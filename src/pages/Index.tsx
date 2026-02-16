@@ -15,23 +15,80 @@ const Index = () => {
     // Scroll to top by default
     if (pathname === '/') {
       window.scrollTo(0, 0);
-      return;
+    } else {
+      // Scroll to specific section if path matches
+      const sectionId = pathname.replace('/', '');
+      const element = document.getElementById(sectionId);
+      if (element) {
+        const offset = 80; // Navbar height offset
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = element.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
     }
 
-    // Scroll to specific section if path matches
-    const sectionId = pathname.replace('/', '');
-    const element = document.getElementById(sectionId);
-    if (element) {
-      const offset = 80; // Navbar height offset
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = element.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
-      const offsetPosition = elementPosition - offset;
+    // Autoscroll logic for landing page
+    if (pathname === '/') {
+      let scrollTimer: NodeJS.Timeout;
+      let autoscrollActive = false;
+      let lastScrollPos = window.scrollY;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
+      const startAutoscroll = () => {
+        if (autoscrollActive) return;
+        autoscrollActive = true;
+
+        const scrollAmount = 1; // Pixels per frame
+        const performScroll = () => {
+          if (!autoscrollActive) return;
+
+          window.scrollBy(0, scrollAmount);
+
+          // Stop if reached bottom
+          if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+            autoscrollActive = false;
+            return;
+          }
+
+          requestAnimationFrame(performScroll);
+        };
+
+        performScroll();
+      };
+
+      const resetTimer = () => {
+        autoscrollActive = false;
+        if (scrollTimer) clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(startAutoscroll, 15000); // 15 seconds idle
+      };
+
+      const handleUserInteraction = () => {
+        // Only reset if significant movement or direct interaction
+        resetTimer();
+      };
+
+      window.addEventListener('scroll', handleUserInteraction);
+      window.addEventListener('mousemove', handleUserInteraction);
+      window.addEventListener('keydown', handleUserInteraction);
+      window.addEventListener('mousedown', handleUserInteraction);
+      window.addEventListener('touchstart', handleUserInteraction);
+
+      resetTimer();
+
+      return () => {
+        if (scrollTimer) clearTimeout(scrollTimer);
+        autoscrollActive = false;
+        window.removeEventListener('scroll', handleUserInteraction);
+        window.removeEventListener('mousemove', handleUserInteraction);
+        window.removeEventListener('keydown', handleUserInteraction);
+        window.removeEventListener('mousedown', handleUserInteraction);
+        window.removeEventListener('touchstart', handleUserInteraction);
+      };
     }
   }, [pathname]);
 
