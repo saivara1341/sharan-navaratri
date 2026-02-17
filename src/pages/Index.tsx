@@ -37,7 +37,6 @@ const Index = () => {
     if (pathname === '/') {
       let scrollTimer: NodeJS.Timeout;
       let autoscrollActive = false;
-      let lastScrollPos = window.scrollY;
 
       const startAutoscroll = () => {
         if (autoscrollActive) return;
@@ -50,7 +49,7 @@ const Index = () => {
           window.scrollBy(0, scrollAmount);
 
           // Stop if reached bottom
-          if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+          if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 2) {
             autoscrollActive = false;
             return;
           }
@@ -64,26 +63,26 @@ const Index = () => {
       const resetTimer = () => {
         autoscrollActive = false;
         if (scrollTimer) clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(startAutoscroll, 15000); // 15 seconds idle
+        scrollTimer = setTimeout(startAutoscroll, 10000); // 10 seconds idle
       };
 
       const handleUserInteraction = () => {
-        // Only reset if significant movement or direct interaction
         resetTimer();
       };
 
-      window.addEventListener('scroll', handleUserInteraction);
-      window.addEventListener('mousemove', handleUserInteraction);
-      window.addEventListener('keydown', handleUserInteraction);
-      window.addEventListener('mousedown', handleUserInteraction);
-      window.addEventListener('touchstart', handleUserInteraction);
+      // Use 'wheel' instead of 'scroll' to detect purposeful user scrolling
+      window.addEventListener('wheel', handleUserInteraction, { passive: true });
+      window.addEventListener('mousemove', handleUserInteraction, { passive: true });
+      window.addEventListener('keydown', handleUserInteraction, { passive: true });
+      window.addEventListener('mousedown', handleUserInteraction, { passive: true });
+      window.addEventListener('touchstart', handleUserInteraction, { passive: true });
 
       resetTimer();
 
       return () => {
         if (scrollTimer) clearTimeout(scrollTimer);
         autoscrollActive = false;
-        window.removeEventListener('scroll', handleUserInteraction);
+        window.removeEventListener('wheel', handleUserInteraction);
         window.removeEventListener('mousemove', handleUserInteraction);
         window.removeEventListener('keydown', handleUserInteraction);
         window.removeEventListener('mousedown', handleUserInteraction);
