@@ -230,7 +230,7 @@ export const Navbar = () => {
               </svg>
             </motion.a>
             <motion.a
-              href="https://www.instagram.com/siddhidynamics/?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+              href="https://www.instagram.com/siddhidynamics/?igsh=djB1eXhhaGNoc3M4"
               target="_blank"
               rel="noopener noreferrer"
               className="w-12 h-12 rounded-xl glass-card flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 transition-all duration-300"
