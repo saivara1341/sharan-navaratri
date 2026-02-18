@@ -209,7 +209,7 @@ export const Navbar = () => {
           </motion.a>
 
           <motion.div
-            className="flex items-center gap-6 mt-4"
+            className="flex items-center gap-6 mt-4 relative z-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{
               opacity: mobileMenuOpen ? 1 : 0,
@@ -230,7 +230,7 @@ export const Navbar = () => {
               </svg>
             </motion.a>
             <motion.a
-              href="https://www.instagram.com/siddhidynamics"
+              href="https://www.instagram.com/siddhidynamics/?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
               target="_blank"
               rel="noopener noreferrer"
               className="w-12 h-12 rounded-xl glass-card flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 transition-all duration-300"
