@@ -73,7 +73,6 @@ export const FooterSection = () => {
               { name: t('nav.vision'), href: '#/vision' },
               { name: t('nav.projects'), href: '#/projects' },
               { name: t('nav.submit'), href: '#/submit' },
-              { name: t('nav.collab'), href: '#/portal' },
             ].map((link, index) => (
               <motion.a
                 key={link.name}

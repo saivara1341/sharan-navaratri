@@ -11,6 +11,7 @@ import NilayamLanding from "./pages/projects/NilayamLanding";
 import ArchPlanLanding from "./pages/projects/ArchPlanLanding";
 import LetUsKnowLanding from "./pages/projects/LetUsKnowLanding";
 import WishOLanding from "./pages/projects/WishOLanding";
+import AdminPortal from "./pages/AdminPortal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/project/archplan" element={<ArchPlanLanding />} />
           <Route path="/project/letusknow" element={<LetUsKnowLanding />} />
           <Route path="/project/wish-o" element={<WishOLanding />} />
+          <Route path="/admin-hq-nexus" element={<AdminPortal />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

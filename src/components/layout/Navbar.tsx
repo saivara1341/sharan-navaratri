@@ -15,7 +15,6 @@ export const Navbar = () => {
     { name: t('nav.vision'), href: '#/vision' },
     { name: t('nav.projects'), href: '#/projects' },
     { name: t('nav.submit'), href: '#/submit' },
-    { name: t('nav.collab'), href: '#/portal' },
   ];
 
   const headerOpacity = useTransform(scrollY, [0, 30], [0, 1]);
@@ -110,7 +109,7 @@ export const Navbar = () => {
 
 
               <motion.a
-                href={isLoggedIn ? "#/portal" : "#/submit"}
+                href={isLoggedIn ? "#/portal" : "#/auth"}
                 className="relative ml-4 px-6 py-2.5 rounded-xl font-semibold text-sm overflow-hidden group"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -191,6 +190,23 @@ export const Navbar = () => {
               {link.name}
             </motion.a>
           ))}
+
+          <motion.a
+            href={isLoggedIn ? "#/portal" : "#/auth"}
+            onClick={() => setMobileMenuOpen(false)}
+            className="px-10 py-4 rounded-xl font-bold text-lg overflow-hidden relative group"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{
+              opacity: mobileMenuOpen ? 1 : 0,
+              y: mobileMenuOpen ? 0 : 20
+            }}
+            transition={{ delay: 0.1 * navLinks.length + 0.1 }}
+          >
+            <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-90" />
+            <span className="relative text-primary-foreground">
+              {isLoggedIn ? t('nav.portal') : t('nav.getStarted')}
+            </span>
+          </motion.a>
 
           <motion.div
             className="flex items-center gap-6 mt-4"

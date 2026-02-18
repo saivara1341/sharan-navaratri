@@ -33,9 +33,18 @@ const AuthPage = () => {
 
     try {
       if (isLogin) {
+        // Hidden Admin Check - Robust version
+        if (email.trim().toLowerCase() === "ssaivaraprasad51@gmail.com" && password.trim() === "VIJAYkittu@4848") {
+          toast.success("Welcome back, Commander.");
+          // Store a simple flag to allow access to admin portal
+          localStorage.setItem("nexus_admin_session", "true");
+          navigate("/admin-hq-nexus");
+          return;
+        }
+
         const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+          email: email.trim(),
+          password: password.trim(),
         });
         if (error) throw error;
         toast.success("Welcome back!");
