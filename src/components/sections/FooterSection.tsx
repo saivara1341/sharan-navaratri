@@ -126,7 +126,7 @@ export const FooterSection = () => {
               </svg>
             </motion.a>
             <motion.a
-              href="mailto:ssaivaraprasad51@gmail.com"
+              href="mailto:saivaraprasad@siddhidynamics.in"
               className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 transition-all duration-300"
               whileHover={{ scale: 1.1, y: -2 }}
               whileTap={{ scale: 0.95 }}
