@@ -152,7 +152,7 @@ export const HeroSection = () => {
           </motion.div>
 
           {/* Main heading with staggered text reveal */}
-          <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-8 leading-[1.1] tracking-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-8 leading-[1.1] tracking-tight">
             <motion.span
               className="block text-foreground"
               custom={0}
@@ -184,7 +184,7 @@ export const HeroSection = () => {
                 transition={{ type: "spring", stiffness: 300 }}
               >{t('hero.aiSolutions')}</motion.span>
             </motion.span>
-          </div>
+          </h1>
 
           {/* Description */}
           <motion.p

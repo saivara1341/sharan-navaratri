@@ -94,6 +94,24 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <Navbar />
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "Siddhi Dynamics",
+          "url": "https://siddhidynamics.in/",
+          "logo": "https://siddhidynamics.in/favicon.jpg",
+          "description": "Deep-tech innovation firm transforming real-world challenges into scalable, production-ready AI solutions.",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "IN"
+          },
+          "sameAs": [
+            "https://www.linkedin.com/company/siddhi-dynamics-llp",
+            "https://www.instagram.com/siddhidynamics/"
+          ]
+        })}
+      </script>
       <main>
         <HeroSection />
         <VisionSection />
