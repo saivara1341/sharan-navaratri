@@ -260,8 +260,8 @@ const AdminPortal = () => {
                                                         <h3 className="text-2xl font-bold group-hover:text-primary transition-colors">{sub.name}</h3>
                                                         {sub.status && (
                                                             <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tighter ${sub.status === 'Analyzing' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' :
-                                                                    sub.status === 'In Progress' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
-                                                                        'bg-green-500/10 text-green-500 border border-green-500/20'
+                                                                sub.status === 'In Progress' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
+                                                                    'bg-green-500/10 text-green-500 border border-green-500/20'
                                                                 }`}>
                                                                 {sub.status}
                                                             </span>

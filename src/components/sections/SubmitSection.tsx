@@ -115,18 +115,29 @@ export const SubmitSection = () => {
           message: validatedData.message.trim(),
         });
 
-      if (error) throw error;
+      // Always log the raw error in dev for debugging
+      if (error) {
+        console.error('[SubmitSection] Supabase insert error:', JSON.stringify(error, null, 2));
+        throw error;
+      }
 
       toast.success(t(`submit.toasts.${formData.inquiryType}Success`));
       setFormData({ name: '', email: '', designation: '', organization: '', inquiryType: 'problem', message: '' });
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof z.ZodError) {
         toast.error(t('submit.toasts.inputError'));
       } else {
-        if (import.meta.env.DEV) {
-          console.error('Contact form submission error:', error);
+        // Detect RLS / permission errors from Supabase
+        const code = error?.code ?? '';
+        const msg: string = error?.message ?? '';
+        const isRLS = code === '42501' || msg.toLowerCase().includes('rls') || msg.toLowerCase().includes('policy') || msg.toLowerCase().includes('permission denied');
+        if (isRLS) {
+          console.error('[SubmitSection] RLS/Permission error — check Supabase policies for contact_submissions table:', error);
+          toast.error('Submission blocked by database policy. Please contact support.');
+        } else {
+          console.error('[SubmitSection] Contact form submission error:', error);
+          toast.error(t('submit.toasts.genericError'));
         }
-        toast.error(t('submit.toasts.genericError'));
       }
     } finally {
       setIsSubmitting(false);
