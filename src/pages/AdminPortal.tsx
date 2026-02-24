@@ -56,6 +56,11 @@ const AdminPortal = () => {
 
     const fetchSubmissions = async () => {
         setLoading(true);
+        // Debug: Log connection details (Safe to log URL, key is masked)
+        console.log("Supabase Connection Check:", {
+            url: import.meta.env.VITE_SUPABASE_URL,
+            hasKey: !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+        });
         try {
             const { data, error } = await supabase
                 .from("contact_submissions")
