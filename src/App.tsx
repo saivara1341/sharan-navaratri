@@ -29,7 +29,6 @@ const App = () => (
           <Route path="/submit" element={<Index />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/portal" element={<Portal />} />
-          <Route path="/portal" element={<Portal />} />
           <Route path="/project/nexus" element={<NexusLanding />} />
           <Route path="/project/nilayam" element={<NilayamLanding />} />
           <Route path="/project/archplan" element={<ArchPlanLanding />} />
