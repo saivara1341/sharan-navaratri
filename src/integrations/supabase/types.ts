@@ -24,6 +24,13 @@ export type Database = {
                     message: string
                     name: string
                     organization: string | null
+                    is_public: boolean | null
+                    status: string | null
+                    progress: number | null
+                    bounty_reward: string | null
+                    response: string | null
+                    milestones: Json | null
+                    file_url: string | null
                 }
                 Insert: {
                     created_at?: string | null
@@ -34,6 +41,13 @@ export type Database = {
                     message: string
                     name: string
                     organization?: string | null
+                    is_public?: boolean | null
+                    status?: string | null
+                    progress?: number | null
+                    bounty_reward?: string | null
+                    response?: string | null
+                    milestones?: Json | null
+                    file_url?: string | null
                 }
                 Update: {
                     created_at?: string | null
@@ -44,6 +58,13 @@ export type Database = {
                     message?: string
                     name?: string
                     organization?: string | null
+                    is_public?: boolean | null
+                    status?: string | null
+                    progress?: number | null
+                    bounty_reward?: string | null
+                    response?: string | null
+                    milestones?: Json | null
+                    file_url?: string | null
                 }
                 Relationships: []
             }
