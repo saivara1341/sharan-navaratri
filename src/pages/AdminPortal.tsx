@@ -66,6 +66,10 @@ const AdminPortal = () => {
                 console.error("Supabase Error:", error);
                 throw error;
             }
+            console.log("Submissions received:", data?.length || 0);
+            if (data && data.length > 0) {
+                console.table(data);
+            }
             setSubmissions(data || []);
         } catch (error: any) {
             const msg = error.message || "Unknown error";
