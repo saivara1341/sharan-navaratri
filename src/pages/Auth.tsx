@@ -43,7 +43,7 @@ const AuthPage = () => {
       setConnectionStatus("testing");
       try {
         const start = Date.now();
-        const resp = await fetch("/supabase-api/rest/v1/", {
+        const resp = await fetch("/supabase-api/rest/v1", {
           headers: { 'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY }
         });
         const duration = Date.now() - start;
@@ -117,9 +117,10 @@ const AuthPage = () => {
       if (message === "Failed to fetch") {
         const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
         message = `Unable to reach the server. 
-                   1. Is your Vite server running on port 5173?
-                   2. Are you using ${isLocal ? "mobile hotspot" : "wifi"}? 
-                   Check the browser console (F12) for AUTH_FAILURE_DETAIL.`;
+                   1. Is your terminal running 'npm run dev'?
+                   2. Check that the port is exactly 5173.
+                   3. Error code: ${error.status || 'Unknown'}.
+                   See Browser Console (F12) for AUTH_FAILURE_DETAIL.`;
       }
 
       toast.error(message, { duration: 10000 });
@@ -154,12 +155,12 @@ const AuthPage = () => {
           <div className="text-center mb-8 pt-4">
             {/* Connection Diagnostic Badge */}
             <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-6 border ${connectionStatus === "ok" ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
-                connectionStatus === "testing" ? "bg-blue-500/10 text-blue-500 border-blue-500/20 animate-pulse" :
-                  "bg-red-500/10 text-red-500 border-red-500/20"
+              connectionStatus === "testing" ? "bg-blue-500/10 text-blue-500 border-blue-500/20 animate-pulse" :
+                "bg-red-500/10 text-red-500 border-red-500/20"
               }`}>
               <div className={`w-1.5 h-1.5 rounded-full ${connectionStatus === "ok" ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" :
-                  connectionStatus === "testing" ? "bg-blue-500" :
-                    "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"
+                connectionStatus === "testing" ? "bg-blue-500" :
+                  "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"
                 }`} />
               {connectionStatus === "ok" ? "System Online" :
                 connectionStatus === "testing" ? "Verifying Bridge..." :

@@ -12,13 +12,13 @@ export default defineConfig(({ mode }) => ({
     proxy: {
       // The browser calls /supabase-api/* which Vite rewrites and forwards server-side.
       "/supabase-api": {
-        target: "https://xgrdubcpomwzbuaqtjad.supabase.co",
+        target: "https://172.64.149.246",
         changeOrigin: true,
-        secure: true,
-        rewrite: (path) => path.replace(/^\/supabase-api/, ""),
+        secure: false, // Required for IP-based targets
         headers: {
-          "x-forwarded-host": "xgrdubcpomwzbuaqtjad.supabase.co",
-        }
+          host: "xgrdubcpomwzbuaqtjad.supabase.co",
+        },
+        rewrite: (path) => path.replace(/^\/supabase-api/, ""),
       },
     },
   },
