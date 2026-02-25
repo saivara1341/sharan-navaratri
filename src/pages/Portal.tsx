@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseService } from "@/services/supabaseService";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
@@ -43,23 +44,18 @@ const Portal = () => {
     }, [navigate]);
 
     const fetchData = async (user: any) => {
-        // Fetch submissions
-        const { data: subData } = await supabase
-            .from('contact_submissions')
-            .select('*')
-            .eq('email', user.email)
-            .order('created_at', { ascending: false });
+        try {
+            const [subData, waitData] = await Promise.all([
+                supabaseService.getSubmissions(user.email),
+                supabaseService.getWaitlistEntries(user.email)
+            ]);
 
-        if (subData) setSubmissions(subData);
-
-        // Fetch waitlist entries
-        const { data: waitData } = await supabase
-            .from('project_waitlist')
-            .select('*')
-            .eq('email', user.email)
-            .order('created_at', { ascending: false });
-
-        if (waitData) setWaitlistEntries(waitData);
+            if (subData) setSubmissions(subData);
+            if (waitData) setWaitlistEntries(waitData);
+        } catch (error) {
+            console.error("Error fetching portal data:", error);
+            toast.error("Failed to load your data. Please refresh.");
+        }
     };
 
     const logout = async () => {

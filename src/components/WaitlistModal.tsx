@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Star, Loader2, CheckCircle } from 'lucide-react';
 import { useTranslation, Trans } from 'react-i18next';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseService } from '@/services/supabaseService';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 
@@ -54,17 +54,16 @@ export const WaitlistModal = ({ isOpen, onClose, projectId, projectName, accentC
     setIsSubmitting(true);
 
     try {
-      // 1. Check for duplicate entry
-      const { data: existingEntry, error: checkError } = await supabase
-        .from('project_waitlist')
-        .select('id')
-        .eq('email', email.trim().toLowerCase())
-        .eq('project_id', projectId)
-        .maybeSingle();
+      const result = await supabaseService.addToWaitlist({
+        project_id: projectId,
+        project_name: projectName,
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        idea_rating: rating > 0 ? rating : null,
+        comment: comment.trim() || null,
+      });
 
-      if (checkError) throw checkError;
-
-      if (existingEntry) {
+      if (result.status === "already_exists") {
         toast({
           title: t('waitlistModal.alreadyJoinedTitle'),
           description: t('waitlistModal.alreadyJoinedDesc'),
@@ -73,20 +72,6 @@ export const WaitlistModal = ({ isOpen, onClose, projectId, projectName, accentC
         setIsSubmitting(false);
         return;
       }
-
-      // 2. Insert new entry
-      const { error } = await supabase
-        .from('project_waitlist')
-        .insert({
-          project_id: projectId,
-          project_name: projectName,
-          name: name.trim(),
-          email: email.trim().toLowerCase(),
-          idea_rating: rating > 0 ? rating : null,
-          comment: comment.trim() || null,
-        });
-
-      if (error) throw error;
 
       setIsSuccess(true);
       toast({

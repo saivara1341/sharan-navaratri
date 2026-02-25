@@ -5,7 +5,13 @@ import type { Database } from './types';
 const SUPABASE_URL = "https://xgrdubcpomwzbuaqtjad.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhncmR1YmNwb213emJ1YXF0amFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NjY3MzksImV4cCI6MjA4NTQ0MjczOX0.O52EhG_2iOjl4Ba2yknPcnqswAk8GIVrAQceEe0ImzI";
 
+// In dev mode, route through the Vite proxy to bypass ISP-level DNS/TLS interception.
+// The Vite server proxies /supabase-api → supabase.co at the Node.js level (not the browser).
+const EFFECTIVE_URL = import.meta.env.DEV
+    ? `${window.location.origin}/supabase-api`
+    : SUPABASE_URL;
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY);
+export const supabase = createClient<Database>(EFFECTIVE_URL, SUPABASE_ANON_KEY);

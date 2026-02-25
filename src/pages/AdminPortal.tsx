@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseService } from "@/services/supabaseService";
+
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import {
@@ -45,46 +47,48 @@ const AdminPortal = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
 
-    // Check for admin session
+    // Check for admin session strictly via Supabase Auth
     useEffect(() => {
-        const isAdmin = localStorage.getItem("nexus_admin_session") === "true";
-        if (!isAdmin) {
-            toast.error("Unauthorized access. Identification required.");
-            navigate("/auth");
-        }
+        const checkAdmin = async () => {
+            const { data: { user }, error } = await supabase.auth.getUser();
+
+            if (error || !user) {
+                toast.error("Please login to access the Admin HQ.");
+                navigate("/auth");
+                return;
+            }
+
+            if (user.email !== "ssaivaraprasad51@gmail.com") {
+                toast.error("Access Refused: You do not have administrative privileges.");
+                navigate("/");
+                return;
+            }
+
+            // Authorized
+            fetchSubmissions();
+        };
+
+        checkAdmin();
     }, [navigate]);
+
+    const [fetchError, setFetchError] = useState<string | null>(null);
 
     const fetchSubmissions = async () => {
         setLoading(true);
-        // Debug: Log connection details (Safe to log URL, key is masked)
-        console.log("Supabase Connection Check:", {
-            url: import.meta.env.VITE_SUPABASE_URL,
-            hasKey: !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY
-        });
-        try {
-            const { data, error } = await supabase
-                .from("contact_submissions")
-                .select("*")
-                .order("created_at", { ascending: false });
+        setFetchError(null);
 
-            if (error) {
-                console.error("Supabase Error:", error);
-                throw error;
-            }
-            console.log("Submissions received:", data?.length || 0);
-            if (data && data.length > 0) {
-                console.table(data);
-            }
+        try {
+            const data = await supabaseService.getSubmissions();
             setSubmissions(data || []);
         } catch (error: any) {
-            const msg = error.message || "Unknown error";
             console.error("Fetch Failure:", error);
+            const msg = error.message || "Unknown error";
 
-            if (msg.includes("Failed to fetch")) {
-                toast.error("Network Error: Could not connect to Supabase. Check your internet or Supabase project status.");
-            } else if (error.code === "PGRST301" || msg.includes("RLS")) {
-                toast.error("Access Denied: Row Level Security is preventing data retrieval. Please check Supabase policies.");
+            if (msg.includes("Failed to fetch") || msg.includes("NetworkError")) {
+                const networkMsg = "ISP/Network Block Detected. The Vite proxy should handle this, but please ensure your dev server is running.";
+                setFetchError(networkMsg);
             } else {
+                setFetchError("Unexpected error: " + msg);
                 toast.error("Failed to fetch submissions: " + msg);
             }
         } finally {
@@ -92,9 +96,7 @@ const AdminPortal = () => {
         }
     };
 
-    useEffect(() => {
-        fetchSubmissions();
-    }, []);
+    // We call this inside the useEffect now
 
     const filteredSubmissions = submissions.filter(s => {
         const matchesFilter = filter === "all" || s.inquiry_type === filter;
@@ -151,7 +153,8 @@ const AdminPortal = () => {
                             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
                         </button>
                         <button
-                            onClick={() => {
+                            onClick={async () => {
+                                await supabase.auth.signOut();
                                 localStorage.removeItem("nexus_admin_session");
                                 navigate("/");
                             }}
@@ -162,6 +165,21 @@ const AdminPortal = () => {
                         </button>
                     </div>
                 </div>
+
+                {/* Error Banner */}
+                {fetchError && (
+                    <div className="mb-8 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 flex items-start gap-3">
+                        <div className="shrink-0 mt-0.5">⚠️</div>
+                        <div className="flex-1">
+                            <p className="font-semibold text-red-300 mb-1">Data Fetch Failed</p>
+                            <pre className="text-xs whitespace-pre-wrap text-red-400/80 font-mono">{fetchError}</pre>
+                        </div>
+                        <button
+                            onClick={() => setFetchError(null)}
+                            className="shrink-0 text-red-400 hover:text-red-200 transition-colors text-lg leading-none"
+                        >×</button>
+                    </div>
+                )}
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">

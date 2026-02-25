@@ -4,7 +4,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Mic, MicOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseService } from '@/services/supabaseService';
 
 const contactSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -104,22 +104,14 @@ export const SubmitSection = () => {
     try {
       const validatedData = contactSchema.parse(formData);
 
-      const { error } = await supabase
-        .from('contact_submissions')
-        .insert({
-          name: validatedData.name.trim(),
-          email: validatedData.email.trim().toLowerCase(),
-          designation: validatedData.designation?.trim() || null,
-          organization: validatedData.organization?.trim() || null,
-          inquiry_type: validatedData.inquiryType,
-          message: validatedData.message.trim(),
-        });
-
-      // Always log the raw error in dev for debugging
-      if (error) {
-        console.error('[SubmitSection] Supabase insert error:', JSON.stringify(error, null, 2));
-        throw error;
-      }
+      await supabaseService.submitContactForm({
+        name: validatedData.name.trim(),
+        email: validatedData.email.trim().toLowerCase(),
+        designation: validatedData.designation?.trim() || null,
+        organization: validatedData.organization?.trim() || null,
+        inquiry_type: validatedData.inquiryType,
+        message: validatedData.message.trim(),
+      });
 
       toast.success(t(`submit.toasts.${formData.inquiryType}Success`));
       setFormData({ name: '', email: '', designation: '', organization: '', inquiryType: 'problem', message: '' });
