@@ -13,6 +13,8 @@ const AuthPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [connectionStatus, setConnectionStatus] = useState<"testing" | "ok" | "failed">("testing");
+  const [debugInfo, setDebugInfo] = useState<string>("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,18 +39,26 @@ const AuthPage = () => {
     });
 
     // Log diagnostic info
-    console.log("Supabase Client Configured at:", (supabase as any).supabaseUrl);
-
     const testConnection = async () => {
+      setConnectionStatus("testing");
       try {
-        const resp = await fetch(`${window.location.origin}/supabase-api/rest/v1/`, {
+        const start = Date.now();
+        const resp = await fetch("/supabase-api/rest/v1/", {
           headers: { 'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY }
         });
-        console.log("ISP Proxy Test Result:", resp.status);
-        return resp.ok;
-      } catch (e) {
+        const duration = Date.now() - start;
+
+        if (resp.ok) {
+          setConnectionStatus("ok");
+          setDebugInfo(`Successfully connected to gateway (HTTP ${resp.status}) in ${duration}ms`);
+        } else {
+          setConnectionStatus("failed");
+          setDebugInfo(`Gateway responded with error: ${resp.status} ${resp.statusText}`);
+        }
+      } catch (e: any) {
         console.error("ISP Proxy Test Failed:", e);
-        return false;
+        setConnectionStatus("failed");
+        setDebugInfo(`Network Failure: ${e.message}. The dev server proxy is unreachable.`);
       }
     };
 
@@ -142,6 +152,32 @@ const AuthPage = () => {
           </button>
 
           <div className="text-center mb-8 pt-4">
+            {/* Connection Diagnostic Badge */}
+            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-6 border ${connectionStatus === "ok" ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
+                connectionStatus === "testing" ? "bg-blue-500/10 text-blue-500 border-blue-500/20 animate-pulse" :
+                  "bg-red-500/10 text-red-500 border-red-500/20"
+              }`}>
+              <div className={`w-1.5 h-1.5 rounded-full ${connectionStatus === "ok" ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" :
+                  connectionStatus === "testing" ? "bg-blue-500" :
+                    "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"
+                }`} />
+              {connectionStatus === "ok" ? "System Online" :
+                connectionStatus === "testing" ? "Verifying Bridge..." :
+                  "ISP Block Active"}
+            </div>
+
+            {connectionStatus === "failed" && (
+              <div className="mb-6 p-3 rounded-lg bg-red-500/5 border border-red-500/10 text-left">
+                <p className="text-[10px] text-red-400 font-mono break-all">{debugInfo}</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="mt-2 text-[10px] text-primary hover:underline font-bold uppercase"
+                >
+                  Retry Connection
+                </button>
+              </div>
+            )}
+
             <h1 className="text-3xl font-bold gradient-text glow-text mb-2">
               {isLogin ? "Welcome Back" : "Join the Future"}
             </h1>
