@@ -2,14 +2,18 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://xgrdubcpomwzbuaqtjad.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhncmR1YmNwb213emJ1YXF0amFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NjY3MzksImV4cCI6MjA4NTQ0MjczOX0.O52EhG_2iOjl4Ba2yknPcnqswAk8GIVrAQceEe0ImzI";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // In dev mode, route through the Vite proxy to bypass ISP-level DNS/TLS interception.
-// The Vite server proxies /supabase-api → supabase.co at the Node.js level (not the browser).
+// The Vite server proxies /supabase-api → supabase.co at the Node.js level.
 const EFFECTIVE_URL = import.meta.env.DEV
-    ? `${window.location.origin}/supabase-api`
+    ? "/supabase-api" // Relative path works better with Vite proxy
     : SUPABASE_URL;
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    console.error("Missing Supabase credentials in .env file");
+}
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";

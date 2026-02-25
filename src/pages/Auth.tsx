@@ -83,7 +83,14 @@ const AuthPage = () => {
         }
       }
     } catch (error: any) {
-      toast.error(error.message || "Authentication failed");
+      console.error("Auth Error:", error);
+      let message = error.message || "Authentication failed";
+
+      if (message === "Failed to fetch") {
+        message = "Network Error: Could not connect to Supabase. This is likely due to an ISP block. Please ensure your Vite dev server is running and try again.";
+      }
+
+      toast.error(message, { duration: 6000 });
     } finally {
       setLoading(false);
     }

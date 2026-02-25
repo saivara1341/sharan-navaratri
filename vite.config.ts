@@ -12,13 +12,12 @@ export default defineConfig(({ mode }) => ({
       // Proxy Supabase API calls via Node.js to bypass ISP-level DNS/TLS interception.
       // The browser calls /supabase-api/* which Vite rewrites and forwards server-side.
       "/supabase-api": {
-        // Use the real Supabase IP directly to bypass ISP DNS poisoning.
-        // IP found via Google DNS: 172.64.149.246
         target: "https://172.64.149.246",
         changeOrigin: true,
-        secure: false, // Required when using IP directly or encountering ISP interception
+        secure: false, // Required when using IP directly to bypass DNS blocks
         headers: {
           host: "xgrdubcpomwzbuaqtjad.supabase.co",
+          origin: "https://xgrdubcpomwzbuaqtjad.supabase.co",
         },
         rewrite: (path) => path.replace(/^\/supabase-api/, ""),
       },

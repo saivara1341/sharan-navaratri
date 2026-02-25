@@ -109,7 +109,7 @@ export const supabaseService = {
      */
     getEffectiveUrl() {
         return import.meta.env.DEV
-            ? `${window.location.origin}/supabase-api`
-            : "https://xgrdubcpomwzbuaqtjad.supabase.co";
+            ? "/supabase-api"
+            : import.meta.env.VITE_SUPABASE_URL;
     }
 };
