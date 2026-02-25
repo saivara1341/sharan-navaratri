@@ -17,11 +17,23 @@ const AuthPage = () => {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) navigate("/portal");
+      if (session) {
+        if (session.user.email === "ssaivaraprasad51@gmail.com") {
+          navigate("/admin-hq-nexus");
+        } else {
+          navigate("/portal");
+        }
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) navigate("/portal");
+      if (session) {
+        if (session.user.email === "ssaivaraprasad51@gmail.com") {
+          navigate("/admin-hq-nexus");
+        } else {
+          navigate("/portal");
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -33,22 +45,22 @@ const AuthPage = () => {
 
     try {
       if (isLogin) {
-        // Hidden Admin Check - Robust version
-        if (email.trim().toLowerCase() === "ssaivaraprasad51@gmail.com" && password.trim() === "VIJAYkittu@4848") {
-          toast.success("Welcome back, Commander.");
-          // Store a simple flag to allow access to admin portal
-          localStorage.setItem("nexus_admin_session", "true");
-          navigate("/admin-hq-nexus");
-          return;
-        }
-
         const { error } = await supabase.auth.signInWithPassword({
           email: email.trim(),
           password: password.trim(),
         });
+
         if (error) throw error;
-        toast.success("Welcome back!");
-        navigate("/portal");
+
+        // Check if admin
+        if (email.trim().toLowerCase() === "ssaivaraprasad51@gmail.com") {
+          toast.success("Welcome back, Commander.");
+          localStorage.setItem("nexus_admin_session", "true");
+          navigate("/admin-hq-nexus");
+        } else {
+          toast.success("Welcome back!");
+          navigate("/portal");
+        }
       } else {
         const { data, error } = await supabase.auth.signUp({
           email,
