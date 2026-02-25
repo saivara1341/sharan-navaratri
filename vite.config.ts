@@ -17,6 +17,8 @@ export default defineConfig(({ mode }) => ({
         secure: false, // Required for IP-based targets
         headers: {
           host: "xgrdubcpomwzbuaqtjad.supabase.co",
+          origin: "https://xgrdubcpomwzbuaqtjad.supabase.co",
+          referer: "https://xgrdubcpomwzbuaqtjad.supabase.co/",
         },
         rewrite: (path) => path.replace(/^\/supabase-api/, ""),
       },

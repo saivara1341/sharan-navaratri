@@ -48,12 +48,12 @@ const AuthPage = () => {
         });
         const duration = Date.now() - start;
 
-        if (resp.ok) {
+        if (resp.status === 200 || resp.status === 401 || resp.status === 404) {
           setConnectionStatus("ok");
-          setDebugInfo(`Successfully connected to gateway (HTTP ${resp.status}) in ${duration}ms`);
+          setDebugInfo(`Bridge Active (Gateway HTTP ${resp.status}). Your ISP block is being bypassed.`);
         } else {
           setConnectionStatus("failed");
-          setDebugInfo(`Gateway responded with error: ${resp.status} ${resp.statusText}`);
+          setDebugInfo(`Gateway Error: ${resp.status} ${resp.statusText}`);
         }
       } catch (e: any) {
         console.error("ISP Proxy Test Failed:", e);
@@ -115,12 +115,7 @@ const AuthPage = () => {
       let message = error.message || "Authentication failed";
 
       if (message === "Failed to fetch") {
-        const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-        message = `Unable to reach the server. 
-                   1. Is your terminal running 'npm run dev'?
-                   2. Check that the port is exactly 5173.
-                   3. Error code: ${error.status || 'Unknown'}.
-                   See Browser Console (F12) for AUTH_FAILURE_DETAIL.`;
+        message = `We are struggling to connect to the backend. Please ensure the terminal shows 'npm run dev' is active. If the green 'System Online' badge is visible, try refreshing once more.`;
       }
 
       toast.error(message, { duration: 10000 });

@@ -8,7 +8,7 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 // ISP Bypass: In development, route through the local Vite proxy.
 // This ensures the browser only talks to localhost, avoiding ISP DNS/TLS blocks.
 const EFFECTIVE_URL = import.meta.env.DEV
-    ? `${window.location.origin}/supabase-api`
+    ? "/supabase-api" // Relative path is safest for Vite proxy
     : SUPABASE_URL;
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
