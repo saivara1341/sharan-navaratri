@@ -5,10 +5,10 @@ import type { Database } from './types';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// In dev mode, route through the Vite proxy to bypass ISP-level DNS/TLS interception.
-// The Vite server proxies /supabase-api → supabase.co at the Node.js level.
+// ISP Bypass: In development, route through the local Vite proxy.
+// This ensures the browser only talks to localhost, avoiding ISP DNS/TLS blocks.
 const EFFECTIVE_URL = import.meta.env.DEV
-    ? "/supabase-api" // Relative path works better with Vite proxy
+    ? `${window.location.origin}/supabase-api`
     : SUPABASE_URL;
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {

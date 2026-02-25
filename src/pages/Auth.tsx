@@ -36,6 +36,24 @@ const AuthPage = () => {
       }
     });
 
+    // Log diagnostic info
+    console.log("Supabase Client Configured at:", (supabase as any).supabaseUrl);
+
+    const testConnection = async () => {
+      try {
+        const resp = await fetch(`${window.location.origin}/supabase-api/rest/v1/`, {
+          headers: { 'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY }
+        });
+        console.log("ISP Proxy Test Result:", resp.status);
+        return resp.ok;
+      } catch (e) {
+        console.error("ISP Proxy Test Failed:", e);
+        return false;
+      }
+    };
+
+    testConnection();
+
     return () => subscription.unsubscribe();
   }, [navigate]);
 
@@ -83,14 +101,18 @@ const AuthPage = () => {
         }
       }
     } catch (error: any) {
-      console.error("Auth Error:", error);
+      console.error("AUTH_FAILURE_DETAIL:", error);
       let message = error.message || "Authentication failed";
 
       if (message === "Failed to fetch") {
-        message = "Network Error: Could not connect to Supabase. This is likely due to an ISP block. Please ensure your Vite dev server is running and try again.";
+        const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+        message = `Unable to reach the server. 
+                   1. Is your Vite server running on port 5173?
+                   2. Are you using ${isLocal ? "mobile hotspot" : "wifi"}? 
+                   Check the browser console (F12) for AUTH_FAILURE_DETAIL.`;
       }
 
-      toast.error(message, { duration: 6000 });
+      toast.error(message, { duration: 10000 });
     } finally {
       setLoading(false);
     }
