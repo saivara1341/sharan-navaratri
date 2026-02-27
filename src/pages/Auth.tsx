@@ -3,18 +3,23 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
+console.log("Supabase URL:", import.meta.env.VITE_SUPABASE_URL);
+console.log("Supabase Key (truncated):", import.meta.env.VITE_SUPABASE_ANON_KEY?.slice(0, 10) + "...");
 import { Eye, EyeOff, ArrowLeft, Mail, Lock, User, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-const AuthPage = () => {
+const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+
+  // Connection Diagnostic State
   const [connectionStatus, setConnectionStatus] = useState<"testing" | "ok" | "failed">("testing");
   const [debugInfo, setDebugInfo] = useState<string>("");
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,19 +43,18 @@ const AuthPage = () => {
       }
     });
 
-    // Log diagnostic info
+    // ISP Bypass Test
     const testConnection = async () => {
       setConnectionStatus("testing");
       try {
         const start = Date.now();
         const resp = await fetch("/supabase-api/rest/v1", {
-          headers: { 'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY }
+          headers: { 'apikey': (supabase as any).supabaseKey || import.meta.env.VITE_SUPABASE_ANON_KEY }
         });
-        const duration = Date.now() - start;
 
         if (resp.status === 200 || resp.status === 401 || resp.status === 404) {
           setConnectionStatus("ok");
-          setDebugInfo(`Bridge Active (Gateway HTTP ${resp.status}). Your ISP block is being bypassed.`);
+          setDebugInfo(`System active. ISP Bypass enabled.`);
         } else {
           setConnectionStatus("failed");
           setDebugInfo(`Gateway Error: ${resp.status} ${resp.statusText}`);
@@ -73,17 +77,15 @@ const AuthPage = () => {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email: email.trim(),
           password: password.trim(),
         });
 
         if (error) throw error;
 
-        // Check if admin
         if (email.trim().toLowerCase() === "ssaivaraprasad51@gmail.com") {
           toast.success("Welcome back, Commander.");
-          localStorage.setItem("nexus_admin_session", "true");
           navigate("/admin-hq-nexus");
         } else {
           toast.success("Welcome back!");
@@ -91,34 +93,21 @@ const AuthPage = () => {
         }
       } else {
         const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
+          email: email.trim(),
+          password: password.trim(),
           options: {
-            data: {
-              full_name: fullName,
-            },
-            emailRedirectTo: `${window.location.origin}/#/portal`,
-          },
+            data: { full_name: fullName.trim() }
+          }
         });
+
         if (error) throw error;
 
-        if (data.session) {
-          toast.success("Account created! Welcome to the future.");
-          navigate("/portal");
-        } else {
-          toast.success("Account created! You can now log in.");
-          setIsLogin(true);
-        }
+        toast.success("Account created!");
+        setIsLogin(true);
       }
     } catch (error: any) {
       console.error("AUTH_FAILURE_DETAIL:", error);
-      let message = error.message || "Authentication failed";
-
-      if (message === "Failed to fetch") {
-        message = `We are struggling to connect to the backend. Please ensure the terminal shows 'npm run dev' is active. If the green 'System Online' badge is visible, try refreshing once more.`;
-      }
-
-      toast.error(message, { duration: 10000 });
+      toast.error(error.message || "Authentication failed");
     } finally {
       setLoading(false);
     }
@@ -148,33 +137,7 @@ const AuthPage = () => {
           </button>
 
           <div className="text-center mb-8 pt-4">
-            {/* Connection Diagnostic Badge */}
-            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-6 border ${connectionStatus === "ok" ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
-              connectionStatus === "testing" ? "bg-blue-500/10 text-blue-500 border-blue-500/20 animate-pulse" :
-                "bg-red-500/10 text-red-500 border-red-500/20"
-              }`}>
-              <div className={`w-1.5 h-1.5 rounded-full ${connectionStatus === "ok" ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" :
-                connectionStatus === "testing" ? "bg-blue-500" :
-                  "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"
-                }`} />
-              {connectionStatus === "ok" ? "System Online" :
-                connectionStatus === "testing" ? "Verifying Bridge..." :
-                  "ISP Block Active"}
-            </div>
-
-            {connectionStatus === "failed" && (
-              <div className="mb-6 p-3 rounded-lg bg-red-500/5 border border-red-500/10 text-left">
-                <p className="text-[10px] text-red-400 font-mono break-all">{debugInfo}</p>
-                <button
-                  onClick={() => window.location.reload()}
-                  className="mt-2 text-[10px] text-primary hover:underline font-bold uppercase"
-                >
-                  Retry Connection
-                </button>
-              </div>
-            )}
-
-            <h1 className="text-3xl font-bold gradient-text glow-text mb-2">
+            <h1 className="text-3xl font-bold gradient-text glow-text mb-2 pt-8">
               {isLogin ? "Welcome Back" : "Join the Future"}
             </h1>
             <p className="text-muted-foreground text-sm mb-8">
@@ -292,4 +255,4 @@ const AuthPage = () => {
   );
 };
 
-export default AuthPage;
+export default Auth;

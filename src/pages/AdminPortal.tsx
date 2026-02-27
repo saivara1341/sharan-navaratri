@@ -19,7 +19,8 @@ import {
     Mail,
     Briefcase,
     Building2,
-    RefreshCw
+    RefreshCw,
+    ArrowUpDown
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -45,14 +46,16 @@ const AdminPortal = () => {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState("all");
     const [searchTerm, setSearchTerm] = useState("");
+    const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
     const navigate = useNavigate();
 
     // Check for admin session strictly via Supabase Auth
+    // Check for admin session strictly via Mock Service
     useEffect(() => {
         const checkAdmin = async () => {
-            const { data: { user }, error } = await supabase.auth.getUser();
+            const { data: { user } } = await supabase.auth.getUser();
 
-            if (error || !user) {
+            if (!user) {
                 toast.error("Please login to access the Admin HQ.");
                 navigate("/auth");
                 return;
@@ -82,15 +85,8 @@ const AdminPortal = () => {
             setSubmissions(data || []);
         } catch (error: any) {
             console.error("Fetch Failure:", error);
-            const msg = error.message || "Unknown error";
-
-            if (msg.includes("Failed to fetch") || msg.includes("NetworkError")) {
-                const networkMsg = "ISP/Network Block Detected. The Vite proxy should handle this, but please ensure your dev server is running.";
-                setFetchError(networkMsg);
-            } else {
-                setFetchError("Unexpected error: " + msg);
-                toast.error("Failed to fetch submissions: " + msg);
-            }
+            setFetchError("Unexpected error: " + error.message);
+            toast.error("Failed to fetch submissions");
         } finally {
             setLoading(false);
         }
@@ -98,14 +94,20 @@ const AdminPortal = () => {
 
     // We call this inside the useEffect now
 
-    const filteredSubmissions = submissions.filter(s => {
-        const matchesFilter = filter === "all" || s.inquiry_type === filter;
-        const matchesSearch =
-            s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            s.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            s.message.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesFilter && matchesSearch;
-    });
+    const filteredSubmissions = submissions
+        .filter(s => {
+            const matchesFilter = filter === "all" || s.inquiry_type === filter;
+            const matchesSearch =
+                s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                s.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                s.message.toLowerCase().includes(searchTerm.toLowerCase());
+            return matchesFilter && matchesSearch;
+        })
+        .sort((a, b) => {
+            const dateA = new Date(a.created_at || 0).getTime();
+            const dateB = new Date(b.created_at || 0).getTime();
+            return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+        });
 
     const getInquiryIcon = (type: string) => {
         switch (type) {
@@ -155,7 +157,6 @@ const AdminPortal = () => {
                         <button
                             onClick={async () => {
                                 await supabase.auth.signOut();
-                                localStorage.removeItem("nexus_admin_session");
                                 navigate("/");
                             }}
                             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20"
@@ -221,6 +222,17 @@ const AdminPortal = () => {
                     </div>
 
                     <div className="flex items-center gap-3 overflow-x-auto pb-2 lg:pb-0 no-scrollbar">
+                        <div className="relative group min-w-[140px]">
+                            <select
+                                value={sortOrder}
+                                onChange={(e) => setSortOrder(e.target.value as 'newest' | 'oldest')}
+                                className="w-full appearance-none bg-white/5 border border-white/10 text-foreground text-sm rounded-full px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all cursor-pointer hover:bg-white/10"
+                            >
+                                <option value="newest" className="bg-[#111] text-foreground">Sort: Newest</option>
+                                <option value="oldest" className="bg-[#111] text-foreground">Sort: Oldest</option>
+                            </select>
+                            <ArrowUpDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none group-hover:text-foreground transition-colors" />
+                        </div>
                         {[
                             { id: "all", label: "All types", icon: <Filter className="w-4 h-4" /> },
                             { id: "problem", label: "Problems", icon: <Target className="w-4 h-4" /> },

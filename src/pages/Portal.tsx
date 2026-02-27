@@ -63,272 +63,221 @@ const Portal = () => {
         navigate("/");
     };
 
-    if (loading) return (
-        <div className="min-h-screen bg-background flex items-center justify-center">
-            <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
-        </div>
-    );
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full"
+                />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
             <Navbar />
 
-            {/* Background decorations */}
+            {/* Background patterns */}
             <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/3 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
-            <main className="flex-grow container mx-auto px-6 pt-32 pb-20 relative z-10">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6 relative">
-                    <div className="absolute -top-12 right-0 md:-top-16 md:right-0">
-                        <button
-                            onClick={logout}
-                            title="Sign Out"
-                            className="p-3 rounded-full glass-card border border-border/50 hover:bg-destructive/10 hover:border-destructive/30 transition-all text-muted-foreground hover:text-destructive group"
-                        >
-                            <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                        </button>
-                    </div>
+            <div className="container relative z-10 mx-auto px-6 pt-32 pb-20 flex-grow">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
                     <div>
-                        <p className="text-muted-foreground">Collab Zone • Growth & Marketing Intelligence</p>
-                        <h2 className="text-2xl font-bold gradient-text">Welcome, {user?.email?.split('@')[0]}</h2>
+                        <h1 className="text-4xl font-bold gradient-text mb-2">Neural Hub</h1>
+                        <p className="text-muted-foreground">Welcome back, {user?.user_metadata?.full_name || user?.email}</p>
                     </div>
+                    <button
+                        onClick={logout}
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/10 text-muted-foreground hover:text-foreground"
+                    >
+                        <LogOut className="w-5 h-5" />
+                        <span>Logout</span>
+                    </button>
                 </div>
 
-                <div className="grid lg:grid-cols-12 gap-8">
-                    {/* Sidebar Tabs */}
-                    <div className="lg:col-span-3 space-y-3">
-                        <button
-                            onClick={() => setActiveTab('submissions')}
-                            className={`w-full flex items-center gap-3 p-4 rounded-xl transition-all duration-300 ${activeTab === 'submissions'
-                                ? 'bg-primary/10 border border-primary/30 text-primary shadow-lg shadow-primary/10'
-                                : 'hover:bg-card/50 border border-transparent text-muted-foreground'
-                                }`}
-                        >
-                            <ClipboardList className="w-5 h-5" />
-                            <span className="font-semibold">Submissions</span>
-                            <span className="ml-auto bg-primary/20 text-xs px-2 py-1 rounded-md">{submissions.length}</span>
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('waitlist')}
-                            className={`w-full flex items-center gap-3 p-4 rounded-xl transition-all duration-300 ${activeTab === 'waitlist'
-                                ? 'bg-primary/10 border border-primary/30 text-primary shadow-lg shadow-primary/10'
-                                : 'hover:bg-card/50 border border-transparent text-muted-foreground'
-                                }`}
-                        >
-                            <Clock className="w-5 h-5" />
-                            <span className="font-semibold">Waitlist</span>
-                            <span className="ml-auto bg-primary/20 text-xs px-2 py-1 rounded-md">{waitlistEntries.length}</span>
-                        </button>
-                    </div>
+                <div className="flex gap-4 mb-8">
+                    <button
+                        onClick={() => setActiveTab('submissions')}
+                        className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${activeTab === 'submissions'
+                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                            : "bg-white/5 text-muted-foreground hover:bg-white/10"
+                            }`}
+                    >
+                        <ClipboardList className="w-5 h-5" />
+                        <span>My Submissions</span>
+                        {submissions.length > 0 && (
+                            <span className="bg-white/20 px-2 rounded-full text-xs">{submissions.length}</span>
+                        )}
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('waitlist')}
+                        className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${activeTab === 'waitlist'
+                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                            : "bg-white/5 text-muted-foreground hover:bg-white/10"
+                            }`}
+                    >
+                        <Clock className="w-5 h-5" />
+                        <span>Waitlist</span>
+                        {waitlistEntries.length > 0 && (
+                            <span className="bg-white/20 px-2 rounded-full text-xs">{waitlistEntries.length}</span>
+                        )}
+                    </button>
+                </div>
 
-                    {/* Main Content Area */}
-                    <div className="lg:col-span-9">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-1 space-y-4">
                         {activeTab === 'submissions' ? (
-                            <div className="space-y-4">
-                                {submissions.length === 0 ? (
-                                    <div className="glass-card p-12 text-center">
-                                        <MessageSquare className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                                        <p className="text-muted-foreground">No submissions found. Shared your first problem with us!</p>
-                                    </div>
-                                ) : (
-                                    submissions.map((sub) => (
-                                        <div key={sub.id} className="glass-card overflow-hidden group">
-                                            <div
-                                                onClick={() => {
-                                                    setSelectedSub(selectedSub?.id === sub.id ? null : sub);
-                                                }}
-                                                className="p-6 cursor-pointer flex items-center justify-between hover:bg-primary/5 transition-colors"
-                                            >
-                                                <div className="flex items-center gap-4">
-                                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${sub.status === 'Resolved' ? 'bg-green-500/20 text-green-500' : 'bg-primary/20 text-primary'
-                                                        }`}>
-                                                        <MessageSquare className="w-5 h-5" />
-                                                    </div>
-                                                    <div>
-                                                        <h3 className="font-bold text-foreground capitalize">{sub.inquiry_type} Solution Tracking</h3>
-                                                        <p className="text-sm text-muted-foreground">{new Date(sub.created_at).toLocaleDateString()}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-4">
-                                                    <span className={`text-xs px-3 py-1 rounded-full border ${sub.status === 'Resolved'
-                                                        ? 'border-green-500/30 bg-green-500/10 text-green-500'
-                                                        : 'border-primary/30 bg-primary/10 text-primary'
-                                                        }`}>
-                                                        {sub.status || 'Analyzing'}
-                                                    </span>
-                                                    {selectedSub?.id === sub.id ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-                                                </div>
+                            submissions.length === 0 ? (
+                                <div className="glass-card p-8 text-center bg-white/5 border-dashed">
+                                    <MessageSquare className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+                                    <p className="text-muted-foreground">No submissions found</p>
+                                </div>
+                            ) : (
+                                submissions.map((sub) => (
+                                    <motion.button
+                                        key={sub.id}
+                                        onClick={() => setSelectedSub(sub)}
+                                        className={`w-full text-left p-6 rounded-2xl glass-card transition-all relative overflow-hidden group ${selectedSub?.id === sub.id ? "electric-border bg-white/10" : "bg-white/5 hover:bg-white/8"
+                                            }`}
+                                    >
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className="text-[10px] uppercase tracking-widest text-primary font-bold">{sub.inquiry_type}</span>
+                                            <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                                                {selectedSub?.id === sub.id ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
                                             </div>
-
-                                            <AnimatePresence>
-                                                {selectedSub?.id === sub.id && (
-                                                    <motion.div
-                                                        initial={{ height: 0 }}
-                                                        animate={{ height: "auto" }}
-                                                        exit={{ height: 0 }}
-                                                        className="overflow-hidden border-t border-border/30 bg-black/20"
-                                                    >
-                                                        <div className="p-8 space-y-8">
-                                                            {/* Details */}
-                                                            <div className="grid md:grid-cols-2 gap-8">
-                                                                <div className="space-y-4">
-                                                                    <h4 className="text-sm font-bold uppercase tracking-widest text-primary/70">Original Message</h4>
-                                                                    <p className="text-sm text-foreground/90 leading-relaxed bg-white/5 p-4 rounded-xl italic">
-                                                                        "{sub.message}"
-                                                                    </p>
-                                                                </div>
-                                                                <div className="space-y-4">
-                                                                    <h4 className="text-sm font-bold uppercase tracking-widest text-accent/70">Our Reply</h4>
-                                                                    <p className="text-sm text-foreground/90 leading-relaxed bg-accent/5 p-4 rounded-xl">
-                                                                        {sub.response || "Our AI agents are currently analyzing your problem statement. We will provide a technical roadmap shortly."}
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-
-                                                            {/* AI Agent Analysis Integration */}
-                                                            <div className="bg-[#1A1A1A] border border-primary/20 rounded-2xl p-6 relative overflow-hidden group/agent">
-                                                                <div className="absolute top-0 right-0 p-4 opacity-20 group-hover/agent:opacity-100 transition-opacity">
-                                                                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                                                                </div>
-
-                                                                <div className="flex items-center gap-3 mb-6">
-                                                                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
-                                                                        <Sparkles className="w-5 h-5 text-primary animate-pulse" />
-                                                                    </div>
-                                                                    <div>
-                                                                        <h4 className="font-bold text-foreground">Siddhi Bot</h4>
-                                                                        <p className="text-[10px] text-primary/70 uppercase tracking-widest font-bold">Marketing & Growth Strategist</p>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="space-y-6">
-                                                                    <div className="bg-black/40 rounded-xl p-5 border border-white/5">
-                                                                        <h5 className="text-xs font-bold text-muted-foreground uppercase mb-3 flex items-center gap-2">
-                                                                            <Clock className="w-3 h-3" /> Bot State: Crafting Campaign
-                                                                        </h5>
-                                                                        <p className="text-sm text-foreground/80 leading-relaxed italic">
-                                                                            "I have analyzed your {sub.inquiry_type} submission. I am currently designing a high-impact social media strategy to maximize engagement. We are targeting viral growth vectors for '{sub.message.split(' ').slice(0, 3).join(' ')}...' on Instagram and LinkedIn."
-                                                                        </p>
-                                                                    </div>
-
-                                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                                        {[
-                                                                            { label: 'Complexity', value: 'High', color: 'text-orange-400' },
-                                                                            { label: 'Feasibility', value: 'Verified', color: 'text-green-400' },
-                                                                            { label: 'Priority', value: 'Active', color: 'text-primary' }
-                                                                        ].map((stat, i) => (
-                                                                            <div key={i} className="bg-white/5 rounded-lg p-3 border border-white/5 text-center">
-                                                                                <span className="text-[10px] text-muted-foreground block mb-1 uppercase font-bold">{stat.label}</span>
-                                                                                <span className={`text-sm font-bold ${stat.color}`}>{stat.value}</span>
-                                                                            </div>
-                                                                        ))}
-                                                                    </div>
-
-                                                                    <div className="space-y-4">
-                                                                        <h4 className="text-sm font-bold uppercase tracking-widest text-primary/70">Agentic Milestones</h4>
-                                                                        <div className="space-y-4">
-                                                                            {(sub.milestones || [
-                                                                                { title: "Brand Voice Alignment", completed: true },
-                                                                                { title: "Social Content Strategy", completed: sub.status !== 'Analyzing' },
-                                                                                { title: "Viral Campaign Launch", completed: sub.status === 'In Progress' || sub.status === 'Resolved' },
-                                                                                { title: "Growth & Analytics Report", completed: sub.status === 'Resolved' }
-                                                                            ]).map((milestone: any, i: number) => (
-                                                                                <div key={i} className="flex items-center gap-4">
-                                                                                    {milestone.completed ? (
-                                                                                        <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center">
-                                                                                            <CheckCircle2 className="w-3 h-3 text-green-500" />
-                                                                                        </div>
-                                                                                    ) : (
-                                                                                        <div className="w-5 h-5 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
-                                                                                            <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-pulse" />
-                                                                                        </div>
-                                                                                    )}
-                                                                                    <span className={milestone.completed ? 'text-foreground font-medium text-sm' : 'text-muted-foreground italic text-sm'}>
-                                                                                        {milestone.title}
-                                                                                    </span>
-                                                                                </div>
-                                                                            ))}
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            {/* AI Agent Brainstorming - Clarity Followup */}
-                                                            <div className="space-y-4 pt-6 border-t border-border/30">
-                                                                <h4 className="text-sm font-bold uppercase tracking-widest text-accent/70 flex items-center gap-2">
-                                                                    <Sparkles className="w-4 h-4" /> Agent Clarification Prompt
-                                                                </h4>
-                                                                <div className="bg-accent/5 border border-accent/20 rounded-xl p-5">
-                                                                    <p className="text-sm text-foreground/80 leading-relaxed">
-                                                                        <span className="text-accent font-bold">Bot Inquiry:</span> "To optimize your reach, which platform is your primary focus? I am currently tailoring the '{sub.message.split(' ').slice(0, 2).join(' ')}' campaign for maximum CTR."
-                                                                    </p>
-                                                                    <div className="mt-4 flex gap-3">
-                                                                        <div className="flex-grow bg-black/40 rounded-lg px-4 py-2 text-xs text-muted-foreground italic border border-white/5">
-                                                                            Responding to this clarity prompt will accelerate engineering...
-                                                                        </div>
-                                                                        <button
-                                                                            onClick={() => toast.success("Clarity signal sent to engineering agents!")}
-                                                                            className="px-4 py-2 bg-accent/20 hover:bg-accent/30 text-accent rounded-lg text-xs font-bold transition-all"
-                                                                        >
-                                                                            Signal Clarity
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
                                         </div>
-                                    ))
-                                )}
-                            </div>
+                                        <h3 className="font-bold mb-1 line-clamp-1">{sub.message}</h3>
+                                        <p className="text-xs text-muted-foreground">
+                                            {new Date(sub.created_at).toLocaleDateString()}
+                                        </p>
+                                    </motion.button>
+                                ))
+                            )
                         ) : (
-                            <div className="grid md:grid-cols-2 gap-6">
-                                {waitlistEntries.length === 0 ? (
-                                    <div className="col-span-full glass-card p-12 text-center">
-                                        <Clock className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                                        <p className="text-muted-foreground">You haven't joined any waitlists yet.</p>
-                                    </div>
-                                ) : (
-                                    waitlistEntries.map((entry) => (
-                                        <div key={entry.id} className="glass-card p-6 flex flex-col gap-4">
-                                            <div className="flex justify-between items-start">
-                                                <div>
-                                                    <h3 className="text-xl font-bold font-display text-primary">{entry.project_name}</h3>
-                                                    <p className="text-sm text-muted-foreground">Joined: {new Date(entry.created_at).toLocaleDateString()}</p>
-                                                </div>
-                                                <div className="bg-primary/10 px-3 py-1 rounded-full text-[10px] font-bold text-primary uppercase border border-primary/20">
-                                                    Active
-                                                </div>
-                                            </div>
-
-                                            {entry.comment && (
-                                                <div className="bg-white/5 p-4 rounded-xl border border-border/30">
-                                                    <span className="text-[10px] uppercase font-bold text-muted-foreground block mb-1">Your Feedback</span>
-                                                    <p className="text-sm italic">"{entry.comment}"</p>
-                                                </div>
-                                            )}
-
-                                            <div className="mt-auto pt-4 border-t border-border/30 flex items-center gap-2 text-xs text-muted-foreground">
-                                                <CheckCircle2 className="w-4 h-4 text-accent" />
-                                                We will notify you at launch
-                                            </div>
+                            waitlistEntries.length === 0 ? (
+                                <div className="glass-card p-8 text-center bg-white/5 border-dashed">
+                                    <Sparkles className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+                                    <p className="text-muted-foreground">Not on any waitlists yet</p>
+                                </div>
+                            ) : (
+                                waitlistEntries.map((entry) => (
+                                    <div key={entry.id} className="p-6 rounded-2xl glass-card bg-white/5 border border-white/10">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <h3 className="font-bold">{entry.project_name}</h3>
+                                            <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${entry.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-blue-500/10 text-blue-500 border border-blue-500/20'
+                                                }`}>
+                                                {entry.status}
+                                            </span>
                                         </div>
-                                    ))
-                                )}
-                            </div>
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                            <Clock className="w-3 h-3" />
+                                            <span>Joined {new Date(entry.created_at).toLocaleDateString()}</span>
+                                        </div>
+                                    </div>
+                                ))
+                            )
                         )}
                     </div>
-                </div>
-            </main>
 
-            {/* Footer Branding */}
-            <footer className="py-8 border-t border-border/10 text-center">
-                <p className="text-xs text-muted-foreground/50 uppercase tracking-[0.3em]">
-                    Growth & Marketing Intelligence • Siddhi Dynamics Collab
-                </p>
-            </footer>
+                    <div className="lg:col-span-2">
+                        <AnimatePresence mode="wait">
+                            {selectedSub ? (
+                                <motion.div
+                                    key={selectedSub.id}
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    className="glass-card p-8 electric-border h-full flex flex-col"
+                                >
+                                    <div className="flex justify-between items-start mb-8 pb-8 border-b border-white/5">
+                                        <div>
+                                            <span className="text-xs uppercase tracking-[0.2em] text-primary font-bold mb-2 block">Case Details</span>
+                                            <h2 className="text-2xl font-bold">{selectedSub.inquiry_type.replace('_', ' ')}</h2>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                                                <CheckCircle2 className="w-4 h-4" />
+                                                <span className="text-xs font-bold uppercase tracking-wider">Submitted</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-8 flex-grow">
+                                        <div>
+                                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-4">Initial Inquiry</label>
+                                            <div className="p-6 rounded-2xl bg-white/5 border border-white/10 italic text-lg leading-relaxed">
+                                                "{selectedSub.message}"
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-6">
+                                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-4">Milestones & Updates</label>
+
+                                            <div className="relative pl-8 space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-white/5">
+                                                <div className="relative">
+                                                    <div className="absolute -left-[30px] top-1 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                                                        <CheckCircle2 className="w-3 h-3 text-white" />
+                                                    </div>
+                                                    <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                                                        <h4 className="text-sm font-bold mb-1">Receipt Confirmed</h4>
+                                                        <p className="text-xs text-muted-foreground">Our agentic systems have indexed your request into the pipeline.</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="relative">
+                                                    <div className="absolute -left-[30px] top-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-[0_0_15px_rgba(var(--primary),0.3)]">
+                                                        <Sparkles className="w-3 h-3 text-white" />
+                                                    </div>
+                                                    <div className="p-4 rounded-xl bg-white/10 border border-primary/20">
+                                                        <h4 className="text-sm font-bold mb-1 text-primary">Intelligent Processing</h4>
+                                                        <p className="text-xs text-muted-foreground">Neural assessment is currently evaluating technical feasibility.</p>
+                                                        <div className="mt-4 flex items-center gap-4">
+                                                            <div className="h-1 flex-grow bg-white/5 rounded-full overflow-hidden">
+                                                                <motion.div
+                                                                    className="h-full bg-primary"
+                                                                    initial={{ width: 0 }}
+                                                                    animate={{ width: "45%" }}
+                                                                />
+                                                            </div>
+                                                            <span className="text-[10px] font-mono text-primary">45% COMPLETION</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-8 p-6 rounded-2xl bg-primary/5 border border-primary/10">
+                                        <div className="flex gap-4 items-center">
+                                            <div className="p-3 rounded-xl bg-primary/20">
+                                                <Clock className="w-6 h-6 text-primary" />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-sm font-bold mb-1">Estimated Review</h4>
+                                                <p className="text-xs text-muted-foreground">Next algorithmic update expected within 24 hours.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ) : (
+                                <div className="h-full glass-card electric-border flex flex-col items-center justify-center p-12 text-center opacity-50 space-y-6">
+                                    <div className="p-8 rounded-full bg-white/5 relative">
+                                        <div className="absolute inset-0 rounded-full border border-primary/30 animate-ping opacity-20" />
+                                        <MessageSquare className="w-16 h-16 text-primary/50" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-2xl font-bold mb-2">Neural Hub Offline</h2>
+                                        <p className="text-muted-foreground max-w-sm mx-auto">Select a project or inquiry from the list to view its real-time processing status and neural roadmap.</p>
+                                    </div>
+                                </div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

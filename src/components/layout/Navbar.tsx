@@ -118,7 +118,7 @@ export const Navbar = () => {
 
 
               <motion.a
-                href={isLoggedIn ? "#/portal" : "#/auth"}
+                href="#/auth"
                 className="relative ml-4 px-6 py-2.5 rounded-xl font-semibold text-sm overflow-hidden group"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -129,7 +129,7 @@ export const Navbar = () => {
                 <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-90 group-hover:opacity-100 transition-opacity" />
                 <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent blur-xl opacity-50 group-hover:opacity-70 transition-opacity" />
                 <span className="relative text-primary-foreground">
-                  {isLoggedIn ? t('nav.portal') : t('nav.getStarted')}
+                  {t('nav.getStarted')}
                 </span>
               </motion.a>
             </nav>
@@ -203,7 +203,7 @@ export const Navbar = () => {
               ))}
 
               <motion.a
-                href={isLoggedIn ? "#/portal" : "#/auth"}
+                href="#/auth"
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full max-w-xs text-center px-10 py-5 rounded-2xl font-bold text-xl overflow-hidden relative group shadow-2xl shadow-primary/20"
                 initial={{ opacity: 0, y: 20 }}
@@ -212,7 +212,7 @@ export const Navbar = () => {
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-90" />
                 <span className="relative text-primary-foreground">
-                  {isLoggedIn ? t('nav.portal') : t('nav.getStarted')}
+                  {t('nav.getStarted')}
                 </span>
               </motion.a>
 

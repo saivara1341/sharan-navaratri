@@ -1,0 +1,5 @@
+com\siddhidynamics\controller\PortalController.class
+com\siddhidynamics\controller\AuthController.class
+com\siddhidynamics\NexusApplication.class
+com\siddhidynamics\service\SupabaseService.class
+com\siddhidynamics\service\SupabaseService$1.class
