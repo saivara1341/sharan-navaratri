@@ -11,49 +11,42 @@ const API_BASE = "/api";
 
 export const supabaseService = {
     async submitContactForm(submission: any) {
-        const response = await fetch(`${API_BASE}/contact-submissions`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(submission)
-        });
-        if (!response.ok) throw new Error(`Backend error: ${response.status}`);
-        return await response.json();
+        // Direct database insertion via Supabase client
+        const { data, error } = await supabase.from('contact_submissions').insert([submission]).select();
+
+        if (error) {
+            console.error("Submission Failure:", error);
+            throw new Error(`DB Error: ${error.message}`);
+        }
+        return data;
     },
 
     async getSubmissions(email?: string, seed?: string) {
-        // High-performance Java-assisted fetching with cache-busting
-        let path = email ? `/contact-submissions?email=${email}` : '/contact-submissions';
-        if (seed) {
-            path += (path.includes('?') ? '&' : '?') + `cb=${seed}`;
-        }
+        let query = supabase.from('contact_submissions').select('*');
+        if (email) query = query.eq('email', email);
 
-        const response = await fetch(`${API_BASE}${path}`);
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Admin HQ Error ${response.status}: ${errorText || 'Backend unreachable'}`);
-        }
-        return await response.json();
+        // Sorting by newest first
+        query = query.order('created_at', { ascending: false });
+
+        const { data, error } = await query;
+        if (error) throw new Error(`Fetch Error: ${error.message}`);
+        return data;
     },
 
     // --- WAITLIST ---
 
     async addToWaitlist(entry: any) {
-        const response = await fetch(`${API_BASE}/project-waitlist`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(entry)
-        });
-        if (!response.ok) throw new Error(`Backend error: ${response.status}`);
-        return await response.json();
+        const { data, error } = await supabase.from('project_waitlist').insert([entry]).select();
+        if (error) throw new Error(`Waitlist DB Error: ${error.message}`);
+        return data;
     },
 
     async getWaitlistEntries(email?: string, seed?: string) {
-        let path = email ? `/project-waitlist?email=${email}` : '/project-waitlist';
-        if (seed) {
-            path += (path.includes('?') ? '&' : '?') + `cb=${seed}`;
-        }
-        const response = await fetch(`${API_BASE}${path}`);
-        if (!response.ok) throw new Error(`Waitlist Error ${response.status}`);
-        return await response.json();
+        let query = supabase.from('project_waitlist').select('*');
+        if (email) query = query.eq('email', email);
+
+        const { data, error } = await query;
+        if (error) throw new Error(`Waitlist DB Error: ${error.message}`);
+        return data;
     }
 };
