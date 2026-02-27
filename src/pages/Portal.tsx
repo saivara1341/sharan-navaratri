@@ -63,6 +63,16 @@ const Portal = () => {
         navigate("/");
     };
 
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 12) return { text: "Good Morning", emoji: "☀️" };
+        if (hour >= 12 && hour < 17) return { text: "Good Afternoon", emoji: "🌤️" };
+        if (hour >= 17 && hour < 21) return { text: "Good Evening", emoji: "🌇" };
+        return { text: "Good Night", emoji: "🌙" };
+    };
+
+    const greeting = getGreeting();
+
     if (loading) {
         return (
             <div className="min-h-screen bg-background flex items-center justify-center">
@@ -87,15 +97,10 @@ const Portal = () => {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
                     <div>
                         <h1 className="text-4xl font-bold gradient-text mb-2">Neural Hub</h1>
-                        <p className="text-muted-foreground">Welcome back, {user?.user_metadata?.full_name || user?.email}</p>
+                        <p className="text-muted-foreground">
+                            {greeting.emoji} {greeting.text}, <span className="text-foreground font-medium">{user?.user_metadata?.full_name || user?.email?.split('@')[0]}</span>!
+                        </p>
                     </div>
-                    <button
-                        onClick={logout}
-                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/10 text-muted-foreground hover:text-foreground"
-                    >
-                        <LogOut className="w-5 h-5" />
-                        <span>Logout</span>
-                    </button>
                 </div>
 
                 <div className="flex gap-4 mb-8">
