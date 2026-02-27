@@ -244,14 +244,13 @@ const Auth = () => {
               Engineering Agentic Intelligence
             </p>
 
-            <div className={`text-[10px] py-1 px-3 rounded-full border inline-flex items-center gap-2 mx-auto ${connectionStatus === "ok" ? "bg-green-500/5 border-green-500/20 text-green-500/50" :
-              connectionStatus === "failed" ? "bg-red-500/5 border-red-500/20 text-red-500/50" :
-                "bg-white/5 border-white/10 text-muted-foreground/30"
-              }`}>
-              <div className={`w-1 h-1 rounded-full ${connectionStatus === "ok" ? "bg-green-500" :
-                connectionStatus === "failed" ? "bg-red-500" : "bg-white/20"
-                }`} />
-              <span>System {connectionStatus === "ok" ? "Active" : connectionStatus === "failed" ? "Offline" : "Checking"}</span>
+            <div className="flex justify-center">
+              <div
+                title={connectionStatus === "ok" ? "System Active" : connectionStatus === "failed" ? "System Offline" : "Checking..."}
+                className={`w-1.5 h-1.5 rounded-full transition-all duration-500 opacity-20 ${connectionStatus === "ok" ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" :
+                    connectionStatus === "failed" ? "bg-red-500" : "bg-white/20"
+                  }`}
+              />
             </div>
           </div>
         </motion.div>

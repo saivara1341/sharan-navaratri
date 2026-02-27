@@ -91,7 +91,7 @@ public class SupabaseService {
             ClassicRequestBuilder requestBuilder = ClassicRequestBuilder.create(method)
                     .setUri(targetUrl)
                     .setHeader("host", hostHeader)
-                    .setHeader("apikey", supabaseAnonKey);
+                    .setHeader("apikey", supabaseAnonKey.trim());
 
             // If we don't have an original request or it doesn't have an Authorization
             // header, use the service key
@@ -126,7 +126,7 @@ public class SupabaseService {
             }
 
             if (!hasAuthHeader) {
-                requestBuilder.setHeader("Authorization", "Bearer " + supabaseAnonKey);
+                requestBuilder.setHeader("Authorization", "Bearer " + supabaseAnonKey.trim());
             }
 
             if (body != null && ("POST".equalsIgnoreCase(method) || "PATCH".equalsIgnoreCase(method)
