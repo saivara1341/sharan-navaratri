@@ -24,16 +24,7 @@ const Auth = () => {
   const testConnection = async () => {
     setConnectionStatus("testing");
     try {
-      // 1. Check if backend proxy is alive (ISP Bypass check)
-      const statusResp = await fetch("/api/status").catch(() => null);
-      if (statusResp && statusResp.ok) {
-        const statusData = await statusResp.json();
-        setDebugInfo(`ISP Proxy active. Key: ${statusData.key_preview}`);
-        setConnectionStatus("ok");
-        return;
-      }
-
-      // 2. Fallback check for direct Supabase
+      // Test the effective Supabase URL directly
       const testUrl = import.meta.env.DEV ? "/supabase-api/rest/v1" : `${(supabase as any).supabaseUrl}/rest/v1`;
       const resp = await fetch(testUrl, {
         headers: { 'apikey': (supabase as any).supabaseKey || import.meta.env.VITE_SUPABASE_ANON_KEY }
@@ -41,14 +32,11 @@ const Auth = () => {
 
       if (resp.status === 200 || resp.status === 401 || resp.status === 404) {
         setConnectionStatus("ok");
-        setDebugInfo(`Direct connection active. ISP Bypass not detected.`);
       } else {
         setConnectionStatus("failed");
-        setDebugInfo(`Connection Error ${resp.status}.`);
       }
     } catch (e: any) {
       setConnectionStatus("failed");
-      setDebugInfo(`Network Failure. API unreachable.`);
     }
   };
 
@@ -256,20 +244,14 @@ const Auth = () => {
               Engineering Agentic Intelligence
             </p>
 
-            <div className={`text-[10px] p-2 rounded-lg border flex items-center gap-2 justify-center ${connectionStatus === "ok" ? "bg-green-500/5 border-green-500/20 text-green-500/80" :
-              connectionStatus === "failed" ? "bg-red-500/5 border-red-500/20 text-red-500/80" :
-                "bg-white/5 border-white/10 text-muted-foreground/50"
+            <div className={`text-[10px] py-1 px-3 rounded-full border inline-flex items-center gap-2 mx-auto ${connectionStatus === "ok" ? "bg-green-500/5 border-green-500/20 text-green-500/50" :
+              connectionStatus === "failed" ? "bg-red-500/5 border-red-500/20 text-red-500/50" :
+                "bg-white/5 border-white/10 text-muted-foreground/30"
               }`}>
-              <div className={`w-1.5 h-1.5 rounded-full ${connectionStatus === "ok" ? "bg-green-500 animate-pulse" :
+              <div className={`w-1 h-1 rounded-full ${connectionStatus === "ok" ? "bg-green-500" :
                 connectionStatus === "failed" ? "bg-red-500" : "bg-white/20"
                 }`} />
-              <span className="truncate">{debugInfo || "Checking System..."}</span>
-              <button
-                onClick={(e) => { e.preventDefault(); testConnection(); }}
-                className="ml-2 hover:text-primary transition-colors underline"
-              >
-                Retry
-              </button>
+              <span>System {connectionStatus === "ok" ? "Active" : connectionStatus === "failed" ? "Offline" : "Checking"}</span>
             </div>
           </div>
         </motion.div>
