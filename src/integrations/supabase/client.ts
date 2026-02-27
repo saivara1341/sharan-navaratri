@@ -12,6 +12,10 @@ const EFFECTIVE_URL = import.meta.env.DEV
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     console.error("[CRITICAL] Missing Supabase credentials in environment variables.");
+} else {
+    console.log("[DEBUG] Supabase initialized with URL:", SUPABASE_URL);
+    console.log("[DEBUG] Supabase Key Preview:", SUPABASE_ANON_KEY.substring(0, 10) + "...");
+    console.log("[DEBUG] Effective API URL:", EFFECTIVE_URL);
 }
 
 export const supabase = createClient<Database>(EFFECTIVE_URL, SUPABASE_ANON_KEY);

@@ -6,7 +6,8 @@ import { toast } from 'sonner';
  * Includes automatic retry logic with exponential backoff for 10k+ user stability.
  */
 
-const API_BASE = "http://localhost:9090/api";
+// Use relative path so Vite proxy handles it correctly on both desktop and mobile
+const API_BASE = "/api";
 
 export const supabaseService = {
     async submitContactForm(submission: any) {

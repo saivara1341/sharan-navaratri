@@ -3,15 +3,20 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import siddhiLogo from '@/assets/siddhi-logo.jpg';
-import { LogOut, Home, X } from 'lucide-react';
+import { LogOut, Home, X, LayoutDashboard } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 export const Navbar = () => {
   const { t } = useTranslation();
+  const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const { scrollY } = useScroll();
+
+  // True when user is on the main landing/home page
+  const isOnLandingPage = location.pathname === '/';
 
   const navLinks = [
     { name: t('nav.vision'), href: '#/vision' },
@@ -147,7 +152,26 @@ export const Navbar = () => {
                     {t('nav.getStarted')}
                   </span>
                 </motion.a>
+              ) : isOnLandingPage ? (
+                // On landing page: show gradient Dashboard button, no Logout
+                <motion.a
+                  href={isAdmin ? "#/admin-hq-nexus" : "#/portal"}
+                  className="relative ml-4 px-6 py-2.5 rounded-xl font-semibold text-sm overflow-hidden group"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4, duration: 0.5 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-90 group-hover:opacity-100 transition-opacity" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent blur-xl opacity-50 group-hover:opacity-70 transition-opacity" />
+                  <span className="relative text-primary-foreground flex items-center gap-2">
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
+                  </span>
+                </motion.a>
               ) : (
+                // On portal/admin pages: show Home + Logout
                 <div className="flex items-center ml-4 gap-2">
                   {!isAdmin && (
                     <motion.a
@@ -274,7 +298,24 @@ export const Navbar = () => {
                     {t('nav.getStarted')}
                   </span>
                 </motion.a>
+              ) : isOnLandingPage ? (
+                // On landing page: gradient Dashboard button
+                <motion.a
+                  href={isAdmin ? "#/admin-hq-nexus" : "#/portal"}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full max-w-xs text-center px-10 py-5 rounded-2xl font-bold text-xl overflow-hidden relative group shadow-2xl shadow-primary/20"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * navLinks.length }}
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-90" />
+                  <span className="relative text-primary-foreground flex items-center justify-center gap-2">
+                    <LayoutDashboard className="w-5 h-5" />
+                    Dashboard
+                  </span>
+                </motion.a>
               ) : (
+                // On portal/admin pages: show Home + Logout
                 <div className="flex flex-col gap-4 w-full max-w-xs">
                   {!isAdmin && (
                     <motion.a

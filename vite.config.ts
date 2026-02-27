@@ -15,6 +15,10 @@ export default defineConfig(({ mode }) => ({
         target: 'http://localhost:9090/api/proxy',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/supabase-api/, ''),
+      },
+      '/api': {
+        target: 'http://localhost:9090',
+        changeOrigin: true,
       }
     },
   },

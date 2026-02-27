@@ -38,8 +38,11 @@ public class SupabaseService {
     @Value("${supabase.url}")
     private String supabaseUrl;
 
-    @Value("${supabase.key}")
-    private String supabaseKey;
+    @Value("${supabase.anon.key}")
+    private String supabaseAnonKey;
+
+    @Value("${supabase.publishable.key}")
+    private String supabasePublishableKey;
 
     @Value("${supabase.proxy.ip:172.64.149.246}")
     private String proxyIp;
@@ -91,17 +94,21 @@ public class SupabaseService {
             ClassicRequestBuilder requestBuilder = ClassicRequestBuilder.create(method)
                     .setUri(targetUrl)
                     .setHeader("host", hostHeader)
-                    .setHeader("apikey", supabaseKey);
+                    .setHeader("apikey", supabasePublishableKey);
 
             // If we don't have an original request or it doesn't have an Authorization
             // header, use the service key
             boolean hasAuthHeader = false;
 
             if (originalRequest != null) {
+                log.debug("--- Incoming Headers from Client ---");
                 Enumeration<String> headerNames = originalRequest.getHeaderNames();
                 if (headerNames != null) {
                     while (headerNames.hasMoreElements()) {
                         String headerName = headerNames.nextElement();
+                        String headerValue = originalRequest.getHeader(headerName);
+                        log.debug("{}: {}", headerName, headerValue);
+
                         // Skip headers that might cause issues or are overridden
                         if (headerName.equalsIgnoreCase("host") ||
                                 headerName.equalsIgnoreCase("connection") ||
@@ -115,14 +122,14 @@ public class SupabaseService {
                             hasAuthHeader = true;
                         }
 
-                        String headerValue = originalRequest.getHeader(headerName);
                         requestBuilder.setHeader(headerName, headerValue);
                     }
                 }
+                log.debug("------------------------------------");
             }
 
             if (!hasAuthHeader) {
-                requestBuilder.setHeader("Authorization", "Bearer " + supabaseKey);
+                requestBuilder.setHeader("Authorization", "Bearer " + supabaseAnonKey);
             }
 
             if (body != null && ("POST".equalsIgnoreCase(method) || "PATCH".equalsIgnoreCase(method)
