@@ -71,7 +71,15 @@ const Portal = () => {
         return { text: "Good Night", emoji: "🌙" };
     };
 
-    const greeting = getGreeting();
+    const [greeting, setGreeting] = useState(getGreeting());
+
+    // Dynamically update greeting every minute
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setGreeting(getGreeting());
+        }, 60_000);
+        return () => clearInterval(interval);
+    }, []);
 
     if (loading) {
         return (
