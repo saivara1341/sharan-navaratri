@@ -89,11 +89,15 @@ const AdminPortal = () => {
         setFetchError(null);
 
         try {
-            const data = await supabaseService.getSubmissions();
+            // Add cache-buster to ensure we bypass any 'Invalid Key' cached responses
+            const data = await supabaseService.getSubmissions(undefined, Date.now().toString());
             setSubmissions(data || []);
+            if (!data || data.length === 0) {
+                console.log("AdminHQ: Connection successful but database returned 0 records.");
+            }
         } catch (error: any) {
             console.error("Fetch Failure:", error);
-            setFetchError("Unexpected error: " + error.message);
+            setFetchError(error.message || "Unknown error");
             toast.error("Failed to fetch submissions");
         } finally {
             setLoading(false);

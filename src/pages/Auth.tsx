@@ -246,9 +246,15 @@ const Auth = () => {
 
             <div className="flex justify-center">
               <div
-                title={connectionStatus === "ok" ? "System Active" : connectionStatus === "failed" ? "System Offline" : "Checking..."}
-                className={`w-1.5 h-1.5 rounded-full transition-all duration-500 opacity-20 ${connectionStatus === "ok" ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" :
-                    connectionStatus === "failed" ? "bg-red-500" : "bg-white/20"
+                onClick={() => {
+                  // Expert Cache Buster: Forces browser to discard the old bundle
+                  const url = new URL(window.location.href);
+                  url.searchParams.set('v', Date.now().toString());
+                  window.location.href = url.toString();
+                }}
+                title={connectionStatus === "ok" ? "System Active (Click to force refresh)" : connectionStatus === "failed" ? "System Offline" : "Checking..."}
+                className={`w-1.5 h-1.5 rounded-full transition-all duration-500 cursor-pointer ${connectionStatus === "ok" ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)] opacity-40 hover:opacity-100" :
+                  connectionStatus === "failed" ? "bg-red-500 opacity-60" : "bg-white/20 opacity-20"
                   }`}
               />
             </div>

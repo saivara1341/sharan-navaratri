@@ -20,11 +20,18 @@ export const supabaseService = {
         return await response.json();
     },
 
-    async getSubmissions(email?: string) {
-        // High-performance Java-assisted fetching
-        const path = email ? `/contact-submissions?email=${email}` : '/contact-submissions';
+    async getSubmissions(email?: string, seed?: string) {
+        // High-performance Java-assisted fetching with cache-busting
+        let path = email ? `/contact-submissions?email=${email}` : '/contact-submissions';
+        if (seed) {
+            path += (path.includes('?') ? '&' : '?') + `cb=${seed}`;
+        }
+
         const response = await fetch(`${API_BASE}${path}`);
-        if (!response.ok) throw new Error(`Backend error: ${response.status}`);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Admin HQ Error ${response.status}: ${errorText || 'Backend unreachable'}`);
+        }
         return await response.json();
     },
 
@@ -40,10 +47,13 @@ export const supabaseService = {
         return await response.json();
     },
 
-    async getWaitlistEntries(email?: string) {
-        const path = email ? `/project-waitlist?email=${email}` : '/project-waitlist';
+    async getWaitlistEntries(email?: string, seed?: string) {
+        let path = email ? `/project-waitlist?email=${email}` : '/project-waitlist';
+        if (seed) {
+            path += (path.includes('?') ? '&' : '?') + `cb=${seed}`;
+        }
         const response = await fetch(`${API_BASE}${path}`);
-        if (!response.ok) throw new Error(`Backend error: ${response.status}`);
+        if (!response.ok) throw new Error(`Waitlist Error ${response.status}`);
         return await response.json();
     }
 };
