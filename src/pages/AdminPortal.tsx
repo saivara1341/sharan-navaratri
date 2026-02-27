@@ -20,7 +20,10 @@ import {
     Briefcase,
     Building2,
     RefreshCw,
-    ArrowUpDown
+    ArrowUpDown,
+    MessageCircle,
+    Send,
+    X
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -47,6 +50,11 @@ const AdminPortal = () => {
     const [filter, setFilter] = useState("all");
     const [searchTerm, setSearchTerm] = useState("");
     const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+    const [chatOpen, setChatOpen] = useState<Submission | null>(null);
+    const [chatMessages, setChatMessages] = useState<any[]>([]);
+    const [chatInput, setChatInput] = useState("");
+    const [chatLoading, setChatLoading] = useState(false);
+    const [sendingMsg, setSendingMsg] = useState(false);
     const navigate = useNavigate();
 
     // Check for admin session strictly via Supabase Auth
@@ -126,6 +134,49 @@ const AdminPortal = () => {
             case "inquiry": return "General Inquiry";
             case "investor": return "Investors & Supporters";
             default: return type;
+        }
+    };
+
+    const openChat = async (sub: Submission) => {
+        setChatOpen(sub);
+        setChatLoading(true);
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data, error } = await (supabase as any)
+                .from('chat_messages')
+                .select('*')
+                .eq('submission_id', sub.id)
+                .order('created_at', { ascending: true });
+            if (error) throw error;
+            setChatMessages(data || []);
+        } catch {
+            toast.error("Could not load chat. Make sure the chat_messages table exists in Supabase.");
+        } finally {
+            setChatLoading(false);
+        }
+    };
+
+    const sendChatMessage = async () => {
+        if (!chatInput.trim() || !chatOpen) return;
+        setSendingMsg(true);
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data, error } = await (supabase as any)
+                .from('chat_messages')
+                .insert([{
+                    submission_id: chatOpen.id,
+                    sender_email: "ssaivaraprasad51@gmail.com",
+                    message: chatInput.trim(),
+                    is_admin: true
+                }])
+                .select();
+            if (error) throw error;
+            setChatMessages(prev => [...prev, ...(data || [])]);
+            setChatInput("");
+        } catch {
+            toast.error("Failed to send message.");
+        } finally {
+            setSendingMsg(false);
         }
     };
 
@@ -349,11 +400,18 @@ const AdminPortal = () => {
 
                                             <div className="shrink-0 flex md:flex-col gap-3">
                                                 <button
+                                                    onClick={() => openChat(sub)}
+                                                    className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center gap-2 hover:scale-105 transition-transform text-sm"
+                                                >
+                                                    <MessageCircle className="w-4 h-4" />
+                                                    Chat
+                                                </button>
+                                                <button
                                                     onClick={() => window.open(`mailto:${sub.email}?subject=Regarding your ${getInquiryLabel(sub.inquiry_type)} on Siddhi Dynamics`)}
-                                                    className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center gap-2 hover:scale-105 transition-transform"
+                                                    className="px-5 py-2.5 rounded-xl bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground font-semibold flex items-center gap-2 transition-all text-sm border border-white/10"
                                                 >
                                                     <Mail className="w-4 h-4" />
-                                                    Reply Now
+                                                    Gmail
                                                 </button>
                                             </div>
                                         </div>
@@ -370,6 +428,91 @@ const AdminPortal = () => {
                 <div className="absolute top-0 right-0 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-[200px] -translate-y-1/2 translate-x-1/2" />
                 <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[150px] translate-y-1/2 -translate-x-1/2" />
             </div>
+
+            {/* ====== IN-APP CHAT PANEL ====== */}
+            <AnimatePresence>
+                {chatOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+                        onClick={() => setChatOpen(null)}
+                    >
+                        <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 30 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 30 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            onClick={e => e.stopPropagation()}
+                            className="relative w-full max-w-lg h-[75vh] bg-[#0a0a0f] border border-white/10 rounded-3xl flex flex-col overflow-hidden shadow-2xl shadow-primary/10"
+                        >
+                            {/* Chat Header */}
+                            <div className="flex items-center justify-between p-5 border-b border-white/10 bg-white/5">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                                        <MessageCircle className="w-5 h-5 text-primary" />
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-sm text-foreground">{chatOpen.name}</p>
+                                        <p className="text-xs text-muted-foreground">{chatOpen.email}</p>
+                                    </div>
+                                </div>
+                                <button onClick={() => setChatOpen(null)} className="p-2 rounded-xl hover:bg-white/10 transition-colors">
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            {/* Chat Messages */}
+                            <div className="flex-1 overflow-y-auto p-5 space-y-3">
+                                {chatLoading ? (
+                                    <div className="flex items-center justify-center h-full text-muted-foreground">
+                                        <RefreshCw className="w-6 h-6 animate-spin mr-2" /> Loading chat...
+                                    </div>
+                                ) : chatMessages.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-center gap-2">
+                                        <MessageCircle className="w-10 h-10 opacity-30" />
+                                        <p className="text-sm">No messages yet. Start the conversation!</p>
+                                    </div>
+                                ) : (
+                                    chatMessages.map((msg: any) => (
+                                        <div key={msg.id} className={`flex ${msg.is_admin ? 'justify-end' : 'justify-start'}`}>
+                                            <div className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm ${msg.is_admin ? 'bg-primary text-primary-foreground rounded-br-sm' : 'bg-white/5 border border-white/10 text-foreground rounded-bl-sm'}`}>
+                                                <p>{msg.message}</p>
+                                                <p className={`text-[10px] mt-1 ${msg.is_admin ? 'text-primary-foreground/60' : 'text-muted-foreground'}`}>
+                                                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+
+                            {/* Chat Input */}
+                            <div className="p-4 border-t border-white/10 bg-white/5">
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        type="text"
+                                        placeholder="Type your message..."
+                                        value={chatInput}
+                                        onChange={e => setChatInput(e.target.value)}
+                                        onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } }}
+                                        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                                    />
+                                    <button
+                                        onClick={sendChatMessage}
+                                        disabled={!chatInput.trim() || sendingMsg}
+                                        className="w-11 h-11 rounded-xl bg-primary flex items-center justify-center hover:bg-primary/80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                                    >
+                                        {sendingMsg ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
