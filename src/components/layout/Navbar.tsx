@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import siddhiLogo from '@/assets/siddhi-logo.jpg';
-import { LogOut, Home } from 'lucide-react';
+import { LogOut, Home, X } from 'lucide-react';
 
 export const Navbar = () => {
   const { t } = useTranslation();
@@ -233,6 +233,19 @@ export const Navbar = () => {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="relative flex flex-col items-center justify-center h-full gap-8 px-6"
             >
+              {/* Close Button */}
+              <motion.button
+                className="absolute top-8 right-6 w-12 h-12 flex items-center justify-center rounded-2xl glass-card border border-white/10 text-foreground hover:text-primary hover:border-primary/30 transition-all z-[120]"
+                onClick={() => setMobileMenuOpen(false)}
+                initial={{ opacity: 0, rotate: -90 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: -90 }}
+                transition={{ duration: 0.2 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <X className="w-6 h-6" />
+              </motion.button>
               {!isAdmin && navLinks.map((link, index) => (
                 <motion.a
                   key={link.name}
