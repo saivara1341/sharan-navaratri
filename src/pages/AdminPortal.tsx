@@ -154,16 +154,6 @@ const AdminPortal = () => {
                         >
                             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
                         </button>
-                        <button
-                            onClick={async () => {
-                                await supabase.auth.signOut();
-                                navigate("/");
-                            }}
-                            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20"
-                        >
-                            <LogOut className="w-5 h-5" />
-                            <span>Logout</span>
-                        </button>
                     </div>
                 </div>
 
