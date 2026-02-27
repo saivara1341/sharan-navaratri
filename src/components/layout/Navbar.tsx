@@ -3,12 +3,14 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import siddhiLogo from '@/assets/siddhi-logo.jpg';
+import { LogOut, Home } from 'lucide-react';
 
 export const Navbar = () => {
   const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { scrollY } = useScroll();
 
   const navLinks = [
@@ -30,10 +32,24 @@ export const Navbar = () => {
     // Basic auth check
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsLoggedIn(!!session);
+      setIsAdmin(session?.user?.email === "ssaivaraprasad51@gmail.com");
     });
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+      setIsAdmin(session?.user?.email === "ssaivaraprasad51@gmail.com");
+    });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      subscription.unsubscribe();
+    };
   }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.hash = "#/";
+  };
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
@@ -93,7 +109,7 @@ export const Navbar = () => {
             </motion.a>
 
             <nav className="hidden md:flex items-center gap-1">
-              {navLinks.map((link, index) => (
+              {!isAdmin && navLinks.map((link, index) => (
                 <motion.a
                   key={link.name}
                   href={link.href}
@@ -115,23 +131,52 @@ export const Navbar = () => {
                 </motion.a>
               ))}
 
-
-
-              <motion.a
-                href="#/auth"
-                className="relative ml-4 px-6 py-2.5 rounded-xl font-semibold text-sm overflow-hidden group"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-90 group-hover:opacity-100 transition-opacity" />
-                <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent blur-xl opacity-50 group-hover:opacity-70 transition-opacity" />
-                <span className="relative text-primary-foreground">
-                  {t('nav.getStarted')}
-                </span>
-              </motion.a>
+              {!isLoggedIn ? (
+                <motion.a
+                  href="#/auth"
+                  className="relative ml-4 px-6 py-2.5 rounded-xl font-semibold text-sm overflow-hidden group"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4, duration: 0.5 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-90 group-hover:opacity-100 transition-opacity" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent blur-xl opacity-50 group-hover:opacity-70 transition-opacity" />
+                  <span className="relative text-primary-foreground">
+                    {t('nav.getStarted')}
+                  </span>
+                </motion.a>
+              ) : (
+                <div className="flex items-center ml-4 gap-2">
+                  {!isAdmin && (
+                    <motion.a
+                      href="#/"
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-white/5 hover:bg-white/10 text-foreground transition-colors border border-white/10"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.2, duration: 0.5 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Home className="w-4 h-4" />
+                      Home
+                    </motion.a>
+                  )}
+                  <motion.button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </motion.button>
+                </div>
+              )}
             </nav>
 
             {/* Mobile menu button */}
@@ -188,7 +233,7 @@ export const Navbar = () => {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="relative flex flex-col items-center justify-center h-full gap-8 px-6"
             >
-              {navLinks.map((link, index) => (
+              {!isAdmin && navLinks.map((link, index) => (
                 <motion.a
                   key={link.name}
                   href={link.href}
@@ -202,19 +247,50 @@ export const Navbar = () => {
                 </motion.a>
               ))}
 
-              <motion.a
-                href="#/auth"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full max-w-xs text-center px-10 py-5 rounded-2xl font-bold text-xl overflow-hidden relative group shadow-2xl shadow-primary/20"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * navLinks.length }}
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-90" />
-                <span className="relative text-primary-foreground">
-                  {t('nav.getStarted')}
-                </span>
-              </motion.a>
+              {!isLoggedIn ? (
+                <motion.a
+                  href="#/auth"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full max-w-xs text-center px-10 py-5 rounded-2xl font-bold text-xl overflow-hidden relative group shadow-2xl shadow-primary/20"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * navLinks.length }}
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-90" />
+                  <span className="relative text-primary-foreground">
+                    {t('nav.getStarted')}
+                  </span>
+                </motion.a>
+              ) : (
+                <div className="flex flex-col gap-4 w-full max-w-xs">
+                  {!isAdmin && (
+                    <motion.a
+                      href="#/"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="w-full text-center px-10 py-4 rounded-2xl font-bold text-lg bg-white/5 border border-white/10 text-foreground flex items-center justify-center gap-2"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 * navLinks.length }}
+                    >
+                      <Home className="w-5 h-5" />
+                      Home
+                    </motion.a>
+                  )}
+                  <motion.button
+                    onClick={() => {
+                      handleLogout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full text-center px-10 py-4 rounded-2xl font-bold text-lg bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center gap-2"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 * navLinks.length + 0.1 }}
+                  >
+                    <LogOut className="w-5 h-5" />
+                    Logout
+                  </motion.button>
+                </div>
+              )}
 
               <motion.div
                 className="flex items-center gap-8 mt-4 relative z-10"

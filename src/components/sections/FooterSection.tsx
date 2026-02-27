@@ -150,7 +150,7 @@ export const FooterSection = () => {
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ delay: 0.7 }}
           >
-            © {new Date().getFullYear()} Siddhi Dynamics LLP. {t('footer.copyright', { year: new Date().getFullYear() })}
+            {t('footer.copyright', { year: new Date().getFullYear() })}
           </motion.p>
           <motion.p
             className="text-xs text-muted-foreground/60 flex items-center gap-2"
