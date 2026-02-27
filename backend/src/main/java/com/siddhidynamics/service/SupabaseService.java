@@ -41,9 +41,6 @@ public class SupabaseService {
     @Value("${supabase.anon.key}")
     private String supabaseAnonKey;
 
-    @Value("${supabase.publishable.key}")
-    private String supabasePublishableKey;
-
     @Value("${supabase.proxy.ip:172.64.149.246}")
     private String proxyIp;
 
@@ -94,7 +91,7 @@ public class SupabaseService {
             ClassicRequestBuilder requestBuilder = ClassicRequestBuilder.create(method)
                     .setUri(targetUrl)
                     .setHeader("host", hostHeader)
-                    .setHeader("apikey", supabasePublishableKey);
+                    .setHeader("apikey", supabaseAnonKey);
 
             // If we don't have an original request or it doesn't have an Authorization
             // header, use the service key
