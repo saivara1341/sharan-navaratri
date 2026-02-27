@@ -73,6 +73,6 @@ public class PortalController {
 
     @GetMapping("/status")
     public String getStatus() {
-        return "{\"status\": \"Online\", \"engine\": \"Java Spring Boot\", \"load_capacity\": \"100k+\"}";
+        return supabaseService.getConfigurationStatus();
     }
 }

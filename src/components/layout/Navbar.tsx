@@ -16,7 +16,7 @@ export const Navbar = () => {
   const { scrollY } = useScroll();
 
   // True when user is on the main landing/home page
-  const isOnLandingPage = location.pathname === '/';
+  const isOnLandingPage = location.pathname === '/' || location.pathname === '';
 
   const navLinks = [
     { name: t('nav.vision'), href: '#/vision' },

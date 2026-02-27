@@ -20,6 +20,38 @@ const Auth = () => {
 
   const navigate = useNavigate();
 
+  // ISP Bypass / System Status Test
+  const testConnection = async () => {
+    setConnectionStatus("testing");
+    try {
+      // 1. Check if backend proxy is alive (ISP Bypass check)
+      const statusResp = await fetch("/api/status").catch(() => null);
+      if (statusResp && statusResp.ok) {
+        const statusData = await statusResp.json();
+        setDebugInfo(`ISP Proxy active. Key: ${statusData.key_preview}`);
+        setConnectionStatus("ok");
+        return;
+      }
+
+      // 2. Fallback check for direct Supabase
+      const testUrl = import.meta.env.DEV ? "/supabase-api/rest/v1" : `${(supabase as any).supabaseUrl}/rest/v1`;
+      const resp = await fetch(testUrl, {
+        headers: { 'apikey': (supabase as any).supabaseKey || import.meta.env.VITE_SUPABASE_ANON_KEY }
+      });
+
+      if (resp.status === 200 || resp.status === 401 || resp.status === 404) {
+        setConnectionStatus("ok");
+        setDebugInfo(`Direct connection active. ISP Bypass not detected.`);
+      } else {
+        setConnectionStatus("failed");
+        setDebugInfo(`Connection Error ${resp.status}.`);
+      }
+    } catch (e: any) {
+      setConnectionStatus("failed");
+      setDebugInfo(`Network Failure. API unreachable.`);
+    }
+  };
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
@@ -40,32 +72,6 @@ const Auth = () => {
         }
       }
     });
-
-    // ISP Bypass Test
-    const testConnection = async () => {
-      setConnectionStatus("testing");
-      try {
-        const start = Date.now();
-        // Use the actual effective URL for testing to avoid 404s in production 
-        const testUrl = import.meta.env.DEV ? "/supabase-api/rest/v1" : `${(supabase as any).supabaseUrl}/rest/v1`;
-
-        const resp = await fetch(testUrl, {
-          headers: { 'apikey': (supabase as any).supabaseKey || import.meta.env.VITE_SUPABASE_ANON_KEY }
-        });
-
-        if (resp.status === 200 || resp.status === 401 || resp.status === 404) {
-          setConnectionStatus("ok");
-          setDebugInfo(`System active. ISP Bypass enabled.`);
-        } else {
-          setConnectionStatus("failed");
-          setDebugInfo(`Gateway Error: ${resp.status} ${resp.statusText}`);
-        }
-      } catch (e: any) {
-        console.error("ISP Proxy Test Failed:", e);
-        setConnectionStatus("failed");
-        setDebugInfo(`Network Failure: ${e.message}. The dev server proxy is unreachable.`);
-      }
-    };
 
     testConnection();
 
@@ -249,6 +255,22 @@ const Auth = () => {
             <p className="text-xs text-muted-foreground/50 uppercase tracking-[0.2em] mb-4">
               Engineering Agentic Intelligence
             </p>
+
+            <div className={`text-[10px] p-2 rounded-lg border flex items-center gap-2 justify-center ${connectionStatus === "ok" ? "bg-green-500/5 border-green-500/20 text-green-500/80" :
+              connectionStatus === "failed" ? "bg-red-500/5 border-red-500/20 text-red-500/80" :
+                "bg-white/5 border-white/10 text-muted-foreground/50"
+              }`}>
+              <div className={`w-1.5 h-1.5 rounded-full ${connectionStatus === "ok" ? "bg-green-500 animate-pulse" :
+                connectionStatus === "failed" ? "bg-red-500" : "bg-white/20"
+                }`} />
+              <span className="truncate">{debugInfo || "Checking System..."}</span>
+              <button
+                onClick={(e) => { e.preventDefault(); testConnection(); }}
+                className="ml-2 hover:text-primary transition-colors underline"
+              >
+                Retry
+              </button>
+            </div>
           </div>
         </motion.div>
       </div>

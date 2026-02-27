@@ -153,4 +153,10 @@ public class SupabaseService {
             throw e;
         }
     }
+
+    public String getConfigurationStatus() {
+        return String.format("{\"status\": \"Online\", \"proxy_ip\": \"%s\", \"key_preview\": \"%s...\"}",
+                proxyIp,
+                (supabaseAnonKey != null && supabaseAnonKey.length() > 10) ? supabaseAnonKey.substring(0, 10) : "none");
+    }
 }
