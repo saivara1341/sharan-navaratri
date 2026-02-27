@@ -3,8 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
-console.log("Supabase URL:", import.meta.env.VITE_SUPABASE_URL);
-console.log("Supabase Key (truncated):", import.meta.env.VITE_SUPABASE_ANON_KEY?.slice(0, 10) + "...");
 import { Eye, EyeOff, ArrowLeft, Mail, Lock, User, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -48,7 +46,10 @@ const Auth = () => {
       setConnectionStatus("testing");
       try {
         const start = Date.now();
-        const resp = await fetch("/supabase-api/rest/v1", {
+        // Use the actual effective URL for testing to avoid 404s in production 
+        const testUrl = import.meta.env.DEV ? "/supabase-api/rest/v1" : `${(supabase as any).supabaseUrl}/rest/v1`;
+
+        const resp = await fetch(testUrl, {
           headers: { 'apikey': (supabase as any).supabaseKey || import.meta.env.VITE_SUPABASE_ANON_KEY }
         });
 
