@@ -48,5 +48,19 @@ export const supabaseService = {
         const { data, error } = await query;
         if (error) throw new Error(`Waitlist DB Error: ${error.message}`);
         return data;
+    },
+
+    async updateSubmission(id: string, updates: Partial<any>) {
+        const { data, error } = await supabase
+            .from('contact_submissions')
+            .update(updates)
+            .eq('id', id)
+            .select();
+
+        if (error) {
+            console.error("Update Failure:", error);
+            throw new Error(`DB Error: ${error.message}`);
+        }
+        return data;
     }
 };

@@ -23,7 +23,8 @@ import {
     ArrowUpDown,
     MessageCircle,
     Send,
-    X
+    X,
+    Edit3
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -55,6 +56,12 @@ const AdminPortal = () => {
     const [chatInput, setChatInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
     const [sendingMsg, setSendingMsg] = useState(false);
+
+    const [editOpen, setEditOpen] = useState<Submission | null>(null);
+    const [editStatus, setEditStatus] = useState("");
+    const [editProgress, setEditProgress] = useState(0);
+    const [updatingSub, setUpdatingSub] = useState(false);
+
     const navigate = useNavigate();
 
     // Check for admin session strictly via Supabase Auth
@@ -181,6 +188,30 @@ const AdminPortal = () => {
             toast.error("Failed to send message.");
         } finally {
             setSendingMsg(false);
+        }
+    };
+
+    const openEdit = (sub: Submission) => {
+        setEditOpen(sub);
+        setEditStatus(sub.status || "Analyzing");
+        setEditProgress(sub.progress || 0);
+    };
+
+    const handleUpdateSubmission = async () => {
+        if (!editOpen) return;
+        setUpdatingSub(true);
+        try {
+            await supabaseService.updateSubmission(editOpen.id, {
+                status: editStatus,
+                progress: editProgress
+            });
+            toast.success("Submission updated successfully");
+            setEditOpen(null);
+            fetchSubmissions(); // Refresh the list
+        } catch (error: any) {
+            toast.error(`Update failed: ${error.message}`);
+        } finally {
+            setUpdatingSub(false);
         }
     };
 
@@ -411,6 +442,13 @@ const AdminPortal = () => {
                                                     Chat
                                                 </button>
                                                 <button
+                                                    onClick={() => openEdit(sub)}
+                                                    className="px-5 py-2.5 rounded-xl bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground font-semibold flex items-center gap-2 transition-all text-sm border border-white/10"
+                                                >
+                                                    <Edit3 className="w-4 h-4" />
+                                                    Edit
+                                                </button>
+                                                <button
                                                     onClick={() => window.open(`mailto:${sub.email}?subject=Regarding your ${getInquiryLabel(sub.inquiry_type)} on Siddhi Dynamics`)}
                                                     className="px-5 py-2.5 rounded-xl bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground font-semibold flex items-center gap-2 transition-all text-sm border border-white/10"
                                                 >
@@ -512,6 +550,106 @@ const AdminPortal = () => {
                                         {sendingMsg ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                                     </button>
                                 </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* ====== EDIT SUBMISSION PANEL ====== */}
+            <AnimatePresence>
+                {editOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+                        onClick={() => setEditOpen(null)}
+                    >
+                        <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 30 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 30 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            onClick={e => e.stopPropagation()}
+                            className="relative w-full max-w-md bg-[#0a0a0f] border border-white/10 rounded-3xl flex flex-col overflow-hidden shadow-2xl shadow-primary/10"
+                        >
+                            {/* Edit Header */}
+                            <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                                        <Edit3 className="w-5 h-5 text-primary" />
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-lg text-foreground">Update Status</p>
+                                        <p className="text-xs text-muted-foreground">{editOpen.name}</p>
+                                    </div>
+                                </div>
+                                <button onClick={() => setEditOpen(null)} className="p-2 rounded-xl hover:bg-white/10 transition-colors">
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            {/* Edit Content */}
+                            <div className="p-6 space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Current Stage</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {['Analyzing', 'Verifying', 'In Progress', 'Validated', 'Completed'].map((s) => (
+                                            <button
+                                                key={s}
+                                                onClick={() => setEditStatus(s)}
+                                                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${editStatus === s
+                                                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                                                    : "bg-white/5 text-muted-foreground hover:bg-white/10"
+                                                    }`}
+                                            >
+                                                {s}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <div className="flex justify-between items-center">
+                                        <label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Progress Percentage</label>
+                                        <span className="text-xl font-bold text-primary">{editProgress}%</span>
+                                    </div>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="100"
+                                        step="5"
+                                        value={editProgress}
+                                        onChange={(e) => setEditProgress(parseInt(e.target.value))}
+                                        className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
+                                    />
+                                    <div className="flex justify-between text-[10px] text-muted-foreground font-mono">
+                                        <span>0%</span>
+                                        <span>25%</span>
+                                        <span>50%</span>
+                                        <span>75%</span>
+                                        <span>100%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Edit Actions */}
+                            <div className="p-6 border-t border-white/10 bg-white/5 flex gap-3">
+                                <button
+                                    onClick={() => setEditOpen(null)}
+                                    className="flex-1 py-3 rounded-xl bg-white/5 text-foreground font-semibold hover:bg-white/10 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleUpdateSubmission}
+                                    disabled={updatingSub}
+                                    className="flex-[2] py-3 rounded-xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                >
+                                    {updatingSub ? <RefreshCw className="w-4 h-4 animate-spin" /> : "Save Changes"}
+                                </button>
                             </div>
                         </motion.div>
                     </motion.div>
