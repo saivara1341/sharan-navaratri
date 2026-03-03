@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Navbar } from '@/components/layout/Navbar';
 import { FooterSection } from '@/components/sections/FooterSection';
 import { WaitlistModal } from '@/components/WaitlistModal';
@@ -65,6 +66,10 @@ const NexusLanding = () => {
 
     return (
         <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-accent/30">
+            <Helmet>
+                <title>Nexus | AI-Powered Career & Talent Pipeline Platform</title>
+                <meta name="description" content="Modernize your campus with Nexus Institutional Command Engine. AI-driven career matching, talent pipelines, and automated placement management." />
+            </Helmet>
             <Navbar />
 
             {/* Scroll Progress Bar */}

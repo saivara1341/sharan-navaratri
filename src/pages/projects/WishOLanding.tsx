@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import {
     Heart,
     Calendar,
@@ -85,6 +86,10 @@ const WishOLanding = () => {
 
     return (
         <div className="min-h-screen font-sans bg-[#0f0a14] text-foreground selection:bg-pink-900 overflow-x-hidden">
+            <Helmet>
+                <title>Wish-O | AI-Powered Celebration & Gifting Engine</title>
+                <meta name="description" content="Celebrate smarter with Wish-O. AI-driven gift recommendations, automated wishes, and seamless celebration planning for every occasion." />
+            </Helmet>
             <Navbar />
 
             <main className="pt-20">

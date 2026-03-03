@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Navbar } from '@/components/layout/Navbar';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { VisionSection } from '@/components/sections/VisionSection';
@@ -93,6 +94,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      <Helmet>
+        <title>Siddhi Dynamics | Deep-Tech AI Innovation Firm</title>
+        <meta name="description" content="Siddhi Dynamics transforms complex real-world challenges into scalable, production-ready AI solutions. Experts in GenAI and Agentic Intelligence." />
+        <link rel="canonical" href="https://siddhidynamics.in/" />
+      </Helmet>
       <Navbar />
       <script type="application/ld+json">
         {JSON.stringify({

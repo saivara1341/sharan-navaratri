@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import {
     Construction,
     DraftingCompass,
@@ -63,6 +64,10 @@ const ArchPlanLanding = () => {
 
     return (
         <div className="min-h-screen font-sans bg-[#0a0a0f] text-foreground selection:bg-blue-900 overflow-x-hidden">
+            <Helmet>
+                <title>ArchPlan | AI-Powered Construction & Architectural Planning</title>
+                <meta name="description" content="Build smarter with ArchPlan AI. Professional architectural designs, Vastu compliance, and accurate cost estimation powered by intelligence." />
+            </Helmet>
             <Navbar />
 
             <main className="pt-20">

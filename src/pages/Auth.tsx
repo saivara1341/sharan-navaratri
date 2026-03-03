@@ -17,18 +17,27 @@ const Auth = () => {
   // Connection Diagnostic State
   const [connectionStatus, setConnectionStatus] = useState<"testing" | "ok" | "failed">("testing");
   const [debugInfo, setDebugInfo] = useState<string>("");
+  const [isRepairing, setIsRepairing] = useState(false);
 
   const navigate = useNavigate();
 
   // ISP Bypass / System Status Test
   const testConnection = async () => {
     setConnectionStatus("testing");
+    setDebugInfo("Initiating connection test...");
     try {
       // Test the effective Supabase URL directly
-      const testUrl = import.meta.env.DEV ? "/supabase-api/rest/v1" : `${(supabase as any).supabaseUrl}/rest/v1`;
+      const testUrl = "/supabase-api/rest/v1/";
+      setDebugInfo(prev => prev + `\nTarget URL: ${testUrl}`);
+
       const resp = await fetch(testUrl, {
-        headers: { 'apikey': (supabase as any).supabaseKey || import.meta.env.VITE_SUPABASE_ANON_KEY }
+        headers: {
+          'apikey': (supabase as any).supabaseKey || import.meta.env.VITE_SUPABASE_ANON_KEY
+        }
       });
+
+      const text = await resp.text();
+      setDebugInfo(prev => prev + `\nStatus: ${resp.status}\nResponse: ${text.substring(0, 50)}...`);
 
       if (resp.status === 200 || resp.status === 401 || resp.status === 404) {
         setConnectionStatus("ok");
@@ -36,7 +45,27 @@ const Auth = () => {
         setConnectionStatus("failed");
       }
     } catch (e: any) {
+      console.error("CONN_TEST_ERROR:", e);
       setConnectionStatus("failed");
+      setDebugInfo(prev => prev + `\nERROR: ${e.message}\nSTACK: ${e.stack?.substring(0, 50)}`);
+    }
+  };
+
+  const handleRepair = async () => {
+    setIsRepairing(true);
+    setDebugInfo("Running system repair...");
+    try {
+      await supabase.auth.signOut();
+      localStorage.clear();
+      sessionStorage.clear();
+      await new Promise(r => setTimeout(r, 1000));
+      setDebugInfo(prev => prev + "\nCache cleared. Retrying connection...");
+      await testConnection();
+      toast.success("System reset. Please try logging in again.");
+    } catch (e: any) {
+      toast.error("Repair failed: " + e.message);
+    } finally {
+      setIsRepairing(false);
     }
   };
 
@@ -244,7 +273,7 @@ const Auth = () => {
               Engineering Agentic Intelligence
             </p>
 
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center gap-2">
               <div
                 onClick={() => {
                   // Expert Cache Buster: Forces browser to discard the old bundle
@@ -257,6 +286,22 @@ const Auth = () => {
                   connectionStatus === "failed" ? "bg-red-500 opacity-60" : "bg-white/20 opacity-20"
                   }`}
               />
+              {debugInfo && (
+                <div className="flex flex-col items-center gap-3 mt-4">
+                  <div className="text-[10px] text-muted-foreground/40 font-mono text-left max-w-xs overflow-hidden bg-white/5 p-2 rounded border border-white/5">
+                    {debugInfo.split('\n').map((line, i) => (
+                      <div key={i}>{line}</div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={handleRepair}
+                    disabled={isRepairing}
+                    className="text-[10px] uppercase tracking-tighter text-primary/50 hover:text-primary transition-colors border-b border-primary/20"
+                  >
+                    {isRepairing ? "Repairing..." : "Repair Connection"}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </motion.div>

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import {
     MessageSquare,
     MapPin,
@@ -86,6 +87,10 @@ const LetUsKnowLanding = () => {
 
     return (
         <div className="min-h-screen font-sans bg-slate-950 text-foreground selection:bg-cyan-900 overflow-x-hidden">
+            <Helmet>
+                <title>Let Us Know | AI-Powered Civic & Governance Assistant</title>
+                <meta name="description" content="Your personal guide to local governance. Verify projects, report issues, and access verified government contacts with our AI civic assistant." />
+            </Helmet>
             <Navbar />
 
             <main className="pt-20">

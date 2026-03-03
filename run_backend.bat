@@ -19,6 +19,6 @@ if %ERRORLEVEL% NEQ 0 (
 
 echo.
 echo [SUCCESS] Backend built successfully.
-echo Starting Java Backend on http://localhost:8080 (SNI Suppression Active)...
-java -Djsse.enableSNIExtension=false -jar target\nexus-backend-0.0.1-SNAPSHOT.jar
+echo Starting Java Backend on http://localhost:9090 (SNI Suppression Active)...
+java -Djsse.enableSNIExtension=true -jar target\nexus-backend-0.0.1-SNAPSHOT.jar
 pause

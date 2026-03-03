@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import {
@@ -95,6 +96,10 @@ const NilayamLanding: React.FC = () => {
 
     return (
         <div className="min-h-screen font-sans bg-background text-foreground selection:bg-blue-900 overflow-x-hidden">
+            <Helmet>
+                <title>Nilayam | AI-Powered Real Estate Solutions</title>
+                <meta name="description" content="Transform real estate management with Nilayam's AI solutions. Automated property tracking, smart matching, and streamlined workflows." />
+            </Helmet>
             <Navbar />
 
             <main className="">
