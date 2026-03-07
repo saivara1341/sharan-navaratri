@@ -14,6 +14,8 @@ import LetUsKnowLanding from "./pages/projects/LetUsKnowLanding";
 import WishOLanding from "./pages/projects/WishOLanding";
 import AdminPortal from "./pages/AdminPortal";
 import NotFound from "./pages/NotFound";
+import PromoPopup from "./components/PromoPopup";
+import WomensDayCelebration from "./components/WomensDayCelebration";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +23,8 @@ const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <WomensDayCelebration />
+        <PromoPopup />
         <Toaster />
         <Sonner />
         <HashRouter>
