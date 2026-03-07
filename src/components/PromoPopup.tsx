@@ -129,11 +129,9 @@ export default function PromoPopup() {
                     <div style={{ position: "absolute", bottom: -50, right: -30, width: 200, height: 200, background: "rgba(14,165,233,0.12)", borderRadius: "50%", filter: "blur(40px)" }} />
 
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8, position: "relative" }}>
-                        <Sparkles className="w-6 h-6 text-yellow-300" style={{ filter: "drop-shadow(0 0 8px rgba(253,224,71,0.8))" }} />
                         <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: "uppercase", color: "rgba(255,255,255,0.7)" }}>
                             Siddhi Dynamics
                         </span>
-                        <Sparkles className="w-6 h-6 text-yellow-300" style={{ filter: "drop-shadow(0 0 8px rgba(253,224,71,0.8))" }} />
                     </div>
                     <h2 style={{ margin: 0, fontSize: "clamp(18px,4vw,26px)", fontWeight: 800, color: "#fff", lineHeight: 1.25, position: "relative" }}>
                         🚀 Automate &amp; Grow Your Business
