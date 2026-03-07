@@ -8,6 +8,7 @@ import { ProjectsSection } from '@/components/sections/ProjectsSection';
 import { IncubationSection } from '@/components/sections/IncubationSection';
 import { SubmitSection } from '@/components/sections/SubmitSection';
 import { FooterSection } from '@/components/sections/FooterSection';
+import { ServicesSection } from '@/components/sections/ServicesSection';
 
 const Index = () => {
   const { pathname } = useLocation();
@@ -123,6 +124,7 @@ const Index = () => {
         <VisionSection />
         <ProjectsSection />
         <IncubationSection />
+        <ServicesSection />
         <SubmitSection />
       </main>
       <FooterSection />
