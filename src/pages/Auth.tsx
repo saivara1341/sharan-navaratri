@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Eye, EyeOff, ArrowLeft, Mail, Lock, User, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { Helmet } from "react-helmet-async";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -140,6 +141,10 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
       <Navbar />
+      <Helmet>
+        <title>{isLogin ? "Login" : "Sign Up"} | Siddhi Dynamics Portal</title>
+        <meta name="description" content="Access the Siddhi Dynamics innovation portal to track your projects and collaborate with our AI team." />
+      </Helmet>
 
       {/* Background patterns */}
       <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />

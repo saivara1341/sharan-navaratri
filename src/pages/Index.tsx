@@ -92,13 +92,39 @@ const Index = () => {
       };
     }
   }, [pathname]);
+  const getPageMeta = () => {
+    switch (pathname) {
+      case '/vision':
+        return {
+          title: "Our Vision | Siddhi Dynamics",
+          description: "Explore our vision of transforming world-class manual processes into intelligent digital workflows using Agentic AI."
+        };
+      case '/projects':
+        return {
+          title: "Our Projects | Siddhi Dynamics",
+          description: "Discover our portfolio of deep-tech AI projects, from talent pipelines to automated construction planning."
+        };
+      case '/submit':
+        return {
+          title: "Discuss Your Project | Siddhi Dynamics",
+          description: "Connect with our innovation team to discuss your business challenges and explore AI-driven automation."
+        };
+      default:
+        return {
+          title: "Siddhi Dynamics | Deep-Tech AI Innovation Firm",
+          description: "Siddhi Dynamics transforms complex real-world challenges into scalable, production-ready AI solutions. Experts in GenAI and Agentic Intelligence."
+        };
+    }
+  };
+
+  const { title, description } = getPageMeta();
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <Helmet>
-        <title>Siddhi Dynamics | Deep-Tech AI Innovation Firm</title>
-        <meta name="description" content="Siddhi Dynamics transforms complex real-world challenges into scalable, production-ready AI solutions. Experts in GenAI and Agentic Intelligence." />
-        <link rel="canonical" href="https://siddhidynamics.in/" />
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={`https://siddhidynamics.in/#${pathname}`} />
       </Helmet>
       <Navbar />
       <script type="application/ld+json">

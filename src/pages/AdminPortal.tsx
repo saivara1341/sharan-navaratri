@@ -29,6 +29,7 @@ import {
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 interface Submission {
     id: string;
@@ -218,6 +219,10 @@ const AdminPortal = () => {
     return (
         <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
             <Navbar />
+            <Helmet>
+                <title>Nexus Admin HQ | Siddhi Dynamics</title>
+                <meta name="description" content="Administrative control center for Siddhi Dynamics. Monitor deep-tech innovations and manage project inquiries." />
+            </Helmet>
 
             <main className="container mx-auto px-6 pt-32 pb-20 relative z-10">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">

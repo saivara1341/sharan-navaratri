@@ -17,6 +17,7 @@ import {
     ChevronDown,
     Sparkles
 } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 
 const Portal = () => {
     const [user, setUser] = useState<any>(null);
@@ -96,6 +97,10 @@ const Portal = () => {
     return (
         <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
             <Navbar />
+            <Helmet>
+                <title>Neural Hub | Siddhi Dynamics Portal</title>
+                <meta name="description" content="Manage your AI project submissions and track real-time progress in the Siddhi Dynamics Neural Hub." />
+            </Helmet>
 
             {/* Background patterns */}
             <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />
