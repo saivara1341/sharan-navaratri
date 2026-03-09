@@ -60,9 +60,23 @@
         "description": "Explore our portfolio of production-ready AI platforms transforming construction, education, property management, and personal automation.",
         "readMore": "Read More ↓",
         "showLess": "Show Less ↑",
-        "progress": "Development Progress",
+        "progress": "Neural Roadmap",
         "access": "Access Platform",
         "waitlist": "Join Waitlist",
+        "stages": {
+            "phase1": "దశ I: ఇన్నోవేషన్ డిజైన్",
+            "phase2": "దశ II: ఆర్కిటెక్చరల్ PoC",
+            "phase3": "దశ III: కోర్ ఇంటిగ్రేషన్",
+            "phase4": "దశ IV: స్టెబిలిటీ స్కేలింగ్",
+            "phase5": "దశ V: ప్రొడక్షన్ పైలట్"
+        },
+        "statuses": {
+            "rnd": "అంతర్గత R&D",
+            "lab": "టెక్నికల్ ల్యాబ్",
+            "alpha": "ఆల్ఫా టెస్టింగ్",
+            "beta": "పబ్లిక్ బీటా",
+            "production": "యాక్టివ్ డిప్లాయ్‌మెంట్"
+        },
         "items": {
             "archplan": {
                 "name": "ArchPlan AI",

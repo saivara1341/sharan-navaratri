@@ -47,7 +47,9 @@ interface ProjectData {
   gradient: string;
   accentColor: string;
   url?: string;
-  progress: number;
+  stageKey: string;
+  statusKey: string;
+  phase: number;
 }
 
 const ProjectCard = ({
@@ -273,23 +275,60 @@ const ProjectCard = ({
             {isExpanded ? t('projects.showLess') : t('projects.readMore')}
           </motion.button>
 
-          {/* Development Progress */}
-          <div className="mb-8 space-y-2">
-            <div className="flex justify-between items-end">
-              <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">{t('projects.progress')}</span>
-              <span className={`text-sm font-bold ${isPrimary ? 'text-primary' : 'text-accent'}`}>{project.progress}%</span>
+          {/* Development Roadmap (Corporate Milestone Stream) */}
+          <div className="mb-8 space-y-4">
+            <div className="flex justify-between items-end mb-1">
+              <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">{t('projects.progress')}</span>
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded bg-white/5 border border-white/10 uppercase tracking-wider ${isPrimary ? 'text-primary' : 'text-accent'}`}>
+                {t(`projects.statuses.${project.statusKey}`)}
+              </span>
             </div>
-            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
-              <motion.div
-                initial={{ width: 0 }}
-                whileInView={{ width: `${project.progress}%` }}
-                transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
-                className={`h-full rounded-full ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
-                style={{
-                  boxShadow: `0 0 10px ${isPrimary ? 'hsl(25 85% 55% / 0.5)' : 'hsl(85 70% 45% / 0.5)'}`
-                }}
-              />
+
+            <div className="relative pt-2">
+              <div className="flex justify-between items-center relative z-10">
+                {[1, 2, 3, 4, 5].map((step) => (
+                  <div key={step} className="relative flex flex-col items-center">
+                    <motion.div
+                      initial={false}
+                      animate={{
+                        scale: step <= project.phase ? 1 : 0.8,
+                        backgroundColor: step < project.phase
+                          ? (isPrimary ? 'hsl(25 85% 55%)' : 'hsl(85 70% 45%)')
+                          : step === project.phase
+                            ? (isPrimary ? 'hsl(25 85% 55%)' : 'hsl(85 70% 45%)')
+                            : 'rgba(255,255,255,0.1)',
+                        boxShadow: step === project.phase
+                          ? `0 0 15px ${isPrimary ? 'hsl(25 85% 55%)' : 'hsl(85 70% 45%)'}`
+                          : 'none'
+                      }}
+                      className={`w-2.5 h-2.5 rounded-full relative z-20 transition-colors duration-500`}
+                    >
+                      {step === project.phase && (
+                        <motion.div
+                          animate={{ scale: [1, 2, 1], opacity: [0.5, 0, 0.5] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                          className={`absolute inset-0 rounded-full ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
+                        />
+                      )}
+                    </motion.div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Connector Line */}
+              <div className="absolute top-[13px] left-0 right-0 h-[1px] bg-white/10 z-0 px-1">
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileInView={{ width: `${(project.phase - 1) * 25}%` }}
+                  transition={{ duration: 1, ease: "easeInOut" }}
+                  className={`h-full ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
+                />
+              </div>
             </div>
+
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center mt-2">
+              {t(`projects.stages.${project.stageKey}`)}
+            </p>
           </div>
 
           {/* Features */}
@@ -380,7 +419,9 @@ export const ProjectsSection = () => {
       gradient: 'from-primary to-orange-400',
       accentColor: 'primary',
       url: 'https://archplan.lovable.app',
-      progress: 85,
+      stageKey: 'phase5',
+      statusKey: 'production',
+      phase: 5,
     },
     {
       id: 'nexus',
@@ -391,7 +432,9 @@ export const ProjectsSection = () => {
       features: t('projects.items.nexus.features', { returnObjects: true }) as string[],
       gradient: 'from-accent to-lime-400',
       accentColor: 'accent',
-      progress: 65,
+      stageKey: 'phase4',
+      statusKey: 'beta',
+      phase: 4,
     },
     {
       id: 'nilayam',
@@ -402,7 +445,9 @@ export const ProjectsSection = () => {
       features: t('projects.items.nilayam.features', { returnObjects: true }) as string[],
       gradient: 'from-accent to-emerald-400',
       accentColor: 'accent',
-      progress: 45,
+      stageKey: 'phase3',
+      statusKey: 'alpha',
+      phase: 3,
     },
     {
       id: 'wish0',
@@ -413,7 +458,9 @@ export const ProjectsSection = () => {
       features: t('projects.items.wish0.features', { returnObjects: true }) as string[],
       gradient: 'from-primary to-amber-500',
       accentColor: 'primary',
-      progress: 15,
+      stageKey: 'phase1',
+      statusKey: 'rnd',
+      phase: 1,
     },
     {
       id: 'letusknow',
@@ -424,7 +471,9 @@ export const ProjectsSection = () => {
       features: t('projects.items.letusknow.features', { returnObjects: true }) as string[],
       gradient: 'from-cyan-500 to-blue-600',
       accentColor: 'accent',
-      progress: 25,
+      stageKey: 'phase2',
+      statusKey: 'lab',
+      phase: 2,
     },
   ];
 

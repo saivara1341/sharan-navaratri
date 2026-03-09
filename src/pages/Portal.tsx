@@ -252,15 +252,27 @@ const Portal = () => {
                                                     <div className="p-4 rounded-xl bg-white/10 border border-primary/20">
                                                         <h4 className="text-sm font-bold mb-1 text-primary">Intelligent Processing</h4>
                                                         <p className="text-xs text-muted-foreground">Neural assessment is currently evaluating technical feasibility.</p>
-                                                        <div className="mt-4 flex items-center gap-4">
-                                                            <div className="h-1 flex-grow bg-white/5 rounded-full overflow-hidden">
-                                                                <motion.div
-                                                                    className="h-full bg-primary"
-                                                                    initial={{ width: 0 }}
-                                                                    animate={{ width: "45%" }}
-                                                                />
+                                                        <div className="mt-6">
+                                                            <div className="flex justify-between items-center relative mb-2">
+                                                                {[1, 2, 3, 4, 5].map((step) => (
+                                                                    <div key={step} className="relative z-10">
+                                                                        <div className={`w-2 h-2 rounded-full ${step <= 3 ? 'bg-primary shadow-[0_0_8px_rgba(var(--primary),0.5)]' : 'bg-white/10'}`} />
+                                                                    </div>
+                                                                ))}
+                                                                <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-white/5 -translate-y-1/2" />
+                                                                <div className="absolute top-1/2 left-0 w-1/2 h-[1px] bg-primary/50 -translate-y-1/2 transition-all duration-1000" />
                                                             </div>
-                                                            <span className="text-[10px] font-mono text-primary">45% COMPLETION</span>
+                                                            <div className="flex justify-between text-[8px] font-bold text-muted-foreground uppercase tracking-widest px-1">
+                                                                <span>Phase I</span>
+                                                                <span>Phase II</span>
+                                                                <span>Phase III</span>
+                                                                <span>Phase IV</span>
+                                                                <span>Phase V</span>
+                                                            </div>
+                                                            <div className="mt-4 flex items-center justify-between">
+                                                                <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em]">Current Stage: Neural Analysis</span>
+                                                                <span className="text-[10px] font-mono text-muted-foreground/60">EST. STABILITY: 45%</span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>

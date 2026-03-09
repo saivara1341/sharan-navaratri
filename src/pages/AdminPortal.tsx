@@ -408,16 +408,31 @@ const AdminPortal = () => {
                                                 </div>
 
                                                 {sub.progress !== undefined && (
-                                                    <div className="space-y-1">
-                                                        <div className="flex justify-between text-[10px] text-muted-foreground font-medium">
-                                                            <span>PROGRESS</span>
-                                                            <span>{sub.progress}%</span>
+                                                    <div className="space-y-3 py-2">
+                                                        <div className="flex justify-between items-center mb-1">
+                                                            <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em]">Development Phase</span>
+                                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
+                                                                PHASE {Math.ceil((sub.progress || 0) / 20) || 1}
+                                                            </span>
                                                         </div>
-                                                        <div className="h-1 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                                                        <div className="relative h-6 flex items-center">
+                                                            <div className="absolute left-0 right-0 h-[1px] bg-white/5 z-0" />
+                                                            <div className="flex justify-between w-full relative z-10">
+                                                                {[1, 2, 3, 4, 5].map((p) => {
+                                                                    const isActive = p <= (sub.progress || 0) / 20;
+                                                                    const isCurrent = p === Math.ceil((sub.progress || 0) / 20);
+                                                                    return (
+                                                                        <div key={p} className="flex flex-col items-center">
+                                                                            <div className={`w-2 h-2 rounded-full transition-all duration-500 ${isActive ? 'bg-primary shadow-[0_0_8px_rgba(var(--primary),0.5)]' : 'bg-white/10'
+                                                                                } ${isCurrent ? 'scale-125' : ''}`} />
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
                                                             <motion.div
                                                                 initial={{ width: 0 }}
                                                                 animate={{ width: `${sub.progress}%` }}
-                                                                className="h-full bg-gradient-to-r from-primary to-accent"
+                                                                className="absolute left-0 h-[1px] bg-primary/50 z-0"
                                                             />
                                                         </div>
                                                     </div>
@@ -616,27 +631,29 @@ const AdminPortal = () => {
                                     </div>
                                 </div>
 
-                                <div className="space-y-3">
+                                <div className="space-y-4">
                                     <div className="flex justify-between items-center">
-                                        <label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Progress Percentage</label>
-                                        <span className="text-xl font-bold text-primary">{editProgress}%</span>
+                                        <label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Neural Roadmap Phase</label>
+                                        <span className="text-lg font-bold text-primary">Phase {Math.ceil(editProgress / 20) || 1}</span>
                                     </div>
-                                    <input
-                                        type="range"
-                                        min="0"
-                                        max="100"
-                                        step="5"
-                                        value={editProgress}
-                                        onChange={(e) => setEditProgress(parseInt(e.target.value))}
-                                        className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
-                                    />
-                                    <div className="flex justify-between text-[10px] text-muted-foreground font-mono">
-                                        <span>0%</span>
-                                        <span>25%</span>
-                                        <span>50%</span>
-                                        <span>75%</span>
-                                        <span>100%</span>
+                                    <div className="grid grid-cols-5 gap-3">
+                                        {[1, 2, 3, 4, 5].map((p) => (
+                                            <button
+                                                key={p}
+                                                onClick={() => setEditProgress(p * 20)}
+                                                className={`py-3 rounded-xl border transition-all flex flex-col items-center justify-center gap-1 ${Math.ceil(editProgress / 20) === p
+                                                        ? "bg-primary/10 border-primary text-primary shadow-[0_0_15px_rgba(var(--primary),0.1)]"
+                                                        : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10"
+                                                    }`}
+                                            >
+                                                <span className="text-[10px] font-bold">P{p}</span>
+                                                <div className={`w-1.5 h-1.5 rounded-full ${Math.ceil(editProgress / 20) === p ? 'bg-primary' : 'bg-white/20'}`} />
+                                            </button>
+                                        ))}
                                     </div>
+                                    <p className="text-[10px] text-muted-foreground text-center italic">
+                                        Refining the progress into corporate-grade developmental milestones.
+                                    </p>
                                 </div>
                             </div>
 
