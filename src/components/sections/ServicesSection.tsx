@@ -252,7 +252,7 @@ export function ServicesSection() {
                         transition: "opacity 0.8s 0.5s ease, transform 0.8s 0.5s ease",
                     }}
                 >
-                    <div style={{ flex: "1 1 300px" }}>
+                    <div style={{ flex: "1 1 350px", textAlign: "left" }}>
                         <h3 style={{ margin: "0 0 8px", fontSize: "clamp(18px,3vw,24px)", fontWeight: 800, color: "#fff" }}>
                             Ready to transform your business? 💡
                         </h3>
@@ -261,7 +261,7 @@ export function ServicesSection() {
                         </p>
                     </div>
 
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 12, flex: "0 0 auto" }}>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 12, flex: "1 1 350px", justifyContent: "center" }}>
                         {/* Phone CTA */}
                         <a
                             href="tel:+916303602743"
