@@ -205,6 +205,7 @@ export default function UgadiCelebration({ onClose }: { onClose?: () => void }) 
                             fontSize: p.size,
                             animation: `uFloat ${p.duration}s ${p.delay}s linear infinite`,
                             userSelect: "none",
+                            display: "block",
                         }}
                     >
                         {p.emoji}
@@ -227,21 +228,38 @@ export default function UgadiCelebration({ onClose }: { onClose?: () => void }) 
                 }}
             >
                 <div
+                    className="ugadi-modal-card"
                     style={{
                         pointerEvents: "all",
                         width: "100%",
                         maxWidth: 540,
+                        maxHeight: "90vh",
+                        overflowY: "auto",
                         borderRadius: 32,
-                        overflow: "hidden",
                         boxShadow: "0 0 100px rgba(101,163,13,0.3), 0 30px 80px rgba(0,0,0,0.8)",
                         border: "1px solid rgba(212,175,55,0.3)",
                         animation: closing
                             ? "uFadeOut 0.5s cubic-bezier(0.4,0,0.2,1) forwards"
                             : "uFadeIn 0.6s cubic-bezier(0.16,1,0.3,1) forwards",
+                        scrollbarWidth: "none",
+                        msOverflowStyle: "none",
                     }}
                 >
+                    <style>{`
+                        .ugadi-modal-card::-webkit-scrollbar { display: none; }
+                        @media (max-width: 640px) {
+                            .ugadi-header { padding: 40px 24px 24px !important; }
+                            .ugadi-body { padding: 24px 20px 32px !important; }
+                            .ugadi-grid { gap: 8px !important; margin-bottom: 24px !important; grid-template-columns: repeat(2, 1fr) !important; }
+                            .ugadi-grid-item { padding: 12px 8px !important; }
+                            .ugadi-close-btn { top: 12px !important; right: 12px !important; width: 32px !important; height: 32px !important; }
+                            .ugadi-headline { font-size: 28px !important; }
+                            .ugadi-icon { font-size: 48px !important; margin-bottom: 12px !important; }
+                        }
+                    `}</style>
                     {/* ── Header ── */}
                     <div
+                        className="ugadi-header"
                         style={{
                             background: "linear-gradient(135deg, #064e3b 0%, #065f46 30%, #047857 60%, #059669 100%)",
                             padding: "48px 32px 32px",
@@ -260,10 +278,11 @@ export default function UgadiCelebration({ onClose }: { onClose?: () => void }) 
                         </div>
 
                         {/* main iconography */}
-                        <div style={{ fontSize: 64, marginBottom: 16, display: "inline-block", filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.3))" }}>🏺</div>
+                        <div className="ugadi-icon" style={{ fontSize: 64, marginBottom: 16, display: "inline-block", filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.3))" }}>🏺</div>
 
                         {/* Telugu Headline */}
                         <h1
+                            className="ugadi-headline"
                             style={{
                                 margin: 0,
                                 fontSize: "clamp(26px, 6vw, 42px)",
@@ -288,6 +307,7 @@ export default function UgadiCelebration({ onClose }: { onClose?: () => void }) 
                         {/* close ✕ */}
                         <button
                             onClick={handleClose}
+                            className="ugadi-close-btn"
                             aria-label="Close"
                             style={{
                                 position: "absolute",
@@ -305,6 +325,7 @@ export default function UgadiCelebration({ onClose }: { onClose?: () => void }) 
                                 color: "#fff",
                                 fontSize: 18,
                                 transition: "all 0.2s",
+                                zIndex: 10,
                             }}
                             onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.25)")}
                             onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.12)")}
@@ -315,6 +336,7 @@ export default function UgadiCelebration({ onClose }: { onClose?: () => void }) 
 
                     {/* ── Body ── */}
                     <div
+                        className="ugadi-body"
                         style={{
                             background: "linear-gradient(180deg, #022c22 0%, #020617 100%)",
                             padding: "32px 36px 40px",
@@ -327,7 +349,7 @@ export default function UgadiCelebration({ onClose }: { onClose?: () => void }) 
                         </p>
 
                         {/* Shadruchulu (Six Flavors) Indicators */}
-                        <div style={{ 
+                        <div className="ugadi-grid" style={{ 
                             display: "grid", 
                             gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", 
                             gap: 12, 
@@ -343,6 +365,7 @@ export default function UgadiCelebration({ onClose }: { onClose?: () => void }) 
                             ].map((item) => (
                                 <div
                                     key={item.t}
+                                    className="ugadi-grid-item"
                                     style={{
                                         background: "rgba(255,255,255,0.04)",
                                         border: `1px solid rgba(255,255,255,0.1)`,
