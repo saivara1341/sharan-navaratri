@@ -16,38 +16,46 @@ import AdminPortal from "./pages/AdminPortal";
 import NotFound from "./pages/NotFound";
 import PromoPopup from "./components/PromoPopup";
 import WomensDayCelebration from "./components/WomensDayCelebration";
+import UgadiCelebration from "./components/UgadiCelebration";
+
+import { useState } from "react";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <WomensDayCelebration />
-        <PromoPopup />
-        <Toaster />
-        <Sonner />
-        <HashRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/vision" element={<Index />} />
-            <Route path="/projects" element={<Index />} />
-            <Route path="/submit" element={<Index />} />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/portal" element={<Portal />} />
-            <Route path="/project/nexus" element={<NexusLanding />} />
-            <Route path="/project/nilayam" element={<NilayamLanding />} />
-            <Route path="/project/archplan" element={<ArchPlanLanding />} />
-            <Route path="/project/letusknow" element={<LetUsKnowLanding />} />
-            <Route path="/project/wish-o" element={<WishOLanding />} />
-            <Route path="/admin-hq-nexus" element={<AdminPortal />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </HashRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </HelmetProvider>
-);
+const App = () => {
+  const [ugadiDone, setUgadiDone] = useState(false);
+
+  return (
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <WomensDayCelebration />
+          <UgadiCelebration onClose={() => setUgadiDone(true)} />
+          <PromoPopup allowed={ugadiDone} />
+          <Toaster />
+          <Sonner />
+          <HashRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/vision" element={<Index />} />
+              <Route path="/projects" element={<Index />} />
+              <Route path="/submit" element={<Index />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/portal" element={<Portal />} />
+              <Route path="/project/nexus" element={<NexusLanding />} />
+              <Route path="/project/nilayam" element={<NilayamLanding />} />
+              <Route path="/project/archplan" element={<ArchPlanLanding />} />
+              <Route path="/project/letusknow" element={<LetUsKnowLanding />} />
+              <Route path="/project/wish-o" element={<WishOLanding />} />
+              <Route path="/admin-hq-nexus" element={<AdminPortal />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </HashRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
+  );
+};
 
 export default App;

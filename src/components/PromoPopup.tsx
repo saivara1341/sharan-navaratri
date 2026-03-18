@@ -42,17 +42,17 @@ const SERVICES = [
 
 const SESSION_KEY = "siddhidynamics_promo_closed";
 
-export default function PromoPopup() {
+export default function PromoPopup({ allowed = true }: { allowed?: boolean }) {
     const [visible, setVisible] = useState(false);
     const [animateOut, setAnimateOut] = useState(false);
 
     useEffect(() => {
-        // Show only once per session
-        if (!sessionStorage.getItem(SESSION_KEY)) {
+        // Show only once per session, and only if allowed
+        if (allowed && !sessionStorage.getItem(SESSION_KEY)) {
             const timer = setTimeout(() => setVisible(true), 800);
             return () => clearTimeout(timer);
         }
-    }, []);
+    }, [allowed]);
 
     const handleClose = () => {
         setAnimateOut(true);
