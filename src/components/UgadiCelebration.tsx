@@ -358,7 +358,7 @@ export default function UgadiCelebration({ onClose }: { onClose?: () => void }) 
                             {[
                                 { e: "🍯", t: "Jaggery", d: "Sweetness", c: "#fbbf24" },
                                 { e: "🧂", t: "Salt", d: "Fear", c: "#e2e8f0" },
-                                { e: "🍋", t: "Neem", d: "Bitterness", c: "#a3e635" },
+                                { e: "🌿", t: "Neem", d: "Bitterness", c: "#a3e635" },
                                 { e: "🌶️", t: "Chilli", d: "Anger", c: "#ef4444" },
                                 { e: "🥭", t: "Mango", d: "Tanginess", c: "#facc15" },
                                 { e: "🏺", t: "Tamarind", d: "Sourness", c: "#b45309" },
