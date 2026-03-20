@@ -16,22 +16,22 @@ import AdminPortal from "./pages/AdminPortal";
 import NotFound from "./pages/NotFound";
 import PromoPopup from "./components/PromoPopup";
 import WomensDayCelebration from "./components/WomensDayCelebration";
-import UgadiCelebration from "./components/UgadiCelebration";
+import RamzanCelebration from "./components/RamzanCelebration";
 
 import { useState } from "react";
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  const [ugadiDone, setUgadiDone] = useState(false);
+  const [ramzanDone, setRamzanDone] = useState(false);
 
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <WomensDayCelebration />
-          <UgadiCelebration onClose={() => setUgadiDone(true)} />
-          <PromoPopup allowed={ugadiDone} />
+          <RamzanCelebration onClose={() => setRamzanDone(true)} />
+          <PromoPopup allowed={ramzanDone} />
           <Toaster />
           <Sonner />
           <HashRouter>
