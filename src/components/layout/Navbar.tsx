@@ -186,18 +186,6 @@ export const Navbar = () => {
                   {!isAdmin && (
                     <>
                       <motion.a
-                        href="#/profile"
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-white/5 hover:bg-white/10 text-foreground transition-colors border border-white/10"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.1, duration: 0.5 }}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <User className="w-4 h-4" />
-                        Profile
-                      </motion.a>
-                      <motion.a
                         href="#/"
                         className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-white/5 hover:bg-white/10 text-foreground transition-colors border border-white/10"
                         initial={{ opacity: 0, scale: 0.9 }}
@@ -355,17 +343,6 @@ export const Navbar = () => {
                 <div className="flex flex-col gap-4 w-full max-w-xs">
                   {!isAdmin && (
                     <>
-                      <motion.a
-                        href="#/profile"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="w-full text-center px-10 py-4 rounded-2xl font-bold text-lg bg-white/5 border border-white/10 text-foreground flex items-center justify-center gap-2"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 * navLinks.length }}
-                      >
-                        <User className="w-5 h-5" />
-                        Profile
-                      </motion.a>
                       <motion.a
                         href="#/"
                         onClick={handleHomeClick}
