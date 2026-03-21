@@ -13,6 +13,7 @@ import ArchPlanLanding from "./pages/projects/ArchPlanLanding";
 import LetUsKnowLanding from "./pages/projects/LetUsKnowLanding";
 import WishOLanding from "./pages/projects/WishOLanding";
 import AdminPortal from "./pages/AdminPortal";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import PromoPopup from "./components/PromoPopup";
 import WomensDayCelebration from "./components/WomensDayCelebration";
@@ -77,6 +78,7 @@ const App = () => {
               <Route path="/submit" element={<Index />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/portal" element={<Portal />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/project/nexus" element={<NexusLanding />} />
               <Route path="/project/nilayam" element={<NilayamLanding />} />
               <Route path="/project/archplan" element={<ArchPlanLanding />} />

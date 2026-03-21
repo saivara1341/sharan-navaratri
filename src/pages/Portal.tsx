@@ -15,8 +15,12 @@ import {
     LogOut,
     ChevronRight,
     ChevronDown,
-    Sparkles
+    Sparkles,
+    User,
+    ArrowRight,
+    AlertCircle
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 
 const Portal = () => {
@@ -114,7 +118,28 @@ const Portal = () => {
                             {greeting.emoji} {greeting.text}, <span className="text-foreground font-medium">{user?.user_metadata?.full_name || user?.email?.split('@')[0]}</span>!
                         </p>
                     </div>
+                    <Link 
+                        to="/profile"
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-muted-foreground hover:text-primary hover:border-primary/30 transition-all font-semibold"
+                    >
+                        <User className="w-5 h-5" />
+                        <span>Profile Settings</span>
+                    </Link>
                 </div>
+
+                {!user?.user_metadata?.role && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-8 p-4 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between gap-4"
+                    >
+                        <div className="flex items-center gap-3 text-primary">
+                            <AlertCircle className="w-5 h-5" />
+                            <p className="text-sm font-medium">Your professional profile is incomplete. Assign your role to enhance your Neural Hub experience.</p>
+                        </div>
+                        <Link to="/profile" className="text-sm font-bold text-primary hover:underline whitespace-nowrap">Complete Profile</Link>
+                    </motion.div>
+                )}
 
                 <div className="flex gap-4 mb-8">
                     <button
@@ -149,9 +174,19 @@ const Portal = () => {
                     <div className="lg:col-span-1 space-y-4">
                         {activeTab === 'submissions' ? (
                             submissions.length === 0 ? (
-                                <div className="glass-card p-8 text-center bg-white/5 border-dashed">
-                                    <MessageSquare className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                                    <p className="text-muted-foreground">No submissions found</p>
+                                <div className="glass-card p-10 text-center bg-white/5 border-dashed border-white/10 flex flex-col items-center">
+                                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                                        <MessageSquare className="w-8 h-8 text-primary/50" />
+                                    </div>
+                                    <h3 className="text-xl font-bold mb-2">No Submissions Yet</h3>
+                                    <p className="text-muted-foreground mb-8 max-w-[250px] mx-auto">Start your journey by submitting your first AI architectural inquiry.</p>
+                                    <Link 
+                                        to="/submit"
+                                        className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-primary/20 transition-all group"
+                                    >
+                                        <span>Start New Submission</span>
+                                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                    </Link>
                                 </div>
                             ) : (
                                 submissions.map((sub) => (
