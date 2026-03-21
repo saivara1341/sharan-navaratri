@@ -21,17 +21,19 @@ import RamzanCelebration from "./components/RamzanCelebration";
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const queryClient = new QueryClient();
 
 const AuthRedirectHandler = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    // Check initial session
+    // Check initial session - ONLY redirect if user is on the auth page
+    // This allows logged-in users to visit the home page freely.
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
+      if (session && (location.pathname === '/auth' || location.pathname === '/auth/')) {
         if (session.user.email === "ssaivaraprasad51@gmail.com") {
           navigate("/admin-hq-nexus");
         } else {
@@ -52,7 +54,7 @@ const AuthRedirectHandler = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, location.pathname]);
 
   return null;
 };
