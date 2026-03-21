@@ -249,13 +249,48 @@ export const Navbar = () => {
               className="absolute inset-0 bg-background/98 backdrop-blur-2xl"
               onClick={() => setMobileMenuOpen(false)}
             />
-            <motion.nav
-              initial={{ y: -50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -50, opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="relative flex flex-col items-center justify-center h-full gap-8 px-6"
-            >
+              <motion.nav
+                initial={{ y: -50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -50, opacity: 0 }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className="relative flex flex-col items-center justify-center min-h-screen py-20 gap-8 px-6 overflow-y-auto"
+              >
+                {/* Mobile Menu Logo/Name Link */}
+                <motion.a
+                  href="#/"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex flex-col items-center gap-2 mb-4 group"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <img
+                    src={siddhiLogo}
+                    alt="Siddhi Dynamics Logo"
+                    className="w-20 h-20 object-contain mix-blend-screen drop-shadow-[0_0_15px_rgba(251,146,60,0.5)]"
+                  />
+                  <div className="flex flex-col items-center">
+                    <span className="font-bold text-2xl text-foreground tracking-widest">
+                      SIDDHI
+                    </span>
+                    <span className="text-xs text-primary font-medium tracking-[0.3em]">
+                      DYNAMICS
+                    </span>
+                  </div>
+                </motion.a>
+
+                {/* Home Link */}
+                <motion.a
+                  href="#/"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-3xl font-display font-bold text-foreground hover:text-primary transition-colors flex items-center gap-3"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 }}
+                >
+                  <Home className="w-8 h-8" />
+                  Home
+                </motion.a>
               {/* Close Button */}
               <motion.button
                 className="absolute top-8 right-6 w-12 h-12 flex items-center justify-center rounded-2xl glass-card border border-white/10 text-foreground hover:text-primary hover:border-primary/30 transition-all z-[120]"
