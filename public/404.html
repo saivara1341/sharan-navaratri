@@ -3,18 +3,63 @@
 <head>
     <meta charset="utf-8">
     <title>Siddhi Dynamics | Redirecting...</title>
+    <style>
+        body {
+            background-color: #0d0d0d;
+            color: #ffffff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+        }
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 3px solid #f97316;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        h1 {
+            font-size: 1.5rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin: 0;
+            opacity: 0.8;
+        }
+        p {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+    </style>
     <script type="text/javascript">
-        // Basic redirect for SPAs on GitHub Pages
-        // This ensures that hitting a direct URL (without a hash) redirects to the root
-        // so that the React App can load and handle the session.
         // Redirect to the root but PRESERVE the hash (where the auth token is)
-        window.location.replace(window.location.origin + window.location.hash);
+        // We use a small delay to ensure the user sees the professional loading screen 
+        // instead of a jarring white "404" page.
+        setTimeout(function() {
+            window.location.replace(window.location.origin + window.location.hash);
+        }, 300);
     </script>
 </head>
 <body>
-    <div style="font-family: sans-serif; text-align: center; padding-top: 50px;">
-      <h1>Siddhi Dynamics</h1>
-      <p>Redirecting you back to the application...</p>
+    <div class="container">
+        <span class="loader"></span>
+        <h1>Siddhi Dynamics</h1>
+        <p>Finalizing your secure session...</p>
     </div>
 </body>
 </html>
