@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from 'react-i18next';
 
 // ── Helper: generate randomised floating festive particles ──────────────────────
 const EMOJIS = ["🌙", "⭐", "🕌", "🏮", "📿", "✨", "🌙", "🌟", "🤝", "💫", "🍬", "❤️"];
@@ -29,6 +30,7 @@ function makeParticles(n: number): Particle[] {
 
 // ── Instagram‑style Heart / Blessing button ──────────────────────────────────
 function BlessingButton({ onBless }: { onBless: () => void }) {
+    const { t } = useTranslation();
     const [blessed, setBlessed] = useState(false);
     const [count, setCount] = useState(1852);
     const [burst, setBurst] = useState(false);
@@ -92,7 +94,7 @@ function BlessingButton({ onBless }: { onBless: () => void }) {
                     transition: "color 0.3s",
                 }}
             >
-                {count.toLocaleString()} {blessed ? "🌙 Eid Mubarak!" : "Send Eid Blessings"}
+                {count.toLocaleString()} {blessed ? `🌙 ${t('eid.eidMubarak')}` : t('eid.sendBlessings')}
             </span>
         </div>
     );
@@ -102,6 +104,8 @@ function BlessingButton({ onBless }: { onBless: () => void }) {
 const SESSION_KEY = "sd_ramzan_2026_closed";
 
 export default function RamzanCelebration({ onClose }: { onClose?: () => void }) {
+    const { t, i18n } = useTranslation();
+    const isRTL = i18n.dir() === 'rtl';
     const [visible, setVisible] = useState(false);
     const [closing, setClosing] = useState(false);
     const [blessed, setBlessed] = useState(false);
@@ -296,13 +300,14 @@ export default function RamzanCelebration({ onClose }: { onClose?: () => void })
                                 backgroundClip: "text",
                                 animation: "rShimmer 4s linear infinite",
                                 textShadow: "0 2px 10px rgba(0,0,0,0.2)",
+                                direction: isRTL ? 'rtl' : 'ltr'
                             }}
                         >
-                            ਈਦ ਮੁਬਾਰਕ 🌙
+                            {t('eid.headline')}
                         </h1>
 
                         <h2 style={{ margin: "5px 0 0", fontSize: 20, fontWeight: 600, color: "#fcd34d", opacity: 0.9 }}>
-                            Eid Mubarak!
+                            {t('eid.subtitle')}
                         </h2>
 
                         {/* close ✕ */}
@@ -344,9 +349,8 @@ export default function RamzanCelebration({ onClose }: { onClose?: () => void })
                             textAlign: "center",
                         }}
                     >
-                        <p style={{ margin: "0 0 24px", fontSize: 16, color: "rgba(255,255,255,0.9)", lineHeight: 1.7, fontWeight: 400 }}>
-                            May the divine blessings of Allah bring you <strong>hope, faith, and joy</strong> on Eid al-Fitr and forever.
-                            Wishing you and your family a blessed and peaceful Eid filled with love and prosperity.
+                        <p style={{ margin: "0 0 24px", fontSize: 16, color: "rgba(255,255,255,0.9)", lineHeight: 1.7, fontWeight: 400, direction: isRTL ? 'rtl' : 'ltr' }}>
+                            {t('eid.message')}
                         </p>
 
                         {/* Eid Values Indicator */}
@@ -357,12 +361,12 @@ export default function RamzanCelebration({ onClose }: { onClose?: () => void })
                             marginBottom: 32 
                         }}>
                             {[
-                                { e: "🤝", t: "Unity", d: "Togetherness", c: "#fbbf24" },
-                                { e: "🕊️", t: "Peace", d: "Spirituality", c: "#60a5fa" },
-                                { e: "🌙", t: "Faith", d: "Devotion", c: "#fcd34d" },
-                                { e: "🤲", t: "Gratitude", d: "Blessings", c: "#34d399" },
-                                { e: "🍬", t: "Joy", d: "Celebration", c: "#f87171" },
-                                { e: "✨", t: "Hope", d: "Future", c: "#a78bfa" },
+                                { e: "🤝", t: t('eid.unity'), d: "Togetherness", c: "#fbbf24" },
+                                { e: "🕊️", t: t('eid.peace'), d: "Spirituality", c: "#60a5fa" },
+                                { e: "🌙", t: t('eid.faith'), d: "Devotion", c: "#fcd34d" },
+                                { e: "🤲", t: t('eid.gratitude'), d: "Blessings", c: "#34d399" },
+                                { e: "🍬", t: t('eid.joy'), d: "Celebration", c: "#f87171" },
+                                { e: "✨", t: t('eid.hope'), d: "Future", c: "#a78bfa" },
                             ].map((item) => (
                                 <div
                                     key={item.t}
@@ -417,7 +421,7 @@ export default function RamzanCelebration({ onClose }: { onClose?: () => void })
                                     gap: 10
                                 }}
                             >
-                                🌙 Eid al-Fitr Mubarak! 🌟
+                                {t('eid.eidMubarak')}
                             </div>
                         )}
                     </div>

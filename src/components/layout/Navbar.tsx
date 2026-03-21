@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import siddhiLogo from '@/assets/siddhi-logo.jpg';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { LogOut, Home, X, LayoutDashboard } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 
@@ -136,6 +137,10 @@ export const Navbar = () => {
                 </motion.a>
               ))}
 
+              <div className="mx-2">
+                <LanguageSwitcher />
+              </div>
+
               {!isLoggedIn ? (
                 <motion.a
                   href="#/auth"
@@ -204,7 +209,8 @@ export const Navbar = () => {
             </nav>
 
             {/* Mobile menu button */}
-            <div className="flex items-center gap-4 md:hidden">
+            <div className="flex items-center gap-2 md:hidden">
+              <LanguageSwitcher />
 
               <motion.button
                 className="relative w-10 h-10 flex items-center justify-center z-[110]"

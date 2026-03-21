@@ -569,5 +569,18 @@
       "step3": "Generate & Design",
       "step4": "Auto-Send"
     }
+  },
+  "eid": {
+    "headline": "Eid Mubarak 🌙",
+    "subtitle": "Eid Mubarak!",
+    "message": "May the divine blessings of Allah bring you hope, faith, and joy on Eid al-Fitr and forever. Wishing you and your family a blessed and peaceful Eid filled with love and prosperity.",
+    "unity": "Unity",
+    "peace": "Peace",
+    "faith": "Faith",
+    "gratitude": "Gratitude",
+    "joy": "Joy",
+    "hope": "Hope",
+    "sendBlessings": "Send Eid Blessings",
+    "eidMubarak": "Eid al-Fitr Mubarak! 🌟"
   }
-}
+}
