@@ -154,14 +154,36 @@ export const FooterSection = () => {
           transition={{ delay: 0.6, duration: 0.8 }}
           className="mt-16 pt-8 border-t border-border/30 flex flex-col md:flex-row items-center justify-between gap-4"
         >
-          <motion.p
-            className="text-sm text-muted-foreground"
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.7 }}
-          >
-            {t('footer.copyright', { year: new Date().getFullYear() })}
-          </motion.p>
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <motion.p
+              className="text-sm text-muted-foreground"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+              transition={{ delay: 0.7 }}
+            >
+              {t('footer.copyright', { year: new Date().getFullYear() })}
+            </motion.p>
+            <div className="flex items-center gap-4">
+              <motion.a 
+                href="#/privacy"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+                transition={{ delay: 0.8 }}
+                className="text-xs text-muted-foreground hover:text-primary transition-colors"
+              >
+                Privacy Policy
+              </motion.a>
+              <motion.a 
+                href="#/terms-of-service"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+                transition={{ delay: 0.9 }}
+                className="text-xs text-muted-foreground hover:text-primary transition-colors"
+              >
+                Terms of Service
+              </motion.a>
+            </div>
+          </div>
           <motion.p
             className="text-xs text-muted-foreground/60 flex items-center gap-2"
             initial={{ opacity: 0 }}

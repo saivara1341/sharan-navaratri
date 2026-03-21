@@ -14,6 +14,8 @@ import LetUsKnowLanding from "./pages/projects/LetUsKnowLanding";
 import WishOLanding from "./pages/projects/WishOLanding";
 import AdminPortal from "./pages/AdminPortal";
 import Profile from "./pages/Profile";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
 import PromoPopup from "./components/PromoPopup";
 import WomensDayCelebration from "./components/WomensDayCelebration";
@@ -87,6 +89,8 @@ const App = () => {
               <Route path="/project/letusknow" element={<LetUsKnowLanding />} />
               <Route path="/project/wish-o" element={<WishOLanding />} />
               <Route path="/admin-hq-nexus" element={<AdminPortal />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
