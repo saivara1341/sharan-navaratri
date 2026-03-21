@@ -55,7 +55,7 @@ export const FooterSection = () => {
               />
             </motion.div>
             <div>
-              <span className="font-bold text-xl text-foreground block" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+              <span className="font-bold text-xl text-foreground block">
                 Siddhi Dynamics LLP
               </span>
               <span className="text-sm text-muted-foreground">

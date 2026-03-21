@@ -476,7 +476,7 @@ export const SubmitSection = () => {
                   }`}>
                   {item.step}
                 </div>
-                <h4 className="text-xl font-bold text-foreground mb-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                <h4 className="text-xl font-bold text-foreground mb-2">
                   {item.title}
                 </h4>
                 <p className="text-sm text-muted-foreground">

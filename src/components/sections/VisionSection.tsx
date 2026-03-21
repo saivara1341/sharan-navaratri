@@ -102,7 +102,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
         </motion.div>
 
         {/* Content */}
-        <h3 className="text-xl font-bold mb-3 text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+        <h3 className="text-xl font-bold mb-3 text-foreground">
           {feature.title}
         </h3>
         <p className="text-muted-foreground text-sm leading-relaxed">

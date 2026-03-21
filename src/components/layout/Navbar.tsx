@@ -104,7 +104,7 @@ export const Navbar = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-lg text-foreground tracking-tight" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+                <span className="font-bold text-lg text-foreground tracking-tight">
                   SIDDHI
                 </span>
                 <span className="text-xs text-primary font-medium tracking-[0.2em]">
