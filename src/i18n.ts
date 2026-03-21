@@ -22,7 +22,6 @@ import or from "./locales/or.json";
 import pa from "./locales/pa.json";
 import pt from "./locales/pt.json";
 import ru from "./locales/ru.json";
-import sa from "./locales/sa.json";
 import ta from "./locales/ta.json";
 import te from "./locales/te.json";
 import ur from "./locales/ur.json";
@@ -50,7 +49,6 @@ const resources = {
     pa: { translation: pa },
     pt: { translation: pt },
     ru: { translation: ru },
-    sa: { translation: sa },
     ta: { translation: ta },
     te: { translation: te },
     ur: { translation: ur },

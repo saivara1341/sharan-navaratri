@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Noto+Sans+Telugu:wght@400;700&family=Hind:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -61,7 +61,7 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', 'Hind', 'Noto Sans Telugu', sans-serif;
+    font-family: 'Inter', sans-serif;
     background: radial-gradient(ellipse at 50% 0%, hsl(25 40% 8%) 0%, hsl(20 15% 3%) 50%);
     background-attachment: fixed;
   }
