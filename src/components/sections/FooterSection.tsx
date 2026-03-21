@@ -35,12 +35,13 @@ export const FooterSection = () => {
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-          <motion.div
+          <motion.a
+            href="#/"
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="flex items-center gap-4"
+            className="flex items-center gap-4 group cursor-pointer"
           >
             <motion.div
               className="relative w-14 h-14"
@@ -62,7 +63,7 @@ export const FooterSection = () => {
                 {t('hero.badge')}
               </span>
             </div>
-          </motion.div>
+          </motion.a>
 
           <motion.nav
             initial="hidden"

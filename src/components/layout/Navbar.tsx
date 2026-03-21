@@ -90,7 +90,7 @@ export const Navbar = () => {
         >
           <div className="flex items-center justify-between">
             <motion.a
-              href="#"
+              href="#/"
               className="flex items-center gap-3 group"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
