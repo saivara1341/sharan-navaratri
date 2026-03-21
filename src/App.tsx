@@ -18,9 +18,43 @@ import PromoPopup from "./components/PromoPopup";
 import WomensDayCelebration from "./components/WomensDayCelebration";
 import RamzanCelebration from "./components/RamzanCelebration";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const queryClient = new QueryClient();
+
+const AuthRedirectHandler = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        if (session.user.email === "ssaivaraprasad51@gmail.com") {
+          navigate("/admin-hq-nexus");
+        } else {
+          navigate("/portal");
+        }
+      }
+    });
+
+    // Listen for auth changes (like login success)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        if (session.user.email === "ssaivaraprasad51@gmail.com") {
+          navigate("/admin-hq-nexus");
+        } else {
+          navigate("/portal");
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  return null;
+};
 
 const App = () => {
   const [ramzanDone, setRamzanDone] = useState(false);
@@ -35,6 +69,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <HashRouter>
+            <AuthRedirectHandler />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/vision" element={<Index />} />
