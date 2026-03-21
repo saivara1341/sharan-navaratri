@@ -7,7 +7,8 @@
         // Basic redirect for SPAs on GitHub Pages
         // This ensures that hitting a direct URL (without a hash) redirects to the root
         // so that the React App can load and handle the session.
-        window.location.replace(window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + "/");
+        // Redirect to the root but PRESERVE the hash (where the auth token is)
+        window.location.replace(window.location.origin + window.location.hash);
     </script>
 </head>
 <body>
