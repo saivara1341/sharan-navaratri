@@ -1,5 +1,5 @@
-import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import siddhiLogo from '@/assets/siddhi-logo.jpg';
 
@@ -18,8 +18,15 @@ const linkVariants = {
 
 export const FooterSection = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-50px' });
+
+  const handleHomeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate("/");
+    window.scrollTo(0, 0);
+  };
 
   return (
     <footer ref={ref} className="py-20 border-t border-border/30 relative overflow-hidden">
@@ -37,11 +44,12 @@ export const FooterSection = () => {
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
           <motion.a
             href="#/"
+            onClick={handleHomeClick}
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="flex items-center gap-4 group cursor-pointer"
+            className="flex items-center gap-4 group cursor-pointer relative z-10"
           >
             <motion.div
               className="relative w-14 h-14"

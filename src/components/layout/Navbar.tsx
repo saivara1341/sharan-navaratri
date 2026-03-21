@@ -4,11 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import siddhiLogo from '@/assets/siddhi-logo.jpg';
 import { LogOut, Home, X, LayoutDashboard } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export const Navbar = () => {
   const { t } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -53,7 +54,14 @@ export const Navbar = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    window.location.hash = "#/";
+    navigate("/");
+  };
+
+  const handleHomeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    navigate("/");
+    window.scrollTo(0, 0);
   };
 
   // Lock body scroll when mobile menu is open
@@ -91,7 +99,8 @@ export const Navbar = () => {
           <div className="flex items-center justify-between">
             <motion.a
               href="#/"
-              className="flex items-center gap-3 group"
+              onClick={handleHomeClick}
+              className="flex items-center gap-3 group relative z-[110] cursor-pointer"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -259,8 +268,8 @@ export const Navbar = () => {
                 {/* Mobile Menu Logo/Name Link */}
                 <motion.a
                   href="#/"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex flex-col items-center gap-2 mb-4 group"
+                  onClick={handleHomeClick}
+                  className="flex flex-col items-center gap-2 mb-4 group relative z-[120] cursor-pointer"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
@@ -282,8 +291,8 @@ export const Navbar = () => {
                 {/* Home Link */}
                 <motion.a
                   href="#/"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-3xl font-display font-bold text-foreground hover:text-primary transition-colors flex items-center gap-3"
+                  onClick={handleHomeClick}
+                  className="text-3xl font-display font-bold text-foreground hover:text-primary transition-colors flex items-center gap-3 relative z-[120] cursor-pointer"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.05 }}
