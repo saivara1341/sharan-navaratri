@@ -103,8 +103,12 @@ const ProjectCard = ({
     e.stopPropagation();
 
     if (project.id === 'nexus') {
-      window.scrollTo(0, 0);
-      navigate('/project/nexus');
+      if (e.shiftKey) { // Secret shortcut or just open the landing page
+        window.scrollTo(0, 0);
+        navigate('/project/nexus');
+      } else {
+        window.open(project.url, '_blank', 'noopener,noreferrer');
+      }
       return;
     }
 
@@ -432,6 +436,7 @@ export const ProjectsSection = () => {
       features: t('projects.items.nexus.features', { returnObjects: true }) as string[],
       gradient: 'from-accent to-lime-400',
       accentColor: 'accent',
+      url: 'https://github.com/saivara1341/siddhidynamics',
       stageKey: 'phase4',
       statusKey: 'beta',
       phase: 4,

@@ -18,12 +18,23 @@ import {
     Sparkles,
     User,
     ArrowRight,
-    AlertCircle
+    AlertCircle,
+    GraduationCap,
+    Rocket,
+    Code2,
+    BarChart3,
+    Handshake,
+    Lightbulb,
+    Target,
+    Briefcase
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 
+import { useTranslation } from "react-i18next";
+
 const Portal = () => {
+    const { t } = useTranslation();
     const [user, setUser] = useState<any>(null);
     const [submissions, setSubmissions] = useState<any[]>([]);
     const [waitlistEntries, setWaitlistEntries] = useState<any[]>([]);
@@ -127,18 +138,82 @@ const Portal = () => {
                     </Link>
                 </div>
 
-                {!user?.user_metadata?.role && (
-                    <motion.div 
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="mb-8 p-4 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between gap-4"
-                    >
-                        <div className="flex items-center gap-3 text-primary">
-                            <AlertCircle className="w-5 h-5" />
-                            <p className="text-sm font-medium">Your professional profile is incomplete. Assign your role to enhance your Neural Hub experience.</p>
+                {user?.user_metadata?.role && (
+                    <div className="mb-12">
+                        <div className="flex items-center gap-2 mb-6">
+                            <Sparkles className="w-5 h-5 text-primary" />
+                            <h2 className="text-xl font-bold">Recommended for You</h2>
                         </div>
-                        <Link to="/profile" className="text-sm font-bold text-primary hover:underline whitespace-nowrap">Complete Profile</Link>
-                    </motion.div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {(() => {
+                                const roles = user.user_metadata.roles || [user.user_metadata.role];
+                                const services: any[] = [];
+                                
+                                if (roles.includes('Student / Researcher')) {
+                                    services.push(
+                                        { title: t('footer.services.student.resume.title'), desc: t('footer.services.student.resume.desc'), icon: GraduationCap, color: "blue", link: "#/projects" },
+                                        { title: t('footer.services.student.skills.title'), desc: t('footer.services.student.skills.desc'), icon: Target, color: "indigo", link: "#/projects" },
+                                        { title: t('footer.services.student.jobs.title'), desc: t('footer.services.student.jobs.desc'), icon: Briefcase, color: "cyan", link: "#/projects" }
+                                    );
+                                }
+                                if (roles.includes('Visionary Founder')) {
+                                    services.push(
+                                        { title: t('footer.services.founder.blueprint.title'), desc: t('footer.services.founder.blueprint.desc'), icon: Rocket, color: "orange", link: "#/projects" },
+                                        { title: t('footer.services.founder.fundraise.title'), desc: t('footer.services.founder.fundraise.desc'), icon: BarChart3, color: "amber", link: "#/projects" }
+                                    );
+                                }
+                                if (roles.includes('Tech Architect')) {
+                                    services.push(
+                                        { title: t('footer.services.architect.design.title'), desc: t('footer.services.architect.design.desc'), icon: Code2, color: "emerald", link: "#/projects" },
+                                        { title: t('footer.services.architect.tech.title'), desc: t('footer.services.architect.tech.desc'), icon: Lightbulb, color: "teal", link: "#/projects" }
+                                    );
+                                }
+                                if (roles.includes('Strategic Partner')) {
+                                    services.push(
+                                        { title: t('footer.services.partner.connect.title'), desc: t('footer.services.partner.connect.desc'), icon: Handshake, color: "purple", link: "#/projects" }
+                                    );
+                                }
+                                if (roles.includes('Venture Investor')) {
+                                    services.push(
+                                        { title: t('footer.services.investor.diligence.title'), desc: t('footer.services.investor.diligence.desc'), icon: BarChart3, color: "rose", link: "#/projects" }
+                                    );
+                                }
+                                if (roles.includes('Other')) {
+                                    services.push(
+                                        { title: t('footer.services.other.consult.title'), desc: t('footer.services.other.consult.desc'), icon: Sparkles, color: "primary", link: "#/submit" }
+                                    );
+                                }
+
+                                // Default fallback if no specific services match or roles are unknown
+                                if (services.length === 0) {
+                                    services.push({ title: "Neural Analysis", desc: "Submit a problem for AI evaluation.", icon: MessageSquare, color: "primary", link: "/submit" });
+                                }
+
+                                return services.map((service, i) => (
+                                    <motion.a
+                                        key={service.title}
+                                        href={service.link}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.1 * i }}
+                                        className="group p-6 rounded-2xl glass-card bg-white/5 border border-white/10 hover:border-primary/30 transition-all hover:bg-white/8 flex flex-col items-start gap-4"
+                                    >
+                                        <div className={`p-3 rounded-xl bg-${service.color}-500/10 text-${service.color}-500 group-hover:scale-110 transition-transform`}>
+                                            <service.icon className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-foreground group-hover:text-primary transition-colors">{service.title}</h3>
+                                            <p className="text-sm text-muted-foreground">{service.desc}</p>
+                                        </div>
+                                        <div className="mt-auto pt-4 flex items-center gap-2 text-xs font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <span>Access Resource</span>
+                                            <ChevronRight className="w-4 h-4" />
+                                        </div>
+                                    </motion.a>
+                                ));
+                            })()}
+                        </div>
+                    </div>
                 )}
 
                 <div className="flex gap-4 mb-8">

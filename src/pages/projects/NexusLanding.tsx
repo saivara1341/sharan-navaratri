@@ -123,6 +123,16 @@ const NexusLanding = () => {
                                     className="px-8 py-4 rounded-xl bg-gradient-to-r from-accent/90 to-lime-400 text-black font-bold text-lg shadow-[0_0_30px_rgba(132,204,22,0.3)] hover:shadow-[0_0_50px_rgba(132,204,22,0.5)] transition-all">
                                     {t('nexus_landing.hero.cta')}
                                 </motion.button>
+                                <motion.a
+                                    href="https://github.com/saivara1341/siddhidynamics"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="px-8 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-foreground font-bold text-lg flex items-center gap-2 transition-all">
+                                    <Rocket className="w-5 h-5 text-accent" />
+                                    View Repository
+                                </motion.a>
                             </div>
                         </motion.div>
                     </div>

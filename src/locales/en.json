@@ -93,8 +93,8 @@
       },
       "nexus": {
         "name": "Nexus Careers",
-        "tagline": "AI-Native Campus Operating System & Recruitment ERP",
-        "description": "A full-scale, AI-powered Campus Operating System unifying students, academic institutions, recruiters, and administrators into a single multi-tenant platform. Students interact through a futuristic, gamified portal that tracks skill acquisition, automating the journey from enrollment to employment.",
+        "tagline": "AI-Powered Student Career & Learning Platform",
+        "description": "Our flagship AI ecosystem helping students transition from education to employment. Build precision AI resumes, discover targeted job opportunities, and access personalized study materials to bridge skill gaps.",
         "features": [
           "AI Mock Interviews",
           "Skill-Gap Detection",
@@ -373,7 +373,31 @@
       "terms": "Terms of Service",
       "cookies": "Cookie Policy"
     },
-    "copyright": "© {{year}} Siddhi Dynamics LLP. All rights reserved."
+    "copyright": "© {{year}} Siddhi Dynamics LLP. All rights reserved.",
+    "services": {
+      "student": {
+        "resume": { "title": "AI Resume Builder", "desc": "Build a high-impact, ATS-friendly resume." },
+        "skills": { "title": "Skill Gap Analysis", "desc": "Identify and bridge your technical gaps." },
+        "jobs": { "title": "Job Match Engine", "desc": "Find roles tailored to your profile." }
+      },
+      "founder": {
+        "blueprint": { "title": "Startup Blueprint", "desc": "AI-generated business & tech roadmap." },
+        "fundraise": { "title": "Fundraise AI", "desc": "Pitch deck analysis & investor matching." }
+      },
+      "architect": {
+        "design": { "title": "System Design Pro", "desc": "Advanced architectural scaling audits." },
+        "tech": { "title": "Tech Stack Evaluator", "desc": "Pick the right tools for your scale." }
+      },
+      "partner": {
+        "connect": { "title": "Ecosystem Connector", "desc": "Find synergy in the Siddhi network." }
+      },
+      "investor": {
+        "diligence": { "title": "Due Diligence AI", "desc": "Automated technical risk assessment." }
+      },
+      "other": {
+        "consult": { "title": "Neural Consulting", "desc": "Custom AI architectural consultation." }
+      }
+    }
   },
   "landing": {
     "tagline": "Modern Property Management",
