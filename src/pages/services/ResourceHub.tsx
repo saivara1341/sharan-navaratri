@@ -29,8 +29,17 @@ import { Link, useSearchParams } from "react-router-dom";
 
 const ResourceHub = () => {
   const [searchParams] = useSearchParams();
-  const initialTab = searchParams.get("category") || "founder";
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  // Persist tab selection in localStorage
+  const [activeTab, setActiveTab] = useState(() => {
+    const saved = localStorage.getItem("nexus_resource_tab");
+    return searchParams.get("category") || saved || "founder";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("nexus_resource_tab", activeTab);
+  }, [activeTab]);
 
   const categories: Record<string, any> = {
     founder: {
@@ -194,22 +203,43 @@ const ResourceHub = () => {
           </motion.p>
         </div>
 
-        {/* Tab Selection */}
-        <div className="flex flex-wrap gap-2 mb-12 p-2 rounded-2xl bg-white/5 border border-white/10 w-fit">
-          {Object.entries(categories).map(([key, cat]) => (
-            <button
-              key={key}
-              onClick={() => setActiveTab(key)}
-              className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
-                activeTab === key 
-                ? `bg-${cat.color}-500/20 text-${cat.color}-500 shadow-inner border border-${cat.color}-500/30` 
-                : "text-muted-foreground hover:text-foreground hover:bg-white/5"
-              }`}
-            >
-              <cat.icon className="w-4 h-4" />
-              <span>{cat.title}</span>
-            </button>
-          ))}
+        {/* Tab Selection & Search */}
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 mb-12">
+            <div className="flex flex-wrap gap-2 p-2 rounded-2xl bg-white/5 border border-white/10 w-fit">
+            {Object.entries(categories).map(([key, cat]) => (
+                <button
+                key={key}
+                onClick={() => setActiveTab(key)}
+                className={`px-4 md:px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+                    activeTab === key 
+                    ? `bg-${cat.color}-500/20 text-${cat.color}-500 shadow-inner border border-${cat.color}-500/30` 
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                }`}
+                >
+                <cat.icon className="w-4 h-4" />
+                <span className="hidden sm:inline">{cat.title}</span>
+                </button>
+            ))}
+            </div>
+
+            <div className="relative w-full lg:w-96 group">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                <input 
+                    type="text"
+                    placeholder={`Search ${categories[activeTab].title} tools...`}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/[0.07] transition-all overflow-hidden text-sm"
+                />
+                {searchQuery && (
+                    <button 
+                        onClick={() => setSearchQuery("")}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                        ×
+                    </button>
+                )}
+            </div>
         </div>
 
         <AnimatePresence mode="wait">
@@ -239,29 +269,44 @@ const ResourceHub = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {categories[activeTab].sections.map((section: any) => (
-                    <div key={section.name} className="space-y-6">
-                        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.3em] pl-2">{section.name}</h3>
-                        <div className="space-y-4">
-                            {section.items.map((item: any) => (
-                                <a 
-                                    key={item.name}
-                                    href={item.link}
-                                    target={item.link.startsWith('http') ? "_blank" : "_self"}
-                                    rel="noopener noreferrer"
-                                    className="group block p-6 rounded-2xl glass-card bg-white/5 border border-white/10 hover:border-primary/30 transition-all hover:bg-white/8"
-                                >
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="font-bold group-hover:text-primary transition-colors">{item.name}</h4>
-                                        <ExternalLink className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all" />
-                                    </div>
-                                    <p className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">{item.desc}</p>
-                                </a>
-                            ))}
+                {categories[activeTab].sections.map((section: any) => {
+                    const filteredItems = section.items.filter((item: any) => 
+                        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        item.desc.toLowerCase().includes(searchQuery.toLowerCase())
+                    );
+
+                    if (filteredItems.length === 0 && searchQuery) return null;
+
+                    return (
+                        <div key={section.name} className="space-y-6">
+                            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.3em] pl-2">{section.name}</h3>
+                            <div className="space-y-4">
+                                {filteredItems.map((item: any) => (
+                                    <a 
+                                        key={item.name}
+                                        href={item.link}
+                                        target={item.link.startsWith('http') ? "_blank" : "_self"}
+                                        rel="noopener noreferrer"
+                                        className="group block p-6 rounded-2xl glass-card bg-white/5 border border-white/10 hover:border-primary/30 transition-all hover:bg-white/8"
+                                    >
+                                        <div className="flex items-center justify-between mb-2">
+                                            <h4 className="font-bold group-hover:text-primary transition-colors">{item.name}</h4>
+                                            <ExternalLink className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all" />
+                                        </div>
+                                        <p className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">{item.desc}</p>
+                                    </a>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
+
+            {searchQuery && !categories[activeTab].sections.some((s: any) => s.items.some((i: any) => i.name.toLowerCase().includes(searchQuery.toLowerCase()))) && (
+                <div className="text-center py-20 bg-white/5 rounded-[32px] border border-dashed border-white/10">
+                    <p className="text-muted-foreground">No resources found matching "{searchQuery}" in this category.</p>
+                </div>
+            )}
 
             {activeTab === 'founder' && (
                 <motion.div

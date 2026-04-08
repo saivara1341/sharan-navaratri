@@ -160,7 +160,7 @@ export const HeroSection = () => {
               animate="visible"
               variants={textRevealVariants}
             >
-              {t('hero.transforming')}
+              Siddhi Transforms
             </motion.span>
             <motion.span
               className="block gradient-text glow-text"
@@ -169,7 +169,7 @@ export const HeroSection = () => {
               animate="visible"
               variants={textRevealVariants}
             >
-              {t('hero.realWorldProblems')}
+              Manual Processes
             </motion.span>
             <motion.span
               className="block text-foreground"
