@@ -250,9 +250,10 @@ const Auth = () => {
               type="button"
               onClick={handleGoogleLogin}
               disabled={loading}
-              className="w-full btn-premium py-3 flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10"
+              className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 border border-gray-300 rounded-lg transition-colors shadow-sm"
+              style={{ fontFamily: "'Roboto', sans-serif" }}
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -270,14 +271,29 @@ const Auth = () => {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              Continue with Google
+              <span>Sign in with Google</span>
             </button>
+
+            {/* Transparency Section for Google Review */}
+            <div className="mt-6 p-4 rounded-xl bg-primary/5 border border-primary/10 text-[11px] text-muted-foreground leading-relaxed">
+              <p className="font-bold text-primary mb-1 uppercase tracking-wider">Why Google Login?</p>
+              <p>
+                We use Google OAuth to securely verify your identity without storing your password. 
+                We only request access to your <strong>email address</strong> and <strong>basic profile info</strong> (name, profile picture) to personalize your innovation dashboard and track your project submissions. 
+                We do not access your contacts, files, or any other private data.
+              </p>
+            </div>
           </form>
 
-          <div className="mt-8 text-center border-t border-border/30 pt-6">
+          <div className="mt-8 text-center border-t border-border/30 pt-6 space-y-4">
             <p className="text-xs text-muted-foreground/50 uppercase tracking-[0.2em]">
               Engineering Agentic Intelligence
             </p>
+            <div className="flex justify-center gap-4 text-[10px] text-muted-foreground/40 font-medium">
+              <a href="#/privacy" className="hover:text-primary transition-colors">Privacy Policy</a>
+              <span>•</span>
+              <a href="#/terms" className="hover:text-primary transition-colors">Terms of Service</a>
+            </div>
           </div>
         </motion.div>
       </div>

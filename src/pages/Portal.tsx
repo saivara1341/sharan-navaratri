@@ -26,7 +26,12 @@ import {
     Handshake,
     Lightbulb,
     Target,
-    Briefcase
+    Briefcase,
+    Globe,
+    ExternalLink,
+    Cpu,
+    Zap,
+    Star
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -151,31 +156,36 @@ const Portal = () => {
                                 
                                 if (roles.includes('Student / Researcher')) {
                                     services.push(
-                                        { title: t('footer.services.student.resume.title'), desc: t('footer.services.student.resume.desc'), icon: GraduationCap, color: "blue", link: "#/projects" },
-                                        { title: t('footer.services.student.skills.title'), desc: t('footer.services.student.skills.desc'), icon: Target, color: "indigo", link: "#/projects" },
-                                        { title: t('footer.services.student.jobs.title'), desc: t('footer.services.student.jobs.desc'), icon: Briefcase, color: "cyan", link: "#/projects" }
+                                        { title: t('footer.services.student.resume.title'), desc: t('footer.services.student.resume.desc'), icon: GraduationCap, color: "blue", link: "/nexus/resume-builder" },
+                                        { title: t('footer.services.student.skills.title'), desc: t('footer.services.student.skills.desc'), icon: Target, color: "indigo", link: "/nexus/resource-hub?category=student" },
+                                        { title: t('footer.services.student.jobs.title'), desc: t('footer.services.student.jobs.desc'), icon: Briefcase, color: "cyan", link: "/nexus/resource-hub?category=student" },
+                                        { title: "Academic Hub", desc: "Access LeetCode, ArXiv & Nexus tools.", icon: Globe, color: "emerald", link: "/nexus/resource-hub?category=student" }
                                     );
                                 }
                                 if (roles.includes('Visionary Founder')) {
                                     services.push(
-                                        { title: t('footer.services.founder.blueprint.title'), desc: t('footer.services.founder.blueprint.desc'), icon: Rocket, color: "orange", link: "#/projects" },
-                                        { title: t('footer.services.founder.fundraise.title'), desc: t('footer.services.founder.fundraise.desc'), icon: BarChart3, color: "amber", link: "#/projects" }
+                                        { title: t('footer.services.founder.blueprint.title'), desc: t('footer.services.founder.blueprint.desc'), icon: Rocket, color: "orange", link: "/nexus/startup-blueprint" },
+                                        { title: "Market & Growth", desc: "DPIIT schemes, grants & market analysis.", icon: BarChart3, color: "amber", link: "/nexus/resource-hub?category=founder" },
+                                        { title: "Startup Sahayak", desc: "Razorpay & DPIIT official resources.", icon: Sparkles, color: "rose", link: "/nexus/resource-hub?category=founder" }
                                     );
                                 }
                                 if (roles.includes('Tech Architect')) {
                                     services.push(
-                                        { title: t('footer.services.architect.design.title'), desc: t('footer.services.architect.design.desc'), icon: Code2, color: "emerald", link: "#/projects" },
-                                        { title: t('footer.services.architect.tech.title'), desc: t('footer.services.architect.tech.desc'), icon: Lightbulb, color: "teal", link: "#/projects" }
+                                        { title: t('footer.services.architect.design.title'), desc: t('footer.services.architect.design.desc'), icon: Code2, color: "emerald", link: "/nexus/resource-hub?category=architect" },
+                                        { title: "System Design Pro", desc: "ByteByteGo & System Design Primer.", icon: Cpu, color: "blue", link: "/nexus/resource-hub?category=architect" },
+                                        { title: t('footer.services.architect.tech.title'), desc: t('footer.services.architect.tech.desc'), icon: Lightbulb, color: "teal", link: "/nexus/resource-hub?category=architect" }
                                     );
                                 }
                                 if (roles.includes('Strategic Partner')) {
                                     services.push(
-                                        { title: t('footer.services.partner.connect.title'), desc: t('footer.services.partner.connect.desc'), icon: Handshake, color: "purple", link: "#/projects" }
+                                        { title: t('footer.services.partner.connect.title'), desc: t('footer.services.partner.connect.desc'), icon: Handshake, color: "purple", link: "/nexus/resource-hub?category=partner" },
+                                        { title: "Business Growth", desc: "HubSpot Academy & Sales training.", icon: Zap, color: "amber", link: "/nexus/resource-hub?category=partner" }
                                     );
                                 }
                                 if (roles.includes('Venture Investor')) {
                                     services.push(
-                                        { title: t('footer.services.investor.diligence.title'), desc: t('footer.services.investor.diligence.desc'), icon: BarChart3, color: "rose", link: "#/projects" }
+                                        { title: t('footer.services.investor.diligence.title'), desc: t('footer.services.investor.diligence.desc'), icon: BarChart3, color: "rose", link: "/nexus/resource-hub?category=investor" },
+                                        { title: "Deal Flow Tools", desc: "AngelList, Affinity & Market data.", icon: Star, color: "yellow", link: "/nexus/resource-hub?category=investor" }
                                     );
                                 }
                                 if (roles.includes('Other')) {
@@ -190,26 +200,30 @@ const Portal = () => {
                                 }
 
                                 return services.map((service, i) => (
-                                    <motion.a
+                                    <Link
                                         key={service.title}
-                                        href={service.link}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.1 * i }}
-                                        className="group p-6 rounded-2xl glass-card bg-white/5 border border-white/10 hover:border-primary/30 transition-all hover:bg-white/8 flex flex-col items-start gap-4"
+                                        to={service.link}
+                                        className="block"
                                     >
-                                        <div className={`p-3 rounded-xl bg-${service.color}-500/10 text-${service.color}-500 group-hover:scale-110 transition-transform`}>
-                                            <service.icon className="w-6 h-6" />
-                                        </div>
-                                        <div>
-                                            <h3 className="font-bold text-foreground group-hover:text-primary transition-colors">{service.title}</h3>
-                                            <p className="text-sm text-muted-foreground">{service.desc}</p>
-                                        </div>
-                                        <div className="mt-auto pt-4 flex items-center gap-2 text-xs font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <span>Access Resource</span>
-                                            <ChevronRight className="w-4 h-4" />
-                                        </div>
-                                    </motion.a>
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: 0.1 * i }}
+                                            className="group p-6 rounded-2xl glass-card bg-white/5 border border-white/10 hover:border-primary/30 transition-all hover:bg-white/8 flex flex-col items-start gap-4 cursor-pointer h-full"
+                                        >
+                                            <div className={`p-3 rounded-xl bg-${service.color}-500/10 text-${service.color}-500 group-hover:scale-110 transition-transform`}>
+                                                <service.icon className="w-6 h-6" />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-foreground group-hover:text-primary transition-colors">{service.title}</h3>
+                                                <p className="text-sm text-muted-foreground">{service.desc}</p>
+                                            </div>
+                                            <div className="mt-auto pt-4 flex items-center gap-2 text-xs font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <span>Access Resource</span>
+                                                <ChevronRight className="w-4 h-4" />
+                                            </div>
+                                        </motion.div>
+                                    </Link>
                                 ));
                             })()}
                         </div>

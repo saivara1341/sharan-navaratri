@@ -21,6 +21,11 @@ import PromoPopup from "./components/PromoPopup";
 import WomensDayCelebration from "./components/WomensDayCelebration";
 import RamzanCelebration from "./components/RamzanCelebration";
 
+// Specialized Service Pages
+import ResourceHub from "@/pages/services/ResourceHub";
+import ResumeBuilder from "@/pages/services/ResumeBuilder";
+import StartupBlueprint from "@/pages/services/StartupBlueprint";
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -89,6 +94,12 @@ const App = () => {
               <Route path="/project/letusknow" element={<LetUsKnowLanding />} />
               <Route path="/project/wish-o" element={<WishOLanding />} />
               <Route path="/admin-hq-nexus" element={<AdminPortal />} />
+              <Route path="/nexus/resource-hub" element={<ResourceHub />} />
+              <Route path="/nexus/market-research" element={<ResourceHub />} />
+              <Route path="/nexus/resume-builder" element={<ResumeBuilder />} />
+              <Route path="/nexus/startup-blueprint" element={<StartupBlueprint />} />
+              <Route path="/nexus/skills-analysis" element={<ResourceHub />} />
+              <Route path="/nexus/jobs" element={<ResourceHub />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

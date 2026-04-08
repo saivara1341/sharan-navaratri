@@ -58,8 +58,9 @@ const PrivacyPolicy = () => {
                 When you interact with our platform, we may collect:
               </p>
               <ul className="list-disc pl-6 text-muted-foreground space-y-2">
-                <li><strong>Identity Data:</strong> Full name, professional role (Matrix Identity).</li>
+                <li><strong>Identity Data:</strong> Full name and professional role.</li>
                 <li><strong>Contact Data:</strong> Email address provided via Google OAuth.</li>
+                <li><strong>Profile Data:</strong> We may receive your Google profile picture and name when you authenticate via Google OAuth to personalize your dashboard experience.</li>
                 <li><strong>Technical Data:</strong> IP address, browser type, and usage patterns.</li>
                 <li><strong>Submission Data:</strong> Any architectural queries or project details you submit through our Neural Hub.</li>
               </ul>
@@ -90,14 +91,26 @@ const PrivacyPolicy = () => {
             </section>
 
             <section>
-                <h2 className="text-xl font-bold text-foreground">5. Your Legal Rights</h2>
+                <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-primary" /> 5. Data Retention and Deletion
+                </h2>
+                <p className="text-muted-foreground leading-relaxed">
+                  We retain your personal data only for as long as necessary to fulfill the purposes we collected it for, including for the purposes of satisfying any legal, accounting, or reporting requirements. 
+                </p>
+                <p className="text-muted-foreground mt-2">
+                  You have the right to request the deletion of your account and associated data at any time. To request data deletion, please contact us at <a href="mailto:ssaivaraprasad51@gmail.com" className="text-primary hover:underline">ssaivaraprasad51@gmail.com</a>. Upon verification of your request, we will remove your personal information from our active databases within 30 days.
+                </p>
+            </section>
+
+            <section>
+                <h2 className="text-xl font-bold text-foreground">6. Your Legal Rights</h2>
                 <p className="text-muted-foreground leading-relaxed">
                     Under certain circumstances, you have rights under data protection laws in relation to your personal data, including the right to request access, correction, or erasure of your data.
                 </p>
             </section>
 
             <section className="pt-8 border-t border-white/5">
-              <h2 className="text-xl font-bold text-foreground">6. Contact Us</h2>
+              <h2 className="text-xl font-bold text-foreground">7. Contact Us</h2>
               <p className="text-muted-foreground">
                 For any questions about this Privacy Policy, please contact our support team:
               </p>
