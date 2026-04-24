@@ -14,8 +14,9 @@
         "into": "into",
         "aiSolutions": "AI Solutions",
         "description": "We are a deep-tech innovation firm converting complex challenges into scalable, <0>production-ready</0> technology solutions powered by <1>AI, Generative AI, and Agentic Intelligence</1>.",
-        "ctaSubmit": "Submit Your Challenge",
-        "ctaExplore": "Explore Projects",
+        "ctaSubmit": "మీ సవాలును సమర్పించండి",
+        "ctaRequirements": "మీ ప్రాజెక్ట్‌ను రూపొందించండి",
+        "ctaExplore": "ప్రాజెక్ట్‌లను అన్వేషించండి",
         "scroll": "Scroll"
     },
     "vision": {
@@ -194,9 +195,10 @@
         "badge": "AI-Powered Analysis",
         "discussLabel": "What would you like to discuss?",
         "types": {
-            "problem": "Real-World Problem",
-            "requirement": "Project Requirement",
-            "inquiry": "General Inquiry"
+            "problem": "వాస్తవిక ప్రపంచ సమస్య",
+            "requirement": "సాఫ్ట్‌వేర్ & వెబ్‌సైట్ అవసరాలు",
+            "inquiry": "సాధారణ విచారణ",
+            "investor": "పెట్టుబడిదారులు మరియు మద్దతుదారులు"
         },
         "fields": {
             "name": "Full Name",
@@ -208,19 +210,22 @@
             "organization": "Organization",
             "organizationPlaceholder": "Company Name",
             "message": {
-                "problem": "Problem Statement",
-                "requirement": "Project Requirements",
-                "inquiry": "Your Message",
-                "problemPlaceholder": "Describe the real-world challenge you're facing in detail...",
-                "requirementPlaceholder": "Describe your project requirements, features needed, timeline expectations...",
-                "inquiryPlaceholder": "How can we help you? Share your questions or ideas..."
+                "problem": "సమస్య ప్రకటన",
+                "requirement": "ప్రాజెక్ట్ అవసరాలు",
+                "inquiry": "మీ సందేశం",
+                "investor": "పెట్టుబడి ప్రతిపాదన",
+                "problemPlaceholder": "మీరు ఎదుర్కొంటున్న వాస్తవ ప్రపంచ సవాలును వివరంగా వివరించండి...",
+                "requirementPlaceholder": "మీ ప్రాజెక్ట్ అవసరాలు, అవసరమైన ఫీచర్లు, టైమ్‌లైన్ అంచనాలను వివరించండి...",
+                "inquiryPlaceholder": "మేము మీకు ఎలా సహాయపడగలము? మీ ప్రశ్నలు లేదా ఆలోచనలను పంచుకోండి...",
+                "investorPlaceholder": "మీ పెట్టుబడి లక్ష్యాలు, విజన్ మరియు మాతో ఎలా సహకరించాలనుకుంటున్నారో షేర్ చేయండి..."
             }
         },
         "submitButton": {
-            "problem": "Submit for AI Analysis",
-            "requirement": "Send Requirements",
-            "inquiry": "Send Message",
-            "submitting": "Submitting..."
+            "problem": "AI విశ్లేషణ కోసం సమర్పించండి",
+            "requirement": "అవసరాలను పంపండి",
+            "inquiry": "సందేశం పంపండి",
+            "investor": "కనెక్షన్ కోసం అభ్యర్థించండి",
+            "submitting": "సమర్పిస్తోంది..."
         },
         "security": "Your data is secured and processed by our AI",
         "process": [
@@ -244,11 +249,12 @@
             "listening": "Listening... Speak now.",
             "voiceFail": "Voice recognition failed. Please check permissions.",
             "voiceNotSupported": "Voice recognition not supported in this browser.",
-            "problemSuccess": "Problem submitted successfully! Our AI agents will analyze your challenge.",
-            "requirementSuccess": "Requirements received! We'll get back to you with a tailored solution.",
-            "inquirySuccess": "Thank you for reaching out! We'll respond to your inquiry shortly.",
-            "inputError": "Please check your input and try again.",
-            "genericError": "Failed to submit. Please try again."
+            "problemSuccess": "సమస్య విజయవంతంగా సమర్పించబడింది! మా AI ఏజెంట్లు మీ సవాలును విశ్లేషిస్తారు.",
+            "requirementSuccess": "అవసరాలు అందాయి! మేము తగిన పరిష్కారంతో మిమ్మల్ని సంప్రదిస్తాము.",
+            "inquirySuccess": "సంప్రదించినందుకు ధన్యవాదాలు! మేము త్వరలో మీ విచారణకు ప్రతిస్పందిస్తాము.",
+            "investorSuccess": "మీ పెట్టుబడి విచారణ అందింది. మా బృందం త్వరలో మిమ్మల్ని సంప్రదిస్తుంది.",
+            "inputError": "దయచేసి మీ ఇన్పుట్‌ను తనిఖీ చేసి మళ్ళీ ప్రయత్నించండి.",
+            "genericError": "సమర్పించడం విఫలమైంది. దయచేసి మళ్ళీ ప్రయత్నించండి."
         }
     },
     "footer": {

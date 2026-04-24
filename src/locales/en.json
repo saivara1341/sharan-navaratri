@@ -15,6 +15,7 @@
     "aiSolutions": "AI Solutions",
     "description": "We are a deep-tech innovation firm converting complex challenges into scalable, <0>production-ready</0> technology solutions powered by <1>AI, Generative AI, and Agentic Intelligence</1>.",
     "ctaSubmit": "Submit Your Challenge",
+    "ctaRequirements": "Build Your Project",
     "ctaExplore": "Explore Projects",
     "scroll": "Scroll"
   },
@@ -290,7 +291,7 @@
     "discussLabel": "What would you like to discuss?",
     "types": {
       "problem": "Real-World Problem",
-      "requirement": "Project Requirement",
+      "requirement": "Software & Website Requirements",
       "inquiry": "General Inquiry",
       "investor": "Investors & Supporters"
     },
@@ -308,7 +309,7 @@
         "requirement": "Project Requirements",
         "inquiry": "Your Message",
         "problemPlaceholder": "Describe the real-world challenge you're facing in detail...",
-        "requirementPlaceholder": "Describe your project requirements, features needed, timeline expectations...",
+        "requirementPlaceholder": "Describe your software or website requirements, features needed, timeline expectations...",
         "inquiryPlaceholder": "How can we help you? Share your questions or ideas...",
         "investor": "Investment or Collaboration Details",
         "investorPlaceholder": "Tell us about your interests, potential collaborations, or investment inquiries..."

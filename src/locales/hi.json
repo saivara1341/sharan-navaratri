@@ -14,8 +14,9 @@
         "into": "into",
         "aiSolutions": "AI Solutions",
         "description": "We are a deep-tech innovation firm converting complex challenges into scalable, <0>production-ready</0> technology solutions powered by <1>AI, Generative AI, and Agentic Intelligence</1>.",
-        "ctaSubmit": "Submit Your Challenge",
-        "ctaExplore": "Explore Projects",
+        "ctaSubmit": "अपना चैलेंज सबमिट करें",
+        "ctaRequirements": "अपना प्रोजेक्ट बनाएं",
+        "ctaExplore": "प्रोजेक्ट्स देखें",
         "scroll": "Scroll"
     },
     "vision": {
@@ -194,9 +195,10 @@
         "badge": "AI-Powered Analysis",
         "discussLabel": "What would you like to discuss?",
         "types": {
-            "problem": "Real-World Problem",
-            "requirement": "Project Requirement",
-            "inquiry": "General Inquiry"
+            "problem": "वास्तविक दुनिया की समस्या",
+            "requirement": "सॉफ्टवेयर और वेबसाइट आवश्यकताएं",
+            "inquiry": "सामान्य पूछताछ",
+            "investor": "निवेशक और समर्थक"
         },
         "fields": {
             "name": "Full Name",
@@ -208,19 +210,22 @@
             "organization": "Organization",
             "organizationPlaceholder": "Company Name",
             "message": {
-                "problem": "Problem Statement",
-                "requirement": "Project Requirements",
-                "inquiry": "Your Message",
-                "problemPlaceholder": "Describe the real-world challenge you're facing in detail...",
-                "requirementPlaceholder": "Describe your project requirements, features needed, timeline expectations...",
-                "inquiryPlaceholder": "How can we help you? Share your questions or ideas..."
+                "problem": "समस्या का विवरण",
+                "requirement": "परियोजना आवश्यकताएं",
+                "inquiry": "आपका संदेश",
+                "investor": "निवेश प्रस्ताव",
+                "problemPlaceholder": "उस वास्तविक दुनिया की चुनौती का विवरण दें जिसका आप सामना कर रहे हैं...",
+                "requirementPlaceholder": "अपनी परियोजना आवश्यकताओं, आवश्यक सुविधाओं, समय सीमा की अपेक्षाओं का वर्णन करें...",
+                "inquiryPlaceholder": "हम आपकी कैसे मदद कर सकते हैं? अपने प्रश्न या विचार साझा करें...",
+                "investorPlaceholder": "अपने निवेश लक्ष्यों, विजन और आप हमारे साथ कैसे सहयोग करना चाहते हैं, साझा करें..."
             }
         },
         "submitButton": {
-            "problem": "Submit for AI Analysis",
-            "requirement": "Send Requirements",
-            "inquiry": "Send Message",
-            "submitting": "Submitting..."
+            "problem": "AI विश्लेषण के लिए सबमिट करें",
+            "requirement": "आवश्यकताएं भेजें",
+            "inquiry": "संदेश भेजें",
+            "investor": "कनेक्ट के लिए अनुरोध करें",
+            "submitting": "सबमिट हो रहा है..."
         },
         "security": "Your data is secured and processed by our AI",
         "process": [
@@ -244,11 +249,12 @@
             "listening": "Listening... Speak now.",
             "voiceFail": "Voice recognition failed. Please check permissions.",
             "voiceNotSupported": "Voice recognition not supported in this browser.",
-            "problemSuccess": "Problem submitted successfully! Our AI agents will analyze your challenge.",
-            "requirementSuccess": "Requirements received! We'll get back to you with a tailored solution.",
-            "inquirySuccess": "Thank you for reaching out! We'll respond to your inquiry shortly.",
-            "inputError": "Please check your input and try again.",
-            "genericError": "Failed to submit. Please try again."
+            "problemSuccess": "समस्या सफलतापूर्वक सबमिट की गई! हमारे AI एजेंट आपकी चुनौती का विश्लेषण करेंगे।",
+            "requirementSuccess": "आवश्यकताएं प्राप्त हुईं! हम आपके पास एक अनुकूलित समाधान के साथ वापस आएंगे।",
+            "inquirySuccess": "हमसे संपर्क करने के लिए धन्यवाद! हम शीघ्र ही आपकी पूछताछ का उत्तर देंगे।",
+            "investorSuccess": "आपकी निवेश पूछताछ प्राप्त हुई है। हमारी टीम जल्द ही आपसे जुड़ेगी।",
+            "inputError": "कृपया अपने इनपुट की जांच करें और पुन: प्रयास करें।",
+            "genericError": "सबमिट करने में विफल। कृपया पुन: प्रयास करें।"
         }
     },
     "footer": {

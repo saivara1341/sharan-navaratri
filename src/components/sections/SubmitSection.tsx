@@ -1,5 +1,6 @@
 import { motion, useInView, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { Mic, MicOff } from 'lucide-react';
 import { toast } from 'sonner';
@@ -32,6 +33,16 @@ export const SubmitSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isListening, setIsListening] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    // Check for type=requirement in hash or search
+    const hasRequirementParam = window.location.hash.includes('type=requirement') || 
+                               window.location.search.includes('type=requirement');
+    if (hasRequirementParam) {
+      setFormData(prev => ({ ...prev, inquiryType: 'requirement' }));
+    }
+  }, [location]);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -215,7 +226,7 @@ export const SubmitSection = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {[
                       { value: 'problem', label: t('submit.types.problem'), icon: '🎯' },
-                      { value: 'requirement', label: t('submit.types.requirement'), icon: '📋' },
+                      { value: 'requirement', label: t('submit.types.requirement'), icon: '💻' },
                       { value: 'inquiry', label: t('submit.types.inquiry'), icon: '❓' },
                       { value: 'investor', label: t('submit.types.investor'), icon: '🤝' },
                     ].map((type) => (

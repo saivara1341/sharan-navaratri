@@ -1,7 +1,7 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import anuragLogo from '@/assets/anurag-university-logo.png';
+import hiveLogo from '@/assets/hive-logo.jpg';
 
 const floatingParticles = [
   { size: 4, left: '10%', top: '20%', delay: 0 },
@@ -150,8 +150,8 @@ export const IncubationSection = () => {
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                   />
                   <img
-                    src={anuragLogo}
-                    alt="Anurag University Logo"
+                    src={hiveLogo}
+                    alt="HIVE Logo"
                     className="h-20 md:h-24 w-auto object-contain relative z-10"
                   />
                 </motion.div>

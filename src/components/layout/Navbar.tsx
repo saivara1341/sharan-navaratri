@@ -37,13 +37,15 @@ export const Navbar = () => {
 
     // Basic auth check
     supabase.auth.getSession().then(({ data: { session } }) => {
+      const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com").split(",");
       setIsLoggedIn(!!session);
-      setIsAdmin(session?.user?.email === "ssaivaraprasad51@gmail.com");
+      setIsAdmin(session?.user?.email ? adminEmails.includes(session.user.email) : false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com").split(",");
       setIsLoggedIn(!!session);
-      setIsAdmin(session?.user?.email === "ssaivaraprasad51@gmail.com");
+      setIsAdmin(session?.user?.email ? adminEmails.includes(session.user.email) : false);
     });
 
     return () => {

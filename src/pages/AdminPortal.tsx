@@ -77,7 +77,8 @@ const AdminPortal = () => {
                 return;
             }
 
-            if (user.email !== "ssaivaraprasad51@gmail.com") {
+            const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com").split(",");
+            if (!user.email || !adminEmails.includes(user.email)) {
                 toast.error("Access Refused: You do not have administrative privileges.");
                 navigate("/");
                 return;
@@ -177,7 +178,7 @@ const AdminPortal = () => {
                 .from('chat_messages')
                 .insert([{
                     submission_id: chatOpen.id,
-                    sender_email: "ssaivaraprasad51@gmail.com",
+                    sender_email: (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com").split(",")[0],
                     message: chatInput.trim(),
                     is_admin: true
                 }])
