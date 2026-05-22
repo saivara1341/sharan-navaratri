@@ -37,11 +37,19 @@ const AuthRedirectHandler = () => {
   const location = useLocation();
 
   useEffect(() => {
+    const checkAdmin = (email?: string) => {
+      if (!email) return false;
+      const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com")
+        .split(",")
+        .map((e: string) => e.trim().toLowerCase());
+      return adminEmails.includes(email.trim().toLowerCase());
+    };
+
     // Check initial session - ONLY redirect if user is on the auth page
     // This allows logged-in users to visit the home page freely.
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session && (location.pathname === '/auth' || location.pathname === '/auth/')) {
-        if (session.user.email === "ssaivaraprasad51@gmail.com") {
+        if (checkAdmin(session.user.email)) {
           navigate("/admin-hq-nexus");
         } else {
           navigate("/portal");
@@ -52,7 +60,7 @@ const AuthRedirectHandler = () => {
     // Listen for auth changes (like login success)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        if (session.user.email === "ssaivaraprasad51@gmail.com") {
+        if (checkAdmin(session.user.email)) {
           navigate("/admin-hq-nexus");
         } else {
           navigate("/portal");

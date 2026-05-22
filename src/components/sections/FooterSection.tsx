@@ -2,7 +2,7 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import siddhiLogo from '@/assets/siddhi-logo.jpg';
+import siddhiLogo from '@/assets/logo.svg';
 
 const linkVariants = {
   hidden: { opacity: 0, y: 10 },
@@ -61,7 +61,7 @@ export const FooterSection = () => {
               <img
                 src={siddhiLogo}
                 alt="Siddhi Dynamics"
-                className="relative w-full h-full object-contain mix-blend-screen"
+                className="relative w-full h-full object-contain"
               />
             </motion.div>
             <div>

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { motion } from "framer-motion";
 
 const SERVICES = [
     {
@@ -51,267 +52,188 @@ const SERVICES = [
     },
 ];
 
-function useInView(threshold = 0.15) {
-    const ref = useRef<HTMLDivElement>(null);
-    const [inView, setInView] = useState(false);
-    useEffect(() => {
-        const el = ref.current;
-        if (!el) return;
-        const observer = new IntersectionObserver(
-            ([entry]) => { if (entry.isIntersecting) setInView(true); },
-            { threshold }
-        );
-        observer.observe(el);
-        return () => observer.disconnect();
-    }, [threshold]);
-    return { ref, inView };
-}
-
 export function ServicesSection() {
-    const { ref: sectionRef, inView } = useInView();
     const [hovered, setHovered] = useState<number | null>(null);
+
+    const containerVariants = {
+        hidden: {},
+        visible: {
+            transition: {
+                staggerChildren: 0.08,
+            }
+        }
+    };
+
+    const cardVariants = {
+        hidden: { opacity: 0, y: 35 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                type: "spring",
+                stiffness: 80,
+                damping: 15
+            }
+        }
+    };
 
     return (
         <section
             id="services"
-            ref={sectionRef}
-            style={{
-                padding: "96px 0 80px",
-                background: "linear-gradient(180deg, #050309 0%, #08041a 50%, #050309 100%)",
-                position: "relative",
-                overflow: "hidden",
-            }}
+            className="py-24 relative overflow-hidden bg-gradient-to-b from-[#050309] via-[#08041a] to-[#050309]"
         >
-            {/* ── decorative blobs ── */}
-            <div style={{ position: "absolute", top: "10%", left: "-8%", width: 420, height: 420, background: "radial-gradient(circle,rgba(124,58,237,0.12) 0%,transparent 70%)", borderRadius: "50%", pointerEvents: "none" }} />
-            <div style={{ position: "absolute", bottom: "5%", right: "-6%", width: 380, height: 380, background: "radial-gradient(circle,rgba(14,165,233,0.1) 0%,transparent 70%)", borderRadius: "50%", pointerEvents: "none" }} />
+            {/* Decorative Blobs */}
+            <div className="absolute top-[10%] left-[-8%] w-[420px] h-[420px] rounded-full bg-[radial-gradient(circle,rgba(124,58,237,0.12)_0%,transparent_70%)] pointer-events-none" />
+            <div className="absolute bottom-[5%] right-[-6%] w-[380px] h-[380px] rounded-full bg-[radial-gradient(circle,rgba(14,165,233,0.1)_0%,transparent_70%)] pointer-events-none" />
 
-            <style>{`
-        @keyframes sdFadeUp {
-          from { opacity:0; transform:translateY(40px); }
-          to   { opacity:1; transform:translateY(0); }
-        }
-        @keyframes sdPing {
-          0%   { transform:scale(1); opacity:1; }
-          75%  { transform:scale(2); opacity:0; }
-          100% { transform:scale(2); opacity:0; }
-        }
-        @keyframes sdGlow {
-          0%,100% { box-shadow: 0 0 20px rgba(124,58,237,0.3); }
-          50%      { box-shadow: 0 0 40px rgba(124,58,237,0.6); }
-        }
-        @keyframes sdShimmer {
-          0%   { background-position:200% center; }
-          100% { background-position:-200% center; }
-        }
-      `}</style>
+            <div className="max-w-6xl mx-auto px-6 relative z-10">
 
-            <div style={{ maxWidth: 1140, margin: "0 auto", padding: "0 24px" }}>
-
-                {/* ── Section heading ── */}
-                <div
-                    style={{
-                        textAlign: "center",
-                        marginBottom: 56,
-                        opacity: inView ? 1 : 0,
-                        transform: inView ? "translateY(0)" : "translateY(30px)",
-                        transition: "opacity 0.7s ease, transform 0.7s ease",
-                    }}
-                >
-                    {/* live badge */}
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.35)", borderRadius: 50, padding: "6px 16px", marginBottom: 20 }}>
-                        <span style={{ position: "relative", display: "inline-block", width: 8, height: 8 }}>
-                            <span style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#7c3aed", animation: "sdPing 1.5s ease-out infinite" }} />
-                            <span style={{ position: "relative", display: "block", width: 8, height: 8, borderRadius: "50%", background: "#a78bfa" }} />
+                {/* Section Heading */}
+                <div className="text-center mb-16">
+                    {/* Live Badge */}
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-600/10 border border-violet-500/35 mb-6"
+                    >
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-500 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-400"></span>
                         </span>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: "#a78bfa", letterSpacing: 2, textTransform: "uppercase" }}>
-                            Our Services
-                        </span>
-                    </div>
+                        <span className="text-xs font-bold text-violet-300 tracking-wider uppercase">Our Services</span>
+                    </motion.div>
 
-                    <h2
+                    {/* Animated Heading */}
+                    <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: 0.1 }}
+                        className="text-4xl sm:text-5xl md:text-6xl font-black mb-6 tracking-tight bg-gradient-to-r from-white via-violet-300 to-sky-300 bg-clip-text text-transparent bg-[size:200%_auto] animate-shimmer"
                         style={{
-                            margin: "0 0 16px",
-                            fontSize: "clamp(28px,5vw,48px)",
-                            fontWeight: 900,
-                            lineHeight: 1.15,
-                            background: "linear-gradient(90deg,#fff 0%,#c4b5fd 40%,#93c5fd 70%,#fff 100%)",
-                            backgroundSize: "200% auto",
-                            WebkitBackgroundClip: "text",
-                            WebkitTextFillColor: "transparent",
-                            backgroundClip: "text",
-                            animation: "sdShimmer 4s linear infinite",
+                            backgroundImage: "linear-gradient(90deg, #fff 0%, #c4b5fd 40%, #93c5fd 70%, #fff 100%)",
                         }}
                     >
                         Automate. Grow. Dominate. 🚀
-                    </h2>
-                    <p style={{ margin: 0, fontSize: "clamp(15px,2vw,18px)", color: "rgba(200,200,230,0.65)", maxWidth: 600, marginLeft: "auto", marginRight: "auto", lineHeight: 1.6 }}>
+                    </motion.h2>
+
+                    {/* Subtext */}
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        className="text-base sm:text-lg text-slate-400/90 max-w-xl mx-auto leading-relaxed"
+                    >
                         We help businesses replace manual work with intelligent digital systems — so you focus on what matters.
-                    </p>
+                    </motion.p>
                 </div>
 
-                {/* ── Service cards grid ── */}
-                <div
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))",
-                        gap: 20,
-                        marginBottom: 56,
-                    }}
+                {/* Service Cards Grid */}
+                <motion.div
+                    variants={containerVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-100px" }}
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"
                 >
                     {SERVICES.map((s, i) => (
-                        <div
+                        <motion.div
                             key={s.title}
+                            variants={cardVariants}
+                            whileHover={{ y: -8, scale: 1.02 }}
                             onMouseEnter={() => setHovered(i)}
                             onMouseLeave={() => setHovered(null)}
+                            className="relative bg-white/[0.02] hover:bg-white/[0.04] backdrop-blur-md border rounded-2xl p-7 cursor-default transition-all duration-300 group overflow-hidden"
                             style={{
-                                position: "relative",
-                                background: hovered === i
-                                    ? `linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))`
-                                    : "rgba(255,255,255,0.03)",
-                                border: `1px solid ${hovered === i ? s.color + "80" : "rgba(255,255,255,0.08)"}`,
-                                borderRadius: 18,
-                                padding: "28px 24px",
-                                cursor: "default",
+                                borderColor: hovered === i ? `${s.color}80` : "rgba(255,255,255,0.08)",
                                 boxShadow: hovered === i ? `0 0 32px ${s.glow}` : "none",
-                                transform: hovered === i ? "translateY(-6px)" : "translateY(0)",
-                                transition: "all 0.3s cubic-bezier(0.16,1,0.3,1)",
-                                opacity: inView ? 1 : 0,
-                                animation: inView
-                                    ? `sdFadeUp 0.6s ${0.1 + i * 0.08}s cubic-bezier(0.16,1,0.3,1) both`
-                                    : "none",
                             }}
                         >
-                            {/* tag */}
+                            {/* Tag */}
                             {s.tag && (
-                                <span style={{
-                                    position: "absolute",
-                                    top: 16,
-                                    right: 16,
-                                    background: s.color,
-                                    color: "#fff",
-                                    fontSize: 10,
-                                    fontWeight: 800,
-                                    letterSpacing: 1,
-                                    textTransform: "uppercase",
-                                    padding: "3px 10px",
-                                    borderRadius: 50,
-                                }}>
+                                <span
+                                    style={{ backgroundColor: s.color }}
+                                    className="absolute top-4 right-4 text-[10px] font-extrabold tracking-widest uppercase text-white px-2.5 py-0.5 rounded-full z-10"
+                                >
                                     {s.tag}
                                 </span>
                             )}
 
-                            {/* icon */}
-                            <div style={{
-                                width: 52,
-                                height: 52,
-                                borderRadius: 14,
-                                background: `linear-gradient(135deg,${s.color}33,${s.color}15)`,
-                                border: `1px solid ${s.color}40`,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontSize: 26,
-                                marginBottom: 18,
-                            }}>
+                            {/* Emoji Icon Container */}
+                            <div
+                                style={{
+                                    background: `linear-gradient(135deg, ${s.color}33, ${s.color}15)`,
+                                    borderColor: `${s.color}40`,
+                                }}
+                                className="w-12 h-12 rounded-xl border flex items-center justify-center text-2xl mb-5 group-hover:scale-110 transition-transform duration-300"
+                            >
                                 {s.emoji}
                             </div>
 
-                            <h3 style={{ margin: "0 0 10px", fontSize: 17, fontWeight: 700, color: "#e2e8f0" }}>{s.title}</h3>
-                            <p style={{ margin: 0, fontSize: 13.5, color: "rgba(200,200,220,0.65)", lineHeight: 1.6 }}>{s.desc}</p>
+                            <h3 className="text-lg font-bold text-slate-100 mb-2 group-hover:text-white transition-colors duration-200">
+                                {s.title}
+                            </h3>
+                            
+                            <p className="text-sm text-slate-400/90 leading-relaxed">
+                                {s.desc}
+                            </p>
 
-                            {/* bottom accent line */}
-                            <div style={{
-                                position: "absolute",
-                                bottom: 0,
-                                left: "10%",
-                                width: hovered === i ? "80%" : "0%",
-                                height: 2,
-                                background: `linear-gradient(90deg,transparent,${s.color},transparent)`,
-                                borderRadius: 2,
-                                transition: "width 0.4s ease",
-                            }} />
-                        </div>
+                            {/* Bottom Ambient Glow line */}
+                            <div
+                                style={{
+                                    background: `linear-gradient(90deg, transparent, ${s.color}, transparent)`,
+                                }}
+                                className="absolute bottom-0 left-[10%] w-0 group-hover:w-[80%] h-[2px] rounded-full transition-all duration-500"
+                            />
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
 
-                {/* ── CTA Banner ── */}
-                <div
-                    style={{
-                        background: "linear-gradient(135deg,rgba(124,58,237,0.15) 0%,rgba(14,165,233,0.12) 100%)",
-                        border: "1px solid rgba(124,58,237,0.3)",
-                        borderRadius: 24,
-                        padding: "40px 36px",
-                        display: "flex",
-                        flexWrap: "wrap",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        gap: 24,
-                        opacity: inView ? 1 : 0,
-                        transform: inView ? "translateY(0)" : "translateY(30px)",
-                        transition: "opacity 0.8s 0.5s ease, transform 0.8s 0.5s ease",
-                    }}
+                {/* CTA Banner */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="relative bg-gradient-to-r from-violet-950/40 to-sky-950/30 border border-violet-500/20 rounded-3xl p-8 md:p-10 flex flex-col lg:flex-row items-center justify-between gap-6 overflow-hidden"
                 >
-                    <div style={{ flex: "1 1 350px", textAlign: "left" }}>
-                        <h3 style={{ margin: "0 0 8px", fontSize: "clamp(18px,3vw,24px)", fontWeight: 800, color: "#fff" }}>
+                    {/* Inner subtle glow */}
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(124,58,237,0.08)_0%,transparent_100%)] pointer-events-none" />
+
+                    <div className="flex-1 text-left relative z-10">
+                        <h3 className="text-xl sm:text-2xl font-extrabold text-white mb-2">
                             Ready to transform your business? 💡
                         </h3>
-                        <p style={{ margin: 0, fontSize: 14.5, color: "rgba(200,200,230,0.7)", lineHeight: 1.6 }}>
+                        <p className="text-sm sm:text-base text-slate-300/80 max-w-lg leading-relaxed">
                             Get in touch today — we'll understand your workflow and automate it for you.
                         </p>
                     </div>
 
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 12, flex: "1 1 350px", justifyContent: "center" }}>
+                    <div className="flex flex-wrap gap-4 justify-center relative z-10">
                         {/* Phone CTA */}
-                        <a
+                        <motion.a
                             href="tel:+916303602743"
-                            style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: 9,
-                                padding: "13px 26px",
-                                borderRadius: 50,
-                                background: "linear-gradient(135deg,#7c3aed,#4f46e5)",
-                                color: "#fff",
-                                fontWeight: 700,
-                                fontSize: 15,
-                                textDecoration: "none",
-                                boxShadow: "0 4px 24px rgba(124,58,237,0.5)",
-                                whiteSpace: "nowrap",
-                                animation: "sdGlow 2.5s ease-in-out infinite",
-                                transition: "transform 0.2s",
-                            }}
-                            onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.transform = "scale(1.05)")}
-                            onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.transform = "scale(1)")}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-sm tracking-wide shadow-[0_4px_20px_rgba(124,58,237,0.4)] hover:shadow-[0_4px_30px_rgba(124,58,237,0.6)] transition-all"
                         >
-                            📞 &nbsp;+91 6303602743
-                        </a>
+                            📞 +91 6303602743
+                        </motion.a>
 
                         {/* Email CTA */}
-                        <a
+                        <motion.a
                             href="mailto:ssaivaraprasad51@gmail.com"
-                            style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: 9,
-                                padding: "13px 26px",
-                                borderRadius: 50,
-                                background: "rgba(255,255,255,0.06)",
-                                border: "1px solid rgba(124,58,237,0.4)",
-                                color: "#c4b5fd",
-                                fontWeight: 700,
-                                fontSize: 15,
-                                textDecoration: "none",
-                                whiteSpace: "nowrap",
-                                transition: "background 0.2s, transform 0.2s",
-                            }}
-                            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(124,58,237,0.2)"; (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1.05)"; }}
-                            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1)"; }}
+                            whileHover={{ scale: 1.05, backgroundColor: "rgba(124,58,237,0.15)" }}
+                            whileTap={{ scale: 0.95 }}
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/[0.06] border border-violet-500/40 text-violet-300 font-bold text-sm tracking-wide transition-all"
                         >
-                            ✉️ &nbsp;Email Us
-                        </a>
+                            ✉️ Email Us
+                        </motion.a>
                     </div>
-                </div>
+                </motion.div>
             </div>
         </section>
     );

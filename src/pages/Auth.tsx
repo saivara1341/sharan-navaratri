@@ -19,10 +19,18 @@ const Auth = () => {
   const navigate = useNavigate();
 
 
+  const checkAdmin = (emailToCheck?: string) => {
+    if (!emailToCheck) return false;
+    const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com")
+      .split(",")
+      .map((e: string) => e.trim().toLowerCase());
+    return adminEmails.includes(emailToCheck.trim().toLowerCase());
+  };
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        if (session.user.email === "ssaivaraprasad51@gmail.com") {
+        if (checkAdmin(session.user.email)) {
           navigate("/admin-hq-nexus");
         } else {
           navigate("/portal");
@@ -32,7 +40,7 @@ const Auth = () => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        if (session.user.email === "ssaivaraprasad51@gmail.com") {
+        if (checkAdmin(session.user.email)) {
           navigate("/admin-hq-nexus");
         } else {
           navigate("/portal");
@@ -56,7 +64,7 @@ const Auth = () => {
 
         if (error) throw error;
 
-        if (email.trim().toLowerCase() === "ssaivaraprasad51@gmail.com") {
+        if (checkAdmin(email)) {
           toast.success("Welcome back, Commander.");
           navigate("/admin-hq-nexus");
         } else {

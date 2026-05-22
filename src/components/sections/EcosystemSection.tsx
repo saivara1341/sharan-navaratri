@@ -52,6 +52,14 @@ const roles = [
   }
 ];
 
+const colorMap: Record<string, { bg: string, text: string, border: string, hoverBorder: string }> = {
+  orange: { bg: "bg-orange-500/10", text: "text-orange-500", border: "border-orange-500/20", hoverBorder: "group-hover:border-orange-500/40" },
+  blue: { bg: "bg-blue-500/10", text: "text-blue-500", border: "border-blue-500/20", hoverBorder: "group-hover:border-blue-500/40" },
+  yellow: { bg: "bg-yellow-500/10", text: "text-yellow-500", border: "border-yellow-500/20", hoverBorder: "group-hover:border-yellow-500/40" },
+  emerald: { bg: "bg-emerald-500/10", text: "text-emerald-500", border: "border-emerald-500/20", hoverBorder: "group-hover:border-emerald-500/40" },
+  purple: { bg: "bg-purple-500/10", text: "text-purple-500", border: "border-purple-500/20", hoverBorder: "group-hover:border-purple-500/40" },
+};
+
 export const EcosystemSection = () => {
   return (
     <section className="py-32 bg-background relative overflow-hidden" id="ecosystem">
@@ -91,42 +99,48 @@ export const EcosystemSection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {roles.map((role, idx) => (
-            <motion.div
-              key={role.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              whileHover={{ y: -5 }}
-              className="group glass-card p-8 rounded-[32px] bg-white/5 border border-white/10 hover:border-primary/40 transition-all hover:bg-white/[0.08]"
-            >
-              <div className="flex justify-between items-start mb-8">
-                <div className={`p-4 rounded-2xl bg-${role.color}-500/10 text-${role.color}-500 group-hover:scale-110 transition-transform`}>
-                  <role.icon className="w-8 h-8" />
-                </div>
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1 bg-white/5 rounded-lg text-muted-foreground border border-white/10 group-hover:text-foreground transition-colors">
-                  {role.tag}
-                </span>
-              </div>
-              
-              <h3 className="text-2xl font-bold mb-4 group-hover:text-primary transition-colors">{role.title}</h3>
-              <p className="text-muted-foreground text-sm mb-10 leading-relaxed min-h-[60px]">
-                {role.desc}
-              </p>
-
-              <Link 
-                to="/auth" 
-                className="flex items-center justify-between w-full p-4 rounded-2xl bg-white/5 border border-white/5 group-hover:border-primary/20 hover:bg-white/10 transition-all"
+          {roles.map((role, idx) => {
+            const colors = colorMap[role.color] || colorMap.blue;
+            return (
+              <motion.div
+                key={role.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: idx * 0.08 }}
+                whileHover={{ y: -8 }}
+                className={`group glass-card p-8 rounded-[32px] bg-white/5 border border-white/10 ${colors.hoverBorder} transition-all hover:bg-white/[0.08] relative overflow-hidden`}
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  <span className="text-xs font-bold uppercase tracking-widest">Access Hub</span>
+                <div className="flex justify-between items-start mb-8">
+                  <div className={`p-4 rounded-2xl ${colors.bg} ${colors.text} group-hover:scale-110 transition-transform`}>
+                    <role.icon className="w-8 h-8" />
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1 bg-white/5 rounded-lg text-muted-foreground border border-white/10 group-hover:text-foreground transition-colors">
+                    {role.tag}
+                  </span>
                 </div>
-                <ArrowRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </motion.div>
-          ))}
+                
+                <h3 className="text-2xl font-bold mb-4 group-hover:text-primary transition-colors">{role.title}</h3>
+                <p className="text-muted-foreground text-sm mb-10 leading-relaxed min-h-[60px]">
+                  {role.desc}
+                </p>
+
+                <Link 
+                  to="/auth" 
+                  className="flex items-center justify-between w-full p-4 rounded-2xl bg-white/5 border border-white/5 group-hover:border-primary/20 hover:bg-white/10 transition-all"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                    <span className="text-xs font-bold uppercase tracking-widest">Access Hub</span>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-transform" />
+                </Link>
+
+                {/* Bottom decorative outline glow on hover */}
+                <div className={`absolute bottom-0 inset-x-0 h-[2px] w-0 group-hover:w-full bg-gradient-to-r from-transparent via-${role.color === 'emerald' ? 'emerald' : role.color === 'orange' ? 'orange' : role.color === 'yellow' ? 'yellow' : role.color === 'purple' ? 'purple' : 'blue'}-500 to-transparent mx-auto transition-all duration-500`} />
+              </motion.div>
+            );
+          })}
           
           {/* Static Hub Stats Card */}
           <motion.div

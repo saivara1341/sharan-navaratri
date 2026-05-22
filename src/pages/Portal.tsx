@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseService } from "@/services/supabaseService";
 import { useNavigate } from "react-router-dom";
@@ -31,7 +31,9 @@ import {
     ExternalLink,
     Cpu,
     Zap,
-    Star
+    Star,
+    X,
+    RefreshCw
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -48,6 +50,12 @@ const Portal = () => {
     const [selectedSub, setSelectedSub] = useState<any | null>(null);
     const [newComment, setNewComment] = useState("");
     const [comments, setComments] = useState<any[]>([]);
+    const [caseViewMode, setCaseViewMode] = useState<'roadmap' | 'chat'>('roadmap');
+    const [chatMessages, setChatMessages] = useState<any[]>([]);
+    const [chatLoading, setChatLoading] = useState(false);
+    const [chatInput, setChatInput] = useState("");
+    const [sendingMsg, setSendingMsg] = useState(false);
+    const chatEndRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -101,6 +109,99 @@ const Portal = () => {
         }, 60_000);
         return () => clearInterval(interval);
     }, []);
+
+    // Fetch and subscribe to chat messages for the selected submission
+    useEffect(() => {
+        if (!selectedSub) {
+            setChatMessages([]);
+            return;
+        }
+
+        const fetchChatMessages = async () => {
+            setChatLoading(true);
+            try {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const { data, error } = await (supabase as any)
+                    .from('chat_messages')
+                    .select('*')
+                    .eq('submission_id', selectedSub.id)
+                    .order('created_at', { ascending: true });
+                if (error) throw error;
+                setChatMessages(data || []);
+            } catch (err) {
+                console.error("Error loading chat messages:", err);
+            } finally {
+                setChatLoading(false);
+            }
+        };
+
+        fetchChatMessages();
+
+        // Listen for new messages in real-time
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const channel = (supabase as any)
+            .channel(`public:chat_messages:submission_id=eq.${selectedSub.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'chat_messages',
+                    filter: `submission_id=eq.${selectedSub.id}`
+                },
+                (payload: any) => {
+                    setChatMessages(prev => {
+                        if (prev.some(m => m.id === payload.new.id)) return prev;
+                        return [...prev, payload.new];
+                    });
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [selectedSub]);
+
+    // Auto-scroll chat box to bottom
+    useEffect(() => {
+        if (caseViewMode === 'chat') {
+            // Use setTimeout to ensure the DOM elements are fully rendered before scrolling
+            setTimeout(() => {
+                chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+    }, [chatMessages, caseViewMode]);
+
+    const sendChatMessage = async () => {
+        if (!chatInput.trim() || !selectedSub || !user) return;
+        setSendingMsg(true);
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data, error } = await (supabase as any)
+                .from('chat_messages')
+                .insert([{
+                    submission_id: selectedSub.id,
+                    sender_email: user.email,
+                    message: chatInput.trim(),
+                    is_admin: false
+                }])
+                .select();
+            if (error) throw error;
+            if (data) {
+                setChatMessages(prev => {
+                    if (prev.some(m => m.id === data[0].id)) return prev;
+                    return [...prev, ...data];
+                });
+            }
+            setChatInput("");
+        } catch (err) {
+            console.error("Error sending message:", err);
+            toast.error("Failed to send message.");
+        } finally {
+            setSendingMsg(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -281,7 +382,7 @@ const Portal = () => {
                                 submissions.map((sub) => (
                                     <motion.button
                                         key={sub.id}
-                                        onClick={() => setSelectedSub(sub)}
+                                        onClick={() => { setSelectedSub(sub); setCaseViewMode('roadmap'); }}
                                         className={`w-full text-left p-6 rounded-2xl glass-card transition-all relative overflow-hidden group ${selectedSub?.id === sub.id ? "electric-border bg-white/10" : "bg-white/5 hover:bg-white/8"
                                             }`}
                                     >
@@ -332,14 +433,14 @@ const Portal = () => {
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -20 }}
-                                    className="glass-card p-8 electric-border h-full flex flex-col"
+                                    className="glass-card p-8 electric-border h-full flex flex-col min-h-[500px]"
                                 >
-                                    <div className="flex justify-between items-start mb-8 pb-8 border-b border-white/5">
+                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-6 border-b border-white/5 gap-4">
                                         <div>
-                                            <span className="text-xs uppercase tracking-[0.2em] text-primary font-bold mb-2 block">Case Details</span>
+                                            <span className="text-xs uppercase tracking-[0.2em] text-primary font-bold mb-1 block">Case Details</span>
                                             <h2 className="text-2xl font-bold">{selectedSub.inquiry_type.replace('_', ' ')}</h2>
                                         </div>
-                                        <div className="text-right">
+                                        <div className="flex items-center gap-2">
                                             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
                                                 <CheckCircle2 className="w-4 h-4" />
                                                 <span className="text-xs font-bold uppercase tracking-wider">Submitted</span>
@@ -347,73 +448,153 @@ const Portal = () => {
                                         </div>
                                     </div>
 
-                                    <div className="space-y-8 flex-grow">
-                                        <div>
-                                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-4">Initial Inquiry</label>
-                                            <div className="p-6 rounded-2xl bg-white/5 border border-white/10 italic text-lg leading-relaxed">
-                                                "{selectedSub.message}"
-                                            </div>
-                                        </div>
+                                    {/* Sub-tab Switcher */}
+                                    <div className="flex gap-2 border-b border-white/10 mb-6 pb-px">
+                                        <button
+                                            onClick={() => setCaseViewMode('roadmap')}
+                                            className={`pb-3 px-4 font-bold text-xs tracking-wider uppercase border-b-2 transition-all ${
+                                                caseViewMode === 'roadmap'
+                                                    ? 'border-primary text-primary'
+                                                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                                            }`}
+                                        >
+                                            🚀 Status & Roadmap
+                                        </button>
+                                        <button
+                                            onClick={() => setCaseViewMode('chat')}
+                                            className={`pb-3 px-4 font-bold text-xs tracking-wider uppercase border-b-2 transition-all flex items-center gap-2 ${
+                                                caseViewMode === 'chat'
+                                                    ? 'border-primary text-primary'
+                                                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                                            }`}
+                                        >
+                                            <MessageSquare className="w-3.5 h-3.5" /> Direct Chat
+                                        </button>
+                                    </div>
 
-                                        <div className="space-y-6">
-                                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-4">Milestones & Updates</label>
-
-                                            <div className="relative pl-8 space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-white/5">
-                                                <div className="relative">
-                                                    <div className="absolute -left-[30px] top-1 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                                                        <CheckCircle2 className="w-3 h-3 text-white" />
-                                                    </div>
-                                                    <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-                                                        <h4 className="text-sm font-bold mb-1">Receipt Confirmed</h4>
-                                                        <p className="text-xs text-muted-foreground">Our agentic systems have indexed your request into the pipeline.</p>
+                                    <div className="flex-1 flex flex-col justify-between">
+                                        {caseViewMode === 'roadmap' ? (
+                                            <div className="space-y-8">
+                                                <div>
+                                                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-3">Initial Inquiry</label>
+                                                    <div className="p-5 rounded-2xl bg-white/5 border border-white/10 italic text-base leading-relaxed text-slate-300">
+                                                        "{selectedSub.message}"
                                                     </div>
                                                 </div>
 
-                                                <div className="relative">
-                                                    <div className="absolute -left-[30px] top-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-[0_0_15px_rgba(var(--primary),0.3)]">
-                                                        <Sparkles className="w-3 h-3 text-white" />
-                                                    </div>
-                                                    <div className="p-4 rounded-xl bg-white/10 border border-primary/20">
-                                                        <h4 className="text-sm font-bold mb-1 text-primary">Intelligent Processing</h4>
-                                                        <p className="text-xs text-muted-foreground">Neural assessment is currently evaluating technical feasibility.</p>
-                                                        <div className="mt-6">
-                                                            <div className="flex justify-between items-center relative mb-2">
-                                                                {[1, 2, 3, 4, 5].map((step) => (
-                                                                    <div key={step} className="relative z-10">
-                                                                        <div className={`w-2 h-2 rounded-full ${step <= 3 ? 'bg-primary shadow-[0_0_8px_rgba(var(--primary),0.5)]' : 'bg-white/10'}`} />
+                                                <div className="space-y-4">
+                                                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-3">Milestones & Updates</label>
+
+                                                    <div className="relative pl-8 space-y-6 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-white/5">
+                                                        <div className="relative">
+                                                            <div className="absolute -left-[30px] top-1 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                                                                <CheckCircle2 className="w-3 h-3 text-white" />
+                                                            </div>
+                                                            <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                                                                <h4 className="text-sm font-bold mb-1">Receipt Confirmed</h4>
+                                                                <p className="text-xs text-muted-foreground">Our agentic systems have indexed your request into the pipeline.</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="relative">
+                                                            <div className="absolute -left-[30px] top-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-[0_0_15px_rgba(var(--primary),0.3)]">
+                                                                <Sparkles className="w-3 h-3 text-white" />
+                                                            </div>
+                                                            <div className="p-4 rounded-xl bg-white/10 border border-primary/20">
+                                                                <h4 className="text-sm font-bold mb-1 text-primary">Intelligent Processing</h4>
+                                                                <p className="text-xs text-muted-foreground">Neural assessment is currently evaluating technical feasibility.</p>
+                                                                <div className="mt-6">
+                                                                    <div className="flex justify-between items-center relative mb-2">
+                                                                        {[1, 2, 3, 4, 5].map((step) => (
+                                                                            <div key={step} className="relative z-10">
+                                                                                <div className={`w-2 h-2 rounded-full ${step <= 3 ? 'bg-primary shadow-[0_0_8px_rgba(var(--primary),0.5)]' : 'bg-white/10'}`} />
+                                                                            </div>
+                                                                        ))}
+                                                                        <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-white/5 -translate-y-1/2" />
+                                                                        <div className="absolute top-1/2 left-0 w-1/2 h-[1px] bg-primary/50 -translate-y-1/2 transition-all duration-1000" />
                                                                     </div>
-                                                                ))}
-                                                                <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-white/5 -translate-y-1/2" />
-                                                                <div className="absolute top-1/2 left-0 w-1/2 h-[1px] bg-primary/50 -translate-y-1/2 transition-all duration-1000" />
-                                                            </div>
-                                                            <div className="flex justify-between text-[8px] font-bold text-muted-foreground uppercase tracking-widest px-1">
-                                                                <span>Phase I</span>
-                                                                <span>Phase II</span>
-                                                                <span>Phase III</span>
-                                                                <span>Phase IV</span>
-                                                                <span>Phase V</span>
-                                                            </div>
-                                                            <div className="mt-4 flex items-center justify-between">
-                                                                <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em]">Current Stage: Neural Analysis</span>
-                                                                <span className="text-[10px] font-mono text-muted-foreground/60">EST. STABILITY: 45%</span>
+                                                                    <div className="flex justify-between text-[8px] font-bold text-muted-foreground uppercase tracking-widest px-1">
+                                                                        <span>Phase I</span>
+                                                                        <span>Phase II</span>
+                                                                        <span>Phase III</span>
+                                                                        <span>Phase IV</span>
+                                                                        <span>Phase V</span>
+                                                                    </div>
+                                                                    <div className="mt-4 flex items-center justify-between">
+                                                                        <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em]">Current Stage: Neural Analysis</span>
+                                                                        <span className="text-[10px] font-mono text-muted-foreground/60">EST. STABILITY: 45%</span>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <div className="mt-8 p-6 rounded-2xl bg-primary/5 border border-primary/10">
-                                        <div className="flex gap-4 items-center">
-                                            <div className="p-3 rounded-xl bg-primary/20">
-                                                <Clock className="w-6 h-6 text-primary" />
+                                                <div className="p-5 rounded-2xl bg-primary/5 border border-primary/10 flex gap-4 items-center">
+                                                    <div className="p-3 rounded-xl bg-primary/20 shrink-0">
+                                                        <Clock className="w-5 h-5 text-primary" />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-sm font-bold mb-0.5">Estimated Review</h4>
+                                                        <p className="text-xs text-muted-foreground">Next algorithmic update expected within 24 hours.</p>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h4 className="text-sm font-bold mb-1">Estimated Review</h4>
-                                                <p className="text-xs text-muted-foreground">Next algorithmic update expected within 24 hours.</p>
+                                        ) : (
+                                            /* Direct Live Chat container */
+                                            <div className="flex flex-col h-[480px] bg-black/40 border border-white/5 rounded-2xl overflow-hidden">
+                                                {/* Chat Messages Panel */}
+                                                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                                                    {chatLoading ? (
+                                                        <div className="flex items-center justify-center h-full text-muted-foreground">
+                                                            <RefreshCw className="w-5 h-5 animate-spin mr-2" /> Loading chat history...
+                                                        </div>
+                                                    ) : chatMessages.length === 0 ? (
+                                                        <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-center gap-2 p-6">
+                                                            <MessageSquare className="w-8 h-8 opacity-30 text-primary animate-pulse" />
+                                                            <h4 className="font-semibold text-sm">No Messages Yet</h4>
+                                                            <p className="text-xs max-w-[240px] leading-relaxed text-muted-foreground">Send a message to start a direct line of communication with our support engineers!</p>
+                                                        </div>
+                                                    ) : (
+                                                        chatMessages.map((msg: any) => {
+                                                            const isSelf = !msg.is_admin;
+                                                            return (
+                                                                <div key={msg.id} className={`flex ${isSelf ? 'justify-end' : 'justify-start'}`}>
+                                                                    <div className={`max-w-[80%] px-4 py-3 rounded-2xl text-xs sm:text-sm ${isSelf ? 'bg-primary text-primary-foreground rounded-br-sm' : 'bg-white/5 border border-white/10 text-foreground rounded-bl-sm'}`}>
+                                                                        <p className="leading-relaxed whitespace-pre-wrap">{msg.message}</p>
+                                                                        <p className={`text-[9px] mt-1 ${isSelf ? 'text-primary-foreground/60' : 'text-muted-foreground'}`}>
+                                                                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })
+                                                    )}
+                                                    <div ref={chatEndRef} />
+                                                </div>
+
+                                                {/* Chat Input panel */}
+                                                <div className="p-3 border-t border-white/5 bg-white/[0.02]">
+                                                    <div className="flex items-center gap-2">
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Type a message to Siddhi Dynamics admins..."
+                                                            value={chatInput}
+                                                            onChange={e => setChatInput(e.target.value)}
+                                                            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } }}
+                                                            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all text-slate-100 placeholder:text-muted-foreground/60"
+                                                        />
+                                                        <button
+                                                            onClick={sendChatMessage}
+                                                            disabled={!chatInput.trim() || sendingMsg}
+                                                            className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center hover:bg-primary/80 transition-colors disabled:opacity-45 disabled:cursor-not-allowed shrink-0"
+                                                        >
+                                                            {sendingMsg ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 text-white" />}
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
                                     </div>
                                 </motion.div>
                             ) : (

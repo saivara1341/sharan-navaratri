@@ -26,3 +26,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Temporary test logs and payloads
+absolute_final_auth_test.txt
+final_auth_test.txt
+final_signup_resp.txt
+signup_payload.json
+signup_resp.txt
+test_output.txt
+
