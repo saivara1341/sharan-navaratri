@@ -2,7 +2,7 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
-import siddhiLogo from '@/assets/logo.svg';
+import siddhiLogo from '@/assets/logo.png';
 import { LogOut, Home, X, LayoutDashboard, User } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
