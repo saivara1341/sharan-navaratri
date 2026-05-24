@@ -34,10 +34,20 @@ async function generate() {
 
     const yOffset = Math.floor((1024 - origH) / 2);
     transparentCanvas.composite(original, 0, yOffset);
-    console.log(`Centering completed. Aspect ratio preserved (y-offset: ${yOffset}px).`);
+    console.log(`Centering completed for transparent canvas (y-offset: ${yOffset}px).`);
 
-    // 3. Remove black background precisely with anti-aliasing alpha gradient
-    console.log('Running anti-aliased background removal on 1024x1024 canvas...');
+    // 2b. Create square 1024x1024 solid black canvas for favicons
+    console.log('Compositing original into a 1024x1024 square solid black canvas...');
+    const blackCanvas = new Jimp({
+      width: 1024,
+      height: 1024,
+      color: 0x000000ff // pure solid black
+    });
+    blackCanvas.composite(original, 0, yOffset);
+    console.log(`Centering completed for solid black canvas (y-offset: ${yOffset}px).`);
+
+    // 3. Remove black background precisely from transparent canvas for site logos
+    console.log('Running anti-aliased background removal on transparent 1024x1024 canvas...');
     let transparentCount = 0;
     transparentCanvas.scan(0, 0, 1024, 1024, function(x, y, idx) {
       const r = this.bitmap.data[idx + 0];
@@ -60,40 +70,50 @@ async function generate() {
     });
     console.log(`Background removal complete. ${transparentCount} dark pixels made transparent.`);
 
-    // 4. Generate all required transparent PNG sizes
-    const pngTargets = [
+    // 4. Generate all required solid black PNG favicons
+    const faviconTargets = [
       { width: 16, height: 16, dest: publicPath('favicon-16x16.png') },
       { width: 32, height: 32, dest: publicPath('favicon-32x32.png') },
       { width: 48, height: 48, dest: publicPath('favicon-48x48.png') },
       { width: 180, height: 180, dest: publicPath('apple-touch-icon.png') },
       { width: 192, height: 192, dest: publicPath('android-chrome-192x192.png') },
       { width: 512, height: 512, dest: publicPath('android-chrome-512x512.png') },
-      { width: 512, height: 512, dest: publicPath('favicon.png') },
+      { width: 512, height: 512, dest: publicPath('favicon.png') }
+    ];
+
+    for (const target of faviconTargets) {
+      console.log(`Generating solid black PNG favicon: ${target.width}x${target.height} -> ${path.basename(target.dest)}`);
+      const resized = blackCanvas.clone().resize({ w: target.width, h: target.height });
+      await resized.write(target.dest);
+    }
+
+    // 4b. Generate transparent logos for website UI
+    const logoTargets = [
       { width: 512, height: 512, dest: assetsPath('logo.png') },
       { width: 512, height: 512, dest: assetsPath('logo-transparent.png') }
     ];
 
-    for (const target of pngTargets) {
-      console.log(`Generating transparent PNG: ${target.width}x${target.height} -> ${path.basename(target.dest)}`);
+    for (const target of logoTargets) {
+      console.log(`Generating transparent PNG logo: ${target.width}x${target.height} -> ${path.basename(target.dest)}`);
       const resized = transparentCanvas.clone().resize({ w: target.width, h: target.height });
       await resized.write(target.dest);
     }
 
-    // 4b. Copy favicon-32x32.png to favicon.ico for older browser compatibility
+    // 4c. Copy favicon-32x32.png (which is pure black background) to favicon.ico for older browser compatibility
     fs.copyFileSync(publicPath('favicon-32x32.png'), publicPath('favicon.ico'));
-    console.log('Successfully copied favicon-32x32.png to favicon.ico');
+    console.log('Successfully copied black-background favicon-32x32.png to favicon.ico');
 
-    // 5. Generate JPG sizes with solid brand dark background (#0a0a0f) for Open Graph & sharing cards
-    console.log('Generating dark-themed brand JPGs (#0a0a0f background)...');
+    // 5. Generate JPG sizes with solid pure black background (#000000) for Open Graph & sharing cards
+    console.log('Generating pure black brand JPGs (#000000 background)...');
     
     // Create 512x512 solid canvas
     const solidCanvas = new Jimp({
       width: 512,
       height: 512,
-      color: 0x0a0a0fff // #0a0a0f with full alpha
+      color: 0x000000ff // #000000 with full alpha
     });
 
-    const wheel512 = transparentCanvas.clone().resize({ w: 512, h: 512 });
+    const wheel512 = blackCanvas.clone().resize({ w: 512, h: 512 });
     solidCanvas.composite(wheel512, 0, 0);
 
     const jpgTargets = [
@@ -106,8 +126,8 @@ async function generate() {
       await solidCanvas.write(dest);
     }
 
-    // 6. Generate modern SVG favicon containing the base64-encoded transparent 512x512 PNG
-    console.log('Encoding transparent PNG to base64 and creating favicon.svg...');
+    // 6. Generate modern SVG favicon containing the base64-encoded solid black 512x512 PNG
+    console.log('Encoding solid black PNG to base64 and creating favicon.svg...');
     const png512Buffer = fs.readFileSync(publicPath('favicon.png'));
     const pngBase64 = png512Buffer.toString('base64');
     
