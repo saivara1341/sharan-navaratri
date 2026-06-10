@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import siddhiLogo from '@/assets/logo.png';
-import { LogOut, Home, X, LayoutDashboard, User, ArrowUp } from 'lucide-react';
+import { LogOut, Home, X, LayoutDashboard, User } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export const Navbar = () => {
@@ -132,27 +132,6 @@ export const Navbar = () => {
             </motion.a>
 
             <nav className="hidden md:flex items-center gap-1">
-              {!isAdmin && isPortal && navLinks.map((link, index) => (
-                <motion.a
-                  key={link.name}
-                  href={link.href}
-                  className="relative px-5 py-2 text-muted-foreground hover:text-foreground transition-colors duration-300 text-sm font-medium group"
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index, duration: 0.5 }}
-                  whileHover={{ y: -2 }}
-                >
-                  {link.name}
-                  <motion.span
-                    className="absolute bottom-0 left-1/2 w-0 h-[2px] bg-primary rounded-full group-hover:w-1/2 transition-all duration-300"
-                    style={{ transform: 'translateX(-50%)' }}
-                  />
-                  <motion.span
-                    className="absolute bottom-0 right-1/2 w-0 h-[2px] bg-primary rounded-full group-hover:w-1/2 transition-all duration-300"
-                    style={{ transform: 'translateX(50%)' }}
-                  />
-                </motion.a>
-              ))}
 
 
               {!isLoggedIn ? (
@@ -172,20 +151,8 @@ export const Navbar = () => {
                   </span>
                 </motion.a>
               ) : isOnLandingPage ? (
-                // On landing page: show gradient Dashboard button, a Scroll to Top button, Contact Us (if not admin), and Logout
+                // On landing page: show gradient Dashboard button and Logout
                 <div className="flex items-center gap-2">
-                  <motion.button
-                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                    className="flex items-center justify-center p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-foreground transition-colors border border-white/10"
-                    title="Scroll to Top"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3, duration: 0.5 }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <ArrowUp className="w-4 h-4" />
-                  </motion.button>
                   <motion.a
                     href={isAdmin ? "#/admin-hq-nexus" : "#/portal"}
                     className="relative px-6 py-2.5 rounded-xl font-semibold text-sm overflow-hidden group"
@@ -202,20 +169,6 @@ export const Navbar = () => {
                       Dashboard
                     </span>
                   </motion.a>
-                  {!isAdmin && (
-                    <motion.a
-                      href="#/portal?tab=contact"
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-white/5 hover:bg-white/10 text-foreground transition-colors border border-white/10"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.45, duration: 0.5 }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <span className="w-4 h-4 text-xs font-bold">✉</span>
-                      Contact Us
-                    </motion.a>
-                  )}
                   <motion.button
                     onClick={handleLogout}
                     className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20"
@@ -230,7 +183,7 @@ export const Navbar = () => {
                   </motion.button>
                 </div>
               ) : (
-                // On portal/admin pages: show Home + Contact Us + Logout
+                // On portal/admin pages: show Home + Contact Us (no icon) + Logout
                 <div className="flex items-center ml-4 gap-2">
                   {!isAdmin && (
                     <>
@@ -248,14 +201,13 @@ export const Navbar = () => {
                       </motion.a>
                       <motion.a
                         href={isPortal ? '#/portal?tab=contact' : '#/submit'}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-white/5 hover:bg-white/10 text-foreground transition-colors border border-white/10"
+                        className="flex items-center px-4 py-2.5 rounded-xl font-semibold text-sm bg-white/5 hover:bg-white/10 text-foreground transition-colors border border-white/10"
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.25, duration: 0.5 }}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <span className="w-4 h-4 text-xs font-bold">✉</span>
                         Contact Us
                       </motion.a>
                     </>
@@ -355,19 +307,7 @@ export const Navbar = () => {
               >
                 <X className="w-6 h-6" />
               </motion.button>
-              {!isAdmin && isPortal && navLinks.map((link, index) => (
-                <motion.a
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-3xl font-display font-bold text-foreground hover:text-primary transition-colors"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 * index }}
-                >
-                  {link.name}
-                </motion.a>
-              ))}
+              {/* Removed portal mobile nav links */}
 
               {!isLoggedIn ? (
                 <motion.a

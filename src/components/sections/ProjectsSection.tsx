@@ -1,8 +1,21 @@
-import { motion, useInView, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { useRef, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { GraduationCap, Heart, Home, Landmark, LucideIcon, Sparkles, ExternalLink, Bell, ArrowRight } from 'lucide-react';
+import { 
+  GraduationCap, 
+  Heart, 
+  Home, 
+  Landmark, 
+  LucideIcon, 
+  Sparkles, 
+  ExternalLink, 
+  Bell, 
+  ArrowRight, 
+  Leaf, 
+  Printer, 
+  X 
+} from 'lucide-react';
 import archplanLogo from '@/assets/archplan-logo.jpeg';
 import nexusLogo from '@/assets/nexuscarrers-logo.jpeg';
 import letusknowLogo from '@/assets/letusknow-logo.png';
@@ -18,20 +31,6 @@ const cardVariants = {
       duration: 0.8,
       delay: i * 0.12,
       ease: [0.25, 0.1, 0.25, 1]
-    }
-  })
-};
-
-const featureVariants = {
-  hidden: { opacity: 0, scale: 0.8, x: -10 },
-  visible: (i: number) => ({
-    opacity: 1,
-    scale: 1,
-    x: 0,
-    transition: {
-      duration: 0.4,
-      delay: 0.4 + i * 0.05,
-      ease: "easeOut"
     }
   })
 };
@@ -55,120 +54,29 @@ interface ProjectData {
 const ProjectCard = ({
   project,
   index,
-  onWaitlistClick
+  onClick
 }: {
   project: ProjectData;
   index: number;
-  onWaitlistClick: (projectId: string, projectName: string, accentColor: 'primary' | 'accent') => void;
+  onClick: () => void;
 }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const mouseXSpring = useSpring(x, { stiffness: 500, damping: 100 });
-  const mouseYSpring = useSpring(y, { stiffness: 500, damping: 100 });
-
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['6deg', '-6deg']);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-6deg', '6deg']);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    const xPct = mouseX / width - 0.5;
-    const yPct = mouseY / height - 0.5;
-    x.set(xPct);
-    y.set(yPct);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-    setIsHovered(false);
-  };
-
-  const handleCardClick = () => {
-    setIsExpanded(!isExpanded);
-  };
-
-  const handleActionClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-
-    if (project.id === 'nexus') {
-      if (e.shiftKey) { // Secret shortcut or just open the landing page
-        window.scrollTo(0, 0);
-        navigate('/project/nexus');
-      } else {
-        window.open(project.url, '_blank', 'noopener,noreferrer');
-      }
-      return;
-    }
-
-    if (project.id === 'nilayam') {
-      window.scrollTo(0, 0);
-      navigate('/project/nilayam');
-      return;
-    }
-
-    if (project.id === 'nilayam') {
-      window.scrollTo(0, 0);
-      navigate('/project/nilayam');
-      return;
-    }
-
-    if (project.id === 'archplan') {
-      window.open('https://archplan.lovable.app', '_blank', 'noopener,noreferrer');
-      return;
-    }
-
-    if (project.id === 'letusknow') {
-      window.scrollTo(0, 0);
-      navigate('/project/letusknow');
-      return;
-    }
-
-    if (project.id === 'wish0') {
-      window.scrollTo(0, 0);
-      navigate('/project/wish-o');
-      return;
-    }
-
-    console.log('Action button clicked for:', project.name);
-    if (project.url) {
-      console.log('Opening URL:', project.url);
-      window.open(project.url, '_blank', 'noopener,noreferrer');
-    } else {
-      console.log('Opening Waitlist Modal');
-      onWaitlistClick(project.id, project.name, project.accentColor as 'primary' | 'accent');
-    }
-  };
-
   const isPrimary = project.accentColor === 'primary';
   const IconComponent = project.icon;
 
   return (
     <motion.div
-      ref={cardRef}
       initial={{ opacity: 0, y: 60 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.8, delay: index * 0.15, ease: [0.25, 0.1, 0.25, 1] }}
-      onMouseMove={handleMouseMove}
+      transition={{ duration: 0.8, delay: index * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={handleMouseLeave}
-      className="relative group"
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={onClick}
+      className="relative group cursor-pointer h-full"
     >
-      <motion.div
-        className="glass-card !overflow-visible p-8 h-full relative"
-      >
+      <div className="glass-card p-8 h-full relative flex flex-col justify-center items-center text-center transition-all duration-300 hover:border-primary/40 min-h-[260px] overflow-hidden">
         {/* Electric border on hover */}
         <motion.div
           animate={{ opacity: isHovered ? 1 : 0 }}
@@ -189,8 +97,8 @@ const ProjectCard = ({
           className="absolute inset-0 pointer-events-none rounded-2xl"
           style={{
             background: isPrimary
-              ? 'radial-gradient(circle at 50% 0%, hsl(25 85% 55% / 0.25) 0%, transparent 60%)'
-              : 'radial-gradient(circle at 50% 0%, hsl(85 70% 45% / 0.25) 0%, transparent 60%)',
+              ? 'radial-gradient(circle at 50% 50%, hsl(25 85% 55% / 0.15) 0%, transparent 60%)'
+              : 'radial-gradient(circle at 50% 50%, hsl(85 70% 45% / 0.15) 0%, transparent 60%)',
           }}
         />
 
@@ -200,198 +108,261 @@ const ProjectCard = ({
           className="absolute inset-0 shimmer pointer-events-none rounded-2xl"
         />
 
-        {/* Content Wrapper for Z-Index Safety */}
-        <div className="relative z-20 h-full flex flex-col pointer-events-none">
-          {/* Clickable Area for Expansion - Now explicit only on content */}
-          <div className="flex-grow pointer-events-auto">
-            {/* Header with Icon and Title */}
-            <div
-              onClick={handleCardClick}
-              className="flex items-start gap-5 mb-6 cursor-pointer hover:opacity-80 transition-opacity"
-            >
-              <motion.div
-                animate={{
-                  scale: isHovered ? 1.1 : 1,
-                  rotate: isHovered ? 5 : 0
-                }}
-                transition={{ type: 'spring', stiffness: 300 }}
-                className={`w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500 overflow-hidden ${!project.image && (isPrimary
-                  ? 'bg-primary/15 text-primary'
-                  : 'bg-accent/15 text-accent')
-                  }`}
-                style={{
-                  boxShadow: isHovered
-                    ? `0 0 40px ${isPrimary ? 'hsl(25 85% 55% / 0.5)' : 'hsl(85 70% 45% / 0.5)'}`
-                    : 'none'
-                }}
-              >
-                {project.image ? (
-                  <img
-                    src={project.image}
-                    alt={`${project.name} logo`}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  IconComponent && <IconComponent className="w-8 h-8" strokeWidth={1.5} />
-                )}
-              </motion.div>
+        {/* Icon/Image */}
+        <motion.div
+          animate={{
+            scale: isHovered ? 1.08 : 1,
+            y: isHovered ? -5 : 0
+          }}
+          className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-300 overflow-hidden mb-6 ${!project.image && (isPrimary
+            ? 'bg-primary/15 text-primary'
+            : 'bg-accent/15 text-accent')
+            }`}
+          style={{
+            boxShadow: isHovered
+              ? `0 0 30px ${isPrimary ? 'hsl(25 85% 55% / 0.4)' : 'hsl(85 70% 45% / 0.4)'}`
+              : 'none'
+          }}
+        >
+          {project.image ? (
+            <img
+              src={project.image}
+              alt={`${project.name} logo`}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            IconComponent && <IconComponent className="w-10 h-10" strokeWidth={1.5} />
+          )}
+        </motion.div>
 
-              <div className="flex-1 min-w-0">
-                <h3 className="text-2xl font-bold mb-1 text-foreground font-display">
-                  {project.name}
-                </h3>
-                <p className={`text-sm font-semibold ${isPrimary ? 'text-primary' : 'text-accent'}`}>
-                  {project.tagline}
-                </p>
-              </div>
-            </div>
+        {/* Title */}
+        <h3 className="text-2xl font-bold mb-3 text-foreground font-display transition-colors group-hover:text-primary">
+          {project.name}
+        </h3>
 
-            {/* Description */}
-            <motion.p
-              onClick={handleCardClick}
-              className="text-muted-foreground text-sm leading-relaxed mb-6 cursor-pointer hover:text-foreground transition-colors"
-              animate={{
-                height: isExpanded ? 'auto' : '4.5rem',
-              }}
-              style={{
-                overflow: 'hidden',
-                display: '-webkit-box',
-                WebkitLineClamp: isExpanded ? 'unset' : 3,
-                WebkitBoxOrient: 'vertical',
-              }}
-            >
-              {project.description}
-            </motion.p>
+        {/* Tagline */}
+        <p className={`text-sm font-semibold max-w-[90%] mx-auto leading-snug ${isPrimary ? 'text-primary' : 'text-accent'}`}>
+          {project.tagline}
+        </p>
+      </div>
+    </motion.div>
+  );
+};
+
+const ProjectDetailsModal = ({
+  project,
+  onClose,
+  onWaitlistClick
+}: {
+  project: ProjectData;
+  onClose: () => void;
+  onWaitlistClick: (projectId: string, projectName: string, accentColor: 'primary' | 'accent') => void;
+}) => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const isPrimary = project.accentColor === 'primary';
+  const IconComponent = project.icon;
+
+  const handleActionClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (project.id === 'nexus') {
+      window.open(project.url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    if (project.id === 'nilayam') {
+      window.scrollTo(0, 0);
+      navigate('/project/nilayam');
+      onClose();
+      return;
+    }
+
+    if (project.id === 'archplan') {
+      window.open('https://archplan.lovable.app', '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    if (project.id === 'letusknow') {
+      window.scrollTo(0, 0);
+      navigate('/project/letusknow');
+      onClose();
+      return;
+    }
+
+    if (project.id === 'wish0') {
+      window.scrollTo(0, 0);
+      navigate('/project/wish-o');
+      onClose();
+      return;
+    }
+
+    if (project.url) {
+      window.open(project.url, '_blank', 'noopener,noreferrer');
+    } else {
+      onWaitlistClick(project.id, project.name, project.accentColor as 'primary' | 'accent');
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="absolute inset-0 bg-black/85 backdrop-blur-md"
+      />
+
+      {/* Modal Container */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+        className="relative w-full max-w-2xl bg-[#0b0c10]/95 border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-y-auto max-h-[90vh] z-10"
+      >
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-muted-foreground hover:text-foreground transition-all cursor-pointer z-50"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        {/* Modal Header */}
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 mb-6 text-center sm:text-left mt-2">
+          <div
+            className={`w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden ${!project.image && (isPrimary
+              ? 'bg-primary/15 text-primary'
+              : 'bg-accent/15 text-accent')
+              }`}
+          >
+            {project.image ? (
+              <img
+                src={project.image}
+                alt={`${project.name} logo`}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              IconComponent && <IconComponent className="w-10 h-10" strokeWidth={1.5} />
+            )}
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <h3 className="text-3xl font-bold mb-1 text-foreground font-display">
+              {project.name}
+            </h3>
+            <p className={`text-base font-semibold ${isPrimary ? 'text-primary' : 'text-accent'}`}>
+              {project.tagline}
+            </p>
           </div>
         </div>
 
-        <div className="mt-auto relative !z-[9999] pointer-events-auto">
+        {/* Description */}
+        <div className="mb-6">
+          <h4 className="text-xs uppercase font-bold tracking-[0.2em] text-muted-foreground/60 mb-2">About Project</h4>
+          <p className="text-slate-300 text-sm leading-relaxed">
+            {project.description}
+          </p>
+        </div>
 
-          {/* Read More Indicator */}
-          <motion.button
-            className={`text-xs font-medium mb-4 ${isPrimary ? 'text-primary' : 'text-accent'} hover:underline relative z-[60] cursor-pointer`}
-            style={{ pointerEvents: 'auto' }}
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsExpanded(!isExpanded);
-            }}
-          >
-            {isExpanded ? t('projects.showLess') : t('projects.readMore')}
-          </motion.button>
-
-          {/* Development Roadmap (Corporate Milestone Stream) */}
-          <div className="mb-8 space-y-4">
-            <div className="flex justify-between items-end mb-1">
-              <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">{t('projects.progress')}</span>
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded bg-white/5 border border-white/10 uppercase tracking-wider ${isPrimary ? 'text-primary' : 'text-accent'}`}>
-                {t(`projects.statuses.${project.statusKey}`)}
-              </span>
-            </div>
-
-            <div className="relative pt-2">
-              <div className="flex justify-between items-center relative z-10">
-                {[1, 2, 3, 4, 5].map((step) => (
-                  <div key={step} className="relative flex flex-col items-center">
-                    <motion.div
-                      initial={false}
-                      animate={{
-                        scale: step <= project.phase ? 1 : 0.8,
-                        backgroundColor: step < project.phase
-                          ? (isPrimary ? 'hsl(25 85% 55%)' : 'hsl(85 70% 45%)')
-                          : step === project.phase
-                            ? (isPrimary ? 'hsl(25 85% 55%)' : 'hsl(85 70% 45%)')
-                            : 'rgba(255,255,255,0.1)',
-                        boxShadow: step === project.phase
-                          ? `0 0 15px ${isPrimary ? 'hsl(25 85% 55%)' : 'hsl(85 70% 45%)'}`
-                          : 'none'
-                      }}
-                      className={`w-2.5 h-2.5 rounded-full relative z-20 transition-colors duration-500`}
-                    >
-                      {step === project.phase && (
-                        <motion.div
-                          animate={{ scale: [1, 2, 1], opacity: [0.5, 0, 0.5] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                          className={`absolute inset-0 rounded-full ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
-                        />
-                      )}
-                    </motion.div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Connector Line */}
-              <div className="absolute top-[13px] left-0 right-0 h-[1px] bg-white/10 z-0 px-1">
-                <motion.div
-                  initial={{ width: 0 }}
-                  whileInView={{ width: `${(project.phase - 1) * 25}%` }}
-                  transition={{ duration: 1, ease: "easeInOut" }}
-                  className={`h-full ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
-                />
-              </div>
-            </div>
-
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center mt-2">
-              {t(`projects.stages.${project.stageKey}`)}
-            </p>
+        {/* Development Roadmap */}
+        <div className="mb-8 p-5 bg-white/5 border border-white/5 rounded-2xl">
+          <div className="flex justify-between items-end mb-3">
+            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">Development Roadmap</span>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded bg-white/5 border border-white/10 uppercase tracking-wider ${isPrimary ? 'text-primary' : 'text-accent'}`}>
+              {t(`projects.statuses.${project.statusKey}`)}
+            </span>
           </div>
 
-          {/* Features */}
+          <div className="relative pt-2 pb-1">
+            <div className="flex justify-between items-center relative z-10">
+              {[1, 2, 3, 4, 5].map((step) => (
+                <div key={step} className="relative flex flex-col items-center">
+                  <div
+                    className={`w-3.5 h-3.5 rounded-full relative z-20 transition-all duration-500 ${step <= project.phase
+                      ? (isPrimary ? 'bg-primary shadow-[0_0_12px_rgba(251,146,60,0.85)]' : 'bg-accent shadow-[0_0_12px_rgba(132,204,22,0.85)]')
+                      : 'bg-white/10'
+                    }`}
+                  >
+                    {step === project.phase && (
+                      <motion.div
+                        animate={{ scale: [1, 2, 1], opacity: [0.5, 0, 0.5] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className={`absolute inset-0 rounded-full ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
+                      />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Connector Line */}
+            <div className="absolute top-[14px] left-0 right-0 h-[2px] bg-white/10 z-0 px-1">
+              <div
+                className={`h-full ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
+                style={{ width: `${(project.phase - 1) * 25}%` }}
+              />
+            </div>
+          </div>
+
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center mt-3">
+            {t(`projects.stages.${project.stageKey}`)}
+          </p>
+        </div>
+
+        {/* Key Features */}
+        <div className="mb-8">
+          <h4 className="text-xs uppercase font-bold tracking-[0.2em] text-muted-foreground/60 mb-3">Key Features & Modules</h4>
           <div className="flex flex-wrap gap-2">
-            {project.features.map((feature, featureIndex) => (
-              <motion.span
+            {project.features.map((feature) => (
+              <span
                 key={feature}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 + featureIndex * 0.05 }}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 border ${isPrimary
-                  ? 'bg-primary/10 text-primary border-primary/20 group-hover:bg-primary/20 group-hover:border-primary/40'
-                  : 'bg-accent/10 text-accent border-accent/20 group-hover:bg-accent/20 group-hover:border-accent/40'
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border ${isPrimary
+                  ? 'bg-primary/10 text-primary border-primary/20'
+                  : 'bg-accent/10 text-accent border-accent/20'
                   }`}
               >
                 {feature}
-              </motion.span>
+              </span>
             ))}
           </div>
+        </div>
 
-          {/* Action Button Container */}
-          <div
-            className="mt-6 pt-4 border-t border-border/30 relative !z-[9999]"
-            style={{ pointerEvents: 'auto' }}
+        {/* Action Button */}
+        <div className="pt-5 border-t border-white/10 flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={handleActionClick}
+            className={`flex-1 py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${project.id === 'nexus' || project.id === 'nilayam' || project.id === 'archplan' || project.id === 'letusknow' || project.id === 'wish0' || project.url
+              ? 'bg-gradient-to-r from-primary to-orange-400 text-primary-foreground shadow-[0_4px_15px_rgba(251,146,60,0.3)] hover:shadow-[0_0_25px_hsl(25_85%_55%/0.5)]'
+              : isPrimary
+                ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                : 'bg-accent text-accent-foreground hover:bg-accent/90'
+              }`}
           >
-            <motion.button
-              onClick={handleActionClick}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={`w-full py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 relative cursor-pointer ${project.id === 'nexus' || project.id === 'nilayam' || project.id === 'archplan' || project.id === 'letusknow' || project.id === 'wish0'
-                ? 'bg-gradient-to-r from-accent/90 to-lime-400 text-black shadow-[0_4px_15px_rgba(132,204,22,0.3)] hover:shadow-[0_0_25px_rgba(132,204,22,0.5)]'
-                : project.url
-                  ? 'bg-gradient-to-r from-primary to-orange-400 text-primary-foreground shadow-[0_4px_15px_rgba(251,146,60,0.3)] hover:shadow-[0_0_25px_hsl(25_85%_55%/0.5)]'
-                  : isPrimary
-                    ? 'bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 hover:border-primary/50'
-                    : 'bg-accent/10 text-accent border border-accent/30 hover:bg-accent/20 hover:border-accent/50'
-                }`}
-            >
-              {project.id === 'nexus' || project.id === 'nilayam' || project.id === 'archplan' || project.id === 'letusknow' || project.id === 'wish0' ? (
-                <>
-                  Know More
-                  <ArrowRight className="w-4 h-4 ml-1" />
-                </>
-              ) : project.url ? (
-                <>
-                  <ExternalLink className="w-4 h-4" />
-                  {t('projects.access')}
-                </>
-              ) : (
-                <>
-                  <Bell className="w-4 h-4" />
-                  {t('projects.waitlist')}
-                </>
-              )}
-            </motion.button>
-          </div>
+            {project.id === 'nexus' || project.id === 'nilayam' || project.id === 'archplan' || project.id === 'letusknow' || project.id === 'wish0' || project.url ? (
+              <>
+                <ExternalLink className="w-4 h-4" />
+                Access Platform
+              </>
+            ) : (
+              <>
+                <Bell className="w-4 h-4" />
+                Join Waitlist
+              </>
+            )}
+          </button>
+          <button
+            onClick={onClose}
+            className="px-6 py-3.5 rounded-xl font-bold text-sm bg-white/5 border border-white/10 hover:bg-white/10 text-slate-300 transition-all cursor-pointer"
+          >
+            Close
+          </button>
         </div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -400,6 +371,7 @@ export const ProjectsSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
   const [waitlistModal, setWaitlistModal] = useState<{
     isOpen: boolean;
     projectId: string;
@@ -415,11 +387,13 @@ export const ProjectsSection = () => {
   const projects: ProjectData[] = [
     {
       id: 'archplan',
-      name: t('projects.items.archplan.name'),
-      tagline: t('projects.items.archplan.tagline'),
-      description: t('projects.items.archplan.description'),
+      name: t('projects.items.archplan.name', 'ArchPlan AI'),
+      tagline: t('projects.items.archplan.tagline', 'AI-Powered Construction Intelligence Platform'),
+      description: t('projects.items.archplan.description', 'A comprehensive, AI-driven platform designed to digitize and streamline the entire construction lifecycle in India. By connecting homeowners, civil engineers, architects, suppliers, and service providers within a single intelligent workflow, ArchPlan AI reduces project delays and optimizes resource allocation with precision.'),
       image: archplanLogo,
-      features: t('projects.items.archplan.features', { returnObjects: true }) as string[],
+      features: (t('projects.items.archplan.features', { returnObjects: true }) as string[])?.length
+        ? (t('projects.items.archplan.features', { returnObjects: true }) as string[])
+        : ["AI 2D/3D Plans", "Vastu Compliance", "BOQ Generation", "Cost Estimation", "Material Marketplace", "Project Management"],
       gradient: 'from-primary to-orange-400',
       accentColor: 'primary',
       url: 'https://archplan.lovable.app',
@@ -429,11 +403,13 @@ export const ProjectsSection = () => {
     },
     {
       id: 'nexus',
-      name: t('projects.items.nexus.name'),
-      tagline: t('projects.items.nexus.tagline'),
-      description: t('projects.items.nexus.description'),
+      name: t('projects.items.nexus.name', 'Nexus Careers'),
+      tagline: t('projects.items.nexus.tagline', 'AI-Powered Student Career & Learning Platform'),
+      description: t('projects.items.nexus.description', 'Our flagship AI ecosystem helping students transition from education to employment. Build precision AI resumes, discover targeted job opportunities, and access personalized study materials to bridge skill gaps.'),
       image: nexusLogo,
-      features: t('projects.items.nexus.features', { returnObjects: true }) as string[],
+      features: (t('projects.items.nexus.features', { returnObjects: true }) as string[])?.length
+        ? (t('projects.items.nexus.features', { returnObjects: true }) as string[])
+        : ["AI Mock Interviews", "Skill-Gap Detection", "Institutional ERP", "Recruiter Portal", "Gamified Learning", "Career Analytics"],
       gradient: 'from-accent to-lime-400',
       accentColor: 'accent',
       url: 'https://github.com/saivara1341/siddhidynamics',
@@ -443,11 +419,13 @@ export const ProjectsSection = () => {
     },
     {
       id: 'nilayam',
-      name: t('projects.items.nilayam.name'),
-      tagline: t('projects.items.nilayam.tagline'),
-      description: t('projects.items.nilayam.description'),
+      name: t('projects.items.nilayam.name', 'Nilayam'),
+      tagline: t('projects.items.nilayam.tagline', 'AI-Driven Property & Smart Living Platform'),
+      description: t('projects.items.nilayam.description', 'A modern SaaS platform designed to simplify and automate the entire rental and property management lifecycle. Property owners access a centralized command center to manage properties, generate legally compliant leases instantly, and automate rent collection, ensuring a frictionless experience for both landlords and tenants.'),
       icon: Home,
-      features: t('projects.items.nilayam.features', { returnObjects: true }) as string[],
+      features: (t('projects.items.nilayam.features', { returnObjects: true }) as string[])?.length
+        ? (t('projects.items.nilayam.features', { returnObjects: true }) as string[])
+        : ["AI Lease Generation", "Financial Analytics", "Tenant Portal", "Maintenance AI", "Marketing Automation", "Community Hub"],
       gradient: 'from-accent to-emerald-400',
       accentColor: 'accent',
       stageKey: 'phase3',
@@ -455,12 +433,46 @@ export const ProjectsSection = () => {
       phase: 3,
     },
     {
+      id: 'indhur_farms',
+      name: t('projects.items.indhur.name', 'Indhur Farms'),
+      tagline: t('projects.items.indhur.tagline', 'Premium Organic Produce & Farm Stays'),
+      description: t('projects.items.indhur.description', 'A premium farm-to-home platform connecting consumers directly with fresh organic produce and providing bookings for scenic farm stays and educational agri-tourism tours.'),
+      icon: Leaf,
+      features: (t('projects.items.indhur.features', { returnObjects: true }) as string[])?.length 
+        ? (t('projects.items.indhur.features', { returnObjects: true }) as string[])
+        : ["Organic Marketplace", "Scenic Bookings", "Agri-Tourism", "Direct Sourcing", "Payment Gateway"],
+      gradient: 'from-emerald-500 to-green-600',
+      accentColor: 'accent',
+      url: 'https://saivara1341.github.io/indhur-farms/',
+      stageKey: 'phase5',
+      statusKey: 'production',
+      phase: 5,
+    },
+    {
+      id: 'print_flow',
+      name: t('projects.items.printflow.name', 'Print Flow (Inkfinity)'),
+      tagline: t('projects.items.printflow.tagline', 'Seamless Automated Order & Print Management'),
+      description: t('projects.items.printflow.description', 'A comprehensive print-on-demand and print workflow automation platform designed to streamline order ingestion, layout preparation, print queue management, and shipping logistics.'),
+      icon: Printer,
+      features: (t('projects.items.printflow.features', { returnObjects: true }) as string[])?.length 
+        ? (t('projects.items.printflow.features', { returnObjects: true }) as string[])
+        : ["Order Ingestion", "Print Queue", "Automated Layouts", "Logistics Integration"],
+      gradient: 'from-blue-500 to-cyan-500',
+      accentColor: 'primary',
+      url: 'https://saivara1341.github.io/inkfinity/',
+      stageKey: 'phase5',
+      statusKey: 'production',
+      phase: 5,
+    },
+    {
       id: 'wish0',
-      name: t('projects.items.wish0.name'),
-      tagline: t('projects.items.wish0.tagline'),
-      description: t('projects.items.wish0.description'),
+      name: t('projects.items.wish0.name', 'Wish-0'),
+      tagline: t('projects.items.wish0.tagline', 'Automated Occasion & Celebration Intelligence'),
+      description: t('projects.items.wish0.description', 'An AI-powered automation system designed to deliver personalized wishes for birthdays and all major life occasions without manual intervention. Wish-0 learns relationship dynamics to craft contextually relevant messages, ensuring you never miss a moment to connect with your loved ones.'),
       icon: Heart,
-      features: t('projects.items.wish0.features', { returnObjects: true }) as string[],
+      features: (t('projects.items.wish0.features', { returnObjects: true }) as string[])?.length
+        ? (t('projects.items.wish0.features', { returnObjects: true }) as string[])
+        : ["Auto Scheduling", "Personalized Messages", "Multi-Channel Delivery", "Relationship Learning", "Emotional Intelligence", "Zero-Friction UX"],
       gradient: 'from-primary to-amber-500',
       accentColor: 'primary',
       stageKey: 'phase1',
@@ -469,11 +481,13 @@ export const ProjectsSection = () => {
     },
     {
       id: 'letusknow',
-      name: t('projects.items.letusknow.name'),
-      tagline: t('projects.items.letusknow.tagline'),
-      description: t('projects.items.letusknow.description'),
+      name: t('projects.items.letusknow.name', 'Letusknow'),
+      tagline: t('projects.items.letusknow.tagline', 'Citizen-Centric Digital Governance Platform'),
+      description: t('projects.items.letusknow.description', 'A revolutionary citizen-centric digital governance platform designed to simplify how people access government services, understand procedures, and resolve public and personal issues. Letusknow bridges the gap between the administration and the public, fostering transparency and efficient grievance redressal.'),
       image: letusknowLogo,
-      features: t('projects.items.letusknow.features', { returnObjects: true }) as string[],
+      features: (t('projects.items.letusknow.features', { returnObjects: true }) as string[])?.length
+        ? (t('projects.items.letusknow.features', { returnObjects: true }) as string[])
+        : ["GPS-Based Location", "Political Representatives Info", "Government Services Guide", "Department Directory", "Development Projects", "Tourism Promotion"],
       gradient: 'from-cyan-500 to-blue-600',
       accentColor: 'accent',
       stageKey: 'phase2',
@@ -574,7 +588,7 @@ export const ProjectsSection = () => {
           </motion.div>
 
           <motion.div
-            className="grid md:grid-cols-2 gap-8 lg:gap-10"
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-50px' }}
@@ -603,13 +617,24 @@ export const ProjectsSection = () => {
                 <ProjectCard
                   project={project}
                   index={index}
-                  onWaitlistClick={handleWaitlistClick}
+                  onClick={() => setSelectedProject(project)}
                 />
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
+
+      {/* Project Details Modal */}
+      <AnimatePresence>
+        {selectedProject && (
+          <ProjectDetailsModal
+            project={selectedProject}
+            onClose={() => setSelectedProject(null)}
+            onWaitlistClick={handleWaitlistClick}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Waitlist Modal */}
       <WaitlistModal
