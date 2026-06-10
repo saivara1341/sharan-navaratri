@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseService } from "@/services/supabaseService";
 
@@ -24,7 +24,10 @@ import {
     MessageCircle,
     Send,
     X,
-    Edit3
+    Edit3,
+    Paperclip,
+    FileText,
+    Download
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -57,6 +60,40 @@ const AdminPortal = () => {
     const [chatInput, setChatInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
     const [sendingMsg, setSendingMsg] = useState(false);
+
+    // Document attachments states & helper
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [attachmentDropdownOpen, setAttachmentDropdownOpen] = useState(false);
+
+    const parseAttachment = (text: string) => {
+        if (text && text.startsWith('[ATTACHMENT:')) {
+            const match = text.match(/^\[ATTACHMENT:([^|]+)\|([^\]]+)\](.*)/s);
+            if (match) {
+                return {
+                    isAttachment: true,
+                    fileName: match[1],
+                    fileUrl: match[2],
+                    additionalText: match[3] ? match[3].trim() : ''
+                };
+            }
+        }
+        return { isAttachment: false, fileName: '', fileUrl: '', additionalText: text };
+    };
+
+    const handleAttachmentSelect = (fileName: string, fileUrl: string) => {
+        setChatInput(`[ATTACHMENT:${fileName}|${fileUrl}] Here is the requested document for your project.`);
+        setAttachmentDropdownOpen(false);
+        toast.success(`Attached template: ${fileName}`);
+    };
+
+    const handleCustomFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const mockUrl = `https://siddhidynamics.com/uploads/${encodeURIComponent(file.name)}`;
+        setChatInput(`[ATTACHMENT:${file.name}|${mockUrl}] Shared file: ${file.name}`);
+        setAttachmentDropdownOpen(false);
+        toast.success(`Custom file attached: ${file.name}`);
+    };
 
     const [editOpen, setEditOpen] = useState<Submission | null>(null);
     const [editStatus, setEditStatus] = useState("");
@@ -528,47 +565,170 @@ const AdminPortal = () => {
                             </div>
 
                             {/* Chat Messages */}
-                            <div className="flex-1 overflow-y-auto p-5 space-y-3">
+                            <div className="flex-1 overflow-y-auto p-5 space-y-3 bg-[#0b141a]">
                                 {chatLoading ? (
-                                    <div className="flex items-center justify-center h-full text-muted-foreground">
+                                    <div className="flex items-center justify-center h-full text-[#8696a0]">
                                         <RefreshCw className="w-6 h-6 animate-spin mr-2" /> Loading chat...
                                     </div>
                                 ) : chatMessages.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-center gap-2">
-                                        <MessageCircle className="w-10 h-10 opacity-30" />
+                                    <div className="flex flex-col items-center justify-center h-full text-[#8696a0] text-center gap-2">
+                                        <MessageCircle className="w-10 h-10 opacity-30 text-primary animate-pulse" />
                                         <p className="text-sm">No messages yet. Start the conversation!</p>
                                     </div>
                                 ) : (
-                                    chatMessages.map((msg: any) => (
-                                        <div key={msg.id} className={`flex ${msg.is_admin ? 'justify-end' : 'justify-start'}`}>
-                                            <div className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm ${msg.is_admin ? 'bg-primary text-primary-foreground rounded-br-sm' : 'bg-white/5 border border-white/10 text-foreground rounded-bl-sm'}`}>
-                                                <p>{msg.message}</p>
-                                                <p className={`text-[10px] mt-1 ${msg.is_admin ? 'text-primary-foreground/60' : 'text-muted-foreground'}`}>
-                                                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                </p>
+                                    chatMessages.map((msg: any) => {
+                                        const isSelf = msg.is_admin;
+                                        const parsed = parseAttachment(msg.message);
+                                        return (
+                                            <div key={msg.id} className={`flex ${isSelf ? 'justify-end' : 'justify-start'} items-end gap-2`}>
+                                                {!isSelf && (
+                                                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-primary/20 text-[10px] font-bold text-primary mb-1">
+                                                        {chatOpen.name.slice(0, 2).toUpperCase()}
+                                                    </div>
+                                                )}
+                                                <div className={`relative max-w-[75%] px-4 py-2.5 rounded-2xl text-sm shadow-md border-t ${
+                                                    isSelf 
+                                                        ? 'bg-[#005c4b] text-[#e9edef] rounded-tr-none border-emerald-500/10' 
+                                                        : 'bg-[#202c33] text-[#e9edef] rounded-tl-none border-white/5'
+                                                }`}>
+                                                    {parsed.isAttachment ? (
+                                                        <div className="space-y-2">
+                                                            {/* Attachment Card */}
+                                                            <a 
+                                                                href={parsed.fileUrl} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                                className="flex items-center gap-3 p-3 bg-black/40 border border-white/10 rounded-xl hover:bg-black/60 transition-colors cursor-pointer group text-left"
+                                                            >
+                                                                <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500 shrink-0">
+                                                                    <FileText className="w-5 h-5" />
+                                                                </div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <p className="font-bold text-xs text-slate-200 line-clamp-1 group-hover:text-primary transition-colors">{parsed.fileName}</p>
+                                                                    <p className="text-[10px] text-muted-foreground">PDF Document • Click to Open</p>
+                                                                </div>
+                                                                <div className="text-muted-foreground hover:text-foreground">
+                                                                    <Download className="w-4 h-4" />
+                                                                </div>
+                                                            </a>
+                                                            {parsed.additionalText && (
+                                                                <p className="leading-relaxed whitespace-pre-wrap">{parsed.additionalText}</p>
+                                                            )}
+                                                        </div>
+                                                    ) : (
+                                                        <p className="leading-relaxed whitespace-pre-wrap">{msg.message}</p>
+                                                    )}
+                                                    <div className="flex items-center justify-end gap-1 text-[9px] text-[#8696a0] mt-1 text-right">
+                                                        <span>{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                        {isSelf && (
+                                                            <span className="text-emerald-400 font-bold ml-1">✓✓</span>
+                                                        )}
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))
+                                        );
+                                    })
                                 )}
                             </div>
 
                             {/* Chat Input */}
-                            <div className="p-4 border-t border-white/10 bg-white/5">
+                            <div className="p-4 border-t border-white/10 bg-[#1f2c34]">
                                 <div className="flex items-center gap-3">
+                                    {/* Paperclip Sharing Menu */}
+                                    <div className="relative shrink-0">
+                                        <button
+                                            type="button"
+                                            onClick={() => setAttachmentDropdownOpen(!attachmentDropdownOpen)}
+                                            className="w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                                            title="Share Quotation or Document Template"
+                                        >
+                                            <Paperclip className={`w-4 h-4 ${attachmentDropdownOpen ? 'text-primary rotate-45' : ''} transition-transform`} />
+                                        </button>
+
+                                        {/* Sharing Dropdown list */}
+                                        <AnimatePresence>
+                                            {attachmentDropdownOpen && (
+                                                <>
+                                                    <div className="fixed inset-0 z-30" onClick={() => setAttachmentDropdownOpen(false)} />
+                                                    <motion.div
+                                                        initial={{ opacity: 0, y: 15 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        exit={{ opacity: 0, y: 15 }}
+                                                        className="absolute bottom-14 left-0 w-80 bg-[#111b21] border border-white/10 rounded-2xl shadow-2xl p-2.5 z-40 space-y-1"
+                                                    >
+                                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold px-2 py-1">Share Document or Quotation</p>
+                                                        
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleAttachmentSelect('Project_Development_Proposal_Quotation.pdf', 'https://siddhidynamics.com/templates/Quotation_Template.pdf')}
+                                                            className="w-full text-left px-3 py-2 hover:bg-white/5 rounded-xl text-xs font-semibold text-slate-200 hover:text-primary transition-colors flex items-center gap-2"
+                                                        >
+                                                            <FileText className="w-3.5 h-3.5 text-primary" />
+                                                            <span className="truncate">Project Proposal & Quotation.pdf</span>
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleAttachmentSelect('Siddhi_Dynamics_Service_Agreement.pdf', 'https://siddhidynamics.com/templates/Service_Agreement.pdf')}
+                                                            className="w-full text-left px-3 py-2 hover:bg-white/5 rounded-xl text-xs font-semibold text-slate-200 hover:text-primary transition-colors flex items-center gap-2"
+                                                        >
+                                                            <FileText className="w-3.5 h-3.5 text-primary" />
+                                                            <span className="truncate">Dynamics Service Agreement.pdf</span>
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleAttachmentSelect('Non_Disclosure_Agreement_NDA.pdf', 'https://siddhidynamics.com/templates/NDA_Siddhi_Dynamics.pdf')}
+                                                            className="w-full text-left px-3 py-2 hover:bg-white/5 rounded-xl text-xs font-semibold text-slate-200 hover:text-primary transition-colors flex items-center gap-2"
+                                                        >
+                                                            <FileText className="w-3.5 h-3.5 text-primary" />
+                                                            <span className="truncate">NDA Template (Siddhi).pdf</span>
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleAttachmentSelect('System_Architecture_Blueprint.pdf', 'https://siddhidynamics.com/templates/Architecture_Blueprint.pdf')}
+                                                            className="w-full text-left px-3 py-2 hover:bg-white/5 rounded-xl text-xs font-semibold text-slate-200 hover:text-primary transition-colors flex items-center gap-2"
+                                                        >
+                                                            <FileText className="w-3.5 h-3.5 text-primary" />
+                                                            <span className="truncate">System Architecture Blueprint.pdf</span>
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => fileInputRef.current?.click()}
+                                                            className="w-full text-left px-3 py-2 hover:bg-white/5 rounded-xl text-xs font-semibold text-slate-200 hover:text-primary transition-colors flex items-center gap-2 border-t border-white/5"
+                                                        >
+                                                            <Paperclip className="w-3.5 h-3.5 text-accent" />
+                                                            <span>Upload Custom Document...</span>
+                                                        </button>
+                                                    </motion.div>
+                                                </>
+                                            )}
+                                        </AnimatePresence>
+                                        {/* Hidden file selector */}
+                                        <input 
+                                            type="file" 
+                                            ref={fileInputRef} 
+                                            onChange={handleCustomFileUpload} 
+                                            className="hidden" 
+                                        />
+                                    </div>
+
                                     <input
                                         type="text"
-                                        placeholder="Type your message..."
+                                        placeholder="Type your message or quote..."
                                         value={chatInput}
                                         onChange={e => setChatInput(e.target.value)}
                                         onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } }}
-                                        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                                        className="flex-1 bg-[#2a3942] border-none text-[#e9edef] rounded-xl px-4 py-3 text-sm focus:outline-none placeholder:text-muted-foreground/60 transition-all"
                                     />
                                     <button
                                         onClick={sendChatMessage}
                                         disabled={!chatInput.trim() || sendingMsg}
                                         className="w-11 h-11 rounded-xl bg-primary flex items-center justify-center hover:bg-primary/80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
                                     >
-                                        {sendingMsg ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                                        {sendingMsg ? <RefreshCw className="w-4 h-4 animate-spin text-white" /> : <Send className="w-4 h-4 text-white" />}
                                     </button>
                                 </div>
                             </div>

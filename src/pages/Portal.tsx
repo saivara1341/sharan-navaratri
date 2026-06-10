@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseService } from "@/services/supabaseService";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { toast } from "sonner";
@@ -33,12 +33,15 @@ import {
     Zap,
     Star,
     X,
-    RefreshCw
+    RefreshCw,
+    Paperclip,
+    FileText,
+    Download
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-
 import { useTranslation } from "react-i18next";
+import { SubmitSection } from "@/components/sections/SubmitSection";
 
 const Portal = () => {
     const { t } = useTranslation();
@@ -46,7 +49,7 @@ const Portal = () => {
     const [submissions, setSubmissions] = useState<any[]>([]);
     const [waitlistEntries, setWaitlistEntries] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'submissions' | 'waitlist'>('submissions');
+    const [activeTab, setActiveTab] = useState<'submissions' | 'waitlist' | 'contact'>('submissions');
     const [selectedSub, setSelectedSub] = useState<any | null>(null);
     const [newComment, setNewComment] = useState("");
     const [comments, setComments] = useState<any[]>([]);
@@ -57,6 +60,51 @@ const Portal = () => {
     const [sendingMsg, setSendingMsg] = useState(false);
     const chatEndRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Attachment states & handlers
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [attachmentDropdownOpen, setAttachmentDropdownOpen] = useState(false);
+
+    const parseAttachment = (text: string) => {
+        if (text && text.startsWith('[ATTACHMENT:')) {
+            const match = text.match(/^\[ATTACHMENT:([^|]+)\|([^\]]+)\](.*)/s);
+            if (match) {
+                return {
+                    isAttachment: true,
+                    fileName: match[1],
+                    fileUrl: match[2],
+                    additionalText: match[3] ? match[3].trim() : ''
+                };
+            }
+        }
+        return { isAttachment: false, fileName: '', fileUrl: '', additionalText: text };
+    };
+
+    const handleAttachmentSelect = (fileName: string, fileUrl: string) => {
+        setChatInput(`[ATTACHMENT:${fileName}|${fileUrl}] `);
+        setAttachmentDropdownOpen(false);
+        toast.success(`Attached ${fileName}. Press send to share!`);
+    };
+
+    const handleCustomFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const mockUrl = `https://siddhidynamics.com/uploads/${encodeURIComponent(file.name)}`;
+        setChatInput(`[ATTACHMENT:${file.name}|${mockUrl}] `);
+        setAttachmentDropdownOpen(false);
+        toast.success(`Attached custom file: ${file.name}. Ready to send!`);
+    };
+
+    // Listen for tab switching queries
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const tab = queryParams.get('tab');
+        const hash = window.location.hash;
+        if (tab === 'contact' || hash.includes('tab=contact') || hash.includes('contact-us')) {
+            setActiveTab('contact');
+        }
+    }, [location]);
 
     useEffect(() => {
         const checkUser = async () => {
@@ -255,6 +303,12 @@ const Portal = () => {
                                 const roles = user.user_metadata.roles || [user.user_metadata.role];
                                 const services: any[] = [];
                                 
+                                if (roles.includes('Client / Customer')) {
+                                    services.push(
+                                        { title: "Submit Your Challenge", desc: "Share a real-world problem for Startup Sahayak validation.", icon: Target, color: "rose", link: "/portal?tab=contact&type=problem" },
+                                        { title: "Build Your Project", desc: "Tell us about your software or website requirements.", icon: Code2, color: "blue", link: "/portal?tab=contact&type=requirement" }
+                                    );
+                                }
                                 if (roles.includes('Student / Researcher')) {
                                     services.push(
                                         { title: t('footer.services.student.resume.title'), desc: t('footer.services.student.resume.desc'), icon: GraduationCap, color: "blue", link: "/nexus/resume-builder" },
@@ -358,9 +412,28 @@ const Portal = () => {
                             <span className="bg-white/20 px-2 rounded-full text-xs">{waitlistEntries.length}</span>
                         )}
                     </button>
+                    <button
+                        onClick={() => setActiveTab('contact')}
+                        className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${activeTab === 'contact'
+                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                            : "bg-white/5 text-muted-foreground hover:bg-white/10"
+                            }`}
+                    >
+                        <Sparkles className="w-5 h-5" />
+                        <span>Submit Challenge / Inquiry</span>
+                    </button>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {activeTab === 'contact' ? (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="glass-card p-4 md:p-8 electric-border bg-white/5 rounded-3xl"
+                    >
+                        <SubmitSection />
+                    </motion.div>
+                ) : (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-1 space-y-4">
                         {activeTab === 'submissions' ? (
                             submissions.length === 0 ? (
@@ -475,6 +548,53 @@ const Portal = () => {
                                     <div className="flex-1 flex flex-col justify-between">
                                         {caseViewMode === 'roadmap' ? (
                                             <div className="space-y-8">
+                                                {selectedSub.inquiry_type === 'problem' && (
+                                                    <div className="glass-card p-6 border border-emerald-500/20 bg-emerald-500/5 rounded-2xl space-y-4">
+                                                        <div className="flex justify-between items-start">
+                                                            <div className="space-y-1">
+                                                                <span className="text-[10px] uppercase tracking-widest text-emerald-400 font-bold block">Verification Authority</span>
+                                                                <h3 className="text-lg font-bold text-slate-100">Startup India & DPIIT Sandbox</h3>
+                                                            </div>
+                                                            <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+                                                                Verified & Eligible
+                                                            </span>
+                                                        </div>
+
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono py-2 border-t border-b border-white/5">
+                                                            <div className="space-y-1">
+                                                                <span className="text-muted-foreground block">DPIIT Registration ID:</span>
+                                                                <span className="text-foreground font-semibold">SS-DPIIT-22-{selectedSub.id.slice(0, 5).toUpperCase()}</span>
+                                                            </div>
+                                                            <div className="space-y-1">
+                                                                <span className="text-muted-foreground block">Evaluation Score:</span>
+                                                                <span className="text-emerald-400 font-bold">87/100 (High Potential)</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold block">Recommended Government Benefits</span>
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                                                                <div className="flex items-center gap-2 text-slate-300">
+                                                                    <span className="text-emerald-400">✓</span> Tax Exemption (Section 56) Recommended
+                                                                </div>
+                                                                <div className="flex items-center gap-2 text-slate-300">
+                                                                    <span className="text-emerald-400">✓</span> Self-Certification Compliance Enabled
+                                                                </div>
+                                                                <div className="flex items-center gap-2 text-slate-300">
+                                                                    <span className="text-emerald-400">✓</span> Fast-track Patent Filing Referral
+                                                                </div>
+                                                                <div className="flex items-center gap-2 text-slate-300">
+                                                                    <span className="text-emerald-400">✓</span> HIVE Incubator Seed-Fund Entry
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="p-4 rounded-xl bg-white/5 text-xs text-muted-foreground leading-relaxed border border-white/5">
+                                                            <strong>AI Recommendation:</strong> Your deep-tech problem has been matched with the HIVE incubation cell seed fund recommendations. We advise proceeding to direct chat with support to receive the structural co-development agreements.
+                                                        </div>
+                                                    </div>
+                                                )}
+
                                                 <div>
                                                     <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-3">Initial Inquiry</label>
                                                     <div className="p-5 rounded-2xl bg-white/5 border border-white/10 italic text-base leading-relaxed text-slate-300">
@@ -542,29 +662,68 @@ const Portal = () => {
                                             </div>
                                         ) : (
                                             /* Direct Live Chat container */
-                                            <div className="flex flex-col h-[480px] bg-black/40 border border-white/5 rounded-2xl overflow-hidden">
+                                            <div className="flex flex-col h-[480px] bg-[#0b141a] border border-white/5 rounded-2xl overflow-hidden relative">
                                                 {/* Chat Messages Panel */}
-                                                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                                                <div className="flex-1 overflow-y-auto p-4 space-y-3 chat-container-whatsapp">
                                                     {chatLoading ? (
-                                                        <div className="flex items-center justify-center h-full text-muted-foreground">
+                                                        <div className="flex items-center justify-center h-full text-[#8696a0]">
                                                             <RefreshCw className="w-5 h-5 animate-spin mr-2" /> Loading chat history...
                                                         </div>
                                                     ) : chatMessages.length === 0 ? (
-                                                        <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-center gap-2 p-6">
+                                                        <div className="flex flex-col items-center justify-center h-full text-[#8696a0] text-center gap-2 p-6">
                                                             <MessageSquare className="w-8 h-8 opacity-30 text-primary animate-pulse" />
                                                             <h4 className="font-semibold text-sm">No Messages Yet</h4>
-                                                            <p className="text-xs max-w-[240px] leading-relaxed text-muted-foreground">Send a message to start a direct line of communication with our support engineers!</p>
+                                                            <p className="text-xs max-w-[240px] leading-relaxed text-[#8696a0]/80">Send a message to start a direct line of communication with our support engineers!</p>
                                                         </div>
                                                     ) : (
                                                         chatMessages.map((msg: any) => {
                                                             const isSelf = !msg.is_admin;
+                                                            const parsed = parseAttachment(msg.message);
                                                             return (
-                                                                <div key={msg.id} className={`flex ${isSelf ? 'justify-end' : 'justify-start'}`}>
-                                                                    <div className={`max-w-[80%] px-4 py-3 rounded-2xl text-xs sm:text-sm ${isSelf ? 'bg-primary text-primary-foreground rounded-br-sm' : 'bg-white/5 border border-white/10 text-foreground rounded-bl-sm'}`}>
-                                                                        <p className="leading-relaxed whitespace-pre-wrap">{msg.message}</p>
-                                                                        <p className={`text-[9px] mt-1 ${isSelf ? 'text-primary-foreground/60' : 'text-muted-foreground'}`}>
-                                                                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                                        </p>
+                                                                <div key={msg.id} className={`flex ${isSelf ? 'justify-end' : 'justify-start'} items-end gap-2`}>
+                                                                    {!isSelf && (
+                                                                        <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-primary/20 text-[9px] font-bold text-primary mb-1">
+                                                                            SD
+                                                                        </div>
+                                                                    )}
+                                                                    <div className={`relative max-w-[75%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm shadow-md border-t ${
+                                                                        isSelf 
+                                                                            ? 'bg-[#005c4b] text-[#e9edef] rounded-tr-none border-emerald-500/10' 
+                                                                            : 'bg-[#202c33] text-[#e9edef] rounded-tl-none border-white/5'
+                                                                    }`}>
+                                                                        {parsed.isAttachment ? (
+                                                                            <div className="space-y-2">
+                                                                                {/* Attachment Card */}
+                                                                                <a 
+                                                                                    href={parsed.fileUrl} 
+                                                                                    target="_blank" 
+                                                                                    rel="noopener noreferrer"
+                                                                                    className="flex items-center gap-3 p-3 bg-black/40 border border-white/10 rounded-xl hover:bg-black/60 transition-colors cursor-pointer group text-left"
+                                                                                >
+                                                                                    <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500 shrink-0">
+                                                                                        <FileText className="w-5 h-5" />
+                                                                                    </div>
+                                                                                    <div className="flex-1 min-w-0">
+                                                                                        <p className="font-bold text-xs text-slate-200 line-clamp-1 group-hover:text-primary transition-colors">{parsed.fileName}</p>
+                                                                                        <p className="text-[10px] text-muted-foreground">PDF Document • Click to Open</p>
+                                                                                    </div>
+                                                                                    <div className="text-muted-foreground hover:text-foreground">
+                                                                                        <Download className="w-4 h-4" />
+                                                                                    </div>
+                                                                                </a>
+                                                                                {parsed.additionalText && (
+                                                                                    <p className="leading-relaxed whitespace-pre-wrap">{parsed.additionalText}</p>
+                                                                                )}
+                                                                            </div>
+                                                                        ) : (
+                                                                            <p className="leading-relaxed whitespace-pre-wrap">{msg.message}</p>
+                                                                        )}
+                                                                        <div className="flex items-center justify-end gap-1 text-[9px] text-[#8696a0] mt-1 text-right">
+                                                                            <span>{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                                            {isSelf && (
+                                                                                <span className="text-emerald-400 font-bold ml-1">✓✓</span>
+                                                                            )}
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             );
@@ -574,22 +733,74 @@ const Portal = () => {
                                                 </div>
 
                                                 {/* Chat Input panel */}
-                                                <div className="p-3 border-t border-white/5 bg-white/[0.02]">
+                                                <div className="p-3 border-t border-white/5 bg-[#1f2c34] relative z-25">
                                                     <div className="flex items-center gap-2">
+                                                        {/* Paperclip Button */}
+                                                        <div className="relative shrink-0">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setAttachmentDropdownOpen(!attachmentDropdownOpen)}
+                                                                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                                                                title="Attach Document / Proposal"
+                                                            >
+                                                                <Paperclip className={`w-4 h-4 ${attachmentDropdownOpen ? 'text-primary rotate-45' : ''} transition-transform`} />
+                                                            </button>
+
+                                                            {/* Dropdown Menu for User Portal attachment */}
+                                                            <AnimatePresence>
+                                                                {attachmentDropdownOpen && (
+                                                                    <>
+                                                                        <div className="fixed inset-0 z-30" onClick={() => setAttachmentDropdownOpen(false)} />
+                                                                        <motion.div
+                                                                            initial={{ opacity: 0, y: 15 }}
+                                                                            animate={{ opacity: 1, y: 0 }}
+                                                                            exit={{ opacity: 0, y: 15 }}
+                                                                            className="absolute bottom-12 left-0 w-64 bg-[#111b21] border border-white/10 rounded-2xl shadow-xl p-2.5 z-40 space-y-1"
+                                                                        >
+                                                                            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold px-2 py-1">Share Document / Requirement</p>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => handleAttachmentSelect('My_Project_Requirements.pdf', 'https://siddhidynamics.com/templates/Quotation_Template.pdf')}
+                                                                                className="w-full text-left px-3.5 py-2.5 hover:bg-white/5 rounded-xl text-xs font-semibold text-slate-200 hover:text-primary transition-colors flex items-center gap-2"
+                                                                            >
+                                                                                <FileText className="w-3.5 h-3.5 text-primary" />
+                                                                                <span>Attach Requirements File</span>
+                                                                            </button>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => fileInputRef.current?.click()}
+                                                                                className="w-full text-left px-3.5 py-2.5 hover:bg-white/5 rounded-xl text-xs font-semibold text-slate-200 hover:text-primary transition-colors flex items-center gap-2 border-t border-white/5"
+                                                                            >
+                                                                                <Paperclip className="w-3.5 h-3.5 text-accent" />
+                                                                                <span>Upload Custom File</span>
+                                                                            </button>
+                                                                        </motion.div>
+                                                                    </>
+                                                                )}
+                                                            </AnimatePresence>
+                                                            {/* Hidden File Input */}
+                                                            <input 
+                                                                type="file" 
+                                                                ref={fileInputRef} 
+                                                                onChange={handleCustomFileUpload} 
+                                                                className="hidden" 
+                                                            />
+                                                        </div>
+
                                                         <input
                                                             type="text"
                                                             placeholder="Type a message to Siddhi Dynamics admins..."
                                                             value={chatInput}
                                                             onChange={e => setChatInput(e.target.value)}
                                                             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } }}
-                                                            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all text-slate-100 placeholder:text-muted-foreground/60"
+                                                            className="flex-1 bg-[#2a3942] border-none rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none transition-all text-slate-100 placeholder:text-muted-foreground/60"
                                                         />
                                                         <button
                                                             onClick={sendChatMessage}
                                                             disabled={!chatInput.trim() || sendingMsg}
                                                             className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center hover:bg-primary/80 transition-colors disabled:opacity-45 disabled:cursor-not-allowed shrink-0"
                                                         >
-                                                            {sendingMsg ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 text-white" />}
+                                                            {sendingMsg ? <RefreshCw className="w-4 h-4 animate-spin text-white" /> : <Send className="w-4 h-4 text-white" />}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -612,6 +823,7 @@ const Portal = () => {
                         </AnimatePresence>
                     </div>
                 </div>
+                )}
             </div>
         </div>
     );

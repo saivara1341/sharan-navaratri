@@ -281,22 +281,9 @@ const Auth = () => {
               </svg>
               <span>Sign in with Google</span>
             </button>
-
-            {/* Transparency Section for Google Review */}
-            <div className="mt-6 p-4 rounded-xl bg-primary/5 border border-primary/10 text-[11px] text-muted-foreground leading-relaxed">
-              <p className="font-bold text-primary mb-1 uppercase tracking-wider">Why Google Login?</p>
-              <p>
-                We use Google OAuth to securely verify your identity without storing your password. 
-                We only request access to your <strong>email address</strong> and <strong>basic profile info</strong> (name, profile picture) to personalize your innovation dashboard and track your project submissions. 
-                We do not access your contacts, files, or any other private data.
-              </p>
-            </div>
           </form>
 
           <div className="mt-8 text-center border-t border-border/30 pt-6 space-y-4">
-            <p className="text-xs text-muted-foreground/50 uppercase tracking-[0.2em]">
-              Engineering Agentic Intelligence
-            </p>
             <div className="flex justify-center gap-4 text-[10px] text-muted-foreground/40 font-medium">
               <a href="#/privacy" className="hover:text-primary transition-colors">Privacy Policy</a>
               <span>•</span>

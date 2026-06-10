@@ -22,11 +22,13 @@ import {
   Target,
   Cpu,
   CheckCircle2,
-  Circle
+  Circle,
+  ArrowLeft
 } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 
 const ROLES = [
+  { id: 'client', name: 'Client / Customer', icon: Briefcase, color: 'text-cyan-500', bgColor: 'bg-cyan-500/10' },
   { id: 'founder', name: 'Visionary Founder', icon: Zap, color: 'text-orange-500', bgColor: 'bg-orange-500/10' },
   { id: 'investor', name: 'Venture Investor', icon: Star, color: 'text-yellow-500', bgColor: 'bg-yellow-500/10' },
   { id: 'developer', name: 'Tech Architect', icon: ShieldCheck, color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
@@ -165,6 +167,15 @@ const Profile = () => {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-5xl mx-auto"
         >
+          {/* Back Button to Dashboard */}
+          <button
+            onClick={() => navigate("/portal")}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-muted-foreground hover:text-foreground transition-all mb-8 text-sm font-semibold cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Dashboard</span>
+          </button>
+
           <div className="flex flex-col lg:flex-row gap-12">
             
             {/* Left Column: Avatar & Multi-Role Selection */}
