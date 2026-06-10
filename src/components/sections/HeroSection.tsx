@@ -242,7 +242,7 @@ export const HeroSection = () => {
             </motion.a>
 
             <motion.a
-              href="#projects"
+              href="#submit?type=inquiry"
               className="group px-8 py-4 rounded-xl font-semibold text-lg border border-primary/40 text-primary hover:bg-primary/10 hover:border-primary/60 transition-all duration-500"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

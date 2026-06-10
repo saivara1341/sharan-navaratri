@@ -20,9 +20,10 @@ export const Navbar = () => {
   const isOnLandingPage = location.pathname === '/' || location.pathname === '';
 
   const navLinks = [
-    { name: t('nav.vision'), href: '#/vision' },
-    { name: t('nav.projects'), href: '#/projects' },
-    { name: t('nav.submit'), href: '#/submit' },
+    { name: t('nav.submitChallenge', 'Submit Your Challenge'), href: '#/submit?type=problem' },
+    { name: t('nav.buildProject', 'Build Your Project'), href: '#/submit?type=requirement' },
+    { name: t('nav.exploreProjects', 'Explore Projects'), href: '#/submit?type=inquiry' },
+    { name: t('nav.contactUs', 'Contact Us'), href: '#/submit' },
   ];
 
   const headerOpacity = useTransform(scrollY, [0, 30], [0, 1]);

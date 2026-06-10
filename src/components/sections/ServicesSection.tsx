@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 const SERVICES = [
     {
-        emoji: "🤖",
+        emoji: "⚡",
         title: "Business Automation",
         desc: "Automate bookkeeping, workflows, tax calculations & invoice processing end-to-end.",
         tag: "Most Popular",

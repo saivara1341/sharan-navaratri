@@ -9,8 +9,8 @@ import { IncubationSection } from '@/components/sections/IncubationSection';
 import { SubmitSection } from '@/components/sections/SubmitSection';
 import { FooterSection } from '@/components/sections/FooterSection';
 import { ServicesSection } from '@/components/sections/ServicesSection';
-import { EcosystemSection } from '@/components/sections/EcosystemSection';
 import { AIOContent } from '@/components/seo/AIOContent';
+
 
 const Index = () => {
   const { pathname } = useLocation();
@@ -201,7 +201,6 @@ const Index = () => {
       <main>
         <HeroSection />
         <VisionSection />
-        <EcosystemSection />
         <ProjectsSection />
         <IncubationSection />
         <ServicesSection />

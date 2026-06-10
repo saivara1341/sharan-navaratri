@@ -5,7 +5,11 @@
     "submit": "Submit Problem",
     "collab": "Collab",
     "portal": "Portal",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "submitChallenge": "Submit Your Challenge",
+    "buildProject": "Build Your Project",
+    "exploreProjects": "Explore Projects",
+    "contactUs": "Contact Us"
   },
   "hero": {
     "badge": "Next-Generation AI Solutions",

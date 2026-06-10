@@ -36,11 +36,17 @@ export const SubmitSection = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Check for type=requirement in hash or search
-    const hasRequirementParam = window.location.hash.includes('type=requirement') || 
-                               window.location.search.includes('type=requirement');
-    if (hasRequirementParam) {
+    const hash = window.location.hash;
+    const search = window.location.search;
+    
+    if (hash.includes('type=requirement') || search.includes('type=requirement')) {
       setFormData(prev => ({ ...prev, inquiryType: 'requirement' }));
+    } else if (hash.includes('type=problem') || search.includes('type=problem')) {
+      setFormData(prev => ({ ...prev, inquiryType: 'problem' }));
+    } else if (hash.includes('type=inquiry') || search.includes('type=inquiry')) {
+      setFormData(prev => ({ ...prev, inquiryType: 'inquiry' }));
+    } else if (hash.includes('type=investor') || search.includes('type=investor')) {
+      setFormData(prev => ({ ...prev, inquiryType: 'investor' }));
     }
   }, [location]);
 
