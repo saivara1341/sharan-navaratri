@@ -2,7 +2,7 @@ import { motion, useInView, useMotionValue, useSpring, useTransform, AnimatePres
 import { useRef, useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import { Mic, MicOff, CheckCircle, Shield, ArrowRight, RefreshCw } from 'lucide-react';
+import { Mic, MicOff, CheckCircle, Shield, ArrowRight, RefreshCw, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { supabaseService } from '@/services/supabaseService';
@@ -33,6 +33,7 @@ export const SubmitSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isListening, setIsListening] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -214,38 +215,75 @@ export const SubmitSection = () => {
   const renderFormFields = () => {
     return (
       <div className="relative z-10 space-y-8">
-        {/* Inquiry Type Selector */}
+        {/* Inquiry Type Selector (Dropdown) */}
         <div className="space-y-3">
           <label className="block text-sm font-medium text-foreground">
             {t('submit.discussLabel')}
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {[
-              { value: 'problem', label: t('submit.types.problem'), icon: '🎯' },
-              { value: 'requirement', label: t('submit.types.requirement'), icon: '💻' },
-              { value: 'inquiry', label: t('submit.types.inquiry'), icon: '❓' },
-              { value: 'investor', label: t('submit.types.investor'), icon: '🤝' },
-            ].map((type) => (
-              <motion.button
-                key={type.value}
-                type="button"
-                onClick={() => setFormData(prev => ({ ...prev, inquiryType: type.value }))}
-                className={`p-4 rounded-xl border-2 transition-all duration-300 text-left flex sm:flex-col items-center sm:items-start gap-3 sm:gap-0 ${formData.inquiryType === type.value
-                  ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
-                  : 'border-border/50 hover:border-primary/50 bg-background/50'
-                  }`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <span className="text-2xl sm:mb-2 block shrink-0">
-                  {type.icon}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="w-full p-4 rounded-xl border-2 border-primary/50 bg-background/50 hover:border-primary/80 transition-all duration-300 text-left flex items-center justify-between shadow-lg shadow-primary/5 focus:outline-none focus:ring-2 focus:ring-primary/50"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl block shrink-0">
+                  {
+                    [
+                      { value: 'problem', icon: '🎯' },
+                      { value: 'requirement', icon: '💻' },
+                      { value: 'inquiry', icon: '❓' },
+                      { value: 'investor', icon: '🤝' },
+                    ].find(o => o.value === formData.inquiryType)?.icon
+                  }
                 </span>
-                <span className={`text-sm font-medium leading-tight ${formData.inquiryType === type.value ? 'text-primary' : 'text-muted-foreground'
-                  }`}>
-                  {type.label}
+                <span className="text-sm font-medium text-primary">
+                  {
+                    [
+                      { value: 'problem', label: t('submit.types.problem') },
+                      { value: 'requirement', label: t('submit.types.requirement') },
+                      { value: 'inquiry', label: t('submit.types.inquiry') },
+                      { value: 'investor', label: t('submit.types.investor') },
+                    ].find(o => o.value === formData.inquiryType)?.label
+                  }
                 </span>
-              </motion.button>
-            ))}
+              </div>
+              <ChevronDown className={`w-5 h-5 text-primary transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+            
+            <AnimatePresence>
+              {isDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scaleY: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scaleY: 1 }}
+                  exit={{ opacity: 0, y: -10, scaleY: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute z-50 w-full mt-2 bg-[#0b0c10] border-2 border-primary/30 rounded-xl shadow-2xl overflow-hidden origin-top"
+                >
+                  {[
+                    { value: 'problem', label: t('submit.types.problem'), icon: '🎯' },
+                    { value: 'requirement', label: t('submit.types.requirement'), icon: '💻' },
+                    { value: 'inquiry', label: t('submit.types.inquiry'), icon: '❓' },
+                    { value: 'investor', label: t('submit.types.investor'), icon: '🤝' },
+                  ].map((type) => (
+                    <button
+                      key={type.value}
+                      type="button"
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, inquiryType: type.value }));
+                        setIsDropdownOpen(false);
+                      }}
+                      className={`w-full p-4 text-left flex items-center gap-3 transition-colors ${formData.inquiryType === type.value ? 'bg-primary/20' : 'hover:bg-primary/10'}`}
+                    >
+                      <span className="text-2xl shrink-0">{type.icon}</span>
+                      <span className={`text-sm font-medium ${formData.inquiryType === type.value ? 'text-primary' : 'text-foreground'}`}>
+                        {type.label}
+                      </span>
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
@@ -687,6 +725,11 @@ export const SubmitSection = () => {
     );
   };
 
+  const bgTransform = useTransform(
+    [springX, springY],
+    ([x, y]) => `radial-gradient(600px circle at ${Number(x) * 100}% ${Number(y) * 100}%, hsl(25 85% 55% / 0.1), transparent 40%)`
+  );
+
   if (isPortal) {
     return (
       <div className="relative z-10 max-w-4xl mx-auto py-8">
@@ -761,10 +804,7 @@ export const SubmitSection = () => {
               <motion.div
                 className="absolute inset-0 pointer-events-none"
                 style={{
-                  background: useTransform(
-                    [springX, springY],
-                    ([x, y]) => `radial-gradient(600px circle at ${Number(x) * 100}% ${Number(y) * 100}%, hsl(25 85% 55% / 0.1), transparent 40%)`
-                  ),
+                  background: bgTransform,
                 }}
               />
 

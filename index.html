@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
 
 <head>
   <meta charset="UTF-8" />
@@ -54,8 +54,22 @@
 </head>
 
 <body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
+    <div id="root"></div>
+    <div id="global-error" style="position: fixed; z-index: 999999; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,0,0,0.9); color: white; padding: 20px; font-size: 18px; display: none; overflow: auto;">
+      <h2>Runtime Error!</h2>
+      <pre id="global-error-text"></pre>
+    </div>
+    <script>
+      window.onerror = function(message, source, lineno, colno, error) {
+        document.getElementById('global-error').style.display = 'block';
+        document.getElementById('global-error-text').innerText += '\n' + message + '\n' + (error ? error.stack : '');
+      };
+      window.addEventListener('unhandledrejection', function(event) {
+        document.getElementById('global-error').style.display = 'block';
+        document.getElementById('global-error-text').innerText += '\nUnhandled Rejection: ' + event.reason;
+      });
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
 </body>
 
 </html>

@@ -1,7 +1,11 @@
-import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { motion, useInView, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 import { 
   GraduationCap, 
   Heart, 
@@ -51,6 +55,8 @@ interface ProjectData {
   phase: number;
 }
 
+const flexokiColors = ['#FFF7D1', '#FFD1D1', '#D1E8FF', '#D1FFD6', '#FFE4D1', '#E8D1FF', '#FFF7D1'];
+
 const ProjectCard = ({
   project,
   index,
@@ -61,89 +67,56 @@ const ProjectCard = ({
   onClick: () => void;
 }) => {
   const { t } = useTranslation();
-  const [isHovered, setIsHovered] = useState(false);
-  const isPrimary = project.accentColor === 'primary';
   const IconComponent = project.icon;
+  const noteColor = flexokiColors[index % flexokiColors.length];
+  // Randomize rotation slightly for sticky note effect
+  const noteRotate = (index % 2 === 0 ? -1 : 1) * ((index % 3) + 1.5);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 60 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, scale: 0.9, y: 50 }}
+      whileInView={{ opacity: 1, scale: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.8, delay: index * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
       onClick={onClick}
-      className="relative group cursor-pointer h-full"
+      className="relative w-full max-w-xs mx-auto aspect-square p-6 cursor-pointer group shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
+      style={{
+        backgroundColor: noteColor,
+        transform: `rotate(${noteRotate}deg)`,
+        borderBottomRightRadius: '3rem 2.5rem',
+        borderBottomLeftRadius: '0.5rem',
+        borderTopRightRadius: '0.5rem',
+        borderTopLeftRadius: '0.5rem',
+      }}
     >
-      <div className="glass-card p-8 h-full relative flex flex-col justify-center items-center text-center transition-all duration-300 hover:border-primary/40 min-h-[260px] overflow-hidden">
-        {/* Electric border on hover */}
-        <motion.div
-          animate={{ opacity: isHovered ? 1 : 0 }}
-          className="absolute inset-0 rounded-2xl pointer-events-none electric-border"
-          style={{
-            padding: '2px',
-            background: `linear-gradient(135deg, ${isPrimary ? 'hsl(25 85% 55%)' : 'hsl(85 70% 45%)'} 0%, ${isPrimary ? 'hsl(85 70% 45%)' : 'hsl(25 85% 55%)'} 100%)`,
-            WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-            mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-            WebkitMaskComposite: 'xor',
-            maskComposite: 'exclude',
-          }}
-        />
-
-        {/* Glow effect */}
-        <motion.div
-          animate={{ opacity: isHovered ? 1 : 0 }}
-          className="absolute inset-0 pointer-events-none rounded-2xl"
-          style={{
-            background: isPrimary
-              ? 'radial-gradient(circle at 50% 50%, hsl(25 85% 55% / 0.15) 0%, transparent 60%)'
-              : 'radial-gradient(circle at 50% 50%, hsl(85 70% 45% / 0.15) 0%, transparent 60%)',
-          }}
-        />
-
-        {/* Shimmer effect */}
-        <motion.div
-          animate={{ opacity: isHovered ? 1 : 0 }}
-          className="absolute inset-0 shimmer pointer-events-none rounded-2xl"
-        />
-
-        {/* Icon/Image */}
-        <motion.div
-          animate={{
-            scale: isHovered ? 1.08 : 1,
-            y: isHovered ? -5 : 0
-          }}
-          className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-300 overflow-hidden mb-6 ${!project.image && (isPrimary
-            ? 'bg-primary/15 text-primary'
-            : 'bg-accent/15 text-accent')
-            }`}
-          style={{
-            boxShadow: isHovered
-              ? `0 0 30px ${isPrimary ? 'hsl(25 85% 55% / 0.4)' : 'hsl(85 70% 45% / 0.4)'}`
-              : 'none'
-          }}
-        >
+      {/* Corner shadow fold effect */}
+      <div 
+        className="absolute bottom-0 right-0 w-12 h-12 pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity duration-300"
+        style={{
+          background: 'linear-gradient(135deg, transparent 45%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.15) 100%)',
+          borderBottomRightRadius: '3rem 2.5rem',
+        }}
+      />
+      
+      <div className="h-full flex flex-col items-center text-center pt-2">
+        <div className="w-16 h-16 rounded-xl flex items-center justify-center bg-black/10 text-black/80 mb-4 overflow-hidden shadow-inner">
           {project.image ? (
-            <img
-              src={project.image}
-              alt={`${project.name} logo`}
-              className="w-full h-full object-cover"
-            />
+            <img src={project.image} alt={`${project.name} logo`} className="w-full h-full object-cover" />
           ) : (
-            IconComponent && <IconComponent className="w-10 h-10" strokeWidth={1.5} />
+            IconComponent && <IconComponent className="w-8 h-8" />
           )}
-        </motion.div>
-
-        {/* Title */}
-        <h3 className="text-2xl font-bold mb-3 text-foreground font-display transition-colors group-hover:text-primary">
+        </div>
+        <h3 className="text-xl font-bold text-black/90 mb-2 font-display leading-tight">
           {project.name}
         </h3>
-
-        {/* Tagline */}
-        <p className={`text-sm font-semibold max-w-[90%] mx-auto leading-snug ${isPrimary ? 'text-primary' : 'text-accent'}`}>
+        <p className="text-sm font-medium text-black/70 mb-4 font-sans line-clamp-3">
           {project.tagline}
         </p>
+        
+        <div className="mt-auto flex items-center gap-1 text-xs font-bold text-black/60 group-hover:text-black/90 transition-colors uppercase tracking-wider">
+          <span>Know more</span>
+          <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+        </div>
       </div>
     </motion.div>
   );
@@ -366,10 +339,13 @@ const ProjectDetailsModal = ({
   );
 };
 
+
+
 export const ProjectsSection = () => {
   const { t } = useTranslation();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
   const [waitlistModal, setWaitlistModal] = useState<{
@@ -509,6 +485,10 @@ export const ProjectsSection = () => {
     setWaitlistModal(prev => ({ ...prev, isOpen: false }));
   };
 
+  useEffect(() => {
+    // GSAP logic removed for sticky note grid
+  }, []);
+
   return (
     <>
       <section id="projects" className="py-32 relative overflow-hidden">
@@ -587,41 +567,19 @@ export const ProjectsSection = () => {
             </p>
           </motion.div>
 
-          <motion.div
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-50px' }}
-          >
+        {/* Sticky Notes Grid */}
+        <div className="relative w-full mt-24 mb-20 max-w-7xl mx-auto px-4 md:px-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12">
             {projects.map((project, index) => (
-              <motion.div
+              <ProjectCard
                 key={project.id}
-                custom={index}
-                variants={cardVariants}
-                onHoverStart={() => setHoveredIndex(index)}
-                onHoverEnd={() => setHoveredIndex(null)}
-                className="relative z-0 hover:z-50 transition-all duration-200"
-              >
-                {/* Spotlight effect on hover */}
-                <AnimatePresence>
-                  {hoveredIndex === index && (
-                    <motion.div
-                      className="absolute -inset-4 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 rounded-3xl blur-2xl -z-10"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  )}
-                </AnimatePresence>
-                <ProjectCard
-                  project={project}
-                  index={index}
-                  onClick={() => setSelectedProject(project)}
-                />
-              </motion.div>
+                project={project}
+                index={index}
+                onClick={() => setSelectedProject(project)}
+              />
             ))}
-          </motion.div>
+          </div>
+        </div>
         </div>
       </section>
 

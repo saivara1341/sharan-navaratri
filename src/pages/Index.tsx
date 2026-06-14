@@ -10,9 +10,10 @@ import { SubmitSection } from '@/components/sections/SubmitSection';
 import { FooterSection } from '@/components/sections/FooterSection';
 import { ServicesSection } from '@/components/sections/ServicesSection';
 import { AIOContent } from '@/components/seo/AIOContent';
-import { ArrowUp } from 'lucide-react';
+import { LiquidMetalUpButton } from "@/components/ui/LiquidMetalUpButton";
+import { FloatingNav } from "@/components/layout/FloatingNav";
+import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from 'framer-motion';
-
 
 const Index = () => {
   const { pathname } = useLocation();
@@ -223,21 +224,11 @@ const Index = () => {
         <AIOContent />
       </main>
       <FooterSection />
+      <FloatingNav />
 
       <AnimatePresence>
         {showScrollTop && (
-          <motion.button
-            initial={{ opacity: 0, y: 20, scale: 0.8 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.8 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="fixed bottom-8 right-8 z-[90] p-4 rounded-full bg-primary text-primary-foreground shadow-2xl shadow-primary/20 border border-primary/30 hover:bg-primary/90 transition-all flex items-center justify-center cursor-pointer"
-            title="Scroll to Top"
-          >
-            <ArrowUp className="w-5 h-5" />
-          </motion.button>
+          <LiquidMetalUpButton onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} />
         )}
       </AnimatePresence>
     </div>

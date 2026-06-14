@@ -6,6 +6,49 @@
 
 @layer base {
   :root {
+    /* Light Mode Theme (Anurag Univ Inspired) */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 20%;
+
+    /* Anurag Maroon */
+    --primary: 353 71% 38%; 
+    --primary-foreground: 0 0% 100%;
+
+    /* Light Grey Backgrounds */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 353 71% 38%;
+
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 40%;
+
+    /* Accent: Gold / Yellow */
+    --accent: 45 100% 50%;
+    --accent-foreground: 0 0% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 90%;
+    --input: 0 0% 96%;
+    --ring: 353 71% 38%;
+
+    --radius: 0.75rem;
+
+    --electric-border: 353 71% 38%;
+    --electric-glow: 45 100% 50%;
+    --electric-lime: 45 100% 50%;
+
+    --glass-bg: 0 0% 100% / 0.8;
+    --glass-border: 0 0% 90% / 0.5;
+  }
+
+  .dark {
     /* Deep space dark theme with electric orange accent */
     --background: 20 15% 3%;
     --foreground: 45 20% 95%;
@@ -62,8 +105,13 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', sans-serif;
-    background: radial-gradient(ellipse at 50% 0%, hsl(25 40% 8%) 0%, hsl(20 15% 3%) 50%);
+    background-color: hsl(var(--background));
+    background-image: none;
     background-attachment: fixed;
+  }
+
+  .dark body {
+    background-image: radial-gradient(ellipse at 50% 0%, hsl(25 40% 8%) 0%, hsl(20 15% 3%) 50%);
   }
 
   h1,

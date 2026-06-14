@@ -211,46 +211,16 @@ export const HeroSection = () => {
           >
             <motion.a
               href="#submit"
-              className="group relative px-8 py-4 rounded-xl font-semibold text-lg overflow-hidden"
+              className="group relative px-10 py-5 rounded-2xl font-semibold text-lg overflow-hidden shadow-2xl shadow-primary/20"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <span className="absolute inset-0 bg-gradient-to-r from-primary via-primary to-accent opacity-90 group-hover:opacity-100 transition-opacity duration-500" />
               <span className="absolute inset-0 bg-gradient-to-r from-primary via-primary to-accent blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
-              <span className="relative flex items-center gap-2 text-primary-foreground">
-                {t('hero.ctaSubmit')}
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </span>
-            </motion.a>
-
-            <motion.a
-              href="#submit?type=requirement"
-              className="group relative px-8 py-4 rounded-xl font-semibold text-lg overflow-hidden"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="absolute inset-0 bg-gradient-to-r from-accent via-accent to-primary opacity-90 group-hover:opacity-100 transition-opacity duration-500" />
-              <span className="absolute inset-0 bg-gradient-to-r from-accent via-accent to-primary blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
-              <span className="relative flex items-center gap-2 text-primary-foreground">
-                {t('hero.ctaRequirements')}
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </span>
-            </motion.a>
-
-            <motion.a
-              href="#submit?type=inquiry"
-              className="group px-8 py-4 rounded-xl font-semibold text-lg border border-primary/40 text-primary hover:bg-primary/10 hover:border-primary/60 transition-all duration-500"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="flex items-center gap-2">
-                {t('hero.ctaExplore')}
-                <svg className="w-5 h-5 group-hover:rotate-45 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              <span className="relative flex items-center gap-3 text-primary-foreground font-bold tracking-wide">
+                Contact Us
+                <svg className="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </span>
             </motion.a>

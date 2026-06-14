@@ -6,14 +6,15 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import AuthPage from "./pages/Auth";
-import Portal from "./pages/Portal";
+import ClientPortal from "./pages/ClientPortal";
+import InvestorPortal from "./pages/InvestorPortal";
+import EmployeePortal from "./pages/EmployeePortal";
 import NexusLanding from "./pages/projects/NexusLanding";
 import NilayamLanding from "./pages/projects/NilayamLanding";
 import ArchPlanLanding from "./pages/projects/ArchPlanLanding";
 import LetUsKnowLanding from "./pages/projects/LetUsKnowLanding";
 import WishOLanding from "./pages/projects/WishOLanding";
 import AdminPortal from "./pages/AdminPortal";
-import Profile from "./pages/Profile";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
@@ -49,21 +50,35 @@ const AuthRedirectHandler = () => {
     // This allows logged-in users to visit the home page freely.
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session && (location.pathname === '/auth' || location.pathname === '/auth/')) {
+        const role = session.user.user_metadata?.role;
         if (checkAdmin(session.user.email)) {
           navigate("/admin-hq-nexus");
+        } else if (role === 'employee') {
+          navigate("/portal/employee");
+        } else if (role === 'client') {
+          navigate("/portal/client");
+        } else if (role === 'investor') {
+          navigate("/portal/investor");
         } else {
-          navigate("/portal");
+          // If they don't have a role, keep them on /auth where Auth.tsx shows the role selector
         }
       }
     });
 
     // Listen for auth changes (like login success)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
+      if (event === 'SIGNED_IN' && session && (location.pathname === '/auth' || location.pathname === '/auth/')) {
+        const role = session.user.user_metadata?.role;
         if (checkAdmin(session.user.email)) {
           navigate("/admin-hq-nexus");
+        } else if (role === 'employee') {
+          navigate("/portal/employee");
+        } else if (role === 'client') {
+          navigate("/portal/client");
+        } else if (role === 'investor') {
+          navigate("/portal/investor");
         } else {
-          navigate("/portal");
+          // Stay on /auth for role selection
         }
       }
     });
@@ -94,8 +109,9 @@ const App = () => {
               <Route path="/projects" element={<Index />} />
               <Route path="/submit" element={<Index />} />
               <Route path="/auth" element={<AuthPage />} />
-              <Route path="/portal" element={<Portal />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/portal/client" element={<ClientPortal />} />
+              <Route path="/portal/investor" element={<InvestorPortal />} />
+              <Route path="/portal/employee" element={<EmployeePortal />} />
               <Route path="/project/nexus" element={<NexusLanding />} />
               <Route path="/project/nilayam" element={<NilayamLanding />} />
               <Route path="/project/archplan" element={<ArchPlanLanding />} />

@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
-import { Eye, EyeOff, ArrowLeft, Mail, Lock, User, Loader2 } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, Mail, Lock, User, Loader2, Briefcase, TrendingUp, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
 
@@ -14,10 +14,9 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-
+  const [needsRoleSelection, setNeedsRoleSelection] = useState(false);
 
   const navigate = useNavigate();
-
 
   const checkAdmin = (emailToCheck?: string) => {
     if (!emailToCheck) return false;
@@ -27,24 +26,31 @@ const Auth = () => {
     return adminEmails.includes(emailToCheck.trim().toLowerCase());
   };
 
+  const checkRoleAndRedirect = (user: any) => {
+    const role = user?.user_metadata?.role;
+    if (checkAdmin(user?.email)) {
+      navigate("/admin-hq-nexus");
+    } else if (role === 'employee') {
+      navigate("/portal/employee");
+    } else if (role === 'client') {
+      navigate("/portal/client");
+    } else if (role === 'investor') {
+      navigate("/portal/investor");
+    } else {
+      setNeedsRoleSelection(true);
+    }
+  };
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        if (checkAdmin(session.user.email)) {
-          navigate("/admin-hq-nexus");
-        } else {
-          navigate("/portal");
-        }
+        checkRoleAndRedirect(session.user);
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        if (checkAdmin(session.user.email)) {
-          navigate("/admin-hq-nexus");
-        } else {
-          navigate("/portal");
-        }
+        checkRoleAndRedirect(session.user);
       }
     });
 
@@ -63,14 +69,8 @@ const Auth = () => {
         });
 
         if (error) throw error;
-
-        if (checkAdmin(email)) {
-          toast.success("Welcome back, Commander.");
-          navigate("/admin-hq-nexus");
-        } else {
-          toast.success("Welcome back!");
-          navigate("/portal");
-        }
+        toast.success("Welcome back!");
+        // The onAuthStateChange will handle redirection
       } else {
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
@@ -110,6 +110,93 @@ const Auth = () => {
       setLoading(false);
     }
   };
+
+  const handleRoleSelection = async (role: string) => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.updateUser({
+        data: { role }
+      });
+      if (error) throw error;
+      
+      toast.success(`Role set to ${role}`);
+      checkRoleAndRedirect(data.user);
+    } catch (err: any) {
+      console.error("ROLE_UPDATE_ERROR:", err);
+      toast.error("Failed to set your role. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (needsRoleSelection) {
+    return (
+      <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
+        <Navbar />
+        <Helmet>
+          <title>Select Your Role | Siddhi Dynamics</title>
+        </Helmet>
+        <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />
+        <div className="flex-grow container relative z-10 mx-auto px-6 pt-32 pb-20 flex justify-center items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-4xl glass-card p-8 electric-border relative text-center"
+          >
+            <h1 className="text-3xl font-bold gradient-text glow-text mb-2 pt-4">Welcome to Siddhi Dynamics</h1>
+            <p className="text-muted-foreground text-base mb-12">Please select how you'll be using our platform to set up your dashboard.</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handleRoleSelection('client')}
+                className="p-8 rounded-2xl border-2 border-border/50 hover:border-primary/50 bg-background/50 flex flex-col items-center text-center transition-all group"
+              >
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <Briefcase className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-2">Startup / Client</h3>
+                <p className="text-sm text-muted-foreground">Manage your projects, payments, team, and track development progress.</p>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handleRoleSelection('investor')}
+                className="p-8 rounded-2xl border-2 border-border/50 hover:accent/50 bg-background/50 flex flex-col items-center text-center transition-all group hover:border-accent/50"
+              >
+                <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <TrendingUp className="w-8 h-8 text-accent" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-2">Venture / Investor</h3>
+                <p className="text-sm text-muted-foreground">Discover our active projects, track traction, and monitor ROI metrics.</p>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handleRoleSelection('employee')}
+                className="p-8 rounded-2xl border-2 border-border/50 hover:border-primary/50 bg-background/50 flex flex-col items-center text-center transition-all group"
+              >
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <Users className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-2">Employee</h3>
+                <p className="text-sm text-muted-foreground">Access internal tasks, project assignments, and team communications.</p>
+              </motion.button>
+            </div>
+            
+            {loading && (
+              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center rounded-2xl z-20">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            )}
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">

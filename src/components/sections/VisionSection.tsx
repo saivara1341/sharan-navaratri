@@ -1,6 +1,11 @@
 import { motion, useInView, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
+import { Sparkles, Brain, Cpu, Bot } from 'lucide-react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -118,49 +123,35 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
   );
 };
 
+
+
 export const VisionSection = () => {
   const { t } = useTranslation();
-  const ref = useRef(null);
+  const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const features = [
     {
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-        </svg>
-      ),
+      icon: <Brain className="w-8 h-8" />,
       title: t('vision.features.ai.title'),
       description: t('vision.features.ai.description'),
       color: 'primary',
     },
     {
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-        </svg>
-      ),
+      icon: <Sparkles className="w-8 h-8" />,
       title: t('vision.features.genAi.title'),
       description: t('vision.features.genAi.description'),
       color: 'accent',
     },
     {
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-      ),
+      icon: <Bot className="w-8 h-8" />,
       title: t('vision.features.agenticAi.title'),
       description: t('vision.features.agenticAi.description'),
       color: 'primary',
     },
     {
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      ),
+      icon: <Cpu className="w-8 h-8" />,
       title: t('vision.features.automation.title'),
       description: t('vision.features.automation.description'),
       color: 'accent',
@@ -174,8 +165,45 @@ export const VisionSection = () => {
     { value: '24/7', label: t('vision.mission.stats.autonomous') },
   ];
 
+  useEffect(() => {
+    let ctx = gsap.context(() => {
+      const cards = gsap.utils.toArray('.custom-card') as HTMLElement[];
+      
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top 15%',
+          end: `+=${cards.length * 80}%`,
+          scrub: 1,
+          pin: true,
+        }
+      });
+
+      cards.forEach((card, index) => {
+        if (index === 0) return;
+
+        tl.from(card, {
+          y: '100vh',
+          ease: 'none',
+        });
+
+        cards.slice(0, index).forEach((prevCard, i) => {
+          const depth = index - i;
+          tl.to(prevCard, {
+            scale: 1 - (depth * 0.05),
+            yPercent: -(depth * 2),
+            opacity: 1 - (depth * 0.1),
+            ease: 'none',
+          }, '<'); 
+        });
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section id="vision" className="py-32 relative overflow-hidden">
+    <section id="vision" className="bg-[#050309] py-32 relative overflow-hidden" ref={ref}>
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/10 to-background" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-primary/3 rounded-full blur-[150px]" />
@@ -213,19 +241,22 @@ export const VisionSection = () => {
           </p>
         </motion.div>
 
-        <motion.div
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-50px' }}
-        >
-          {features.map((feature, index) => (
-            <motion.div key={feature.title} variants={cardVariants}>
-              <FeatureCard feature={feature} index={index} />
-            </motion.div>
-          ))}
-        </motion.div>
+        {/* GSAP Scroll Track for Cards */}
+        <div ref={containerRef} className="relative w-full mt-20 flex items-center justify-center min-h-[60vh] pb-[50px]">
+          <div className="relative w-full max-w-4xl h-[350px]">
+            {features.map((feature, index) => (
+              <div 
+                key={feature.title} 
+                className="custom-card absolute top-0 left-0 w-full"
+                style={{ zIndex: index + 1 }}
+              >
+                <div className="bg-[#0b0c10] border border-white/10 rounded-2xl shadow-2xl overflow-hidden w-full h-full">
+                  <FeatureCard feature={feature} index={index} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Mission statement */}
         <motion.div
