@@ -24,7 +24,7 @@
         "subtitle": "Driving human progress through technological excellence",
         "beyondPrototypes": "Beyond Prototypes,",
         "intoProduction": "Into Production",
-        "visionDescription": "We identify real-world challenges and transform them into scalable, production-ready technology solutions—not just demos, but <0>deployable systems</0> that create lasting impact.",
+        "visionDescription": "We identify real-world challenges and transform them into scalable, <0>production-ready</0> technology solutions—not just demos, but <0>deployable systems</0> that create lasting impact.",
         "mission": {
             "subtitle": "Our Mission",
             "title": "Engineering the Future of <0>Intelligent Systems</0>",
@@ -58,7 +58,7 @@
     "projects": {
         "title": "Our Products",
         "subtitle": "Building the <0>Future</0>",
-        "description": "Explore our portfolio of production-ready AI platforms transforming construction, education, property management, and personal automation.",
+        "description": "Explore our portfolio of <0>production-ready</0> AI platforms transforming construction, education, property management, and personal automation.",
         "readMore": "Read More ↓",
         "showLess": "Show Less ↑",
         "progress": "न्यूरल रोडमैप",
@@ -284,15 +284,15 @@
     "meta": {
         "home": {
             "title": "Siddhi Dynamics | AI Solutions for Real-World Problems",
-            "description": "Deep-tech innovation firm transforming real-world challenges into scalable, production-ready AI solutions powered by AI, Generative AI, and Agentic Intelligence."
+            "description": "Deep-tech innovation firm transforming real-world challenges into scalable, <0>production-ready</0> AI solutions powered by AI, Generative AI, and Agentic Intelligence."
         },
         "vision": {
             "title": "Our Vision | Siddhi Dynamics",
-            "description": "Driving human progress through technological excellence and AI innovation. Building production-ready systems that create lasting impact."
+            "description": "Driving human progress through technological excellence and AI innovation. Building <0>production-ready</0> systems that create lasting impact."
         },
         "projects": {
             "title": "Our Products | Siddhi Dynamics",
-            "description": "Explore our portfolio of production-ready AI platforms transforming construction, education, property management, and personal automation."
+            "description": "Explore our portfolio of <0>production-ready</0> AI platforms transforming construction, education, property management, and personal automation."
         },
         "submit": {
             "title": "Submit Your Challenge | Siddhi Dynamics",

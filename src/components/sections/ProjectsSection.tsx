@@ -23,6 +23,8 @@ import {
 import archplanLogo from '@/assets/archplan-logo.jpeg';
 import nexusLogo from '@/assets/nexuscarrers-logo.jpeg';
 import letusknowLogo from '@/assets/letusknow-logo.png';
+import printflowLogo from '@/assets/printflow-logo.png';
+import indhurFarmsLogo from '@/assets/indhur-farms-logo.png';
 import { WaitlistModal } from '@/components/WaitlistModal';
 
 const cardVariants = {
@@ -45,6 +47,8 @@ interface ProjectData {
   tagline: string;
   description: string;
   icon?: LucideIcon;
+  iconBgClass?: string;
+  iconColorClass?: string;
   image?: string;
   features: string[];
   gradient: string;
@@ -79,7 +83,7 @@ const ProjectCard = ({
       viewport={{ once: true, margin: '-50px' }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       onClick={onClick}
-      className="relative w-full max-w-xs mx-auto aspect-square p-6 cursor-pointer group shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
+      className="relative w-full max-w-xs mx-auto aspect-square p-3 sm:p-6 cursor-pointer group shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
       style={{
         backgroundColor: noteColor,
         transform: `rotate(${noteRotate}deg)`,
@@ -91,31 +95,31 @@ const ProjectCard = ({
     >
       {/* Corner shadow fold effect */}
       <div 
-        className="absolute bottom-0 right-0 w-12 h-12 pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity duration-300"
+        className="absolute bottom-0 right-0 w-8 h-8 sm:w-12 sm:h-12 pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity duration-300"
         style={{
           background: 'linear-gradient(135deg, transparent 45%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.15) 100%)',
           borderBottomRightRadius: '3rem 2.5rem',
         }}
       />
       
-      <div className="h-full flex flex-col items-center text-center pt-2">
-        <div className="w-16 h-16 rounded-xl flex items-center justify-center bg-black/10 text-black/80 mb-4 overflow-hidden shadow-inner">
+      <div className="h-full flex flex-col items-center text-center pt-1 sm:pt-2">
+        <div className={`w-10 h-10 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl flex items-center justify-center ${project.iconBgClass || 'bg-black/10'} ${project.iconColorClass || 'text-black/80'} mb-2 sm:mb-4 overflow-hidden shadow-inner shrink-0`}>
           {project.image ? (
             <img src={project.image} alt={`${project.name} logo`} className="w-full h-full object-cover" />
           ) : (
-            IconComponent && <IconComponent className="w-8 h-8" />
+            IconComponent && <IconComponent className="w-5 h-5 sm:w-8 sm:h-8" />
           )}
         </div>
-        <h3 className="text-xl font-bold text-black/90 mb-2 font-display leading-tight">
+        <h3 className="text-sm sm:text-xl font-bold text-black/90 mb-1 sm:mb-2 font-display leading-tight line-clamp-2">
           {project.name}
         </h3>
-        <p className="text-sm font-medium text-black/70 mb-4 font-sans line-clamp-3">
+        <p className="text-[10px] sm:text-sm font-medium text-black/70 mb-2 sm:mb-4 font-sans line-clamp-2 sm:line-clamp-3">
           {project.tagline}
         </p>
         
-        <div className="mt-auto flex items-center gap-1 text-xs font-bold text-black/60 group-hover:text-black/90 transition-colors uppercase tracking-wider">
+        <div className="mt-auto flex items-center gap-1 text-[9px] sm:text-xs font-bold text-black/60 group-hover:text-black/90 transition-colors uppercase tracking-wider">
           <span>Know more</span>
-          <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
         </div>
       </div>
     </motion.div>
@@ -194,7 +198,7 @@ const ProjectDetailsModal = ({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-        className="relative w-full max-w-2xl bg-[#0b0c10]/95 border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-y-auto max-h-[90vh] z-10"
+        className="relative w-full max-w-2xl bg-card border border-border/50 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-y-auto max-h-[90vh] z-10"
       >
         {/* Close Button */}
         <button
@@ -207,9 +211,9 @@ const ProjectDetailsModal = ({
         {/* Modal Header */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 mb-6 text-center sm:text-left mt-2">
           <div
-            className={`w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden ${!project.image && (isPrimary
+            className={`w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden ${!project.image && (project.iconBgClass ? `${project.iconBgClass} ${project.iconColorClass}` : (isPrimary
               ? 'bg-primary/15 text-primary'
-              : 'bg-accent/15 text-accent')
+              : 'bg-accent/15 text-accent'))
               }`}
           >
             {project.image ? (
@@ -399,6 +403,8 @@ export const ProjectsSection = () => {
       tagline: t('projects.items.nilayam.tagline', 'AI-Driven Property & Smart Living Platform'),
       description: t('projects.items.nilayam.description', 'A modern SaaS platform designed to simplify and automate the entire rental and property management lifecycle. Property owners access a centralized command center to manage properties, generate legally compliant leases instantly, and automate rent collection, ensuring a frictionless experience for both landlords and tenants.'),
       icon: Home,
+      iconBgClass: 'bg-blue-500',
+      iconColorClass: 'text-white',
       features: (t('projects.items.nilayam.features', { returnObjects: true }) as string[])?.length
         ? (t('projects.items.nilayam.features', { returnObjects: true }) as string[])
         : ["AI Lease Generation", "Financial Analytics", "Tenant Portal", "Maintenance AI", "Marketing Automation", "Community Hub"],
@@ -413,7 +419,7 @@ export const ProjectsSection = () => {
       name: t('projects.items.indhur.name', 'Indhur Farms'),
       tagline: t('projects.items.indhur.tagline', 'Premium Organic Produce & Farm Stays'),
       description: t('projects.items.indhur.description', 'A premium farm-to-home platform connecting consumers directly with fresh organic produce and providing bookings for scenic farm stays and educational agri-tourism tours.'),
-      icon: Leaf,
+      image: indhurFarmsLogo,
       features: (t('projects.items.indhur.features', { returnObjects: true }) as string[])?.length 
         ? (t('projects.items.indhur.features', { returnObjects: true }) as string[])
         : ["Organic Marketplace", "Scenic Bookings", "Agri-Tourism", "Direct Sourcing", "Payment Gateway"],
@@ -429,7 +435,7 @@ export const ProjectsSection = () => {
       name: t('projects.items.printflow.name', 'Print Flow (Inkfinity)'),
       tagline: t('projects.items.printflow.tagline', 'Seamless Automated Order & Print Management'),
       description: t('projects.items.printflow.description', 'A comprehensive print-on-demand and print workflow automation platform designed to streamline order ingestion, layout preparation, print queue management, and shipping logistics.'),
-      icon: Printer,
+      image: printflowLogo,
       features: (t('projects.items.printflow.features', { returnObjects: true }) as string[])?.length 
         ? (t('projects.items.printflow.features', { returnObjects: true }) as string[])
         : ["Order Ingestion", "Print Queue", "Automated Layouts", "Logistics Integration"],
@@ -563,13 +569,18 @@ export const ProjectsSection = () => {
               />
             </h2>
             <p className="text-muted-foreground text-lg md:text-xl max-w-3xl mx-auto">
-              {t('projects.description')}
+              <Trans
+                i18nKey="projects.description"
+                components={[
+                  <strong className="text-foreground font-semibold" key="0" />
+                ]}
+              />
             </p>
           </motion.div>
 
         {/* Sticky Notes Grid */}
         <div className="relative w-full mt-24 mb-20 max-w-7xl mx-auto px-4 md:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-3 gap-y-6 sm:gap-x-8 sm:gap-y-12">
             {projects.map((project, index) => (
               <ProjectCard
                 key={project.id}

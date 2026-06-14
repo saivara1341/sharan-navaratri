@@ -6,46 +6,44 @@
 
 @layer base {
   :root {
-    /* Light Mode Theme (Anurag Univ Inspired) */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 20%;
+    /* Light Mode Theme (Monax Inspired) */
+    --background: 42 20% 92%; /* #efede8 */
+    --foreground: 240 10% 5%; /* #0d0d10 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 20%;
+    --card: 43 18% 88%; /* #e5e2da */
+    --card-foreground: 240 10% 5%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 20%;
+    --popover: 42 20% 92%;
+    --popover-foreground: 240 10% 5%;
 
-    /* Anurag Maroon */
-    --primary: 353 71% 38%; 
-    --primary-foreground: 0 0% 100%;
+    /* Medium Pistachio Green for primary */
+    --primary: 78 40% 55%; /* Medium Green */
+    --primary-foreground: 240 10% 5%; /* Dark text for contrast */
 
-    /* Light Grey Backgrounds */
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 353 71% 38%;
+    --secondary: 43 18% 88%; /* #e5e2da */
+    --secondary-foreground: 240 10% 5%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 40%;
+    --muted: 40 5% 52%; /* #8a8780 */
+    --muted-foreground: 240 10% 17%; /* ink-soft */
 
-    /* Accent: Gold / Yellow */
-    --accent: 45 100% 50%;
-    --accent-foreground: 0 0% 10%;
+    --accent: 78 40% 40%; /* Slightly darker green */
+    --accent-foreground: 42 20% 92%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 96%;
-    --ring: 353 71% 38%;
+    --border: 44 23% 82%; /* #dad6c9 */
+    --input: 44 23% 82%;
+    --ring: 78 40% 55%;
 
     --radius: 0.75rem;
 
-    --electric-border: 353 71% 38%;
-    --electric-glow: 45 100% 50%;
-    --electric-lime: 45 100% 50%;
+    --electric-border: 78 40% 55%;
+    --electric-glow: 78 40% 40%;
+    --electric-lime: 78 40% 55%;
 
-    --glass-bg: 0 0% 100% / 0.8;
-    --glass-border: 0 0% 90% / 0.5;
+    --glass-bg: 42 20% 92% / 0.8;
+    --glass-border: 44 23% 82% / 0.5;
   }
 
   .dark {
@@ -201,34 +199,32 @@
 
   /* Electric glow effects */
   .glow-primary {
-    box-shadow:
-      0 0 20px hsl(25 85% 55% / 0.3),
-      0 0 40px hsl(25 85% 55% / 0.2),
-      0 0 60px hsl(25 85% 55% / 0.1);
+    box-shadow: none;
   }
 
   .glow-accent {
-    box-shadow:
-      0 0 20px hsl(85 70% 45% / 0.3),
-      0 0 40px hsl(85 70% 45% / 0.2),
-      0 0 60px hsl(85 70% 45% / 0.1);
+    box-shadow: none;
   }
 
   .glow-text {
-    text-shadow:
-      0 0 20px hsl(25 85% 55% / 0.6),
-      0 0 40px hsl(25 85% 55% / 0.3);
+    text-shadow: none;
   }
 
   .glow-text-accent {
-    text-shadow:
-      0 0 20px hsl(85 70% 45% / 0.6),
-      0 0 40px hsl(85 70% 45% / 0.3);
+    text-shadow: none;
   }
 
   /* Gradient text */
+  /* Red and Yellow in Light Mode, Green and Orange in Dark Mode */
   .gradient-text {
     @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg,
+        #ef4444 0%, /* Red */
+        #eab308 50%, /* Yellow */
+        #f97316 100%); /* Orange */
+  }
+
+  .dark .gradient-text {
     background-image: linear-gradient(135deg,
         hsl(25 85% 60%) 0%,
         hsl(35 90% 55%) 50%,
@@ -236,6 +232,30 @@
   }
 
   .gradient-text-reverse {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg,
+        #eab308 0%, /* Yellow */
+        #f97316 50%, /* Orange */
+        #ef4444 100%); /* Red */
+  }
+
+  .dark .gradient-text-reverse {
+    background-image: linear-gradient(135deg,
+        hsl(85 70% 50%) 0%,
+        hsl(35 90% 55%) 50%,
+        hsl(25 85% 60%) 100%);
+  }
+
+  /* Main Section (Hero) specific Green/Orange combination */
+  .gradient-hero {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg,
+        hsl(25 85% 60%) 0%,
+        hsl(35 90% 55%) 50%,
+        hsl(85 70% 50%) 100%);
+  }
+
+  .gradient-hero-reverse {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg,
         hsl(85 70% 50%) 0%,
@@ -282,15 +302,15 @@
   /* Input styles */
   .input-premium {
     @apply w-full px-5 py-4 rounded-xl text-foreground placeholder:text-muted-foreground transition-all duration-500 focus:outline-none;
-    background: hsl(20 15% 6%);
-    border: 1px solid hsl(25 50% 30% / 0.3);
+    background: white;
+    border: 1px solid hsl(var(--border));
   }
 
   .input-premium:focus {
-    border-color: hsl(25 85% 55% / 0.6);
+    border-color: hsl(var(--primary) / 0.6);
     box-shadow:
-      0 0 20px hsl(25 85% 55% / 0.15),
-      inset 0 0 20px hsl(25 85% 55% / 0.03);
+      0 0 20px hsl(var(--primary) / 0.15),
+      inset 0 0 20px hsl(var(--primary) / 0.03);
   }
 
   /* Particle ring background */

@@ -80,7 +80,7 @@ export const FloatingNav = () => {
               onClick={item.action}
               whileHover={{ scale: 1.15, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              className="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-muted-foreground hover:text-primary transition-all"
+              className="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-white transition-all"
               title={item.label}
             >
               <div className="absolute inset-0 bg-primary/20 rounded-full blur-md opacity-0 hover:opacity-100 transition-opacity" />

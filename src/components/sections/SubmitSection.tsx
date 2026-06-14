@@ -237,7 +237,7 @@ export const SubmitSection = () => {
                     ].find(o => o.value === formData.inquiryType)?.icon
                   }
                 </span>
-                <span className="text-sm font-medium text-primary">
+                <span className="text-sm font-medium text-foreground">
                   {
                     [
                       { value: 'problem', label: t('submit.types.problem') },
@@ -258,7 +258,7 @@ export const SubmitSection = () => {
                   animate={{ opacity: 1, y: 0, scaleY: 1 }}
                   exit={{ opacity: 0, y: -10, scaleY: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute z-50 w-full mt-2 bg-[#0b0c10] border-2 border-primary/30 rounded-xl shadow-2xl overflow-hidden origin-top"
+                  className="absolute z-50 w-full mt-2 bg-card border-2 border-primary/30 rounded-xl shadow-2xl overflow-hidden origin-top"
                 >
                   {[
                     { value: 'problem', label: t('submit.types.problem'), icon: '🎯' },
@@ -276,7 +276,7 @@ export const SubmitSection = () => {
                       className={`w-full p-4 text-left flex items-center gap-3 transition-colors ${formData.inquiryType === type.value ? 'bg-primary/20' : 'hover:bg-primary/10'}`}
                     >
                       <span className="text-2xl shrink-0">{type.icon}</span>
-                      <span className={`text-sm font-medium ${formData.inquiryType === type.value ? 'text-primary' : 'text-foreground'}`}>
+                      <span className={`text-sm font-medium text-foreground`}>
                         {type.label}
                       </span>
                     </button>
@@ -424,7 +424,7 @@ export const SubmitSection = () => {
                 <select
                   value={businessSector}
                   onChange={(e) => setBusinessSector(e.target.value)}
-                  className="input-premium bg-[#0f0f15]/80 border border-white/10 text-foreground cursor-pointer"
+                  className="input-premium bg-card border border-border/50 text-foreground cursor-pointer"
                   required
                 >
                   <option value="E-commerce">E-commerce</option>
@@ -645,7 +645,7 @@ export const SubmitSection = () => {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 30 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-lg bg-[#0a0a0f] border border-white/10 rounded-3xl p-8 overflow-hidden shadow-2xl shadow-primary/10"
+              className="relative w-full max-w-lg bg-card border border-border/50 rounded-3xl p-8 overflow-hidden shadow-2xl shadow-primary/10"
             >
               {/* Radial gradient background */}
               <div className="absolute top-0 left-0 w-80 h-80 bg-primary/10 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2" />
@@ -736,7 +736,7 @@ export const SubmitSection = () => {
         <form
           ref={formRef}
           onSubmit={handleSubmit}
-          className="glass-card electric-border p-6 md:p-10 relative overflow-hidden bg-[#0c0c14]/30"
+          className="glass-card electric-border p-6 md:p-10 relative overflow-hidden bg-card/30"
         >
           {renderFormFields()}
         </form>
@@ -832,8 +832,7 @@ export const SubmitSection = () => {
                 transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
                 whileHover={{ y: -5 }}
               >
-                <div className={`text-6xl font-bold mb-4 opacity-40 group-hover:opacity-70 transition-opacity ${index % 2 === 0 ? 'gradient-text' : 'gradient-text-reverse'
-                  }`}>
+                <div className="text-6xl font-bold mb-4 text-foreground/50 transition-colors duration-300 group-hover:text-orange-500">
                   {item.step}
                 </div>
                 <h4 className="text-xl font-bold text-foreground mb-2">

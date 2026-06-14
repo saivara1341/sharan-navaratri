@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { useRef, useEffect, useState } from "react";
 
 const SERVICES = [
     {
@@ -7,57 +8,98 @@ const SERVICES = [
         title: "Business Automation",
         desc: "Automate bookkeeping, workflows, tax calculations & invoice processing end-to-end.",
         tag: "Most Popular",
-        color: "#7c3aed",
-    },
-    {
-        emoji: "📊",
-        title: "Financial Reports",
-        desc: "Real-time dashboards, GST filing, profit & loss — always audit-ready.",
-        tag: "",
-        color: "#0ea5e9",
     },
     {
         emoji: "🌐",
-        title: "Digital Marketing & Websites",
-        desc: "Business profile websites, SEO campaigns, and social media growth strategies.",
+        title: "Website Development",
+        desc: "High-performance, responsive business profile websites tailored to your brand.",
         tag: "",
-        color: "#10b981",
     },
     {
-        emoji: "💳",
-        title: "NFC / RFID Digital Cards",
-        desc: "Replace visiting cards with smart, tap-to-connect digital NFC & RFID cards.",
-        tag: "New",
-        color: "#f59e0b",
+        emoji: "☁️",
+        title: "SaaS Platforms",
+        desc: "Custom cloud-based Software-as-a-Service solutions for scalable enterprise growth.",
+        tag: "Premium",
+    },
+    {
+        emoji: "🏢",
+        title: "ERP Solutions",
+        desc: "Centralize your business operations with intelligent Enterprise Resource Planning systems.",
+        tag: "",
+    },
+    {
+        emoji: "🛍️",
+        title: "E-Commerce Stores",
+        desc: "Fully functional digital storefronts with seamless payment gateways and inventory management.",
+        tag: "",
     },
     {
         emoji: "⚙️",
         title: "Digital Workflow Solutions",
         desc: "Transform large manual processes into seamless, trackable digital workflows.",
         tag: "",
-        color: "#ec4899",
-    },
-    {
-        emoji: "🧾",
-        title: "Invoice & Tax Processing",
-        desc: "Smart invoice generation, automated tax calculations and e-filing support.",
-        tag: "",
-        color: "#6366f1",
     },
 ];
 
 export function ServicesSection() {
+    const carouselRef = useRef<HTMLDivElement>(null);
+    const [isAutoScrolling, setIsAutoScrolling] = useState(true);
+    const resumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        if (!isAutoScrolling) return;
+
+        const interval = setInterval(() => {
+            if (carouselRef.current) {
+                const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+                
+                // If we've reached the end of the scroll container, loop back to the start
+                if (scrollLeft + clientWidth >= scrollWidth - 10) {
+                    carouselRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    carouselRef.current.scrollBy({ left: 400, behavior: 'smooth' });
+                }
+            }
+        }, 2000);
+
+        return () => clearInterval(interval);
+    }, [isAutoScrolling]);
+
+    const handleUserInteraction = () => {
+        setIsAutoScrolling(false);
+        if (resumeTimeoutRef.current) {
+            clearTimeout(resumeTimeoutRef.current);
+        }
+        resumeTimeoutRef.current = setTimeout(() => {
+            setIsAutoScrolling(true);
+        }, 2000);
+    };
+
+    const scrollLeft = () => {
+        handleUserInteraction();
+        if (carouselRef.current) {
+            carouselRef.current.scrollBy({ left: -400, behavior: 'smooth' });
+        }
+    };
+
+    const scrollRight = () => {
+        handleUserInteraction();
+        if (carouselRef.current) {
+            carouselRef.current.scrollBy({ left: 400, behavior: 'smooth' });
+        }
+    };
+
     return (
         <section
             id="services"
-            className="py-24 md:py-32 relative bg-[#050309] border-t border-white/5"
+            className="py-24 md:py-32 relative border-t border-border/30 bg-background"
         >
             <div className="max-w-7xl mx-auto px-6 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
                     
-                    {/* Left Column: Sticky Header */}
+                    {/* Left Column: Header */}
                     <div className="lg:col-span-5 relative">
-                        <div className="lg:sticky lg:top-32 flex flex-col items-start">
+                        <div className="flex flex-col items-start">
                             <motion.div
                                 initial={{ opacity: 0, y: -20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
@@ -65,7 +107,7 @@ export function ServicesSection() {
                                 transition={{ duration: 0.6 }}
                                 className="inline-flex items-center gap-2 mb-8"
                             >
-                                <span className="text-xs font-bold text-violet-300 tracking-widest uppercase">
+                                <span className="text-xs font-bold tracking-widest uppercase text-primary">
                                     Our Capabilities
                                 </span>
                             </motion.div>
@@ -75,7 +117,7 @@ export function ServicesSection() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6, delay: 0.1 }}
-                                className="text-4xl sm:text-5xl md:text-6xl font-black mb-8 tracking-tight text-white leading-[1.1]"
+                                className="text-4xl sm:text-5xl md:text-6xl font-black mb-8 tracking-tight leading-[1.1] text-foreground"
                             >
                                 Automate. Grow. Dominate. 🚀
                             </motion.h2>
@@ -85,7 +127,7 @@ export function ServicesSection() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6, delay: 0.2 }}
-                                className="text-lg text-slate-400 leading-relaxed mb-10 max-w-md"
+                                className="text-lg leading-relaxed mb-10 max-w-md text-muted-foreground"
                             >
                                 We help businesses replace manual work with intelligent digital systems — including Website Development, SaaS, ERP, E-Commerce, and more — so you focus on what matters.
                             </motion.p>
@@ -96,63 +138,82 @@ export function ServicesSection() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6, delay: 0.3 }}
-                                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black font-bold text-sm tracking-widest uppercase hover:bg-slate-200 transition-colors"
+                                className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm tracking-widest uppercase transition-transform hover:scale-105 bg-primary text-primary-foreground shadow-[0_4px_20px_hsl(var(--primary)/0.3)]"
                             >
                                 Explore Capabilities
                             </motion.button>
                         </div>
                     </div>
 
-                    {/* Right Column: Sticky Stack Cards */}
-                    <div className="lg:col-span-7 flex flex-col pt-12 lg:pt-0 pb-32">
-                        {SERVICES.map((s, i) => (
-                            <motion.div
-                                onClick={() => document.getElementById('submit')?.scrollIntoView({ behavior: 'smooth' })}
-                                key={s.title}
-                                initial={{ opacity: 0, y: 50 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: "-50px" }}
-                                transition={{ duration: 0.6, delay: 0.1 }}
-                                className="sticky w-full rounded-3xl p-8 sm:p-10 mb-6 sm:mb-8 cursor-pointer transition-all duration-300 group shadow-[0_0_30px_rgba(0,0,0,0.3)] hover:shadow-[0_0_40px_rgba(255,255,255,0.05)] border border-white/5"
-                                style={{ 
-                                    top: `calc(10rem + ${i * 1.5}rem)`, 
-                                    zIndex: i + 1,
-                                    backgroundColor: '#0A0A0E', // Dark card background for contrast
-                                }}
+                    {/* Right Column: Carousel */}
+                    <div className="lg:col-span-7 flex flex-col pt-12 lg:pt-0">
+                        {/* Navigation Arrows */}
+                        <div className="flex gap-4 justify-end mb-8">
+                            <button 
+                                onClick={scrollLeft}
+                                className="w-12 h-12 rounded-full border border-border flex items-center justify-center hover:bg-black/5 transition-colors text-foreground"
                             >
-                                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
-                                    {/* Content Wrap */}
-                                    <div className="flex flex-col pr-8">
-                                        <div className="flex items-center gap-4 mb-6">
-                                            <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-white/5 text-3xl shadow-inner border border-white/10">
-                                                {s.emoji}
-                                            </div>
-                                            {s.tag && (
-                                                <span 
-                                                    className="text-[10px] font-extrabold tracking-widest uppercase px-3 py-1 rounded-full text-white shadow-lg"
-                                                    style={{ backgroundColor: s.color }}
-                                                >
-                                                    {s.tag}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <h3 className="text-3xl sm:text-4xl font-bold text-white mb-4 tracking-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r transition-all duration-300" style={{ backgroundImage: `linear-gradient(to right, white, ${s.color})` }}>
-                                            {s.title}
-                                        </h3>
-                                        <p className="text-lg text-slate-400 leading-relaxed">
-                                            {s.desc}
-                                        </p>
-                                    </div>
+                                <ChevronLeft className="w-6 h-6" />
+                            </button>
+                            <button 
+                                onClick={scrollRight}
+                                className="w-12 h-12 rounded-full border border-border flex items-center justify-center hover:bg-black/5 transition-colors text-foreground"
+                            >
+                                <ChevronRight className="w-6 h-6" />
+                            </button>
+                        </div>
 
-                                    {/* Arrow Icon */}
-                                    <div className="mt-4 sm:mt-0 shrink-0">
-                                        <div className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center text-slate-400 group-hover:border-white group-hover:text-white group-hover:bg-white/5 transition-all duration-300 overflow-hidden relative">
-                                            <ArrowUpRight className="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+                        {/* Cards Container */}
+                        <div 
+                            ref={carouselRef} 
+                            onScroll={handleUserInteraction}
+                            onTouchStart={handleUserInteraction}
+                            className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 custom-scrollbar"
+                            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                        >
+                            <style dangerouslySetInnerHTML={{__html: `
+                                .custom-scrollbar::-webkit-scrollbar { display: none; }
+                            `}} />
+                            
+                            {SERVICES.map((s) => (
+                                <div key={s.title} className="snap-start shrink-0 w-[85%] sm:w-[400px]">
+                                    <div
+                                        onClick={() => document.getElementById('submit')?.scrollIntoView({ behavior: 'smooth' })}
+                                        className="service-card h-full rounded-3xl p-8 sm:p-10 cursor-pointer transition-all duration-300 group shadow-[0_0_30px_rgba(0,0,0,0.05)] hover:shadow-[0_0_40px_hsl(var(--primary)/0.2)] border border-border/50 bg-transparent backdrop-blur-md"
+                                    >
+                                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 h-full">
+                                            {/* Content Wrap */}
+                                            <div className="flex flex-col pr-8 flex-1">
+                                                <div className="flex items-center gap-4 mb-6">
+                                                    <div className="w-16 h-16 shrink-0 rounded-2xl flex items-center justify-center text-3xl shadow-sm border border-border/50 transition-colors duration-300 group-hover:border-primary/50 bg-black/5">
+                                                        {s.emoji}
+                                                    </div>
+                                                    {s.tag && (
+                                                        <span className="text-[10px] shrink-0 font-extrabold tracking-widest uppercase px-3 py-1 rounded-full shadow-sm bg-primary text-primary-foreground">
+                                                            {s.tag}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <h3 className="text-3xl sm:text-4xl font-bold mb-4 tracking-tight transition-all duration-300 text-foreground">
+                                                    {s.title}
+                                                </h3>
+                                                <p className="text-lg leading-relaxed mt-auto text-muted-foreground">
+                                                    {s.desc}
+                                                </p>
+                                            </div>
+
+                                            {/* Arrow Icon */}
+                                            <div className="mt-4 sm:mt-0 shrink-0">
+                                                <div className="w-14 h-14 rounded-full border border-border flex items-center justify-center transition-all duration-300 overflow-hidden relative group-hover:border-transparent text-muted-foreground">
+                                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-primary" />
+                                                    <ArrowUpRight className="w-6 h-6 transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 relative z-10 group-hover:text-primary-foreground" />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </motion.div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

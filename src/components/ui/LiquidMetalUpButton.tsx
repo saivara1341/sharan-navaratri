@@ -70,7 +70,7 @@ export const LiquidMetalUpButton = ({ onClick }: { onClick: () => void }) => {
     >
       <div className="relative w-full h-full flex items-center justify-center">
         {/* Animated Arrow Up Icon */}
-        <div className="absolute z-10 pointer-events-none flex items-center justify-center w-full h-full text-foreground">
+        <div className="absolute z-10 pointer-events-none flex items-center justify-center w-full h-full text-white">
           <ArrowUp className="w-6 h-6 absolute transition-all duration-300 group-hover:-translate-y-10 group-hover:opacity-0" />
           <ArrowUp className="w-6 h-6 absolute translate-y-10 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100" />
         </div>

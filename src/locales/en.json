@@ -28,7 +28,7 @@
     "subtitle": "Driving human progress through technological excellence",
     "beyondPrototypes": "Beyond Prototypes,",
     "intoProduction": "Into Production",
-    "visionDescription": "We identify real-world challenges and transform them into scalable, production-ready technology solutions—not just demos, but <0>deployable systems</0> that create lasting impact.",
+    "visionDescription": "We identify real-world challenges and transform them into scalable, <0>production-ready</0> technology solutions—not just demos, but <0>deployable systems</0> that create lasting impact.",
     "mission": {
       "subtitle": "Our Mission",
       "title": "Engineering the Future of <0>Intelligent Systems</0>",
@@ -62,7 +62,7 @@
   "projects": {
     "title": "Our Products",
     "subtitle": "Building the <0>Future</0>",
-    "description": "Explore our portfolio of production-ready AI platforms transforming construction, education, property management, and personal automation.",
+    "description": "Discover our ecosystem of intelligent platforms driving innovation across <0>construction, education, real estate, agriculture, civic governance, and automated workflows.</0>",
     "readMore": "Read More ↓",
     "showLess": "Show Less ↑",
     "progress": "Neural Roadmap",

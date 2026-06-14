@@ -30,10 +30,10 @@ export const FooterSection = () => {
   };
 
   return (
-    <footer ref={ref} className="py-20 border-t border-border/30 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-t from-secondary/10 to-transparent" />
+    <footer ref={ref} className="py-20 border-t border-white/10 bg-black text-white relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent" />
       <motion.div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/3 rounded-full blur-[150px]"
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/10 rounded-full blur-[150px]"
         animate={{
           scale: [1, 1.1, 1],
           opacity: [0.3, 0.5, 0.3]
@@ -65,10 +65,10 @@ export const FooterSection = () => {
               />
             </motion.div>
             <div>
-              <span className="font-bold text-xl text-foreground block">
+              <span className="font-bold text-xl text-white block">
                 Siddhi Dynamics LLP
               </span>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-slate-400">
                 {t('hero.badge')}
               </span>
             </div>
@@ -89,7 +89,7 @@ export const FooterSection = () => {
                 href={link.href}
                 custom={index}
                 variants={linkVariants}
-                className="relative text-sm text-muted-foreground hover:text-foreground transition-colors group"
+                className="relative text-sm text-slate-400 hover:text-white transition-colors group"
                 whileHover={{ y: -3, scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -115,7 +115,8 @@ export const FooterSection = () => {
               href="https://www.linkedin.com/company/siddhi-dynamics-llp"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 transition-all duration-300"
+              className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/30 transition-all duration-300"
+              style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}
               whileHover={{ scale: 1.1, y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -127,7 +128,8 @@ export const FooterSection = () => {
               href="https://www.instagram.com/siddhidynamics/?igsh=djB1eXhhaGNoc3M4"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 transition-all duration-300"
+              className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/30 transition-all duration-300"
+              style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}
               whileHover={{ scale: 1.1, y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -137,7 +139,8 @@ export const FooterSection = () => {
             </motion.a>
             <motion.a
               href="mailto:saivaraprasad@siddhidynamics.in"
-              className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 transition-all duration-300"
+              className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/30 transition-all duration-300"
+              style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}
               whileHover={{ scale: 1.1, y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -152,11 +155,11 @@ export const FooterSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.6, duration: 0.8 }}
-          className="mt-16 pt-8 border-t border-border/30 flex flex-col md:flex-row items-center justify-between gap-4"
+          className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4"
         >
           <div className="flex flex-col md:flex-row items-center gap-6">
             <motion.p
-              className="text-sm text-muted-foreground"
+              className="text-sm text-slate-400"
               initial={{ opacity: 0 }}
               animate={isInView ? { opacity: 1 } : {}}
               transition={{ delay: 0.7 }}
@@ -169,7 +172,7 @@ export const FooterSection = () => {
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
                 transition={{ delay: 0.8 }}
-                className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                className="text-xs text-slate-400 hover:text-primary transition-colors"
               >
                 Privacy Policy
               </motion.a>
@@ -178,14 +181,14 @@ export const FooterSection = () => {
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
                 transition={{ delay: 0.9 }}
-                className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                className="text-xs text-slate-400 hover:text-primary transition-colors"
               >
                 Terms of Service
               </motion.a>
             </div>
           </div>
           <motion.p
-            className="text-xs text-muted-foreground/60 flex items-center gap-2"
+            className="text-xs text-slate-400/60 flex items-center gap-2"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ delay: 0.8 }}
@@ -198,7 +201,6 @@ export const FooterSection = () => {
               }}
               transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
             />
-            {/* Footer description removed per user request */}
           </motion.p>
         </motion.div>
       </div>

@@ -61,7 +61,7 @@ export const HeroSection = () => {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden particle-ring"
+      className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden particle-ring pt-32 pb-32"
       style={{
         '--ring-x': mousePosition.x,
         '--ring-y': mousePosition.y,
@@ -163,7 +163,7 @@ export const HeroSection = () => {
               Siddhi Transforms
             </motion.span>
             <motion.span
-              className="block gradient-text glow-text"
+              className="block gradient-hero glow-text"
               custom={1}
               initial="hidden"
               animate="visible"
@@ -179,7 +179,7 @@ export const HeroSection = () => {
               variants={textRevealVariants}
             >
               {t('hero.into')} <motion.span
-                className="gradient-text-reverse glow-text-accent inline-block"
+                className="gradient-hero-reverse glow-text-accent inline-block"
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >{t('hero.aiSolutions')}</motion.span>
@@ -207,7 +207,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-32"
           >
             <motion.a
               href="#submit"
@@ -232,7 +232,7 @@ export const HeroSection = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.5 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2"
+          className="absolute bottom-24 left-1/2 -translate-x-1/2"
         >
           <motion.div
             animate={{ y: [0, 12, 0] }}

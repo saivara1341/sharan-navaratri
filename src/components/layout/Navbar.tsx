@@ -94,7 +94,7 @@ export const Navbar = () => {
         <motion.div
           className="absolute inset-0 transition-colors duration-300"
           style={{
-            backgroundColor: scrolled ? 'rgba(2, 2, 2, 0.98)' : 'rgba(2, 2, 2, 0.85)',
+            backgroundColor: scrolled ? 'rgba(45, 45, 45, 0.98)' : 'rgba(45, 45, 45, 0.85)',
             backdropFilter: 'blur(45px) saturate(180%)',
             WebkitBackdropFilter: 'blur(45px) saturate(180%)',
             borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
@@ -122,7 +122,7 @@ export const Navbar = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-lg text-foreground tracking-tight">
+                <span className="font-bold text-lg text-white tracking-tight">
                   SIDDHI
                 </span>
                 <span className="text-xs text-primary font-medium tracking-[0.2em]">
@@ -201,7 +201,7 @@ export const Navbar = () => {
                       </motion.a>
                       <motion.a
                         href={isPortal ? '#/portal?tab=contact' : '#/submit'}
-                        className="flex items-center px-4 py-2.5 rounded-xl font-semibold text-sm bg-white/5 hover:bg-white/10 text-foreground transition-colors border border-white/10"
+                        className="flex items-center px-4 py-2.5 rounded-xl font-semibold text-sm bg-white/5 hover:bg-white/10 text-foreground transition-colors border border-white/10 ml-6"
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.25, duration: 0.5 }}
@@ -237,18 +237,18 @@ export const Navbar = () => {
               >
                 <div className="flex flex-col gap-1.5">
                   <motion.span
-                    className="w-6 h-0.5 bg-foreground rounded-full"
+                    className="w-6 h-0.5 bg-white rounded-full"
                     animate={{
                       rotate: mobileMenuOpen ? 45 : 0,
                       y: mobileMenuOpen ? 8 : 0
                     }}
                   />
                   <motion.span
-                    className="w-6 h-0.5 bg-foreground rounded-full"
+                    className="w-6 h-0.5 bg-white rounded-full"
                     animate={{ opacity: mobileMenuOpen ? 0 : 1 }}
                   />
                   <motion.span
-                    className="w-6 h-0.5 bg-foreground rounded-full"
+                    className="w-6 h-0.5 bg-white rounded-full"
                     animate={{
                       rotate: mobileMenuOpen ? -45 : 0,
                       y: mobileMenuOpen ? -8 : 0
@@ -267,10 +267,10 @@ export const Navbar = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[105] md:hidden bg-[#020202]"
+            className="fixed inset-0 z-[105] md:hidden bg-[#2d2d2d]"
           >
             <div
-              className="absolute inset-0 bg-[#020202] backdrop-blur-3xl"
+              className="absolute inset-0 bg-[#2d2d2d] backdrop-blur-3xl"
               onClick={() => setMobileMenuOpen(false)}
             />
               <motion.nav

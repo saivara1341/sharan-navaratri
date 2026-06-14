@@ -1,7 +1,7 @@
 import { motion, useInView, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Sparkles, Brain, Cpu, Bot } from 'lucide-react';
+import { Network, Lightbulb, Waypoints, Zap } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -94,10 +94,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
             scale: isHovered ? 1.1 : 1,
             rotate: isHovered ? 5 : 0
           }}
-          className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 ${isPrimary
-              ? 'bg-primary/10 text-primary group-hover:bg-primary/20 group-hover:shadow-[0_0_30px_hsl(25_85%_55%_/_0.3)]'
-              : 'bg-accent/10 text-accent group-hover:bg-accent/20 group-hover:shadow-[0_0_30px_hsl(85_70%_45%_/_0.3)]'
-            }`}
+          className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 bg-primary/10 text-foreground group-hover:bg-orange-500/20 group-hover:text-orange-600 group-hover:shadow-[0_0_30px_rgba(249,115,22,0.3)]"
         >
           {feature.icon}
         </motion.div>
@@ -133,25 +130,25 @@ export const VisionSection = () => {
 
   const features = [
     {
-      icon: <Brain className="w-8 h-8" />,
+      icon: <Network className="w-8 h-8" />,
       title: t('vision.features.ai.title'),
       description: t('vision.features.ai.description'),
       color: 'primary',
     },
     {
-      icon: <Sparkles className="w-8 h-8" />,
+      icon: <Lightbulb className="w-8 h-8" />,
       title: t('vision.features.genAi.title'),
       description: t('vision.features.genAi.description'),
       color: 'accent',
     },
     {
-      icon: <Bot className="w-8 h-8" />,
+      icon: <Waypoints className="w-8 h-8" />,
       title: t('vision.features.agenticAi.title'),
       description: t('vision.features.agenticAi.description'),
       color: 'primary',
     },
     {
-      icon: <Cpu className="w-8 h-8" />,
+      icon: <Zap className="w-8 h-8" />,
       title: t('vision.features.automation.title'),
       description: t('vision.features.automation.description'),
       color: 'accent',
@@ -203,7 +200,7 @@ export const VisionSection = () => {
   }, []);
 
   return (
-    <section id="vision" className="bg-[#050309] py-32 relative overflow-hidden" ref={ref}>
+    <section id="vision" className="bg-background py-32 relative overflow-hidden" ref={ref}>
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/10 to-background" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-primary/3 rounded-full blur-[150px]" />
@@ -250,7 +247,7 @@ export const VisionSection = () => {
                 className="custom-card absolute top-0 left-0 w-full"
                 style={{ zIndex: index + 1 }}
               >
-                <div className="bg-[#0b0c10] border border-white/10 rounded-2xl shadow-2xl overflow-hidden w-full h-full">
+                <div className="bg-card border border-border/50 rounded-2xl shadow-2xl overflow-hidden w-full h-full">
                   <FeatureCard feature={feature} index={index} />
                 </div>
               </div>
