@@ -381,7 +381,7 @@ export const ProjectsSection = () => {
       tagline: t('projects.items.archplan.tagline', 'AI-Powered Construction Intelligence Platform'),
       description: t('projects.items.archplan.description', 'A comprehensive, AI-driven platform designed to digitize and streamline the entire construction lifecycle in India. By connecting homeowners, civil engineers, architects, suppliers, and service providers within a single intelligent workflow, ArchPlan AI reduces project delays and optimizes resource allocation with precision.'),
       image: archplanLogo,
-      features: (t('projects.items.archplan.features', { returnObjects: true }) as string[])?.length
+      features: Array.isArray(t('projects.items.archplan.features', { returnObjects: true }))
         ? (t('projects.items.archplan.features', { returnObjects: true }) as string[])
         : ["AI 2D/3D Plans", "Vastu Compliance", "BOQ Generation", "Cost Estimation", "Material Marketplace", "Project Management"],
       gradient: 'from-primary to-orange-400',
@@ -397,7 +397,7 @@ export const ProjectsSection = () => {
       tagline: t('projects.items.nexus.tagline', 'AI-Powered Student Career & Learning Platform'),
       description: t('projects.items.nexus.description', 'Our flagship AI ecosystem helping students transition from education to employment. Build precision AI resumes, discover targeted job opportunities, and access personalized study materials to bridge skill gaps.'),
       image: nexusLogo,
-      features: (t('projects.items.nexus.features', { returnObjects: true }) as string[])?.length
+      features: Array.isArray(t('projects.items.nexus.features', { returnObjects: true }))
         ? (t('projects.items.nexus.features', { returnObjects: true }) as string[])
         : ["AI Mock Interviews", "Skill-Gap Detection", "Institutional ERP", "Recruiter Portal", "Gamified Learning", "Career Analytics"],
       gradient: 'from-accent to-lime-400',
@@ -415,7 +415,7 @@ export const ProjectsSection = () => {
       icon: Home,
       iconBgClass: 'bg-blue-500',
       iconColorClass: 'text-white',
-      features: (t('projects.items.nilayam.features', { returnObjects: true }) as string[])?.length
+      features: Array.isArray(t('projects.items.nilayam.features', { returnObjects: true }))
         ? (t('projects.items.nilayam.features', { returnObjects: true }) as string[])
         : ["AI Lease Generation", "Financial Analytics", "Tenant Portal", "Maintenance AI", "Marketing Automation", "Community Hub"],
       gradient: 'from-accent to-emerald-400',
@@ -430,7 +430,7 @@ export const ProjectsSection = () => {
       tagline: t('projects.items.indhur.tagline', 'Premium Organic Produce & Farm Stays'),
       description: t('projects.items.indhur.description', 'A premium farm-to-home platform connecting consumers directly with fresh organic produce and providing bookings for scenic farm stays and educational agri-tourism tours.'),
       image: indhurFarmsLogo,
-      features: (t('projects.items.indhur.features', { returnObjects: true }) as string[])?.length 
+      features: Array.isArray(t('projects.items.indhur.features', { returnObjects: true }))
         ? (t('projects.items.indhur.features', { returnObjects: true }) as string[])
         : ["Organic Marketplace", "Scenic Bookings", "Agri-Tourism", "Direct Sourcing", "Payment Gateway"],
       gradient: 'from-emerald-500 to-green-600',
@@ -446,7 +446,7 @@ export const ProjectsSection = () => {
       tagline: t('projects.items.printflow.tagline', 'Seamless Automated Order & Print Management'),
       description: t('projects.items.printflow.description', 'A comprehensive print-on-demand and print workflow automation platform designed to streamline order ingestion, layout preparation, print queue management, and shipping logistics.'),
       image: printflowLogo,
-      features: (t('projects.items.printflow.features', { returnObjects: true }) as string[])?.length 
+      features: Array.isArray(t('projects.items.printflow.features', { returnObjects: true }))
         ? (t('projects.items.printflow.features', { returnObjects: true }) as string[])
         : ["Order Ingestion", "Print Queue", "Automated Layouts", "Logistics Integration"],
       gradient: 'from-blue-500 to-cyan-500',
@@ -462,7 +462,7 @@ export const ProjectsSection = () => {
       tagline: t('projects.items.wish0.tagline', 'Automated Occasion & Celebration Intelligence'),
       description: t('projects.items.wish0.description', 'An AI-powered automation system designed to deliver personalized wishes for birthdays and all major life occasions without manual intervention. Wish-0 learns relationship dynamics to craft contextually relevant messages, ensuring you never miss a moment to connect with your loved ones.'),
       icon: Heart,
-      features: (t('projects.items.wish0.features', { returnObjects: true }) as string[])?.length
+      features: Array.isArray(t('projects.items.wish0.features', { returnObjects: true }))
         ? (t('projects.items.wish0.features', { returnObjects: true }) as string[])
         : ["Auto Scheduling", "Personalized Messages", "Multi-Channel Delivery", "Relationship Learning", "Emotional Intelligence", "Zero-Friction UX"],
       gradient: 'from-primary to-amber-500',
@@ -477,7 +477,7 @@ export const ProjectsSection = () => {
       tagline: t('projects.items.letusknow.tagline', 'Citizen-Centric Digital Governance Platform'),
       description: t('projects.items.letusknow.description', 'A revolutionary citizen-centric digital governance platform designed to simplify how people access government services, understand procedures, and resolve public and personal issues. Letusknow bridges the gap between the administration and the public, fostering transparency and efficient grievance redressal.'),
       image: letusknowLogo,
-      features: (t('projects.items.letusknow.features', { returnObjects: true }) as string[])?.length
+      features: Array.isArray(t('projects.items.letusknow.features', { returnObjects: true }))
         ? (t('projects.items.letusknow.features', { returnObjects: true }) as string[])
         : ["GPS-Based Location", "Political Representatives Info", "Government Services Guide", "Department Directory", "Development Projects", "Tourism Promotion"],
       gradient: 'from-cyan-500 to-blue-600',
