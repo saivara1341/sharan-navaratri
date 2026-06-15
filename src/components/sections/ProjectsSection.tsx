@@ -174,6 +174,16 @@ const ProjectDetailsModal = ({
       return;
     }
 
+    if (project.id === 'print_flow') {
+      window.open('https://saivara1341.github.io/inkfinity/', '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    if (project.id === 'indhur_farms') {
+      window.open('https://saivara1341.github.io/indhur-farms/', '_blank', 'noopener,noreferrer');
+      return;
+    }
+
     if (project.url) {
       window.open(project.url, '_blank', 'noopener,noreferrer');
     } else {
@@ -203,7 +213,7 @@ const ProjectDetailsModal = ({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-muted-foreground hover:text-foreground transition-all cursor-pointer z-50"
+          className="absolute top-5 right-5 p-2 rounded-xl bg-muted/30 hover:bg-muted/60 border border-border text-muted-foreground hover:text-foreground transition-all cursor-pointer z-50"
         >
           <X className="w-5 h-5" />
         </button>
@@ -240,16 +250,16 @@ const ProjectDetailsModal = ({
         {/* Description */}
         <div className="mb-6">
           <h4 className="text-xs uppercase font-bold tracking-[0.2em] text-muted-foreground/60 mb-2">About Project</h4>
-          <p className="text-slate-300 text-sm leading-relaxed">
+          <p className="text-foreground/80 text-sm leading-relaxed">
             {project.description}
           </p>
         </div>
 
         {/* Development Roadmap */}
-        <div className="mb-8 p-5 bg-white/5 border border-white/5 rounded-2xl">
+        <div className="mb-8 p-5 bg-muted/30 border border-border rounded-2xl">
           <div className="flex justify-between items-end mb-3">
             <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">Development Roadmap</span>
-            <span className={`text-[10px] font-bold px-2 py-0.5 rounded bg-white/5 border border-white/10 uppercase tracking-wider ${isPrimary ? 'text-primary' : 'text-accent'}`}>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded bg-muted/50 border border-border uppercase tracking-wider ${isPrimary ? 'text-primary' : 'text-accent'}`}>
               {t(`projects.statuses.${project.statusKey}`)}
             </span>
           </div>
@@ -261,7 +271,7 @@ const ProjectDetailsModal = ({
                   <div
                     className={`w-3.5 h-3.5 rounded-full relative z-20 transition-all duration-500 ${step <= project.phase
                       ? (isPrimary ? 'bg-primary shadow-[0_0_12px_rgba(251,146,60,0.85)]' : 'bg-accent shadow-[0_0_12px_rgba(132,204,22,0.85)]')
-                      : 'bg-white/10'
+                      : 'bg-border'
                     }`}
                   >
                     {step === project.phase && (
@@ -277,7 +287,7 @@ const ProjectDetailsModal = ({
             </div>
 
             {/* Connector Line */}
-            <div className="absolute top-[14px] left-0 right-0 h-[2px] bg-white/10 z-0 px-1">
+            <div className="absolute top-[14px] left-0 right-0 h-[2px] bg-border z-0 px-1">
               <div
                 className={`h-full ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
                 style={{ width: `${(project.phase - 1) * 25}%` }}
@@ -309,7 +319,7 @@ const ProjectDetailsModal = ({
         </div>
 
         {/* Action Button */}
-        <div className="pt-5 border-t border-white/10 flex flex-col sm:flex-row gap-3">
+        <div className="pt-5 border-t border-border flex flex-col sm:flex-row gap-3">
           <button
             onClick={handleActionClick}
             className={`flex-1 py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${project.id === 'nexus' || project.id === 'nilayam' || project.id === 'archplan' || project.id === 'letusknow' || project.id === 'wish0' || project.url
@@ -333,7 +343,7 @@ const ProjectDetailsModal = ({
           </button>
           <button
             onClick={onClose}
-            className="px-6 py-3.5 rounded-xl font-bold text-sm bg-white/5 border border-white/10 hover:bg-white/10 text-slate-300 transition-all cursor-pointer"
+            className="px-6 py-3.5 rounded-xl font-bold text-sm bg-muted/30 border border-border hover:bg-muted/60 text-muted-foreground transition-all cursor-pointer"
           >
             Close
           </button>
@@ -425,7 +435,7 @@ export const ProjectsSection = () => {
         : ["Organic Marketplace", "Scenic Bookings", "Agri-Tourism", "Direct Sourcing", "Payment Gateway"],
       gradient: 'from-emerald-500 to-green-600',
       accentColor: 'accent',
-      url: 'https://saivara1341.github.io/indhur-farms/',
+      url: 'https://indhurfarms.in/',
       stageKey: 'phase5',
       statusKey: 'production',
       phase: 5,
