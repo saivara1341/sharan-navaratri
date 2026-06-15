@@ -270,7 +270,7 @@ const ProjectDetailsModal = ({
                 <div key={step} className="relative flex flex-col items-center">
                   <div
                     className={`w-3.5 h-3.5 rounded-full relative z-20 transition-all duration-500 ${step <= project.phase
-                      ? (isPrimary ? 'bg-primary shadow-[0_0_12px_rgba(251,146,60,0.85)]' : 'bg-accent shadow-[0_0_12px_rgba(132,204,22,0.85)]')
+                      ? (isPrimary ? 'bg-primary dark:shadow-[0_0_12px_rgba(251,146,60,0.85)]' : 'bg-accent dark:shadow-[0_0_12px_rgba(132,204,22,0.85)]')
                       : 'bg-border'
                     }`}
                   >
@@ -323,7 +323,7 @@ const ProjectDetailsModal = ({
           <button
             onClick={handleActionClick}
             className={`flex-1 py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${project.id === 'nexus' || project.id === 'nilayam' || project.id === 'archplan' || project.id === 'letusknow' || project.id === 'wish0' || project.url
-              ? 'bg-gradient-to-r from-primary to-orange-400 text-primary-foreground shadow-[0_4px_15px_rgba(251,146,60,0.3)] hover:shadow-[0_0_25px_hsl(25_85%_55%/0.5)]'
+              ? 'bg-gradient-to-r from-primary to-orange-400 text-primary-foreground dark:shadow-[0_4px_15px_rgba(251,146,60,0.3)] dark:hover:shadow-[0_0_25px_hsl(25_85%_55%/0.5)]'
               : isPrimary
                 ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                 : 'bg-accent text-accent-foreground hover:bg-accent/90'

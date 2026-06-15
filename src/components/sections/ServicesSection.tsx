@@ -138,7 +138,7 @@ export function ServicesSection() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6, delay: 0.3 }}
-                                className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm tracking-widest uppercase transition-transform hover:scale-105 bg-primary text-primary-foreground shadow-[0_4px_20px_hsl(var(--primary)/0.3)]"
+                                className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm tracking-widest uppercase transition-transform hover:scale-105 bg-primary text-primary-foreground"
                             >
                                 Explore Capabilities
                             </motion.button>
@@ -179,7 +179,7 @@ export function ServicesSection() {
                                 <div key={s.title} className="snap-start shrink-0 w-[85%] sm:w-[400px]">
                                     <div
                                         onClick={() => document.getElementById('submit')?.scrollIntoView({ behavior: 'smooth' })}
-                                        className="service-card h-full rounded-3xl p-8 sm:p-10 cursor-pointer transition-all duration-300 group shadow-[0_0_30px_rgba(0,0,0,0.05)] hover:shadow-[0_0_40px_hsl(var(--primary)/0.2)] border border-border/50 bg-transparent backdrop-blur-md"
+                                        className="service-card h-full rounded-3xl p-8 sm:p-10 cursor-pointer transition-all duration-300 group shadow-[0_0_30px_rgba(0,0,0,0.05)] hover:shadow-md border border-border/50 bg-transparent backdrop-blur-md"
                                     >
                                         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 h-full">
                                             {/* Content Wrap */}

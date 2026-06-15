@@ -114,11 +114,11 @@ export const Navbar = () => {
               whileTap={{ scale: 0.98 }}
             >
               <div className="relative w-14 h-14 flex items-center justify-center">
-                <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl opacity-60" />
+                <div className="absolute inset-0 dark:bg-primary/20 rounded-full blur-2xl opacity-60" />
                 <img
                   src={siddhiLogo}
                   alt="Siddhi Dynamics Logo"
-                  className="relative w-full h-full object-contain drop-shadow-[0_0_15px_rgba(251,146,60,0.5)]"
+                  className="relative w-full h-full object-contain dark:drop-shadow-[0_0_15px_rgba(251,146,60,0.5)]"
                 />
               </div>
               <div className="flex flex-col">

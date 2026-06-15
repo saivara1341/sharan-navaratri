@@ -94,7 +94,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
             scale: isHovered ? 1.1 : 1,
             rotate: isHovered ? 5 : 0
           }}
-          className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 bg-primary/10 text-foreground group-hover:bg-orange-500/20 group-hover:text-orange-600 group-hover:shadow-[0_0_30px_rgba(249,115,22,0.3)]"
+          className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 bg-primary/10 text-foreground group-hover:bg-primary/20 group-hover:text-primary dark:group-hover:bg-orange-500/20 dark:group-hover:text-orange-600 dark:group-hover:shadow-[0_0_30px_rgba(249,115,22,0.3)]"
         >
           {feature.icon}
         </motion.div>
@@ -309,9 +309,9 @@ export const VisionSection = () => {
                       className="text-4xl font-bold gradient-text mb-2 relative z-10"
                       animate={{
                         textShadow: [
-                          "0 0 20px hsl(25 85% 55% / 0)",
-                          "0 0 30px hsl(25 85% 55% / 0.5)",
-                          "0 0 20px hsl(25 85% 55% / 0)"
+                          "0 0 0px transparent",
+                          "0 0 0px transparent",
+                          "0 0 0px transparent"
                         ]
                       }}
                       transition={{ duration: 2, repeat: Infinity, delay: index * 0.3 }}
