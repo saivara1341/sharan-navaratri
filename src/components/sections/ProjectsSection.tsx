@@ -175,7 +175,7 @@ const ProjectDetailsModal = ({
     }
 
     if (project.id === 'print_flow') {
-      window.open('https://saivara1341.github.io/inkfinity/', '_blank', 'noopener,noreferrer');
+      window.open('https://saivara1341.github.io/inkfinity', '_blank', 'noopener,noreferrer');
       return;
     }
 
@@ -435,7 +435,7 @@ export const ProjectsSection = () => {
         : ["Organic Marketplace", "Scenic Bookings", "Agri-Tourism", "Direct Sourcing", "Payment Gateway"],
       gradient: 'from-emerald-500 to-green-600',
       accentColor: 'accent',
-      url: 'https://indhurfarms.in/',
+      url: 'https://saivara1341.github.io/indhur-farms/',
       stageKey: 'phase5',
       statusKey: 'production',
       phase: 5,
@@ -451,7 +451,7 @@ export const ProjectsSection = () => {
         : ["Order Ingestion", "Print Queue", "Automated Layouts", "Logistics Integration"],
       gradient: 'from-blue-500 to-cyan-500',
       accentColor: 'primary',
-      url: 'https://saivara1341.github.io/inkfinity/',
+      url: 'https://saivara1341.github.io/inkfinity',
       stageKey: 'phase5',
       statusKey: 'production',
       phase: 5,
