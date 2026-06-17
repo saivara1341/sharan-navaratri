@@ -22,7 +22,10 @@ export const Navbar = () => {
     location.pathname === '' || 
     location.pathname === '/vision' || 
     location.pathname === '/projects' || 
-    location.pathname === '/submit';
+    location.pathname === '/submit' ||
+    location.pathname === '/about' ||
+    location.pathname === '/blog' ||
+    location.pathname.startsWith('/services/');
   const isPortal = location.pathname.includes('/portal');
 
   const navLinks = [
@@ -132,6 +135,22 @@ export const Navbar = () => {
             </motion.a>
 
             <nav className="hidden md:flex items-center gap-1">
+              <motion.a
+                href="/about"
+                onClick={(e) => { e.preventDefault(); navigate('/about'); }}
+                className="relative px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all"
+                whileHover={{ scale: 1.02 }}
+              >
+                About
+              </motion.a>
+              <motion.a
+                href="/blog"
+                onClick={(e) => { e.preventDefault(); navigate('/blog'); }}
+                className="relative px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all"
+                whileHover={{ scale: 1.02 }}
+              >
+                Blog
+              </motion.a>
 
 
               {!isLoggedIn ? (
@@ -293,6 +312,26 @@ export const Navbar = () => {
                 >
                   <Home className="w-8 h-8" />
                   Home
+                </motion.a>
+                <motion.a
+                  href="/about"
+                  onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/about'); }}
+                  className="text-2xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.08 }}
+                >
+                  About
+                </motion.a>
+                <motion.a
+                  href="/blog"
+                  onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/blog'); }}
+                  className="text-2xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.11 }}
+                >
+                  Blog
                 </motion.a>
               {/* Close Button */}
               <motion.button

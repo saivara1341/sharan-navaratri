@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SERVICES = [
     {
@@ -8,40 +9,47 @@ const SERVICES = [
         title: "Business Automation",
         desc: "Automate bookkeeping, workflows, tax calculations & invoice processing end-to-end.",
         tag: "Most Popular",
+        href: "/services/business-automation",
     },
     {
         emoji: "🌐",
         title: "Website Development",
         desc: "High-performance, responsive business profile websites tailored to your brand.",
         tag: "",
+        href: "/services/website-development",
     },
     {
         emoji: "☁️",
         title: "SaaS Platforms",
         desc: "Custom cloud-based Software-as-a-Service solutions for scalable enterprise growth.",
         tag: "Premium",
+        href: "/services/saas",
     },
     {
         emoji: "🏢",
         title: "ERP Solutions",
         desc: "Centralize your business operations with intelligent Enterprise Resource Planning systems.",
         tag: "",
+        href: "/services/erp",
     },
     {
         emoji: "🛍️",
         title: "E-Commerce Stores",
         desc: "Fully functional digital storefronts with seamless payment gateways and inventory management.",
         tag: "",
+        href: "/services/website-development",
     },
     {
         emoji: "⚙️",
         title: "Digital Workflow Solutions",
         desc: "Transform large manual processes into seamless, trackable digital workflows.",
         tag: "",
+        href: "/services/business-automation",
     },
 ];
 
 export function ServicesSection() {
+    const navigate = useNavigate();
     const carouselRef = useRef<HTMLDivElement>(null);
     const [isAutoScrolling, setIsAutoScrolling] = useState(true);
     const resumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -178,7 +186,7 @@ export function ServicesSection() {
                             {SERVICES.map((s) => (
                                 <div key={s.title} className="snap-start shrink-0 w-[85%] sm:w-[400px]">
                                     <div
-                                        onClick={() => document.getElementById('submit')?.scrollIntoView({ behavior: 'smooth' })}
+                                        onClick={() => s.href ? navigate(s.href) : document.getElementById('submit')?.scrollIntoView({ behavior: 'smooth' })}
                                         className="service-card h-full rounded-3xl p-8 sm:p-10 cursor-pointer transition-all duration-300 group shadow-[0_0_30px_rgba(0,0,0,0.05)] hover:shadow-md border border-border/50 bg-transparent backdrop-blur-md"
                                     >
                                         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 h-full">

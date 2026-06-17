@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'fram
 import { useRef, useEffect, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Scene3D } from '../three/Scene3D';
+import hiveLogo from '@/assets/hive-logo.jpg';
 
 const floatingAnimation = {
   y: [0, -15, 0],
@@ -160,7 +161,7 @@ export const HeroSection = () => {
               animate="visible"
               variants={textRevealVariants}
             >
-              Siddhi Transforms
+              We help Indian businesses
             </motion.span>
             <motion.span
               className="block gradient-hero glow-text"
@@ -169,7 +170,7 @@ export const HeroSection = () => {
               animate="visible"
               variants={textRevealVariants}
             >
-              Manual Processes
+              replace manual work
             </motion.span>
             <motion.span
               className="block text-foreground"
@@ -178,11 +179,11 @@ export const HeroSection = () => {
               animate="visible"
               variants={textRevealVariants}
             >
-              {t('hero.into')} <motion.span
+              with AI systems that{' '}<motion.span
                 className="gradient-hero-reverse glow-text-accent inline-block"
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 300 }}
-              >{t('hero.aiSolutions')}</motion.span>
+              >actually ship</motion.span>
             </motion.span>
           </h1>
 
@@ -191,15 +192,10 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.8 }}
-            className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed"
+            className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed hero-description"
           >
-            <Trans
-              i18nKey="hero.description"
-              components={[
-                <span className="text-primary font-medium" />,
-                <span className="text-accent font-medium" />
-              ]}
-            />
+            From invoice processing to custom SaaS — we build and deploy intelligent systems, not demos.
+            {' '}<span className="text-primary font-medium">Incubated at HIVE, Anurag University.</span>
           </motion.p>
 
           {/* CTA buttons */}
@@ -207,7 +203,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-32"
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10"
           >
             <motion.a
               href="#submit"
@@ -218,12 +214,52 @@ export const HeroSection = () => {
               <span className="absolute inset-0 bg-gradient-to-r from-primary via-primary to-accent opacity-90 group-hover:opacity-100 transition-opacity duration-500" />
               <span className="absolute inset-0 bg-gradient-to-r from-primary via-primary to-accent blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
               <span className="relative flex items-center gap-3 text-primary-foreground font-bold tracking-wide">
-                Contact Us
+                Book a Free AI Discovery Call
                 <svg className="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </span>
             </motion.a>
+            <motion.a
+              href="/about"
+              className="group px-8 py-5 rounded-2xl font-semibold text-lg border border-border/60 hover:border-primary/40 transition-all text-muted-foreground hover:text-foreground"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <span className="flex items-center gap-2">
+                How we work
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
+            </motion.a>
+          </motion.div>
+
+          {/* Trust strip */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.3 }}
+            className="flex flex-wrap items-center justify-center gap-6 mb-32 text-xs text-muted-foreground"
+          >
+            <span className="flex items-center gap-2">
+              <img src={hiveLogo} alt="HIVE" className="h-6 w-auto rounded-sm" />
+              Incubated at HIVE · Anurag University
+            </span>
+            <span className="text-border/60">|</span>
+            <span className="flex items-center gap-2">
+              <span className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center">
+                <span className="w-2 h-2 rounded-full bg-primary" />
+              </span>
+              Production-ready AI · Not demos
+            </span>
+            <span className="text-border/60">|</span>
+            <span className="flex items-center gap-2">
+              <span className="w-4 h-4 rounded-full bg-accent/20 flex items-center justify-center">
+                <span className="w-2 h-2 rounded-full bg-accent" />
+              </span>
+              Built for Indian businesses
+            </span>
           </motion.div>
         </motion.div>
 

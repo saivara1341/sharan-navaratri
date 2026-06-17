@@ -2,10 +2,6 @@ import { motion, useInView, AnimatePresence, useScroll, useTransform } from 'fra
 import { useRef, useState, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
 import { 
   GraduationCap, 
   Heart, 

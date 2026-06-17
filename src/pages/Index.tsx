@@ -170,14 +170,21 @@ const Index = () => {
           "alternateName": ["Siddhi", "Siddhi AI", "Siddhi Dynamics LLP"],
           "url": "https://siddhidynamics.in/",
           "logo": "https://siddhidynamics.in/favicon.jpg",
-          "description": "Deep-tech innovation firm transforming real-world challenges into scalable, production-ready AI solutions.",
+          "description": "Siddhi Dynamics LLP is a deep-tech AI innovation firm based in Hyderabad, India, incubated at HIVE, Anurag University. We specialize in agentic AI, business automation, SaaS, and ERP for Indian businesses.",
+          "foundingDate": "2024",
           "brand": {
             "@type": "Brand",
             "name": "Siddhi"
           },
           "address": {
             "@type": "PostalAddress",
+            "addressLocality": "Hyderabad",
+            "addressRegion": "Telangana",
             "addressCountry": "IN"
+          },
+          "memberOf": {
+            "@type": "Organization",
+            "name": "HIVE — Anurag University Innovation and Incubation Cell"
           },
           "sameAs": [
             "https://www.linkedin.com/company/siddhi-dynamics-llp",
@@ -186,7 +193,36 @@ const Index = () => {
           "contactPoint": {
             "@type": "ContactPoint",
             "telephone": "+91-6303602743",
-            "contactType": "customer service"
+            "email": "saivaraprasad@siddhidynamics.in",
+            "contactType": "customer service",
+            "areaServed": "IN",
+            "availableLanguage": ["English", "Telugu", "Hindi"]
+          },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Siddhi Dynamics Services",
+            "itemListElement": [
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Business Automation", "url": "https://siddhidynamics.in/services/business-automation" } },
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SaaS Platform Development", "url": "https://siddhidynamics.in/services/saas" } },
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "ERP Solutions", "url": "https://siddhidynamics.in/services/erp" } },
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Website Development", "url": "https://siddhidynamics.in/services/website-development" } }
+            ]
+          }
+        })}
+      </script>
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Siddhi Dynamics — AI & Business Automation for India",
+          "url": "https://siddhidynamics.in/",
+          "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": ["h1", "h2", ".hero-description", "#ai-indexing-core"]
+          },
+          "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://siddhidynamics.in/" }]
           }
         })}
       </script>
@@ -197,10 +233,10 @@ const Index = () => {
           "mainEntity": [
             {
               "@type": "Question",
-              "name": "What is Siddhi?",
+              "name": "What is Siddhi Dynamics?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Siddhi is a deep-tech AI innovation firm (Siddhi Dynamics) that provides professional resource hubs and automated workflow solutions."
+                "text": "Siddhi Dynamics LLP is a deep-tech AI innovation firm based in Hyderabad, India. Founded in 2024 and incubated at HIVE (Anurag University), we build agentic AI systems, business automation, SaaS platforms, and ERP solutions for Indian businesses."
               }
             },
             {
@@ -208,7 +244,55 @@ const Index = () => {
               "name": "What services does Siddhi Dynamics provide?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "We provide business automation, financial reporting, digital NFC cards, and specialized toolkits for Architects, Investors, and Founders."
+                "text": "Siddhi Dynamics provides: (1) Business Automation — AI invoice processing, bookkeeping, GST compliance, workflow digitization; (2) SaaS Platform Development — custom cloud software for Indian startups; (3) ERP Solutions — AI-powered enterprise resource planning for SMBs; (4) Website Development — mobile-first, SEO-optimized business websites; (5) Digital Workflow Solutions — replacing large manual processes with intelligent digital workflows."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Which companies does Siddhi Dynamics serve?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Siddhi Dynamics primarily serves Indian small and medium businesses (SMBs) — including businesses in construction, retail, manufacturing, professional services, and property management. We also work with startups building SaaS products for Indian markets."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is Siddhi Dynamics an AI agentic automation company in India?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Siddhi Dynamics is one of India's emerging agentic AI automation companies, specifically focused on the SMB market. We build agentic systems that autonomously handle business workflows — without constant human supervision. This includes automated invoice processing, compliance monitoring, financial reporting, and supply chain management."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the difference between Siddhi and large AI companies like iOPEX or IBM India?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Large AI companies like iOPEX, Prodapt, IBM India, and Concentrix serve enterprise clients with large budgets and complex IT ecosystems. Siddhi Dynamics is specifically designed for India's 80 million SMBs — businesses that need the same AI power but at Indian market pricing, with faster deployment and more direct service."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Where is Siddhi Dynamics located?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Siddhi Dynamics is headquartered in Hyderabad, Telangana, India. The company is incubated at HIVE — the Innovation and Incubation Cell of Anurag University, Hyderabad."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What products has Siddhi Dynamics built?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Siddhi Dynamics has built: ArchPlan AI (AI-driven construction planning platform), Nexus Careers (AI student-to-employment platform), Nilayam (AI property management SaaS), Indhur Farms (organic farm-to-home marketplace), Print Flow/Inkfinity (print workflow automation), Wish-0 (AI occasion automation), and Letusknow (digital governance platform)."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How can I contact Siddhi Dynamics or start a project?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "You can reach Siddhi Dynamics at saivaraprasad@siddhidynamics.in or by phone at +91-6303602743. Use the contact form on siddhidynamics.in to submit your project requirement or business challenge."
               }
             }
           ]

@@ -772,20 +772,32 @@ export const SubmitSection = () => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
               </span>
-              <span className="text-sm text-muted-foreground font-medium">{t('submit.badge')}</span>
+              <span className="text-sm text-muted-foreground font-medium">Free AI Discovery Call · No commitment</span>
             </motion.div>
 
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              <Trans
-                i18nKey="submit.title"
-                components={[
-                  <span className="gradient-text glow-text" />
-                ]}
-              />
+              Tell us your biggest{' '}
+              <span className="gradient-text glow-text">operational headache</span>
             </h2>
-            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
-              {t('submit.description')}
+            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-8">
+              We'll map your process and show you exactly what AI can automate — in a single conversation.
+              Responses within <strong className="text-foreground">24 hours</strong>.
             </p>
+
+            {/* Trust strip above form */}
+            <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
+              {[
+                { icon: '✅', text: 'Free 30-min consultation' },
+                { icon: '🏛️', text: 'Incubated at HIVE, Anurag University' },
+                { icon: '🔒', text: 'Your information stays private' },
+                { icon: '⚡', text: 'Reply within 24 hours' },
+              ].map(({ icon, text }) => (
+                <span key={text} className="flex items-center gap-1.5">
+                  <span>{icon}</span>
+                  <span>{text}</span>
+                </span>
+              ))}
+            </div>
           </div>
 
           <motion.div

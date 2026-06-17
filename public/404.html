@@ -15,9 +15,7 @@
             margin: 0;
             overflow: hidden;
         }
-        .container {
-            text-align: center;
-        }
+        .container { text-align: center; }
         .loader {
             width: 48px;
             height: 48px;
@@ -33,33 +31,26 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        h1 {
-            font-size: 1.5rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            margin: 0;
-            opacity: 0.8;
-        }
-        p {
-            color: #888;
-            font-size: 0.9rem;
-            margin-top: 10px;
-        }
+        h1 { font-size: 1.5rem; letter-spacing: 0.1em; text-transform: uppercase; margin: 0; opacity: 0.8; }
+        p { color: #888; font-size: 0.9rem; margin-top: 10px; }
     </style>
     <script type="text/javascript">
-        // Redirect to the root but PRESERVE the hash (where the auth token is)
-        // We use a small delay to ensure the user sees the professional loading screen 
-        // instead of a jarring white "404" page.
-        setTimeout(function() {
-            window.location.replace(window.location.origin + window.location.hash);
-        }, 300);
+        // GitHub Pages SPA redirect — BrowserRouter edition.
+        // Encodes the full path so that index.html can decode and restore it.
+        var l = window.location;
+        l.replace(
+            l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+            '/?p=/' + l.pathname.slice(1).replace(/&/g, '~and~') +
+            (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+            l.hash
+        );
     </script>
 </head>
 <body>
     <div class="container">
         <span class="loader"></span>
         <h1>Siddhi Dynamics</h1>
-        <p>Finalizing your secure session...</p>
+        <p>Loading your experience...</p>
     </div>
 </body>
 </html>

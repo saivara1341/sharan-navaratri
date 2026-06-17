@@ -29,6 +29,12 @@ export const FooterSection = () => {
     window.scrollTo(0, 0);
   };
 
+  const handleNavClick = (e: React.MouseEvent, href: string) => {
+    e.preventDefault();
+    navigate(href);
+    window.scrollTo(0, 0);
+  };
+
   return (
     <footer ref={ref} className="py-20 border-t border-white/10 bg-black text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent" />
@@ -44,7 +50,7 @@ export const FooterSection = () => {
       <div className="container mx-auto px-6 relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
           <motion.a
-            href="#/"
+            href="/"
             onClick={handleHomeClick}
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -77,16 +83,20 @@ export const FooterSection = () => {
           <motion.nav
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
-            className="flex items-center gap-10"
+            className="flex flex-wrap items-center gap-6"
           >
             {[
-              { name: t('nav.vision'), href: '#/vision' },
-              { name: t('nav.projects'), href: '#/projects' },
-              { name: t('nav.submit'), href: '#/submit' },
+              { name: 'About', href: '/about' },
+              { name: t('nav.vision'), href: '/#vision' },
+              { name: t('nav.projects'), href: '/#projects' },
+              { name: 'Blog', href: '/blog' },
+              { name: 'Services', href: '/services/business-automation' },
+              { name: t('nav.submit'), href: '/#submit' },
             ].map((link, index) => (
               <motion.a
                 key={link.name}
                 href={link.href}
+                onClick={(e) => handleNavClick(e, link.href)}
                 custom={index}
                 variants={linkVariants}
                 className="relative text-sm text-slate-400 hover:text-white transition-colors group"
@@ -166,9 +176,13 @@ export const FooterSection = () => {
             >
               {t('footer.copyright', { year: new Date().getFullYear() })}
             </motion.p>
+            <address className="not-italic text-xs text-slate-500">
+              Siddhi Dynamics LLP · Hyderabad, Telangana, India · HIVE, Anurag University
+            </address>
             <div className="flex items-center gap-4">
               <motion.a 
-                href="#/privacy"
+                href="/privacy"
+                onClick={(e) => handleNavClick(e, '/privacy')}
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
                 transition={{ delay: 0.8 }}
@@ -177,7 +191,8 @@ export const FooterSection = () => {
                 Privacy Policy
               </motion.a>
               <motion.a 
-                href="#/terms-of-service"
+                href="/terms-of-service"
+                onClick={(e) => handleNavClick(e, '/terms-of-service')}
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
                 transition={{ delay: 0.9 }}

@@ -1,11 +1,7 @@
-import { motion, useInView, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
+import { motion, useInView, useMotionValue, useSpring } from 'framer-motion';
+import { useRef, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Network, Lightbulb, Waypoints, Zap } from 'lucide-react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -162,42 +158,7 @@ export const VisionSection = () => {
     { value: '24/7', label: t('vision.mission.stats.autonomous') },
   ];
 
-  useEffect(() => {
-    let ctx = gsap.context(() => {
-      const cards = gsap.utils.toArray('.custom-card') as HTMLElement[];
-      
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: 'top 15%',
-          end: `+=${cards.length * 80}%`,
-          scrub: 1,
-          pin: true,
-        }
-      });
 
-      cards.forEach((card, index) => {
-        if (index === 0) return;
-
-        tl.from(card, {
-          y: '100vh',
-          ease: 'none',
-        });
-
-        cards.slice(0, index).forEach((prevCard, i) => {
-          const depth = index - i;
-          tl.to(prevCard, {
-            scale: 1 - (depth * 0.05),
-            yPercent: -(depth * 2),
-            opacity: 1 - (depth * 0.1),
-            ease: 'none',
-          }, '<'); 
-        });
-      });
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
 
   return (
     <section id="vision" className="bg-background py-32 relative overflow-hidden" ref={ref}>
@@ -224,7 +185,7 @@ export const VisionSection = () => {
           >
             {t('vision.title')}
           </motion.span>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 leading-tight">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 leading-tight text-foreground">
             {t('vision.beyondPrototypes')}{' '}
             <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>
           </h2>
@@ -238,22 +199,22 @@ export const VisionSection = () => {
           </p>
         </motion.div>
 
-        {/* GSAP Scroll Track for Cards */}
-        <div ref={containerRef} className="relative w-full mt-20 flex items-center justify-center min-h-[60vh] pb-[50px]">
-          <div className="relative w-full max-w-4xl h-[350px]">
-            {features.map((feature, index) => (
-              <div 
-                key={feature.title} 
-                className="custom-card absolute top-0 left-0 w-full"
-                style={{ zIndex: index + 1 }}
-              >
-                <div className="bg-card border border-border/50 rounded-2xl shadow-2xl overflow-hidden w-full h-full">
-                  <FeatureCard feature={feature} index={index} />
-                </div>
+        {/* Stable Grid Layout for Cards (Replaces GSAP Pinning) */}
+        <motion.div 
+          ref={containerRef} 
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-20"
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
+          {features.map((feature, index) => (
+            <motion.div key={feature.title} variants={cardVariants} className="w-full h-full">
+              <div className="bg-card border border-border/50 rounded-2xl shadow-xl overflow-hidden w-full h-full">
+                <FeatureCard feature={feature} index={index} />
               </div>
-            ))}
-          </div>
-        </div>
+            </motion.div>
+          ))}
+        </motion.div>
 
         {/* Mission statement */}
         <motion.div
@@ -272,11 +233,11 @@ export const VisionSection = () => {
                 <span className="text-accent font-medium text-sm tracking-[0.3em] uppercase mb-4 block">
                   {t('vision.mission.subtitle')}
                 </span>
-                <h3 className="text-3xl md:text-4xl font-bold mb-6 leading-tight">
+                <h3 className="text-3xl md:text-4xl font-bold mb-6 leading-tight text-foreground">
                   <Trans
                     i18nKey="vision.mission.title"
                     components={[
-                      <span className="gradient-text-reverse glow-text-accent" />
+                      <span className="text-primary font-bold" />
                     ]}
                   />
                 </h3>

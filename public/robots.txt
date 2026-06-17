@@ -1,6 +1,26 @@
 User-agent: *
 Allow: /
 Disallow: /admin-hq-nexus/
+Disallow: /admin-hq-nexus
 Disallow: /portal/
+Disallow: /portal
+Disallow: /auth/
+Disallow: /auth
+
+# Allow all AI crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: CCBot
+Allow: /
 
 Sitemap: https://siddhidynamics.in/sitemap.xml

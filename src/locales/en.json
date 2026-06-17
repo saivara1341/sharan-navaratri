@@ -86,7 +86,7 @@
       "archplan": {
         "name": "ArchPlan AI",
         "tagline": "AI-Powered Construction Intelligence Platform",
-        "description": "A comprehensive, AI-driven platform designed to digitize and streamline the entire construction lifecycle in India. By connecting homeowners, civil engineers, architects, suppliers, and service providers within a single intelligent workflow, ArchPlan AI reduces project delays and optimizes resource allocation with precision.",
+        "description": "Skip months of back-and-forth with architects. ArchPlan AI generates 2D/3D plans, BOQs, and cost estimates in minutes — connecting homeowners, engineers, and suppliers in one platform. Live in India.",
         "features": [
           "AI 2D/3D Plans",
           "Vastu Compliance",
@@ -99,7 +99,7 @@
       "nexus": {
         "name": "Nexus Careers",
         "tagline": "AI-Powered Student Career & Learning Platform",
-        "description": "Our flagship AI ecosystem helping students transition from education to employment. Build precision AI resumes, discover targeted job opportunities, and access personalized study materials to bridge skill gaps.",
+        "description": "Built for Indian students who need more than a degree to land a job. Nexus generates AI-tailored resumes, identifies skill gaps, matches you to real openings, and runs mock interviews — from application to offer letter.",
         "features": [
           "AI Mock Interviews",
           "Skill-Gap Detection",
@@ -112,7 +112,7 @@
       "nilayam": {
         "name": "Nilayam",
         "tagline": "AI-Driven Property & Smart Living Platform",
-        "description": "A modern SaaS platform designed to simplify and automate the entire rental and property management lifecycle. Property owners access a centralized command center to manage properties, generate legally compliant leases instantly, and automate rent collection, ensuring a frictionless experience for both landlords and tenants.",
+        "description": "Stop managing rentals over WhatsApp. Nilayam auto-generates compliant lease agreements, automates rent collection, tracks maintenance requests, and gives landlords a single dashboard for every property.",
         "features": [
           "AI Lease Generation",
           "Financial Analytics",
@@ -125,7 +125,7 @@
       "wish0": {
         "name": "Wish-0",
         "tagline": "Automated Occasion & Celebration Intelligence",
-        "description": "An AI-powered automation system designed to deliver personalized wishes for birthdays and all major life occasions without manual intervention. Wish-0 learns relationship dynamics to craft contextually relevant messages, ensuring you never miss a moment to connect with your loved ones.",
+        "description": "Never forget to wish someone again. Wish-0 learns your relationships, crafts personalised messages for birthdays and occasions, and sends them automatically — so you never miss a moment that matters.",
         "features": [
           "Auto Scheduling",
           "Personalized Messages",
@@ -138,7 +138,7 @@
       "letusknow": {
         "name": "Letusknow",
         "tagline": "Citizen-Centric Digital Governance Platform",
-        "description": "A revolutionary citizen-centric digital governance platform designed to simplify how people access government services, understand procedures, and resolve public and personal issues. Letusknow bridges the gap between the administration and the public, fostering transparency and efficient grievance redressal.",
+        "description": "Navigating government services in India shouldn't require a consultant. LetUsKnow tells citizens exactly what forms to fill, where to go, and what to expect — turning bureaucratic confusion into a 5-minute lookup.",
         "features": [
           "GPS-Based Location",
           "Political Representatives Info",
@@ -381,26 +381,56 @@
     "copyright": "© {{year}} Siddhi Dynamics LLP. All rights reserved.",
     "services": {
       "student": {
-        "resume": { "title": "AI Resume Builder", "desc": "Build a high-impact, ATS-friendly resume." },
-        "skills": { "title": "Skill Gap Analysis", "desc": "Identify and bridge your technical gaps." },
-        "jobs": { "title": "Job Match Engine", "desc": "Find roles tailored to your profile." }
+        "resume": {
+          "title": "AI Resume Builder",
+          "desc": "Build a high-impact, ATS-friendly resume."
+        },
+        "skills": {
+          "title": "Skill Gap Analysis",
+          "desc": "Identify and bridge your technical gaps."
+        },
+        "jobs": {
+          "title": "Job Match Engine",
+          "desc": "Find roles tailored to your profile."
+        }
       },
       "founder": {
-        "blueprint": { "title": "Startup Blueprint", "desc": "AI-generated business & tech roadmap." },
-        "fundraise": { "title": "Fundraise AI", "desc": "Pitch deck analysis & investor matching." }
+        "blueprint": {
+          "title": "Startup Blueprint",
+          "desc": "AI-generated business & tech roadmap."
+        },
+        "fundraise": {
+          "title": "Fundraise AI",
+          "desc": "Pitch deck analysis & investor matching."
+        }
       },
       "architect": {
-        "design": { "title": "System Design Pro", "desc": "Advanced architectural scaling audits." },
-        "tech": { "title": "Tech Stack Evaluator", "desc": "Pick the right tools for your scale." }
+        "design": {
+          "title": "System Design Pro",
+          "desc": "Advanced architectural scaling audits."
+        },
+        "tech": {
+          "title": "Tech Stack Evaluator",
+          "desc": "Pick the right tools for your scale."
+        }
       },
       "partner": {
-        "connect": { "title": "Ecosystem Connector", "desc": "Find synergy in the Siddhi network." }
+        "connect": {
+          "title": "Ecosystem Connector",
+          "desc": "Find synergy in the Siddhi network."
+        }
       },
       "investor": {
-        "diligence": { "title": "Due Diligence AI", "desc": "Automated technical risk assessment." }
+        "diligence": {
+          "title": "Due Diligence AI",
+          "desc": "Automated technical risk assessment."
+        }
       },
       "other": {
-        "consult": { "title": "Neural Consulting", "desc": "Custom AI architectural consultation." }
+        "consult": {
+          "title": "Neural Consulting",
+          "desc": "Custom AI architectural consultation."
+        }
       }
     }
   },
@@ -612,4 +642,4 @@
     "sendBlessings": "Send Eid Blessings",
     "eidMubarak": "Eid al-Fitr Mubarak! 🌟"
   }
-}
+}

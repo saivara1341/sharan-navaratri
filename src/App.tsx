@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import AuthPage from "./pages/Auth";
@@ -26,6 +26,14 @@ import RamzanCelebration from "./components/RamzanCelebration";
 import ResourceHub from "@/pages/services/ResourceHub";
 import ResumeBuilder from "@/pages/services/ResumeBuilder";
 import StartupBlueprint from "@/pages/services/StartupBlueprint";
+
+// New SEO Pages
+import About from "@/pages/About";
+import Blog from "@/pages/Blog";
+import BusinessAutomation from "@/pages/services/BusinessAutomation";
+import WebsiteDevelopment from "@/pages/services/WebsiteDevelopment";
+import SaaSPlatforms from "@/pages/services/SaaSPlatforms";
+import ERPSolutions from "@/pages/services/ERPSolutions";
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -101,7 +109,7 @@ const App = () => {
           <PromoPopup allowed={ramzanDone} />
           <Toaster />
           <Sonner />
-          <HashRouter>
+          <BrowserRouter>
             <AuthRedirectHandler />
             <Routes>
               <Route path="/" element={<Index />} />
@@ -126,10 +134,17 @@ const App = () => {
               <Route path="/nexus/jobs" element={<ResourceHub />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
+              {/* SEO Pages */}
+              <Route path="/about" element={<About />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/services/business-automation" element={<BusinessAutomation />} />
+              <Route path="/services/website-development" element={<WebsiteDevelopment />} />
+              <Route path="/services/saas" element={<SaaSPlatforms />} />
+              <Route path="/services/erp" element={<ERPSolutions />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </HashRouter>
+          </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
     </HelmetProvider>
