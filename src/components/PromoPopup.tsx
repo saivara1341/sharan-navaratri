@@ -4,15 +4,15 @@ import { X, Printer, Sparkles, ArrowRight } from "lucide-react";
 const FEATURES = [
     {
         icon: <Printer className="w-5 h-5" />,
-        title: "Automated Workflow Ingestion",
-        desc: "Streamline print job ingestion and layouts directly from your customers.",
-        color: "from-blue-500 to-cyan-500",
+        title: "Print Everything",
+        desc: "High-quality visiting cards, posters, banners, and custom corporate materials.",
+        color: "from-[#FF6B00] to-[#FF8b3d]",
     },
     {
         icon: <Sparkles className="w-5 h-5" />,
-        title: "Smart Queue & Shipping Integration",
-        desc: "Optimize queue preparation and shipping logistics automatically.",
-        color: "from-violet-500 to-purple-600",
+        title: "Delivered Fast",
+        desc: "Direct shipping from local printing hubs in Hyderabad & Nizamabad.",
+        color: "from-amber-500 to-orange-600",
     },
 ];
 
@@ -54,32 +54,38 @@ export default function PromoPopup({ allowed = true }: { allowed?: boolean }) {
                     animation: animateOut
                         ? "promoFadeOut 0.35s cubic-bezier(0.4,0,0.2,1) forwards"
                         : "promoFadeIn 0.5s cubic-bezier(0.16,1,0.3,1) forwards",
-                    maxWidth: 600,
-                    background: "linear-gradient(135deg, #09090b 0%, #172554 50%, #0c4a6e 100%)",
-                    borderTop: "1px solid rgba(14,165,233,0.35)",
-                    borderLeft: "1px solid rgba(14,165,233,0.35)",
-                    borderRight: "1px solid rgba(14,165,233,0.35)",
+                    maxWidth: 580,
+                    background: "linear-gradient(135deg, #09090b 0%, #1c1917 50%, #0c0a09 100%)",
+                    borderTop: "1px solid rgba(255,107,0,0.35)",
+                    borderLeft: "1px solid rgba(255,107,0,0.35)",
+                    borderRight: "1px solid rgba(255,107,0,0.35)",
                     borderBottom: "none",
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
+                    borderTopLeftRadius: 24,
+                    borderTopRightRadius: 24,
                     borderBottomLeftRadius: 0,
                     borderBottomRightRadius: 0,
-                    boxShadow: "0 -10px 40px rgba(0,0,0,0.5), 0 0 80px rgba(14,165,233,0.15)",
+                    boxShadow: "0 -10px 40px rgba(0,0,0,0.6), 0 0 80px rgba(255,107,0,0.15)",
                     position: "relative",
                     padding: "0 0 24px 0",
+                    fontFamily: "'Inter', sans-serif"
                 }}
             >
                 <style>{`
+                    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;800&display=swap');
+                    
                     .promo-container {
                         height: 52vh;
                         max-height: 52vh;
+                    }
+                    .font-display {
+                        font-family: 'Space Grotesk', sans-serif;
                     }
                     @media (min-width: 640px) {
                         .promo-container {
                             height: auto;
                             max-height: 85vh;
-                            border-bottom: 1px solid rgba(14,165,233,0.35) !important;
-                            border-radius: 20px !important;
+                            border-bottom: 1px solid rgba(255,107,0,0.35) !important;
+                            border-radius: 24px !important;
                         }
                     }
                 `}</style>
@@ -112,28 +118,28 @@ export default function PromoPopup({ allowed = true }: { allowed?: boolean }) {
 
                 <div
                     style={{
-                        background: "linear-gradient(135deg, #1e40af 0%, #0369a1 50%, #0891b2 100%)",
-                        borderRadius: "20px 20px 0 0",
-                        padding: "24px 24px 18px",
+                        background: "linear-gradient(135deg, #FF6B00 0%, #FF801A 50%, #d45900 100%)",
+                        borderRadius: "24px 24px 0 0",
+                        padding: "26px 24px 20px",
                         textAlign: "center",
                         position: "relative",
                         overflow: "hidden",
                         flexShrink: 0,
                     }}
                 >
-                    <div style={{ position: "absolute", top: -40, left: -40, width: 160, height: 160, background: "rgba(255,255,255,0.06)", borderRadius: "50%", filter: "blur(30px)" }} />
-                    <div style={{ position: "absolute", bottom: -50, right: -30, width: 200, height: 200, background: "rgba(8,145,178,0.12)", borderRadius: "50%", filter: "blur(40px)" }} />
+                    <div style={{ position: "absolute", top: -40, left: -40, width: 160, height: 160, background: "rgba(255,255,255,0.08)", borderRadius: "50%", filter: "blur(30px)" }} />
+                    <div style={{ position: "absolute", bottom: -50, right: -30, width: 200, height: 200, background: "rgba(255,255,255,0.05)", borderRadius: "50%", filter: "blur(40px)" }} />
 
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 6, position: "relative" }}>
-                        <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: "rgba(255,255,255,0.85)" }}>
-                            NEW RELEASE
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8, position: "relative" }}>
+                        <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, textTransform: "uppercase", color: "rgba(255,255,255,0.9)" }}>
+                            INDIA'S SMART PRINTING PLATFORM
                         </span>
                     </div>
-                    <h2 style={{ margin: 0, fontSize: "clamp(18px, 5vw, 24px)", fontWeight: 800, color: "#fff", lineHeight: 1.25, position: "relative" }}>
+                    <h2 className="font-display" style={{ margin: 0, fontSize: "clamp(20px, 5.5vw, 26px)", fontWeight: 800, color: "#fff", lineHeight: 1.2, position: "relative" }}>
                         Print Flow Webpage is Live! 🚀
                     </h2>
-                    <p style={{ margin: "8px 0 0", fontSize: 13, color: "rgba(255,255,255,0.95)", position: "relative" }}>
-                        Experience the ultimate automated order &amp; print queue management platform.
+                    <p className="font-display" style={{ margin: "8px 0 0", fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,0.95)", position: "relative" }}>
+                        Print everything. <span style={{ color: "#000", fontWeight: 700 }}>Delivered fast.</span>
                     </p>
                 </div>
 
@@ -153,7 +159,7 @@ export default function PromoPopup({ allowed = true }: { allowed?: boolean }) {
                             background: rgba(255,255,255,0.02);
                         }
                         .custom-scrollbar::-webkit-scrollbar-thumb {
-                            background: rgba(14,165,233,0.3);
+                            background: rgba(255,107,0,0.3);
                             border-radius: 4px;
                         }
                     `}</style>
@@ -164,14 +170,14 @@ export default function PromoPopup({ allowed = true }: { allowed?: boolean }) {
                             style={{
                                 background: "rgba(255,255,255,0.03)",
                                 border: "1px solid rgba(255,255,255,0.06)",
-                                borderRadius: 12,
-                                padding: "12px 14px",
+                                borderRadius: 16,
+                                padding: "14px 16px",
                                 transition: "transform 0.2s, border-color 0.2s",
                                 cursor: "default",
                             }}
                             onMouseEnter={(e) => {
                                 (e.currentTarget as HTMLDivElement).style.transform = "translateY(-1px)";
-                                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(14,165,233,0.4)";
+                                (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,107,0,0.4)";
                             }}
                             onMouseLeave={(e) => {
                                 (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
@@ -182,7 +188,7 @@ export default function PromoPopup({ allowed = true }: { allowed?: boolean }) {
                                 style={{
                                     width: 38,
                                     height: 38,
-                                    borderRadius: 8,
+                                    borderRadius: 10,
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
@@ -195,8 +201,8 @@ export default function PromoPopup({ allowed = true }: { allowed?: boolean }) {
                                 {f.icon}
                             </div>
                             <div className="flex flex-col">
-                                <div style={{ fontWeight: 700, fontSize: 14, color: "#f1f5f9", marginBottom: 2 }}>{f.title}</div>
-                                <div style={{ fontSize: 12.5, color: "rgba(203,213,225,0.8)", lineHeight: 1.4 }}>{f.desc}</div>
+                                <div className="font-display" style={{ fontWeight: 700, fontSize: 14.5, color: "#f8fafc", marginBottom: 2 }}>{f.title}</div>
+                                <div style={{ fontSize: 12.5, color: "rgba(226,232,240,0.85)", lineHeight: 1.4 }}>{f.desc}</div>
                             </div>
                         </div>
                     ))}
@@ -211,26 +217,26 @@ export default function PromoPopup({ allowed = true }: { allowed?: boolean }) {
                             display: "flex",
                             alignItems: "center",
                             gap: 8,
-                            padding: "12px 32px",
+                            padding: "12px 36px",
                             borderRadius: 50,
-                            background: "linear-gradient(135deg, #0ea5e9, #0284c7)",
+                            background: "linear-gradient(135deg, #FF6B00, #ff8c33)",
                             color: "#fff",
                             fontWeight: 700,
                             fontSize: 14.5,
                             textDecoration: "none",
-                            boxShadow: "0 4px 20px rgba(14,165,233,0.45)",
+                            boxShadow: "0 4px 20px rgba(255,107,0,0.45)",
                             transition: "transform 0.2s, box-shadow 0.2s",
                         }}
                         onMouseEnter={(e) => { 
                             (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1.03)"; 
-                            (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 6px 28px rgba(14,165,233,0.65)"; 
+                            (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 6px 28px rgba(255,107,0,0.65)"; 
                         }}
                         onMouseLeave={(e) => { 
                             (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1)"; 
-                            (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 4px 20px rgba(14,165,233,0.45)"; 
+                            (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 4px 20px rgba(255,107,0,0.45)"; 
                         }}
                     >
-                        Visit Print Flow Waitlist
+                        Join Waitlist on Website
                         <ArrowRight className="w-4.5 h-4.5" />
                     </a>
                 </div>
