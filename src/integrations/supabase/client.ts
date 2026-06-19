@@ -23,10 +23,6 @@ if (isDev) {
 
 export const supabase = createClient<Database>(EFFECTIVE_URL, FINAL_KEY, {
   auth: {
-    lock: {
-      acquire: async () => ({
-        release: async () => {},
-      }),
-    },
+    lock: async (name, acquireTimeout, fn) => await fn(),
   },
 });
