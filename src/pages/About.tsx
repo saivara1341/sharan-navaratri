@@ -186,7 +186,7 @@ export default function About() {
               >
                 {[
                   { icon: Building2, label: 'Incubated at', value: 'HIVE — Anurag University' },
-                  { icon: Globe, label: 'Headquartered in', value: 'Hyderabad, Telangana, India' },
+                  { icon: Globe, label: 'Headquartered in', value: 'Hyderabad & Nizamabad, Telangana, India' },
                   { icon: Rocket, label: 'Founded', value: '2024' },
                   { icon: Users, label: 'Focus Area', value: 'Indian SMBs & Deep-Tech AI' },
                   { icon: Award, label: 'Core Expertise', value: 'Agentic AI, GenAI, Automation, SaaS, ERP' },

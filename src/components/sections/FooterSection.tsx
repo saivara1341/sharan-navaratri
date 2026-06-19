@@ -205,7 +205,7 @@ export const FooterSection = () => {
               {t('footer.copyright', { year: new Date().getFullYear() })}
             </motion.p>
             <address className="not-italic text-xs text-slate-500">
-              Siddhi Dynamics LLP · Hyderabad, Telangana, India · HIVE, Anurag University
+              Siddhi Dynamics LLP · Hyderabad & Nizamabad, Telangana, India · HIVE, Anurag University
             </address>
             <div className="flex items-center gap-4">
               <motion.a 

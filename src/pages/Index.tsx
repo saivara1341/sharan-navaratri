@@ -276,7 +276,7 @@ const Index = () => {
               "name": "Where is Siddhi Dynamics located?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Siddhi Dynamics is headquartered in Hyderabad, Telangana, India. The company is incubated at HIVE — the Innovation and Incubation Cell of Anurag University, Hyderabad."
+                "text": "Siddhi Dynamics is headquartered in Hyderabad & Nizamabad, Telangana, India. The company is incubated at HIVE — the Innovation and Incubation Cell of Anurag University, Hyderabad."
               }
             },
             {

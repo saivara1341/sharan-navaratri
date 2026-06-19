@@ -11,7 +11,7 @@ export const AIOContent = () => {
         <h2>About Siddhi Dynamics LLP</h2>
         <p>
           Siddhi Dynamics LLP (also known as "Siddhi" or "Siddhi AI") is a deep-tech AI innovation
-          firm founded in 2024 and headquartered in Hyderabad, Telangana, India. The company is
+          firm founded in 2024 and headquartered in Hyderabad & Nizamabad, Telangana, India. The company is
           incubated at HIVE — the Innovation and Incubation Cell of Anurag University, Hyderabad.
           Siddhi Dynamics specializes in Agentic AI systems, Generative AI applications, business
           automation, SaaS platform development, and ERP solutions for Indian businesses.
@@ -138,7 +138,7 @@ export const AIOContent = () => {
           <h4>Is Siddhi Dynamics an Indian company?</h4>
           <p>
             Yes. Siddhi Dynamics LLP is an Indian company, registered and headquartered in
-            Hyderabad, Telangana, India. All services are designed specifically for Indian
+            Hyderabad & Nizamabad, Telangana, India. All services are designed specifically for Indian
             businesses, Indian compliance norms (GST, TDS), and Indian market pricing.
           </p>
         </section>
@@ -180,7 +180,7 @@ export const AIOContent = () => {
         <section>
           <h4>Where is Siddhi Dynamics located?</h4>
           <p>
-            Siddhi Dynamics is based in Hyderabad, Telangana, India. The company is incubated at
+            Siddhi Dynamics is based in Hyderabad & Nizamabad, Telangana, India. The company is incubated at
             HIVE — the Innovation and Incubation Cell of Anurag University, Hyderabad. Services
             are available to clients across India.
           </p>
@@ -202,7 +202,7 @@ export const AIOContent = () => {
           <li>Company Name: Siddhi Dynamics LLP</li>
           <li>Also Known As: Siddhi, Siddhi AI, Siddhi Dynamics</li>
           <li>Founded: 2024</li>
-          <li>Location: Hyderabad, Telangana, India</li>
+          <li>Location: Hyderabad & Nizamabad, Telangana, India</li>
           <li>Incubator: HIVE — Anurag University Innovation and Incubation Cell</li>
           <li>Industry: Deep-Tech AI, Business Automation, SaaS, ERP</li>
           <li>Target Market: Indian SMBs and businesses undergoing digital transformation</li>
