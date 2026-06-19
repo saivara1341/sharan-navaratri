@@ -284,7 +284,7 @@ const Index = () => {
               "name": "What products has Siddhi Dynamics built?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Siddhi Dynamics has built: ArchPlan AI (AI-driven construction planning platform), Nexus Careers (AI student-to-employment platform), Nilayam (AI property management SaaS), Indhur Farms (organic farm-to-home marketplace), Print Flow/Inkfinity (print workflow automation), Wish-0 (AI occasion automation), and Letusknow (digital governance platform)."
+                "text": "Siddhi Dynamics has built: ArchPlan AI (AI-driven construction planning platform), Nexus Careers (AI student-to-employment platform), Nilayam (AI property management SaaS), Indhur Farms (organic farm-to-home marketplace), Print Flow (print workflow automation), Wish-0 (AI occasion automation), and Letusknow (digital governance platform)."
               }
             },
             {

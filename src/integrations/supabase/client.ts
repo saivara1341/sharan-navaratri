@@ -21,4 +21,12 @@ if (isDev) {
     console.log(`[Supabase] Target: https://172.64.149.246`);
 }
 
-export const supabase = createClient<Database>(EFFECTIVE_URL, FINAL_KEY);
+export const supabase = createClient<Database>(EFFECTIVE_URL, FINAL_KEY, {
+  auth: {
+    lock: {
+      acquire: async () => ({
+        release: async () => {},
+      }),
+    },
+  },
+});

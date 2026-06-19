@@ -171,7 +171,7 @@ const ProjectDetailsModal = ({
     }
 
     if (project.id === 'print_flow') {
-      window.open('https://saivara1341.github.io/inkfinity', '_blank', 'noopener,noreferrer');
+      window.open('https://printflows.in/', '_blank', 'noopener,noreferrer');
       return;
     }
 
@@ -438,7 +438,7 @@ export const ProjectsSection = () => {
     },
     {
       id: 'print_flow',
-      name: t('projects.items.printflow.name', 'Print Flow (Inkfinity)'),
+      name: t('projects.items.printflow.name', 'Print Flow'),
       tagline: t('projects.items.printflow.tagline', 'Seamless Automated Order & Print Management'),
       description: t('projects.items.printflow.description', 'A comprehensive print-on-demand and print workflow automation platform designed to streamline order ingestion, layout preparation, print queue management, and shipping logistics.'),
       image: printflowLogo,
@@ -447,7 +447,7 @@ export const ProjectsSection = () => {
         : ["Order Ingestion", "Print Queue", "Automated Layouts", "Logistics Integration"],
       gradient: 'from-blue-500 to-cyan-500',
       accentColor: 'primary',
-      url: 'https://saivara1341.github.io/inkfinity',
+      url: 'https://printflows.in/',
       stageKey: 'phase5',
       statusKey: 'production',
       phase: 5,
