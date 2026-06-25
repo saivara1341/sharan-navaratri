@@ -17,7 +17,7 @@ export const IncubationSection = () => {
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   return (
-    <section ref={ref} className="py-20 relative overflow-hidden">
+    <section ref={ref} className="py-10 md:py-20 relative overflow-hidden">
       {/* Animated background gradient */}
       <motion.div
         className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background"
@@ -97,69 +97,30 @@ export const IncubationSection = () => {
           className="flex flex-col items-center"
         >
           {/* Card container */}
-          <motion.div
-            className="relative group"
-            whileHover={{ y: -5 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            {/* Animated glow effect */}
-            <motion.div
-              className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 rounded-3xl blur-2xl"
-              initial={{ opacity: 0 }}
-              animate={isInView ? {
-                opacity: [0, 0.5, 0.3],
-                scale: [0.9, 1.02, 1]
-              } : {}}
-              transition={{ duration: 1.5, delay: 0.8 }}
-              whileHover={{ opacity: 1, scale: 1.05 }}
-            />
+          <div className="relative w-full max-w-4xl">
+            {/* Static glow effect */}
+            <div className="absolute -inset-4 bg-gradient-to-r from-red-500/10 via-blue-900/10 to-red-500/10 rounded-3xl blur-2xl opacity-80 pointer-events-none" />
 
-            {/* Rotating border effect */}
-            <motion.div
-              className="absolute -inset-[2px] rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-              style={{
-                background: "conic-gradient(from 0deg, hsl(25 85% 55%), hsl(85 70% 45%), hsl(25 85% 55%))",
-                padding: "2px",
-              }}
-            />
+            {/* Red & Navy Blue Static Gradient Border */}
+            <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-red-600 via-blue-900 to-red-600 opacity-60" />
 
             {/* Main card */}
-            <motion.div
-              className="relative bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 md:p-12 overflow-hidden"
-              initial={{ borderColor: "hsl(var(--border) / 0.5)" }}
-              whileHover={{ borderColor: "hsl(25 85% 55% / 0.5)" }}
-            >
-              {/* Shimmer effect */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
-              />
-
+            <div className="relative bg-[#091020] dark:bg-[#050b16] rounded-2xl p-8 md:p-12 overflow-hidden">
               <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
-                {/* Logo with pulse effect */}
-                <motion.div
-                  whileHover={{ scale: 1.08, rotate: 2 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                  className="bg-white rounded-xl p-6 shadow-lg relative"
-                >
-                  <motion.div
-                    className="absolute inset-0 bg-primary/20 rounded-xl blur-xl"
-                    animate={{
-                      scale: [1, 1.2, 1],
-                      opacity: [0.3, 0.6, 0.3]
-                    }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                  />
+                {/* HIVE Logo */}
+                <div className="relative shrink-0">
+                  <div className="absolute inset-0 bg-red-500/10 rounded-xl blur-xl" />
                   <img
                     src={hiveLogo}
                     alt="HIVE Logo"
-                    className="h-20 md:h-24 w-auto object-contain relative z-10"
+                    className="h-20 md:h-24 w-auto object-contain relative z-10 rounded-xl"
                   />
-                </motion.div>
+                </div>
 
                 {/* Info with staggered animations */}
                 <div className="text-center md:text-left">
                   <motion.h3
-                    className="text-2xl md:text-3xl font-bold text-foreground mb-2"
+                    className="text-2xl md:text-3xl font-bold text-white mb-2"
                     initial={{ opacity: 0, x: -20 }}
                     animate={isInView ? { opacity: 1, x: 0 } : {}}
                     transition={{ duration: 0.5, delay: 0.7 }}
@@ -167,7 +128,7 @@ export const IncubationSection = () => {
                     {t('incubation.cell')}
                   </motion.h3>
                   <motion.p
-                    className="text-xl text-primary font-semibold mb-3"
+                    className="text-xl text-red-500 dark:text-red-400 font-bold mb-3"
                     initial={{ opacity: 0, x: -20 }}
                     animate={isInView ? { opacity: 1, x: 0 } : {}}
                     transition={{ duration: 0.5, delay: 0.8 }}
@@ -175,7 +136,7 @@ export const IncubationSection = () => {
                     {t('incubation.university')}
                   </motion.p>
                   <motion.p
-                    className="text-muted-foreground max-w-md"
+                    className="text-slate-300 max-w-md"
                     initial={{ opacity: 0, x: -20 }}
                     animate={isInView ? { opacity: 1, x: 0 } : {}}
                     transition={{ duration: 0.5, delay: 0.9 }}
@@ -184,8 +145,8 @@ export const IncubationSection = () => {
                   </motion.p>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>

@@ -255,43 +255,61 @@ const ProjectDetailsModal = ({
         <div className="mb-8 p-5 bg-muted/30 border border-border rounded-2xl">
           <div className="flex justify-between items-end mb-3">
             <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">Development Roadmap</span>
-            <span className={`text-[10px] font-bold px-2 py-0.5 rounded bg-muted/50 border border-border uppercase tracking-wider ${isPrimary ? 'text-primary' : 'text-accent'}`}>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${
+              project.statusKey === 'rnd'
+                ? 'bg-amber-500/5 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20 dark:border-amber-500/30'
+                : project.statusKey === 'lab'
+                ? 'bg-purple-500/5 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20 dark:border-purple-500/30'
+                : project.statusKey === 'alpha'
+                ? 'bg-rose-500/5 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20 dark:border-rose-500/30'
+                : project.statusKey === 'beta'
+                ? 'bg-blue-500/5 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20 dark:border-blue-500/30'
+                : 'bg-emerald-500/5 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 dark:border-emerald-500/30'
+            }`}>
               {t(`projects.statuses.${project.statusKey}`)}
             </span>
           </div>
 
-          <div className="relative pt-2 pb-1">
+          <div className="relative pt-3 pb-2">
             <div className="flex justify-between items-center relative z-10">
-              {[1, 2, 3, 4, 5].map((step) => (
-                <div key={step} className="relative flex flex-col items-center">
-                  <div
-                    className={`w-3.5 h-3.5 rounded-full relative z-20 transition-all duration-500 ${step <= project.phase
-                      ? (isPrimary ? 'bg-primary dark:shadow-[0_0_12px_rgba(251,146,60,0.85)]' : 'bg-accent dark:shadow-[0_0_12px_rgba(132,204,22,0.85)]')
-                      : 'bg-border'
-                    }`}
-                  >
-                    {step === project.phase && (
-                      <motion.div
-                        animate={{ scale: [1, 2, 1], opacity: [0.5, 0, 0.5] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        className={`absolute inset-0 rounded-full ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
-                      />
-                    )}
+              {[1, 2, 3, 4, 5].map((step) => {
+                const isCompleted = step <= project.phase;
+                const isCurrent = step === project.phase;
+                return (
+                  <div key={step} className="relative flex flex-col items-center">
+                    <div
+                      className={`w-6 h-6 rounded-full relative z-20 transition-all duration-500 flex items-center justify-center text-[10px] font-bold border ${
+                        isCompleted
+                          ? isPrimary
+                            ? 'bg-primary text-primary-foreground border-primary dark:shadow-[0_0_12px_rgba(251,146,60,0.85)]'
+                            : 'bg-accent text-accent-foreground border-accent dark:shadow-[0_0_12px_rgba(132,204,22,0.85)]'
+                          : 'bg-muted border-border text-muted-foreground'
+                      }`}
+                    >
+                      {step}
+                      {isCurrent && (
+                        <motion.div
+                          animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                          className={`absolute inset-0 rounded-full -z-10 ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Connector Line */}
-            <div className="absolute top-[14px] left-0 right-0 h-[2px] bg-border z-0 px-1">
+            <div className="absolute top-6 left-0 right-0 h-[2px] bg-border z-0 px-1">
               <div
-                className={`h-full ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
+                className={`h-full transition-all duration-500 ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
                 style={{ width: `${(project.phase - 1) * 25}%` }}
               />
             </div>
           </div>
 
-          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center mt-3">
+          <p className="text-[11px] font-bold text-foreground/80 dark:text-foreground/90 uppercase tracking-widest text-center mt-3">
             {t(`projects.stages.${project.stageKey}`)}
           </p>
         </div>
@@ -303,9 +321,9 @@ const ProjectDetailsModal = ({
             {project.features.map((feature) => (
               <span
                 key={feature}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium border ${isPrimary
-                  ? 'bg-primary/10 text-primary border-primary/20'
-                  : 'bg-accent/10 text-accent border-accent/20'
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-200 ${isPrimary
+                  ? 'bg-orange-500/5 dark:bg-primary/10 text-orange-700 dark:text-primary border-orange-500/20 dark:border-primary/20 hover:bg-orange-500/10 dark:hover:bg-primary/20'
+                  : 'bg-emerald-500/5 dark:bg-accent/10 text-emerald-700 dark:text-accent border-emerald-500/20 dark:border-accent/20 hover:bg-emerald-500/10 dark:hover:bg-accent/20'
                   }`}
               >
                 {feature}
@@ -503,7 +521,7 @@ export const ProjectsSection = () => {
 
   return (
     <>
-      <section id="projects" className="py-32 relative overflow-hidden">
+      <section id="projects" className="py-16 md:py-32 relative overflow-hidden">
         {/* Enhanced animated background */}
         <div className="absolute inset-0 pointer-events-none">
           <motion.div
@@ -549,7 +567,7 @@ export const ProjectsSection = () => {
         </div>
 
         {/* Grid pattern */}
-        <div className="absolute inset-0 grid-pattern opacity-20 pointer-events-none" />
+        <div className="absolute inset-0 grid-pattern opacity-65 pointer-events-none" />
 
         <div className="container mx-auto px-6 relative z-10" ref={ref}>
           <motion.div
@@ -585,7 +603,7 @@ export const ProjectsSection = () => {
           </motion.div>
 
         {/* Sticky Notes Grid */}
-        <div className="relative w-full mt-24 mb-20 max-w-7xl mx-auto px-4 md:px-8">
+        <div className="relative w-full mt-12 md:mt-24 mb-8 md:mb-20 max-w-7xl mx-auto px-4 md:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-3 gap-y-6 sm:gap-x-8 sm:gap-y-12">
             {projects.map((project, index) => (
               <ProjectCard

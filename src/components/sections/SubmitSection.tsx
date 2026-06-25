@@ -746,7 +746,7 @@ export const SubmitSection = () => {
   }
 
   return (
-    <section id="submit" className="py-32 relative overflow-hidden">
+    <section id="submit" className="pt-4 pb-32 md:pt-8 relative overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/5 to-background" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-primary/3 rounded-full blur-[200px]" />
