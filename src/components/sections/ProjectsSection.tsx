@@ -206,6 +206,9 @@ const ProjectDetailsModal = ({
         transition={{ type: 'spring', damping: 25, stiffness: 350 }}
         className="relative w-full max-w-2xl bg-card border border-border/50 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-y-auto max-h-[90vh] z-10"
       >
+        {/* Grid pattern background */}
+        <div className="absolute inset-0 grid-pattern opacity-35 pointer-events-none" />
+
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -214,153 +217,155 @@ const ProjectDetailsModal = ({
           <X className="w-5 h-5" />
         </button>
 
-        {/* Modal Header */}
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 mb-6 text-center sm:text-left mt-2">
-          <div
-            className={`w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden ${!project.image && (project.iconBgClass ? `${project.iconBgClass} ${project.iconColorClass}` : (isPrimary
-              ? 'bg-primary/15 text-primary'
-              : 'bg-accent/15 text-accent'))
-              }`}
-          >
-            {project.image ? (
-              <img
-                src={project.image}
-                alt={`${project.name} logo`}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              IconComponent && <IconComponent className="w-10 h-10" strokeWidth={1.5} />
-            )}
+        <div className="relative z-10">
+          {/* Modal Header */}
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 mb-6 text-center sm:text-left mt-2">
+            <div
+              className={`w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden ${!project.image && (project.iconBgClass ? `${project.iconBgClass} ${project.iconColorClass}` : (isPrimary
+                ? 'bg-primary/15 text-primary'
+                : 'bg-accent/15 text-accent'))
+                }`}
+            >
+              {project.image ? (
+                <img
+                  src={project.image}
+                  alt={`${project.name} logo`}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                IconComponent && <IconComponent className="w-10 h-10" strokeWidth={1.5} />
+              )}
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <h3 className="text-3xl font-bold mb-1 text-foreground font-display">
+                {project.name}
+              </h3>
+              <p className={`text-base font-semibold ${isPrimary ? 'text-primary' : 'text-accent'}`}>
+                {project.tagline}
+              </p>
+            </div>
           </div>
 
-          <div className="flex-1 min-w-0">
-            <h3 className="text-3xl font-bold mb-1 text-foreground font-display">
-              {project.name}
-            </h3>
-            <p className={`text-base font-semibold ${isPrimary ? 'text-primary' : 'text-accent'}`}>
-              {project.tagline}
+          {/* Description */}
+          <div className="mb-6">
+            <h4 className="text-xs uppercase font-bold tracking-[0.2em] text-muted-foreground/60 mb-2">About Project</h4>
+            <p className="text-foreground/80 text-sm leading-relaxed">
+              {project.description}
             </p>
           </div>
-        </div>
 
-        {/* Description */}
-        <div className="mb-6">
-          <h4 className="text-xs uppercase font-bold tracking-[0.2em] text-muted-foreground/60 mb-2">About Project</h4>
-          <p className="text-foreground/80 text-sm leading-relaxed">
-            {project.description}
-          </p>
-        </div>
-
-        {/* Development Roadmap */}
-        <div className="mb-8 p-5 bg-muted/30 border border-border rounded-2xl">
-          <div className="flex justify-between items-end mb-3">
-            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">Development Roadmap</span>
-            <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${
-              project.statusKey === 'rnd'
-                ? 'bg-amber-500/5 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20 dark:border-amber-500/30'
-                : project.statusKey === 'lab'
-                ? 'bg-purple-500/5 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20 dark:border-purple-500/30'
-                : project.statusKey === 'alpha'
-                ? 'bg-rose-500/5 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20 dark:border-rose-500/30'
-                : project.statusKey === 'beta'
-                ? 'bg-blue-500/5 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20 dark:border-blue-500/30'
-                : 'bg-emerald-500/5 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 dark:border-emerald-500/30'
-            }`}>
-              {t(`projects.statuses.${project.statusKey}`)}
-            </span>
-          </div>
-
-          <div className="relative pt-3 pb-2">
-            <div className="flex justify-between items-center relative z-10">
-              {[1, 2, 3, 4, 5].map((step) => {
-                const isCompleted = step <= project.phase;
-                const isCurrent = step === project.phase;
-                return (
-                  <div key={step} className="relative flex flex-col items-center">
-                    <div
-                      className={`w-6 h-6 rounded-full relative z-20 transition-all duration-500 flex items-center justify-center text-[10px] font-bold border ${
-                        isCompleted
-                          ? isPrimary
-                            ? 'bg-primary text-primary-foreground border-primary dark:shadow-[0_0_12px_rgba(251,146,60,0.85)]'
-                            : 'bg-accent text-accent-foreground border-accent dark:shadow-[0_0_12px_rgba(132,204,22,0.85)]'
-                          : 'bg-muted border-border text-muted-foreground'
-                      }`}
-                    >
-                      {step}
-                      {isCurrent && (
-                        <motion.div
-                          animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                          className={`absolute inset-0 rounded-full -z-10 ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
-                        />
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Connector Line */}
-            <div className="absolute top-6 left-0 right-0 h-[2px] bg-border z-0 px-1">
-              <div
-                className={`h-full transition-all duration-500 ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
-                style={{ width: `${(project.phase - 1) * 25}%` }}
-              />
-            </div>
-          </div>
-
-          <p className="text-[11px] font-bold text-foreground/80 dark:text-foreground/90 uppercase tracking-widest text-center mt-3">
-            {t(`projects.stages.${project.stageKey}`)}
-          </p>
-        </div>
-
-        {/* Key Features */}
-        <div className="mb-8">
-          <h4 className="text-xs uppercase font-bold tracking-[0.2em] text-muted-foreground/60 mb-3">Key Features & Modules</h4>
-          <div className="flex flex-wrap gap-2">
-            {project.features.map((feature) => (
-              <span
-                key={feature}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-200 ${isPrimary
-                  ? 'bg-orange-500/5 dark:bg-primary/10 text-orange-700 dark:text-primary border-orange-500/20 dark:border-primary/20 hover:bg-orange-500/10 dark:hover:bg-primary/20'
-                  : 'bg-emerald-500/5 dark:bg-accent/10 text-emerald-700 dark:text-accent border-emerald-500/20 dark:border-accent/20 hover:bg-emerald-500/10 dark:hover:bg-accent/20'
-                  }`}
-              >
-                {feature}
+          {/* Development Roadmap */}
+          <div className="mb-8 p-5 bg-muted/30 border border-border rounded-2xl">
+            <div className="flex justify-between items-end mb-3">
+              <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">Development Roadmap</span>
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${
+                project.statusKey === 'rnd'
+                  ? 'bg-amber-500/5 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20 dark:border-amber-500/30'
+                  : project.statusKey === 'lab'
+                  ? 'bg-purple-500/5 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20 dark:border-purple-500/30'
+                  : project.statusKey === 'alpha'
+                  ? 'bg-rose-500/5 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20 dark:border-rose-500/30'
+                  : project.statusKey === 'beta'
+                  ? 'bg-blue-500/5 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20 dark:border-blue-500/30'
+                  : 'bg-emerald-500/5 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 dark:border-emerald-500/30'
+              }`}>
+                {t(`projects.statuses.${project.statusKey}`)}
               </span>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* Action Button */}
-        <div className="pt-5 border-t border-border flex flex-col sm:flex-row gap-3">
-          <button
-            onClick={handleActionClick}
-            className={`flex-1 py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${project.id === 'nexus' || project.id === 'nilayam' || project.id === 'archplan' || project.id === 'letusknow' || project.id === 'wish0' || project.url
-              ? 'bg-gradient-to-r from-primary to-orange-400 text-primary-foreground dark:shadow-[0_4px_15px_rgba(251,146,60,0.3)] dark:hover:shadow-[0_0_25px_hsl(25_85%_55%/0.5)]'
-              : isPrimary
-                ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                : 'bg-accent text-accent-foreground hover:bg-accent/90'
-              }`}
-          >
-            {project.id === 'nexus' || project.id === 'nilayam' || project.id === 'archplan' || project.id === 'letusknow' || project.id === 'wish0' || project.url ? (
-              <>
-                <ExternalLink className="w-4 h-4" />
-                Access Platform
-              </>
-            ) : (
-              <>
-                <Bell className="w-4 h-4" />
-                Join Waitlist
-              </>
-            )}
-          </button>
-          <button
-            onClick={onClose}
-            className="px-6 py-3.5 rounded-xl font-bold text-sm bg-muted/30 border border-border hover:bg-muted/60 text-muted-foreground transition-all cursor-pointer"
-          >
-            Close
-          </button>
+            <div className="relative pt-3 pb-2">
+              <div className="flex justify-between items-center relative z-10">
+                {[1, 2, 3, 4, 5].map((step) => {
+                  const isCompleted = step <= project.phase;
+                  const isCurrent = step === project.phase;
+                  return (
+                    <div key={step} className="relative flex flex-col items-center">
+                      <div
+                        className={`w-6 h-6 rounded-full relative z-20 transition-all duration-500 flex items-center justify-center text-[10px] font-bold border ${
+                          isCompleted
+                            ? isPrimary
+                              ? 'bg-primary text-primary-foreground border-primary dark:shadow-[0_0_12px_rgba(251,146,60,0.85)]'
+                              : 'bg-accent text-accent-foreground border-accent dark:shadow-[0_0_12px_rgba(132,204,22,0.85)]'
+                            : 'bg-muted border-border text-muted-foreground'
+                        }`}
+                      >
+                        {step}
+                        {isCurrent && (
+                          <motion.div
+                            animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                            className={`absolute inset-0 rounded-full -z-10 ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Connector Line */}
+              <div className="absolute top-6 left-0 right-0 h-[2px] bg-border z-0 px-1">
+                <div
+                  className={`h-full transition-all duration-500 ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
+                  style={{ width: `${(project.phase - 1) * 25}%` }}
+                />
+              </div>
+            </div>
+
+            <p className="text-[11px] font-bold text-foreground/80 dark:text-foreground/90 uppercase tracking-widest text-center mt-3">
+              {t(`projects.stages.${project.stageKey}`)}
+            </p>
+          </div>
+
+          {/* Key Features */}
+          <div className="mb-8">
+            <h4 className="text-xs uppercase font-bold tracking-[0.2em] text-muted-foreground/60 mb-3">Key Features & Modules</h4>
+            <div className="flex flex-wrap gap-2">
+              {project.features.map((feature) => (
+                <span
+                  key={feature}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-200 ${isPrimary
+                    ? 'bg-orange-500/5 dark:bg-primary/10 text-orange-700 dark:text-primary border-orange-500/20 dark:border-primary/20 hover:bg-orange-500/10 dark:hover:bg-primary/20'
+                    : 'bg-emerald-500/5 dark:bg-accent/10 text-emerald-700 dark:text-accent border-emerald-500/20 dark:border-accent/20 hover:bg-emerald-500/10 dark:hover:bg-accent/20'
+                    }`}
+                >
+                  {feature}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Button */}
+          <div className="pt-5 border-t border-border flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={handleActionClick}
+              className={`flex-1 py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${project.id === 'nexus' || project.id === 'nilayam' || project.id === 'archplan' || project.id === 'letusknow' || project.id === 'wish0' || project.url
+                ? 'bg-gradient-to-r from-primary to-orange-400 text-primary-foreground dark:shadow-[0_4px_15px_rgba(251,146,60,0.3)] dark:hover:shadow-[0_0_25px_hsl(25_85%_55%/0.5)]'
+                : isPrimary
+                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  : 'bg-accent text-accent-foreground hover:bg-accent/90'
+                }`}
+            >
+              {project.id === 'nexus' || project.id === 'nilayam' || project.id === 'archplan' || project.id === 'letusknow' || project.id === 'wish0' || project.url ? (
+                <>
+                  <ExternalLink className="w-4 h-4" />
+                  Access Platform
+                </>
+              ) : (
+                <>
+                  <Bell className="w-4 h-4" />
+                  Join Waitlist
+                </>
+              )}
+            </button>
+            <button
+              onClick={onClose}
+              className="px-6 py-3.5 rounded-xl font-bold text-sm bg-muted/30 border border-border hover:bg-muted/60 text-muted-foreground transition-all cursor-pointer"
+            >
+              Close
+            </button>
+          </div>
         </div>
       </motion.div>
     </div>
