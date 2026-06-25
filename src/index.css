@@ -504,8 +504,8 @@
   /* Grid pattern overlay */
   .grid-pattern {
     background-image:
-      linear-gradient(hsl(25 50% 30% / 0.18) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(25 50% 30% / 0.18) 1px, transparent 1px);
+      linear-gradient(hsl(25 50% 30% / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(25 50% 30% / 0.05) 1px, transparent 1px);
     background-size: 50px 50px;
   }
 
