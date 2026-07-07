@@ -178,9 +178,8 @@ export const Navbar = () => {
 
 
               {!isLoggedIn ? (
-                <motion.a
-                  href="/auth"
-                  onClick={(e) => { e.preventDefault(); navigate('/auth'); }}
+                <motion.button
+                  onClick={() => navigate('/auth')}
                   className="relative ml-4 px-6 py-2.5 rounded-xl font-semibold text-sm overflow-hidden group"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -193,7 +192,7 @@ export const Navbar = () => {
                   <span className="relative text-primary-foreground">
                     {t('nav.getStarted')}
                   </span>
-                </motion.a>
+                </motion.button>
               ) : isOnLandingPage ? (
                 // On landing page: show gradient Dashboard button and Logout
                 <div className="flex items-center gap-2">
@@ -375,9 +374,8 @@ export const Navbar = () => {
               {/* Removed portal mobile nav links */}
 
               {!isLoggedIn ? (
-                <motion.a
-                  href="/auth"
-                  onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/auth'); }}
+                <motion.button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/auth'); }}
                   className="w-full max-w-xs text-center px-10 py-5 rounded-2xl font-bold text-xl overflow-hidden relative group shadow-2xl shadow-primary/20"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -387,7 +385,7 @@ export const Navbar = () => {
                   <span className="relative text-primary-foreground">
                     {t('nav.getStarted')}
                   </span>
-                </motion.a>
+                </motion.button>
               ) : isOnLandingPage ? (
                 // On landing page: show gradient Dashboard button and Logout
                 <div className="flex flex-col gap-4 w-full max-w-xs">
