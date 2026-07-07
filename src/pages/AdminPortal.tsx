@@ -95,15 +95,58 @@ const AdminPortal = () => {
         toast.success(`Custom file attached: ${file.name}`);
     };
 
+    // Metadata Parsing & Serialization
+    const parseProjectMetadata = (bountyReward: string | null | undefined) => {
+        try {
+            if (bountyReward && bountyReward.trim().startsWith('{')) {
+                return JSON.parse(bountyReward);
+            }
+        } catch (e) {
+            console.error("Failed to parse project metadata:", e);
+        }
+        return {
+            deadline: "",
+            website_url: "",
+            agreement: bountyReward || ""
+        };
+    };
+
+    const serializeProjectMetadata = (deadline: string, websiteUrl: string, agreement: string) => {
+        return JSON.stringify({
+            deadline,
+            website_url: websiteUrl,
+            agreement
+        });
+    };
+
+    // Edit Modal states
     const [editOpen, setEditOpen] = useState<Submission | null>(null);
     const [editStatus, setEditStatus] = useState("");
     const [editProgress, setEditProgress] = useState(0);
+    const [editName, setEditName] = useState("");
+    const [editEmail, setEditEmail] = useState("");
+    const [editOrg, setEditOrg] = useState("");
+    const [editMsg, setEditMsg] = useState("");
+    const [editDeadline, setEditDeadline] = useState("");
+    const [editUrl, setEditUrl] = useState("");
+    const [editAgreement, setEditAgreement] = useState("");
+
+    // Create Modal states
+    const [createOpen, setCreateOpen] = useState(false);
+    const [createName, setCreateName] = useState("");
+    const [createEmail, setCreateEmail] = useState("");
+    const [createOrg, setCreateOrg] = useState("");
+    const [createMsg, setCreateMsg] = useState("");
+    const [createStatus, setCreateStatus] = useState("In Progress");
+    const [createProgress, setCreateProgress] = useState(0);
+    const [createDeadline, setCreateDeadline] = useState("");
+    const [createUrl, setCreateUrl] = useState("");
+    const [createAgreement, setCreateAgreement] = useState("");
+    const [creatingSub, setCreatingSub] = useState(false);
     const [updatingSub, setUpdatingSub] = useState(false);
 
     const navigate = useNavigate();
 
-    // Check for admin session strictly via Supabase Auth
-    // Check for admin session strictly via Mock Service
     useEffect(() => {
         const checkAdmin = async () => {
             const { data: { user } } = await supabase.auth.getUser();
@@ -121,7 +164,6 @@ const AdminPortal = () => {
                 return;
             }
 
-            // Authorized
             fetchSubmissions();
         };
 
@@ -135,12 +177,8 @@ const AdminPortal = () => {
         setFetchError(null);
 
         try {
-            // Add cache-buster to ensure we bypass any 'Invalid Key' cached responses
             const data = await supabaseService.getSubmissions(undefined, Date.now().toString());
             setSubmissions(data || []);
-            if (!data || data.length === 0) {
-                console.log("AdminHQ: Connection successful but database returned 0 records.");
-            }
         } catch (error: any) {
             console.error("Fetch Failure:", error);
             setFetchError(error.message || "Unknown error");
@@ -149,8 +187,6 @@ const AdminPortal = () => {
             setLoading(false);
         }
     };
-
-    // We call this inside the useEffect now
 
     const filteredSubmissions = submissions
         .filter(s => {
@@ -180,7 +216,7 @@ const AdminPortal = () => {
     const getInquiryLabel = (type: string) => {
         switch (type) {
             case "problem": return "Real-World Problem";
-            case "requirement": return "Project Requirement";
+            case "requirement": return "Client Project";
             case "inquiry": return "General Inquiry";
             case "investor": return "Investors & Supporters";
             default: return type;
@@ -191,7 +227,6 @@ const AdminPortal = () => {
         setChatOpen(sub);
         setChatLoading(true);
         try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const { data, error } = await (supabase as any)
                 .from('chat_messages')
                 .select('*')
@@ -210,7 +245,6 @@ const AdminPortal = () => {
         if (!chatInput.trim() || !chatOpen) return;
         setSendingMsg(true);
         try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const { data, error } = await (supabase as any)
                 .from('chat_messages')
                 .insert([{
@@ -234,23 +268,91 @@ const AdminPortal = () => {
         setEditOpen(sub);
         setEditStatus(sub.status || "Analyzing");
         setEditProgress(sub.progress || 0);
+        setEditName(sub.name || "");
+        setEditEmail(sub.email || "");
+        setEditOrg(sub.organization || "");
+        setEditMsg(sub.message || "");
+        
+        const meta = parseProjectMetadata(sub.bounty_reward);
+        setEditDeadline(meta.deadline || "");
+        setEditUrl(meta.website_url || "");
+        setEditAgreement(meta.agreement || "");
     };
 
     const handleUpdateSubmission = async () => {
         if (!editOpen) return;
         setUpdatingSub(true);
         try {
+            const bountyStr = serializeProjectMetadata(editDeadline, editUrl, editAgreement);
             await supabaseService.updateSubmission(editOpen.id, {
+                name: editName,
+                email: editEmail,
+                organization: editOrg,
+                message: editMsg,
                 status: editStatus,
-                progress: editProgress
+                progress: editProgress,
+                bounty_reward: bountyStr
             });
-            toast.success("Submission updated successfully");
+            toast.success("Project updated successfully");
             setEditOpen(null);
-            fetchSubmissions(); // Refresh the list
+            fetchSubmissions();
         } catch (error: any) {
             toast.error(`Update failed: ${error.message}`);
         } finally {
             setUpdatingSub(false);
+        }
+    };
+
+    const handleCreateSubmission = async () => {
+        if (!createName.trim() || !createEmail.trim()) {
+            toast.error("Name and Email are required.");
+            return;
+        }
+        setCreatingSub(true);
+        try {
+            const bountyStr = serializeProjectMetadata(createDeadline, createUrl, createAgreement);
+            await supabaseService.submitContactForm({
+                name: createName.trim(),
+                email: createEmail.trim().toLowerCase(),
+                designation: "Client Representative",
+                organization: createOrg.trim(),
+                inquiry_type: "requirement",
+                message: createMsg.trim() || "Client project requirements created by admin.",
+                status: createStatus,
+                progress: createProgress,
+                bounty_reward: bountyStr
+            });
+            toast.success("Client project created successfully");
+            setCreateOpen(false);
+            setCreateName("");
+            setCreateEmail("");
+            setCreateOrg("");
+            setCreateMsg("");
+            setCreateStatus("In Progress");
+            setCreateProgress(0);
+            setCreateDeadline("");
+            setCreateUrl("");
+            setCreateAgreement("");
+            fetchSubmissions();
+        } catch (error: any) {
+            toast.error(`Creation failed: ${error.message}`);
+        } finally {
+            setCreatingSub(false);
+        }
+    };
+
+    const handleDeleteSubmission = async (id: string) => {
+        if (!window.confirm("Are you sure you want to delete this project/submission? This cannot be undone.")) return;
+        try {
+            const { error } = await supabase
+                .from('contact_submissions')
+                .delete()
+                .eq('id', id);
+            if (error) throw error;
+            toast.success("Project deleted successfully");
+            fetchSubmissions();
+        } catch (error: any) {
+            toast.error(`Delete failed: ${error.message}`);
         }
     };
 
@@ -264,7 +366,7 @@ const AdminPortal = () => {
 
             <main className="container mx-auto px-6 pt-32 pb-20 relative z-10">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-                    <div>
+                    <div className="text-left">
                         <motion.h1
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -306,7 +408,7 @@ const AdminPortal = () => {
                     {[
                         { label: "Total Submissions", value: submissions.length, icon: <Users className="w-6 h-6 text-primary" /> },
                         { label: "Problems", value: submissions.filter(s => s.inquiry_type === "problem").length, icon: <Target className="w-6 h-6 text-red-400" /> },
-                        { label: "Requirements", value: submissions.filter(s => s.inquiry_type === "requirement").length, icon: <ClipboardList className="w-6 h-6 text-blue-400" /> },
+                        { label: "Client Projects", value: submissions.filter(s => s.inquiry_type === "requirement").length, icon: <ClipboardList className="w-6 h-6 text-blue-400" /> },
                         { label: "Investors", value: submissions.filter(s => s.inquiry_type === "investor").length, icon: <Handshake className="w-6 h-6 text-green-400" /> },
                     ].map((stat, i) => (
                         <motion.div
@@ -316,7 +418,7 @@ const AdminPortal = () => {
                             transition={{ delay: i * 0.1 }}
                             className="glass-card p-6 electric-border flex items-center justify-between"
                         >
-                            <div>
+                            <div className="text-left">
                                 <p className="text-sm text-muted-foreground mb-1 uppercase tracking-wider">{stat.label}</p>
                                 <h3 className="text-3xl font-bold">{stat.value}</h3>
                             </div>
@@ -355,7 +457,7 @@ const AdminPortal = () => {
                         {[
                             { id: "all", label: "All types", icon: <Filter className="w-4 h-4" /> },
                             { id: "problem", label: "Problems", icon: <Target className="w-4 h-4" /> },
-                            { id: "requirement", label: "Requirements", icon: <ClipboardList className="w-4 h-4" /> },
+                            { id: "requirement", label: "Client Projects", icon: <ClipboardList className="w-4 h-4" /> },
                             { id: "inquiry", label: "Inquiries", icon: <HelpCircle className="w-4 h-4" /> },
                             { id: "investor", label: "Investors", icon: <Handshake className="w-4 h-4" /> },
                         ].map((t) => (
@@ -373,6 +475,28 @@ const AdminPortal = () => {
                         ))}
                     </div>
                 </div>
+
+                {filter === "requirement" && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-6 p-6 glass-card border border-primary/20 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4 text-left"
+                    >
+                        <div>
+                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                <ClipboardList className="w-5 h-5 text-primary" />
+                                Managed Client Projects
+                            </h2>
+                            <p className="text-xs text-muted-foreground mt-1">Manage project descriptions, client credentials, SLAs, deadlines, and project URLs.</p>
+                        </div>
+                        <button
+                            onClick={() => setCreateOpen(true)}
+                            className="bg-primary hover:bg-primary/80 text-primary-foreground font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
+                        >
+                            + Add Client Project
+                        </button>
+                    </motion.div>
+                )}
 
                 {/* Submissions List */}
                 <div className="space-y-6">
@@ -413,7 +537,7 @@ const AdminPortal = () => {
                                                     </span>
                                                 </div>
 
-                                                <div className="space-y-1">
+                                                <div className="space-y-1 text-left">
                                                     <div className="flex items-center gap-3">
                                                         <h3 className="text-2xl font-bold group-hover:text-primary transition-colors">{sub.name}</h3>
                                                         {sub.status && (
@@ -446,7 +570,7 @@ const AdminPortal = () => {
                                                 </div>
 
                                                 {sub.progress !== undefined && (
-                                                    <div className="space-y-3 py-2">
+                                                    <div className="space-y-3 py-2 text-left">
                                                         <div className="flex justify-between items-center mb-1">
                                                             <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em]">Development Phase</span>
                                                             <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
@@ -476,18 +600,50 @@ const AdminPortal = () => {
                                                     </div>
                                                 )}
 
-                                                <div className="bg-white/5 rounded-2xl p-6 border border-white/5 group-hover:bg-white/[0.07] transition-colors relative">
-                                                    {sub.bounty_reward && (
-                                                        <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/20 text-primary border border-primary/30 z-20">
-                                                            <span className="text-xs font-bold tracking-tight">BOUNTY: {sub.bounty_reward}</span>
-                                                        </div>
-                                                    )}
-                                                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                                                        <MessageSquare className="w-12 h-12" />
-                                                    </div>
-                                                    <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap relative z-10">
-                                                        {sub.message}
-                                                    </p>
+                                                <div className="bg-white/5 rounded-2xl p-6 border border-white/5 group-hover:bg-white/[0.07] transition-colors relative text-left">
+                                                    {(() => {
+                                                        const meta = parseProjectMetadata(sub.bounty_reward);
+                                                        const isJson = sub.bounty_reward && sub.bounty_reward.trim().startsWith('{');
+                                                        if (isJson) {
+                                                            return (
+                                                                <div className="space-y-4">
+                                                                    <div className="flex flex-wrap gap-4 text-xs font-semibold text-slate-300 mb-2 border-b border-white/5 pb-2">
+                                                                        {meta.deadline && (
+                                                                            <span className="bg-orange-500/10 text-orange-400 border border-orange-500/20 px-2.5 py-1 rounded-lg">
+                                                                                Deadline: {meta.deadline}
+                                                                            </span>
+                                                                        )}
+                                                                        {meta.website_url && (
+                                                                            <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-1 rounded-lg truncate max-w-xs">
+                                                                                URL: <a href={meta.website_url} target="_blank" rel="noopener noreferrer" className="hover:underline text-blue-400">{meta.website_url}</a>
+                                                                            </span>
+                                                                        )}
+                                                                        {meta.agreement && (
+                                                                            <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-lg truncate max-w-xs animate-pulse">
+                                                                                Agreement: {meta.agreement}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                    <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap relative z-10">
+                                                                        {sub.message}
+                                                                    </p>
+                                                                </div>
+                                                            );
+                                                        }
+                                                        
+                                                        return (
+                                                            <>
+                                                                {sub.bounty_reward && (
+                                                                    <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/20 text-primary border border-primary/30 z-20">
+                                                                        <span className="text-xs font-bold tracking-tight">BOUNTY: {sub.bounty_reward}</span>
+                                                                    </div>
+                                                                )}
+                                                                <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap relative z-10">
+                                                                    {sub.message}
+                                                                </p>
+                                                            </>
+                                                        );
+                                                    })()}
                                                 </div>
                                             </div>
 
@@ -512,6 +668,12 @@ const AdminPortal = () => {
                                                 >
                                                     <Mail className="w-4 h-4" />
                                                     Gmail
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteSubmission(sub.id)}
+                                                    className="px-5 py-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 hover:text-red-400 font-semibold flex items-center gap-2 transition-all text-sm border border-red-500/20"
+                                                >
+                                                    Delete
                                                 </button>
                                             </div>
                                         </div>
@@ -554,7 +716,7 @@ const AdminPortal = () => {
                                     <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                                         <MessageCircle className="w-5 h-5 text-primary" />
                                     </div>
-                                    <div>
+                                    <div className="text-left">
                                         <p className="font-semibold text-sm text-foreground">{chatOpen.name}</p>
                                         <p className="text-xs text-muted-foreground">{chatOpen.email}</p>
                                     </div>
@@ -586,14 +748,13 @@ const AdminPortal = () => {
                                                         {chatOpen.name.slice(0, 2).toUpperCase()}
                                                     </div>
                                                 )}
-                                                <div className={`relative max-w-[75%] px-4 py-2.5 rounded-2xl text-sm shadow-md border-t ${
+                                                <div className={`relative max-w-[75%] px-4 py-2.5 rounded-2xl text-sm shadow-md border-t text-left ${
                                                     isSelf 
                                                         ? 'bg-[#005c4b] text-[#e9edef] rounded-tr-none border-emerald-500/10' 
                                                         : 'bg-[#202c33] text-[#e9edef] rounded-tl-none border-white/5'
                                                 }`}>
                                                     {parsed.isAttachment ? (
                                                         <div className="space-y-2">
-                                                            {/* Attachment Card */}
                                                             <a 
                                                                 href={parsed.fileUrl} 
                                                                 target="_blank" 
@@ -634,7 +795,6 @@ const AdminPortal = () => {
                             {/* Chat Input */}
                             <div className="p-4 border-t border-white/10 bg-[#1f2c34]">
                                 <div className="flex items-center gap-3">
-                                    {/* Paperclip Sharing Menu */}
                                     <div className="relative shrink-0">
                                         <button
                                             type="button"
@@ -645,7 +805,6 @@ const AdminPortal = () => {
                                             <Paperclip className={`w-4 h-4 ${attachmentDropdownOpen ? 'text-primary rotate-45' : ''} transition-transform`} />
                                         </button>
 
-                                        {/* Sharing Dropdown list */}
                                         <AnimatePresence>
                                             {attachmentDropdownOpen && (
                                                 <>
@@ -654,7 +813,7 @@ const AdminPortal = () => {
                                                         initial={{ opacity: 0, y: 15 }}
                                                         animate={{ opacity: 1, y: 0 }}
                                                         exit={{ opacity: 0, y: 15 }}
-                                                        className="absolute bottom-14 left-0 w-80 bg-[#111b21] border border-white/10 rounded-2xl shadow-2xl p-2.5 z-40 space-y-1"
+                                                        className="absolute bottom-14 left-0 w-80 bg-[#111b21] border border-white/10 rounded-2xl shadow-2xl p-2.5 z-40 space-y-1 text-left"
                                                     >
                                                         <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold px-2 py-1">Share Document or Quotation</p>
                                                         
@@ -706,7 +865,6 @@ const AdminPortal = () => {
                                                 </>
                                             )}
                                         </AnimatePresence>
-                                        {/* Hidden file selector */}
                                         <input 
                                             type="file" 
                                             ref={fileInputRef} 
@@ -721,7 +879,7 @@ const AdminPortal = () => {
                                         value={chatInput}
                                         onChange={e => setChatInput(e.target.value)}
                                         onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } }}
-                                        className="flex-1 bg-[#2a3942] border-none text-[#e9edef] rounded-xl px-4 py-3 text-sm focus:outline-none placeholder:text-muted-foreground/60 transition-all"
+                                        className="flex-1 bg-[#2a3942] border-none text-[#e9edef] rounded-xl px-4 py-3 text-sm focus:outline-none placeholder:text-muted-foreground/60 transition-all text-left"
                                     />
                                     <button
                                         onClick={sendChatMessage}
@@ -754,7 +912,7 @@ const AdminPortal = () => {
                             exit={{ scale: 0.9, opacity: 0, y: 30 }}
                             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                             onClick={e => e.stopPropagation()}
-                            className="relative w-full max-w-md bg-[#0a0a0f] border border-white/10 rounded-3xl flex flex-col overflow-hidden shadow-2xl shadow-primary/10"
+                            className="relative w-full max-w-lg h-[85vh] bg-[#0a0a0f] border border-white/10 rounded-3xl flex flex-col overflow-hidden shadow-2xl shadow-primary/10"
                         >
                             {/* Edit Header */}
                             <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5">
@@ -762,9 +920,9 @@ const AdminPortal = () => {
                                     <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                                         <Edit3 className="w-5 h-5 text-primary" />
                                     </div>
-                                    <div>
-                                        <p className="font-semibold text-lg text-foreground">Update Status</p>
-                                        <p className="text-xs text-muted-foreground">{editOpen.name}</p>
+                                    <div className="text-left">
+                                        <p className="font-semibold text-lg text-foreground">Update Client Project</p>
+                                        <p className="text-xs text-muted-foreground">{editName} ({editEmail})</p>
                                     </div>
                                 </div>
                                 <button onClick={() => setEditOpen(null)} className="p-2 rounded-xl hover:bg-white/10 transition-colors">
@@ -773,48 +931,130 @@ const AdminPortal = () => {
                             </div>
 
                             {/* Edit Content */}
-                            <div className="p-6 space-y-6">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Current Stage</label>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {['Analyzing', 'Verifying', 'In Progress', 'Validated', 'Completed'].map((s) => (
-                                            <button
-                                                key={s}
-                                                onClick={() => setEditStatus(s)}
-                                                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${editStatus === s
-                                                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                                                    : "bg-white/5 text-muted-foreground hover:bg-white/10"
-                                                    }`}
-                                            >
-                                                {s}
-                                            </button>
-                                        ))}
+                            <div className="flex-1 overflow-y-auto p-6 space-y-6 text-left">
+                                {/* Basic Info */}
+                                <div className="space-y-4">
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-white/5 pb-2">Client Details</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-slate-400">Client Name</label>
+                                            <input
+                                                type="text"
+                                                value={editName}
+                                                onChange={e => setEditName(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-slate-400">Client Email</label>
+                                            <input
+                                                type="email"
+                                                value={editEmail}
+                                                onChange={e => setEditEmail(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                            />
+                                        </div>
+                                        <div className="space-y-1 md:col-span-2">
+                                            <label className="text-[10px] uppercase font-bold text-slate-400">Organization / Company Name</label>
+                                            <input
+                                                type="text"
+                                                value={editOrg}
+                                                onChange={e => setEditOrg(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
+                                {/* Project Parameters */}
                                 <div className="space-y-4">
-                                    <div className="flex justify-between items-center">
-                                        <label className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Neural Roadmap Phase</label>
-                                        <span className="text-lg font-bold text-primary">Phase {Math.ceil(editProgress / 20) || 1}</span>
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-white/5 pb-2">Project & SLA Specifications</h4>
+                                    <div className="space-y-3">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-slate-400">Project Requirements / Description</label>
+                                            <textarea
+                                                rows={3}
+                                                value={editMsg}
+                                                onChange={e => setEditMsg(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] uppercase font-bold text-slate-400">Project Deadline Date</label>
+                                                <input
+                                                    type="date"
+                                                    value={editDeadline}
+                                                    onChange={e => setEditDeadline(e.target.value)}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary text-slate-200"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] uppercase font-bold text-slate-400">Live Website / SaaS App URL</label>
+                                                <input
+                                                    type="url"
+                                                    placeholder="https://client-app.siddhidynamics.in"
+                                                    value={editUrl}
+                                                    onChange={e => setEditUrl(e.target.value)}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-slate-400">Contractual Agreement & SLA Summary</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g., SLA signed v1.1 - 99.9% availability, 12 months maintenance support"
+                                                value={editAgreement}
+                                                onChange={e => setEditAgreement(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="grid grid-cols-5 gap-3">
-                                        {[1, 2, 3, 4, 5].map((p) => (
-                                            <button
-                                                key={p}
-                                                onClick={() => setEditProgress(p * 20)}
-                                                className={`py-3 rounded-xl border transition-all flex flex-col items-center justify-center gap-1 ${Math.ceil(editProgress / 20) === p
-                                                        ? "bg-primary/10 border-primary text-primary shadow-[0_0_15px_rgba(var(--primary),0.1)]"
-                                                        : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10"
-                                                    }`}
-                                            >
-                                                <span className="text-[10px] font-bold">P{p}</span>
-                                                <div className={`w-1.5 h-1.5 rounded-full ${Math.ceil(editProgress / 20) === p ? 'bg-primary' : 'bg-white/20'}`} />
-                                            </button>
-                                        ))}
+                                </div>
+
+                                {/* Progress & Status */}
+                                <div className="space-y-4">
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-white/5 pb-2">Status & Milestones</h4>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] uppercase font-bold text-slate-400">Current Stage</label>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                            {['Analyzing', 'Verifying', 'In Progress', 'Validated', 'Completed'].map((s) => (
+                                                <button
+                                                    key={s}
+                                                    onClick={() => setEditStatus(s)}
+                                                    className={`px-3 py-2 rounded-xl text-xs font-medium transition-all ${editStatus === s
+                                                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                                                        : "bg-white/5 text-muted-foreground hover:bg-white/10"
+                                                        }`}
+                                                >
+                                                    {s}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <p className="text-[10px] text-muted-foreground text-center italic">
-                                        Refining the progress into corporate-grade developmental milestones.
-                                    </p>
+
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center">
+                                            <label className="text-[10px] uppercase font-bold text-slate-400">Roadmap Phase</label>
+                                            <span className="text-sm font-bold text-primary">Phase {Math.ceil(editProgress / 20) || 1} ({editProgress}%)</span>
+                                        </div>
+                                        <div className="grid grid-cols-5 gap-2">
+                                            {[1, 2, 3, 4, 5].map((p) => (
+                                                <button
+                                                    key={p}
+                                                    onClick={() => setEditProgress(p * 20)}
+                                                    className={`py-2 rounded-xl border transition-all flex flex-col items-center justify-center gap-0.5 ${Math.ceil(editProgress / 20) === p
+                                                            ? "bg-primary/10 border-primary text-primary"
+                                                            : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10"
+                                                        }`}
+                                                >
+                                                    <span className="text-[9px] font-bold">P{p}</span>
+                                                    <div className={`w-1 h-1 rounded-full ${Math.ceil(editProgress / 20) === p ? 'bg-primary' : 'bg-white/20'}`} />
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -832,6 +1072,196 @@ const AdminPortal = () => {
                                     className="flex-[2] py-3 rounded-xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                 >
                                     {updatingSub ? <RefreshCw className="w-4 h-4 animate-spin" /> : "Save Changes"}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* ====== CREATE CLIENT PROJECT PANEL ====== */}
+            <AnimatePresence>
+                {createOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+                        onClick={() => setCreateOpen(false)}
+                    >
+                        <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 30 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 30 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            onClick={e => e.stopPropagation()}
+                            className="relative w-full max-w-lg h-[85vh] bg-[#0a0a0f] border border-white/10 rounded-3xl flex flex-col overflow-hidden shadow-2xl shadow-primary/10"
+                        >
+                            {/* Create Header */}
+                            <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                                        <ClipboardList className="w-5 h-5 text-primary" />
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="font-semibold text-lg text-foreground">Create Client Project</p>
+                                        <p className="text-xs text-muted-foreground">Add project parameters, SLA agreements & launch details.</p>
+                                    </div>
+                                </div>
+                                <button onClick={() => setCreateOpen(false)} className="p-2 rounded-xl hover:bg-white/10 transition-colors">
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            {/* Create Content */}
+                            <div className="flex-1 overflow-y-auto p-6 space-y-6 text-left">
+                                {/* Basic Info */}
+                                <div className="space-y-4">
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-white/5 pb-2">Client Details</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-slate-400">Client Name *</label>
+                                            <input
+                                                type="text"
+                                                required
+                                                placeholder="e.g. Ramesh Talagana"
+                                                value={createName}
+                                                onChange={e => setCreateName(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-slate-400">Client Email *</label>
+                                            <input
+                                                type="email"
+                                                required
+                                                placeholder="e.g. client@example.com"
+                                                value={createEmail}
+                                                onChange={e => setCreateEmail(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                            />
+                                        </div>
+                                        <div className="space-y-1 md:col-span-2">
+                                            <label className="text-[10px] uppercase font-bold text-slate-400">Organization / Company Name</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. Acme Tech Solutions"
+                                                value={createOrg}
+                                                onChange={e => setCreateOrg(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Project Parameters */}
+                                <div className="space-y-4">
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-white/5 pb-2">Project & SLA Specifications</h4>
+                                    <div className="space-y-3">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-slate-400">Project Requirements / Description</label>
+                                            <textarea
+                                                rows={3}
+                                                placeholder="Outline what needs to be built..."
+                                                value={createMsg}
+                                                onChange={e => setCreateMsg(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] uppercase font-bold text-slate-400">Project Deadline Date</label>
+                                                <input
+                                                    type="date"
+                                                    value={createDeadline}
+                                                    onChange={e => setCreateDeadline(e.target.value)}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary text-slate-200"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] uppercase font-bold text-slate-400">Live Website / SaaS App URL</label>
+                                                <input
+                                                    type="url"
+                                                    placeholder="https://client-app.siddhidynamics.in"
+                                                    value={createUrl}
+                                                    onChange={e => setCreateUrl(e.target.value)}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-slate-400">Contractual Agreement & SLA Summary</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g., SLA signed v1.1 - 99.9% availability, 12 months maintenance support"
+                                                value={createAgreement}
+                                                onChange={e => setCreateAgreement(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Progress & Status */}
+                                <div className="space-y-4">
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-white/5 pb-2">Status & Milestones</h4>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] uppercase font-bold text-slate-400">Current Stage</label>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                            {['Analyzing', 'Verifying', 'In Progress', 'Validated', 'Completed'].map((s) => (
+                                                <button
+                                                    key={s}
+                                                    onClick={() => setCreateStatus(s)}
+                                                    className={`px-3 py-2 rounded-xl text-xs font-medium transition-all ${createStatus === s
+                                                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                                                        : "bg-white/5 text-muted-foreground hover:bg-white/10"
+                                                        }`}
+                                                >
+                                                    {s}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center">
+                                            <label className="text-[10px] uppercase font-bold text-slate-400">Roadmap Phase</label>
+                                            <span className="text-sm font-bold text-primary">Phase {Math.ceil(createProgress / 20) || 1} ({createProgress}%)</span>
+                                        </div>
+                                        <div className="grid grid-cols-5 gap-2">
+                                            {[1, 2, 3, 4, 5].map((p) => (
+                                                <button
+                                                    key={p}
+                                                    onClick={() => setCreateProgress(p * 20)}
+                                                    className={`py-2 rounded-xl border transition-all flex flex-col items-center justify-center gap-0.5 ${Math.ceil(createProgress / 20) === p
+                                                            ? "bg-primary/10 border-primary text-primary"
+                                                            : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10"
+                                                        }`}
+                                                >
+                                                    <span className="text-[9px] font-bold">P{p}</span>
+                                                    <div className={`w-1 h-1 rounded-full ${Math.ceil(createProgress / 20) === p ? 'bg-primary' : 'bg-white/20'}`} />
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Create Actions */}
+                            <div className="p-6 border-t border-white/10 bg-white/5 flex gap-3">
+                                <button
+                                    onClick={() => setCreateOpen(false)}
+                                    className="flex-1 py-3 rounded-xl bg-white/5 text-foreground font-semibold hover:bg-white/10 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleCreateSubmission}
+                                    disabled={creatingSub}
+                                    className="flex-[2] py-3 rounded-xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                >
+                                    {creatingSub ? <RefreshCw className="w-4 h-4 animate-spin" /> : "Create Project"}
                                 </button>
                             </div>
                         </motion.div>

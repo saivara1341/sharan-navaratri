@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Eye, EyeOff, ArrowLeft, Mail, Lock, User, Loader2, Briefcase, TrendingUp, Users } from "lucide-react";
@@ -26,19 +26,48 @@ const Auth = () => {
     return adminEmails.includes(emailToCheck.trim().toLowerCase());
   };
 
-  const checkRoleAndRedirect = (user: any) => {
-    const role = user?.user_metadata?.role;
-    if (checkAdmin(user?.email)) {
+  const checkRoleAndRedirect = async (user: any) => {
+    if (!user) return;
+    const email = user.email;
+    if (checkAdmin(email)) {
       navigate("/admin-hq-nexus");
-    } else if (role === 'employee') {
+      return;
+    }
+
+    const role = user.user_metadata?.role;
+    if (role === 'employee') {
       navigate("/portal/employee");
+      return;
     } else if (role === 'client') {
       navigate("/portal/client");
+      return;
     } else if (role === 'investor') {
       navigate("/portal/investor");
-    } else {
-      setNeedsRoleSelection(true);
+      return;
     }
+
+    // Check database to see if this email exists as a client
+    if (email) {
+      try {
+        const { data, error } = await supabase
+          .from('contact_submissions')
+          .select('id')
+          .eq('email', email.trim().toLowerCase())
+          .limit(1);
+
+        if (data && data.length > 0) {
+          await supabase.auth.updateUser({
+            data: { role: 'client' }
+          });
+          navigate("/portal/client");
+          return;
+        }
+      } catch (err) {
+        console.error("DB check failed for client email:", err);
+      }
+    }
+
+    setNeedsRoleSelection(true);
   };
 
   useEffect(() => {
@@ -372,9 +401,9 @@ const Auth = () => {
 
           <div className="mt-8 text-center border-t border-border/30 pt-6 space-y-4">
             <div className="flex justify-center gap-4 text-[10px] text-muted-foreground/40 font-medium">
-              <a href="#/privacy" className="hover:text-primary transition-colors">Privacy Policy</a>
+              <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
               <span>•</span>
-              <a href="#/terms" className="hover:text-primary transition-colors">Terms of Service</a>
+              <Link to="/terms-of-service" className="hover:text-primary transition-colors">Terms of Service</Link>
             </div>
           </div>
         </motion.div>

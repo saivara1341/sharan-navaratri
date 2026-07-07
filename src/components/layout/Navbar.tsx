@@ -14,6 +14,7 @@ export const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const { scrollY } = useScroll();
 
   // True when user is on the main landing/home page
@@ -39,6 +40,14 @@ export const Navbar = () => {
   const headerPadding = useTransform(scrollY, [0, 100], ['24px', '14px']);
   const headerBlur = useTransform(scrollY, [0, 100], ['0px', '40px']);
 
+  const checkAdmin = (emailToCheck?: string) => {
+    if (!emailToCheck) return false;
+    const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com")
+      .split(",")
+      .map((e: string) => e.trim().toLowerCase());
+    return adminEmails.includes(emailToCheck.trim().toLowerCase());
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
@@ -47,15 +56,15 @@ export const Navbar = () => {
 
     // Basic auth check
     supabase.auth.getSession().then(({ data: { session } }) => {
-      const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com").split(",");
       setIsLoggedIn(!!session);
-      setIsAdmin(session?.user?.email ? adminEmails.includes(session.user.email) : false);
+      setIsAdmin(session?.user?.email ? checkAdmin(session.user.email) : false);
+      setUserRole(session?.user?.user_metadata?.role || null);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com").split(",");
       setIsLoggedIn(!!session);
-      setIsAdmin(session?.user?.email ? adminEmails.includes(session.user.email) : false);
+      setIsAdmin(session?.user?.email ? checkAdmin(session.user.email) : false);
+      setUserRole(session?.user?.user_metadata?.role || null);
     });
 
     return () => {
@@ -67,6 +76,21 @@ export const Navbar = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/");
+  };
+
+  const handleDashboardClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isAdmin) {
+      navigate("/admin-hq-nexus");
+    } else if (userRole === 'employee') {
+      navigate("/portal/employee");
+    } else if (userRole === 'client') {
+      navigate("/portal/client");
+    } else if (userRole === 'investor') {
+      navigate("/portal/investor");
+    } else {
+      navigate("/auth");
+    }
   };
 
   const handleHomeClick = (e: React.MouseEvent) => {
@@ -155,7 +179,8 @@ export const Navbar = () => {
 
               {!isLoggedIn ? (
                 <motion.a
-                  href="#/auth"
+                  href="/auth"
+                  onClick={(e) => { e.preventDefault(); navigate('/auth'); }}
                   className="relative ml-4 px-6 py-2.5 rounded-xl font-semibold text-sm overflow-hidden group"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -173,7 +198,8 @@ export const Navbar = () => {
                 // On landing page: show gradient Dashboard button and Logout
                 <div className="flex items-center gap-2">
                   <motion.a
-                    href={isAdmin ? "#/admin-hq-nexus" : "#/portal"}
+                    href={isAdmin ? "/admin-hq-nexus" : `/portal/${userRole || ''}`}
+                    onClick={handleDashboardClick}
                     className="relative px-6 py-2.5 rounded-xl font-semibold text-sm overflow-hidden group"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -350,8 +376,8 @@ export const Navbar = () => {
 
               {!isLoggedIn ? (
                 <motion.a
-                  href="#/auth"
-                  onClick={() => setMobileMenuOpen(false)}
+                  href="/auth"
+                  onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/auth'); }}
                   className="w-full max-w-xs text-center px-10 py-5 rounded-2xl font-bold text-xl overflow-hidden relative group shadow-2xl shadow-primary/20"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -366,8 +392,8 @@ export const Navbar = () => {
                 // On landing page: show gradient Dashboard button and Logout
                 <div className="flex flex-col gap-4 w-full max-w-xs">
                   <motion.a
-                    href={isAdmin ? "#/admin-hq-nexus" : "#/portal"}
-                    onClick={() => setMobileMenuOpen(false)}
+                    href={isAdmin ? "/admin-hq-nexus" : `/portal/${userRole || ''}`}
+                    onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); handleDashboardClick(e); }}
                     className="w-full text-center px-10 py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-primary to-accent text-primary-foreground flex items-center justify-center gap-2 shadow-2xl shadow-primary/20"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}

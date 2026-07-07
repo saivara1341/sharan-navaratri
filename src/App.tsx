@@ -54,40 +54,61 @@ const AuthRedirectHandler = () => {
       return adminEmails.includes(email.trim().toLowerCase());
     };
 
-    // Check initial session - ONLY redirect if user is on the auth page
-    // This allows logged-in users to visit the home page freely.
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session && (location.pathname === '/auth' || location.pathname === '/auth/')) {
-        const role = session.user.user_metadata?.role;
-        if (checkAdmin(session.user.email)) {
-          navigate("/admin-hq-nexus");
-        } else if (role === 'employee') {
-          navigate("/portal/employee");
-        } else if (role === 'client') {
-          navigate("/portal/client");
-        } else if (role === 'investor') {
-          navigate("/portal/investor");
-        } else {
-          // If they don't have a role, keep them on /auth where Auth.tsx shows the role selector
+    const checkUserRoleAndRedirect = async (session: any) => {
+      if (!session) return;
+      const email = session.user.email;
+      if (checkAdmin(email)) {
+        navigate("/admin-hq-nexus");
+        return;
+      }
+
+      const role = session.user.user_metadata?.role;
+      if (role === 'employee') {
+        navigate("/portal/employee");
+        return;
+      } else if (role === 'client') {
+        navigate("/portal/client");
+        return;
+      } else if (role === 'investor') {
+        navigate("/portal/investor");
+        return;
+      }
+
+      // Check database to see if this email is registered
+      if (email) {
+        try {
+          const { data, error } = await supabase
+            .from('contact_submissions')
+            .select('id')
+            .eq('email', email.trim().toLowerCase())
+            .limit(1);
+
+          if (data && data.length > 0) {
+            await supabase.auth.updateUser({
+              data: { role: 'client' }
+            });
+            navigate("/portal/client");
+            return;
+          }
+        } catch (err) {
+          console.error("DB check failed for client email:", err);
         }
       }
-    });
+    };
+
+    // Check initial session - ONLY redirect if user is on the auth page
+    if (location.pathname === '/auth' || location.pathname === '/auth/') {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          checkUserRoleAndRedirect(session);
+        }
+      });
+    }
 
     // Listen for auth changes (like login success)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session && (location.pathname === '/auth' || location.pathname === '/auth/')) {
-        const role = session.user.user_metadata?.role;
-        if (checkAdmin(session.user.email)) {
-          navigate("/admin-hq-nexus");
-        } else if (role === 'employee') {
-          navigate("/portal/employee");
-        } else if (role === 'client') {
-          navigate("/portal/client");
-        } else if (role === 'investor') {
-          navigate("/portal/investor");
-        } else {
-          // Stay on /auth for role selection
-        }
+        checkUserRoleAndRedirect(session);
       }
     });
 
