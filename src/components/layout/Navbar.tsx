@@ -330,7 +330,7 @@ export const Navbar = () => {
                 <motion.a
                   href="#/"
                   onClick={handleHomeClick}
-                  className="text-3xl font-display font-bold text-foreground hover:text-primary transition-colors flex items-center gap-3 relative z-[120] cursor-pointer"
+                  className="text-3xl font-display font-bold text-emerald-400 hover:text-white transition-colors flex items-center gap-3 relative z-[120] cursor-pointer"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.05 }}
@@ -341,7 +341,7 @@ export const Navbar = () => {
                 <motion.a
                   href="/about"
                   onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/about'); }}
-                  className="text-2xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
+                  className="text-2xl font-bold text-emerald-400 hover:text-white transition-colors relative z-[120]"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.08 }}
@@ -351,7 +351,7 @@ export const Navbar = () => {
                 <motion.a
                   href="/blog"
                   onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/blog'); }}
-                  className="text-2xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
+                  className="text-2xl font-bold text-emerald-400 hover:text-white transition-colors relative z-[120]"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.11 }}
@@ -360,7 +360,7 @@ export const Navbar = () => {
                 </motion.a>
               {/* Close Button */}
               <motion.button
-                className="absolute top-8 right-6 w-12 h-12 flex items-center justify-center rounded-2xl glass-card border border-white/10 text-foreground hover:text-primary hover:border-primary/30 transition-all z-[120]"
+                className="absolute top-8 right-6 w-12 h-12 flex items-center justify-center rounded-2xl glass-card border border-white/10 text-white hover:text-primary hover:border-primary/30 transition-all z-[120]"
                 onClick={() => setMobileMenuOpen(false)}
                 initial={{ opacity: 0, rotate: -90 }}
                 animate={{ opacity: 1, rotate: 0 }}
@@ -422,7 +422,7 @@ export const Navbar = () => {
                       <motion.a
                         href="#/"
                         onClick={handleHomeClick}
-                        className="w-full text-center px-10 py-4 rounded-2xl font-bold text-lg bg-white/5 border border-white/10 text-foreground flex items-center justify-center gap-2"
+                        className="w-full text-center px-10 py-4 rounded-2xl font-bold text-lg bg-white/5 border border-white/10 text-white hover:text-primary transition-all flex items-center justify-center gap-2"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 * navLinks.length + 0.05 }}
