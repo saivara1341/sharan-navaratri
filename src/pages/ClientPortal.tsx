@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/layout/Navbar";
-import { Briefcase, CheckCircle, Clock, AlertCircle, LogOut, ExternalLink, Calendar, ShieldCheck, Mail, RefreshCw } from "lucide-react";
+import { Briefcase, CheckCircle, Clock, AlertCircle, LogOut, ExternalLink, Calendar, ShieldCheck, Mail, RefreshCw, MessageCircle, Send, X, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
@@ -29,6 +29,170 @@ export default function ClientPortal() {
     const [clientOrg, setClientOrg] = useState("");
     const [projects, setProjects] = useState<Submission[]>([]);
     const [refreshing, setRefreshing] = useState(false);
+
+    // Chat States
+    const [chatOpen, setChatOpen] = useState<Submission | null>(null);
+    const [chatMessages, setChatMessages] = useState<any[]>([]);
+    const [chatInput, setChatInput] = useState("");
+    const [chatLoading, setChatLoading] = useState(false);
+    const [sendingMsg, setSendingMsg] = useState(false);
+
+    const openClientChat = async (proj: Submission) => {
+        setChatOpen(proj);
+        setChatLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('chat_messages')
+                .select('*')
+                .eq('submission_id', proj.id)
+                .order('created_at', { ascending: true });
+            if (error) throw error;
+            setChatMessages(data || []);
+        } catch (err: any) {
+            console.error("Error loading chat:", err);
+            toast.error("Could not load chat messages.");
+        } finally {
+            setChatLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!chatOpen) return;
+        const channel = supabase
+            .channel(`chat_${chatOpen.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'chat_messages',
+                    filter: `submission_id=eq.${chatOpen.id}`
+                },
+                (payload) => {
+                    setChatMessages((prev) => {
+                        if (prev.some(m => m.id === payload.new.id)) return prev;
+                        return [...prev, payload.new];
+                    });
+                }
+            )
+            .subscribe();
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [chatOpen]);
+
+    const sendChatMessage = async () => {
+        if (!chatInput.trim() || !chatOpen || !clientEmail) return;
+        const userMsg = chatInput.trim();
+        setChatInput("");
+        setSendingMsg(true);
+
+        try {
+            // 1. Insert User Message
+            const { data: userMsgData, error: userMsgError } = await supabase
+                .from('chat_messages')
+                .insert({
+                    submission_id: chatOpen.id,
+                    sender_email: clientEmail,
+                    message: userMsg,
+                    is_admin: false
+                })
+                .select();
+
+            if (userMsgError) throw userMsgError;
+
+            // 2. Generate embedding for query & query knowledge base
+            const apiKey = import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem('vite_gemini_api_key');
+            if (!apiKey) {
+                setSendingMsg(false);
+                return;
+            }
+
+            // Generate query vector
+            const embedResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: 'models/text-embedding-004',
+                    content: { parts: [{ text: userMsg }] }
+                })
+            });
+            if (!embedResponse.ok) throw new Error("Embedding generation failed");
+            const embedData = await embedResponse.json();
+            const queryVector = embedData.embedding.values;
+
+            // Fetch context matching query vector
+            const { data: matchedDocs, error: matchError } = await supabase.rpc('match_knowledge_base', {
+                query_embedding: queryVector,
+                match_threshold: 0.3,
+                match_count: 3
+            });
+
+            const contextText = (matchedDocs || []).map((doc: any) => `Source Document: ${doc.file_name}\nContent:\n${doc.content}`).join('\n\n---\n\n');
+
+            // Generate response via Gemini
+            const systemInstruction = `You are Siddhi AI, the virtual coordinator for Siddhi Dynamics. 
+Answer the client's questions about their project, requirements, pricing, or contract based ONLY on the provided Knowledge Base Context. 
+Be professional, concise, and helpful. 
+If the context does not contain enough information to resolve their query, reply: "I cannot verify this information. Let me escalate this to our team lead saivaraprasad for a direct response." and append "[ESCFLAG]" at the end.
+
+---
+KNOWLEDGE BASE CONTEXT:
+${contextText || "No matching guidelines found."}
+---
+`;
+
+            const historyPayload = chatMessages.slice(-6).map((m: any) => ({
+                role: m.is_admin ? 'model' : 'user',
+                parts: [{ text: m.message }]
+            }));
+            historyPayload.push({
+                role: 'user',
+                parts: [{ text: userMsg }]
+            });
+
+            const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: historyPayload,
+                    systemInstruction: { parts: [{ text: systemInstruction }] }
+                })
+            });
+
+            if (!geminiResponse.ok) throw new Error("Gemini AI generation failed");
+            const geminiData = await geminiResponse.json();
+            const aiText = geminiData.candidates[0].content.parts[0].text;
+
+            const isEscalated = aiText.includes('[ESCFLAG]');
+            const cleanAiText = aiText.replace('[ESCFLAG]', '').trim();
+
+            // Insert AI Response into DB
+            const { error: aiMsgError } = await supabase
+                .from('chat_messages')
+                .insert({
+                    submission_id: chatOpen.id,
+                    sender_email: 'ai@siddhidynamics.in',
+                    message: cleanAiText,
+                    is_admin: true
+                });
+
+            if (aiMsgError) throw aiMsgError;
+
+            if (isEscalated) {
+                // Update submission status to 'Analyzing'
+                await supabase
+                    .from('contact_submissions')
+                    .update({ status: 'Analyzing' })
+                    .eq('id', chatOpen.id);
+                toast.info("AI escalated this query to our team lead saivaraprasad. We'll reply soon!");
+            }
+        } catch (err: any) {
+            console.error("AI chat assistant failed:", err);
+        } finally {
+            setSendingMsg(false);
+        }
+    };
 
     const parseProjectMetadata = (bountyReward: string | null | undefined) => {
         try {
@@ -224,16 +388,25 @@ export default function ClientPortal() {
                                                 <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-wider mt-1">Roadmap ID: {proj.id.slice(0, 8)}</p>
                                             </div>
 
-                                            {meta.website_url && (
-                                                <a
-                                                    href={meta.website_url}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold text-xs transition-all hover:scale-105 shadow-md shadow-primary/10"
+                                            <div className="flex flex-wrap items-center gap-2 shrink-0">
+                                                <button
+                                                    onClick={() => openClientChat(proj)}
+                                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-xs border border-white/10 transition-all hover:scale-105"
                                                 >
-                                                    Launch Website / SaaS <ExternalLink className="w-3.5 h-3.5" />
-                                                </a>
-                                            )}
+                                                    <MessageCircle className="w-3.5 h-3.5 text-primary" />
+                                                    Chat Support / AI
+                                                </button>
+                                                {meta.website_url && (
+                                                    <a
+                                                        href={meta.website_url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold text-xs transition-all hover:scale-105 shadow-md shadow-primary/10"
+                                                    >
+                                                        Launch Website / SaaS <ExternalLink className="w-3.5 h-3.5" />
+                                                    </a>
+                                                )}
+                                            </div>
                                         </div>
 
                                         {/* Requirements / Description */}
@@ -299,6 +472,123 @@ export default function ClientPortal() {
                     </div>
                 )}
             </main>
+
+            {/* ====== CLIENT CHAT PANEL ====== */}
+            <AnimatePresence>
+                {chatOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+                        onClick={() => setChatOpen(null)}
+                    >
+                        <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 30 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 30 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            onClick={e => e.stopPropagation()}
+                            className="relative w-full max-w-lg h-[75vh] bg-[#0a0a0f] border border-white/10 rounded-3xl flex flex-col overflow-hidden shadow-2xl shadow-primary/10"
+                        >
+                            {/* Chat Header */}
+                            <div className="flex items-center justify-between p-5 border-b border-white/10 bg-white/5">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                                        <MessageCircle className="w-5 h-5 text-primary" />
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="font-semibold text-sm text-foreground">Siddhi AI Support Hub</p>
+                                        <p className="text-xs text-muted-foreground">{chatOpen.organization || "Project Workspace"}</p>
+                                    </div>
+                                </div>
+                                <button onClick={() => setChatOpen(null)} className="p-2 rounded-xl hover:bg-white/10 transition-colors">
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            {/* Chat Messages */}
+                            <div className="flex-1 overflow-y-auto p-5 space-y-3 bg-[#0b141a] no-scrollbar">
+                                {chatLoading ? (
+                                    <div className="flex items-center justify-center h-full text-[#8696a0]">
+                                        <RefreshCw className="w-6 h-6 animate-spin mr-2" /> Loading chat...
+                                    </div>
+                                ) : chatMessages.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center h-full text-[#8696a0] text-center gap-2 px-6">
+                                        <Sparkles className="w-10 h-10 text-primary animate-pulse mb-2" />
+                                        <p className="font-semibold text-white">Welcome to Siddhi Support Hub</p>
+                                        <p className="text-xs max-w-xs leading-relaxed text-center">Ask any questions about your project scope, targets, or custom requirements. Our AI assistant will answer based on our internal files.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {chatMessages.map((msg: any) => {
+                                            const isAI = msg.sender_email === 'ai@siddhidynamics.in';
+                                            const isAdminMsg = msg.is_admin && !isAI;
+                                            const isUserMsg = !msg.is_admin;
+                                            
+                                            return (
+                                                <div 
+                                                    key={msg.id} 
+                                                    className={`flex ${isUserMsg ? 'justify-end' : 'justify-start'} w-full`}
+                                                >
+                                                    <div className="flex items-start gap-2.5 max-w-[80%]">
+                                                        {!isUserMsg && (
+                                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                                                                isAI ? 'bg-primary/20 text-primary' : 'bg-blue-500/20 text-blue-400'
+                                                            }`}>
+                                                                {isAI ? <Sparkles className="w-4 h-4" /> : <ShieldCheck className="w-4 h-4" />}
+                                                            </div>
+                                                        )}
+                                                        <div className="flex flex-col text-left">
+                                                            <div className={`rounded-2xl px-4 py-2.5 text-sm ${
+                                                                isUserMsg 
+                                                                    ? 'bg-primary text-primary-foreground rounded-tr-none' 
+                                                                    : isAI
+                                                                        ? 'bg-white/5 border border-white/10 text-slate-300 rounded-tl-none'
+                                                                        : 'bg-blue-500/10 border border-blue-500/20 text-blue-200 rounded-tl-none'
+                                                            }`}>
+                                                                {msg.message}
+                                                            </div>
+                                                            <span className="text-[9px] text-muted-foreground/60 mt-1 self-start">
+                                                                {format(new Date(msg.created_at), 'HH:mm')}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Chat Input */}
+                            <div className="p-4 border-t border-white/10 bg-white/5 flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder={sendingMsg ? "AI is typing..." : "Type your message here..."}
+                                    value={chatInput}
+                                    onChange={e => setChatInput(e.target.value)}
+                                    onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } }}
+                                    disabled={sendingMsg}
+                                    className="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
+                                />
+                                <button
+                                    onClick={sendChatMessage}
+                                    disabled={!chatInput.trim() || sendingMsg}
+                                    className="bg-primary text-primary-foreground p-3 rounded-xl hover:scale-105 transition-transform disabled:opacity-50 disabled:scale-100 flex items-center justify-center shrink-0"
+                                >
+                                    {sendingMsg ? (
+                                        <RefreshCw className="w-4 h-4 animate-spin" />
+                                    ) : (
+                                        <Send className="w-4 h-4" />
+                                    )}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

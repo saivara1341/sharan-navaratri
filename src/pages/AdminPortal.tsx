@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseService } from "@/services/supabaseService";
+import { KnowledgeHubManager } from "@/components/admin/KnowledgeHubManager";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
@@ -60,6 +61,7 @@ const AdminPortal = () => {
     const [chatInput, setChatInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
     const [sendingMsg, setSendingMsg] = useState(false);
+    const [viewMode, setViewMode] = useState<'submissions' | 'knowledge'>('submissions');
 
     // Document attachments states & helper
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -379,12 +381,34 @@ const AdminPortal = () => {
 
                     <div className="flex items-center gap-4">
                         <button
-                            onClick={fetchSubmissions}
-                            className="p-3 rounded-xl glass-card hover:bg-white/5 transition-colors group"
-                            title="Refresh Data"
+                            onClick={() => setViewMode('submissions')}
+                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
+                                viewMode === 'submissions'
+                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                                    : 'bg-white/5 border border-white/10 hover:bg-white/10 text-slate-300'
+                            }`}
                         >
-                            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                            Submissions
                         </button>
+                        <button
+                            onClick={() => setViewMode('knowledge')}
+                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
+                                viewMode === 'knowledge'
+                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                                    : 'bg-white/5 border border-white/10 hover:bg-white/10 text-slate-300'
+                            }`}
+                        >
+                            Knowledge Hub
+                        </button>
+                        {viewMode === 'submissions' && (
+                            <button
+                                onClick={fetchSubmissions}
+                                className="p-3 rounded-xl glass-card hover:bg-white/5 transition-colors group"
+                                title="Refresh Data"
+                            >
+                                <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -403,8 +427,10 @@ const AdminPortal = () => {
                     </div>
                 )}
 
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                {viewMode === 'submissions' ? (
+                    <>
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                     {[
                         { label: "Total Submissions", value: submissions.length, icon: <Users className="w-6 h-6 text-primary" /> },
                         { label: "Problems", value: submissions.filter(s => s.inquiry_type === "problem").length, icon: <Target className="w-6 h-6 text-red-400" /> },
@@ -683,6 +709,10 @@ const AdminPortal = () => {
                         )}
                     </AnimatePresence>
                 </div>
+                    </>
+                ) : (
+                    <KnowledgeHubManager />
+                )}
             </main>
 
             {/* Background elements */}

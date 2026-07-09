@@ -18,6 +18,25 @@ export const supabaseService = {
             console.error("Submission Failure:", error);
             throw new Error(`DB Error: ${error.message}`);
         }
+
+        // Auto onboarding: Send Magic Link Invitation
+        try {
+            const redirectUrl = typeof window !== 'undefined' ? window.location.origin + '/auth' : 'https://siddhidynamics.in/auth';
+            await supabase.auth.signInWithOtp({
+                email: submission.email,
+                options: {
+                    emailRedirectTo: redirectUrl,
+                    data: {
+                        role: 'client',
+                        full_name: submission.name
+                    }
+                }
+            });
+            toast.success("Welcome! A secure portal login link has been sent to your email.");
+        } catch (authErr) {
+            console.error("Auto onboarding failed:", authErr);
+        }
+
         return data;
     },
 
