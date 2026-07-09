@@ -47,7 +47,11 @@ const serviceSchema = {
   "name": "Custom SaaS Platform Development India",
   "serviceType": "SaaS Development",
   "provider": { "@type": "Organization", "name": "Siddhi Dynamics LLP", "url": "https://siddhidynamics.in" },
-  "areaServed": { "@type": "Country", "name": "India" },
+  "areaServed": [
+    { "@type": "Country", "name": "India" },
+    { "@type": "City", "name": "Nizamabad" },
+    { "@type": "City", "name": "Hyderabad" }
+  ],
   "description": "Custom cloud-based SaaS platform development for Indian businesses and startups. Multi-tenant, API-first, with Razorpay payments and GST compliance built-in."
 };
 
@@ -63,9 +67,9 @@ export default function SaaSPlatforms() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Helmet>
-        <title>Custom SaaS Platform Development India | Cloud Software — Siddhi Dynamics</title>
-        <meta name="description" content="Custom SaaS platform development for Indian businesses and startups. Multi-tenant, Razorpay-integrated, GST-compliant. Built by Siddhi Dynamics, Hyderabad." />
-        <meta name="keywords" content="custom SaaS development India, SaaS platform India, cloud software development India, SaaS startup India, SaaS for Indian businesses, software as a service Hyderabad" />
+        <title>Custom SaaS Platform Development in Nizamabad & Hyderabad | Siddhi Dynamics</title>
+        <meta name="description" content="Custom SaaS platform development for Indian businesses and startups. Multi-tenant, Razorpay-integrated, GST-compliant. Built by Siddhi Dynamics, Hyderabad & Nizamabad." />
+        <meta name="keywords" content="custom SaaS development India, SaaS platform India, cloud software development India, SaaS startup India, SaaS for Indian businesses, software as a service Hyderabad, software as a service Nizamabad, SaaS developer Nizamabad" />
         <link rel="canonical" href="https://siddhidynamics.in/services/saas" />
         <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>

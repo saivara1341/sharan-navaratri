@@ -213,6 +213,56 @@ const Index = () => {
       <script type="application/ld+json">
         {JSON.stringify({
           "@context": "https://schema.org",
+          "@type": "ProfessionalService",
+          "name": "Siddhi Dynamics LLP — Software Company in Nizamabad",
+          "alternateName": "Siddhi Dynamics Nizamabad Office",
+          "description": "Siddhi Dynamics LLP is a top-rated software company in Nizamabad, Telangana, offering custom software, web development, Agentic AI automation, custom SaaS platforms, and AI-powered ERP solutions.",
+          "url": "https://siddhidynamics.in/",
+          "logo": "https://siddhidynamics.in/favicon.jpg",
+          "image": "https://siddhidynamics.in/favicon.jpg",
+          "telephone": "+91-6303602743",
+          "priceRange": "$$",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "3-5-260/2, Shivajinagar Road, Kotagally",
+            "addressLocality": "Nizamabad",
+            "addressRegion": "Telangana",
+            "postalCode": "503001",
+            "addressCountry": "IN"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "18.6725",
+            "longitude": "78.0984"
+          },
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday"
+            ],
+            "opens": "09:00",
+            "closes": "18:00"
+          },
+          "parentOrganization": {
+            "@type": "Organization",
+            "name": "Siddhi Dynamics LLP",
+            "url": "https://siddhidynamics.in/",
+            "logo": "https://siddhidynamics.in/favicon.jpg"
+          },
+          "sameAs": [
+            "https://www.linkedin.com/company/siddhi-dynamics-llp",
+            "https://www.instagram.com/siddhidynamics/"
+          ]
+        })}
+      </script>
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
           "@type": "WebPage",
           "name": "Siddhi Dynamics — AI & Business Automation for India",
           "url": "https://siddhidynamics.in/",

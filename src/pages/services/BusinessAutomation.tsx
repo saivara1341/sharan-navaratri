@@ -62,7 +62,11 @@ const serviceSchema = {
     "name": "Siddhi Dynamics LLP",
     "url": "https://siddhidynamics.in"
   },
-  "areaServed": { "@type": "Country", "name": "India" },
+  "areaServed": [
+    { "@type": "Country", "name": "India" },
+    { "@type": "City", "name": "Nizamabad" },
+    { "@type": "City", "name": "Hyderabad" }
+  ],
   "description": "End-to-end business automation including AI invoice processing, bookkeeping automation, GST compliance, workflow digitization, and financial reporting for Indian small and medium businesses.",
   "offers": {
     "@type": "Offer",
@@ -87,9 +91,9 @@ export default function BusinessAutomation() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Helmet>
-        <title>Business Automation Services India | AI Invoice & Workflow Automation — Siddhi Dynamics</title>
-        <meta name="description" content="End-to-end business automation for Indian SMBs — AI invoice processing, bookkeeping automation, GST compliance, and workflow digitization. Siddhi Dynamics, Hyderabad." />
-        <meta name="keywords" content="business automation India, AI invoice processing India, bookkeeping automation India, workflow automation for small business India, GST automation India, business process automation Hyderabad" />
+        <title>Business Automation & AI Solutions in Nizamabad & Hyderabad | Siddhi Dynamics</title>
+        <meta name="description" content="End-to-end business automation for Indian SMBs — AI invoice processing, bookkeeping automation, GST compliance, and workflow digitization. Siddhi Dynamics, Hyderabad & Nizamabad." />
+        <meta name="keywords" content="business automation India, AI invoice processing India, bookkeeping automation India, workflow automation for small business India, GST automation India, business process automation Hyderabad, business process automation Nizamabad, AI automation Nizamabad" />
         <link rel="canonical" href="https://siddhidynamics.in/services/business-automation" />
         <meta property="og:title" content="Business Automation for Indian SMBs | Siddhi Dynamics" />
         <meta property="og:description" content="AI-powered invoice processing, bookkeeping, GST compliance and workflow automation for Indian businesses." />

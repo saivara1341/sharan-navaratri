@@ -204,8 +204,12 @@ export const FooterSection = () => {
             >
               {t('footer.copyright', { year: new Date().getFullYear() })}
             </motion.p>
-            <address className="not-italic text-xs text-slate-500">
-              Siddhi Dynamics LLP · Hyderabad & Nizamabad, Telangana, India · HIVE, Anurag University
+            <address className="not-italic text-xs text-slate-500 flex flex-col md:flex-row flex-wrap items-center gap-2 md:gap-3 text-center md:text-left">
+              <span><strong>Siddhi Dynamics LLP</strong></span>
+              <span className="hidden md:inline">·</span>
+              <span><strong>Nizamabad:</strong> 3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana - 503001</span>
+              <span className="hidden md:inline">·</span>
+              <span><strong>Hyderabad:</strong> HIVE, Anurag University, Hyderabad, Telangana - 500049</span>
             </address>
             <div className="flex items-center gap-4">
               <motion.a 

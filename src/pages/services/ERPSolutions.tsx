@@ -52,7 +52,11 @@ const serviceSchema = {
   "name": "AI ERP Solutions for Small Business India",
   "serviceType": "ERP Implementation",
   "provider": { "@type": "Organization", "name": "Siddhi Dynamics LLP", "url": "https://siddhidynamics.in" },
-  "areaServed": { "@type": "Country", "name": "India" },
+  "areaServed": [
+    { "@type": "Country", "name": "India" },
+    { "@type": "City", "name": "Nizamabad" },
+    { "@type": "City", "name": "Hyderabad" }
+  ],
   "description": "Intelligent ERP solutions for Indian small and medium businesses. Centralizes inventory, HR, sales, and finance with AI-powered automation and Tally integration."
 };
 
@@ -68,9 +72,9 @@ export default function ERPSolutions() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Helmet>
-        <title>ERP Solutions for Small Business India | AI Enterprise Resource Planning — Siddhi Dynamics</title>
-        <meta name="description" content="Intelligent ERP solutions for Indian small businesses. Inventory, HR, sales, finance and compliance — unified and AI-powered. Siddhi Dynamics, Hyderabad." />
-        <meta name="keywords" content="ERP solutions India, ERP for small business India, AI ERP India, enterprise resource planning India, ERP implementation Hyderabad, Tally integration ERP India" />
+        <title>ERP Solutions & Software in Nizamabad & Hyderabad | Siddhi Dynamics</title>
+        <meta name="description" content="Intelligent ERP solutions for Indian small businesses. Inventory, HR, sales, finance and compliance — unified and AI-powered. Siddhi Dynamics, Hyderabad & Nizamabad." />
+        <meta name="keywords" content="ERP solutions India, ERP for small business India, AI ERP India, enterprise resource planning India, ERP implementation Hyderabad, ERP implementation Nizamabad, ERP software Nizamabad, Tally integration ERP India" />
         <link rel="canonical" href="https://siddhidynamics.in/services/erp" />
         <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>

@@ -47,7 +47,11 @@ const serviceSchema = {
   "name": "Business Website Development India",
   "serviceType": "Web Development",
   "provider": { "@type": "Organization", "name": "Siddhi Dynamics LLP", "url": "https://siddhidynamics.in" },
-  "areaServed": { "@type": "Country", "name": "India" },
+  "areaServed": [
+    { "@type": "Country", "name": "India" },
+    { "@type": "City", "name": "Nizamabad" },
+    { "@type": "City", "name": "Hyderabad" }
+  ],
   "description": "High-performance, mobile-first business profile websites for Indian businesses. SEO-optimized, WhatsApp-integrated, and built to convert visitors into leads."
 };
 
@@ -63,9 +67,9 @@ export default function WebsiteDevelopment() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Helmet>
-        <title>Business Website Development India | Professional Web Design — Siddhi Dynamics</title>
-        <meta name="description" content="Professional business profile websites for Indian businesses. Mobile-first, SEO-optimized, WhatsApp-integrated. Fast turnaround. Siddhi Dynamics, Hyderabad." />
-        <meta name="keywords" content="business website development India, website design for small business India, professional website India, website development Hyderabad, business profile website India, SEO website India" />
+        <title>Website Development & Design in Nizamabad & Hyderabad | Siddhi Dynamics</title>
+        <meta name="description" content="Professional business profile websites for Indian businesses. Mobile-first, SEO-optimized, WhatsApp-integrated. Fast turnaround. Siddhi Dynamics, Hyderabad & Nizamabad." />
+        <meta name="keywords" content="business website development India, website design for small business India, professional website India, website development Hyderabad, website development Nizamabad, web design Nizamabad, business profile website India, SEO website India" />
         <link rel="canonical" href="https://siddhidynamics.in/services/website-development" />
         <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>

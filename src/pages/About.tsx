@@ -79,26 +79,76 @@ const orgSchema = {
 const aboutPageSchema = {
   "@context": "https://schema.org",
   "@type": "AboutPage",
-  "name": "About Siddhi Dynamics — Deep-Tech AI Firm, Hyderabad India",
+  "name": "About Siddhi Dynamics — Deep-Tech AI Firm, Hyderabad & Nizamabad India",
   "url": "https://siddhidynamics.in/about",
-  "description": "Learn about Siddhi Dynamics LLP — founded in Hyderabad, incubated at HIVE/Anurag University, building AI automation, SaaS, and ERP solutions for Indian businesses.",
+  "description": "Learn about Siddhi Dynamics LLP — headquartered in Hyderabad & Nizamabad, incubated at HIVE/Anurag University, building AI automation, SaaS, and ERP solutions for Indian businesses.",
   "mainEntity": { "@type": "Organization", "name": "Siddhi Dynamics LLP" }
+};
+
+const nizamabadSchema = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "Siddhi Dynamics LLP — Software Company in Nizamabad",
+  "alternateName": "Siddhi Dynamics Nizamabad Office",
+  "description": "Siddhi Dynamics LLP is a top-rated software company in Nizamabad, Telangana, offering custom software, web development, Agentic AI automation, custom SaaS platforms, and AI-powered ERP solutions.",
+  "url": "https://siddhidynamics.in",
+  "logo": "https://siddhidynamics.in/favicon.jpg",
+  "image": "https://siddhidynamics.in/favicon.jpg",
+  "telephone": "+91-6303602743",
+  "priceRange": "$$",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "3-5-260/2, Shivajinagar Road, Kotagally",
+    "addressLocality": "Nizamabad",
+    "addressRegion": "Telangana",
+    "postalCode": "503001",
+    "addressCountry": "IN"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "18.6725",
+    "longitude": "78.0984"
+  },
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ],
+    "opens": "09:00",
+    "closes": "18:00"
+  },
+  "parentOrganization": {
+    "@type": "Organization",
+    "name": "Siddhi Dynamics LLP",
+    "url": "https://siddhidynamics.in",
+    "logo": "https://siddhidynamics.in/favicon.jpg"
+  },
+  "sameAs": [
+    "https://www.linkedin.com/company/siddhi-dynamics-llp",
+    "https://www.instagram.com/siddhidynamics/"
+  ]
 };
 
 export default function About() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Helmet>
-        <title>About Siddhi Dynamics | Deep-Tech AI Company, Hyderabad India</title>
-        <meta name="description" content="Siddhi Dynamics LLP is a Hyderabad-based deep-tech AI company incubated at HIVE, Anurag University. We build agentic AI, business automation, SaaS and ERP solutions for Indian businesses and SMBs." />
-        <meta name="keywords" content="Siddhi Dynamics about, AI company Hyderabad, deep tech startup India, Anurag University incubation, HIVE incubation, AI automation company India, GenAI startup India" />
+        <title>About Siddhi Dynamics | Best Software Company in Nizamabad & Hyderabad</title>
+        <meta name="description" content="Siddhi Dynamics LLP is a premier software company and deep-tech AI firm in Nizamabad & Hyderabad. We build agentic AI, business automation, web development, SaaS, and ERP solutions." />
+        <meta name="keywords" content="Siddhi Dynamics, best software company in Nizamabad, top IT company in Nizamabad, software development Nizamabad, AI company Hyderabad, deep tech startup India, Anurag University incubation, HIVE incubation" />
         <link rel="canonical" href="https://siddhidynamics.in/about" />
-        <meta property="og:title" content="About Siddhi Dynamics | Deep-Tech AI Company, Hyderabad" />
-        <meta property="og:description" content="Hyderabad-based deep-tech AI firm, incubated at HIVE/Anurag University. Building AI automation and SaaS for Indian businesses." />
+        <meta property="og:title" content="About Siddhi Dynamics | Best Software Company in Nizamabad & Hyderabad" />
+        <meta property="og:description" content="Nizamabad & Hyderabad-based deep-tech AI firm and software company, incubated at HIVE/Anurag University. Building AI automation and SaaS." />
         <meta property="og:url" content="https://siddhidynamics.in/about" />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify(orgSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(aboutPageSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(nizamabadSchema)}</script>
       </Helmet>
 
       <Navbar />
