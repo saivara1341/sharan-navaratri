@@ -18,9 +18,9 @@ export default defineConfig(({ mode }) => ({
         rewrite: (path) => path.replace(/^\/supabase-api/, ''),
         followRedirects: true, // Crucial for Supabase Auth flows
         headers: {
-          'Host': 'xgrdubcpomwzbuaqtjad.supabase.co',
-          'Origin': 'https://xgrdubcpomwzbuaqtjad.supabase.co',
-          'Referer': 'https://xgrdubcpomwzbuaqtjad.supabase.co/',
+          'Host': 'xoqpxckowwubeqdtazks.supabase.co',
+          'Origin': 'https://xoqpxckowwubeqdtazks.supabase.co',
+          'Referer': 'https://xoqpxckowwubeqdtazks.supabase.co/',
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         }
       },

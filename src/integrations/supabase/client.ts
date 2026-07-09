@@ -2,8 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 import { Database } from './types';
 
 // Core credentials with production-safe fallbacks
-const FALLBACK_URL = "https://xgrdubcpomwzbuaqtjad.supabase.co";
-const FALLBACK_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhncmR1YmNwb213emJ1YXF0amFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NjY3MzksImV4cCI6MjA4NTQ0MjczOX0.O52EhG_2iOjl4Ba2yknPcnqswAk8GIVrAQceEe0ImzI".trim();
+const FALLBACK_URL = "https://xoqpxckowwubeqdtazks.supabase.co";
+const FALLBACK_KEY = "sb_publishable_Db5k1uOh50NIY-GPvMm0HQ_OMnOz8D7".trim();
 
 const isDev = import.meta.env.DEV;
 
