@@ -57,14 +57,14 @@ interface ProjectData {
 }
 
 const notePalettes = [
-  { bg: '#FFF1B8', edge: '#D69E2E', ink: '#2B2112', icon: '#F9D56E', shadow: 'rgba(214, 158, 46, 0.26)' },
-  { bg: '#DDEBFF', edge: '#4C78B8', ink: '#13233D', icon: '#AFCBFF', shadow: 'rgba(76, 120, 184, 0.26)' },
-  { bg: '#DDF7EA', edge: '#2F9E74', ink: '#102C22', icon: '#A7E4C2', shadow: 'rgba(47, 158, 116, 0.26)' },
-  { bg: '#FFE4BF', edge: '#C7792A', ink: '#321F0D', icon: '#FFC980', shadow: 'rgba(199, 121, 42, 0.25)' },
-  { bg: '#E5E0FF', edge: '#705BC7', ink: '#201A3F', icon: '#C8BDFF', shadow: 'rgba(112, 91, 199, 0.25)' },
-  { bg: '#FFDDE8', edge: '#C9567B', ink: '#3B1421', icon: '#FFB4CB', shadow: 'rgba(201, 86, 123, 0.24)' },
-  { bg: '#D9F3F6', edge: '#278A96', ink: '#0E2A2E', icon: '#A8DFE6', shadow: 'rgba(39, 138, 150, 0.24)' },
-  { bg: '#E9E3D2', edge: '#8F7651', ink: '#2F2619', icon: '#D5C49C', shadow: 'rgba(143, 118, 81, 0.24)' },
+  { bg: '#FFF1B8', darkBg: '#3A2A08', edge: '#D69E2E', darkEdge: '#EAB54D', ink: '#2B2112', darkInk: '#FFF2C7', icon: '#F9D56E', darkIcon: '#6B4A0E', shadow: 'rgba(214, 158, 46, 0.26)', darkShadow: 'rgba(234, 181, 77, 0.22)' },
+  { bg: '#DDEBFF', darkBg: '#102846', edge: '#4C78B8', darkEdge: '#78A7E8', ink: '#13233D', darkInk: '#DCEBFF', icon: '#AFCBFF', darkIcon: '#1F4B7C', shadow: 'rgba(76, 120, 184, 0.26)', darkShadow: 'rgba(120, 167, 232, 0.22)' },
+  { bg: '#DDF7EA', darkBg: '#0E3124', edge: '#2F9E74', darkEdge: '#63D6A5', ink: '#102C22', darkInk: '#DDFCEF', icon: '#A7E4C2', darkIcon: '#15583D', shadow: 'rgba(47, 158, 116, 0.26)', darkShadow: 'rgba(99, 214, 165, 0.2)' },
+  { bg: '#FFE4BF', darkBg: '#3A210B', edge: '#C7792A', darkEdge: '#E8A453', ink: '#321F0D', darkInk: '#FFE7C7', icon: '#FFC980', darkIcon: '#70400D', shadow: 'rgba(199, 121, 42, 0.25)', darkShadow: 'rgba(232, 164, 83, 0.2)' },
+  { bg: '#E5E0FF', darkBg: '#211A42', edge: '#705BC7', darkEdge: '#A392F4', ink: '#201A3F', darkInk: '#E8E2FF', icon: '#C8BDFF', darkIcon: '#3A2D7A', shadow: 'rgba(112, 91, 199, 0.25)', darkShadow: 'rgba(163, 146, 244, 0.22)' },
+  { bg: '#FFDDE8', darkBg: '#3A1423', edge: '#C9567B', darkEdge: '#F184A8', ink: '#3B1421', darkInk: '#FFE0EA', icon: '#FFB4CB', darkIcon: '#7A2845', shadow: 'rgba(201, 86, 123, 0.24)', darkShadow: 'rgba(241, 132, 168, 0.22)' },
+  { bg: '#D9F3F6', darkBg: '#0E3035', edge: '#278A96', darkEdge: '#61C9D4', ink: '#0E2A2E', darkInk: '#DDFBFF', icon: '#A8DFE6', darkIcon: '#155866', shadow: 'rgba(39, 138, 150, 0.24)', darkShadow: 'rgba(97, 201, 212, 0.2)' },
+  { bg: '#E9E3D2', darkBg: '#2C2619', edge: '#8F7651', darkEdge: '#C4A36F', ink: '#2F2619', darkInk: '#EFE4C9', icon: '#D5C49C', darkIcon: '#5C492B', shadow: 'rgba(143, 118, 81, 0.24)', darkShadow: 'rgba(196, 163, 111, 0.2)' },
 ];
 
 const modalPalettes: Record<string, {
@@ -208,17 +208,22 @@ const ProjectCard = ({
       viewport={{ once: true, margin: '-50px' }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       onClick={onClick}
-      className="relative w-full max-w-xs mx-auto aspect-square p-3 sm:p-6 cursor-pointer group border hover:-translate-y-2 transition-all duration-300"
+      className="relative w-full max-w-xs mx-auto aspect-square p-3 sm:p-6 cursor-pointer group border border-[color:var(--note-edge)] bg-[image:var(--note-bg)] shadow-[0_18px_36px_var(--note-shadow)] hover:-translate-y-2 transition-all duration-300 dark:border-[color:var(--note-edge-dark)] dark:bg-[image:var(--note-bg-dark)] dark:shadow-[0_18px_36px_var(--note-shadow-dark)]"
       style={{
-        background: `linear-gradient(145deg, ${palette.bg} 0%, ${palette.bg} 58%, color-mix(in srgb, ${palette.bg} 78%, white 22%) 100%)`,
-        borderColor: palette.edge,
-        boxShadow: `0 18px 36px ${palette.shadow}`,
+        '--note-bg': `linear-gradient(145deg, ${palette.bg} 0%, ${palette.bg} 58%, color-mix(in srgb, ${palette.bg} 78%, white 22%) 100%)`,
+        '--note-bg-dark': `linear-gradient(145deg, ${palette.darkBg} 0%, color-mix(in srgb, ${palette.darkBg} 86%, black 14%) 100%)`,
+        '--note-shadow': palette.shadow,
+        '--note-shadow-dark': palette.darkShadow,
+        '--note-edge': palette.edge,
+        '--note-edge-dark': palette.darkEdge,
+        '--note-icon': palette.icon,
+        '--note-icon-dark': palette.darkIcon,
         transform: `rotate(${noteRotate}deg)`,
         borderBottomRightRadius: '3rem 2.5rem',
         borderBottomLeftRadius: '0.5rem',
         borderTopRightRadius: '0.5rem',
         borderTopLeftRadius: '0.5rem',
-      }}
+      } as React.CSSProperties}
     >
       {/* Corner shadow fold effect */}
       <div 
@@ -230,12 +235,14 @@ const ProjectCard = ({
       />
       
       <div
-        className="h-full flex flex-col items-center text-center pt-1 sm:pt-2"
-        style={{ color: palette.ink }}
+        className="h-full flex flex-col items-center text-center pt-1 sm:pt-2 text-[color:var(--note-ink)] dark:text-[color:var(--note-ink-dark)]"
+        style={{
+          '--note-ink': palette.ink,
+          '--note-ink-dark': palette.darkInk,
+        } as React.CSSProperties}
       >
         <div
-          className={`w-10 h-10 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl flex items-center justify-center ${project.iconBgClass || ''} ${project.iconColorClass || ''} mb-2 sm:mb-4 overflow-hidden shadow-inner shrink-0`}
-          style={{ backgroundColor: project.iconBgClass ? undefined : palette.icon }}
+          className={`w-10 h-10 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl flex items-center justify-center ${project.iconBgClass || 'bg-[color:var(--note-icon)] dark:bg-[color:var(--note-icon-dark)]'} ${project.iconColorClass || ''} mb-2 sm:mb-4 overflow-hidden shadow-inner shrink-0`}
         >
           {project.image ? (
             <img src={project.image} alt={`${project.name} logo`} className="w-full h-full object-cover" />

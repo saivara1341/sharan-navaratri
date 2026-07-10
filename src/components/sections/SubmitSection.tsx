@@ -16,6 +16,41 @@ const contactSchema = z.object({
   message: z.string().min(10, 'Message must be at least 10 characters').max(2000),
 });
 
+const ProcessStepCard = ({ item, index, parentInView }: { item: any; index: number; parentInView: boolean }) => {
+  const stepRef = useRef<HTMLDivElement>(null);
+  const isStepInView = useInView(stepRef, { margin: '-35% 0px -35% 0px' });
+  const isActive = parentInView && isStepInView;
+
+  return (
+    <motion.div
+      ref={stepRef}
+      className="text-center group"
+      initial={{ opacity: 0, y: 30 }}
+      animate={parentInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
+      whileHover={{ y: -5 }}
+    >
+      <motion.div
+        className={`text-6xl font-bold mb-4 transition-colors duration-300 ${
+          isActive ? 'text-orange-500' : 'text-foreground/50'
+        }`}
+        animate={{
+          scale: isActive ? 1.06 : 1,
+        }}
+        transition={{ duration: 0.3 }}
+      >
+        {item.step}
+      </motion.div>
+      <h4 className="text-xl font-bold text-foreground mb-2">
+        {item.title}
+      </h4>
+      <p className="text-sm text-muted-foreground">
+        {item.description}
+      </p>
+    </motion.div>
+  );
+};
+
 export const SubmitSection = () => {
   const { t, i18n } = useTranslation();
   const ref = useRef(null);
@@ -835,24 +870,12 @@ export const SubmitSection = () => {
             className="mt-20 grid md:grid-cols-3 gap-8"
           >
             {(t('submit.process', { returnObjects: true }) as any[]).map((item, index) => (
-              <motion.div
+              <ProcessStepCard
                 key={item.step}
-                className="text-center group"
-                initial={{ opacity: 0, y: 30 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
-                whileHover={{ y: -5 }}
-              >
-                <div className="text-6xl font-bold mb-4 text-foreground/50 transition-colors duration-300 group-hover:text-orange-500">
-                  {item.step}
-                </div>
-                <h4 className="text-xl font-bold text-foreground mb-2">
-                  {item.title}
-                </h4>
-                <p className="text-sm text-muted-foreground">
-                  {item.description}
-                </p>
-              </motion.div>
+                item={item}
+                index={index}
+                parentInView={isInView}
+              />
             ))}
           </motion.div>
         </motion.div>

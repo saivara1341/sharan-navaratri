@@ -207,15 +207,15 @@ export const HeroSection = () => {
           >
             <motion.a
               href="#submit"
-              className="group relative px-10 py-5 rounded-2xl font-semibold text-lg overflow-hidden shadow-2xl shadow-primary/20"
+              className="group relative w-full max-w-[21rem] overflow-hidden rounded-2xl px-5 py-4 text-sm font-semibold shadow-2xl shadow-primary/20 sm:w-auto sm:max-w-none sm:px-10 sm:py-5 sm:text-lg"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <span className="absolute inset-0 bg-gradient-to-r from-primary via-primary to-accent opacity-90 group-hover:opacity-100 transition-opacity duration-500" />
               <span className="absolute inset-0 bg-gradient-to-r from-primary via-primary to-accent blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
-              <span className="relative flex items-center gap-3 text-primary-foreground font-bold tracking-wide">
+              <span className="relative flex items-center justify-center gap-2 whitespace-nowrap text-primary-foreground font-bold tracking-wide sm:gap-3">
                 Book a Free AI Discovery Call
-                <svg className="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1 sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </span>

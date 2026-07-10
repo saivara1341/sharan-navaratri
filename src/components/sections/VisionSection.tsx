@@ -68,24 +68,28 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       icon: 'bg-orange-500/15 text-orange-700 dark:text-orange-300 dark:bg-orange-500/15',
       rail: 'bg-orange-500',
       wash: 'linear-gradient(135deg, hsl(35 90% 92% / 0.72), hsl(42 20% 92% / 0.88))',
+      darkWash: 'linear-gradient(135deg, hsl(24 44% 13% / 0.94), hsl(20 18% 7% / 0.96))',
     },
     {
       glow: 'hsl(205 85% 55% / 0.18)',
       icon: 'bg-sky-500/15 text-sky-800 dark:text-sky-300 dark:bg-sky-500/15',
       rail: 'bg-sky-500',
       wash: 'linear-gradient(135deg, hsl(205 85% 92% / 0.72), hsl(42 20% 92% / 0.88))',
+      darkWash: 'linear-gradient(135deg, hsl(210 52% 14% / 0.94), hsl(215 22% 8% / 0.96))',
     },
     {
       glow: 'hsl(275 70% 55% / 0.18)',
       icon: 'bg-violet-500/15 text-violet-800 dark:text-violet-300 dark:bg-violet-500/15',
       rail: 'bg-violet-500',
       wash: 'linear-gradient(135deg, hsl(275 70% 93% / 0.72), hsl(42 20% 92% / 0.88))',
+      darkWash: 'linear-gradient(135deg, hsl(270 44% 15% / 0.94), hsl(260 22% 8% / 0.96))',
     },
     {
       glow: 'hsl(155 65% 42% / 0.18)',
       icon: 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 dark:bg-emerald-500/15',
       rail: 'bg-emerald-500',
       wash: 'linear-gradient(135deg, hsl(155 65% 92% / 0.72), hsl(42 20% 92% / 0.88))',
+      darkWash: 'linear-gradient(135deg, hsl(156 46% 12% / 0.94), hsl(160 20% 7% / 0.96))',
     },
   ];
   const palette = palettes[index % palettes.length];
@@ -99,8 +103,11 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       className="relative group cursor-pointer perspective-1000 h-full"
     >
       <div
-        className={`glass-card p-6 sm:p-10 h-full min-h-[330px] sm:min-h-[460px] transition-all duration-500 ${isHovered ? 'electric-border' : ''}`}
-        style={{ background: palette.wash }}
+        className={`glass-card bg-[image:var(--feature-wash)] p-6 sm:p-10 h-full min-h-[330px] sm:min-h-[460px] transition-all duration-500 dark:bg-[image:var(--feature-wash-dark)] ${isHovered ? 'electric-border' : ''}`}
+        style={{
+          '--feature-wash': palette.wash,
+          '--feature-wash-dark': palette.darkWash,
+        } as React.CSSProperties}
       >
         {/* Glow effect */}
         <motion.div
