@@ -112,12 +112,18 @@ export const IncubationSection = () => {
                   animate={isInView ? { opacity: 1, rotate: 0, y: 0 } : {}}
                   transition={{ duration: 0.7, delay: 0.65 }}
                 >
-                  <div className="absolute -inset-2 rounded-[1.25rem] bg-white/10 blur-lg md:-inset-4 md:rounded-[2rem] md:blur-xl" />
-                  <div className="relative rounded-[1.1rem] bg-white p-3 shadow-[0_20px_55px_rgba(0,0,0,0.24)] sm:p-4 md:rounded-[1.5rem] md:p-6 md:shadow-[0_28px_70px_rgba(0,0,0,0.28)]">
+                  <div
+                    className="absolute -inset-2 bg-white/10 blur-lg md:-inset-4 md:blur-xl"
+                    style={{ clipPath: 'polygon(8% 0, 100% 0, 100% 72%, 92% 100%, 0 100%, 0 28%)' }}
+                  />
+                  <div
+                    className="relative border border-white/80 bg-white p-3 shadow-[0_20px_55px_rgba(0,0,0,0.24)] sm:p-4 md:p-6 md:shadow-[0_28px_70px_rgba(0,0,0,0.28)]"
+                    style={{ clipPath: 'polygon(8% 0, 100% 0, 100% 72%, 92% 100%, 0 100%, 0 28%)' }}
+                  >
                     <img
                       src={hiveLogo}
                       alt="HIVE Logo"
-                      className="h-14 w-full rounded-xl object-contain sm:h-20 md:h-32"
+                      className="h-14 w-full object-contain sm:h-20 md:h-32"
                     />
                   </div>
                   <div className="absolute -bottom-3 left-1/2 hidden -translate-x-1/2 items-center gap-1.5 rounded-full border border-white/15 bg-[#102642]/90 px-3 py-1.5 text-[10px] font-semibold text-white shadow-xl backdrop-blur sm:flex md:-bottom-4 md:gap-2 md:px-4 md:py-2 md:text-xs">

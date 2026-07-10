@@ -233,7 +233,7 @@ export const VisionSection = () => {
   ];
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    const releaseBuffer = 0.12;
+    const releaseBuffer = 0.08;
     const cardProgress = Math.min(1, latest / (1 - releaseBuffer));
     const nextIndex = Math.min(features.length - 1, Math.max(0, Math.floor(cardProgress * features.length)));
     setActiveFeatureIndex(nextIndex);
@@ -283,7 +283,7 @@ export const VisionSection = () => {
         {/* Mobile-only sticky scroll stack for AI capability cards */}
         <motion.div
           ref={containerRef} 
-          className="relative mt-8 h-[650svh] md:hidden"
+          className="relative mt-8 h-[300svh] md:hidden"
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
