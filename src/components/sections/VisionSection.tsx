@@ -1,4 +1,4 @@
-import { motion, useInView, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useInView, useMotionValue, useMotionValueEvent, useScroll, useSpring } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Network, Lightbulb, Waypoints, Zap } from 'lucide-react';
@@ -62,7 +62,33 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
     setIsHovered(false);
   };
 
-  const isPrimary = feature.color === 'primary';
+  const palettes = [
+    {
+      glow: 'hsl(25 85% 55% / 0.18)',
+      icon: 'bg-orange-500/15 text-orange-700 dark:text-orange-300 dark:bg-orange-500/15',
+      rail: 'bg-orange-500',
+      wash: 'linear-gradient(135deg, hsl(35 90% 92% / 0.72), hsl(42 20% 92% / 0.88))',
+    },
+    {
+      glow: 'hsl(205 85% 55% / 0.18)',
+      icon: 'bg-sky-500/15 text-sky-800 dark:text-sky-300 dark:bg-sky-500/15',
+      rail: 'bg-sky-500',
+      wash: 'linear-gradient(135deg, hsl(205 85% 92% / 0.72), hsl(42 20% 92% / 0.88))',
+    },
+    {
+      glow: 'hsl(275 70% 55% / 0.18)',
+      icon: 'bg-violet-500/15 text-violet-800 dark:text-violet-300 dark:bg-violet-500/15',
+      rail: 'bg-violet-500',
+      wash: 'linear-gradient(135deg, hsl(275 70% 93% / 0.72), hsl(42 20% 92% / 0.88))',
+    },
+    {
+      glow: 'hsl(155 65% 42% / 0.18)',
+      icon: 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 dark:bg-emerald-500/15',
+      rail: 'bg-emerald-500',
+      wash: 'linear-gradient(135deg, hsl(155 65% 92% / 0.72), hsl(42 20% 92% / 0.88))',
+    },
+  ];
+  const palette = palettes[index % palettes.length];
 
   return (
     <motion.div
@@ -72,15 +98,16 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       style={{ x: springX, y: springY }}
       className="relative group cursor-pointer perspective-1000 h-full"
     >
-      <div className={`glass-card p-8 h-full transition-all duration-500 ${isHovered ? 'electric-border' : ''}`}>
+      <div
+        className={`glass-card p-6 sm:p-10 h-full min-h-[330px] sm:min-h-[460px] transition-all duration-500 ${isHovered ? 'electric-border' : ''}`}
+        style={{ background: palette.wash }}
+      >
         {/* Glow effect */}
         <motion.div
           animate={{ opacity: isHovered ? 1 : 0 }}
           className="absolute inset-0 pointer-events-none rounded-2xl"
           style={{
-            background: isPrimary
-              ? 'radial-gradient(circle at 50% 0%, hsl(25 85% 55% / 0.15) 0%, transparent 60%)'
-              : 'radial-gradient(circle at 50% 0%, hsl(85 70% 45% / 0.15) 0%, transparent 60%)',
+            background: `radial-gradient(circle at 50% 0%, ${palette.glow} 0%, transparent 62%)`,
           }}
         />
 
@@ -90,7 +117,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
             scale: isHovered ? 1.1 : 1,
             rotate: isHovered ? 5 : 0
           }}
-          className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 bg-primary/10 text-foreground group-hover:bg-primary/20 group-hover:text-primary dark:group-hover:bg-orange-500/20 dark:group-hover:text-orange-600 dark:group-hover:shadow-[0_0_30px_rgba(249,115,22,0.3)]"
+          className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 ${palette.icon} group-hover:shadow-[0_18px_50px_rgba(0,0,0,0.14)]`}
         >
           {feature.icon}
         </motion.div>
@@ -109,8 +136,50 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
             width: isHovered ? '100%' : '0%',
             opacity: isHovered ? 1 : 0
           }}
-          className={`absolute bottom-0 left-0 h-0.5 ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
+          className={`absolute bottom-0 left-0 h-0.5 ${palette.rail}`}
         />
+      </div>
+    </motion.div>
+  );
+};
+
+const PinnedFeatureCard = ({
+  feature,
+  index,
+  activeIndex,
+}: {
+  feature: any;
+  index: number;
+  activeIndex: number;
+}) => {
+  const isActive = index === activeIndex;
+  const isStacked = index < activeIndex;
+  const stackDepth = activeIndex - index;
+  const isVisible = isActive || isStacked;
+
+  return (
+    <motion.div
+      className="absolute inset-0 flex items-start justify-center"
+      initial={false}
+      animate={{
+        opacity: isVisible ? 1 : 0,
+        y: isStacked ? stackDepth * 18 : isActive ? 0 : 120,
+        scale: isStacked ? 1 - stackDepth * 0.035 : isActive ? 1 : 0.94,
+      }}
+      transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+      style={{
+        zIndex: isVisible ? index + 1 : 0,
+        pointerEvents: isActive ? 'auto' : 'none',
+      }}
+      aria-hidden={!isVisible}
+    >
+      <div
+        className="w-full max-w-4xl bg-card border border-border/50 rounded-2xl shadow-2xl overflow-hidden"
+        style={{
+          boxShadow: `0 ${24 + index * 8}px ${60 + index * 8}px hsl(240 10% 5% / ${0.14 + index * 0.03})`,
+        }}
+      >
+        <FeatureCard feature={feature} index={index} />
       </div>
     </motion.div>
   );
@@ -123,6 +192,11 @@ export const VisionSection = () => {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const containerRef = useRef<HTMLDivElement>(null);
+  const [activeFeatureIndex, setActiveFeatureIndex] = useState(0);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end'],
+  });
 
   const features = [
     {
@@ -158,10 +232,17 @@ export const VisionSection = () => {
     { value: '24/7', label: t('vision.mission.stats.autonomous') },
   ];
 
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    const releaseBuffer = 0.12;
+    const cardProgress = Math.min(1, latest / (1 - releaseBuffer));
+    const nextIndex = Math.min(features.length - 1, Math.max(0, Math.floor(cardProgress * features.length)));
+    setActiveFeatureIndex(nextIndex);
+  });
+
 
 
   return (
-    <section id="vision" className="bg-background py-32 relative overflow-hidden" ref={ref}>
+    <section id="vision" className="bg-background py-32 relative overflow-visible" ref={ref}>
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/10 to-background" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-primary/3 rounded-full blur-[150px]" />
@@ -199,17 +280,36 @@ export const VisionSection = () => {
           </p>
         </motion.div>
 
-        {/* Stable Grid Layout for Cards (Replaces GSAP Pinning) */}
-        <motion.div 
+        {/* Mobile-only sticky scroll stack for AI capability cards */}
+        <motion.div
           ref={containerRef} 
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-20"
+          className="relative mt-8 h-[650svh] md:hidden"
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
+          <div className="sticky top-36 h-[calc(100svh-10rem)]">
+            {features.map((feature, index) => (
+              <PinnedFeatureCard
+                key={feature.title}
+                feature={feature}
+                index={index}
+                activeIndex={activeFeatureIndex}
+              />
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Desktop/tablet cards scroll normally */}
+        <motion.div
+          className="mt-20 hidden grid-cols-2 gap-8 md:grid"
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
           {features.map((feature, index) => (
-            <motion.div key={feature.title} variants={cardVariants} className="w-full h-full">
-              <div className="bg-card border border-border/50 rounded-2xl shadow-xl overflow-hidden w-full h-full">
+            <motion.div key={feature.title} variants={cardVariants} className="h-full">
+              <div className="h-full rounded-2xl border border-border/50 bg-card shadow-xl">
                 <FeatureCard feature={feature} index={index} />
               </div>
             </motion.div>

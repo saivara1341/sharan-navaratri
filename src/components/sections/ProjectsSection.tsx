@@ -56,7 +56,135 @@ interface ProjectData {
   phase: number;
 }
 
-const flexokiColors = ['#FFF7D1', '#FFD1D1', '#D1E8FF', '#D1FFD6', '#FFE4D1', '#E8D1FF', '#FFF7D1'];
+const notePalettes = [
+  { bg: '#FFF1B8', edge: '#D69E2E', ink: '#2B2112', icon: '#F9D56E', shadow: 'rgba(214, 158, 46, 0.26)' },
+  { bg: '#DDEBFF', edge: '#4C78B8', ink: '#13233D', icon: '#AFCBFF', shadow: 'rgba(76, 120, 184, 0.26)' },
+  { bg: '#DDF7EA', edge: '#2F9E74', ink: '#102C22', icon: '#A7E4C2', shadow: 'rgba(47, 158, 116, 0.26)' },
+  { bg: '#FFE4BF', edge: '#C7792A', ink: '#321F0D', icon: '#FFC980', shadow: 'rgba(199, 121, 42, 0.25)' },
+  { bg: '#E5E0FF', edge: '#705BC7', ink: '#201A3F', icon: '#C8BDFF', shadow: 'rgba(112, 91, 199, 0.25)' },
+  { bg: '#FFDDE8', edge: '#C9567B', ink: '#3B1421', icon: '#FFB4CB', shadow: 'rgba(201, 86, 123, 0.24)' },
+  { bg: '#D9F3F6', edge: '#278A96', ink: '#0E2A2E', icon: '#A8DFE6', shadow: 'rgba(39, 138, 150, 0.24)' },
+  { bg: '#E9E3D2', edge: '#8F7651', ink: '#2F2619', icon: '#D5C49C', shadow: 'rgba(143, 118, 81, 0.24)' },
+];
+
+const modalPalettes: Record<string, {
+  bg: string;
+  border: string;
+  text: string;
+  muted: string;
+  accent: string;
+  accentSoft: string;
+  panel: string;
+  chip: string;
+  button: string;
+  buttonText: string;
+  shadow: string;
+}> = {
+  archplan: {
+    bg: 'linear-gradient(145deg, #fff4df 0%, #ffe0b5 45%, #f7b26b 100%)',
+    border: '#d97824',
+    text: '#2c1706',
+    muted: '#68411f',
+    accent: '#b45309',
+    accentSoft: '#fff0d9',
+    panel: 'rgba(255, 248, 236, 0.78)',
+    chip: 'rgba(180, 83, 9, 0.12)',
+    button: 'linear-gradient(135deg, #d97706, #f97316)',
+    buttonText: '#fffaf1',
+    shadow: 'rgba(217, 119, 6, 0.32)',
+  },
+  nexus: {
+    bg: 'linear-gradient(145deg, #e8f0ff 0%, #c7ddff 48%, #779bd8 100%)',
+    border: '#4f7ec7',
+    text: '#10243f',
+    muted: '#345175',
+    accent: '#2563eb',
+    accentSoft: '#edf5ff',
+    panel: 'rgba(239, 246, 255, 0.78)',
+    chip: 'rgba(37, 99, 235, 0.12)',
+    button: 'linear-gradient(135deg, #2563eb, #22a6f2)',
+    buttonText: '#ffffff',
+    shadow: 'rgba(37, 99, 235, 0.3)',
+  },
+  nilayam: {
+    bg: 'linear-gradient(145deg, #e5fff0 0%, #b8efd3 48%, #4fb47d 100%)',
+    border: '#2f9e74',
+    text: '#0d2b1e',
+    muted: '#315f49',
+    accent: '#047857',
+    accentSoft: '#ecfff4',
+    panel: 'rgba(238, 255, 245, 0.78)',
+    chip: 'rgba(4, 120, 87, 0.12)',
+    button: 'linear-gradient(135deg, #047857, #10b981)',
+    buttonText: '#f6fffb',
+    shadow: 'rgba(4, 120, 87, 0.28)',
+  },
+  indhur_farms: {
+    bg: 'linear-gradient(145deg, #f1f7d8 0%, #d8e99c 45%, #789b38 100%)',
+    border: '#6f8f2c',
+    text: '#26320e',
+    muted: '#56652d',
+    accent: '#63851d',
+    accentSoft: '#f7fde4',
+    panel: 'rgba(249, 255, 232, 0.78)',
+    chip: 'rgba(99, 133, 29, 0.14)',
+    button: 'linear-gradient(135deg, #63851d, #98b83e)',
+    buttonText: '#fbfff0',
+    shadow: 'rgba(99, 133, 29, 0.28)',
+  },
+  print_flow: {
+    bg: 'linear-gradient(145deg, #e7fbff 0%, #b7eaf4 48%, #27a7bc 100%)',
+    border: '#16879b',
+    text: '#082d35',
+    muted: '#315e68',
+    accent: '#0891b2',
+    accentSoft: '#effcff',
+    panel: 'rgba(236, 254, 255, 0.78)',
+    chip: 'rgba(8, 145, 178, 0.13)',
+    button: 'linear-gradient(135deg, #0891b2, #06b6d4)',
+    buttonText: '#f4feff',
+    shadow: 'rgba(8, 145, 178, 0.28)',
+  },
+  wish0: {
+    bg: 'linear-gradient(145deg, #fff0f5 0%, #ffd1df 48%, #d95f85 100%)',
+    border: '#c9567b',
+    text: '#3a1220',
+    muted: '#754055',
+    accent: '#be3f6c',
+    accentSoft: '#fff5f8',
+    panel: 'rgba(255, 245, 248, 0.8)',
+    chip: 'rgba(190, 63, 108, 0.13)',
+    button: 'linear-gradient(135deg, #be3f6c, #f06292)',
+    buttonText: '#fff8fb',
+    shadow: 'rgba(190, 63, 108, 0.3)',
+  },
+  letusknow: {
+    bg: 'linear-gradient(145deg, #f0edff 0%, #d4cbff 48%, #7461ce 100%)',
+    border: '#705bc7',
+    text: '#201644',
+    muted: '#4e4374',
+    accent: '#5b4ab8',
+    accentSoft: '#f6f4ff',
+    panel: 'rgba(246, 244, 255, 0.8)',
+    chip: 'rgba(91, 74, 184, 0.13)',
+    button: 'linear-gradient(135deg, #5b4ab8, #8b5cf6)',
+    buttonText: '#fbfaff',
+    shadow: 'rgba(91, 74, 184, 0.28)',
+  },
+  dogin: {
+    bg: 'linear-gradient(145deg, #fff0e9 0%, #ffc9b7 48%, #e15c43 100%)',
+    border: '#c44935',
+    text: '#3a150f',
+    muted: '#744034',
+    accent: '#c2412f',
+    accentSoft: '#fff6f2',
+    panel: 'rgba(255, 246, 242, 0.8)',
+    chip: 'rgba(194, 65, 47, 0.13)',
+    button: 'linear-gradient(135deg, #c2412f, #f97316)',
+    buttonText: '#fffaf7',
+    shadow: 'rgba(194, 65, 47, 0.3)',
+  },
+};
 
 const ProjectCard = ({
   project,
@@ -69,7 +197,7 @@ const ProjectCard = ({
 }) => {
   const { t } = useTranslation();
   const IconComponent = project.icon;
-  const noteColor = flexokiColors[index % flexokiColors.length];
+  const palette = notePalettes[index % notePalettes.length];
   // Randomize rotation slightly for sticky note effect
   const noteRotate = (index % 2 === 0 ? -1 : 1) * ((index % 3) + 1.5);
 
@@ -80,9 +208,11 @@ const ProjectCard = ({
       viewport={{ once: true, margin: '-50px' }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       onClick={onClick}
-      className="relative w-full max-w-xs mx-auto aspect-square p-3 sm:p-6 cursor-pointer group shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
+      className="relative w-full max-w-xs mx-auto aspect-square p-3 sm:p-6 cursor-pointer group border hover:-translate-y-2 transition-all duration-300"
       style={{
-        backgroundColor: noteColor,
+        background: `linear-gradient(145deg, ${palette.bg} 0%, ${palette.bg} 58%, color-mix(in srgb, ${palette.bg} 78%, white 22%) 100%)`,
+        borderColor: palette.edge,
+        boxShadow: `0 18px 36px ${palette.shadow}`,
         transform: `rotate(${noteRotate}deg)`,
         borderBottomRightRadius: '3rem 2.5rem',
         borderBottomLeftRadius: '0.5rem',
@@ -99,22 +229,28 @@ const ProjectCard = ({
         }}
       />
       
-      <div className="h-full flex flex-col items-center text-center pt-1 sm:pt-2">
-        <div className={`w-10 h-10 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl flex items-center justify-center ${project.iconBgClass || 'bg-black/10'} ${project.iconColorClass || 'text-black/80'} mb-2 sm:mb-4 overflow-hidden shadow-inner shrink-0`}>
+      <div
+        className="h-full flex flex-col items-center text-center pt-1 sm:pt-2"
+        style={{ color: palette.ink }}
+      >
+        <div
+          className={`w-10 h-10 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl flex items-center justify-center ${project.iconBgClass || ''} ${project.iconColorClass || ''} mb-2 sm:mb-4 overflow-hidden shadow-inner shrink-0`}
+          style={{ backgroundColor: project.iconBgClass ? undefined : palette.icon }}
+        >
           {project.image ? (
             <img src={project.image} alt={`${project.name} logo`} className="w-full h-full object-cover" />
           ) : (
             IconComponent && <IconComponent className="w-5 h-5 sm:w-8 sm:h-8" />
           )}
         </div>
-        <h3 className="text-sm sm:text-xl font-bold text-black/90 mb-1 sm:mb-2 font-display leading-tight line-clamp-2">
+        <h3 className="text-sm sm:text-xl font-bold mb-1 sm:mb-2 font-display leading-tight line-clamp-2">
           {project.name}
         </h3>
-        <p className="text-[10px] sm:text-sm font-medium text-black/70 mb-2 sm:mb-4 font-sans line-clamp-2 sm:line-clamp-3">
+        <p className="text-[10px] sm:text-sm font-medium mb-2 sm:mb-4 font-sans line-clamp-2 sm:line-clamp-3 opacity-75">
           {project.tagline}
         </p>
         
-        <div className="mt-auto flex items-center gap-1 text-[9px] sm:text-xs font-bold text-black/60 group-hover:text-black/90 transition-colors uppercase tracking-wider">
+        <div className="mt-auto flex items-center gap-1 text-[9px] sm:text-xs font-bold opacity-70 group-hover:opacity-95 transition-opacity uppercase tracking-wider">
           <span>Know more</span>
           <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
         </div>
@@ -136,6 +272,7 @@ const ProjectDetailsModal = ({
   const navigate = useNavigate();
   const isPrimary = project.accentColor === 'primary';
   const IconComponent = project.icon;
+  const palette = modalPalettes[project.id] ?? modalPalettes.archplan;
 
   const handleActionClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -210,15 +347,32 @@ const ProjectDetailsModal = ({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-        className="relative w-full max-w-2xl bg-card border border-border/50 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-y-auto max-h-[90vh] z-10"
+        className="relative w-full max-w-2xl border rounded-3xl p-6 sm:p-8 shadow-2xl overflow-y-auto max-h-[90vh] z-10"
+        style={{
+          background: palette.bg,
+          borderColor: palette.border,
+          boxShadow: `0 28px 80px ${palette.shadow}`,
+          color: palette.text,
+        }}
       >
         {/* Grid pattern background */}
-        <div className="absolute inset-0 grid-pattern opacity-35 pointer-events-none" />
+        <div className="absolute inset-0 grid-pattern opacity-20 pointer-events-none" />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: `radial-gradient(circle at 18% 8%, ${palette.accentSoft} 0%, transparent 32%), linear-gradient(180deg, rgba(255,255,255,0.32), transparent 60%)`,
+          }}
+        />
 
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-xl bg-muted/30 hover:bg-muted/60 border border-border text-muted-foreground hover:text-foreground transition-all cursor-pointer z-50"
+          className="absolute top-5 right-5 p-2 rounded-xl border transition-all cursor-pointer z-50"
+          style={{
+            backgroundColor: palette.accentSoft,
+            borderColor: palette.border,
+            color: palette.text,
+          }}
         >
           <X className="w-5 h-5" />
         </button>
@@ -227,10 +381,11 @@ const ProjectDetailsModal = ({
           {/* Modal Header */}
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 mb-6 text-center sm:text-left mt-2">
             <div
-              className={`w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden ${!project.image && (project.iconBgClass ? `${project.iconBgClass} ${project.iconColorClass}` : (isPrimary
-                ? 'bg-primary/15 text-primary'
-                : 'bg-accent/15 text-accent'))
-                }`}
+              className={`w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden ${!project.image && project.iconColorClass ? project.iconColorClass : ''}`}
+              style={{
+                backgroundColor: project.image ? palette.accentSoft : palette.chip,
+                border: `1px solid ${palette.border}`,
+              }}
             >
               {project.image ? (
                 <img
@@ -244,10 +399,10 @@ const ProjectDetailsModal = ({
             </div>
 
             <div className="flex-1 min-w-0">
-              <h3 className="text-3xl font-bold mb-1 text-foreground font-display">
+              <h3 className="text-3xl font-bold mb-1 font-display" style={{ color: palette.text }}>
                 {project.name}
               </h3>
-              <p className={`text-base font-semibold ${isPrimary ? 'text-primary' : 'text-accent'}`}>
+              <p className="text-base font-semibold" style={{ color: palette.accent }}>
                 {project.tagline}
               </p>
             </div>
@@ -255,16 +410,22 @@ const ProjectDetailsModal = ({
 
           {/* Description */}
           <div className="mb-6">
-            <h4 className="text-xs uppercase font-bold tracking-[0.2em] text-muted-foreground/60 mb-2">About Project</h4>
-            <p className="text-foreground/80 text-sm leading-relaxed">
+            <h4 className="text-xs uppercase font-bold tracking-[0.2em] mb-2" style={{ color: palette.muted }}>About Project</h4>
+            <p className="text-sm leading-relaxed" style={{ color: palette.text }}>
               {project.description}
             </p>
           </div>
 
           {/* Development Roadmap */}
-          <div className="mb-8 p-5 bg-muted/30 border border-border rounded-2xl">
+          <div
+            className="mb-8 p-5 border rounded-2xl backdrop-blur"
+            style={{
+              backgroundColor: palette.panel,
+              borderColor: palette.border,
+            }}
+          >
             <div className="flex justify-between items-end mb-3">
-              <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">Development Roadmap</span>
+              <span className="text-[10px] uppercase font-bold tracking-[0.2em]" style={{ color: palette.muted }}>Development Roadmap</span>
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${
                 project.statusKey === 'rnd'
                   ? 'bg-amber-500/5 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20 dark:border-amber-500/30'
@@ -288,20 +449,21 @@ const ProjectDetailsModal = ({
                   return (
                     <div key={step} className="relative flex flex-col items-center">
                       <div
-                        className={`w-6 h-6 rounded-full relative z-20 transition-all duration-500 flex items-center justify-center text-[10px] font-bold border ${
-                          isCompleted
-                            ? isPrimary
-                              ? 'bg-primary text-primary-foreground border-primary dark:shadow-[0_0_12px_rgba(251,146,60,0.85)]'
-                              : 'bg-accent text-accent-foreground border-accent dark:shadow-[0_0_12px_rgba(132,204,22,0.85)]'
-                            : 'bg-muted border-border text-muted-foreground'
-                        }`}
+                        className="w-6 h-6 rounded-full relative z-20 transition-all duration-500 flex items-center justify-center text-[10px] font-bold border"
+                        style={{
+                          backgroundColor: isCompleted ? palette.accent : palette.accentSoft,
+                          borderColor: isCompleted ? palette.accent : palette.border,
+                          color: isCompleted ? palette.buttonText : palette.muted,
+                          boxShadow: isCompleted ? `0 0 12px ${palette.shadow}` : undefined,
+                        }}
                       >
                         {step}
                         {isCurrent && (
                           <motion.div
                             animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
                             transition={{ duration: 2, repeat: Infinity }}
-                            className={`absolute inset-0 rounded-full -z-10 ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
+                            className="absolute inset-0 rounded-full -z-10"
+                            style={{ backgroundColor: palette.accent }}
                           />
                         )}
                       </div>
@@ -311,30 +473,32 @@ const ProjectDetailsModal = ({
               </div>
 
               {/* Connector Line */}
-              <div className="absolute top-6 left-0 right-0 h-[2px] bg-border z-0 px-1">
+              <div className="absolute top-6 left-0 right-0 h-[2px] z-0 px-1" style={{ backgroundColor: palette.accentSoft }}>
                 <div
-                  className={`h-full transition-all duration-500 ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
-                  style={{ width: `${(project.phase - 1) * 25}%` }}
+                  className="h-full transition-all duration-500"
+                  style={{ width: `${(project.phase - 1) * 25}%`, backgroundColor: palette.accent }}
                 />
               </div>
             </div>
 
-            <p className="text-[11px] font-bold text-foreground/80 dark:text-foreground/90 uppercase tracking-widest text-center mt-3">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-center mt-3" style={{ color: palette.text }}>
               {t(`projects.stages.${project.stageKey}`)}
             </p>
           </div>
 
           {/* Key Features */}
           <div className="mb-8">
-            <h4 className="text-xs uppercase font-bold tracking-[0.2em] text-muted-foreground/60 mb-3">Key Features & Modules</h4>
+            <h4 className="text-xs uppercase font-bold tracking-[0.2em] mb-3" style={{ color: palette.muted }}>Key Features & Modules</h4>
             <div className="flex flex-wrap gap-2">
               {project.features.map((feature) => (
                 <span
                   key={feature}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-200 ${isPrimary
-                    ? 'bg-orange-500/5 dark:bg-primary/10 text-orange-700 dark:text-primary border-orange-500/20 dark:border-primary/20 hover:bg-orange-500/10 dark:hover:bg-primary/20'
-                    : 'bg-emerald-500/5 dark:bg-accent/10 text-emerald-700 dark:text-accent border-emerald-500/20 dark:border-accent/20 hover:bg-emerald-500/10 dark:hover:bg-accent/20'
-                    }`}
+                  className="px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-200"
+                  style={{
+                    backgroundColor: palette.chip,
+                    borderColor: palette.border,
+                    color: palette.text,
+                  }}
                 >
                   {feature}
                 </span>
@@ -343,15 +507,15 @@ const ProjectDetailsModal = ({
           </div>
 
           {/* Action Button */}
-          <div className="pt-5 border-t border-border flex flex-col sm:flex-row gap-3">
+          <div className="pt-5 border-t flex flex-col sm:flex-row gap-3" style={{ borderColor: palette.border }}>
             <button
               onClick={handleActionClick}
-              className={`flex-1 py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${project.id === 'nexus' || project.id === 'nilayam' || project.id === 'archplan' || project.id === 'letusknow' || project.id === 'wish0' || project.url
-                ? 'bg-gradient-to-r from-primary to-orange-400 text-primary-foreground dark:shadow-[0_4px_15px_rgba(251,146,60,0.3)] dark:hover:shadow-[0_0_25px_hsl(25_85%_55%/0.5)]'
-                : isPrimary
-                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                  : 'bg-accent text-accent-foreground hover:bg-accent/90'
-                }`}
+              className="flex-1 py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer"
+              style={{
+                background: palette.button,
+                color: palette.buttonText,
+                boxShadow: `0 14px 30px ${palette.shadow}`,
+              }}
             >
               {project.id === 'nexus' || project.id === 'nilayam' || project.id === 'archplan' || project.id === 'letusknow' || project.id === 'wish0' || project.url ? (
                 <>
@@ -367,7 +531,12 @@ const ProjectDetailsModal = ({
             </button>
             <button
               onClick={onClose}
-              className="px-6 py-3.5 rounded-xl font-bold text-sm bg-muted/30 border border-border hover:bg-muted/60 text-muted-foreground transition-all cursor-pointer"
+              className="px-6 py-3.5 rounded-xl font-bold text-sm border transition-all cursor-pointer"
+              style={{
+                backgroundColor: palette.accentSoft,
+                borderColor: palette.border,
+                color: palette.text,
+              }}
             >
               Close
             </button>

@@ -193,9 +193,9 @@ export const FooterSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.6, duration: 0.8 }}
-          className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4"
+          className="mt-16 pt-8 border-t border-white/10 flex flex-col items-center gap-5"
         >
-          <div className="flex flex-col md:flex-row items-center gap-6">
+          <div className="flex flex-col items-center gap-5 md:flex-row md:justify-between md:w-full">
             <motion.p
               className="text-sm text-slate-400"
               initial={{ opacity: 0 }}
@@ -204,13 +204,6 @@ export const FooterSection = () => {
             >
               {t('footer.copyright', { year: new Date().getFullYear() })}
             </motion.p>
-            <address className="not-italic text-xs text-slate-500 flex flex-col md:flex-row flex-wrap items-center gap-2 md:gap-3 text-center md:text-left">
-              <span><strong>Siddhi Dynamics LLP</strong></span>
-              <span className="hidden md:inline">·</span>
-              <span><strong>Nizamabad:</strong> 3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana - 503001</span>
-              <span className="hidden md:inline">·</span>
-              <span><strong>Hyderabad:</strong> HIVE, Anurag University, Hyderabad, Telangana - 500049</span>
-            </address>
             <div className="flex items-center gap-4">
               <motion.a 
                 href="/privacy"
@@ -234,21 +227,21 @@ export const FooterSection = () => {
               </motion.a>
             </div>
           </div>
-          <motion.p
-            className="text-xs text-slate-400/60 flex items-center gap-2"
+          <motion.address
+            className="not-italic w-full max-w-3xl rounded-2xl border border-white/5 bg-white/[0.025] px-4 py-3 text-center text-[11px] leading-relaxed text-slate-500/80 md:text-xs"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ delay: 0.8 }}
           >
-            <motion.span
-              className="w-2 h-2 rounded-full bg-accent"
-              animate={{
-                scale: [1, 1.3, 1],
-                opacity: [0.6, 1, 0.6]
-              }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            />
-          </motion.p>
+            <span className="sr-only">Siddhi Dynamics LLP office locations: </span>
+            <span className="mb-1 block font-semibold text-slate-400">Siddhi Dynamics LLP</span>
+            <span className="block">
+              <strong className="font-semibold text-slate-400">Nizamabad</strong>: 3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001
+            </span>
+            <span className="mt-1 block">
+              <strong className="font-semibold text-slate-400">Hyderabad</strong>: HIVE, Anurag University, Hyderabad, Telangana 500049
+            </span>
+          </motion.address>
         </motion.div>
       </div>
     </footer>

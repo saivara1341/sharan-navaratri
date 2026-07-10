@@ -788,7 +788,6 @@ export const SubmitSection = () => {
             <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
               {[
                 { icon: '✅', text: 'Free 30-min consultation' },
-                { icon: '🏛️', text: 'Incubated at HIVE, Anurag University' },
                 { icon: '🔒', text: 'Your information stays private' },
                 { icon: '⚡', text: 'Reply within 24 hours' },
               ].map(({ icon, text }) => (
