@@ -21,6 +21,7 @@ import nexusLogo from '@/assets/nexuscarrers-logo.jpeg';
 import letusknowLogo from '@/assets/letusknow-logo.png';
 import printflowLogo from '@/assets/printflow-logo.png';
 import indhurFarmsLogo from '@/assets/indhur-farms-logo.png';
+import doginLogo from '@/assets/dogin-logo.png';
 import { WaitlistModal } from '@/components/WaitlistModal';
 
 const cardVariants = {
@@ -177,6 +178,11 @@ const ProjectDetailsModal = ({
 
     if (project.id === 'indhur_farms') {
       window.open('https://saivara1341.github.io/indhur-farms/', '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    if (project.id === 'dogin') {
+      window.open('https://dogin-chi.vercel.app/', '_blank', 'noopener,noreferrer');
       return;
     }
 
@@ -504,6 +510,22 @@ export const ProjectsSection = () => {
       stageKey: 'phase2',
       statusKey: 'lab',
       phase: 2,
+    },
+    {
+      id: 'dogin',
+      name: t('projects.items.dogin.name', 'Dogin'),
+      tagline: t('projects.items.dogin.tagline', "India's Premier Dog Care Platform"),
+      description: t('projects.items.dogin.description', "Dogin is India's premier dog care platform. Features AI-powered health assistant, veterinary booking, pet matchmaking, grooming services, marketplace, lost & found, and community — all in one app."),
+      image: doginLogo,
+      features: Array.isArray(t('projects.items.dogin.features', { returnObjects: true }))
+        ? (t('projects.items.dogin.features', { returnObjects: true }) as string[])
+        : ["AI Health Assistant", "Veterinary Booking", "Pet Matchmaking", "Grooming Services", "Pet Marketplace", "Lost & Found", "Community Hub"],
+      gradient: 'from-red-500 to-orange-600',
+      accentColor: 'primary',
+      url: 'https://dogin-chi.vercel.app/',
+      stageKey: 'phase5',
+      statusKey: 'production',
+      phase: 5,
     },
   ];
 

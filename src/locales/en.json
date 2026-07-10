@@ -147,6 +147,20 @@
           "Development Projects",
           "Tourism Promotion"
         ]
+      },
+      "dogin": {
+        "name": "Dogin",
+        "tagline": "India's Premier Dog Care Platform",
+        "description": "Dogin is India's premier dog care platform. Features AI-powered health assistant, veterinary booking, pet matchmaking, grooming services, marketplace, lost & found, and community — all in one app.",
+        "features": [
+          "AI Health Assistant",
+          "Veterinary Booking",
+          "Pet Matchmaking",
+          "Grooming Services",
+          "Pet Marketplace",
+          "Lost & Found",
+          "Community Hub"
+        ]
       }
     }
   },
