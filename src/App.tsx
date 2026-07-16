@@ -9,6 +9,7 @@ import AuthPage from "./pages/Auth";
 import ClientPortal from "./pages/ClientPortal";
 import InvestorPortal from "./pages/InvestorPortal";
 import EmployeePortal from "./pages/EmployeePortal";
+import PortalGateway from "./pages/PortalGateway";
 import NexusLanding from "./pages/projects/NexusLanding";
 import NilayamLanding from "./pages/projects/NilayamLanding";
 import ArchPlanLanding from "./pages/projects/ArchPlanLanding";
@@ -95,14 +96,14 @@ const AuthRedirectHandler = () => {
         }
       }
 
-      // If we are here, user has no role set yet. Redirect them to /auth to select role.
-      if (location.pathname !== '/auth' && location.pathname !== '/auth/') {
-        navigate("/auth");
+      // If we are here, user has no role set yet. Redirect them to /portal to select role.
+      if (location.pathname !== '/portal' && location.pathname !== '/portal/') {
+        navigate("/portal");
       }
     };
 
-    // Check initial session - ONLY redirect if user is on the auth page
-    if (location.pathname === '/auth' || location.pathname === '/auth/') {
+    // Check initial session - ONLY redirect if user is on the auth or portal page
+    if (location.pathname === '/auth' || location.pathname === '/auth/' || location.pathname === '/portal' || location.pathname === '/portal/') {
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (session) {
           checkUserRoleAndRedirect(session);
@@ -143,6 +144,7 @@ const App = () => {
               <Route path="/projects" element={<Index />} />
               <Route path="/submit" element={<Index />} />
               <Route path="/auth" element={<AuthPage />} />
+              <Route path="/portal" element={<PortalGateway />} />
               <Route path="/portal/client" element={<ClientPortal />} />
               <Route path="/portal/investor" element={<InvestorPortal />} />
               <Route path="/portal/employee" element={<EmployeePortal />} />

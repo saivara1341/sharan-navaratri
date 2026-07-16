@@ -89,7 +89,7 @@ export const Navbar = () => {
     } else if (userRole === 'investor') {
       navigate("/portal/investor");
     } else {
-      navigate("/auth");
+      navigate("/portal");
     }
   };
 
@@ -179,7 +179,7 @@ export const Navbar = () => {
 
               {!isLoggedIn ? (
                 <motion.button
-                  onClick={() => navigate('/auth')}
+                  onClick={() => navigate('/portal')}
                   className="relative ml-4 px-6 py-2.5 rounded-xl font-semibold text-sm overflow-hidden group"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -375,7 +375,7 @@ export const Navbar = () => {
 
               {!isLoggedIn ? (
                 <motion.button
-                  onClick={() => { setMobileMenuOpen(false); navigate('/auth'); }}
+                  onClick={() => { setMobileMenuOpen(false); navigate('/portal'); }}
                   className="w-full max-w-xs text-center px-10 py-5 rounded-2xl font-bold text-xl overflow-hidden relative group shadow-2xl shadow-primary/20"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
