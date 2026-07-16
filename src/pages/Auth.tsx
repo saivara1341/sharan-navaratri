@@ -321,7 +321,7 @@ const Auth = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@company.com"
+                  placeholder="your@email.com"
                   className="input-premium py-3 pl-12"
                 />
               </div>

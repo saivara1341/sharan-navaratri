@@ -1155,7 +1155,7 @@ const AdminPortal = () => {
                                             <input
                                                 type="text"
                                                 required
-                                                placeholder="e.g. Ramesh Talagana"
+                                                placeholder="e.g. Client Name"
                                                 value={createName}
                                                 onChange={e => setCreateName(e.target.value)}
                                                 className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
