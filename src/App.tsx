@@ -94,6 +94,11 @@ const AuthRedirectHandler = () => {
           console.error("DB check failed for client email:", err);
         }
       }
+
+      // If we are here, user has no role set yet. Redirect them to /auth to select role.
+      if (location.pathname !== '/auth' && location.pathname !== '/auth/') {
+        navigate("/auth");
+      }
     };
 
     // Check initial session - ONLY redirect if user is on the auth page
@@ -107,7 +112,7 @@ const AuthRedirectHandler = () => {
 
     // Listen for auth changes (like login success)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session && (location.pathname === '/auth' || location.pathname === '/auth/')) {
+      if (event === 'SIGNED_IN' && session) {
         checkUserRoleAndRedirect(session);
       }
     });
