@@ -38,6 +38,11 @@ interface StartupProject {
   description: string;
   website_url?: string;
   milestones: string[];
+  tam?: string;
+  sam?: string;
+  som?: string;
+  businessModel?: string;
+  pitch?: string;
 }
 
 export default function InvestorPortal() {
@@ -45,6 +50,7 @@ export default function InvestorPortal() {
   const [loading, setLoading] = useState(true);
   const [investorEmail, setInvestorEmail] = useState("");
   const [investorName, setInvestorName] = useState("");
+  const [activeTab, setActiveTab] = useState<'startups' | 'journey' | 'stats'>('startups');
   
   // Projects states (mock database portfolio + user submission data)
   const [portfolio, setPortfolio] = useState<StartupProject[]>([]);
@@ -76,7 +82,12 @@ export default function InvestorPortal() {
       status: "In Progress",
       description: "Cloud-native ERP platform built for Indian small-to-medium manufacturing firms. Solves compliance, inventory, and supply chain automation in one dashboard.",
       website_url: "https://siddhidynamics.in/services/erp",
-      milestones: ["Phase 1: Architecture (100% Completed)", "Phase 2: Alpha Testing (100% Completed)", "Phase 3: Integration (60% Completed)", "Phase 4: Validation (Pending)", "Phase 5: Deploy (Pending)"]
+      milestones: ["Phase 1: Architecture (100% Completed)", "Phase 2: Alpha Testing (100% Completed)", "Phase 3: Integration (60% Completed)", "Phase 4: Validation (Pending)", "Phase 5: Deploy (Pending)"],
+      tam: "$12.8B (APAC Manufacturing)",
+      sam: "$1.4B (Indian SME Sector)",
+      som: "$120M (Target Year 3)",
+      businessModel: "B2B SaaS subscription + custom on-premise implementation fees",
+      pitch: "Replacing complex, manual spreadsheet-based ERP systems with a modular cloud-native tool tailored specifically for GST compliance and inventory tracking in Indian factories."
     },
     {
       id: "mock-proj-2",
@@ -89,7 +100,12 @@ export default function InvestorPortal() {
       status: "Completed",
       description: "AI-powered landing page builder featuring micro-interactions and smart conversions. Enables zero-code high-performance website generation.",
       website_url: "https://siddhidynamics.in/project/wish-o",
-      milestones: ["Phase 1: Architecture (100%)", "Phase 2: Alpha (100%)", "Phase 3: Integration (100%)", "Phase 4: Validation (100%)", "Phase 5: Deploy (100%)"]
+      milestones: ["Phase 1: Architecture (100%)", "Phase 2: Alpha (100%)", "Phase 3: Integration (100%)", "Phase 4: Validation (100%)", "Phase 5: Deploy (100%)"],
+      tam: "$4.2B (Global Web Dev & Marketing)",
+      sam: "$850M (No-Code Website Builders)",
+      som: "$95M (Freelancers & Digital Agencies)",
+      businessModel: "Product-led growth SaaS - Free tier, Pro at $15/mo, Agency at $79/mo",
+      pitch: "AI-driven conversion-focused landing page generator with built-in high-performance micro-animations and automated customer acquisition analytics."
     },
     {
       id: "mock-proj-3",
@@ -101,7 +117,12 @@ export default function InvestorPortal() {
       progress: 20,
       status: "Analyzing",
       description: "Machine learning analytics for real-time power grid stabilization. Intended to assist green microgrids in routing power dynamically to minimize transmission waste.",
-      milestones: ["Phase 1: Architecture (80% Completed)", "Phase 2: Alpha (Pending)", "Phase 3: Integration (Pending)", "Phase 4: Validation (Pending)", "Phase 5: Deploy (Pending)"]
+      milestones: ["Phase 1: Architecture (80% Completed)", "Phase 2: Alpha (Pending)", "Phase 3: Integration (Pending)", "Phase 4: Validation (Pending)", "Phase 5: Deploy (Pending)"],
+      tam: "$18.4B (Smart Grid Infrastructure)",
+      sam: "$2.1B (Microgrid Optimization)",
+      som: "$180M (Targeting Public Utility Pilots)",
+      businessModel: "Enterprise SaaS + Performance-Based Sharing (15% grid energy savings)",
+      pitch: "Deploying machine learning models to prevent power load instability in local energy grids and dynamically routing surplus renewable storage."
     },
     {
       id: "mock-proj-4",
@@ -114,7 +135,12 @@ export default function InvestorPortal() {
       status: "In Progress",
       description: "Real-time CAD metadata indexing engine that uses AI to detect load-bearing anomalies and compliance issues directly in blueprints.",
       website_url: "https://siddhidynamics.in/project/archplan",
-      milestones: ["Phase 1: Architecture (100% Completed)", "Phase 2: Alpha (60% Completed)", "Phase 3: Integration (Pending)", "Phase 4: Validation (Pending)", "Phase 5: Deploy (Pending)"]
+      milestones: ["Phase 1: Architecture (100% Completed)", "Phase 2: Alpha (60% Completed)", "Phase 3: Integration (Pending)", "Phase 4: Validation (Pending)", "Phase 5: Deploy (Pending)"],
+      tam: "$6.5B (Architectural CAD Tools)",
+      sam: "$980M (BIM Compliance Inspection)",
+      som: "$80M (Top 200 Global Design Firms)",
+      businessModel: "Subscription seat licensing ($85/seat/month) + custom API audit rates",
+      pitch: "Algorithmic CAD blueprint compliance engine that automatically identifies structural and local load regulations to bypass weeks of review."
     }
   ];
 
@@ -165,11 +191,23 @@ export default function InvestorPortal() {
           // Attempt to parse bounty details
           let website = "";
           let deadlineText = "";
+          let tam = "$5.0B (Global Market)";
+          let sam = "$800M (Target Addressable)";
+          let som = "$50M (Initial Launch)";
+          let businessModel = "B2B SaaS / Custom Enterprise Licensing";
+          let pitch = "Advanced automated solution accelerating client operational pipelines.";
+          
           try {
             if (s.bounty_reward && s.bounty_reward.trim().startsWith('{')) {
               const meta = JSON.parse(s.bounty_reward);
               website = meta.website_url || "";
               deadlineText = meta.deadline ? `Target: ${meta.deadline}` : "";
+              if (meta.tam) tam = meta.tam;
+              if (meta.sam) sam = meta.sam;
+              if (meta.som) som = meta.som;
+              if (meta.business_model) businessModel = meta.business_model;
+              else if (meta.businessModel) businessModel = meta.businessModel;
+              if (meta.pitch) pitch = meta.pitch;
             }
           } catch (e) {
             // Ignored
@@ -192,7 +230,12 @@ export default function InvestorPortal() {
               `Phase 3: Integration (${s.progress && s.progress >= 60 ? '100%' : s.progress && s.progress >= 40 ? 'In Progress' : 'Pending'})`,
               `Phase 4: Validation (${s.progress && s.progress >= 80 ? '100%' : s.progress && s.progress >= 60 ? 'In Progress' : 'Pending'})`,
               `Phase 5: Deploy (${s.progress && s.progress === 100 ? '100%' : s.progress && s.progress >= 80 ? 'In Progress' : 'Pending'})`
-            ]
+            ],
+            tam,
+            sam,
+            som,
+            businessModel,
+            pitch
           };
         });
 
@@ -489,124 +532,330 @@ If you cannot answer based on our tech stack, say: "I will escalate this questio
           </div>
         </div>
 
-        {/* Portfolio Table and Filters */}
-        <div className="space-y-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <h2 className="text-2xl font-bold text-white tracking-wide text-left">Ecosystem Active Startup Projects</h2>
-            
-            {/* Filter controls */}
-            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-              {/* Search */}
-              <div className="relative flex-grow md:flex-grow-0">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Search startup..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-full md:w-60 bg-white/5 border border-white/10 rounded-xl text-sm focus:outline-none focus:border-accent text-white"
-                />
+        {/* Tab Selection Navigation */}
+        <div className="flex border-b border-white/10 gap-6 w-full">
+          <button
+            onClick={() => setActiveTab('startups')}
+            className={`pb-4 text-sm font-bold tracking-wider uppercase transition-all cursor-pointer ${
+              activeTab === 'startups' 
+                ? 'text-accent border-b-2 border-accent' 
+                : 'text-muted-foreground hover:text-white'
+            }`}
+          >
+            Startups Portfolio ({filteredPortfolio.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('journey')}
+            className={`pb-4 text-sm font-bold tracking-wider uppercase transition-all cursor-pointer ${
+              activeTab === 'journey' 
+                ? 'text-accent border-b-2 border-accent' 
+                : 'text-muted-foreground hover:text-white'
+            }`}
+          >
+            Siddhi Journey & Milestones
+          </button>
+          <button
+            onClick={() => setActiveTab('stats')}
+            className={`pb-4 text-sm font-bold tracking-wider uppercase transition-all cursor-pointer ${
+              activeTab === 'stats' 
+                ? 'text-accent border-b-2 border-accent' 
+                : 'text-muted-foreground hover:text-white'
+            }`}
+          >
+            Ecosystem Stats
+          </button>
+        </div>
+
+        {/* Tab Content Display */}
+        <AnimatePresence mode="wait">
+          {activeTab === 'startups' && (
+            <motion.div
+              key="startups-tab"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              className="space-y-6"
+            >
+              {/* Portfolio Table and Filters */}
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <h2 className="text-xl font-bold text-white tracking-wide text-left">Ecosystem Active Startup Projects</h2>
+                
+                {/* Filter controls */}
+                <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                  {/* Search */}
+                  <div className="relative flex-grow md:flex-grow-0">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <input
+                      type="text"
+                      placeholder="Search startup..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 pr-4 py-2 w-full md:w-60 bg-white/5 border border-white/10 rounded-xl text-sm focus:outline-none focus:border-accent text-white"
+                    />
+                  </div>
+
+                  {/* Status Filter */}
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="bg-white/5 border border-white/10 rounded-xl text-xs py-2 px-3 focus:outline-none focus:border-accent text-slate-300"
+                  >
+                    <option value="all" className="bg-neutral-950">All Statuses</option>
+                    <option value="Analyzing" className="bg-neutral-950">Analyzing</option>
+                    <option value="In Progress" className="bg-neutral-950">In Progress</option>
+                    <option value="Completed" className="bg-neutral-950">Completed</option>
+                  </select>
+
+                  {/* Stage Filter */}
+                  <select
+                    value={stageFilter}
+                    onChange={(e) => setStageFilter(e.target.value)}
+                    className="bg-white/5 border border-white/10 rounded-xl text-xs py-2 px-3 focus:outline-none focus:border-accent text-slate-300"
+                  >
+                    <option value="all" className="bg-neutral-950">All Stages</option>
+                    <option value="Pre-seed" className="bg-neutral-950">Pre-seed</option>
+                    <option value="Seed" className="bg-neutral-950">Seed</option>
+                    <option value="Series A" className="bg-neutral-950">Series A</option>
+                  </select>
+                </div>
               </div>
 
-              {/* Status Filter */}
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="bg-white/5 border border-white/10 rounded-xl text-xs py-2 px-3 focus:outline-none focus:border-accent text-slate-300"
-              >
-                <option value="all" className="bg-neutral-950">All Statuses</option>
-                <option value="Analyzing" className="bg-neutral-950">Analyzing</option>
-                <option value="In Progress" className="bg-neutral-950">In Progress</option>
-                <option value="Completed" className="bg-neutral-950">Completed</option>
-              </select>
+              {/* Startup Catalog */}
+              {filteredPortfolio.length === 0 ? (
+                <div className="text-center py-20 glass-card rounded-3xl border border-dashed border-white/10 space-y-4">
+                  <Briefcase className="w-12 h-12 text-muted-foreground mx-auto" />
+                  <h3 className="text-xl font-medium text-white">No startups match filter</h3>
+                  <p className="text-muted-foreground text-sm max-w-md mx-auto">
+                    No ecosystem startup projects fit the active search parameters. Try adjusting filters.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                  {filteredPortfolio.map((item) => (
+                    <motion.div
+                      key={item.id}
+                      whileHover={{ scale: 1.01, border: "1px solid rgba(234, 179, 8, 0.25)" }}
+                      className="glass-card p-6 rounded-3xl border border-white/10 flex flex-col justify-between cursor-pointer group transition-all"
+                      onClick={() => setSelectedProject(item)}
+                    >
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <span className="text-[10px] uppercase font-bold text-accent tracking-widest">{item.category}</span>
+                            <h3 className="text-xl font-bold text-white group-hover:text-accent transition-colors mt-0.5">{item.name}</h3>
+                          </div>
+                          <span className={`text-[10px] uppercase font-extrabold tracking-wider px-2 py-0.5 rounded ${
+                            item.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                            item.status === 'In Progress' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
+                            'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20'
+                          }`}>
+                            {item.status}
+                          </span>
+                        </div>
 
-              {/* Stage Filter */}
-              <select
-                value={stageFilter}
-                onChange={(e) => setStageFilter(e.target.value)}
-                className="bg-white/5 border border-white/10 rounded-xl text-xs py-2 px-3 focus:outline-none focus:border-accent text-slate-300"
-              >
-                <option value="all" className="bg-neutral-950">All Stages</option>
-                <option value="Pre-seed" className="bg-neutral-950">Pre-seed</option>
-                <option value="Seed" className="bg-neutral-950">Seed</option>
-                <option value="Series A" className="bg-neutral-950">Series A</option>
-              </select>
-            </div>
-          </div>
+                        <p className="text-slate-400 text-sm line-clamp-3 leading-relaxed">
+                          {item.description}
+                        </p>
 
-          {/* Startup Catalog */}
-          {filteredPortfolio.length === 0 ? (
-            <div className="text-center py-20 glass-card rounded-3xl border border-dashed border-white/10 space-y-4">
-              <Briefcase className="w-12 h-12 text-muted-foreground mx-auto" />
-              <h3 className="text-xl font-medium text-white">No startups match filter</h3>
-              <p className="text-muted-foreground text-sm max-w-md mx-auto">
-                No ecosystem startup projects fit the active search parameters. Try adjusting filters.
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-              {filteredPortfolio.map((item) => (
-                <motion.div
-                  key={item.id}
-                  whileHover={{ scale: 1.01, border: "1px solid rgba(234, 179, 8, 0.25)" }}
-                  className="glass-card p-6 rounded-3xl border border-white/10 flex flex-col justify-between cursor-pointer group transition-all"
-                  onClick={() => setSelectedProject(item)}
-                >
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <span className="text-[10px] uppercase font-bold text-accent tracking-widest">{item.category}</span>
-                        <h3 className="text-xl font-bold text-white group-hover:text-accent transition-colors mt-0.5">{item.name}</h3>
+                        {/* Stats mini bar */}
+                        <div className="grid grid-cols-3 gap-2 bg-white/2 rounded-xl p-3 border border-white/5 text-center text-xs">
+                          <div>
+                            <p className="text-[10px] text-muted-foreground/80 uppercase font-bold tracking-wider">Stage</p>
+                            <p className="font-bold text-slate-200 mt-0.5">{item.stage}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] text-muted-foreground/80 uppercase font-bold tracking-wider">Traction</p>
+                            <p className="font-bold text-emerald-400 mt-0.5">{item.traction.split(" ")[0]}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] text-muted-foreground/80 uppercase font-bold tracking-wider">Projection</p>
+                            <p className="font-bold text-accent mt-0.5">{item.roi.split(" ")[0]}</p>
+                          </div>
+                        </div>
                       </div>
-                      <span className={`text-[10px] uppercase font-extrabold tracking-wider px-2 py-0.5 rounded ${
-                        item.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                        item.status === 'In Progress' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
-                        'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20'
-                      }`}>
-                        {item.status}
-                      </span>
-                    </div>
 
-                    <p className="text-slate-400 text-sm line-clamp-3 leading-relaxed">
-                      {item.description}
-                    </p>
-
-                    {/* Stats mini bar */}
-                    <div className="grid grid-cols-3 gap-2 bg-white/2 rounded-xl p-3 border border-white/5 text-center text-xs">
-                      <div>
-                        <p className="text-[10px] text-muted-foreground/80 uppercase font-bold tracking-wider">Stage</p>
-                        <p className="font-bold text-slate-200 mt-0.5">{item.stage}</p>
+                      <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between">
+                        <div className="flex-grow max-w-[70%] space-y-1">
+                          <div className="flex justify-between text-[9px] font-bold text-muted-foreground uppercase">
+                            <span>Milestone Progress</span>
+                            <span>{item.progress}%</span>
+                          </div>
+                          <div className="relative h-1.5 bg-white/5 rounded-full overflow-hidden">
+                            <div className="absolute h-full bg-gradient-to-r from-accent to-yellow-600 left-0" style={{ width: `${item.progress}%` }} />
+                          </div>
+                        </div>
+                        <span className="flex items-center text-xs font-bold text-accent group-hover:translate-x-1 transition-transform">
+                          Details <ChevronRight className="w-4 h-4" />
+                        </span>
                       </div>
-                      <div>
-                        <p className="text-[10px] text-muted-foreground/80 uppercase font-bold tracking-wider">Traction</p>
-                        <p className="font-bold text-emerald-400 mt-0.5">{item.traction.split(" ")[0]}</p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-muted-foreground/80 uppercase font-bold tracking-wider">Projection</p>
-                        <p className="font-bold text-accent mt-0.5">{item.roi.split(" ")[0]}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between">
-                    <div className="flex-grow max-w-[70%] space-y-1">
-                      <div className="flex justify-between text-[9px] font-bold text-muted-foreground uppercase">
-                        <span>Milestone Progress</span>
-                        <span>{item.progress}%</span>
-                      </div>
-                      <div className="relative h-1.5 bg-white/5 rounded-full overflow-hidden">
-                        <div className="absolute h-full bg-gradient-to-r from-accent to-yellow-600 left-0" style={{ width: `${item.progress}%` }} />
-                      </div>
-                    </div>
-                    <span className="flex items-center text-xs font-bold text-accent group-hover:translate-x-1 transition-transform">
-                      Details <ChevronRight className="w-4 h-4" />
-                    </span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
           )}
-        </div>
+
+          {activeTab === 'journey' && (
+            <motion.div
+              key="journey-tab"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              className="space-y-8 max-w-3xl mx-auto text-left"
+            >
+              <div className="text-center py-4">
+                <span className="text-xs uppercase font-bold text-accent tracking-[0.25em]">Siddhi Dynamics Timeline</span>
+                <h3 className="text-2xl font-extrabold text-white mt-1">Our Journey & Roadmap</h3>
+                <p className="text-slate-400 text-xs mt-1">Tracking our growth and ecosystem milestones from inception to market leadership.</p>
+              </div>
+
+              {/* Timeline layout */}
+              <div className="relative border-l border-white/10 ml-4 md:ml-32 space-y-8 pt-4 pb-8">
+                {/* Milestone 1 */}
+                <div className="relative pl-6">
+                  <div className="absolute -left-[9px] top-1 w-4.5 h-4.5 rounded-full bg-accent flex items-center justify-center border border-black"><Check className="w-3 h-3 text-black" /></div>
+                  <span className="absolute -left-32 top-0.5 text-xs font-bold text-slate-500 hidden md:block">2025 Q3</span>
+                  <div className="glass-card p-5 rounded-2xl border border-white/5 space-y-1">
+                    <span className="text-[9px] uppercase font-bold text-accent tracking-wider md:hidden">2025 Q3</span>
+                    <h4 className="text-sm font-bold text-white">Inception & System Architecture Design</h4>
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      Siddhi Dynamics formulated its operational mandate: using modern AI automation to rapidly deploy and scale enterprise workflows, no-code landing tools, and clean tech grids.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Milestone 2 */}
+                <div className="relative pl-6">
+                  <div className="absolute -left-[9px] top-1 w-4.5 h-4.5 rounded-full bg-accent flex items-center justify-center border border-black"><Check className="w-3 h-3 text-black" /></div>
+                  <span className="absolute -left-32 top-0.5 text-xs font-bold text-slate-500 hidden md:block">2026 Q1</span>
+                  <div className="glass-card p-5 rounded-2xl border border-white/5 space-y-1">
+                    <span className="text-[9px] uppercase font-bold text-accent tracking-wider md:hidden">2026 Q1</span>
+                    <h4 className="text-sm font-bold text-white">Secure DB Schema & Waitlist Expansion</h4>
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      Applied 10 critical database migrations establishing robust row-level security (RLS), input constraints, and anti-spam trigger parameters. Launched public waitlists for flagship solutions.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Milestone 3 */}
+                <div className="relative pl-6">
+                  <div className="absolute -left-[9px] top-1 w-4.5 h-4.5 rounded-full bg-accent flex items-center justify-center border border-black"><Activity className="w-3 h-3 text-black" /></div>
+                  <span className="absolute -left-32 top-0.5 text-xs font-bold text-slate-500 hidden md:block">2026 Q2 (Current)</span>
+                  <div className="glass-card p-5 rounded-2xl border border-accent/20 bg-accent/2 space-y-1">
+                    <span className="text-[9px] uppercase font-bold text-accent tracking-wider md:hidden">2026 Q2</span>
+                    <h4 className="text-sm font-bold text-accent">Unified Gateway & Collaborative Portals</h4>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      Constructed the secure unified gateway (`/portal`) enabling custom client dashboards, developer workspace interfaces, and accredited investor consoles supporting RAG AI support assistants.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Milestone 4 */}
+                <div className="relative pl-6">
+                  <div className="absolute -left-[9px] top-1 w-4.5 h-4.5 rounded-full bg-neutral-900 border border-white/10 flex items-center justify-center" />
+                  <span className="absolute -left-32 top-0.5 text-xs font-bold text-slate-600 hidden md:block">2026 Q3-Q4</span>
+                  <div className="glass-card p-5 rounded-2xl border border-white/5 opacity-60 space-y-1">
+                    <span className="text-[9px] uppercase font-bold text-slate-600 tracking-wider md:hidden">2026 Q3-Q4</span>
+                    <h4 className="text-sm font-bold text-slate-200">Scale Incubation & Commercial Pilot Deployments</h4>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Onboarding custom integrations for Indian manufacturers (Siddhi ERP Suite) and rolling out PropTech blueprint anomalies engines for top architecture firms globally.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'stats' && (
+            <motion.div
+              key="stats-tab"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              className="space-y-6"
+            >
+              <div className="text-center py-4">
+                <span className="text-xs uppercase font-bold text-accent tracking-[0.25em]">Ecosystem Health</span>
+                <h3 className="text-2xl font-extrabold text-white mt-1">Aggregate Financial & Growth Stats</h3>
+                <p className="text-slate-400 text-xs mt-1">Ecosystem metrics compiled directly from active venture tracks.</p>
+              </div>
+
+              {/* Growth Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+                <div className="p-5 bg-white/2 rounded-2xl border border-white/5 space-y-2">
+                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Cumulative Ecosystem ARR</p>
+                  <p className="text-2xl font-bold text-white">$1.24M</p>
+                  <div className="h-1 bg-emerald-500/20 rounded-full overflow-hidden">
+                    <div className="h-full bg-emerald-400 w-[78%]" />
+                  </div>
+                  <p className="text-[9px] text-emerald-400 font-bold">▲ +12% since last quarter</p>
+                </div>
+
+                <div className="p-5 bg-white/2 rounded-2xl border border-white/5 space-y-2">
+                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Total Active Users</p>
+                  <p className="text-2xl font-bold text-white">8,420+</p>
+                  <div className="h-1 bg-blue-500/20 rounded-full overflow-hidden">
+                    <div className="h-full bg-blue-400 w-[85%]" />
+                  </div>
+                  <p className="text-[9px] text-blue-400 font-bold">▲ +550 registrations this month</p>
+                </div>
+
+                <div className="p-5 bg-white/2 rounded-2xl border border-white/5 space-y-2">
+                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Ecosystem Success Rate</p>
+                  <p className="text-2xl font-bold text-white">96.4%</p>
+                  <div className="h-1 bg-accent/20 rounded-full overflow-hidden">
+                    <div className="h-full bg-accent w-[96%]" />
+                  </div>
+                  <p className="text-[9px] text-accent font-bold">Highly predictable deliverables</p>
+                </div>
+
+                <div className="p-5 bg-white/2 rounded-2xl border border-white/5 space-y-2">
+                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Average Exit ROI</p>
+                  <p className="text-2xl font-bold text-white">2.37x</p>
+                  <div className="h-1 bg-purple-500/20 rounded-full overflow-hidden">
+                    <div className="h-full bg-purple-400 w-[70%]" />
+                  </div>
+                  <p className="text-[9px] text-purple-400 font-bold">Consistently outperforming index</p>
+                </div>
+              </div>
+
+              {/* Sector Allocations */}
+              <div className="glass-card p-6 rounded-3xl border border-white/10 text-left space-y-4 mt-4">
+                <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider">Ecosystem Sector Capital Allocation</h4>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between text-xs text-slate-300 font-semibold mb-1">
+                      <span>Enterprise Software (SaaS / ERP)</span>
+                      <span>45%</span>
+                    </div>
+                    <div className="h-2 bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-accent w-[45%]" /></div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs text-slate-300 font-semibold mb-1">
+                      <span>Developer Tools & AI Agents</span>
+                      <span>25%</span>
+                    </div>
+                    <div className="h-2 bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-emerald-400 w-[25%]" /></div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs text-slate-300 font-semibold mb-1">
+                      <span>PropTech & CAD Compliance Engines</span>
+                      <span>15%</span>
+                    </div>
+                    <div className="h-2 bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-blue-500 w-[15%]" /></div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs text-slate-300 font-semibold mb-1">
+                      <span>Deep Tech & Sustainable Clean Grid Energy</span>
+                      <span>15%</span>
+                    </div>
+                    <div className="h-2 bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-purple-500 w-[15%]" /></div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* Project Detail Modal */}
@@ -649,6 +898,43 @@ If you cannot answer based on our tech stack, say: "I will escalate this questio
                     {selectedProject.description}
                   </p>
                 </div>
+
+                {/* Market Size & Economics */}
+                <div className="space-y-2">
+                  <h4 className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Market Size & Economics</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="p-3 bg-white/2 rounded-xl border border-white/5 text-center">
+                      <p className="text-[9px] text-muted-foreground font-bold uppercase">Total Addressable (TAM)</p>
+                      <p className="text-xs font-bold text-white mt-1">{selectedProject.tam || "$2.5B"}</p>
+                    </div>
+                    <div className="p-3 bg-white/2 rounded-xl border border-white/5 text-center">
+                      <p className="text-[9px] text-muted-foreground font-bold uppercase">Serviceable Addressable (SAM)</p>
+                      <p className="text-xs font-bold text-white mt-1">{selectedProject.sam || "$400M"}</p>
+                    </div>
+                    <div className="p-3 bg-white/2 rounded-xl border border-white/5 text-center">
+                      <p className="text-[9px] text-muted-foreground font-bold uppercase">Serviceable Obtainable (SOM)</p>
+                      <p className="text-xs font-bold text-white mt-1">{selectedProject.som || "$50M"}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Business Model */}
+                <div className="space-y-2">
+                  <h4 className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Business & Monetization Model</h4>
+                  <p className="text-slate-300 text-sm leading-relaxed bg-white/2 rounded-2xl p-4 border border-white/5">
+                    {selectedProject.businessModel || "B2B SaaS licensing + bespoke professional integration fees"}
+                  </p>
+                </div>
+
+                {/* Pitch Summary */}
+                {selectedProject.pitch && (
+                  <div className="space-y-2">
+                    <h4 className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Core Venture Pitch</h4>
+                    <p className="text-slate-300 text-sm leading-relaxed bg-white/2 rounded-2xl p-4 border border-white/5 italic">
+                      "{selectedProject.pitch}"
+                    </p>
+                  </div>
+                )}
 
                 {/* Progress bar details */}
                 <div className="space-y-3">

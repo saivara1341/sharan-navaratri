@@ -60,6 +60,11 @@ export default function EmployeePortal() {
   const [selectedSub, setSelectedSub] = useState<Submission | null>(null);
   const [editStatus, setEditStatus] = useState("Analyzing");
   const [editProgress, setEditProgress] = useState(0);
+  const [editDeadline, setEditDeadline] = useState("");
+  const [editUrl, setEditUrl] = useState("");
+  const [editAgreement, setEditAgreement] = useState("");
+  const [editBudgetTotal, setEditBudgetTotal] = useState("");
+  const [editBudgetPaid, setEditBudgetPaid] = useState("");
   const [savingRoadmap, setSavingRoadmap] = useState(false);
 
   // Chat Console states
@@ -115,16 +120,24 @@ export default function EmployeePortal() {
     navigate("/");
   };
 
-  // Save changes to progress & status
+  // Save changes to progress, status, and metadata details
   const handleSaveRoadmap = async () => {
     if (!selectedSub) return;
     setSavingRoadmap(true);
     try {
+      const metaStr = JSON.stringify({
+        deadline: editDeadline.trim(),
+        website_url: editUrl.trim(),
+        agreement: editAgreement.trim(),
+        budget_total: editBudgetTotal.trim(),
+        budget_paid: editBudgetPaid.trim()
+      });
       await supabaseService.updateSubmission(selectedSub.id, {
         status: editStatus,
-        progress: editProgress
+        progress: editProgress,
+        bounty_reward: metaStr
       });
-      toast.success("Roadmap milestones updated successfully.");
+      toast.success("Roadmap milestones and contract details updated successfully.");
       setSelectedSub(null);
       await fetchSubmissionsData();
     } catch (err: any) {
@@ -227,10 +240,33 @@ export default function EmployeePortal() {
     }
   };
 
+  const parseProjectMetadata = (bountyReward: string | null | undefined) => {
+    try {
+      if (bountyReward && bountyReward.trim().startsWith('{')) {
+        return JSON.parse(bountyReward);
+      }
+    } catch (e) {
+      console.error("Failed to parse project metadata:", e);
+    }
+    return {
+      deadline: "",
+      website_url: "",
+      agreement: bountyReward || "",
+      budget_total: "",
+      budget_paid: ""
+    };
+  };
+
   const openEditor = (sub: Submission) => {
     setSelectedSub(sub);
     setEditStatus(sub.status || "Analyzing");
     setEditProgress(sub.progress || 0);
+    const meta = parseProjectMetadata(sub.bounty_reward);
+    setEditDeadline(meta.deadline || "");
+    setEditUrl(meta.website_url || "");
+    setEditAgreement(meta.agreement || "");
+    setEditBudgetTotal(meta.budget_total || "$12,500");
+    setEditBudgetPaid(meta.budget_paid || "$4,500");
   };
 
   const selectChat = (sub: Submission) => {
@@ -654,44 +690,105 @@ export default function EmployeePortal() {
                   <p className="font-bold text-slate-200">Organization: <span className="font-normal text-slate-400">{selectedSub.organization || "Individual"}</span></p>
                   <p className="font-bold text-slate-200">Representative: <span className="font-normal text-slate-400">{selectedSub.name} ({selectedSub.email})</span></p>
                 </div>
-
-                {/* Status Selector */}
-                <div className="space-y-2 text-xs">
-                  <label className="font-bold text-slate-300 uppercase tracking-wider">Delivery Stage</label>
-                  <select
-                    value={editStatus}
-                    onChange={(e) => setEditStatus(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-primary text-white"
-                  >
-                    <option value="Analyzing" className="bg-neutral-950">Analyzing (Phase 1)</option>
-                    <option value="In Progress" className="bg-neutral-950">In Progress (Phase 2-4)</option>
-                    <option value="Completed" className="bg-neutral-950">Completed (Phase 5)</option>
-                  </select>
-                </div>
-
-                {/* Progress Bar slider */}
-                <div className="space-y-3 text-xs">
-                  <div className="flex justify-between items-center font-bold text-slate-300">
-                    <span className="uppercase tracking-wider">Milestone Completion</span>
-                    <span className="text-primary">{editProgress}%</span>
+                <div className="space-y-4 max-h-[55vh] overflow-y-auto pr-1 no-scrollbar">
+                  {/* Status Selector */}
+                  <div className="space-y-2 text-xs">
+                    <label className="font-bold text-slate-300 uppercase tracking-wider">Delivery Stage</label>
+                    <select
+                      value={editStatus}
+                      onChange={(e) => setEditStatus(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-primary text-white"
+                    >
+                      <option value="Analyzing" className="bg-neutral-950">Analyzing (Phase 1)</option>
+                      <option value="In Progress" className="bg-neutral-950">In Progress (Phase 2-4)</option>
+                      <option value="Completed" className="bg-neutral-950">Completed (Phase 5)</option>
+                    </select>
                   </div>
-                  
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    step="5"
-                    value={editProgress}
-                    onChange={(e) => setEditProgress(parseInt(e.target.value))}
-                    className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
-                  />
-                  
-                  <div className="flex justify-between w-full text-[9px] text-muted-foreground/60 font-bold uppercase tracking-wider">
-                    <span>0%</span>
-                    <span>25%</span>
-                    <span>50%</span>
-                    <span>75%</span>
-                    <span>100%</span>
+
+                  {/* Progress Bar slider */}
+                  <div className="space-y-3 text-xs">
+                    <div className="flex justify-between items-center font-bold text-slate-300">
+                      <span className="uppercase tracking-wider">Milestone Completion</span>
+                      <span className="text-primary">{editProgress}%</span>
+                    </div>
+                    
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      step="5"
+                      value={editProgress}
+                      onChange={(e) => setEditProgress(parseInt(e.target.value))}
+                      className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
+                    />
+                    
+                    <div className="flex justify-between w-full text-[9px] text-muted-foreground/60 font-bold uppercase tracking-wider">
+                      <span>0%</span>
+                      <span>25%</span>
+                      <span>50%</span>
+                      <span>75%</span>
+                      <span>100%</span>
+                    </div>
+                  </div>
+
+                  {/* Target Milestone Deadline */}
+                  <div className="space-y-2 text-xs">
+                    <label className="font-bold text-slate-300 uppercase tracking-wider">Target Milestone Deadline</label>
+                    <input
+                      type="text"
+                      value={editDeadline}
+                      onChange={(e) => setEditDeadline(e.target.value)}
+                      placeholder="e.g. 2026-08-30 or Phase 3 Release"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-primary text-white"
+                    />
+                  </div>
+
+                  {/* Demo / Live Website URL */}
+                  <div className="space-y-2 text-xs">
+                    <label className="font-bold text-slate-300 uppercase tracking-wider">Demo / Live Website URL</label>
+                    <input
+                      type="text"
+                      value={editUrl}
+                      onChange={(e) => setEditUrl(e.target.value)}
+                      placeholder="e.g. https://clientapp.siddhidynamics.in"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-primary text-white"
+                    />
+                  </div>
+
+                  {/* SLA & Agreement Summary */}
+                  <div className="space-y-2 text-xs">
+                    <label className="font-bold text-slate-300 uppercase tracking-wider">Agreement SLA Summary</label>
+                    <input
+                      type="text"
+                      value={editAgreement}
+                      onChange={(e) => setEditAgreement(e.target.value)}
+                      placeholder="e.g. SLA signed v1.1 - 99.9% uptime"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-primary text-white"
+                    />
+                  </div>
+
+                  {/* Total Contract Budget */}
+                  <div className="space-y-2 text-xs">
+                    <label className="font-bold text-slate-300 uppercase tracking-wider">Total Contract Budget</label>
+                    <input
+                      type="text"
+                      value={editBudgetTotal}
+                      onChange={(e) => setEditBudgetTotal(e.target.value)}
+                      placeholder="e.g. $15,000"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-primary text-white"
+                    />
+                  </div>
+
+                  {/* Milestones Disbursed Amount */}
+                  <div className="space-y-2 text-xs">
+                    <label className="font-bold text-slate-300 uppercase tracking-wider">Milestones Disbursed Amount</label>
+                    <input
+                      type="text"
+                      value={editBudgetPaid}
+                      onChange={(e) => setEditBudgetPaid(e.target.value)}
+                      placeholder="e.g. $6,000"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-primary text-white"
+                    />
                   </div>
                 </div>
 

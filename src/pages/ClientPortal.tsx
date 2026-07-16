@@ -2,7 +2,29 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/layout/Navbar";
-import { Briefcase, CheckCircle, Clock, AlertCircle, LogOut, ExternalLink, Calendar, ShieldCheck, Mail, RefreshCw, MessageCircle, Send, X, Sparkles } from "lucide-react";
+import { 
+    Briefcase, 
+    CheckCircle, 
+    Clock, 
+    AlertCircle, 
+    LogOut, 
+    ExternalLink, 
+    Calendar, 
+    ShieldCheck, 
+    Mail, 
+    RefreshCw, 
+    MessageCircle, 
+    Send, 
+    X, 
+    Sparkles,
+    DollarSign,
+    CreditCard,
+    Receipt,
+    FileText,
+    Download,
+    FolderOpen
+} from "lucide-react";
+import { format } from "date-fns";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
@@ -29,6 +51,7 @@ export default function ClientPortal() {
     const [clientOrg, setClientOrg] = useState("");
     const [projects, setProjects] = useState<Submission[]>([]);
     const [refreshing, setRefreshing] = useState(false);
+    const [projectTabs, setProjectTabs] = useState<Record<string, 'roadmap' | 'payments' | 'agreements'>>({});
 
     // Chat States
     const [chatOpen, setChatOpen] = useState<Submission | null>(null);
@@ -197,7 +220,23 @@ ${contextText || "No matching guidelines found."}
     const parseProjectMetadata = (bountyReward: string | null | undefined) => {
         try {
             if (bountyReward && bountyReward.trim().startsWith('{')) {
-                return JSON.parse(bountyReward);
+                const parsed = JSON.parse(bountyReward);
+                return {
+                    deadline: parsed.deadline || "",
+                    website_url: parsed.website_url || "",
+                    agreement: parsed.agreement || "",
+                    budget_total: parsed.budget_total || "$12,500",
+                    budget_paid: parsed.budget_paid || "$4,500",
+                    invoices: parsed.invoices || [
+                        { id: "INV-2026-001", description: "Initial Milestone: Discovery & Architecture Blueprint", amount: "$3,750", status: "Paid", date: "2026-06-10" },
+                        { id: "INV-2026-002", description: "Second Milestone: Alpha Engine Core & DB Integration", amount: "$5,000", status: "Pending", date: "2026-07-25" },
+                        { id: "INV-2026-003", description: "Final Milestone: Deployment, Handoff & Maintenance SLA", amount: "$3,750", status: "Upcoming", date: "2026-08-30" }
+                    ],
+                    agreements: parsed.agreements || [
+                        { name: "Master Services Agreement (MSA) v1.4", date: "2026-06-01", status: "Signed", url: "#" },
+                        { name: "Mutual Non-Disclosure Agreement (NDA)", date: "2026-05-28", status: "Signed", url: "#" }
+                    ]
+                };
             }
         } catch (e) {
             console.error("Failed to parse project metadata:", e);
@@ -205,7 +244,18 @@ ${contextText || "No matching guidelines found."}
         return {
             deadline: "",
             website_url: "",
-            agreement: bountyReward || ""
+            agreement: bountyReward || "",
+            budget_total: "$12,500",
+            budget_paid: "$4,500",
+            invoices: [
+                { id: "INV-2026-001", description: "Initial Milestone: Discovery & Architecture Blueprint", amount: "$3,750", status: "Paid", date: "2026-06-10" },
+                { id: "INV-2026-002", description: "Second Milestone: Alpha Engine Core & DB Integration", amount: "$5,000", status: "Pending", date: "2026-07-25" },
+                { id: "INV-2026-003", description: "Final Milestone: Deployment, Handoff & Maintenance SLA", amount: "$3,750", status: "Upcoming", date: "2026-08-30" }
+            ],
+            agreements: [
+                { name: "Master Services Agreement (MSA) v1.4", date: "2026-06-01", status: "Signed", url: "#" },
+                { name: "Mutual Non-Disclosure Agreement (NDA)", date: "2026-05-28", status: "Signed", url: "#" }
+            ]
         };
     };
 
@@ -409,62 +459,218 @@ ${contextText || "No matching guidelines found."}
                                             </div>
                                         </div>
 
-                                        {/* Requirements / Description */}
-                                        <div className="space-y-2">
-                                            <h4 className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Project Scope & Requirements</h4>
-                                            <div className="bg-white/5 rounded-2xl p-5 border border-white/5 text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
-                                                {proj.message}
-                                            </div>
+                                        {/* Project Tabs Selector */}
+                                        <div className="flex border-b border-white/5 gap-6">
+                                            {(['roadmap', 'payments', 'agreements'] as const).map((tab) => {
+                                                const isActive = (projectTabs[proj.id] || 'roadmap') === tab;
+                                                return (
+                                                    <button
+                                                        key={tab}
+                                                        onClick={() => setProjectTabs(prev => ({ ...prev, [proj.id]: tab }))}
+                                                        className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                                                            isActive
+                                                                ? 'text-primary border-b-2 border-primary'
+                                                                : 'text-muted-foreground hover:text-white'
+                                                        }`}
+                                                    >
+                                                        {tab === 'roadmap' ? 'Roadmap & Support' :
+                                                         tab === 'payments' ? 'Budget & Payments' : 'Agreements & SLA'}
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
 
-                                        {/* Development Roadmap Progress */}
-                                        <div className="space-y-4">
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Neural Developmental Roadmap</span>
-                                                <span className="text-xs font-extrabold text-primary">PHASE {currentPhase} · {progressVal}% COMPLETED</span>
-                                            </div>
-                                            
-                                            {/* Progress Bar slider representation */}
-                                            <div className="space-y-2">
-                                                <div className="relative h-2 bg-white/5 rounded-full overflow-hidden">
-                                                    <motion.div
-                                                        initial={{ width: 0 }}
-                                                        animate={{ width: `${progressVal}%` }}
-                                                        className="absolute left-0 h-full bg-gradient-to-r from-primary to-accent"
-                                                    />
-                                                </div>
-                                                <div className="flex justify-between w-full text-[9px] text-muted-foreground/60 font-bold uppercase tracking-wider">
-                                                    <span>Phase 1: Architecture</span>
-                                                    <span>Phase 2: Alpha</span>
-                                                    <span>Phase 3: Integration</span>
-                                                    <span>Phase 4: Validation</span>
-                                                    <span>Phase 5: Deploy</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Additional Metadata Details */}
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-white/5 pt-4">
-                                            {meta.deadline && (
-                                                <div className="flex items-center gap-3 p-3 bg-white/2 rounded-xl border border-white/5">
-                                                    <Calendar className="w-5 h-5 text-primary shrink-0" />
-                                                    <div>
-                                                        <p className="text-[9px] text-muted-foreground font-bold uppercase">Target Milestone Deadline</p>
-                                                        <p className="text-sm font-bold text-slate-200">{meta.deadline}</p>
+                                        {/* Tab Content Display */}
+                                        <AnimatePresence mode="wait">
+                                            {(projectTabs[proj.id] || 'roadmap') === 'roadmap' && (
+                                                <motion.div
+                                                    key="roadmap-tab"
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: -10 }}
+                                                    className="space-y-6"
+                                                >
+                                                    {/* Requirements / Description */}
+                                                    <div className="space-y-2">
+                                                        <h4 className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Project Scope & Requirements</h4>
+                                                        <div className="bg-white/5 rounded-2xl p-5 border border-white/5 text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
+                                                            {proj.message}
+                                                        </div>
                                                     </div>
-                                                </div>
+
+                                                    {/* Development Roadmap Progress */}
+                                                    <div className="space-y-4">
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Neural Developmental Roadmap</span>
+                                                            <span className="text-xs font-extrabold text-primary">PHASE {currentPhase} · {progressVal}% COMPLETED</span>
+                                                        </div>
+                                                        
+                                                        {/* Progress Bar representation */}
+                                                        <div className="space-y-2">
+                                                            <div className="relative h-2 bg-white/5 rounded-full overflow-hidden">
+                                                                <div
+                                                                    className="absolute left-0 h-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
+                                                                    style={{ width: `${progressVal}%` }}
+                                                                />
+                                                            </div>
+                                                            <div className="flex justify-between w-full text-[9px] text-muted-foreground/60 font-bold uppercase tracking-wider">
+                                                                <span>Phase 1: Architecture</span>
+                                                                <span>Phase 2: Alpha</span>
+                                                                <span>Phase 3: Integration</span>
+                                                                <span>Phase 4: Validation</span>
+                                                                <span>Phase 5: Deploy</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Additional Metadata Details */}
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-white/5 pt-4">
+                                                        {meta.deadline && (
+                                                            <div className="flex items-center gap-3 p-3 bg-white/2 rounded-xl border border-white/5">
+                                                                <Calendar className="w-5 h-5 text-primary shrink-0" />
+                                                                <div>
+                                                                    <p className="text-[9px] text-muted-foreground font-bold uppercase">Target Milestone Deadline</p>
+                                                                    <p className="text-sm font-bold text-slate-200">{meta.deadline}</p>
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {meta.agreement && (
+                                                            <div className="flex items-center gap-3 p-3 bg-white/2 rounded-xl border border-white/5">
+                                                                <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
+                                                                <div>
+                                                                    <p className="text-[9px] text-muted-foreground font-bold uppercase">Contractual Agreement & Support SLA</p>
+                                                                    <p className="text-sm font-semibold text-slate-200 truncate max-w-xs" title={meta.agreement}>{meta.agreement}</p>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </motion.div>
                                             )}
 
-                                            {meta.agreement && (
-                                                <div className="flex items-center gap-3 p-3 bg-white/2 rounded-xl border border-white/5">
-                                                    <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
-                                                    <div>
-                                                        <p className="text-[9px] text-muted-foreground font-bold uppercase">Contractual Agreement & Support SLA</p>
-                                                        <p className="text-sm font-semibold text-slate-200 truncate max-w-xs" title={meta.agreement}>{meta.agreement}</p>
+                                            {(projectTabs[proj.id] || 'roadmap') === 'payments' && (
+                                                <motion.div
+                                                    key="payments-tab"
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: -10 }}
+                                                    className="space-y-6"
+                                                >
+                                                    {/* Budget Stats Grid */}
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                        <div className="p-4 bg-white/2 rounded-2xl border border-white/5 flex items-center gap-3.5">
+                                                            <div className="p-2.5 bg-primary/10 rounded-xl border border-primary/20">
+                                                                <DollarSign className="w-5 h-5 text-primary" />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-[9px] font-bold text-muted-foreground uppercase">Total Contract Value</p>
+                                                                <p className="text-lg font-bold text-white mt-0.5">{meta.budget_total}</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="p-4 bg-white/2 rounded-2xl border border-white/5 flex items-center gap-3.5">
+                                                            <div className="p-2.5 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                                                                <CreditCard className="w-5 h-5 text-emerald-400" />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-[9px] font-bold text-muted-foreground uppercase">Milestones Disbursed</p>
+                                                                <p className="text-lg font-bold text-white mt-0.5">{meta.budget_paid}</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="p-4 bg-white/2 rounded-2xl border border-white/5 flex items-center gap-3.5">
+                                                            <div className="p-2.5 bg-yellow-500/10 rounded-xl border border-yellow-500/20">
+                                                                <Receipt className="w-5 h-5 text-yellow-400" />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-[9px] font-bold text-muted-foreground uppercase">Retainer / Outstanding</p>
+                                                                <p className="text-lg font-bold text-white mt-0.5">
+                                                                    {`$${(parseInt(meta.budget_total.replace(/[^0-9]/g, '')) - parseInt(meta.budget_paid.replace(/[^0-9]/g, ''))).toLocaleString()}`}
+                                                                </p>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
+
+                                                    {/* Invoices Table */}
+                                                    <div className="space-y-2">
+                                                        <h4 className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Milestone Disbursement Schedule</h4>
+                                                        <div className="overflow-x-auto border border-white/10 rounded-2xl bg-white/2">
+                                                            <table className="w-full text-left border-collapse">
+                                                                <thead>
+                                                                    <tr className="border-b border-white/10 bg-white/5 text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                                                                        <th className="p-4">Invoice ID</th>
+                                                                        <th className="p-4">Milestone Phase</th>
+                                                                        <th className="p-4">Amount</th>
+                                                                        <th className="p-4">Due Date</th>
+                                                                        <th className="p-4">Status</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody className="divide-y divide-white/5 text-xs">
+                                                                    {meta.invoices.map((inv: any, idx: number) => (
+                                                                        <tr key={inv.id || idx} className="hover:bg-white/2 transition-colors">
+                                                                            <td className="p-4 font-mono text-slate-300 font-semibold">{inv.id}</td>
+                                                                            <td className="p-4 text-white font-medium">{inv.description}</td>
+                                                                            <td className="p-4 text-white font-bold">{inv.amount}</td>
+                                                                            <td className="p-4 text-slate-400">{inv.date}</td>
+                                                                            <td className="p-4">
+                                                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                                                                    inv.status === 'Paid' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                                                                                    inv.status === 'Pending' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
+                                                                                    'bg-slate-500/10 text-slate-400 border border-white/10'
+                                                                                }`}>
+                                                                                    {inv.status}
+                                                                                </span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
                                             )}
-                                        </div>
+
+                                            {(projectTabs[proj.id] || 'roadmap') === 'agreements' && (
+                                                <motion.div
+                                                    key="agreements-tab"
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: -10 }}
+                                                    className="space-y-4 text-left"
+                                                >
+                                                    <h4 className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Executed Legal Agreements</h4>
+                                                    <div className="grid grid-cols-1 gap-3">
+                                                        {meta.agreements.map((doc: any, idx: number) => (
+                                                            <div 
+                                                                key={idx} 
+                                                                className="flex items-center justify-between p-4 bg-white/2 hover:bg-white/5 border border-white/10 rounded-2xl transition-all"
+                                                            >
+                                                                <div className="flex items-center gap-3.5">
+                                                                    <div className="p-2.5 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                                                                        <FileText className="w-5 h-5 text-emerald-400" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-sm font-bold text-white">{doc.name}</p>
+                                                                        <p className="text-[10px] text-muted-foreground mt-0.5">Signed: {doc.date} · Secure Vault Executed</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-[10px] font-bold text-emerald-400 px-2 py-0.5 bg-emerald-500/5 border border-emerald-500/20 rounded">
+                                                                        {doc.status}
+                                                                    </span>
+                                                                    <button 
+                                                                        onClick={() => toast.success(`Downloading ${doc.name} secure archive...`)}
+                                                                        className="p-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-all cursor-pointer"
+                                                                    >
+                                                                        <Download className="w-4 h-4" />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
                                     </div>
                                 );
                             })}
