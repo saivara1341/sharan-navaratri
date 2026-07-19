@@ -7,11 +7,9 @@ import {
     CheckCircle, 
     Clock, 
     AlertCircle, 
-    LogOut, 
     ExternalLink, 
     Calendar, 
     ShieldCheck, 
-    Mail, 
     RefreshCw, 
     MessageCircle, 
     Send, 
@@ -28,6 +26,7 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
+import projectSubmissionIllustration from "@/assets/project-submission-empty-state.png";
 
 interface Submission {
     id: string;
@@ -311,11 +310,6 @@ ${contextText || "No matching guidelines found."}
         });
     }, [navigate]);
 
-    const handleLogout = async () => {
-        await supabase.auth.signOut();
-        navigate("/");
-    };
-
     if (loading) {
         return (
             <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center gap-4">
@@ -336,7 +330,7 @@ ${contextText || "No matching guidelines found."}
             <main className="container mx-auto px-6 pt-32 pb-20 max-w-5xl relative z-10 space-y-12">
                 
                 {/* Portal Header */}
-                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                <div className="rounded-3xl border border-border bg-card/90 px-6 py-7 shadow-sm md:px-8">
                     <div className="text-left">
                         <span className="text-xs uppercase font-bold text-primary tracking-[0.25em]">Siddhi Dynamics Portal</span>
                         <h1 className="text-3xl font-extrabold mt-1 text-foreground">
@@ -347,7 +341,7 @@ ${contextText || "No matching guidelines found."}
                         </p>
                     </div>
                     
-                    <div className="flex items-center gap-3">
+                    <div className="mt-5 flex items-center gap-3">
                         <button
                             onClick={handleRefresh}
                             disabled={refreshing}
@@ -356,28 +350,23 @@ ${contextText || "No matching guidelines found."}
                         >
                             <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
                         </button>
-                        <button
-                            onClick={handleLogout}
-                            className="flex items-center gap-2 border border-red-500/20 hover:border-red-500/40 hover:bg-red-500/5 text-foreground hover:text-red-400 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
-                        >
-                            <LogOut className="w-4 h-4" /> Logout
-                        </button>
                     </div>
                 </div>
 
                 {projects.length === 0 ? (
-                    <div className="text-center py-20 glass-card rounded-3xl border border-dashed border-border space-y-4">
-                        <Briefcase className="w-12 h-12 text-muted-foreground mx-auto" />
-                        <h3 className="text-xl font-medium text-foreground">No takeup projects found</h3>
-                        <p className="text-muted-foreground text-sm max-w-md mx-auto">
-                            We haven't linked a project roadmap to your email address ({clientEmail}) yet. Please contact your Siddhi Dynamics account manager to configure your dashboard.
-                        </p>
-                        <a
-                            href="mailto:contact@siddhidynamics.in"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:scale-105 transition-all shadow-lg shadow-primary/20"
+                    <div className="text-center px-6 py-10 rounded-3xl border border-primary/20 bg-card shadow-sm space-y-6">
+                        <img
+                            src={projectSubmissionIllustration}
+                            alt="Project roadmap ready for a new submission"
+                            className="mx-auto w-full max-w-xl rounded-2xl object-cover"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => navigate('/submit?type=requirement')}
+                            className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:scale-105 transition-all shadow-lg shadow-primary/20"
                         >
-                            <Mail className="w-4 h-4" /> Contact Account Manager
-                        </a>
+                            Start Submitting Form
+                        </button>
                     </div>
                 ) : (
                     <div className="space-y-8">
