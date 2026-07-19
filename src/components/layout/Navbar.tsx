@@ -119,12 +119,10 @@ export const Navbar = () => {
       >
         {/* Robust Glass Background */}
         <motion.div
-          className="absolute inset-0 transition-colors duration-300"
+          className="absolute inset-0 border-b border-border bg-background/95 dark:bg-[#2d2d2d]/95 transition-colors duration-300"
           style={{
-            backgroundColor: scrolled ? 'rgba(45, 45, 45, 0.98)' : 'rgba(45, 45, 45, 0.85)',
             backdropFilter: 'blur(45px) saturate(180%)',
-            WebkitBackdropFilter: 'blur(45px) saturate(180%)',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+            WebkitBackdropFilter: 'blur(45px) saturate(180%)'
           }}
         />
 
@@ -149,7 +147,7 @@ export const Navbar = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-lg text-white tracking-tight">
+                <span className="font-bold text-lg text-foreground tracking-tight">
                   SIDDHI
                 </span>
                 <span className="text-xs text-primary font-medium tracking-[0.2em]">
@@ -162,7 +160,7 @@ export const Navbar = () => {
               <motion.a
                 href="/about"
                 onClick={(e) => { e.preventDefault(); navigate('/about'); }}
-                className="relative px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all"
+                className="relative px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
                 whileHover={{ scale: 1.02 }}
               >
                 About
@@ -170,7 +168,7 @@ export const Navbar = () => {
               <motion.a
                 href="/blog"
                 onClick={(e) => { e.preventDefault(); navigate('/blog'); }}
-                className="relative px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all"
+                className="relative px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
                 whileHover={{ scale: 1.02 }}
               >
                 Blog
@@ -233,7 +231,8 @@ export const Navbar = () => {
                     <>
                       <motion.a
                         href="#/"
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-white/5 hover:bg-white/10 text-foreground transition-colors border border-white/10"
+                        onClick={handleHomeClick}
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-muted/60 hover:bg-muted text-foreground transition-colors border border-border"
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.2, duration: 0.5 }}
@@ -245,7 +244,7 @@ export const Navbar = () => {
                       </motion.a>
                       <motion.a
                         href={isPortal ? '#/portal?tab=contact' : '#/submit'}
-                        className="flex items-center px-4 py-2.5 rounded-xl font-semibold text-sm bg-white/5 hover:bg-white/10 text-foreground transition-colors border border-white/10 ml-6"
+                        className="flex items-center px-4 py-2.5 rounded-xl font-semibold text-sm bg-muted/60 hover:bg-muted text-foreground transition-colors border border-border ml-2"
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.25, duration: 0.5 }}
@@ -281,18 +280,18 @@ export const Navbar = () => {
               >
                 <div className="flex flex-col gap-1.5">
                   <motion.span
-                    className="w-6 h-0.5 bg-white rounded-full"
+                    className="w-6 h-0.5 bg-foreground rounded-full"
                     animate={{
                       rotate: mobileMenuOpen ? 45 : 0,
                       y: mobileMenuOpen ? 8 : 0
                     }}
                   />
                   <motion.span
-                    className="w-6 h-0.5 bg-white rounded-full"
+                    className="w-6 h-0.5 bg-foreground rounded-full"
                     animate={{ opacity: mobileMenuOpen ? 0 : 1 }}
                   />
                   <motion.span
-                    className="w-6 h-0.5 bg-white rounded-full"
+                    className="w-6 h-0.5 bg-foreground rounded-full"
                     animate={{
                       rotate: mobileMenuOpen ? -45 : 0,
                       y: mobileMenuOpen ? -8 : 0
@@ -311,10 +310,10 @@ export const Navbar = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[105] md:hidden bg-[#2d2d2d]"
+            className="fixed inset-0 z-[105] md:hidden bg-background"
           >
             <div
-              className="absolute inset-0 bg-[#2d2d2d] backdrop-blur-3xl"
+              className="absolute inset-0 bg-background/95 backdrop-blur-3xl"
               onClick={() => setMobileMenuOpen(false)}
             />
               <motion.nav
@@ -330,7 +329,7 @@ export const Navbar = () => {
                 <motion.a
                   href="#/"
                   onClick={handleHomeClick}
-                  className="text-3xl font-display font-bold text-emerald-400 hover:text-white transition-colors flex items-center gap-3 relative z-[120] cursor-pointer"
+                  className="text-3xl font-display font-bold text-primary hover:text-foreground transition-colors flex items-center gap-3 relative z-[120] cursor-pointer"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.05 }}
@@ -341,7 +340,7 @@ export const Navbar = () => {
                 <motion.a
                   href="/about"
                   onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/about'); }}
-                  className="text-2xl font-bold text-emerald-400 hover:text-white transition-colors relative z-[120]"
+                  className="text-2xl font-bold text-primary hover:text-foreground transition-colors relative z-[120]"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.08 }}
@@ -351,7 +350,7 @@ export const Navbar = () => {
                 <motion.a
                   href="/blog"
                   onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/blog'); }}
-                  className="text-2xl font-bold text-emerald-400 hover:text-white transition-colors relative z-[120]"
+                  className="text-2xl font-bold text-primary hover:text-foreground transition-colors relative z-[120]"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.11 }}
@@ -360,7 +359,7 @@ export const Navbar = () => {
                 </motion.a>
               {/* Close Button */}
               <motion.button
-                className="absolute top-8 right-6 w-12 h-12 flex items-center justify-center rounded-2xl glass-card border border-white/10 text-white hover:text-primary hover:border-primary/30 transition-all z-[120]"
+                className="absolute top-8 right-6 w-12 h-12 flex items-center justify-center rounded-2xl bg-card border border-border text-foreground hover:text-primary hover:border-primary/30 transition-all z-[120]"
                 onClick={() => setMobileMenuOpen(false)}
                 initial={{ opacity: 0, rotate: -90 }}
                 animate={{ opacity: 1, rotate: 0 }}
@@ -422,13 +421,23 @@ export const Navbar = () => {
                       <motion.a
                         href="#/"
                         onClick={handleHomeClick}
-                        className="w-full text-center px-10 py-4 rounded-2xl font-bold text-lg bg-white/5 border border-white/10 text-white hover:text-primary transition-all flex items-center justify-center gap-2"
+                        className="w-full text-center px-10 py-4 rounded-2xl font-bold text-lg bg-muted/60 border border-border text-foreground hover:text-primary transition-all flex items-center justify-center gap-2"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 * navLinks.length + 0.05 }}
                       >
                         <Home className="w-5 h-5" />
                         Home
+                      </motion.a>
+                      <motion.a
+                        href="#/portal?tab=contact"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="w-full text-center px-10 py-4 rounded-2xl font-bold text-lg bg-muted/60 border border-border text-foreground hover:text-primary transition-all flex items-center justify-center"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 * navLinks.length + 0.08 }}
+                      >
+                        Contact Us
                       </motion.a>
                     </>
                   )}

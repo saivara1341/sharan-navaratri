@@ -499,7 +499,7 @@ export default function PortalGateway() {
                       {authMode === 'login' ? "Don't have an account? " : "Already have an account? "}
                       <button
                         onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')}
-                        className="text-primary font-bold hover:underline cursor-pointer"
+                        className="text-red-600 dark:text-red-400 font-bold hover:text-red-700 dark:hover:text-red-300 hover:underline cursor-pointer"
                       >
                         {authMode === 'login' ? 'Sign Up' : 'Sign In'}
                       </button>
