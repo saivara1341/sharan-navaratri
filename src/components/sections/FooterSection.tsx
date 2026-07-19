@@ -235,6 +235,9 @@ export const FooterSection = () => {
           >
             <span className="sr-only">Siddhi Dynamics LLP office locations: </span>
             <span className="mb-1 block font-semibold text-slate-400">Siddhi Dynamics LLP</span>
+            <span className="mx-auto mb-3 block max-w-2xl text-slate-400">
+              A 5-star rated deep-tech innovation firm specializing in production-grade AI solutions, full-stack software development, and agentic workflows.
+            </span>
             <span className="block">
               <strong className="font-semibold text-slate-400">Nizamabad</strong>: 3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001
             </span>

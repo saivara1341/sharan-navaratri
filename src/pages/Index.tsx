@@ -129,8 +129,8 @@ const Index = () => {
         };
       default:
         return {
-          title: "Siddhi | Deep-Tech AI Innovation & Agentic Systems",
-          description: "Siddhi (Siddhi Dynamics) is a premier deep-tech firm in India. We transform complex challenges into scalable AI solutions. Experts in Agentic Intelligence, GenAI, and Professional Resource Hubs."
+          title: "Siddhi Dynamics LLP | Deep-Tech AI & Software Development",
+          description: "Siddhi Dynamics LLP is a 5-star rated deep-tech innovation firm serving Hyderabad and Nizamabad with production-grade AI solutions, full-stack software development, and agentic workflows."
         };
     }
   };
@@ -166,29 +166,57 @@ const Index = () => {
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
-          "name": "Siddhi Dynamics",
+          "name": "Siddhi Dynamics LLP",
           "alternateName": ["Siddhi", "Siddhi AI", "Siddhi Dynamics LLP"],
           "url": "https://siddhidynamics.in/",
           "logo": "https://siddhidynamics.in/favicon.jpg",
-          "description": "Siddhi Dynamics LLP is a deep-tech AI innovation firm based in Hyderabad, India, incubated at HIVE, Anurag University. We specialize in agentic AI, business automation, SaaS, and ERP for Indian businesses.",
+          "description": "Siddhi Dynamics LLP is a 5-star rated deep-tech innovation firm serving Hyderabad and Nizamabad with production-grade AI solutions, full-stack software development, and agentic workflows.",
           "foundingDate": "2024",
           "brand": {
             "@type": "Brand",
             "name": "Siddhi"
           },
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": "Hyderabad",
-            "addressRegion": "Telangana",
-            "addressCountry": "IN"
-          },
+          "address": [
+            {
+              "@type": "PostalAddress",
+              "streetAddress": "3-5-260/2, Shivajinagar Road, Kotagally",
+              "addressLocality": "Nizamabad",
+              "addressRegion": "Telangana",
+              "postalCode": "503001",
+              "addressCountry": "IN"
+            },
+            {
+              "@type": "PostalAddress",
+              "streetAddress": "HIVE, Anurag University",
+              "addressLocality": "Hyderabad",
+              "addressRegion": "Telangana",
+              "postalCode": "500049",
+              "addressCountry": "IN"
+            }
+          ],
+          "areaServed": [
+            { "@type": "City", "name": "Nizamabad" },
+            { "@type": "City", "name": "Hyderabad" },
+            { "@type": "State", "name": "Telangana" },
+            { "@type": "Country", "name": "India" }
+          ],
+          "knowsAbout": [
+            "Agentic AI",
+            "Artificial Intelligence",
+            "Business Process Automation",
+            "Full-Stack Software Development",
+            "SaaS Platform Development",
+            "ERP Solutions",
+            "Cloud-Integrated Applications"
+          ],
           "memberOf": {
             "@type": "Organization",
             "name": "HIVE — Anurag University Innovation and Incubation Cell"
           },
           "sameAs": [
             "https://www.linkedin.com/company/siddhi-dynamics-llp",
-            "https://www.instagram.com/siddhidynamics/"
+            "https://www.instagram.com/siddhidynamics/",
+            "https://wa.me/916303602743"
           ],
           "contactPoint": {
             "@type": "ContactPoint",
@@ -222,6 +250,12 @@ const Index = () => {
           "image": "https://siddhidynamics.in/favicon.jpg",
           "telephone": "+91-6303602743",
           "priceRange": "$$",
+          "areaServed": [
+            { "@type": "City", "name": "Nizamabad" },
+            { "@type": "City", "name": "Hyderabad" },
+            { "@type": "State", "name": "Telangana" },
+            { "@type": "Country", "name": "India" }
+          ],
           "address": {
             "@type": "PostalAddress",
             "streetAddress": "3-5-260/2, Shivajinagar Road, Kotagally",
@@ -256,7 +290,8 @@ const Index = () => {
           },
           "sameAs": [
             "https://www.linkedin.com/company/siddhi-dynamics-llp",
-            "https://www.instagram.com/siddhidynamics/"
+            "https://www.instagram.com/siddhidynamics/",
+            "https://wa.me/916303602743"
           ]
         })}
       </script>
