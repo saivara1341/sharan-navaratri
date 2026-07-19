@@ -387,72 +387,13 @@ export default function PortalGateway() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="space-y-12"
+              className="w-full max-w-md mx-auto"
             >
-              {/* Intro Title */}
-              <div className="text-center max-w-2xl mx-auto space-y-3">
-                <span className="text-xs uppercase font-bold text-primary tracking-[0.25em]">Siddhi Dynamics Gateways</span>
-                <h1 className="text-4xl font-extrabold text-white gradient-text glow-text">Portal Gateway Hub</h1>
-                <p className="text-slate-400 text-sm leading-relaxed">
-                  Welcome to our unified access hub. Please register or log in using your authorized email coordinates to securely enter your dashboard.
-                </p>
-              </div>
-
-              {/* Main Auth & Grid Layout */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-                
-                {/* Left: Portals summaries */}
-                <div className="lg:col-span-7 flex flex-col justify-between gap-6 text-left">
-                  {/* Startup */}
-                  <div className="glass-card p-6 rounded-2xl border border-white/10 flex gap-5 hover:border-primary/20 transition-all">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-                      <Briefcase className="w-6 h-6 text-primary" />
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="text-lg font-bold text-white">Startup / Client Workspace</h3>
-                      <p className="text-xs text-slate-400 leading-relaxed">
-                        Authorized clients can track real-time delivery roadmaps, inspect milestone timelines, launch deployed prototypes, and interact with our AI support coordinator.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Investor */}
-                  <div className="glass-card p-6 rounded-2xl border border-white/10 flex gap-5 hover:border-accent/20 transition-all">
-                    <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center shrink-0 border border-accent/20">
-                      <TrendingUp className="w-6 h-6 text-accent" />
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="text-lg font-bold text-white">Venture / Investor Dashboard</h3>
-                      <p className="text-xs text-slate-400 leading-relaxed">
-                        Accredited supporters can audit our incubation catalog, evaluate traction statistics, analyze target projections, and submit meeting requests directly.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Employee */}
-                  <div className="glass-card p-6 rounded-2xl border border-white/10 flex gap-5 hover:border-blue-500/20 transition-all">
-                    <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 border border-blue-500/20">
-                      <Users className="w-6 h-6 text-blue-400" />
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="text-lg font-bold text-white">Employee Workspace Hub</h3>
-                      <p className="text-xs text-slate-400 leading-relaxed">
-                        Internal builders and analysts can manage delivery backlogs, check backlog tickets, update developmental percentages, and reply to client support lines.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right: Consolidated Login form */}
-                <div className="lg:col-span-5">
-                  <div className="glass-card p-6 md:p-8 rounded-3xl border border-white/10 flex flex-col justify-center h-full relative">
+                  <div className="glass-card bg-card/80 p-6 md:p-8 rounded-3xl border border-border shadow-xl flex flex-col justify-center relative">
                     <div className="text-center mb-6">
-                      <h3 className="text-xl font-bold text-white">
-                        {authMode === 'login' ? 'Secure Gateway Login' : 'Register Member'}
-                      </h3>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {authMode === 'login' ? 'Access your dashboard parameters.' : 'Create credentials to register.'}
-                      </p>
+                      <h1 className="text-2xl font-bold text-foreground">
+                        {authMode === 'login' ? 'Sign In' : 'Sign Up'}
+                      </h1>
                     </div>
 
                     <form onSubmit={handleEmailAuth} className="space-y-4 text-left">
@@ -464,7 +405,7 @@ export default function PortalGateway() {
                             exit={{ opacity: 0, height: 0 }}
                             className="space-y-1"
                           >
-                            <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Full Name</label>
+                            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">Full Name</label>
                             <div className="relative">
                               <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                               <input
@@ -473,7 +414,7 @@ export default function PortalGateway() {
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
                                 placeholder="Your Full Name"
-                                className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-xs focus:outline-none focus:border-primary text-white"
+                                className="w-full bg-background border border-input rounded-xl py-2.5 pl-10 pr-4 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
                               />
                             </div>
                           </motion.div>
@@ -481,7 +422,7 @@ export default function PortalGateway() {
                       </AnimatePresence>
 
                       <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 ml-1">Email Address</label>
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">Email Address</label>
                         <div className="relative">
                           <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                           <input
@@ -490,14 +431,14 @@ export default function PortalGateway() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="your@email.com"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-xs focus:outline-none focus:border-primary text-white"
+                            className="w-full bg-background border border-input rounded-xl py-2.5 pl-10 pr-4 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
                           />
                         </div>
                       </div>
 
                       <div className="space-y-1">
                         <div className="flex justify-between items-center px-1">
-                          <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Password</label>
+                          <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Password</label>
                         </div>
                         <div className="relative">
                           <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -507,12 +448,12 @@ export default function PortalGateway() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="••••••••"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-12 text-xs focus:outline-none focus:border-primary text-white"
+                            className="w-full bg-background border border-input rounded-xl py-2.5 pl-10 pr-12 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
+                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                           >
                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
@@ -527,22 +468,22 @@ export default function PortalGateway() {
                         {authLoading ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
-                          authMode === 'login' ? 'Authorize Secure Entrance' : 'Register New Account'
+                          authMode === 'login' ? 'Sign In' : 'Sign Up'
                         )}
                       </button>
                     </form>
 
                     {/* Google Auth Divider */}
                     <div className="relative my-6 text-center">
-                      <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/10"></div></div>
-                      <span className="relative bg-[#0d0e12] px-3 text-[10px] text-muted-foreground uppercase font-bold tracking-wider">or continue with</span>
+                      <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border"></div></div>
+                      <span className="relative bg-card px-3 text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Or</span>
                     </div>
 
                     <button
                       type="button"
                       onClick={handleGoogleLogin}
                       disabled={authLoading}
-                      className="w-full py-3 border border-white/10 bg-white/2 hover:bg-white/5 text-slate-200 font-bold text-xs rounded-xl hover:scale-[1.01] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
+                      className="w-full py-3 border border-border bg-background hover:bg-muted text-foreground font-bold text-xs rounded-xl hover:scale-[1.01] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
                     >
                       <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                         <path fill="#EA4335" d="M12 5.04c1.74 0 3.3.6 4.53 1.77l3.39-3.39C17.85 1.5 15.17 0 12 0 7.31 0 3.25 2.69 1.25 6.61l3.92 3.04c.93-2.79 3.52-4.61 6.83-4.61z" />
@@ -555,18 +496,15 @@ export default function PortalGateway() {
 
                     {/* Mode Toggle link */}
                     <p className="text-center text-xs text-muted-foreground mt-6">
-                      {authMode === 'login' ? "Need to join our ecosystem? " : "Already registered? "}
+                      {authMode === 'login' ? "Don't have an account? " : "Already have an account? "}
                       <button
                         onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')}
                         className="text-primary font-bold hover:underline cursor-pointer"
                       >
-                        {authMode === 'login' ? 'Create Account' : 'Log In'}
+                        {authMode === 'login' ? 'Sign Up' : 'Sign In'}
                       </button>
                     </p>
                   </div>
-                </div>
-
-              </div>
             </motion.div>
           )}
 
