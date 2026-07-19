@@ -286,11 +286,11 @@ export default function PortalGateway() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="w-full max-w-4xl mx-auto glass-card p-8 border border-white/10 rounded-3xl relative text-center space-y-8"
+              className="w-full max-w-4xl mx-auto glass-card bg-card/80 p-8 border border-border shadow-xl rounded-3xl relative text-center space-y-8"
             >
               <div className="space-y-2">
                 <div className="p-2.5 bg-primary/10 rounded-xl w-fit mx-auto border border-primary/20"><Sparkles className="w-6 h-6 text-primary animate-pulse" /></div>
-                <h1 className="text-3xl font-extrabold text-white">Welcome to Siddhi Dynamics</h1>
+                <h1 className="text-3xl font-extrabold text-foreground">Welcome to Siddhi Dynamics</h1>
                 <p className="text-muted-foreground text-sm max-w-md mx-auto">
                   Please select how you'll be using our platform to set up your dashboard.
                 </p>
@@ -303,14 +303,14 @@ export default function PortalGateway() {
                   whileHover={{ scale: 1.02, border: "1px solid rgba(251, 146, 60, 0.3)" }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleRoleSelect('client')}
-                  className="p-6 rounded-2xl border border-white/10 bg-white/2 hover:bg-white/5 flex flex-col justify-between h-64 text-left transition-all group cursor-pointer"
+                  className="p-6 rounded-2xl border border-border bg-background/70 hover:bg-muted flex flex-col justify-between h-64 text-left transition-all group cursor-pointer shadow-sm"
                 >
                   <div className="space-y-4">
                     <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-105 transition-transform">
                       <Briefcase className="w-6 h-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors">Startup / Client</h3>
+                      <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">Startup / Client</h3>
                       <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                         Manage your projects, custom specifications, milestone payments, and track active developmental roadmaps.
                       </p>
@@ -326,14 +326,14 @@ export default function PortalGateway() {
                   whileHover={{ scale: 1.02, border: "1px solid rgba(234, 179, 8, 0.3)" }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleRoleSelect('investor')}
-                  className="p-6 rounded-2xl border border-white/10 bg-white/2 hover:bg-white/5 flex flex-col justify-between h-64 text-left transition-all group cursor-pointer"
+                  className="p-6 rounded-2xl border border-border bg-background/70 hover:bg-muted flex flex-col justify-between h-64 text-left transition-all group cursor-pointer shadow-sm"
                 >
                   <div className="space-y-4">
                     <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center border border-accent/20 group-hover:scale-105 transition-transform">
                       <TrendingUp className="w-6 h-6 text-accent" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-white group-hover:text-accent transition-colors">Venture / Investor</h3>
+                      <h3 className="text-lg font-bold text-foreground group-hover:text-accent transition-colors">Venture / Investor</h3>
                       <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                         Discover ecosystem startup projects, view portfolio metrics, run due diligence audits, and contact founders.
                       </p>
@@ -349,27 +349,27 @@ export default function PortalGateway() {
                   whileHover={{ scale: 1.02, border: "1px solid rgba(59, 130, 246, 0.3)" }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleRoleSelect('employee')}
-                  className="p-6 rounded-2xl border border-white/10 bg-white/2 hover:bg-white/5 flex flex-col justify-between h-64 text-left transition-all group cursor-pointer"
+                  className="p-6 rounded-2xl border border-border bg-background/70 hover:bg-muted flex flex-col justify-between h-64 text-left transition-all group cursor-pointer shadow-sm"
                 >
                   <div className="space-y-4">
                     <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 group-hover:scale-105 transition-transform">
-                      <Users className="w-6 h-6 text-blue-400" />
+                      <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors">Employee / Builder</h3>
+                      <h3 className="text-lg font-bold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Employee / Builder</h3>
                       <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                         Access internal system task lists, manage delivery schedules, and reply to escalated client support tickets.
                       </p>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold text-blue-400 flex items-center gap-1 mt-4 group-hover:translate-x-1 transition-transform">
+                  <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1 mt-4 group-hover:translate-x-1 transition-transform">
                     Claim Path <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 </motion.button>
               </div>
 
               {/* Secondary actions */}
-              <div className="pt-6 border-t border-white/5">
+              <div className="pt-6 border-t border-border">
                 <button
                   onClick={handleLogout}
                   className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-red-400 transition-colors cursor-pointer"
