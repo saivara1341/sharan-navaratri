@@ -2,7 +2,7 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import siddhiLogo from '@/assets/logo.png';
+import siddhiLogo from '@/assets/siddhi-logo.png';
 
 const linkVariants = {
   hidden: { opacity: 0, y: 10 },
