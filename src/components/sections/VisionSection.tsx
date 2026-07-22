@@ -199,9 +199,17 @@ export const VisionSection = () => {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const containerRef = useRef<HTMLDivElement>(null);
+  const desktopContainerRef = useRef<HTMLDivElement>(null);
   const [activeFeatureIndex, setActiveFeatureIndex] = useState(0);
+  const [activeDesktopIndex, setActiveDesktopIndex] = useState(0);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
+    offset: ['start start', 'end end'],
+  });
+
+  const { scrollYProgress: desktopScrollYProgress } = useScroll({
+    target: desktopContainerRef,
     offset: ['start start', 'end end'],
   });
 
@@ -246,6 +254,13 @@ export const VisionSection = () => {
     setActiveFeatureIndex(nextIndex);
   });
 
+  useMotionValueEvent(desktopScrollYProgress, 'change', (latest) => {
+    const releaseBuffer = 0.08;
+    const cardProgress = Math.min(1, latest / (1 - releaseBuffer));
+    const nextIndex = Math.min(features.length - 1, Math.max(0, Math.floor(cardProgress * features.length)));
+    setActiveDesktopIndex(nextIndex);
+  });
+
 
 
   return (
@@ -287,7 +302,7 @@ export const VisionSection = () => {
           </p>
         </motion.div>
 
-        {/* Mobile-only sticky scroll stack for AI capability cards */}
+        {/* Mobile sticky scroll stack for AI capability cards */}
         <motion.div
           ref={containerRef} 
           className="relative mt-8 h-[300svh] md:hidden"
@@ -307,20 +322,24 @@ export const VisionSection = () => {
           </div>
         </motion.div>
 
-        {/* Desktop/tablet cards scroll normally */}
+        {/* Desktop sticky stack scroll animation */}
         <motion.div
-          className="mt-20 hidden grid-cols-2 gap-8 md:grid"
+          ref={desktopContainerRef}
+          className="relative mt-16 hidden md:block h-[340vh]"
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          {features.map((feature, index) => (
-            <motion.div key={feature.title} variants={cardVariants} className="h-full">
-              <div className="h-full rounded-2xl border border-border/50 bg-card shadow-xl">
-                <FeatureCard feature={feature} index={index} />
-              </div>
-            </motion.div>
-          ))}
+          <div className="sticky top-32 h-[520px] flex items-center justify-center max-w-4xl mx-auto">
+            {features.map((feature, index) => (
+              <PinnedFeatureCard
+                key={feature.title}
+                feature={feature}
+                index={index}
+                activeIndex={activeDesktopIndex}
+              />
+            ))}
+          </div>
         </motion.div>
 
         {/* Mission statement */}

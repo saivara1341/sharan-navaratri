@@ -385,7 +385,7 @@ const AdminPortal = () => {
                             className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
                                 viewMode === 'submissions'
                                     ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                                    : 'bg-white/5 border border-white/10 hover:bg-white/10 text-slate-300'
+                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
                             }`}
                         >
                             Submissions
@@ -395,7 +395,7 @@ const AdminPortal = () => {
                             className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
                                 viewMode === 'knowledge'
                                     ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                                    : 'bg-white/5 border border-white/10 hover:bg-white/10 text-slate-300'
+                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
                             }`}
                         >
                             Knowledge Hub
@@ -403,7 +403,7 @@ const AdminPortal = () => {
                         {viewMode === 'submissions' && (
                             <button
                                 onClick={fetchSubmissions}
-                                className="p-3 rounded-xl glass-card hover:bg-white/5 transition-colors group"
+                                className="p-3 rounded-xl glass-card hover:bg-muted/50 transition-colors group"
                                 title="Refresh Data"
                             >
                                 <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
@@ -448,7 +448,7 @@ const AdminPortal = () => {
                                 <p className="text-sm text-muted-foreground mb-1 uppercase tracking-wider">{stat.label}</p>
                                 <h3 className="text-3xl font-bold">{stat.value}</h3>
                             </div>
-                            <div className="p-3 rounded-xl bg-white/5">
+                            <div className="p-3 rounded-xl bg-muted">
                                 {stat.icon}
                             </div>
                         </motion.div>
@@ -464,7 +464,7 @@ const AdminPortal = () => {
                             placeholder="Search by name, email or message..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                            className="w-full bg-card border border-border text-foreground rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                         />
                     </div>
 
@@ -473,10 +473,10 @@ const AdminPortal = () => {
                             <select
                                 value={sortOrder}
                                 onChange={(e) => setSortOrder(e.target.value as 'newest' | 'oldest')}
-                                className="w-full appearance-none bg-white/5 border border-white/10 text-foreground text-sm rounded-full px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all cursor-pointer hover:bg-white/10"
+                                className="w-full appearance-none bg-card border border-border text-foreground text-sm rounded-full px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all cursor-pointer hover:bg-muted"
                             >
-                                <option value="newest" className="bg-[#111] text-foreground">Sort: Newest</option>
-                                <option value="oldest" className="bg-[#111] text-foreground">Sort: Oldest</option>
+                                <option value="newest" className="bg-popover text-popover-foreground">Sort: Newest</option>
+                                <option value="oldest" className="bg-popover text-popover-foreground">Sort: Oldest</option>
                             </select>
                             <ArrowUpDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none group-hover:text-foreground transition-colors" />
                         </div>
@@ -492,7 +492,7 @@ const AdminPortal = () => {
                                 onClick={() => setFilter(t.id)}
                                 className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${filter === t.id
                                     ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                                    : "bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
+                                    : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground border border-border"
                                     }`}
                             >
                                 {t.icon}
@@ -509,7 +509,7 @@ const AdminPortal = () => {
                         className="mb-6 p-6 glass-card border border-primary/20 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4 text-left"
                     >
                         <div>
-                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                            <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
                                 <ClipboardList className="w-5 h-5 text-primary" />
                                 Managed Client Projects
                             </h2>
@@ -626,14 +626,14 @@ const AdminPortal = () => {
                                                     </div>
                                                 )}
 
-                                                <div className="bg-white/5 rounded-2xl p-6 border border-white/5 group-hover:bg-white/[0.07] transition-colors relative text-left">
+                                                <div className="bg-muted/40 rounded-2xl p-6 border border-border group-hover:bg-muted/60 transition-colors relative text-left">
                                                     {(() => {
                                                         const meta = parseProjectMetadata(sub.bounty_reward);
                                                         const isJson = sub.bounty_reward && sub.bounty_reward.trim().startsWith('{');
                                                         if (isJson) {
                                                             return (
                                                                 <div className="space-y-4">
-                                                                    <div className="flex flex-wrap gap-4 text-xs font-semibold text-slate-300 mb-2 border-b border-white/5 pb-2">
+                                                                    <div className="flex flex-wrap gap-4 text-xs font-semibold text-muted-foreground mb-2 border-b border-border pb-2">
                                                                         {meta.deadline && (
                                                                             <span className="bg-orange-500/10 text-orange-400 border border-orange-500/20 px-2.5 py-1 rounded-lg">
                                                                                 Deadline: {meta.deadline}
@@ -683,14 +683,14 @@ const AdminPortal = () => {
                                                 </button>
                                                 <button
                                                     onClick={() => openEdit(sub)}
-                                                    className="px-5 py-2.5 rounded-xl bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground font-semibold flex items-center gap-2 transition-all text-sm border border-white/10"
+                                                    className="px-5 py-2.5 rounded-xl bg-muted text-foreground hover:bg-muted/80 font-semibold flex items-center gap-2 transition-all text-sm border border-border"
                                                 >
                                                     <Edit3 className="w-4 h-4" />
                                                     Edit
                                                 </button>
                                                 <button
                                                     onClick={() => window.open(`mailto:${sub.email}?subject=Regarding your ${getInquiryLabel(sub.inquiry_type)} on Siddhi Dynamics`)}
-                                                    className="px-5 py-2.5 rounded-xl bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground font-semibold flex items-center gap-2 transition-all text-sm border border-white/10"
+                                                    className="px-5 py-2.5 rounded-xl bg-muted text-foreground hover:bg-muted/80 font-semibold flex items-center gap-2 transition-all text-sm border border-border"
                                                 >
                                                     <Mail className="w-4 h-4" />
                                                     Gmail
@@ -942,10 +942,10 @@ const AdminPortal = () => {
                             exit={{ scale: 0.9, opacity: 0, y: 30 }}
                             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                             onClick={e => e.stopPropagation()}
-                            className="relative w-full max-w-lg h-[85vh] bg-[#0a0a0f] border border-white/10 rounded-3xl flex flex-col overflow-hidden shadow-2xl shadow-primary/10"
+                            className="relative w-full max-w-lg h-[85vh] bg-popover border border-border rounded-3xl flex flex-col overflow-hidden shadow-2xl shadow-primary/10"
                         >
                             {/* Edit Header */}
-                            <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5">
+                            <div className="flex items-center justify-between p-6 border-b border-border bg-muted/40">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                                         <Edit3 className="w-5 h-5 text-primary" />
@@ -955,8 +955,8 @@ const AdminPortal = () => {
                                         <p className="text-xs text-muted-foreground">{editName} ({editEmail})</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setEditOpen(null)} className="p-2 rounded-xl hover:bg-white/10 transition-colors">
-                                    <X className="w-5 h-5" />
+                                <button onClick={() => setEditOpen(null)} className="p-2 rounded-xl hover:bg-muted transition-colors">
+                                    <X className="w-5 h-5 text-foreground" />
                                 </button>
                             </div>
 
@@ -964,33 +964,33 @@ const AdminPortal = () => {
                             <div className="flex-1 overflow-y-auto p-6 space-y-6 text-left">
                                 {/* Basic Info */}
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-white/5 pb-2">Client Details</h4>
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-border pb-2">Client Details</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-slate-400">Client Name</label>
+                                            <label className="text-[10px] uppercase font-bold text-muted-foreground">Client Name</label>
                                             <input
                                                 type="text"
                                                 value={editName}
                                                 onChange={e => setEditName(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                                className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-slate-400">Client Email</label>
+                                            <label className="text-[10px] uppercase font-bold text-muted-foreground">Client Email</label>
                                             <input
                                                 type="email"
                                                 value={editEmail}
                                                 onChange={e => setEditEmail(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                                className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                             />
                                         </div>
                                         <div className="space-y-1 md:col-span-2">
-                                            <label className="text-[10px] uppercase font-bold text-slate-400">Organization / Company Name</label>
+                                            <label className="text-[10px] uppercase font-bold text-muted-foreground">Organization / Company Name</label>
                                             <input
                                                 type="text"
                                                 value={editOrg}
                                                 onChange={e => setEditOrg(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                                className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                             />
                                         </div>
                                     </div>
@@ -998,46 +998,46 @@ const AdminPortal = () => {
 
                                 {/* Project Parameters */}
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-white/5 pb-2">Project & SLA Specifications</h4>
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-border pb-2">Project & SLA Specifications</h4>
                                     <div className="space-y-3">
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-slate-400">Project Requirements / Description</label>
+                                            <label className="text-[10px] uppercase font-bold text-muted-foreground">Project Requirements / Description</label>
                                             <textarea
                                                 rows={3}
                                                 value={editMsg}
                                                 onChange={e => setEditMsg(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                                className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                             />
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-1">
-                                                <label className="text-[10px] uppercase font-bold text-slate-400">Project Deadline Date</label>
+                                                <label className="text-[10px] uppercase font-bold text-muted-foreground">Project Deadline Date</label>
                                                 <input
                                                     type="date"
                                                     value={editDeadline}
                                                     onChange={e => setEditDeadline(e.target.value)}
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary text-slate-200"
+                                                    className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                                 />
                                             </div>
                                             <div className="space-y-1">
-                                                <label className="text-[10px] uppercase font-bold text-slate-400">Live Website / SaaS App URL</label>
+                                                <label className="text-[10px] uppercase font-bold text-muted-foreground">Live Website / SaaS App URL</label>
                                                 <input
                                                     type="url"
                                                     placeholder="https://client-app.siddhidynamics.in"
                                                     value={editUrl}
                                                     onChange={e => setEditUrl(e.target.value)}
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                                    className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                                 />
                                             </div>
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-slate-400">Contractual Agreement & SLA Summary</label>
+                                            <label className="text-[10px] uppercase font-bold text-muted-foreground">Contractual Agreement & SLA Summary</label>
                                             <input
                                                 type="text"
                                                 placeholder="e.g., SLA signed v1.1 - 99.9% availability, 12 months maintenance support"
                                                 value={editAgreement}
                                                 onChange={e => setEditAgreement(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                                className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                             />
                                         </div>
                                     </div>
@@ -1045,9 +1045,9 @@ const AdminPortal = () => {
 
                                 {/* Progress & Status */}
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-white/5 pb-2">Status & Milestones</h4>
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-border pb-2">Status & Milestones</h4>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] uppercase font-bold text-slate-400">Current Stage</label>
+                                        <label className="text-[10px] uppercase font-bold text-muted-foreground">Current Stage</label>
                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                                             {['Analyzing', 'Verifying', 'In Progress', 'Validated', 'Completed'].map((s) => (
                                                 <button
@@ -1055,7 +1055,7 @@ const AdminPortal = () => {
                                                     onClick={() => setEditStatus(s)}
                                                     className={`px-3 py-2 rounded-xl text-xs font-medium transition-all ${editStatus === s
                                                         ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                                                        : "bg-white/5 text-muted-foreground hover:bg-white/10"
+                                                        : "bg-muted text-muted-foreground hover:bg-muted/80 border border-border"
                                                         }`}
                                                 >
                                                     {s}
@@ -1066,7 +1066,7 @@ const AdminPortal = () => {
 
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center">
-                                            <label className="text-[10px] uppercase font-bold text-slate-400">Roadmap Phase</label>
+                                            <label className="text-[10px] uppercase font-bold text-muted-foreground">Roadmap Phase</label>
                                             <span className="text-sm font-bold text-primary">Phase {Math.ceil(editProgress / 20) || 1} ({editProgress}%)</span>
                                         </div>
                                         <div className="grid grid-cols-5 gap-2">
@@ -1076,11 +1076,11 @@ const AdminPortal = () => {
                                                     onClick={() => setEditProgress(p * 20)}
                                                     className={`py-2 rounded-xl border transition-all flex flex-col items-center justify-center gap-0.5 ${Math.ceil(editProgress / 20) === p
                                                             ? "bg-primary/10 border-primary text-primary"
-                                                            : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10"
+                                                            : "bg-muted border-border text-muted-foreground hover:bg-muted/80"
                                                         }`}
                                                 >
                                                     <span className="text-[9px] font-bold">P{p}</span>
-                                                    <div className={`w-1 h-1 rounded-full ${Math.ceil(editProgress / 20) === p ? 'bg-primary' : 'bg-white/20'}`} />
+                                                    <div className={`w-1 h-1 rounded-full ${Math.ceil(editProgress / 20) === p ? 'bg-primary' : 'bg-muted-foreground/30'}`} />
                                                 </button>
                                             ))}
                                         </div>
@@ -1089,10 +1089,10 @@ const AdminPortal = () => {
                             </div>
 
                             {/* Edit Actions */}
-                            <div className="p-6 border-t border-white/10 bg-white/5 flex gap-3">
+                            <div className="p-6 border-t border-border bg-muted/30 flex gap-3">
                                 <button
                                     onClick={() => setEditOpen(null)}
-                                    className="flex-1 py-3 rounded-xl bg-white/5 text-foreground font-semibold hover:bg-white/10 transition-colors"
+                                    className="flex-1 py-3 rounded-xl bg-muted text-foreground font-semibold hover:bg-muted/80 transition-colors border border-border"
                                 >
                                     Cancel
                                 </button>
@@ -1126,10 +1126,10 @@ const AdminPortal = () => {
                             exit={{ scale: 0.9, opacity: 0, y: 30 }}
                             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                             onClick={e => e.stopPropagation()}
-                            className="relative w-full max-w-lg h-[85vh] bg-[#0a0a0f] border border-white/10 rounded-3xl flex flex-col overflow-hidden shadow-2xl shadow-primary/10"
+                            className="relative w-full max-w-lg h-[85vh] bg-popover border border-border rounded-3xl flex flex-col overflow-hidden shadow-2xl shadow-primary/10"
                         >
                             {/* Create Header */}
-                            <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5">
+                            <div className="flex items-center justify-between p-6 border-b border-border bg-muted/40">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                                         <ClipboardList className="w-5 h-5 text-primary" />
@@ -1139,8 +1139,8 @@ const AdminPortal = () => {
                                         <p className="text-xs text-muted-foreground">Add project parameters, SLA agreements & launch details.</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setCreateOpen(false)} className="p-2 rounded-xl hover:bg-white/10 transition-colors">
-                                    <X className="w-5 h-5" />
+                                <button onClick={() => setCreateOpen(false)} className="p-2 rounded-xl hover:bg-muted transition-colors">
+                                    <X className="w-5 h-5 text-foreground" />
                                 </button>
                             </div>
 
@@ -1148,38 +1148,38 @@ const AdminPortal = () => {
                             <div className="flex-1 overflow-y-auto p-6 space-y-6 text-left">
                                 {/* Basic Info */}
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-white/5 pb-2">Client Details</h4>
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-border pb-2">Client Details</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-slate-400">Client Name *</label>
+                                            <label className="text-[10px] uppercase font-bold text-muted-foreground">Client Name *</label>
                                             <input
                                                 type="text"
                                                 required
                                                 placeholder="e.g. Client Name"
                                                 value={createName}
                                                 onChange={e => setCreateName(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                                className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-slate-400">Client Email *</label>
+                                            <label className="text-[10px] uppercase font-bold text-muted-foreground">Client Email *</label>
                                             <input
                                                 type="email"
                                                 required
                                                 placeholder="e.g. client@example.com"
                                                 value={createEmail}
                                                 onChange={e => setCreateEmail(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                                className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                             />
                                         </div>
                                         <div className="space-y-1 md:col-span-2">
-                                            <label className="text-[10px] uppercase font-bold text-slate-400">Organization / Company Name</label>
+                                            <label className="text-[10px] uppercase font-bold text-muted-foreground">Organization / Company Name</label>
                                             <input
                                                 type="text"
                                                 placeholder="e.g. Acme Tech Solutions"
                                                 value={createOrg}
                                                 onChange={e => setCreateOrg(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                                className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                             />
                                         </div>
                                     </div>
@@ -1187,47 +1187,47 @@ const AdminPortal = () => {
 
                                 {/* Project Parameters */}
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-white/5 pb-2">Project & SLA Specifications</h4>
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-border pb-2">Project & SLA Specifications</h4>
                                     <div className="space-y-3">
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-slate-400">Project Requirements / Description</label>
+                                            <label className="text-[10px] uppercase font-bold text-muted-foreground">Project Requirements / Description</label>
                                             <textarea
                                                 rows={3}
                                                 placeholder="Outline what needs to be built..."
                                                 value={createMsg}
                                                 onChange={e => setCreateMsg(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                                className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                             />
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-1">
-                                                <label className="text-[10px] uppercase font-bold text-slate-400">Project Deadline Date</label>
+                                                <label className="text-[10px] uppercase font-bold text-muted-foreground">Project Deadline Date</label>
                                                 <input
                                                     type="date"
                                                     value={createDeadline}
                                                     onChange={e => setCreateDeadline(e.target.value)}
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary text-slate-200"
+                                                    className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                                 />
                                             </div>
                                             <div className="space-y-1">
-                                                <label className="text-[10px] uppercase font-bold text-slate-400">Live Website / SaaS App URL</label>
+                                                <label className="text-[10px] uppercase font-bold text-muted-foreground">Live Website / SaaS App URL</label>
                                                 <input
                                                     type="url"
                                                     placeholder="https://client-app.siddhidynamics.in"
                                                     value={createUrl}
                                                     onChange={e => setCreateUrl(e.target.value)}
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                                    className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                                 />
                                             </div>
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-[10px] uppercase font-bold text-slate-400">Contractual Agreement & SLA Summary</label>
+                                            <label className="text-[10px] uppercase font-bold text-muted-foreground">Contractual Agreement & SLA Summary</label>
                                             <input
                                                 type="text"
                                                 placeholder="e.g., SLA signed v1.1 - 99.9% availability, 12 months maintenance support"
                                                 value={createAgreement}
                                                 onChange={e => setCreateAgreement(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                                className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                             />
                                         </div>
                                     </div>
@@ -1235,9 +1235,9 @@ const AdminPortal = () => {
 
                                 {/* Progress & Status */}
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-white/5 pb-2">Status & Milestones</h4>
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-border pb-2">Status & Milestones</h4>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] uppercase font-bold text-slate-400">Current Stage</label>
+                                        <label className="text-[10px] uppercase font-bold text-muted-foreground">Current Stage</label>
                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                                             {['Analyzing', 'Verifying', 'In Progress', 'Validated', 'Completed'].map((s) => (
                                                 <button
@@ -1245,7 +1245,7 @@ const AdminPortal = () => {
                                                     onClick={() => setCreateStatus(s)}
                                                     className={`px-3 py-2 rounded-xl text-xs font-medium transition-all ${createStatus === s
                                                         ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                                                        : "bg-white/5 text-muted-foreground hover:bg-white/10"
+                                                        : "bg-muted text-muted-foreground hover:bg-muted/80 border border-border"
                                                         }`}
                                                 >
                                                     {s}
@@ -1256,7 +1256,7 @@ const AdminPortal = () => {
 
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center">
-                                            <label className="text-[10px] uppercase font-bold text-slate-400">Roadmap Phase</label>
+                                            <label className="text-[10px] uppercase font-bold text-muted-foreground">Roadmap Phase</label>
                                             <span className="text-sm font-bold text-primary">Phase {Math.ceil(createProgress / 20) || 1} ({createProgress}%)</span>
                                         </div>
                                         <div className="grid grid-cols-5 gap-2">
@@ -1266,11 +1266,11 @@ const AdminPortal = () => {
                                                     onClick={() => setCreateProgress(p * 20)}
                                                     className={`py-2 rounded-xl border transition-all flex flex-col items-center justify-center gap-0.5 ${Math.ceil(createProgress / 20) === p
                                                             ? "bg-primary/10 border-primary text-primary"
-                                                            : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10"
+                                                            : "bg-muted border-border text-muted-foreground hover:bg-muted/80"
                                                         }`}
                                                 >
                                                     <span className="text-[9px] font-bold">P{p}</span>
-                                                    <div className={`w-1 h-1 rounded-full ${Math.ceil(createProgress / 20) === p ? 'bg-primary' : 'bg-white/20'}`} />
+                                                    <div className={`w-1 h-1 rounded-full ${Math.ceil(createProgress / 20) === p ? 'bg-primary' : 'bg-muted-foreground/30'}`} />
                                                 </button>
                                             ))}
                                         </div>
@@ -1279,10 +1279,10 @@ const AdminPortal = () => {
                             </div>
 
                             {/* Create Actions */}
-                            <div className="p-6 border-t border-white/10 bg-white/5 flex gap-3">
+                            <div className="p-6 border-t border-border bg-muted/30 flex gap-3">
                                 <button
                                     onClick={() => setCreateOpen(false)}
-                                    className="flex-1 py-3 rounded-xl bg-white/5 text-foreground font-semibold hover:bg-white/10 transition-colors"
+                                    className="flex-1 py-3 rounded-xl bg-muted text-foreground font-semibold hover:bg-muted/80 transition-colors border border-border"
                                 >
                                     Cancel
                                 </button>

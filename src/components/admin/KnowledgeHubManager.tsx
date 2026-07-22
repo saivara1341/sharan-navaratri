@@ -24,10 +24,10 @@ interface KbEntry {
 const KbEntryCard = ({ entry, onDelete }: { entry: KbEntry, onDelete: (id: string) => void }) => {
     const [expanded, setExpanded] = useState(false);
     return (
-        <div className="bg-white/5 border border-white/10 rounded-xl p-5 hover:border-white/20 transition-all text-left">
+        <div className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-all text-left">
             <div className="flex items-center justify-between gap-4 mb-2">
                 <div className="min-w-0 flex-1 text-left">
-                    <h4 className="font-bold text-white text-sm truncate">
+                    <h4 className="font-bold text-foreground text-sm truncate">
                         {entry.file_name}
                     </h4>
                     <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
@@ -40,7 +40,7 @@ const KbEntryCard = ({ entry, onDelete }: { entry: KbEntry, onDelete: (id: strin
                 <div className="flex items-center gap-2 shrink-0">
                     <button 
                         onClick={() => setExpanded(!expanded)} 
-                        className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-300 transition-colors"
+                        className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-muted hover:bg-muted/80 text-foreground transition-colors border border-border"
                     >
                         {expanded ? "Hide Text" : "View Text"}
                     </button>
@@ -54,7 +54,7 @@ const KbEntryCard = ({ entry, onDelete }: { entry: KbEntry, onDelete: (id: strin
                 </div>
             </div>
             {expanded && (
-                <div className="mt-3 p-3 rounded-lg bg-black/40 border border-white/5 text-xs text-slate-300 font-mono whitespace-pre-wrap max-h-48 overflow-y-auto leading-relaxed text-left">
+                <div className="mt-3 p-3 rounded-lg bg-muted/50 border border-border text-xs text-foreground font-mono whitespace-pre-wrap max-h-48 overflow-y-auto leading-relaxed text-left">
                     {entry.content}
                 </div>
             )}
@@ -281,7 +281,7 @@ export const KnowledgeHubManager = () => {
         <div className="space-y-8 text-left">
             {/* Section Header */}
             <div className="p-6 glass-card border border-primary/20 rounded-2xl">
-                <h2 className="text-xl font-bold text-white flex items-center gap-2 mb-2">
+                <h2 className="text-xl font-bold text-foreground flex items-center gap-2 mb-2">
                     <Building2 className="w-5 h-5 text-primary" />
                     Dynamic Knowledge Hub (Vector RAG)
                 </h2>
@@ -308,7 +308,7 @@ export const KnowledgeHubManager = () => {
                                 placeholder="Paste Gemini API Key..."
                                 value={geminiKey}
                                 onChange={(e) => setGeminiKey(e.target.value)}
-                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                className="flex-1 bg-card border border-border text-foreground rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                             />
                             <button
                                 onClick={() => handleSaveGeminiKey(geminiKey)}
@@ -328,7 +328,7 @@ export const KnowledgeHubManager = () => {
                             Supports PDF, DOCX, PNG, JPG. The file will be parsed by Gemini Flash OCR, vectorized, and uploaded.
                         </p>
                         
-                        <label className="border-2 border-dashed border-white/10 hover:border-primary/50 rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all bg-white/5 hover:bg-white/10 group relative">
+                        <label className="border-2 border-dashed border-border hover:border-primary/50 rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all bg-muted/40 hover:bg-muted/70 group relative">
                             {fileUploading ? (
                                 <div className="flex flex-col items-center gap-2 text-primary">
                                     <RefreshCw className="w-8 h-8 animate-spin" />
@@ -364,7 +364,7 @@ export const KnowledgeHubManager = () => {
                                     placeholder="e.g. Website Pricing Sheet"
                                     value={kbTitle}
                                     onChange={(e) => setKbTitle(e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                    className="w-full bg-card border border-border text-foreground rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                 />
                             </div>
                             <div>
@@ -374,7 +374,7 @@ export const KnowledgeHubManager = () => {
                                     placeholder="Paste pricing rules, FAQs, guidelines, or other business facts here..."
                                     value={kbContent}
                                     onChange={(e) => setKbContent(e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                    className="w-full bg-card border border-border text-foreground rounded-xl p-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                 />
                             </div>
                             <button
@@ -401,7 +401,7 @@ export const KnowledgeHubManager = () => {
                                 placeholder="Search guidelines..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary w-full sm:w-48"
+                                className="bg-card border border-border text-foreground rounded-xl px-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary w-full sm:w-48"
                             />
                         </div>
 
@@ -411,9 +411,9 @@ export const KnowledgeHubManager = () => {
                                 <p>Accessing vector indexes...</p>
                             </div>
                         ) : filteredEntries.length === 0 ? (
-                            <div className="flex-1 flex flex-col items-center justify-center py-20 text-center text-muted-foreground border border-dashed border-white/10 rounded-2xl bg-white/5">
+                            <div className="flex-1 flex flex-col items-center justify-center py-20 text-center text-muted-foreground border border-dashed border-border rounded-2xl bg-muted/20">
                                 <BookOpen className="w-10 h-10 mb-4 text-muted-foreground/50" />
-                                <p className="font-medium text-slate-300">No matching guidelines found</p>
+                                <p className="font-medium text-foreground">No matching guidelines found</p>
                                 <p className="text-xs text-muted-foreground mt-1 max-w-sm">Use the forms on the left to upload or write manual guidelines for the AI assistant.</p>
                             </div>
                         ) : (

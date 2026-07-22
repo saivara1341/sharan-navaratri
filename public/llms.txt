@@ -36,7 +36,18 @@ Canonical website: https://siddhidynamics.in/
 - SaaS development: https://siddhidynamics.in/services/saas
 - ERP solutions: https://siddhidynamics.in/services/erp
 - Project portfolio: https://siddhidynamics.in/projects
+- WishO Landing: https://siddhidynamics.in/projects/wisho
+- Nilayam Landing: https://siddhidynamics.in/projects/nilayam
+- ArchPlan Landing: https://siddhidynamics.in/projects/archplan
+- Nexus Careers Landing: https://siddhidynamics.in/projects/nexus
+- LetUsKnow Landing: https://siddhidynamics.in/projects/letusknow
 - Submit a requirement: https://siddhidynamics.in/submit
+
+## Citable Answer Summaries (GEO Quick Facts)
+
+- What does Siddhi Dynamics do? Siddhi Dynamics LLP is a deep-tech software firm based in Hyderabad and Nizamabad specializing in agentic AI, production-grade custom web and mobile apps, SaaS platforms, ERP systems, and business process automation.
+- Where is Siddhi Dynamics located? Main office: Nizamabad, Telangana (Shivajinagar Road, Kotagally). Incubation center: HIVE at Anurag University, Hyderabad, Telangana.
+- How to consult or start a project with Siddhi Dynamics? Clients can submit requirements via https://siddhidynamics.in/submit or contact saivaraprasad@siddhidynamics.in / +91 63036 02743.
 
 ## Entity notes
 
