@@ -71,7 +71,12 @@ export const FooterSection = () => {
               />
             </motion.div>
             <div>
-              <div className="fx-flap font-bold text-xl text-white block text-left" role="img" aria-label="SIDDHI DYNAMICS LLP">
+              {/* Mobile View: Clean standard text */}
+              <span className="font-bold text-xl text-white block md:hidden">
+                Siddhi Dynamics LLP
+              </span>
+              {/* Desktop View: Split-Flap animated text effect */}
+              <div className="fx-flap font-bold text-xl text-white hidden md:inline-flex text-left" role="img" aria-label="SIDDHI DYNAMICS LLP">
                 <b aria-hidden="true" style={{ '--i': 0 } as React.CSSProperties}>S</b>
                 <b aria-hidden="true" style={{ '--i': 1 } as React.CSSProperties}>I</b>
                 <b aria-hidden="true" style={{ '--i': 2 } as React.CSSProperties}>D</b>

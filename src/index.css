@@ -6,44 +6,44 @@
 
 @layer base {
   :root {
-    /* Light Mode Theme (Monax Inspired) */
-    --background: 42 20% 92%; /* #efede8 */
-    --foreground: 240 10% 5%; /* #0d0d10 */
+    /* Premium High-Contrast Light Mode (Crisp Porcelain & Slate Palette) */
+    --background: 210 20% 98%; /* #f8fafc clean crisp canvas */
+    --foreground: 222 47% 11%; /* #0f172a rich deep charcoal ink */
 
-    --card: 43 18% 88%; /* #e5e2da */
-    --card-foreground: 240 10% 5%;
+    --card: 0 0% 100%; /* #ffffff pure brilliant card base */
+    --card-foreground: 222 47% 11%;
 
-    --popover: 42 20% 92%;
-    --popover-foreground: 240 10% 5%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
 
-    /* Medium Pistachio Green for primary */
-    --primary: 78 40% 55%; /* Medium Green */
-    --primary-foreground: 240 10% 5%; /* Dark text for contrast */
+    /* Vibrant Pistachio / Emerald Green primary */
+    --primary: 158 64% 42%; /* Vibrant refined emerald green */
+    --primary-foreground: 0 0% 100%; /* Crisp white text on primary buttons */
 
-    --secondary: 43 18% 88%; /* #e5e2da */
-    --secondary-foreground: 240 10% 5%;
+    --secondary: 210 40% 96%; /* #f1f5f9 soft subtle slate tint */
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 40 5% 52%; /* #8a8780 */
-    --muted-foreground: 240 10% 17%; /* ink-soft */
+    --muted: 210 40% 94%; /* #e2e8f0 clean light slate */
+    --muted-foreground: 215 25% 35%; /* #334155 high contrast readable text */
 
-    --accent: 78 40% 40%; /* Slightly darker green */
-    --accent-foreground: 42 20% 92%;
+    --accent: 25 95% 53%; /* Warm vibrant accent */
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 44 23% 82%; /* #dad6c9 */
-    --input: 44 23% 82%;
-    --ring: 78 40% 55%;
+    --border: 214 32% 88%; /* #cbd5e1 crisp defined borders */
+    --input: 214 32% 88%;
+    --ring: 158 64% 42%;
 
     --radius: 0.75rem;
 
-    --electric-border: 78 40% 55%;
-    --electric-glow: 78 40% 40%;
-    --electric-lime: 78 40% 55%;
+    --electric-border: 158 64% 42%;
+    --electric-glow: 158 64% 35%;
+    --electric-lime: 158 64% 42%;
 
-    --glass-bg: 42 20% 92% / 0.8;
-    --glass-border: 44 23% 82% / 0.5;
+    --glass-bg: 0 0% 100% / 0.85;
+    --glass-border: 214 32% 88% / 0.8;
   }
 
   .dark {
