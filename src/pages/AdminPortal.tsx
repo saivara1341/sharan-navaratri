@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseService } from "@/services/supabaseService";
 import { KnowledgeHubManager } from "@/components/admin/KnowledgeHubManager";
+import { SeoGeoCommandCenter } from "@/components/admin/SeoGeoCommandCenter";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
@@ -61,7 +62,7 @@ const AdminPortal = () => {
     const [chatInput, setChatInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
     const [sendingMsg, setSendingMsg] = useState(false);
-    const [viewMode, setViewMode] = useState<'submissions' | 'knowledge'>('submissions');
+    const [viewMode, setViewMode] = useState<'submissions' | 'knowledge' | 'seo-geo'>('submissions');
 
     // Document attachments states & helper
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -400,6 +401,16 @@ const AdminPortal = () => {
                         >
                             Knowledge Hub
                         </button>
+                        <button
+                            onClick={() => setViewMode('seo-geo')}
+                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
+                                viewMode === 'seo-geo'
+                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
+                            }`}
+                        >
+                            <span>⚡</span> SEO + GEO Suite
+                        </button>
                         {viewMode === 'submissions' && (
                             <button
                                 onClick={fetchSubmissions}
@@ -710,8 +721,10 @@ const AdminPortal = () => {
                     </AnimatePresence>
                 </div>
                     </>
-                ) : (
+                ) : viewMode === 'knowledge' ? (
                     <KnowledgeHubManager />
+                ) : (
+                    <SeoGeoCommandCenter />
                 )}
             </main>
 
