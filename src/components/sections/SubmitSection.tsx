@@ -6,6 +6,7 @@ import { Mic, MicOff, CheckCircle, Shield, ArrowRight, RefreshCw, ChevronDown } 
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { supabaseService } from '@/services/supabaseService';
+import { LikeButton } from '@/components/ui/LikeButton';
 
 const contactSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -797,18 +798,22 @@ export const SubmitSection = () => {
           className="max-w-4xl mx-auto"
         >
           <div className="text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="inline-flex items-center gap-3 px-6 py-3 rounded-full glass-card electric-border mb-8"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
-              </span>
-              <span className="text-sm text-muted-foreground font-medium">Free AI Discovery Call · No commitment</span>
-            </motion.div>
+            <div className="flex items-center justify-center gap-4 mb-8 flex-wrap">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="inline-flex items-center gap-3 px-6 py-3 rounded-full glass-card electric-border"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
+                </span>
+                <span className="text-sm text-muted-foreground font-medium">Free AI Discovery Call · No commitment</span>
+              </motion.div>
+
+              <LikeButton initialCount={48} />
+            </div>
 
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
               Tell us your biggest{' '}

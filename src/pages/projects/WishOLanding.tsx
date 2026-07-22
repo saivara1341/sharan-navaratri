@@ -21,6 +21,7 @@ import {
 import { Navbar } from '@/components/layout/Navbar';
 import { FooterSection } from '@/components/sections/FooterSection';
 import { WaitlistModal } from '@/components/WaitlistModal';
+import { LikeButton } from '@/components/ui/LikeButton';
 
 const WishOLanding = () => {
     const navigate = useNavigate();
@@ -117,9 +118,12 @@ const WishOLanding = () => {
                             transition={{ duration: 0.8 }}
                             className="max-w-4xl mx-auto"
                         >
-                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/20 text-pink-400 font-bold mb-8">
-                                <Heart className="w-4 h-4 fill-current" />
-                                <span className="tracking-wide text-sm uppercase">The AI Celebration Engine</span>
+                            <div className="flex items-center justify-center gap-4 mb-8 flex-wrap">
+                                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/20 text-pink-400 font-bold">
+                                    <Heart className="w-4 h-4 fill-current" />
+                                    <span className="tracking-wide text-sm uppercase">The AI Celebration Engine</span>
+                                </div>
+                                <LikeButton initialCount={142} />
                             </div>
 
                             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 font-display tracking-tight leading-tight">
