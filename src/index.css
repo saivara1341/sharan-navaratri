@@ -16,8 +16,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Vibrant Pistachio / Emerald Green primary */
-    --primary: 158 64% 42%; /* Vibrant refined emerald green */
+    /* Refined Olive Green primary */
+    --primary: 84 60% 35%; /* Rich refined olive green */
     --primary-foreground: 0 0% 100%; /* Crisp white text on primary buttons */
 
     --secondary: 210 40% 96%; /* #f1f5f9 soft subtle slate tint */
@@ -34,13 +34,13 @@
 
     --border: 214 32% 88%; /* #cbd5e1 crisp defined borders */
     --input: 214 32% 88%;
-    --ring: 158 64% 42%;
+    --ring: 84 60% 35%;
 
     --radius: 0.75rem;
 
-    --electric-border: 158 64% 42%;
-    --electric-glow: 158 64% 35%;
-    --electric-lime: 158 64% 42%;
+    --electric-border: 84 60% 35%;
+    --electric-glow: 84 60% 30%;
+    --electric-lime: 84 60% 35%;
 
     --glass-bg: 0 0% 100% / 0.85;
     --glass-border: 214 32% 88% / 0.8;
@@ -599,10 +599,10 @@
   79% { transform: rotateX(0); }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce), (max-width: 767px) {
   .ld-helix path,
   .fx-flap b {
-    animation: none;
+    animation: none !important;
   }
 }
 

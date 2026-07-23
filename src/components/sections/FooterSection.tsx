@@ -2,6 +2,7 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useIsMobile } from '@/hooks/use-mobile';
 import siddhiLogo from '@/assets/siddhi-logo.png';
 
 const linkVariants = {
@@ -22,6 +23,7 @@ export const FooterSection = () => {
   const navigate = useNavigate();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-50px' });
+  const isMobile = useIsMobile();
 
   const handleHomeClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -52,10 +54,10 @@ export const FooterSection = () => {
           <motion.a
             href="/"
             onClick={handleHomeClick}
-            initial={{ opacity: 0, x: -30 }}
+            initial={isMobile ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={isMobile ? { duration: 0 } : { duration: 0.8 }}
             className="flex items-center gap-4 group cursor-pointer relative z-10"
           >
             <motion.div
