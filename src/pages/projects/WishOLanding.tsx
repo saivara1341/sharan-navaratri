@@ -123,7 +123,7 @@ const WishOLanding = () => {
                                     <Heart className="w-4 h-4 fill-current" />
                                     <span className="tracking-wide text-sm uppercase">The AI Celebration Engine</span>
                                 </div>
-                                <LikeButton initialCount={142} />
+                                <LikeButton projectId="wish0" initialCount={145} />
                             </div>
 
                             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 font-display tracking-tight leading-tight">

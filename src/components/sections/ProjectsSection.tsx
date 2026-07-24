@@ -23,6 +23,7 @@ import printflowLogo from '@/assets/printflow-logo.png';
 import indhurFarmsLogo from '@/assets/indhur-farms-logo.png';
 import doginLogo from '@/assets/dogin-logo.png';
 import { WaitlistModal } from '@/components/WaitlistModal';
+import { LikeButton } from '@/components/ui/LikeButton';
 
 const cardVariants = {
   hidden: { opacity: 0, y: 80, rotateX: -15 },
@@ -186,6 +187,17 @@ const modalPalettes: Record<string, {
   },
 };
 
+const defaultProjectLikes: Record<string, number> = {
+  archplan: 154,
+  nexus: 198,
+  nilayam: 126,
+  indhur_farms: 84,
+  print_flow: 72,
+  wish0: 145,
+  letusknow: 93,
+  dogin: 167,
+};
+
 const ProjectCard = ({
   project,
   index,
@@ -257,9 +269,12 @@ const ProjectCard = ({
           {project.tagline}
         </p>
         
-        <div className="mt-auto flex items-center gap-1 text-[9px] sm:text-xs font-bold opacity-70 group-hover:opacity-95 transition-opacity uppercase tracking-wider">
-          <span>Know more</span>
-          <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
+        <div className="mt-auto w-full flex items-center justify-between pt-1">
+          <LikeButton projectId={project.id} initialCount={defaultProjectLikes[project.id] || 80} className="scale-90" />
+          <div className="flex items-center gap-1 text-[9px] sm:text-xs font-bold opacity-70 group-hover:opacity-95 transition-opacity uppercase tracking-wider">
+            <span>Know more</span>
+            <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
+          </div>
         </div>
       </div>
     </motion.div>
@@ -405,13 +420,16 @@ const ProjectDetailsModal = ({
               )}
             </div>
 
-            <div className="flex-1 min-w-0">
-              <h3 className="text-3xl font-bold mb-1 font-display" style={{ color: palette.text }}>
-                {project.name}
-              </h3>
-              <p className="text-base font-semibold" style={{ color: palette.accent }}>
-                {project.tagline}
-              </p>
+            <div className="flex-1 min-w-0 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-3xl font-bold mb-1 font-display" style={{ color: palette.text }}>
+                  {project.name}
+                </h3>
+                <p className="text-base font-semibold" style={{ color: palette.accent }}>
+                  {project.tagline}
+                </p>
+              </div>
+              <LikeButton projectId={project.id} initialCount={defaultProjectLikes[project.id] || 80} />
             </div>
           </div>
 

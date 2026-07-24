@@ -1,6 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LikeButtonProps {
+  projectId?: string;
   initialCount?: number;
   className?: string;
   onLikeChange?: (liked: boolean, count: number) => void;
@@ -13,27 +15,86 @@ interface Particle {
 }
 
 export const LikeButton: React.FC<LikeButtonProps> = ({
+  projectId,
   initialCount = 24,
   className = "",
   onLikeChange,
 }) => {
-  const [liked, setLiked] = useState(false);
-  const [count, setCount] = useState(initialCount);
+  const storageKeyLiked = projectId ? `siddhi_liked_${projectId}` : 'siddhi_liked_default';
+  const storageKeyCount = projectId ? `siddhi_likes_count_${projectId}` : 'siddhi_likes_count_default';
+
+  const [liked, setLiked] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem(storageKeyLiked) === 'true';
+  });
+
+  const [count, setCount] = useState<number>(() => {
+    if (typeof window === 'undefined') return initialCount;
+    const stored = localStorage.getItem(storageKeyCount);
+    return stored ? parseInt(stored, 10) : initialCount;
+  });
+
   const [isPopping, setIsPopping] = useState(false);
   const [particles, setParticles] = useState<Particle[]>([]);
   const btnRef = useRef<HTMLButtonElement>(null);
 
-  const triggerLike = (e: React.MouseEvent) => {
+  // Sync count with Supabase if projectId is provided
+  useEffect(() => {
+    if (!projectId) return;
+
+    const fetchRealLikes = async () => {
+      try {
+        const { data, error } = await (supabase as any)
+          .from('project_likes')
+          .select('likes_count')
+          .eq('project_id', projectId)
+          .maybeSingle();
+
+        if (data && typeof data.likes_count === 'number') {
+          setCount(data.likes_count);
+          localStorage.setItem(storageKeyCount, String(data.likes_count));
+        }
+      } catch (err) {
+        // Silently use cached/initial count on error
+      }
+    };
+
+    fetchRealLikes();
+  }, [projectId, storageKeyCount]);
+
+  const triggerLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     const newLiked = !liked;
     const newCount = newLiked ? count + 1 : Math.max(0, count - 1);
+    
     setLiked(newLiked);
     setCount(newCount);
 
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(storageKeyLiked, String(newLiked));
+      localStorage.setItem(storageKeyCount, String(newCount));
+    }
+
     if (onLikeChange) {
       onLikeChange(newLiked, newCount);
+    }
+
+    // Persist real count to Supabase if projectId is present
+    if (projectId) {
+      try {
+        await (supabase as any).from('project_likes').upsert(
+          {
+            project_id: projectId,
+            likes_count: newCount,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'project_id' }
+        );
+      } catch (err) {
+        console.warn('Like count persistence notice:', err);
+      }
     }
 
     if (newLiked) {

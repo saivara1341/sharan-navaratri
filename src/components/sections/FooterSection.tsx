@@ -61,7 +61,7 @@ export const FooterSection = () => {
             className="flex items-center gap-4 group cursor-pointer relative z-10"
           >
             <motion.div
-              className="relative w-14 h-14"
+              className="relative w-14 h-14 shrink-0"
               whileHover={{ rotate: 5, scale: 1.05 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
@@ -72,34 +72,11 @@ export const FooterSection = () => {
                 className="relative w-full h-full object-contain"
               />
             </motion.div>
-            <div>
-              {/* Mobile View: Clean standard text */}
-              <span className="font-bold text-xl text-white block md:hidden">
+            <div className="flex flex-col">
+              <span className="font-bold text-xl text-white tracking-wide">
                 Siddhi Dynamics LLP
               </span>
-              {/* Desktop View: Split-Flap animated text effect */}
-              <div className="fx-flap font-bold text-xl text-white hidden md:inline-flex text-left" role="img" aria-label="SIDDHI DYNAMICS LLP">
-                <b aria-hidden="true" style={{ '--i': 0 } as React.CSSProperties}>S</b>
-                <b aria-hidden="true" style={{ '--i': 1 } as React.CSSProperties}>I</b>
-                <b aria-hidden="true" style={{ '--i': 2 } as React.CSSProperties}>D</b>
-                <b aria-hidden="true" style={{ '--i': 3 } as React.CSSProperties}>D</b>
-                <b aria-hidden="true" style={{ '--i': 4 } as React.CSSProperties}>H</b>
-                <b aria-hidden="true" style={{ '--i': 5 } as React.CSSProperties}>I</b>
-                <b aria-hidden="true" className="fx-space" style={{ '--i': 6 } as React.CSSProperties}>&nbsp;</b>
-                <b aria-hidden="true" style={{ '--i': 7 } as React.CSSProperties}>D</b>
-                <b aria-hidden="true" style={{ '--i': 8 } as React.CSSProperties}>Y</b>
-                <b aria-hidden="true" style={{ '--i': 9 } as React.CSSProperties}>N</b>
-                <b aria-hidden="true" style={{ '--i': 10 } as React.CSSProperties}>A</b>
-                <b aria-hidden="true" style={{ '--i': 11 } as React.CSSProperties}>M</b>
-                <b aria-hidden="true" style={{ '--i': 12 } as React.CSSProperties}>I</b>
-                <b aria-hidden="true" style={{ '--i': 13 } as React.CSSProperties}>C</b>
-                <b aria-hidden="true" style={{ '--i': 14 } as React.CSSProperties}>S</b>
-                <b aria-hidden="true" className="fx-space" style={{ '--i': 15 } as React.CSSProperties}>&nbsp;</b>
-                <b aria-hidden="true" style={{ '--i': 16 } as React.CSSProperties}>L</b>
-                <b aria-hidden="true" style={{ '--i': 17 } as React.CSSProperties}>L</b>
-                <b aria-hidden="true" style={{ '--i': 18 } as React.CSSProperties}>P</b>
-              </div>
-              <span className="text-sm text-slate-400 block mt-1">
+              <span className="text-sm text-slate-400 block mt-0.5">
                 {t('hero.badge')}
               </span>
             </div>

@@ -6,7 +6,6 @@ import { Mic, MicOff, CheckCircle, Shield, ArrowRight, RefreshCw, ChevronDown } 
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { supabaseService } from '@/services/supabaseService';
-import { LikeButton } from '@/components/ui/LikeButton';
 
 const contactSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -811,8 +810,6 @@ export const SubmitSection = () => {
                 </span>
                 <span className="text-sm text-muted-foreground font-medium">Free AI Discovery Call · No commitment</span>
               </motion.div>
-
-              <LikeButton initialCount={48} />
             </div>
 
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
