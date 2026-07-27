@@ -16,6 +16,14 @@
     <priority>0.9</priority>
   </url>
 
+  <!-- Nizamabad Local Landing Page -->
+  <url>
+    <loc>https://siddhidynamics.in/software-company-nizamabad</loc>
+    <lastmod>2026-07-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
   <!-- Blog -->
   <url>
     <loc>https://siddhidynamics.in/blog</loc>

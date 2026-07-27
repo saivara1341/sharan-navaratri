@@ -241,7 +241,9 @@ export const FooterSection = () => {
               A 5-star rated deep-tech innovation firm specializing in production-grade AI solutions, full-stack software development, and agentic workflows.
             </span>
             <span className="block">
-              <strong className="font-semibold text-slate-400">Nizamabad</strong>: 3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001
+              <a href="/software-company-nizamabad" className="hover:text-primary">
+                <strong className="font-semibold text-slate-400">Nizamabad</strong>: 3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001
+              </a>
             </span>
             <span className="mt-1 block">
               <strong className="font-semibold text-slate-400">Hyderabad</strong>: HIVE, Anurag University, Hyderabad, Telangana 500049

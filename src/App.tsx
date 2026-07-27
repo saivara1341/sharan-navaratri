@@ -35,6 +35,7 @@ import BusinessAutomation from "@/pages/services/BusinessAutomation";
 import WebsiteDevelopment from "@/pages/services/WebsiteDevelopment";
 import SaaSPlatforms from "@/pages/services/SaaSPlatforms";
 import ERPSolutions from "@/pages/services/ERPSolutions";
+import SoftwareCompanyNizamabad from "@/pages/SoftwareCompanyNizamabad";
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -169,6 +170,7 @@ const App = () => {
               <Route path="/services/website-development" element={<WebsiteDevelopment />} />
               <Route path="/services/saas" element={<SaaSPlatforms />} />
               <Route path="/services/erp" element={<ERPSolutions />} />
+              <Route path="/software-company-nizamabad" element={<SoftwareCompanyNizamabad />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
