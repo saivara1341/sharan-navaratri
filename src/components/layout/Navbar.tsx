@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import siddhiLogo from '@/assets/siddhi-logo.png';
-import { LogOut, Home, X, LayoutDashboard, User } from 'lucide-react';
+import { LogOut, Home, X, LayoutDashboard, User, Bot } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export const Navbar = () => {
@@ -157,6 +157,16 @@ export const Navbar = () => {
             </motion.a>
 
             <nav className="hidden md:flex items-center gap-1">
+              <motion.a
+                href="/siddhi"
+                onClick={(e) => { e.preventDefault(); navigate('/siddhi'); }}
+                className="relative px-3.5 py-1.5 rounded-xl text-xs font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-400/30 hover:bg-cyan-500/20 transition-all flex items-center gap-1.5 shadow-sm"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Bot className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Siddhi AI</span>
+              </motion.a>
               <motion.a
                 href="/about"
                 onClick={(e) => { e.preventDefault(); navigate('/about'); }}
@@ -338,12 +348,23 @@ export const Navbar = () => {
                   Home
                 </motion.a>
                 <motion.a
+                  href="/siddhi"
+                  onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/siddhi'); }}
+                  className="text-2xl font-bold text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-2 relative z-[120]"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.07 }}
+                >
+                  <Bot className="w-6 h-6 text-cyan-400" />
+                  Siddhi AI
+                </motion.a>
+                <motion.a
                   href="/about"
                   onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/about'); }}
                   className="text-2xl font-bold text-primary hover:text-foreground transition-colors relative z-[120]"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.08 }}
+                  transition={{ delay: 0.09 }}
                 >
                   About
                 </motion.a>

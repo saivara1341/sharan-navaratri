@@ -274,71 +274,107 @@ export const VisionSection = () => {
       <div className="absolute inset-0 grid-pattern opacity-30" />
 
       <div className="container mx-auto px-6 relative z-10" ref={ref}>
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
-          className="text-center mb-20"
-        >
-          <motion.span
-            className="inline-block text-primary font-medium text-sm tracking-[0.3em] uppercase mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            {t('vision.title')}
-          </motion.span>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 leading-tight text-foreground">
-            {t('vision.beyondPrototypes')}{' '}
-            <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>
-          </h2>
-          <p className="text-muted-foreground text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-            <Trans
-              i18nKey="vision.visionDescription"
-              components={[
-                <span className="text-primary font-medium" />
-              ]}
-            />
-          </p>
-        </motion.div>
-
         {/* Mobile sticky scroll stack for AI capability cards */}
         <motion.div
           ref={containerRef} 
-          className="relative mt-8 h-[300svh] md:hidden"
+          className="relative mt-2 h-[320svh] md:hidden"
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          <div className="sticky top-36 h-[calc(100svh-10rem)]">
-            {features.map((feature, index) => (
-              <PinnedFeatureCard
-                key={feature.title}
-                feature={feature}
-                index={index}
-                activeIndex={activeFeatureIndex}
-              />
-            ))}
+          <div className="sticky top-20 z-20 flex flex-col items-center justify-start pt-2 pb-4">
+            {/* Mobile Header Text - pinned sticky so it stays visible under navbar while scrolling */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+              className="text-center mb-5 px-2"
+            >
+              <motion.span
+                className="inline-block text-primary font-medium text-xs tracking-[0.25em] uppercase mb-2"
+                initial={{ opacity: 0, y: 15 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                {t('vision.title')}
+              </motion.span>
+              <h2 className="text-2xl sm:text-3xl font-bold mb-3 leading-tight text-foreground">
+                {t('vision.beyondPrototypes')}{' '}
+                <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>
+              </h2>
+              <p className="text-muted-foreground text-xs sm:text-sm max-w-sm mx-auto leading-relaxed">
+                <Trans
+                  i18nKey="vision.visionDescription"
+                  components={[
+                    <span className="text-primary font-medium" />
+                  ]}
+                />
+              </p>
+            </motion.div>
+
+            {/* Mobile Pinned Feature Cards */}
+            <div className="relative w-full h-[380px] flex items-center justify-center">
+              {features.map((feature, index) => (
+                <PinnedFeatureCard
+                  key={feature.title}
+                  feature={feature}
+                  index={index}
+                  activeIndex={activeFeatureIndex}
+                />
+              ))}
+            </div>
           </div>
         </motion.div>
 
         {/* Desktop sticky stack scroll animation */}
         <motion.div
           ref={desktopContainerRef}
-          className="relative mt-16 hidden md:block h-[340vh]"
+          className="relative mt-4 hidden md:block h-[340vh]"
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          <div className="sticky top-32 h-[520px] flex items-center justify-center max-w-4xl mx-auto">
-            {features.map((feature, index) => (
-              <PinnedFeatureCard
-                key={feature.title}
-                feature={feature}
-                index={index}
-                activeIndex={activeDesktopIndex}
-              />
-            ))}
+          <div className="sticky top-24 z-20 flex flex-col items-center justify-start max-w-5xl mx-auto pt-2 pb-6">
+            {/* Desktop Header Text - pinned sticky so it stays visible while scrolling cards */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+              className="text-center mb-8 max-w-3xl"
+            >
+              <motion.span
+                className="inline-block text-primary font-medium text-sm tracking-[0.3em] uppercase mb-4"
+                initial={{ opacity: 0, y: 15 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                {t('vision.title')}
+              </motion.span>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-foreground">
+                {t('vision.beyondPrototypes')}{' '}
+                <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>
+              </h2>
+              <p className="text-muted-foreground text-lg md:text-xl leading-relaxed">
+                <Trans
+                  i18nKey="vision.visionDescription"
+                  components={[
+                    <span className="text-primary font-medium" />
+                  ]}
+                />
+              </p>
+            </motion.div>
+
+            {/* Desktop Pinned Feature Cards */}
+            <div className="relative w-full max-w-4xl h-[440px] flex items-center justify-center">
+              {features.map((feature, index) => (
+                <PinnedFeatureCard
+                  key={feature.title}
+                  feature={feature}
+                  index={index}
+                  activeIndex={activeDesktopIndex}
+                />
+              ))}
+            </div>
           </div>
         </motion.div>
 
