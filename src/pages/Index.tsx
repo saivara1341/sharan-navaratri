@@ -9,7 +9,6 @@ import { IncubationSection } from '@/components/sections/IncubationSection';
 import { SubmitSection } from '@/components/sections/SubmitSection';
 import { FooterSection } from '@/components/sections/FooterSection';
 import { ServicesSection } from '@/components/sections/ServicesSection';
-import { SiddhiBannerSection } from '@/components/sections/SiddhiBannerSection';
 import { AIOContent } from '@/components/seo/AIOContent';
 import { LiquidMetalUpButton } from "@/components/ui/LiquidMetalUpButton";
 import { FloatingNav } from "@/components/layout/FloatingNav";
@@ -386,7 +385,6 @@ const Index = () => {
       </script>
       <main>
         <HeroSection />
-        <SiddhiBannerSection />
         <VisionSection />
         <ProjectsSection />
         <IncubationSection />
