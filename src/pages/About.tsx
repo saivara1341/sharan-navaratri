@@ -7,7 +7,7 @@ import { ArrowRight, Building2, Users, Rocket, Award, Brain, Zap, Globe, Heart }
 
 const MILESTONES = [
   { year: '2024', event: 'Siddhi Dynamics LLP founded in Hyderabad, India' },
-  { year: '2024', event: 'Accepted into HIVE — Anurag University Incubation Cell' },
+  { year: '2024', event: 'ArchPlan AI accepted into HIVE — Anurag University Incubation Cell' },
   { year: '2024', event: 'Launched ArchPlan AI, India\'s first AI-driven construction lifecycle platform' },
   { year: '2024', event: 'Nexus Careers platform enters beta — empowering student-to-employment transitions' },
   { year: '2025', event: 'Expanded service portfolio: Business Automation, SaaS, ERP for Indian SMBs' },
@@ -55,13 +55,8 @@ const orgSchema = {
       "addressCountry": "IN"
     }
   },
-  "description": "Siddhi Dynamics LLP is a deep-tech AI innovation firm incubated at HIVE, Anurag University, Hyderabad. We specialize in agentic AI, generative AI, business automation, SaaS, and ERP solutions for Indian businesses.",
+  "description": "Siddhi Dynamics LLP is a deep-tech AI innovation firm specializing in agentic AI, generative AI, business automation, SaaS, and ERP solutions for Indian businesses.",
   "numberOfEmployees": { "@type": "QuantitativeValue", "minValue": 5, "maxValue": 20 },
-  "memberOf": {
-    "@type": "Organization",
-    "name": "HIVE — Anurag University Incubation Cell",
-    "url": "https://anurag.edu.in"
-  },
   "sameAs": [
     "https://www.linkedin.com/company/siddhi-dynamics-llp",
     "https://www.instagram.com/siddhidynamics/"
@@ -81,7 +76,7 @@ const aboutPageSchema = {
   "@type": "AboutPage",
   "name": "About Siddhi Dynamics — Deep-Tech AI Firm, Hyderabad & Nizamabad India",
   "url": "https://siddhidynamics.in/about",
-  "description": "Learn about Siddhi Dynamics LLP — headquartered in Hyderabad & Nizamabad, incubated at HIVE/Anurag University, building AI automation, SaaS, and ERP solutions for Indian businesses.",
+  "description": "Learn about Siddhi Dynamics LLP — headquartered in Hyderabad & Nizamabad and building AI automation, SaaS, and ERP solutions for Indian businesses.",
   "mainEntity": { "@type": "Organization", "name": "Siddhi Dynamics LLP" }
 };
 
@@ -141,10 +136,10 @@ export default function About() {
       <Helmet>
         <title>About Siddhi Dynamics | Best Software Company in Nizamabad & Hyderabad</title>
         <meta name="description" content="Siddhi Dynamics LLP is a premier software company and deep-tech AI firm in Nizamabad & Hyderabad. We build agentic AI, business automation, web development, SaaS, and ERP solutions." />
-        <meta name="keywords" content="Siddhi Dynamics, best software company in Nizamabad, top IT company in Nizamabad, software development Nizamabad, AI company Hyderabad, deep tech startup India, Anurag University incubation, HIVE incubation" />
+        <meta name="keywords" content="Siddhi Dynamics, best software company in Nizamabad, top IT company in Nizamabad, software development Nizamabad, AI company Hyderabad, deep tech startup India, ArchPlan AI, HIVE incubation" />
         <link rel="canonical" href="https://siddhidynamics.in/about" />
         <meta property="og:title" content="About Siddhi Dynamics | Best Software Company in Nizamabad & Hyderabad" />
-        <meta property="og:description" content="Nizamabad & Hyderabad-based deep-tech AI firm and software company, incubated at HIVE/Anurag University. Building AI automation and SaaS." />
+        <meta property="og:description" content="Nizamabad & Hyderabad-based deep-tech AI firm building production-ready AI automation, SaaS, and ERP solutions." />
         <meta property="og:url" content="https://siddhidynamics.in/about" />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify(orgSchema)}</script>
@@ -185,9 +180,9 @@ export default function About() {
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl">
                 Siddhi Dynamics is a deep-tech AI innovation firm based in Hyderabad, India.
-                Incubated at <strong className="text-foreground">HIVE — Anurag University's Incubation Cell</strong>,
-                we build agentic AI, generative AI, and automation systems that transform how
-                Indian businesses operate.
+                We build agentic AI, generative AI, and automation systems that transform how
+                Indian businesses operate. Our construction platform, ArchPlan AI, was incubated
+                at <strong className="text-foreground"> HIVE — Anurag University's Incubation Cell</strong>.
               </p>
             </motion.div>
           </div>
@@ -221,9 +216,10 @@ export default function About() {
                     That's the gap Siddhi Dynamics was created to close.
                   </p>
                   <p>
-                    Founded in Hyderabad and incubated at <strong className="text-foreground">HIVE,
-                    Anurag University's innovation cell</strong>, we combine academic rigor with
-                    production-grade engineering to deliver AI systems that actually work.
+                    Founded in Hyderabad, we combine focused research with production-grade
+                    engineering to deliver AI systems that actually work. ArchPlan AI, our
+                    construction platform, was incubated at <strong className="text-foreground">HIVE,
+                    Anurag University's innovation cell</strong>.
                   </p>
                 </div>
               </motion.div>
@@ -236,7 +232,7 @@ export default function About() {
                 className="space-y-4"
               >
                 {[
-                  { icon: Building2, label: 'Incubated at', value: 'HIVE — Anurag University' },
+                  { icon: Building2, label: 'ArchPlan AI incubated at', value: 'HIVE — Anurag University' },
                   { icon: Globe, label: 'Headquartered in', value: 'Hyderabad & Nizamabad, Telangana, India' },
                   { icon: Rocket, label: 'Founded', value: '2024' },
                   { icon: Users, label: 'Focus Area', value: 'Indian SMBs & Deep-Tech AI' },
