@@ -5,7 +5,6 @@ import { Navbar } from '@/components/layout/Navbar';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { VisionSection } from '@/components/sections/VisionSection';
 import { ProjectsSection } from '@/components/sections/ProjectsSection';
-import { IncubationSection } from '@/components/sections/IncubationSection';
 import { SubmitSection } from '@/components/sections/SubmitSection';
 import { FooterSection } from '@/components/sections/FooterSection';
 import { ServicesSection } from '@/components/sections/ServicesSection';
@@ -388,7 +387,6 @@ const Index = () => {
         <HeroSection />
         <VisionSection />
         <ProjectsSection />
-        <IncubationSection />
         <ServicesSection />
         <SubmitSection />
         <AIOContent />

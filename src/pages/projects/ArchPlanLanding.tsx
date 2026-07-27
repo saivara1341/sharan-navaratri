@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Navbar } from '@/components/layout/Navbar';
 import { FooterSection } from '@/components/sections/FooterSection';
+import { IncubationSection } from '@/components/sections/IncubationSection';
 import { WaitlistModal } from '@/components/WaitlistModal';
 
 const ArchPlanLanding = () => {
@@ -210,6 +211,8 @@ const ArchPlanLanding = () => {
                         </div>
                     </div>
                 </section>
+
+                <IncubationSection />
 
                 {/* Final CTA */}
                 <section className="py-32 text-center">

@@ -71,7 +71,7 @@ export const IncubationSection = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             whileHover={{ scale: 1.05, boxShadow: "0 0 20px hsl(25 85% 55% / 0.3)" }}
           >
-            {t('incubation.badge')}
+            ArchPlan at HIVE
           </motion.span>
           <motion.h2
             className="text-3xl md:text-4xl font-bold text-foreground mb-4"
@@ -79,7 +79,7 @@ export const IncubationSection = () => {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            {t('incubation.title')}
+            Incubated at HIVE
           </motion.h2>
           <motion.p
             className="text-muted-foreground max-w-2xl mx-auto"
@@ -87,7 +87,7 @@ export const IncubationSection = () => {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            {t('incubation.description')}
+            ArchPlan AI, a project by Siddhi Dynamics LLP, was incubated at the HIVE Incubation Cell at Anurag University.
           </motion.p>
         </motion.div>
 
@@ -128,7 +128,7 @@ export const IncubationSection = () => {
                   </div>
                   <div className="absolute -bottom-3 left-1/2 hidden -translate-x-1/2 items-center gap-1.5 rounded-full border border-white/15 bg-[#102642]/90 px-3 py-1.5 text-[10px] font-semibold text-white shadow-xl backdrop-blur sm:flex md:-bottom-4 md:gap-2 md:px-4 md:py-2 md:text-xs">
                     <Award className="h-3.5 w-3.5 text-[#f06b7f] md:h-4 md:w-4" />
-                    Innovation Partner
+                    ArchPlan Incubator
                   </div>
                 </motion.div>
 
@@ -164,7 +164,7 @@ export const IncubationSection = () => {
                     animate={isInView ? { opacity: 1, x: 0 } : {}}
                     transition={{ duration: 0.5, delay: 0.94 }}
                   >
-                    University-backed incubation for sharper products and faster launches.
+                    Incubation support for ArchPlan's product development, validation, and launch.
                   </motion.p>
 
                   <motion.div
