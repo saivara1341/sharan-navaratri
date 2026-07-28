@@ -27,6 +27,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import projectSubmissionIllustration from "@/assets/project-submission-empty-state.png";
+import { GoogleReviewCard } from "@/components/GoogleReviewCard";
 
 interface Submission {
     id: string;
@@ -352,6 +353,10 @@ ${contextText || "No matching guidelines found."}
                         </button>
                     </div>
                 </div>
+
+                {projects.length > 0 && (
+                    <GoogleReviewCard audience="client" name={clientName} compact />
+                )}
 
                 {projects.length === 0 ? (
                     <div className="text-center px-6 py-10 rounded-3xl border border-primary/20 bg-card shadow-sm space-y-6">

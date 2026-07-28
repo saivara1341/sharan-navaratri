@@ -11,6 +11,7 @@ import { ServicesSection } from '@/components/sections/ServicesSection';
 import { AIOContent } from '@/components/seo/AIOContent';
 import { LiquidMetalUpButton } from "@/components/ui/LiquidMetalUpButton";
 import { FloatingNav } from "@/components/layout/FloatingNav";
+import { GoogleReviewCard } from "@/components/GoogleReviewCard";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -389,6 +390,9 @@ const Index = () => {
         <ProjectsSection />
         <ServicesSection />
         <SubmitSection />
+        <div className="container mx-auto px-6 py-10">
+          <GoogleReviewCard />
+        </div>
         <AIOContent />
       </main>
       <FooterSection />

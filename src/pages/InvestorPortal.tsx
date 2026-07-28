@@ -25,6 +25,7 @@ import {
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
+import { GoogleReviewCard } from "@/components/GoogleReviewCard";
 
 interface StartupProject {
   id: string;
@@ -482,6 +483,8 @@ If you cannot answer based on our tech stack, say: "I will escalate this questio
             </button>
           </div>
         </div>
+
+        <GoogleReviewCard audience="investor" name={investorName} compact />
 
         {/* Strategic Metrics Dashboard */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
