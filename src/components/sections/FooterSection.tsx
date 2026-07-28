@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
 import siddhiLogo from '@/assets/siddhi-logo.png';
 
-const nizamabadAddress = '3-5-260/2, Shivaji Nagar Road, Kotagally, Nizamabad, Telangana 503001, India';
+const nizamabadAddress = '3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001, India';
 const nizamabadMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`Siddhi Dynamics LLP, ${nizamabadAddress}`)}`;
-const nizamabadMapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(`Siddhi Dynamics LLP, ${nizamabadAddress}`)}&output=embed`;
+const hyderabadAddress = 'HIVE, Anurag University, Hyderabad, Telangana 500049, India';
+const hyderabadMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hyderabadAddress)}`;
 
 const linkVariants = {
   hidden: { opacity: 0, y: 10 },
@@ -235,47 +236,41 @@ export const FooterSection = () => {
             </div>
           </div>
           <motion.address
-            className="not-italic w-full max-w-3xl rounded-2xl border border-white/5 bg-white/[0.025] px-4 py-3 text-center text-[11px] leading-relaxed text-slate-500/80 md:text-xs"
+            className="grid w-full max-w-3xl gap-3 not-italic text-left md:grid-cols-2"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ delay: 0.8 }}
           >
             <span className="sr-only">Siddhi Dynamics LLP office locations: </span>
-            <span className="mb-1 block font-semibold text-slate-400">Siddhi Dynamics LLP</span>
-            <span className="mx-auto mb-3 block max-w-2xl text-slate-400">
-              A 5-star rated deep-tech innovation firm specializing in production-grade AI solutions, full-stack software development, and agentic workflows.
-            </span>
-            <span className="block">
+            <span className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+              <strong className="mb-1 block text-sm font-semibold text-white">Nizamabad office</strong>
+              <span className="block text-xs leading-5 text-slate-400">
+                3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001
+              </span>
               <a
                 href={nizamabadMapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-primary"
+                className="mt-3 inline-flex text-xs font-semibold text-primary transition-colors hover:text-white"
               >
-                <strong className="font-semibold text-slate-400">Nizamabad</strong>: 3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001
+                Open in Google Maps ↗
               </a>
             </span>
-            <span className="mt-1 block">
-              <strong className="font-semibold text-slate-400">Hyderabad</strong>: HIVE, Anurag University, Hyderabad, Telangana 500049
+            <span className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+              <strong className="mb-1 block text-sm font-semibold text-white">Hyderabad office</strong>
+              <span className="block text-xs leading-5 text-slate-400">
+                HIVE, Anurag University, Hyderabad, Telangana 500049
+              </span>
+              <a
+                href={hyderabadMapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-flex text-xs font-semibold text-primary transition-colors hover:text-white"
+              >
+                Open in Google Maps ↗
+              </a>
             </span>
           </motion.address>
-          <motion.div
-            className="w-full max-w-3xl overflow-hidden rounded-2xl border border-white/10 bg-white/[0.025]"
-            initial={{ opacity: 0, y: 12 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.9, duration: 0.6 }}
-          >
-            <iframe
-              title="Google Map showing Siddhi Dynamics LLP in Nizamabad"
-              src={nizamabadMapEmbedUrl}
-              width="100%"
-              height="280"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="block"
-              allowFullScreen
-            />
-          </motion.div>
         </motion.div>
       </div>
     </footer>
