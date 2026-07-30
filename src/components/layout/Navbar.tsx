@@ -143,6 +143,9 @@ export const Navbar = () => {
                 <img
                   src={siddhiLogo}
                   alt="Siddhi Dynamics Logo"
+                  width="56"
+                  height="56"
+                  decoding="async"
                   className="relative w-full h-full object-contain dark:drop-shadow-[0_0_15px_rgba(251,146,60,0.5)]"
                 />
               </div>

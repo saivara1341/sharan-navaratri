@@ -1,8 +1,8 @@
-import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
-import { useRef, useEffect, useState } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { lazy, Suspense, useRef, useEffect, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Scene3D } from '../three/Scene3D';
 import hiveLogo from '@/assets/hive-logo.jpg';
+const Scene3D = lazy(() => import('../three/Scene3D').then(module => ({ default: module.Scene3D })));
 
 const floatingAnimation = {
   y: [0, -15, 0],
@@ -42,6 +42,7 @@ export const HeroSection = () => {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
+  const [showScene, setShowScene] = useState(false);
   const { scrollY } = useScroll();
 
   const y = useTransform(scrollY, [0, 500], [0, 150]);
@@ -49,6 +50,20 @@ export const HeroSection = () => {
   const scale = useTransform(scrollY, [0, 500], [1, 0.95]);
 
   useEffect(() => {
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    if (connection?.saveData || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const enableScene = () => setShowScene(true);
+    const idleId = 'requestIdleCallback' in window
+      ? window.requestIdleCallback(enableScene, { timeout: 2500 })
+      : window.setTimeout(enableScene, 1800);
+    return () => {
+      if ('cancelIdleCallback' in window) window.cancelIdleCallback(idleId);
+      else window.clearTimeout(idleId);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
     const handleMouseMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth) * 100;
       const y = (e.clientY / window.innerHeight) * 100;
@@ -68,7 +83,7 @@ export const HeroSection = () => {
         '--ring-y': mousePosition.y,
       } as React.CSSProperties}
     >
-      <Scene3D />
+      {showScene && <Suspense fallback={null}><Scene3D /></Suspense>}
 
       {/* Multi-layered gradients */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 to-background pointer-events-none" />
@@ -243,7 +258,7 @@ export const HeroSection = () => {
             className="flex flex-wrap items-center justify-center gap-6 mb-32 text-xs text-muted-foreground"
           >
             <span className="flex items-center gap-2">
-              <img src={hiveLogo} alt="HIVE" className="h-6 w-auto rounded-sm" />
+              <img src={hiveLogo} alt="HIVE" width="96" height="24" loading="lazy" decoding="async" className="h-6 w-auto rounded-sm" />
               Incubated at HIVE · Anurag University
             </span>
             <span className="text-border/60">|</span>

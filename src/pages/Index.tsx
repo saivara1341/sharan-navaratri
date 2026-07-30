@@ -159,7 +159,7 @@ const Index = () => {
         <meta property="twitter:description" content={description} />
         <meta property="twitter:image" content="https://siddhidynamics.in/favicon.jpg" />
 
-        <link rel="canonical" href={`https://siddhidynamics.in/#${pathname}`} />
+        <link rel="canonical" href={`https://siddhidynamics.in${pathname === '/' ? '/' : pathname}`} />
       </Helmet>
       <Navbar />
       <script type="application/ld+json">

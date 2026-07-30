@@ -4,44 +4,36 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-import Index from "./pages/Index";
-import AuthPage from "./pages/Auth";
-import ClientPortal from "./pages/ClientPortal";
-import InvestorPortal from "./pages/InvestorPortal";
-import EmployeePortal from "./pages/EmployeePortal";
-import PortalGateway from "./pages/PortalGateway";
-import NexusLanding from "./pages/projects/NexusLanding";
-import NilayamLanding from "./pages/projects/NilayamLanding";
-import ArchPlanLanding from "./pages/projects/ArchPlanLanding";
-import LetUsKnowLanding from "./pages/projects/LetUsKnowLanding";
-import WishOLanding from "./pages/projects/WishOLanding";
-import AdminPortal from "./pages/AdminPortal";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsOfService from "./pages/TermsOfService";
-import NotFound from "./pages/NotFound";
-import PromoPopup from "./components/PromoPopup";
-import WomensDayCelebration from "./components/WomensDayCelebration";
-import RamzanCelebration from "./components/RamzanCelebration";
-
-// Specialized Service Pages
-import ResourceHub from "@/pages/services/ResourceHub";
-import ResumeBuilder from "@/pages/services/ResumeBuilder";
-import StartupBlueprint from "@/pages/services/StartupBlueprint";
-
-// New SEO Pages
-import About from "@/pages/About";
-import Blog from "@/pages/Blog";
-import BusinessAutomation from "@/pages/services/BusinessAutomation";
-import WebsiteDevelopment from "@/pages/services/WebsiteDevelopment";
-import SaaSPlatforms from "@/pages/services/SaaSPlatforms";
-import ERPSolutions from "@/pages/services/ERPSolutions";
-import SoftwareCompanyNizamabad from "@/pages/SoftwareCompanyNizamabad";
-
-import { useState, useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const queryClient = new QueryClient();
+const Index = lazy(() => import("./pages/Index"));
+const AuthPage = lazy(() => import("./pages/Auth"));
+const ClientPortal = lazy(() => import("./pages/ClientPortal"));
+const InvestorPortal = lazy(() => import("./pages/InvestorPortal"));
+const EmployeePortal = lazy(() => import("./pages/EmployeePortal"));
+const PortalGateway = lazy(() => import("./pages/PortalGateway"));
+const NexusLanding = lazy(() => import("./pages/projects/NexusLanding"));
+const NilayamLanding = lazy(() => import("./pages/projects/NilayamLanding"));
+const ArchPlanLanding = lazy(() => import("./pages/projects/ArchPlanLanding"));
+const LetUsKnowLanding = lazy(() => import("./pages/projects/LetUsKnowLanding"));
+const WishOLanding = lazy(() => import("./pages/projects/WishOLanding"));
+const AdminPortal = lazy(() => import("./pages/AdminPortal"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./pages/TermsOfService"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const ResourceHub = lazy(() => import("@/pages/services/ResourceHub"));
+const ResumeBuilder = lazy(() => import("@/pages/services/ResumeBuilder"));
+const StartupBlueprint = lazy(() => import("@/pages/services/StartupBlueprint"));
+const About = lazy(() => import("@/pages/About"));
+const Blog = lazy(() => import("@/pages/Blog"));
+const BusinessAutomation = lazy(() => import("@/pages/services/BusinessAutomation"));
+const WebsiteDevelopment = lazy(() => import("@/pages/services/WebsiteDevelopment"));
+const SaaSPlatforms = lazy(() => import("@/pages/services/SaaSPlatforms"));
+const ERPSolutions = lazy(() => import("@/pages/services/ERPSolutions"));
+const SoftwareCompanyNizamabad = lazy(() => import("@/pages/SoftwareCompanyNizamabad"));
 
 const AuthRedirectHandler = () => {
   const navigate = useNavigate();
@@ -126,19 +118,15 @@ const AuthRedirectHandler = () => {
 };
 
 const App = () => {
-  const [ramzanDone, setRamzanDone] = useState(false);
-
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <WomensDayCelebration />
-          <RamzanCelebration onClose={() => setRamzanDone(true)} />
-          <PromoPopup allowed={ramzanDone} />
           <Toaster />
           <Sonner />
           <BrowserRouter>
             <AuthRedirectHandler />
+            <Suspense fallback={<div className="min-h-screen bg-background" aria-busy="true" aria-label="Loading page" />}>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/vision" element={<Index />} />
@@ -174,6 +162,7 @@ const App = () => {
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+            </Suspense>
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>

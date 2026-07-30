@@ -77,6 +77,8 @@ export const FloatingNav = () => {
           return (
             <motion.button
               key={item.id}
+              type="button"
+              aria-label={item.label}
               onClick={item.action}
               whileHover={{ scale: 1.15, y: -2 }}
               whileTap={{ scale: 0.95 }}
