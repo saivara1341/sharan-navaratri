@@ -23,6 +23,10 @@ const WishOLanding = lazy(() => import("./pages/projects/WishOLanding"));
 const AdminPortal = lazy(() => import("./pages/AdminPortal"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
+const RefundCancellationPolicy = lazy(() => import("./pages/RefundCancellationPolicy"));
+const ShippingDeliveryPolicy = lazy(() => import("./pages/ShippingDeliveryPolicy"));
+const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
+const ContactInformation = lazy(() => import("./pages/ContactInformation"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ResourceHub = lazy(() => import("@/pages/services/ResourceHub"));
 const ResumeBuilder = lazy(() => import("@/pages/services/ResumeBuilder"));
@@ -151,6 +155,11 @@ const App = () => {
               <Route path="/nexus/jobs" element={<ResourceHub />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/terms-and-conditions" element={<TermsOfService />} />
+              <Route path="/refund-cancellation-policy" element={<RefundCancellationPolicy />} />
+              <Route path="/shipping-delivery-policy" element={<ShippingDeliveryPolicy />} />
+              <Route path="/cookie-policy" element={<CookiePolicy />} />
+              <Route path="/contact-information" element={<ContactInformation />} />
               {/* SEO Pages */}
               <Route path="/about" element={<About />} />
               <Route path="/blog" element={<Blog />} />

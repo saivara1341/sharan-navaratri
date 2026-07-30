@@ -36,7 +36,7 @@ const PrivacyPolicy = () => {
             </div>
             <div>
               <h1 className="text-3xl md:text-4xl font-bold gradient-text">Privacy Policy</h1>
-              <p className="text-muted-foreground">Last Updated: March 21, 2026</p>
+              <p className="text-muted-foreground">Last Updated: July 30, 2026</p>
             </div>
           </div>
 
@@ -98,7 +98,7 @@ const PrivacyPolicy = () => {
                   We retain your personal data only for as long as necessary to fulfill the purposes we collected it for, including for the purposes of satisfying any legal, accounting, or reporting requirements. 
                 </p>
                 <p className="text-muted-foreground mt-2">
-                  You have the right to request the deletion of your account and associated data at any time. To request data deletion, please contact us at <a href="mailto:ssaivaraprasad51@gmail.com" className="text-primary hover:underline">ssaivaraprasad51@gmail.com</a>. Upon verification of your request, we will remove your personal information from our active databases within 30 days.
+                  You have the right to request the deletion of your account and associated data at any time. To request data deletion, please contact us at <a href="mailto:saivaraprasad@siddhidynamics.in" className="text-primary hover:underline">saivaraprasad@siddhidynamics.in</a>. Upon verification of your request, we will remove your personal information from our active databases within 30 days.
                 </p>
             </section>
 
@@ -115,10 +115,10 @@ const PrivacyPolicy = () => {
                 For any questions about this Privacy Policy, please contact our support team:
               </p>
               <a 
-                href="mailto:ssaivaraprasad51@gmail.com" 
+                href="mailto:saivaraprasad@siddhidynamics.in"
                 className="text-primary hover:underline font-bold"
               >
-                ssaivaraprasad51@gmail.com
+                saivaraprasad@siddhidynamics.in
               </a>
             </section>
           </div>

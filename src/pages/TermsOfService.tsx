@@ -10,7 +10,7 @@ const TermsOfService = () => {
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col font-inter">
       <Navbar />
       <Helmet>
-        <title>Terms of Service | Siddhi Dynamics</title>
+        <title>Terms &amp; Conditions | Siddhi Dynamics</title>
       </Helmet>
 
       {/* Background patterns */}
@@ -35,8 +35,8 @@ const TermsOfService = () => {
               <Gavel className="w-8 h-8" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold gradient-text">Terms of Service</h1>
-              <p className="text-muted-foreground">Last Updated: March 21, 2026</p>
+              <h1 className="text-3xl md:text-4xl font-bold gradient-text">Terms &amp; Conditions</h1>
+              <p className="text-muted-foreground">Last Updated: July 30, 2026</p>
             </div>
           </div>
 
@@ -99,10 +99,10 @@ const TermsOfService = () => {
                 For questions regarding these Terms, please contact us at:
               </p>
               <a 
-                href="mailto:ssaivaraprasad51@gmail.com" 
+                href="mailto:saivaraprasad@siddhidynamics.in"
                 className="text-primary hover:underline font-bold"
               >
-                ssaivaraprasad51@gmail.com
+                saivaraprasad@siddhidynamics.in
               </a>
             </section>
           </div>

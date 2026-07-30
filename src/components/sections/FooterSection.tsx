@@ -217,26 +217,26 @@ export const FooterSection = () => {
               {t('footer.copyright', { year: new Date().getFullYear() })}
             </motion.p>
             <div className="flex items-center gap-4">
-              <motion.a 
-                href="/privacy"
-                onClick={(e) => handleNavClick(e, '/privacy')}
-                initial={{ opacity: 0 }}
-                animate={isInView ? { opacity: 1 } : {}}
-                transition={{ delay: 0.8 }}
-                className="text-xs text-slate-400 hover:text-primary transition-colors"
-              >
-                Privacy Policy
-              </motion.a>
-              <motion.a 
-                href="/terms-of-service"
-                onClick={(e) => handleNavClick(e, '/terms-of-service')}
-                initial={{ opacity: 0 }}
-                animate={isInView ? { opacity: 1 } : {}}
-                transition={{ delay: 0.9 }}
-                className="text-xs text-slate-400 hover:text-primary transition-colors"
-              >
-                Terms of Service
-              </motion.a>
+              {[
+                { label: 'Privacy Policy', href: '/privacy' },
+                { label: 'Terms & Conditions', href: '/terms-and-conditions' },
+                { label: 'Refund & Cancellation', href: '/refund-cancellation-policy' },
+                { label: 'Shipping & Delivery', href: '/shipping-delivery-policy' },
+                { label: 'Cookie Policy', href: '/cookie-policy' },
+                { label: 'Contact Information', href: '/contact-information' },
+              ].map((link, index) => (
+                <motion.a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => handleNavClick(e, link.href)}
+                  initial={{ opacity: 0 }}
+                  animate={isInView ? { opacity: 1 } : {}}
+                  transition={{ delay: 0.8 + index * 0.05 }}
+                  className="text-xs text-slate-400 hover:text-primary transition-colors"
+                >
+                  {link.label}
+                </motion.a>
+              ))}
             </div>
           </div>
           <motion.address
