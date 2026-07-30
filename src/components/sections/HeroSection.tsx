@@ -88,7 +88,7 @@ export const HeroSection = () => {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden particle-ring pt-32 pb-32"
+      className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden particle-ring pt-32 pb-32 md:pt-24 md:pb-16"
       style={{
         '--ring-x': mousePosition.x,
         '--ring-y': mousePosition.y,
@@ -162,7 +162,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="flex flex-col items-center mb-10 mt-20 md:mt-16"
+            className="flex flex-col items-center mb-10 mt-20 md:mb-6 md:mt-8"
           >
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -179,7 +179,7 @@ export const HeroSection = () => {
           </motion.div>
 
           {/* Main heading with staggered text reveal */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-8 leading-[1.1] tracking-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-6xl font-bold mb-8 md:mb-5 leading-[1.1] tracking-tight">
             <motion.span
               className="block text-foreground"
               custom={0}
@@ -218,7 +218,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.8 }}
-            className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed hero-description"
+            className="text-base sm:text-lg md:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto mb-12 md:mb-7 leading-relaxed hero-description"
           >
             From invoice processing to custom SaaS — we build and deploy intelligent systems, not demos.
             {' '}<span className="text-primary font-medium">Incubated at HIVE, Anurag University.</span>
@@ -229,11 +229,11 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10"
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10 md:mb-7"
           >
             <motion.a
               href="#submit"
-              className="group relative w-full max-w-[21rem] overflow-hidden rounded-2xl px-5 py-4 text-sm font-semibold shadow-2xl shadow-primary/20 sm:w-auto sm:max-w-none sm:px-10 sm:py-5 sm:text-lg"
+              className="group relative w-full max-w-[21rem] overflow-hidden rounded-2xl px-5 py-4 text-sm font-semibold shadow-2xl shadow-primary/20 sm:w-auto sm:max-w-none sm:px-10 sm:py-5 sm:text-lg md:px-8 md:py-4 md:text-base"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -248,7 +248,7 @@ export const HeroSection = () => {
             </motion.a>
             <motion.a
               href="/about"
-              className="group px-8 py-5 rounded-2xl font-semibold text-lg border border-border/60 hover:border-primary/40 transition-all text-muted-foreground hover:text-foreground"
+              className="group px-8 py-5 rounded-2xl font-semibold text-lg border border-border/60 hover:border-primary/40 transition-all text-muted-foreground hover:text-foreground md:py-4 md:text-base"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
             >
@@ -266,7 +266,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.3 }}
-            className="flex flex-wrap items-center justify-center gap-6 mb-32 text-xs text-muted-foreground"
+            className="flex flex-wrap items-center justify-center gap-6 mb-32 text-xs text-muted-foreground md:mb-12"
           >
             <span className="flex items-center gap-2">
               <img src={hiveLogo} alt="HIVE" width="96" height="24" loading="lazy" decoding="async" className="h-6 w-auto rounded-sm" />
@@ -294,7 +294,7 @@ export const HeroSection = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.5 }}
-          className="absolute bottom-24 left-1/2 -translate-x-1/2"
+          className="absolute bottom-24 left-1/2 -translate-x-1/2 md:bottom-5"
         >
           <motion.div
             animate={{ y: [0, 12, 0] }}
