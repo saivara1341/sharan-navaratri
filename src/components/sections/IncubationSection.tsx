@@ -123,6 +123,10 @@ export const IncubationSection = () => {
                     <img
                       src={hiveLogo}
                       alt="HIVE Logo"
+                      width="384"
+                      height="128"
+                      loading="lazy"
+                      decoding="async"
                       className="h-14 w-full object-contain sm:h-20 md:h-32"
                     />
                   </div>

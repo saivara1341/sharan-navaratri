@@ -257,7 +257,15 @@ const ProjectCard = ({
           className={`w-10 h-10 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl flex items-center justify-center ${project.iconBgClass || 'bg-[color:var(--note-icon)] dark:bg-[color:var(--note-icon-dark)]'} ${project.iconColorClass || ''} mb-2 sm:mb-4 overflow-hidden shadow-inner shrink-0`}
         >
           {project.image ? (
-            <img src={project.image} alt={`${project.name} logo`} className="w-full h-full object-cover" />
+            <img
+              src={project.image}
+              alt={`${project.name} logo`}
+              width="64"
+              height="64"
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover"
+            />
           ) : (
             IconComponent && <IconComponent className="w-5 h-5 sm:w-8 sm:h-8" />
           )}
@@ -413,6 +421,10 @@ const ProjectDetailsModal = ({
                 <img
                   src={project.image}
                   alt={`${project.name} logo`}
+                  width="80"
+                  height="80"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
               ) : (

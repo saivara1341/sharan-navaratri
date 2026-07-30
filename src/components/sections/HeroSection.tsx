@@ -51,14 +51,25 @@ export const HeroSection = () => {
 
   useEffect(() => {
     const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
-    if (connection?.saveData || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const isConstrainedDevice =
+      connection?.saveData ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      window.matchMedia('(pointer: coarse)').matches ||
+      window.innerWidth < 900;
+    if (isConstrainedDevice) return;
+
     const enableScene = () => setShowScene(true);
-    const idleId = 'requestIdleCallback' in window
-      ? window.requestIdleCallback(enableScene, { timeout: 2500 })
-      : window.setTimeout(enableScene, 1800);
+    const interactionEvents = ['pointerdown', 'keydown', 'scroll'] as const;
+    const handleFirstInteraction = () => {
+      window.setTimeout(enableScene, 1200);
+      interactionEvents.forEach(event => window.removeEventListener(event, handleFirstInteraction));
+    };
+    interactionEvents.forEach(event =>
+      window.addEventListener(event, handleFirstInteraction, { passive: true, once: true })
+    );
+
     return () => {
-      if ('cancelIdleCallback' in window) window.cancelIdleCallback(idleId);
-      else window.clearTimeout(idleId);
+      interactionEvents.forEach(event => window.removeEventListener(event, handleFirstInteraction));
     };
   }, []);
 

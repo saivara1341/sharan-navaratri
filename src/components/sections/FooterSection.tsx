@@ -74,6 +74,10 @@ export const FooterSection = () => {
               <img
                 src={siddhiLogo}
                 alt="Siddhi Dynamics"
+                width="56"
+                height="56"
+                loading="lazy"
+                decoding="async"
                 className="relative w-full h-full object-contain"
               />
             </motion.div>

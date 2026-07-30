@@ -130,6 +130,12 @@
   }
 }
 
+/* Keep below-the-fold sections out of initial layout and paint work. */
+main > section:not(:first-child) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+}
+
 @layer components {
 
   /* Electric border effect */
