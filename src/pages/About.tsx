@@ -3,7 +3,9 @@ import { motion } from 'framer-motion';
 import { Navbar } from '@/components/layout/Navbar';
 import { FooterSection } from '@/components/sections/FooterSection';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Building2, Users, Rocket, Award, Brain, Zap, Globe, Heart } from 'lucide-react';
+import { ArrowRight, Building2, Users, Rocket, Award, Brain, Zap, Globe, Heart, Mail, Phone } from 'lucide-react';
+import founderSai from '@/assets/founder-sarugu-sai-vara-prasad.jpeg';
+import cofounderDevi from '@/assets/cofounder-sarugu-devi-vara-prasad.png';
 
 const MILESTONES = [
   { year: '2024', event: 'Siddhi Dynamics LLP founded in Hyderabad, India' },
@@ -38,6 +40,27 @@ const VALUES = [
   },
 ];
 
+const FOUNDERS = [
+  {
+    name: 'Sarugu Sai Vara Prasad',
+    role: 'Founder & Designated Partner',
+    email: 'saivaraprasad@siddhidynamics.in',
+    phone: '+91 6303602743',
+    phoneHref: '+916303602743',
+    image: founderSai,
+    imagePosition: 'object-top',
+  },
+  {
+    name: 'Sarugu Devi Vara Prasad',
+    role: 'Co-Founder & Designated Partner',
+    email: 'sarugudevivaraprasad@gmail.com',
+    phone: '+91 6309891760',
+    phoneHref: '+916309891760',
+    image: cofounderDevi,
+    imagePosition: 'object-center',
+  },
+];
+
 const orgSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
@@ -57,6 +80,22 @@ const orgSchema = {
   },
   "description": "Siddhi Dynamics LLP is a deep-tech AI innovation firm specializing in agentic AI, generative AI, business automation, SaaS, and ERP solutions for Indian businesses.",
   "numberOfEmployees": { "@type": "QuantitativeValue", "minValue": 5, "maxValue": 20 },
+  "founder": [
+    {
+      "@type": "Person",
+      "name": "Sarugu Sai Vara Prasad",
+      "jobTitle": "Founder & Designated Partner",
+      "email": "saivaraprasad@siddhidynamics.in",
+      "telephone": "+91-6303602743"
+    },
+    {
+      "@type": "Person",
+      "name": "Sarugu Devi Vara Prasad",
+      "jobTitle": "Co-Founder & Designated Partner",
+      "email": "sarugudevivaraprasad@gmail.com",
+      "telephone": "+91-6309891760"
+    }
+  ],
   "sameAs": [
     "https://www.linkedin.com/company/siddhi-dynamics-llp",
     "https://www.instagram.com/siddhidynamics/"
@@ -249,6 +288,75 @@ export default function About() {
                   </div>
                 ))}
               </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Founders */}
+        <section className="py-20 border-t border-border/30 bg-card/20">
+          <div className="container mx-auto px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-14"
+            >
+              <span className="text-primary text-sm font-bold tracking-widest uppercase mb-4 block">
+                Leadership
+              </span>
+              <h2 className="text-4xl md:text-5xl font-black mb-4">Meet Our Founders</h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                The people building Siddhi Dynamics and shaping its long-term vision.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              {FOUNDERS.map((founder, index) => (
+                <motion.article
+                  key={founder.name}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.65, delay: index * 0.12 }}
+                  className="group overflow-hidden rounded-3xl border border-border/50 bg-card shadow-[0_18px_60px_rgba(15,23,42,0.08)] transition-all duration-500 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_24px_75px_rgba(15,23,42,0.13)]"
+                >
+                  <div className="relative aspect-[4/4.25] overflow-hidden bg-muted">
+                    <img
+                      src={founder.image}
+                      alt={`${founder.name}, ${founder.role} at Siddhi Dynamics`}
+                      className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03] ${founder.imagePosition}`}
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/45 to-transparent" />
+                  </div>
+
+                  <div className="p-6 sm:p-8">
+                    <h3 className="text-2xl font-black tracking-tight text-foreground mb-1">{founder.name}</h3>
+                    <p className="text-primary font-semibold mb-6">{founder.role}</p>
+
+                    <div className="space-y-3">
+                      <a
+                        href={`mailto:${founder.email}`}
+                        className="flex items-center gap-3 text-sm text-muted-foreground transition-colors hover:text-primary break-all"
+                      >
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                          <Mail className="h-4 w-4 text-primary" />
+                        </span>
+                        {founder.email}
+                      </a>
+                      <a
+                        href={`tel:${founder.phoneHref}`}
+                        className="flex items-center gap-3 text-sm text-muted-foreground transition-colors hover:text-primary"
+                      >
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                          <Phone className="h-4 w-4 text-primary" />
+                        </span>
+                        {founder.phone}
+                      </a>
+                    </div>
+                  </div>
+                </motion.article>
+              ))}
             </div>
           </div>
         </section>
