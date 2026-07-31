@@ -103,7 +103,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       className="relative group cursor-pointer perspective-1000 h-full"
     >
       <div
-        className={`glass-card bg-[image:var(--feature-wash)] p-6 sm:p-10 h-full min-h-[330px] sm:min-h-[460px] transition-all duration-500 dark:bg-[image:var(--feature-wash-dark)] ${isHovered ? 'electric-border' : ''}`}
+        className={`glass-card bg-[image:var(--feature-wash)] p-6 sm:p-8 h-full min-h-[330px] md:min-h-[350px] transition-all duration-500 dark:bg-[image:var(--feature-wash-dark)] ${isHovered ? 'electric-border' : ''}`}
         style={{
           '--feature-wash': palette.wash,
           '--feature-wash-dark': palette.darkWash,
@@ -181,7 +181,7 @@ const PinnedFeatureCard = ({
       aria-hidden={!isVisible}
     >
       <div
-        className="w-full max-w-4xl bg-card border border-border/50 rounded-2xl shadow-2xl overflow-hidden"
+        className="w-full max-w-3xl bg-card border border-border/50 rounded-2xl shadow-2xl overflow-hidden"
         style={{
           boxShadow: `0 ${24 + index * 8}px ${60 + index * 8}px hsl(240 10% 5% / ${0.14 + index * 0.03})`,
         }}
@@ -365,7 +365,7 @@ export const VisionSection = () => {
             </motion.div>
 
             {/* Desktop Pinned Feature Cards */}
-            <div className="relative w-full max-w-4xl h-[440px] flex items-center justify-center">
+            <div className="relative w-full max-w-3xl h-[360px] flex items-center justify-center">
               {features.map((feature, index) => (
                 <PinnedFeatureCard
                   key={feature.title}
