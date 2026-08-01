@@ -1,10 +1,11 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { MorphingText } from '@/components/ui/morphing-text';
+import siddhiLogo from '@/assets/siddhi-logo.png';
 
 const INTRO_STORAGE_KEY = 'siddhi-intro-seen';
 const INTRO_DURATION = 7000;
+const INTRO_EXIT_DURATION = 800;
 
 export const SiteIntro = () => {
   const location = useLocation();
@@ -25,7 +26,7 @@ export const SiteIntro = () => {
 
     const timer = window.setTimeout(
       () => setVisible(false),
-      reduceMotion ? 900 : INTRO_DURATION
+      reduceMotion ? 900 : INTRO_DURATION - INTRO_EXIT_DURATION
     );
 
     return () => {
@@ -42,7 +43,7 @@ export const SiteIntro = () => {
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.025, filter: 'blur(10px)' }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: INTRO_EXIT_DURATION / 1000, ease: [0.22, 1, 0.36, 1] }}
           role="status"
           aria-label="Welcome to Siddhi Dynamics"
         >
@@ -54,11 +55,35 @@ export const SiteIntro = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75 }}
           >
-            <p>Intelligence · Innovation · India</p>
-            <MorphingText
-              className="site-intro-morph"
-              texts={['Welcome', 'to', 'Siddhi', 'Dynamics']}
-            />
+            <motion.p
+              className="site-intro-welcome"
+              initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45, duration: 0.55 }}
+            >
+              Welcome to
+            </motion.p>
+            <motion.div
+              className="site-intro-brand-lockup"
+              initial={reduceMotion ? false : { opacity: 0, y: 18, scale: 0.92 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.7, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <img className="site-intro-logo" src={siddhiLogo} alt="" />
+              <h1 className="site-intro-brand" aria-label="SiddhiDynamics LLP">
+                <span className="site-intro-brand-siddhi">Siddhi</span>
+                <span className="site-intro-brand-dynamics">Dynamics</span>
+                <span className="site-intro-brand-llp">LLP</span>
+              </h1>
+            </motion.div>
+            <motion.p
+              className="site-intro-tagline"
+              initial={reduceMotion ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.25, duration: 0.7 }}
+            >
+              Building Ideas · Creating Impact
+            </motion.p>
             <div className="site-intro-line">
               <span />
               <i />

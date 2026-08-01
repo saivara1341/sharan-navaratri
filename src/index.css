@@ -988,8 +988,16 @@ body:has(.site-intro) {
   text-align: center;
 }
 
-.site-intro-content > p {
-  margin-bottom: clamp(1.5rem, 4vh, 2.8rem);
+.site-intro-logo {
+  width: clamp(4rem, 8vw, 6.5rem);
+  height: clamp(4rem, 8vw, 6.5rem);
+  flex: 0 0 auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 28px rgb(249 115 22 / 0.28));
+}
+
+.site-intro-welcome {
+  margin: 0 0 clamp(0.45rem, 1.2vh, 0.75rem);
   color: rgb(255 255 255 / 0.48);
   font-size: clamp(0.62rem, 1.1vw, 0.78rem);
   font-weight: 700;
@@ -997,15 +1005,45 @@ body:has(.site-intro) {
   text-transform: uppercase;
 }
 
-.site-intro-morph {
-  height: clamp(5rem, 13vw, 9rem);
-  max-width: 100%;
+.site-intro-brand {
+  margin: 0;
   color: #fff;
   font-family: var(--font-display, ui-sans-serif), sans-serif;
-  font-size: clamp(3.2rem, 10vw, 8.4rem) !important;
+  font-size: clamp(2.7rem, 9.2vw, 7.8rem);
+  line-height: 0.95;
   font-weight: 800;
   letter-spacing: -0.055em;
   text-shadow: 0 0 50px rgb(255 255 255 / 0.12);
+  white-space: nowrap;
+}
+
+.site-intro-brand-lockup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.7rem, 2vw, 1.35rem);
+}
+
+.site-intro-brand-dynamics {
+  margin-left: 0.09em;
+}
+
+.site-intro-brand-llp {
+  margin-left: 0.5em;
+  color: rgb(255 255 255 / 0.58);
+  font-size: 0.27em;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  vertical-align: 0.42em;
+}
+
+.site-intro-tagline {
+  margin: clamp(1rem, 2.5vh, 1.6rem) 0 0;
+  color: rgb(255 255 255 / 0.48);
+  font-size: clamp(0.58rem, 1vw, 0.72rem);
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
 }
 
 .site-intro-line {
@@ -1029,4 +1067,24 @@ body:has(.site-intro) {
 
 @media (prefers-reduced-motion: reduce) {
   .site-intro-glow { animation: none; }
+}
+
+@media (max-width: 520px) {
+  .site-intro-brand-lockup {
+    gap: 0.55rem;
+  }
+
+  .site-intro-logo {
+    width: clamp(3.2rem, 15vw, 4.2rem);
+    height: clamp(3.2rem, 15vw, 4.2rem);
+  }
+
+  .site-intro-brand {
+    font-size: clamp(2rem, 9.8vw, 3.2rem);
+    letter-spacing: -0.07em;
+  }
+
+  .site-intro-tagline {
+    letter-spacing: 0.18em;
+  }
 }
