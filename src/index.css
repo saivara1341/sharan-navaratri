@@ -684,6 +684,8 @@ main > section:not(:first-child) {
 }
 
 .independence-kicker {
+  position: relative;
+  z-index: 10;
   display: flex;
   align-items: center;
   gap: 0.9rem;
@@ -706,7 +708,7 @@ main > section:not(:first-child) {
 
 .independence-flag-stage {
   position: relative;
-  width: min(1120px, 94vw);
+  width: min(1320px, 112vw);
   perspective: 1400px;
 }
 
@@ -714,7 +716,7 @@ main > section:not(:first-child) {
   position: absolute;
   inset: 12% 5% -5%;
   z-index: -1;
-  border-radius: 50%;
+  border-radius: 46%;
   background: rgb(0 0 0 / 0.88);
   filter: blur(38px);
   transform: translateY(48px) scale(0.9);
@@ -722,63 +724,86 @@ main > section:not(:first-child) {
 
 .independence-flag {
   position: relative;
-  height: clamp(400px, 60vh, 650px);
-  overflow: hidden;
-  border-radius: 2px 18px 18px 2px;
+  height: clamp(430px, 68vh, 720px);
   transform-origin: left center;
   transform-style: preserve-3d;
-  box-shadow: 0 30px 100px rgb(0 0 0 / 0.64), inset 0 0 40px rgb(0 0 0 / 0.2);
-  animation: independence-flag-float 5.2s ease-in-out infinite;
+  filter: drop-shadow(0 42px 44px rgb(0 0 0 / 0.62));
+  animation: independence-flag-float 6.5s ease-in-out infinite;
 }
 
-.flag-band {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 33.34%;
+.independence-flag-3d {
+  overflow: visible;
+  filter: drop-shadow(0 44px 46px rgb(0 0 0 / 0.72));
 }
 
-.flag-saffron { top: 0; background: linear-gradient(90deg, #e97c16, #ff9933 45%, #f68b21); }
-.flag-white { top: 33.33%; background: linear-gradient(90deg, #ecebe4, #fff 45%, #e7e8e1); }
-.flag-green { top: 66.66%; background: linear-gradient(90deg, #087a18, #138808 48%, #076c19); }
-
-.flag-folds {
+.cinematic-flag-canvas {
   position: absolute;
-  inset: -8%;
+  inset: -8% -6%;
+  z-index: 1;
+}
+
+.independence-flag-3d .independence-copy {
+  z-index: 3;
+  pointer-events: none;
+}
+
+.independence-flag-3d .independence-eyebrow {
+  padding: 0.42rem 0.8rem;
+  border-radius: 999px;
+  color: rgb(0 0 80 / 0.76);
+  background: rgb(255 255 255 / 0.28);
+  backdrop-filter: blur(5px);
+}
+
+.independence-flag-3d .independence-copy h1 {
+  color: #080b15;
+  text-shadow: 0 2px 0 rgb(255 255 255 / 0.58), 0 8px 28px rgb(255 255 255 / 0.4);
+}
+
+.independence-flag-3d .independence-copy h1 span {
+  margin-top: 0.42em;
+  font-family: inherit;
+  font-size: 0.42em;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.independence-flag-3d .independence-rotating-copy {
+  gap: 0.55rem;
+  margin-top: clamp(1.6rem, 4vh, 2.7rem);
+  padding: 0.62rem 1.15rem;
+  border-radius: 999px;
+  color: #fff;
+  background: rgb(0 0 80 / 0.72);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.18), inset 0 1px 0 rgb(255 255 255 / 0.2);
+  backdrop-filter: blur(10px);
+  text-shadow: none;
+}
+
+.independence-flag-3d .independence-rotating-copy > span:last-child {
+  color: #fff;
+  font-weight: 800;
+}
+
+.cinematic-flag-svg {
+  position: absolute;
+  inset: -4% -2%;
+  width: 104%;
+  height: 108%;
+  overflow: visible;
+}
+
+.flag-sheen {
+  position: absolute;
+  inset: 3% 1% 2%;
   z-index: 4;
   pointer-events: none;
-  mix-blend-mode: multiply;
-  background:
-    repeating-linear-gradient(
-      96deg,
-      transparent 0%,
-      rgb(0 0 0 / 0.05) 5%,
-      rgb(255 255 255 / 0.14) 10%,
-      rgb(0 0 0 / 0.13) 16%,
-      transparent 23%
-    );
-  background-size: 160% 100%;
-  animation: independence-fabric 4.2s ease-in-out infinite;
-}
-
-.flag-folds::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0.24;
-  background-image: repeating-linear-gradient(0deg, transparent 0 2px, rgb(20 20 20 / 0.08) 3px);
-}
-
-.independence-chakra {
-  position: absolute;
-  z-index: 2;
-  top: 50%;
-  left: 50%;
-  width: clamp(102px, 12vw, 160px);
-  color: #000080;
-  transform: translate(-50%, -50%);
-  opacity: 0.22;
-  animation: independence-chakra-spin 28s linear infinite;
+  clip-path: polygon(0 4%, 100% 0, 100% 96%, 0 100%);
+  background: linear-gradient(105deg, transparent 25%, rgb(255 255 255 / 0.18) 42%, transparent 57%);
+  transform: translateX(-48%);
+  animation: independence-sheen 5.5s ease-in-out infinite;
 }
 
 .independence-copy {
@@ -789,15 +814,15 @@ main > section:not(:first-child) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: clamp(2rem, 5vw, 5rem);
+  padding: clamp(2rem, 5vw, 5rem) clamp(3rem, 10vw, 9rem);
   text-align: center;
   color: #070b14;
-  text-shadow: 0 1px 0 rgb(255 255 255 / 0.34);
+  text-shadow: 0 1px 0 rgb(255 255 255 / 0.6), 0 4px 18px rgb(255 255 255 / 0.24);
 }
 
 .independence-eyebrow {
   margin-bottom: 0.8rem;
-  color: #000080;
+  color: rgb(0 0 128 / 0.82);
   font-size: clamp(0.7rem, 1.3vw, 0.95rem);
   font-weight: 800;
   letter-spacing: 0.28em;
@@ -806,10 +831,11 @@ main > section:not(:first-child) {
 
 .independence-copy h1 {
   max-width: 900px;
-  font-size: clamp(2.4rem, 6vw, 5.7rem);
+  font-size: clamp(2.7rem, 6.2vw, 6.2rem);
   font-weight: 900;
   line-height: 0.93;
   letter-spacing: -0.055em;
+  filter: drop-shadow(0 2px 1px rgb(255 255 255 / 0.42));
 }
 
 .independence-copy h1 span {
@@ -840,9 +866,21 @@ main > section:not(:first-child) {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  width: max-content;
   gap: 0.75rem;
-  color: rgb(255 255 255 / 0.62);
+  position: absolute;
+  bottom: 7.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 8;
+  padding: 0.65rem 1.1rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 999px;
+  color: rgb(255 255 255 / 0.82);
+  background: rgb(5 8 13 / 0.72);
+  box-shadow: 0 12px 35px rgb(0 0 0 / 0.28);
+  backdrop-filter: blur(12px);
   font-family: Georgia, 'Times New Roman', serif;
   font-size: clamp(0.78rem, 1.3vw, 1rem);
   font-style: italic;
@@ -853,13 +891,13 @@ main > section:not(:first-child) {
 .independence-footer i:last-of-type { background: #138808; }
 
 @keyframes independence-flag-float {
-  0%, 100% { transform: rotateX(1deg) rotateY(-4deg) rotateZ(-0.4deg) translateY(0); }
-  50% { transform: rotateX(-1deg) rotateY(3deg) rotateZ(0.4deg) translateY(-12px); }
+  0%, 100% { transform: rotateX(1deg) rotateY(-5deg) rotateZ(-0.7deg) translate3d(-1%, 2px, 0); }
+  50% { transform: rotateX(-2deg) rotateY(4deg) rotateZ(0.7deg) translate3d(1%, -15px, 18px); }
 }
 
-@keyframes independence-fabric {
-  0%, 100% { background-position: 0% 50%; transform: skewY(-0.4deg) scaleX(1.02); }
-  50% { background-position: 100% 50%; transform: skewY(0.6deg) scaleX(1); }
+@keyframes independence-sheen {
+  0%, 100% { transform: translateX(-65%); opacity: 0.3; }
+  50% { transform: translateX(65%); opacity: 0.85; }
 }
 
 @keyframes independence-ambient-drift {
@@ -867,28 +905,128 @@ main > section:not(:first-child) {
   to { transform: translate3d(3%, 2%, 0) scale(1.08); }
 }
 
-@keyframes independence-chakra-spin {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
 .independence-flag.reduce-motion,
-.independence-flag.reduce-motion .flag-folds,
-.independence-flag.reduce-motion .independence-chakra { animation: none; }
+.independence-flag.reduce-motion .flag-sheen { animation: none; }
 
 @media (max-width: 640px) {
-  .independence-hero { padding: 6.5rem 0.75rem 1.5rem; }
-  .independence-flag-stage { width: 96vw; }
-  .independence-flag { height: min(66vh, 520px); border-radius: 2px 10px 10px 2px; }
-  .independence-copy { padding: 1.5rem 1.25rem; }
+  .independence-hero { gap: 0.65rem; padding: 6.5rem 0.75rem 1rem; }
+  .independence-flag-stage { width: 112vw; }
+  .independence-flag { height: min(58vh, 460px); }
+  .independence-copy { padding: 1.5rem 2.5rem; }
   .independence-copy h1 { font-size: clamp(2.1rem, 12vw, 3.6rem); }
   .independence-copy h1 span { font-size: 0.55em; }
-  .independence-rotating-copy { flex-direction: column; align-items: center; gap: 0.1rem; }
-  .independence-footer { max-width: 340px; gap: 0.5rem; }
+  .independence-flag-3d .independence-rotating-copy {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 1.45rem;
+    padding: 0.52rem 0.8rem;
+    font-size: 0.78rem;
+  }
+  .independence-footer {
+    width: max-content;
+    max-width: calc(100vw - 2rem);
+    gap: 0.42rem;
+    padding: 0.52rem 0.8rem;
+    font-size: 0.68rem;
+    white-space: nowrap;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .independence-ambient,
   .independence-flag,
-  .flag-folds,
-  .independence-chakra { animation: none !important; }
+  .flag-sheen { animation: none !important; }
+}
+/* One-time cinematic site introduction */
+.site-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: #fff;
+  background:
+    radial-gradient(circle at 50% 45%, rgb(255 255 255 / 0.055), transparent 32%),
+    linear-gradient(145deg, #050609 0%, #0a0d13 48%, #030405 100%);
+}
+
+body:has(.site-intro) {
+  overflow: hidden;
+}
+
+.site-intro::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(circle, #000 0%, transparent 72%);
+}
+
+.site-intro-glow {
+  position: absolute;
+  width: min(62vw, 780px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  filter: blur(110px);
+  opacity: 0.15;
+  animation: site-intro-drift 6s ease-in-out infinite alternate;
+}
+
+.site-intro-glow-saffron { top: -36%; left: -18%; background: #ff8c1a; }
+.site-intro-glow-green { right: -20%; bottom: -40%; background: #35a64a; animation-delay: -2s; }
+
+.site-intro-content {
+  position: relative;
+  z-index: 2;
+  width: min(92vw, 980px);
+  text-align: center;
+}
+
+.site-intro-content > p {
+  margin-bottom: clamp(1.5rem, 4vh, 2.8rem);
+  color: rgb(255 255 255 / 0.48);
+  font-size: clamp(0.62rem, 1.1vw, 0.78rem);
+  font-weight: 700;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+.site-intro-morph {
+  height: clamp(5rem, 13vw, 9rem);
+  max-width: 100%;
+  color: #fff;
+  font-family: var(--font-display, ui-sans-serif), sans-serif;
+  font-size: clamp(3.2rem, 10vw, 8.4rem) !important;
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  text-shadow: 0 0 50px rgb(255 255 255 / 0.12);
+}
+
+.site-intro-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: min(280px, 64vw);
+  margin: clamp(1.2rem, 3vh, 2rem) auto 0;
+}
+
+.site-intro-line span { height: 1px; flex: 1; }
+.site-intro-line span:first-child { background: linear-gradient(90deg, transparent, #ff9933); }
+.site-intro-line span:last-child { background: linear-gradient(90deg, #138808, transparent); }
+.site-intro-line i { width: 5px; height: 5px; border-radius: 50%; background: #fff; box-shadow: 0 0 16px #fff; }
+
+@keyframes site-intro-drift {
+  from { transform: translate3d(-3%, -2%, 0) scale(1); }
+  to { transform: translate3d(5%, 4%, 0) scale(1.14); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-intro-glow { animation: none; }
 }

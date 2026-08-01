@@ -1,24 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import FadeThrough from '@/components/smoothui/fade-through';
-
-const AshokaChakra = () => (
-  <svg aria-hidden="true" className="independence-chakra" viewBox="0 0 100 100">
-    <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" strokeWidth="3" />
-    <circle cx="50" cy="50" r="5" fill="currentColor" />
-    {Array.from({ length: 24 }, (_, index) => (
-      <line
-        key={index}
-        x1="50"
-        y1="50"
-        x2="50"
-        y2="16"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        transform={`rotate(${index * 15} 50 50)`}
-      />
-    ))}
-  </svg>
-);
+import { CinematicIndianFlag } from '@/components/three/CinematicIndianFlag';
 
 export const IndependenceDayHero = () => {
   const reduceMotion = useReducedMotion();
@@ -32,7 +14,7 @@ export const IndependenceDayHero = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2 }}
       >
-        <span /> 15 August <span />
+        <span /> 15th August <span />
       </motion.div>
 
       <motion.div
@@ -42,13 +24,8 @@ export const IndependenceDayHero = () => {
         transition={{ duration: 1.25, ease: [0.16, 1, 0.3, 1] }}
       >
         <div className="independence-flag-shadow" aria-hidden="true" />
-        <div className={`independence-flag ${reduceMotion ? 'reduce-motion' : ''}`}>
-          <div className="flag-folds" aria-hidden="true" />
-          <div className="flag-band flag-saffron" />
-          <div className="flag-band flag-white">
-            <AshokaChakra />
-          </div>
-          <div className="flag-band flag-green" />
+        <div className={`independence-flag independence-flag-3d ${reduceMotion ? 'reduce-motion' : ''}`}>
+          <CinematicIndianFlag />
 
           <div className="independence-copy">
             <motion.p
@@ -57,11 +34,11 @@ export const IndependenceDayHero = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8, duration: 0.8 }}
             >
-              Siddhi Dynamics celebrates
+              Siddhi Dynamics · India
             </motion.p>
             <h1 id="independence-title">
               Happy Independence Day
-              <span>to every Indian.</span>
+              <span>to every Indian</span>
             </h1>
             <div className="independence-rotating-copy" aria-label="Our promise to India">
               <span>We build to</span>
