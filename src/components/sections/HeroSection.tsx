@@ -1,7 +1,8 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { lazy, Suspense, useRef, useEffect, useState } from 'react';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import hiveLogo from '@/assets/hive-logo.jpg';
+import FadeThrough from '@/components/smoothui/fade-through';
 const Scene3D = lazy(() => import('../three/Scene3D').then(module => ({ default: module.Scene3D })));
 
 const floatingAnimation = {
@@ -190,26 +191,29 @@ export const HeroSection = () => {
               We help Indian businesses
             </motion.span>
             <motion.span
-              className="block gradient-hero glow-text"
+              className="block text-foreground"
               custom={1}
               initial="hidden"
               animate="visible"
               variants={textRevealVariants}
             >
-              replace manual work
+              with AI systems that
             </motion.span>
             <motion.span
-              className="block text-foreground"
+              className="block min-h-[1.1em] gradient-hero glow-text"
               custom={2}
               initial="hidden"
               animate="visible"
               variants={textRevealVariants}
             >
-              with AI systems that{' '}<motion.span
-                className="gradient-hero-reverse glow-text-accent inline-block"
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >actually ship</motion.span>
+              <FadeThrough
+                interval={3000}
+                phrases={[
+                  'automate manual work.',
+                  'ship production AI.',
+                  'scale with confidence.',
+                ]}
+              />
             </motion.span>
           </h1>
 

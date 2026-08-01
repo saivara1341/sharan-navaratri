@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Navbar } from '@/components/layout/Navbar';
 import { HeroSection } from '@/components/sections/HeroSection';
+import { IndependenceDayHero } from '@/components/sections/IndependenceDayHero';
 import { VisionSection } from '@/components/sections/VisionSection';
 import { ProjectsSection } from '@/components/sections/ProjectsSection';
 import { SubmitSection } from '@/components/sections/SubmitSection';
@@ -18,6 +19,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 const Index = () => {
   const { pathname } = useLocation();
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const today = new Date();
+  const isIndependenceDay =
+    (today.getMonth() === 7 && today.getDate() === 15) ||
+    new URLSearchParams(window.location.search).get('independence') === 'preview';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -385,7 +390,7 @@ const Index = () => {
         })}
       </script>
       <main>
-        <HeroSection />
+        {isIndependenceDay ? <IndependenceDayHero /> : <HeroSection />}
         <VisionSection />
         <ServicesSection />
         <ProjectsSection />
