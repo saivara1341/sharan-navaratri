@@ -277,7 +277,7 @@ export const VisionSection = () => {
         {/* Mobile sticky scroll stack for AI capability cards */}
         <motion.div
           ref={containerRef} 
-          className="relative mt-2 h-[calc(100svh+400px)] md:hidden"
+          className="relative mt-2 h-[calc(100svh+1400px)] md:hidden"
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
@@ -329,7 +329,7 @@ export const VisionSection = () => {
         {/* Desktop sticky stack scroll animation */}
         <motion.div
           ref={desktopContainerRef}
-          className="relative mt-4 hidden h-[calc(100vh+480px)] md:block"
+          className="relative mt-4 hidden h-[calc(100vh+1800px)] md:block"
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
