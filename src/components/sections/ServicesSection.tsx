@@ -173,7 +173,7 @@ export function ServicesSection() {
       <div className="pointer-events-none absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-primary/[0.045] blur-[110px]" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
-        <div ref={stackRef} className="relative h-[calc(100svh+1400px)] md:h-[calc(100vh+1650px)]">
+        <div ref={stackRef} className="relative h-[calc(100svh+2800px)] md:h-[calc(100vh+3600px)]">
           <div className="sticky top-28 z-20 flex flex-col items-center pt-2 md:top-32">
             <div className="mb-7 grid w-full gap-5 lg:grid-cols-[1fr_0.9fr] lg:items-end lg:gap-16 md:mb-9">
               <motion.div
