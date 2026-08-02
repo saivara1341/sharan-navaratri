@@ -528,6 +528,25 @@ main > section:not(:first-child) {
     @apply absolute inset-0 pointer-events-none opacity-[0.03];
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   }
+
+  .pixel-service-card {
+    background-image:
+      radial-gradient(circle at 18px 18px, hsl(var(--primary) / 0.13) 0 2px, transparent 2px),
+      linear-gradient(90deg, hsl(var(--foreground) / 0.055) 1px, transparent 1px),
+      linear-gradient(0deg, hsl(var(--foreground) / 0.045) 1px, transparent 1px),
+      linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--secondary) / 0.72) 100%);
+    background-position: 0 0, -1px -1px, -1px -1px, 0 0;
+    background-size: 36px 36px, 18px 18px, 18px 18px, 100% 100%;
+    image-rendering: pixelated;
+  }
+
+  .dark .pixel-service-card {
+    background-image:
+      radial-gradient(circle at 18px 18px, hsl(var(--primary) / 0.22) 0 2px, transparent 2px),
+      linear-gradient(90deg, hsl(var(--foreground) / 0.07) 1px, transparent 1px),
+      linear-gradient(0deg, hsl(var(--foreground) / 0.06) 1px, transparent 1px),
+      linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--secondary) / 0.64) 100%);
+  }
 }
 
 @layer utilities {
