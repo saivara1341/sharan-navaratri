@@ -2,6 +2,7 @@ import { motion, useInView, AnimatePresence, useScroll, useTransform } from 'fra
 import { useRef, useState, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import KineticCenterBuild from '@/components/smoothui/kinetic-center-build';
 import { 
   GraduationCap, 
   Heart, 
@@ -817,13 +818,17 @@ export const ProjectsSection = () => {
             >
               {t('projects.title')}
             </motion.span>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 font-display">
-              <Trans
-                i18nKey="projects.subtitle"
-                components={[
-                  <span className="gradient-text-reverse glow-text-accent" />
-                ]}
-              />
+            <h2 className="mb-8 font-display">
+              {isInView ? (
+                <KineticCenterBuild
+                  className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight gradient-text-reverse glow-text-accent"
+                  phrases={["Building the Future"]}
+                />
+              ) : (
+                <span aria-hidden="true" className="invisible text-4xl md:text-5xl lg:text-6xl font-bold">
+                  Building the Future
+                </span>
+              )}
             </h2>
             <p className="text-muted-foreground text-lg md:text-xl max-w-3xl mx-auto">
               <Trans

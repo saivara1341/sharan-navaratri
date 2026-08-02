@@ -528,6 +528,25 @@ main > section:not(:first-child) {
     @apply absolute inset-0 pointer-events-none opacity-[0.03];
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   }
+
+  .pixel-service-card {
+    background-image:
+      radial-gradient(circle at 18px 18px, hsl(var(--primary) / 0.13) 0 2px, transparent 2px),
+      linear-gradient(90deg, hsl(var(--foreground) / 0.055) 1px, transparent 1px),
+      linear-gradient(0deg, hsl(var(--foreground) / 0.045) 1px, transparent 1px),
+      linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--secondary) / 0.72) 100%);
+    background-position: 0 0, -1px -1px, -1px -1px, 0 0;
+    background-size: 36px 36px, 18px 18px, 18px 18px, 100% 100%;
+    image-rendering: pixelated;
+  }
+
+  .dark .pixel-service-card {
+    background-image:
+      radial-gradient(circle at 18px 18px, hsl(var(--primary) / 0.22) 0 2px, transparent 2px),
+      linear-gradient(90deg, hsl(var(--foreground) / 0.07) 1px, transparent 1px),
+      linear-gradient(0deg, hsl(var(--foreground) / 0.06) 1px, transparent 1px),
+      linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--secondary) / 0.64) 100%);
+  }
 }
 
 @layer utilities {
@@ -652,5 +671,439 @@ main > section:not(:first-child) {
   to {
     transform: translate(var(--tx), var(--ty)) scale(0);
     opacity: 0;
+  }
+}
+/* Independence Day cinematic hero */
+.independence-hero {
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1rem, 2.2vh, 1.75rem);
+  padding: 7rem 1.25rem 2rem;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 50% 38%, hsl(var(--primary) / 0.12), transparent 34%),
+    linear-gradient(180deg, #05070b 0%, #0b111b 54%, #030507 100%);
+}
+
+.independence-ambient {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.46;
+  background-image:
+    linear-gradient(115deg, transparent 35%, rgb(255 153 51 / 0.12) 48%, transparent 61%),
+    linear-gradient(65deg, transparent 35%, rgb(19 136 8 / 0.1) 48%, transparent 61%);
+  filter: blur(24px);
+  animation: independence-ambient-drift 9s ease-in-out infinite alternate;
+}
+
+.independence-kicker {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  color: rgb(255 255 255 / 0.78);
+  font-size: clamp(0.72rem, 1.1vw, 0.86rem);
+  font-weight: 700;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+.independence-kicker span {
+  width: clamp(2rem, 5vw, 4rem);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #ff9933);
+}
+
+.independence-kicker span:last-child {
+  background: linear-gradient(90deg, #138808, transparent);
+}
+
+.independence-flag-stage {
+  position: relative;
+  width: min(1320px, 112vw);
+  perspective: 1400px;
+}
+
+.independence-flag-shadow {
+  position: absolute;
+  inset: 12% 5% -5%;
+  z-index: -1;
+  border-radius: 46%;
+  background: rgb(0 0 0 / 0.88);
+  filter: blur(38px);
+  transform: translateY(48px) scale(0.9);
+}
+
+.independence-flag {
+  position: relative;
+  height: clamp(430px, 68vh, 720px);
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 42px 44px rgb(0 0 0 / 0.62));
+  animation: independence-flag-float 6.5s ease-in-out infinite;
+}
+
+.independence-flag-3d {
+  overflow: visible;
+  filter: drop-shadow(0 44px 46px rgb(0 0 0 / 0.72));
+}
+
+.cinematic-flag-canvas {
+  position: absolute;
+  inset: -8% -6%;
+  z-index: 1;
+}
+
+.independence-flag-3d .independence-copy {
+  z-index: 3;
+  pointer-events: none;
+}
+
+.independence-flag-3d .independence-eyebrow {
+  padding: 0.42rem 0.8rem;
+  border-radius: 999px;
+  color: rgb(0 0 80 / 0.76);
+  background: rgb(255 255 255 / 0.28);
+  backdrop-filter: blur(5px);
+}
+
+.independence-flag-3d .independence-copy h1 {
+  color: #080b15;
+  text-shadow: 0 2px 0 rgb(255 255 255 / 0.58), 0 8px 28px rgb(255 255 255 / 0.4);
+}
+
+.independence-flag-3d .independence-copy h1 span {
+  margin-top: 0.42em;
+  font-family: inherit;
+  font-size: 0.42em;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.independence-flag-3d .independence-rotating-copy {
+  gap: 0.55rem;
+  margin-top: clamp(1.6rem, 4vh, 2.7rem);
+  padding: 0.62rem 1.15rem;
+  border-radius: 999px;
+  color: #fff;
+  background: rgb(0 0 80 / 0.72);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.18), inset 0 1px 0 rgb(255 255 255 / 0.2);
+  backdrop-filter: blur(10px);
+  text-shadow: none;
+}
+
+.independence-flag-3d .independence-rotating-copy > span:last-child {
+  color: #fff;
+  font-weight: 800;
+}
+
+.cinematic-flag-svg {
+  position: absolute;
+  inset: -4% -2%;
+  width: 104%;
+  height: 108%;
+  overflow: visible;
+}
+
+.flag-sheen {
+  position: absolute;
+  inset: 3% 1% 2%;
+  z-index: 4;
+  pointer-events: none;
+  clip-path: polygon(0 4%, 100% 0, 100% 96%, 0 100%);
+  background: linear-gradient(105deg, transparent 25%, rgb(255 255 255 / 0.18) 42%, transparent 57%);
+  transform: translateX(-48%);
+  animation: independence-sheen 5.5s ease-in-out infinite;
+}
+
+.independence-copy {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2rem, 5vw, 5rem) clamp(3rem, 10vw, 9rem);
+  text-align: center;
+  color: #070b14;
+  text-shadow: 0 1px 0 rgb(255 255 255 / 0.6), 0 4px 18px rgb(255 255 255 / 0.24);
+}
+
+.independence-eyebrow {
+  margin-bottom: 0.8rem;
+  color: rgb(0 0 128 / 0.82);
+  font-size: clamp(0.7rem, 1.3vw, 0.95rem);
+  font-weight: 800;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.independence-copy h1 {
+  max-width: 900px;
+  font-size: clamp(2.7rem, 6.2vw, 6.2rem);
+  font-weight: 900;
+  line-height: 0.93;
+  letter-spacing: -0.055em;
+  filter: drop-shadow(0 2px 1px rgb(255 255 255 / 0.42));
+}
+
+.independence-copy h1 span {
+  display: block;
+  margin-top: 0.16em;
+  color: #000080;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.58em;
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+.independence-rotating-copy {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2rem;
+  margin-top: clamp(1rem, 3vh, 2rem);
+  font-size: clamp(0.9rem, 1.6vw, 1.25rem);
+  font-weight: 700;
+}
+
+.independence-rotating-copy > span:last-child { color: #000080; }
+
+.independence-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  width: max-content;
+  gap: 0.75rem;
+  position: absolute;
+  bottom: 7.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 8;
+  padding: 0.65rem 1.1rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 999px;
+  color: rgb(255 255 255 / 0.82);
+  background: rgb(5 8 13 / 0.72);
+  box-shadow: 0 12px 35px rgb(0 0 0 / 0.28);
+  backdrop-filter: blur(12px);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(0.78rem, 1.3vw, 1rem);
+  font-style: italic;
+  letter-spacing: 0.04em;
+}
+
+.independence-footer i { width: 4px; height: 4px; border-radius: 50%; background: #ff9933; }
+.independence-footer i:last-of-type { background: #138808; }
+
+@keyframes independence-flag-float {
+  0%, 100% { transform: rotateX(1deg) rotateY(-5deg) rotateZ(-0.7deg) translate3d(-1%, 2px, 0); }
+  50% { transform: rotateX(-2deg) rotateY(4deg) rotateZ(0.7deg) translate3d(1%, -15px, 18px); }
+}
+
+@keyframes independence-sheen {
+  0%, 100% { transform: translateX(-65%); opacity: 0.3; }
+  50% { transform: translateX(65%); opacity: 0.85; }
+}
+
+@keyframes independence-ambient-drift {
+  from { transform: translate3d(-3%, -1%, 0) scale(1); }
+  to { transform: translate3d(3%, 2%, 0) scale(1.08); }
+}
+
+.independence-flag.reduce-motion,
+.independence-flag.reduce-motion .flag-sheen { animation: none; }
+
+@media (max-width: 640px) {
+  .independence-hero { gap: 0.65rem; padding: 6.5rem 0.75rem 1rem; }
+  .independence-flag-stage { width: 112vw; }
+  .independence-flag { height: min(58vh, 460px); }
+  .independence-copy { padding: 1.5rem 2.5rem; }
+  .independence-copy h1 { font-size: clamp(2.1rem, 12vw, 3.6rem); }
+  .independence-copy h1 span { font-size: 0.55em; }
+  .independence-flag-3d .independence-rotating-copy {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 1.45rem;
+    padding: 0.52rem 0.8rem;
+    font-size: 0.78rem;
+  }
+  .independence-footer {
+    width: max-content;
+    max-width: calc(100vw - 2rem);
+    gap: 0.42rem;
+    padding: 0.52rem 0.8rem;
+    font-size: 0.68rem;
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .independence-ambient,
+  .independence-flag,
+  .flag-sheen { animation: none !important; }
+}
+/* One-time cinematic site introduction */
+.site-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: #fff;
+  background:
+    radial-gradient(circle at 50% 45%, rgb(255 255 255 / 0.055), transparent 32%),
+    linear-gradient(145deg, #050609 0%, #0a0d13 48%, #030405 100%);
+}
+
+body:has(.site-intro) {
+  overflow: hidden;
+}
+
+.site-intro::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(circle, #000 0%, transparent 72%);
+}
+
+.site-intro-glow {
+  position: absolute;
+  width: min(62vw, 780px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  filter: blur(110px);
+  opacity: 0.15;
+  animation: site-intro-drift 6s ease-in-out infinite alternate;
+}
+
+.site-intro-glow-saffron { top: -36%; left: -18%; background: #ff8c1a; }
+.site-intro-glow-green { right: -20%; bottom: -40%; background: #35a64a; animation-delay: -2s; }
+
+.site-intro-content {
+  position: relative;
+  z-index: 2;
+  width: min(92vw, 980px);
+  text-align: center;
+}
+
+.site-intro-logo {
+  width: clamp(4rem, 8vw, 6.5rem);
+  height: clamp(4rem, 8vw, 6.5rem);
+  flex: 0 0 auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 28px rgb(249 115 22 / 0.28));
+}
+
+.site-intro-welcome {
+  margin: 0 0 clamp(0.45rem, 1.2vh, 0.75rem);
+  color: rgb(255 255 255 / 0.48);
+  font-size: clamp(0.62rem, 1.1vw, 0.78rem);
+  font-weight: 700;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+.site-intro-brand {
+  margin: 0;
+  color: #fff;
+  font-family: var(--font-display, ui-sans-serif), sans-serif;
+  font-size: clamp(2.7rem, 9.2vw, 7.8rem);
+  line-height: 0.95;
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  text-shadow: 0 0 50px rgb(255 255 255 / 0.12);
+  white-space: nowrap;
+}
+
+.site-intro-brand-lockup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.7rem, 2vw, 1.35rem);
+}
+
+.site-intro-brand-dynamics {
+  margin-left: 0.09em;
+}
+
+.site-intro-brand-llp {
+  margin-left: 0.5em;
+  color: rgb(255 255 255 / 0.58);
+  font-size: 0.27em;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  vertical-align: 0.42em;
+}
+
+.site-intro-tagline {
+  margin: clamp(1rem, 2.5vh, 1.6rem) 0 0;
+  color: rgb(255 255 255 / 0.48);
+  font-size: clamp(0.58rem, 1vw, 0.72rem);
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.site-intro-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: min(280px, 64vw);
+  margin: clamp(1.2rem, 3vh, 2rem) auto 0;
+}
+
+.site-intro-line span { height: 1px; flex: 1; }
+.site-intro-line span:first-child { background: linear-gradient(90deg, transparent, #ff9933); }
+.site-intro-line span:last-child { background: linear-gradient(90deg, #138808, transparent); }
+.site-intro-line i { width: 5px; height: 5px; border-radius: 50%; background: #fff; box-shadow: 0 0 16px #fff; }
+
+@keyframes site-intro-drift {
+  from { transform: translate3d(-3%, -2%, 0) scale(1); }
+  to { transform: translate3d(5%, 4%, 0) scale(1.14); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-intro-glow { animation: none; }
+}
+
+@media (max-width: 520px) {
+  .site-intro-brand-lockup {
+    gap: 0.55rem;
+  }
+
+  .site-intro-logo {
+    width: clamp(3.2rem, 15vw, 4.2rem);
+    height: clamp(3.2rem, 15vw, 4.2rem);
+  }
+
+  .site-intro-brand {
+    font-size: clamp(2rem, 9.8vw, 3.2rem);
+    letter-spacing: -0.07em;
+  }
+
+  .site-intro-tagline {
+    letter-spacing: 0.18em;
   }
 }

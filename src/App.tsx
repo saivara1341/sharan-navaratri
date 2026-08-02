@@ -7,6 +7,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { lazy, Suspense, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useLocation } from "react-router-dom";
+import { SiteIntro } from "@/components/SiteIntro";
 
 const queryClient = new QueryClient();
 const Index = lazy(() => import("./pages/Index"));
@@ -130,6 +131,7 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <AuthRedirectHandler />
+            <SiteIntro />
             <Suspense fallback={<div className="min-h-screen bg-background" aria-busy="true" aria-label="Loading page" />}>
             <Routes>
               <Route path="/" element={<Index />} />

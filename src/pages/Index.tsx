@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Navbar } from '@/components/layout/Navbar';
@@ -15,9 +15,48 @@ import { GoogleReviewCard } from "@/components/GoogleReviewCard";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from 'framer-motion';
 
+const IndependenceDayHero = lazy(() =>
+  import('@/components/sections/IndependenceDayHero').then(module => ({
+    default: module.IndependenceDayHero,
+  }))
+);
+
+const IST_OFFSET_MS = (5 * 60 + 30) * 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const isAugust15InIndia = (timestamp: number) => {
+  const indiaTime = new Date(timestamp + IST_OFFSET_MS);
+  return indiaTime.getUTCMonth() === 7 && indiaTime.getUTCDate() === 15;
+};
+
+const msUntilNextIndiaMidnight = (timestamp: number) => {
+  const shiftedIndiaTime = timestamp + IST_OFFSET_MS;
+  const nextMidnight = (Math.floor(shiftedIndiaTime / DAY_MS) + 1) * DAY_MS;
+  return nextMidnight - shiftedIndiaTime;
+};
+
 const Index = () => {
   const { pathname } = useLocation();
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [indiaClock, setIndiaClock] = useState(Date.now);
+  const isIndependenceDay =
+    isAugust15InIndia(indiaClock) ||
+    new URLSearchParams(window.location.search).get('independence') === 'preview';
+
+  useEffect(() => {
+    let timer: number;
+
+    const scheduleIndiaMidnight = () => {
+      const now = Date.now();
+      timer = window.setTimeout(() => {
+        setIndiaClock(Date.now());
+        scheduleIndiaMidnight();
+      }, msUntilNextIndiaMidnight(now) + 50);
+    };
+
+    scheduleIndiaMidnight();
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -385,7 +424,11 @@ const Index = () => {
         })}
       </script>
       <main>
-        <HeroSection />
+        {isIndependenceDay ? (
+          <Suspense fallback={<div className="min-h-[100dvh] bg-background" />}>
+            <IndependenceDayHero />
+          </Suspense>
+        ) : <HeroSection />}
         <VisionSection />
         <ServicesSection />
         <ProjectsSection />

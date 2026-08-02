@@ -6,6 +6,7 @@ import { Mic, MicOff, CheckCircle, Shield, ArrowRight, RefreshCw, ChevronDown } 
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { supabaseService } from '@/services/supabaseService';
+import SharedAxisX from '@/components/smoothui/shared-axis-x';
 
 const contactSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -812,9 +813,17 @@ export const SubmitSection = () => {
               </motion.div>
             </div>
 
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              Tell us your biggest{' '}
-              <span className="gradient-text glow-text">operational headache</span>
+            <h2 className="mb-6">
+              {isInView ? (
+                <SharedAxisX
+                  className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight gradient-text glow-text"
+                  phrases={["Tell us your biggest operational headache"]}
+                />
+              ) : (
+                <span aria-hidden="true" className="invisible text-4xl md:text-5xl lg:text-6xl font-bold">
+                  Tell us your biggest operational headache
+                </span>
+              )}
             </h2>
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-8">
               We'll map your process and show you exactly what AI can automate — in a single conversation.
