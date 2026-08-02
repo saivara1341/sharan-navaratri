@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import siddhiLogo from '@/assets/siddhi-logo.png';
 
 const INTRO_STORAGE_KEY = 'siddhi-intro-seen';
-const INTRO_DURATION = 7000;
+const INTRO_DURATION = 5000;
 const INTRO_EXIT_DURATION = 800;
 
 export const SiteIntro = () => {
