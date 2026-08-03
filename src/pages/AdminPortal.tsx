@@ -335,6 +335,16 @@ const AdminPortal = () => {
                 bounty_reward: bountyStr
             });
             toast.success("Project updated successfully");
+
+            // Automated email triggers based on status
+            if (editStatus === 'Completed' && editOpen.status !== 'Completed') {
+                emailService.projectComplete(editEmail, editName, editOrg || 'Client Project');
+            } else if ((editStatus === 'In Progress' || editStatus === 'Analysing') && editOpen.status === 'New') {
+                emailService.projectStart(editEmail, editName, editOrg || 'Client Project', editDeadline || 'Per Roadmap');
+            } else {
+                emailService.statusUpdate(editEmail, editName, editOrg || 'Client Project', editStatus, editProgress);
+            }
+
             setEditOpen(null);
             fetchSubmissions();
         } catch (error: any) {
@@ -364,6 +374,15 @@ const AdminPortal = () => {
                 bounty_reward: bountyStr
             });
             toast.success("Client project created successfully");
+
+            // Automated email welcome & kickoff
+            emailService.projectStart(
+                createEmail.trim().toLowerCase(),
+                createName.trim(),
+                createOrg.trim() || "New Project",
+                createDeadline || "As per agreed roadmap"
+            );
+
             setCreateOpen(false);
             setCreateName("");
             setCreateEmail("");

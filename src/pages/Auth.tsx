@@ -6,6 +6,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Eye, EyeOff, ArrowLeft, Mail, Lock, User, Loader2, Briefcase, TrendingUp, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
+import { emailService } from "@/services/emailService";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -86,6 +87,25 @@ const Auth = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      toast.error("Please enter your email address first.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: window.location.origin + "/auth?reset=true",
+      });
+      if (error) throw error;
+      toast.success(`Password reset link sent to ${email.trim()}! Check your inbox.`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send password reset email.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -99,6 +119,8 @@ const Auth = () => {
 
         if (error) throw error;
         toast.success("Welcome back!");
+        // Fire security login alert asynchronously
+        emailService.loginAlert(email.trim(), data.user?.user_metadata?.full_name || email.split('@')[0]);
         // The onAuthStateChange will handle redirection
       } else {
         const { data, error } = await supabase.auth.signUp({
@@ -112,6 +134,8 @@ const Auth = () => {
         if (error) throw error;
 
         toast.success("Account created!");
+        // Send welcome email
+        emailService.welcome(email.trim(), fullName.trim() || email.split('@')[0]);
         setIsLogin(true);
       }
     } catch (error: any) {
@@ -347,6 +371,17 @@ const Auth = () => {
                   {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                 </button>
               </div>
+              {isLogin && (
+                <div className="flex justify-end pt-1">
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
+                    className="text-xs text-primary hover:underline font-medium"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+              )}
             </div>
 
             <button

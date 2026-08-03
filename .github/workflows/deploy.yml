@@ -1,31 +1,39 @@
-name: Build and Deploy to GitHub Pages
+name: Deploy to Cloudflare Pages
 
 on:
   push:
     branches:
       - main
 
-permissions:
-  contents: write
-
 jobs:
-  build-and-deploy:
-    concurrency: ci-${{ github.ref }}
+  deploy:
     runs-on: ubuntu-latest
+    name: Deploy Siddhi Dynamics to Cloudflare Pages (CDN)
     steps:
-      - name: Checkout 🛎️
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install and Build 🔧
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Production Bundle
+        run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-        run: |
-          npm install
-          npm run build
+          VITE_ADMIN_EMAILS: ${{ secrets.VITE_ADMIN_EMAILS }}
 
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
         with:
-          folder: dist
-          branch: gh-pages
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: siddhidynamics
+          directory: dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

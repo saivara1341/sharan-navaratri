@@ -19,15 +19,17 @@ import {
     Sparkles,
 } from "lucide-react";
 
+import { emailService } from "@/services/emailService";
+
 const INQUIRY_TYPES = [
-    { value: "requirement",  label: "Project Requirement",      desc: "Share what you want to build" },
-    { value: "seo-geo",      label: "SEO / GEO / AEO Services", desc: "Search & AI visibility optimisation" },
-    { value: "website",      label: "Website Development",      desc: "Custom website or landing page" },
-    { value: "automation",   label: "Business Automation",      desc: "Workflow / RPA / AI automation" },
-    { value: "saas",         label: "SaaS / App Platform",      desc: "Full-stack product development" },
-    { value: "erp",          label: "ERP / Management System",  desc: "Enterprise resource planning" },
-    { value: "gbp",          label: "Google Business Profile",  desc: "Local SEO & GMB optimisation" },
-    { value: "other",        label: "Other / General Query",    desc: "Anything else on your mind" },
+    { value: "requirement",  label: "Project Requirement",      desc: "Share your requirement — Custom Quote", price: "Flexible Budget" },
+    { value: "seo-geo",      label: "SEO / GEO / AEO Services", desc: "Search & AI score analysis",          price: "Starts @ ₹15,000/mo" },
+    { value: "website",      label: "Website Development",      desc: "Custom Web / Landing Page",           price: "Starts @ ₹25,000" },
+    { value: "automation",   label: "Business Automation",      desc: "Workflow / RPA / AI Automation",      price: "Starts @ ₹35,000" },
+    { value: "saas",         label: "SaaS / App Platform",      desc: "Full-stack MVP Development",          price: "Custom Scope" },
+    { value: "erp",          label: "ERP / Management System",  desc: "Enterprise Resource Planning",        price: "Custom Scope" },
+    { value: "gbp",          label: "Google Business Profile",  desc: "Local GMB & Map Optimisation",        price: "Starts @ ₹8,000/mo" },
+    { value: "call-request", label: "📞 Request 1-on-1 Call",   desc: "Discuss requirement & budget on call",price: "FREE 15-Min Call" },
 ];
 
 export default function ProjectSubmitForm() {
@@ -47,6 +49,7 @@ export default function ProjectSubmitForm() {
     const [designation, setDesignation] = useState("");
     const [organization, setOrganization] = useState("");
     const [inquiryType, setInquiryType] = useState(defaultType);
+    const [preferredBudget, setPreferredBudget] = useState("flexible");
     const [message, setMessage] = useState("");
 
     useEffect(() => {
@@ -85,18 +88,27 @@ export default function ProjectSubmitForm() {
 
         setSubmitting(true);
         try {
+            const formattedMessage = `[Budget Preference: ${preferredBudget.toUpperCase()}] ${message.trim()}`;
             const { error } = await supabase.from("contact_submissions").insert({
                 name: name.trim(),
                 email: email.trim().toLowerCase(),
                 designation: designation.trim() || null,
                 organization: organization.trim() || null,
                 inquiry_type: inquiryType,
-                message: message.trim(),
+                message: formattedMessage,
                 status: "New",
                 progress: 0,
             });
 
             if (error) throw error;
+
+            // Trigger automated email confirmation to client
+            emailService.projectStart(
+                email.trim().toLowerCase(),
+                name.trim(),
+                `${inquiryType.toUpperCase()} Requirement`,
+                "Within 24 Hours (Review & Scope Call)"
+            );
 
             setStep("success");
             toast.success("Requirement submitted! Siddhi Dynamics team will reach out within 24 hours.");
@@ -199,17 +211,53 @@ export default function ProjectSubmitForm() {
                                         key={type.value}
                                         type="button"
                                         onClick={() => setInquiryType(type.value)}
-                                        className={`text-left p-3.5 rounded-xl border transition-all ${
+                                        className={`text-left p-3.5 rounded-xl border transition-all flex flex-col justify-between ${
                                             inquiryType === type.value
                                                 ? "bg-primary/10 border-primary text-foreground ring-1 ring-primary/30"
                                                 : "bg-card border-border hover:border-primary/40 text-muted-foreground hover:text-foreground"
                                         }`}
                                     >
-                                        <div className="text-sm font-bold">{type.label}</div>
-                                        <div className="text-xs mt-0.5 opacity-70">{type.desc}</div>
+                                        <div>
+                                            <div className="flex items-center justify-between gap-1">
+                                                <span className="text-sm font-bold">{type.label}</span>
+                                                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">{type.price}</span>
+                                            </div>
+                                            <div className="text-xs mt-1 opacity-70">{type.desc}</div>
+                                        </div>
                                     </button>
                                 ))}
                             </div>
+                        </div>
+
+                        {/* Budget Preference Selector */}
+                        <div className="p-4 rounded-2xl bg-card border border-border space-y-2">
+                            <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                                💰 Estimated Budget Preference
+                            </label>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                {[
+                                    { value: "flexible", label: "🤝 Custom / Discuss" },
+                                    { value: "starter", label: "₹10k - ₹30k" },
+                                    { value: "growth", label: "₹30k - ₹1 Lakh" },
+                                    { value: "enterprise", label: "₹1 Lakh+" },
+                                ].map((b) => (
+                                    <button
+                                        key={b.value}
+                                        type="button"
+                                        onClick={() => setPreferredBudget(b.value)}
+                                        className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all text-center ${
+                                            preferredBudget === b.value
+                                                ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                                                : "bg-muted/40 border-border text-muted-foreground hover:text-foreground"
+                                        }`}
+                                    >
+                                        {b.label}
+                                    </button>
+                                ))}
+                            </div>
+                            <p className="text-[11px] text-muted-foreground pt-1">
+                                💡 Don't worry if you're not sure! Select <strong>Custom / Discuss</strong> and we will tailor a package to your budget on a 1-on-1 call.
+                            </p>
                         </div>
 
                         {/* Personal Details */}

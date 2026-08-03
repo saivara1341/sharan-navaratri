@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
+import { emailService } from "@/services/emailService";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Tab = 'overview' | 'seo-geo' | 'analytics' | 'clients' | 'billing' | 'chat';
@@ -29,18 +30,17 @@ interface ClientBrand {
   email: string;
   address: string;
   goals: string[];
-  socialFb: string;
-  socialIg: string;
-  socialLi: string;
-  socialYt: string;
+  socialFb?: string;
+  socialIg?: string;
+  socialLi?: string;
+  socialYt?: string;
   addedAt: string;
-  // Dynamic analysis & metrics
-  geoScore?: number;
-  seoScore?: number;
-  gbpScore?: number;
-  aeoScore?: number;
-  status?: string;
-  progress?: number;
+  geoScore: number;
+  seoScore: number;
+  gbpScore: number;
+  aeoScore: number;
+  status: string;
+  progress: number;
   monthlyImpressions?: string;
   monthlyClicks?: string;
   ctr?: string;
@@ -102,7 +102,6 @@ export default function VMagneticMindsPortal() {
       gpay:    `tez://upi/pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${amt}&cu=INR`,
       phonepe: `phonepe://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${amt}&cu=INR`,
       paytm:   `paytmmp://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${amt}&cu=INR`,
-      bhim:    base,
     };
     return map[app] || base;
   };
@@ -112,6 +111,13 @@ export default function VMagneticMindsPortal() {
     if (utrInput.trim().length < 8) { toast.error("Enter a valid UTR (min 8 digits)"); return; }
     setSubmittingUtr(true);
     setTimeout(() => {
+      // Trigger confirmation email
+      emailService.paymentConfirm(
+        "ssaivaraprasad51@gmail.com",
+        agencyName,
+        selInvoice?.amount || "₹1,000",
+        selInvoice?.id || "INV-2026-001"
+      );
       setSubmittingUtr(false);
       setPayModalOpen(false);
       setUtrInput("");

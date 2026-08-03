@@ -24,9 +24,10 @@ const ContactInformation = () => (
     <section>
       <h2 className="text-xl font-bold text-foreground">Email and phone</h2>
       <p className="text-muted-foreground leading-relaxed">
-        Email: <a className="text-primary hover:underline" href="mailto:saivaraprasad@siddhidynamics.in">saivaraprasad@siddhidynamics.in</a><br />
+        Primary Email: <a className="text-primary hover:underline" href="mailto:saivaraprasad@siddhidynamics.in">saivaraprasad@siddhidynamics.in</a><br />
+        Support / Admin Email: <a className="text-primary hover:underline" href="mailto:ssaivaraprasad51@gmail.com">ssaivaraprasad51@gmail.com</a><br />
         Phone / WhatsApp: <a className="text-primary hover:underline" href="tel:+916303602743">+91 63036 02743</a><br />
-        Website: <a className="text-primary hover:underline" href="https://siddhidynamics.in">https://siddhidynamics.in</a>
+        Website: <a className="text-primary hover:underline" href="https://siddhidynamics.com">https://siddhidynamics.com</a>
       </p>
       <p className="text-muted-foreground leading-relaxed">Business enquiries are normally acknowledged within 2 business days. Payment, refund, or delivery requests are handled according to the applicable policy and project agreement.</p>
     </section>
