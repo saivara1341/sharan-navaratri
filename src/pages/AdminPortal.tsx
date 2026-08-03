@@ -162,6 +162,7 @@ const AdminPortal = () => {
 
     // Edit Modal states
     const [editOpen, setEditOpen] = useState<Submission | null>(null);
+    const [viewDetailsSub, setViewDetailsSub] = useState<Submission | null>(null);
     const [editStatus, setEditStatus] = useState("");
     const [editProgress, setEditProgress] = useState(0);
     const [editName, setEditName] = useState("");
@@ -806,34 +807,41 @@ const AdminPortal = () => {
                                             </div>
 
                                             <div className="shrink-0 flex md:flex-col gap-3">
-                                                <button
-                                                    onClick={() => openChat(sub)}
-                                                    className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center gap-2 hover:scale-105 transition-transform text-sm"
-                                                >
-                                                    <MessageCircle className="w-4 h-4" />
-                                                    Chat
-                                                </button>
-                                                <button
-                                                    onClick={() => openEdit(sub)}
-                                                    className="px-5 py-2.5 rounded-xl bg-muted text-foreground hover:bg-muted/80 font-semibold flex items-center gap-2 transition-all text-sm border border-border"
-                                                >
-                                                    <Edit3 className="w-4 h-4" />
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    onClick={() => window.open(`mailto:${sub.email}?subject=Regarding your ${getInquiryLabel(sub.inquiry_type)} on Siddhi Dynamics`)}
-                                                    className="px-5 py-2.5 rounded-xl bg-muted text-foreground hover:bg-muted/80 font-semibold flex items-center gap-2 transition-all text-sm border border-border"
-                                                >
-                                                    <Mail className="w-4 h-4" />
-                                                    Gmail
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDeleteSubmission(sub.id)}
-                                                    className="px-5 py-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 hover:text-red-400 font-semibold flex items-center gap-2 transition-all text-sm border border-red-500/20"
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
+                                                 <button
+                                                     onClick={() => setViewDetailsSub(sub)}
+                                                     className="px-5 py-2.5 rounded-xl bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 font-semibold flex items-center gap-2 transition-all text-sm"
+                                                 >
+                                                     <ClipboardList className="w-4 h-4" />
+                                                     View Details
+                                                 </button>
+                                                 <button
+                                                     onClick={() => openChat(sub)}
+                                                     className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center gap-2 hover:scale-105 transition-transform text-sm"
+                                                 >
+                                                     <MessageCircle className="w-4 h-4" />
+                                                     Chat
+                                                 </button>
+                                                 <button
+                                                     onClick={() => openEdit(sub)}
+                                                     className="px-5 py-2.5 rounded-xl bg-muted text-foreground hover:bg-muted/80 font-semibold flex items-center gap-2 transition-all text-sm border border-border"
+                                                 >
+                                                     <Edit3 className="w-4 h-4" />
+                                                     Edit
+                                                 </button>
+                                                 <button
+                                                     onClick={() => window.open(`mailto:${sub.email}?subject=Regarding your ${getInquiryLabel(sub.inquiry_type)} on Siddhi Dynamics`)}
+                                                     className="px-5 py-2.5 rounded-xl bg-muted text-foreground hover:bg-muted/80 font-semibold flex items-center gap-2 transition-all text-sm border border-border"
+                                                 >
+                                                     <Mail className="w-4 h-4" />
+                                                     Gmail
+                                                 </button>
+                                                 <button
+                                                     onClick={() => handleDeleteSubmission(sub.id)}
+                                                     className="px-5 py-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 hover:text-red-400 font-semibold flex items-center gap-2 transition-all text-sm border border-red-500/20"
+                                                 >
+                                                     Delete
+                                                 </button>
+                                             </div>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -1296,6 +1304,105 @@ const AdminPortal = () => {
                                         {sendingMsg ? <RefreshCw className="w-4 h-4 animate-spin text-white" /> : <Send className="w-4 h-4 text-white" />}
                                     </button>
                                 </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* ====== FULL INFORMATIVE DATA INSPECTOR MODAL ====== */}
+            <AnimatePresence>
+                {viewDetailsSub && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[220] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+                        onClick={() => setViewDetailsSub(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            onClick={e => e.stopPropagation()}
+                            className="w-full max-w-2xl max-h-[85vh] bg-card border border-border rounded-3xl flex flex-col overflow-hidden shadow-2xl"
+                        >
+                            {/* Header */}
+                            <div className="p-6 border-b border-border bg-muted/40 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                                        <ClipboardList className="w-5 h-5 text-primary" />
+                                    </div>
+                                    <div className="text-left">
+                                        <h3 className="font-extrabold text-lg text-foreground">{viewDetailsSub.name}</h3>
+                                        <p className="text-xs text-muted-foreground">{getInquiryLabel(viewDetailsSub.inquiry_type)} · Received {format(new Date(viewDetailsSub.created_at || ""), "PPP 'at' p")}</p>
+                                    </div>
+                                </div>
+                                <button onClick={() => setViewDetailsSub(null)} className="p-2 rounded-xl hover:bg-muted text-foreground transition-colors"><X className="w-5 h-5" /></button>
+                            </div>
+
+                            {/* Body */}
+                            <div className="flex-1 overflow-y-auto p-6 space-y-6 text-left">
+                                {/* Client & Organization */}
+                                <div className="p-4 rounded-2xl bg-muted/40 border border-border space-y-3">
+                                    <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary flex items-center gap-2">
+                                        <Users className="w-4 h-4" /> Client & Contact Details
+                                    </h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                        <div><span className="text-muted-foreground font-semibold">Name:</span> <strong className="text-foreground">{viewDetailsSub.name}</strong></div>
+                                        <div><span className="text-muted-foreground font-semibold">Email:</span> <strong className="text-foreground">{viewDetailsSub.email}</strong></div>
+                                        <div><span className="text-muted-foreground font-semibold">Role / Designation:</span> <strong className="text-foreground">{viewDetailsSub.designation || 'Not specified'}</strong></div>
+                                        <div><span className="text-muted-foreground font-semibold">Organization:</span> <strong className="text-foreground">{viewDetailsSub.organization || 'Not specified'}</strong></div>
+                                    </div>
+                                </div>
+
+                                {/* Inquiry & Specifications */}
+                                <div className="p-4 rounded-2xl bg-muted/40 border border-border space-y-3">
+                                    <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary flex items-center gap-2">
+                                        <Briefcase className="w-4 h-4" /> Inquiry & Project Specifications
+                                    </h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                        <div><span className="text-muted-foreground font-semibold">Type:</span> <span className="font-bold text-primary">{getInquiryLabel(viewDetailsSub.inquiry_type)}</span></div>
+                                        <div><span className="text-muted-foreground font-semibold">Status:</span> <span className="font-bold text-amber-400">{viewDetailsSub.status || 'New'}</span></div>
+                                        <div><span className="text-muted-foreground font-semibold">Development Phase:</span> <span className="font-bold text-emerald-400">Phase {Math.ceil((viewDetailsSub.progress || 0) / 20) || 1} ({viewDetailsSub.progress || 0}%)</span></div>
+                                        {(() => {
+                                            const meta = parseProjectMetadata(viewDetailsSub.bounty_reward);
+                                            return (
+                                                <>
+                                                    {meta.deadline && <div><span className="text-muted-foreground font-semibold">Target Deadline:</span> <strong className="text-foreground">{meta.deadline}</strong></div>}
+                                                    {meta.website_url && <div><span className="text-muted-foreground font-semibold">Website / URL:</span> <a href={meta.website_url} target="_blank" rel="noreferrer" className="text-blue-400 hover:underline">{meta.website_url}</a></div>}
+                                                    {meta.agreement && <div><span className="text-muted-foreground font-semibold">Agreement:</span> <strong className="text-foreground">{meta.agreement}</strong></div>}
+                                                </>
+                                            );
+                                        })()}
+                                    </div>
+                                </div>
+
+                                {/* Full Message */}
+                                <div className="p-4 rounded-2xl bg-muted/40 border border-border space-y-2">
+                                    <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary flex items-center gap-2">
+                                        <MessageSquare className="w-4 h-4" /> Full Submitted Message / Requirements
+                                    </h4>
+                                    <div className="text-xs text-foreground/90 leading-relaxed whitespace-pre-wrap font-sans p-4 bg-card rounded-xl border border-border">
+                                        {viewDetailsSub.message}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Footer Actions */}
+                            <div className="p-4 bg-muted border-t border-border flex flex-wrap gap-2 justify-end">
+                                <button onClick={() => {
+                                    navigator.clipboard.writeText(`Client: ${viewDetailsSub.name}\nEmail: ${viewDetailsSub.email}\nOrg: ${viewDetailsSub.organization || 'N/A'}\nType: ${viewDetailsSub.inquiry_type}\nMessage: ${viewDetailsSub.message}`);
+                                    toast.success("Full client details copied!");
+                                }} className="px-4 py-2 bg-card border border-border hover:bg-muted text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 text-foreground">
+                                    📋 Copy Details
+                                </button>
+                                <button onClick={() => { openEdit(viewDetailsSub); setViewDetailsSub(null); }} className="px-4 py-2 bg-card border border-border hover:bg-muted text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 text-foreground">
+                                    <Edit3 className="w-3.5 h-3.5" /> Edit & Update
+                                </button>
+                                <button onClick={() => { openChat(viewDetailsSub); setViewDetailsSub(null); }} className="px-4 py-2 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl hover:scale-105 transition-all flex items-center gap-1.5">
+                                    <MessageCircle className="w-3.5 h-3.5" /> Open Chat
+                                </button>
                             </div>
                         </motion.div>
                     </motion.div>
