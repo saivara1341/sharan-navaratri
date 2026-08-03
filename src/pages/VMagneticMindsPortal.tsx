@@ -62,14 +62,13 @@ export default function VMagneticMindsPortal() {
   // ── UPI / billing ──────────────────────────────────────────────────────────
   const upiId      = "6303602743@upi";
   const payeeName  = "Siddhi Dynamics LLP";
-  const upiName    = "Siddhi Dynamics";
-  const monthlyFee = "₹25,000";
+  const monthlyFee = "₹1,000";
 
-  // All pending – no payment received yet
+  // All pending – no payment received yet (₹1,000/mo for 12 months)
   const [invoices] = useState([
-    { id: "INV-VMM-001", month: "Month 1 (Aug 2026)", amount: "₹25,000", rawAmount: "25000", status: "Pending",  date: "2026-08-01", desc: "12-Month SLA Onboarding: SEO, GEO, AEO & GBP Setup" },
-    { id: "INV-VMM-002", month: "Month 2 (Sep 2026)", amount: "₹25,000", rawAmount: "25000", status: "Upcoming", date: "2026-09-01", desc: "Month 2 SEO/GEO Optimisation & GA Monthly Report" },
-    { id: "INV-VMM-003", month: "Month 3 (Oct 2026)", amount: "₹25,000", rawAmount: "25000", status: "Upcoming", date: "2026-10-01", desc: "Month 3 AI Search Citation Expansion & GBP Posts" },
+    { id: "INV-VMM-001", month: "Month 1 (Aug 2026)", amount: "₹1,000", rawAmount: "1000", status: "Pending",  date: "2026-08-01", desc: "12-Month SLA Onboarding: SEO, GEO, AEO & GBP Setup" },
+    { id: "INV-VMM-002", month: "Month 2 (Sep 2026)", amount: "₹1,000", rawAmount: "1000", status: "Upcoming", date: "2026-09-01", desc: "Month 2 SEO/GEO Optimisation & GA Monthly Report" },
+    { id: "INV-VMM-003", month: "Month 3 (Oct 2026)", amount: "₹1,000", rawAmount: "1000", status: "Upcoming", date: "2026-10-01", desc: "Month 3 AI Search Citation Expansion & GBP Posts" },
   ]);
 
   const [payModalOpen,   setPayModalOpen]   = useState(false);
@@ -78,7 +77,7 @@ export default function VMagneticMindsPortal() {
   const [submittingUtr,  setSubmittingUtr]  = useState(false);
 
   const buildUpiLink = (app: string) => {
-    const amt = selInvoice?.rawAmount || "25000";
+    const amt = selInvoice?.rawAmount || "1000";
     const base = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiName)}&am=${amt}&cu=INR&tn=${encodeURIComponent(selInvoice?.id || 'SLA')}`;
     const map: Record<string, string> = {
       gpay:    `tez://upi/pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiName)}&am=${amt}&cu=INR`,
@@ -265,7 +264,7 @@ export default function VMagneticMindsPortal() {
           <div>
             <p className="text-sm font-bold text-yellow-600 dark:text-yellow-400">Payment Pending — Month 1 Invoice Due</p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              No payment has been received yet. Please clear <strong>INV-VMM-001 (₹25,000)</strong> via UPI to activate your full SLA services.
+              No payment has been received yet. Please clear <strong>INV-VMM-001 (₹1,000)</strong> via UPI to activate your full SLA services.
               Go to the <button onClick={() => setActiveTab('billing')} className="underline text-primary font-semibold">Billing tab</button> to pay now.
             </p>
           </div>
@@ -527,7 +526,7 @@ export default function VMagneticMindsPortal() {
                           <CreditCard className="w-5 h-5 text-primary" /> 12-Month SLA Payment Schedule
                         </h3>
                         <p className="text-xs text-muted-foreground mt-0.5">
-                          Contract total: <strong>₹3,00,000</strong> · ₹25,000/month · <span className="text-amber-500 font-semibold">0 of 12 paid</span>
+                          Contract total: <strong>₹12,000</strong> · ₹1,000/month · <span className="text-amber-500 font-semibold">0 of 12 paid</span>
                         </p>
                       </div>
                       <span className="text-[10px] px-2 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-lg font-bold">⚙ Admin-set · Read only</span>
