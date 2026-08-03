@@ -389,33 +389,111 @@ export default function VMagneticMindsPortal() {
           </div>
         </motion.div>
 
-        {/* ── 2-Column Tab Grid ──────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {TABS.map((tab, i) => (
-            <motion.button key={tab.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col items-start gap-2 p-4 rounded-2xl border text-left transition-all group ${
-                activeTab === tab.id
-                  ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20'
-                  : 'glass-card border-border hover:border-primary/40 hover:shadow-sm'
-              }`}>
-              <div className={`${activeTab === tab.id ? 'text-primary-foreground' : 'text-primary'}`}>
-                {tab.icon}
-              </div>
-              <div>
-                <div className={`text-xs font-extrabold leading-tight ${activeTab === tab.id ? 'text-primary-foreground' : 'text-foreground'}`}>
-                  {tab.label}
+        {/* ── Client Portfolio Tab (always accessible) ─────────────────── */}
+        {activeTab === 'clients' && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {TABS.map((tab, i) => (
+              <motion.button key={tab.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex flex-col items-start gap-2 p-4 rounded-2xl border text-left transition-all group ${
+                  activeTab === tab.id
+                    ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20'
+                    : 'glass-card border-border hover:border-primary/40 hover:shadow-sm'
+                }`}>
+                <div className={`${activeTab === tab.id ? 'text-primary-foreground' : 'text-primary'}`}>
+                  {tab.icon}
                 </div>
-                <div className={`text-[10px] mt-0.5 ${activeTab === tab.id ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
-                  {tab.desc}
+                <div>
+                  <div className={`text-xs font-extrabold leading-tight ${activeTab === tab.id ? 'text-primary-foreground' : 'text-foreground'}`}>
+                    {tab.label}
+                  </div>
+                  <div className={`text-[10px] mt-0.5 ${activeTab === tab.id ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                    {tab.desc}
+                  </div>
                 </div>
-              </div>
-            </motion.button>
-          ))}
-        </div>
+              </motion.button>
+            ))}
+          </div>
+        )}
 
-        {/* ── Tab Content ────────────────────────────────────────────────── */}
+        {/* ── Tab Grid (only when client selected) ─────────────────────── */}
+        {activeTab !== 'clients' && selectedBrandId !== 'all' && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {TABS.map((tab, i) => (
+              <motion.button key={tab.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex flex-col items-start gap-2 p-4 rounded-2xl border text-left transition-all group ${
+                  activeTab === tab.id
+                    ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20'
+                    : 'glass-card border-border hover:border-primary/40 hover:shadow-sm'
+                }`}>
+                <div className={`${activeTab === tab.id ? 'text-primary-foreground' : 'text-primary'}`}>
+                  {tab.icon}
+                </div>
+                <div>
+                  <div className={`text-xs font-extrabold leading-tight ${activeTab === tab.id ? 'text-primary-foreground' : 'text-foreground'}`}>
+                    {tab.label}
+                  </div>
+                  <div className={`text-[10px] mt-0.5 ${activeTab === tab.id ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                    {tab.desc}
+                  </div>
+                </div>
+              </motion.button>
+            ))}
+          </div>
+        )}
+
+        {/* ── No Client Selected Gate ───────────────────────────────────── */}
+        {activeTab !== 'clients' && selectedBrandId === 'all' && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            className="glass-card rounded-3xl border border-dashed border-primary/30 p-12 text-center space-y-4"
+          >
+            {clients.length === 0 ? (
+              <>
+                <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto">
+                  <Users className="w-10 h-10 text-primary" />
+                </div>
+                <h3 className="text-xl font-extrabold text-foreground">No Clients Added Yet</h3>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                  Add your first client brand to unlock the 12-Month SLA dashboard, SEO/GEO analysis, reports, billing, and AI coordinator.
+                </p>
+                <button
+                  onClick={() => { setActiveTab('clients'); setShowClientForm(true); }}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground text-sm font-extrabold rounded-xl hover:scale-[1.02] transition-all shadow-md shadow-primary/20 mx-auto"
+                >
+                  <Plus className="w-4 h-4" /> Add First Client Brand
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto">
+                  <Filter className="w-10 h-10 text-primary" />
+                </div>
+                <h3 className="text-xl font-extrabold text-foreground">Select a Client to Continue</h3>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                  Pick a client brand from the dropdown above to view their 12-Month SLA, SEO/GEO scores, GA reports, billing, and AI support.
+                </p>
+                <div className="flex flex-wrap gap-3 justify-center mt-2">
+                  {clients.map(c => (
+                    <button
+                      key={c.id}
+                      onClick={() => { setSelectedBrandId(c.id); setActiveTab('overview'); toast.info(`Viewing ${c.businessName}`); }}
+                      className="flex items-center gap-2 px-4 py-2.5 bg-card border border-primary/30 hover:border-primary hover:bg-primary/5 text-sm font-bold text-foreground rounded-xl transition-all"
+                    >
+                      🏢 {c.businessName}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </motion.div>
+        )}
+
+        {/* ── Tab Content (only when a client is selected) ─────────────── */}
+        {selectedBrandId !== 'all' && (
         <AnimatePresence mode="wait">
 
           {/* ═══ OVERVIEW ══════════════════════════════════════════════════ */}
@@ -857,6 +935,7 @@ export default function VMagneticMindsPortal() {
             </motion.div>
           )}
         </AnimatePresence>
+        )}
       </main>
 
       {/* ════ PAY MODAL ════════════════════════════════════════════════════════ */}
