@@ -246,7 +246,7 @@ export default function VMagneticMindsPortal() {
 
   // ── Chat ───────────────────────────────────────────────────────────────────
   const [chatMessages, setChatMessages] = useState<any[]>([
-    { sender: "Siddhi AI", text: "Welcome V Magnetic Minds! I'm your dedicated AI coordinator for your 12-month SEO, GEO, AEO & GBP programme. Select any client brand to view their custom progress or reports.", time: "Now", isAdmin: true }
+    { sender: "Siddhi AI", text: `Welcome ${agencyName}! I'm your dedicated Siddhi AI coordinator for your 12-month SEO, GEO, AEO & GBP programme. Ask me anything about pricing, your clients, scores, invoices, or SLA progress.`, time: "Now", isAdmin: true }
   ]);
   const [chatInput, setChatInput] = useState("");
 
@@ -254,18 +254,67 @@ export default function VMagneticMindsPortal() {
     e.preventDefault();
     if (!chatInput.trim()) return;
     const msg = chatInput.trim();
+    const lower = msg.toLowerCase();
     setChatInput("");
-    setChatMessages(prev => [...prev, { sender: "V Magnetic Minds", text: msg, time: "Now", isAdmin: false }]);
+    const now = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    setChatMessages(prev => [...prev, { sender: agencyName, text: msg, time: now, isAdmin: false }]);
+
     setTimeout(() => {
-      let reply = "Thank you! I've logged your request. saivaraprasad will review and respond.";
-      if (/payment|upi|invoice|billing/i.test(msg))
-        reply = `Pay via UPI ID: ${upiId} or scan the QR in the Billing tab. After paying, submit your UTR reference there.`;
-      else if (/seo|geo|gbp|aeo|rank/i.test(msg))
-        reply = "Select any client brand from the dropdown filter at the top to inspect their exact GEO, SEO, GBP, and AEO score breakdowns.";
-      else if (/client|add|portfolio/i.test(msg))
-        reply = "Head to the Client Portfolio tab to add new client brands or click 'Inspect Analysis' on any card to view their progress.";
-      setChatMessages(prev => [...prev, { sender: "Siddhi AI", text: reply, time: "Now", isAdmin: true }]);
-    }, 900);
+      let reply = "";
+
+      // ── Pricing / Cost per client ──────────────────────────────────────
+      if (/cost|price|pricing|how much|per client|per month|fee|charge|rate/i.test(lower)) {
+        const clientCount = clients.length;
+        const totalMonthly = clientCount * 1000;
+        reply = clientCount === 0
+          ? `Your retainer with Siddhi Dynamics is ₹1,000 per client per month, on a 12-month SLA. You haven't added any clients yet — add your first client brand to get started!`
+          : `Your Siddhi Dynamics retainer is ₹1,000 per client per month.\n\nCurrently you have ${clientCount} client${clientCount > 1 ? 's' : ''} — that's ₹${totalMonthly.toLocaleString('en-IN')} / month total (₹${(totalMonthly * 12).toLocaleString('en-IN')} for the full 12-month SLA).\n\nClients managed:\n${clients.map((c, i) => `${i + 1}. ${c.businessName} — ₹1,000/mo`).join('\n')}`;
+      }
+
+      // ── Invoice / Billing / Payment ────────────────────────────────────
+      else if (/invoice|bill|payment|pay|upi|utr|due|pending/i.test(lower)) {
+        const pending = invoices.filter(inv => inv.status === "Pending");
+        const upcoming = invoices.filter(inv => inv.status === "Upcoming");
+        if (pending.length > 0) {
+          reply = `You have ${pending.length} pending invoice${pending.length > 1 ? 's' : ''}:\n\n${pending.map(p => `• ${p.id} — ${p.amount} (${p.month})`).join('\n')}\n\nPay via UPI ID: ${upiId} (${payeeName}). Open the Billing tab and click "Pay Now" on any invoice to submit your UTR after payment.`;
+        } else {
+          reply = `All invoices are up to date! ${upcoming.length > 0 ? `Next upcoming: ${upcoming[0].id} — ${upcoming[0].amount} due ${upcoming[0].date}.` : ''}\n\nUPI ID: ${upiId} | Payee: ${payeeName}`;
+        }
+      }
+
+      // ── Selected client specific info ──────────────────────────────────
+      else if (/score|seo|geo|gbp|aeo|rank|analysis|performance/i.test(lower)) {
+        if (selectedBrand) {
+          reply = `Here are the live scores for ${selectedBrand.businessName}:\n\n📍 GEO (AI Visibility): ${selectedBrand.geoScore || 82}/100\n🔍 SEO (Search Engine): ${selectedBrand.seoScore || 78}/100\n🏢 GBP (Google Business): ${selectedBrand.gbpScore || 84}/100\n🎯 AEO (Answer Engine): ${selectedBrand.aeoScore || 76}/100\n\n📊 Monthly Impressions: ${selectedBrand.monthlyImpressions || 'N/A'}\n👆 Clicks: ${selectedBrand.monthlyClicks || 'N/A'} | CTR: ${selectedBrand.ctr || 'N/A'}\n✅ Conversions: ${selectedBrand.conversions || 'N/A'}\n🤖 AI Citations: ${selectedBrand.aiCitations || 'N/A'}\n\nStatus: ${selectedBrand.status || 'Onboarding'}`;
+        } else if (clients.length === 0) {
+          reply = "No clients added yet. Add your first client brand to start tracking SEO, GEO, AEO & GBP scores.";
+        } else {
+          reply = `You have ${clients.length} client${clients.length > 1 ? 's' : ''}. Select a client from the dropdown above to view their individual scores:\n\n${clients.map((c, i) => `${i + 1}. ${c.businessName} — SEO: ${c.seoScore || 78} | GEO: ${c.geoScore || 82} | GBP: ${c.gbpScore || 84} | AEO: ${c.aeoScore || 76}`).join('\n')}`;
+        }
+      }
+
+      // ── Client list / portfolio ────────────────────────────────────────
+      else if (/client|portfolio|brand|how many|list/i.test(lower)) {
+        if (clients.length === 0) {
+          reply = "You haven't added any client brands yet. Go to the Client Portfolio tab and click \"Add Client Brand\" to get started.";
+        } else {
+          reply = `You're currently managing ${clients.length} client brand${clients.length > 1 ? 's' : ''} under ${agencyName}:\n\n${clients.map((c, i) => `${i + 1}. ${c.businessName}${c.category ? ` (${c.category})` : ''} — Status: ${c.status || 'Active'}`).join('\n')}\n\nSelect any client from the dropdown to drill into their analysis, GA reports, and billing.`;
+        }
+      }
+
+      // ── SLA / contract / duration ──────────────────────────────────────
+      else if (/sla|contract|duration|months|plan|12 month|start/i.test(lower)) {
+        reply = `Your SLA with Siddhi Dynamics is a 12-Month Executive Programme.\n\n📅 Contract: Aug 2026 – Aug 2027\n💰 Retainer: ${monthlyFee} per client per month\n🏢 Clients: ${clients.length} brand${clients.length !== 1 ? 's' : ''} managed\n⚡ Services: SEO, GEO (AI Search), AEO (Answer Engine), GBP Optimisation, GA Monthly Reports\n\nPayment is due on the 1st of each month. Current status: ${invoices[0]?.status === 'Pending' ? '⚠️ Month 1 payment pending' : '✅ Payments up to date'}`;
+      }
+
+      // ── Fallback ───────────────────────────────────────────────────────
+      else {
+        reply = `I'm your Siddhi AI coordinator for ${agencyName}'s 12-month SLA programme. I can help you with:\n\n• 💰 Pricing & cost per client\n• 📋 Invoice & payment status\n• 📊 SEO / GEO / AEO / GBP scores\n• 👥 Client portfolio overview\n• 📅 SLA details & contract info\n\nJust ask me anything specific!`;
+      }
+
+      const replyTime = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      setChatMessages(prev => [...prev, { sender: "Siddhi AI", text: reply, time: replyTime, isAdmin: true }]);
+    }, 700);
   };
 
   // ── Auth ───────────────────────────────────────────────────────────────────
@@ -918,7 +967,7 @@ export default function VMagneticMindsPortal() {
                       m.isAdmin ? 'bg-muted border border-border text-foreground rounded-tl-none' : 'bg-primary text-primary-foreground rounded-tr-none'
                     }`}>
                       <div className="font-bold opacity-60 text-[10px] mb-1">{m.sender}</div>
-                      {m.text}
+                      <span style={{ whiteSpace: 'pre-wrap' }}>{m.text}</span>
                     </div>
                   </div>
                 ))}
