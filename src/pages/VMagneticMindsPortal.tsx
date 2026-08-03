@@ -1119,9 +1119,9 @@ export default function VMagneticMindsPortal() {
                       <Briefcase className="w-4 h-4" /> Business Information
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div><input required placeholder="Business Name * (e.g. Zenith Fitness Studio)" className={inp} value={clientForm.businessName} onChange={cf('businessName')} /></div>
-                      <div><input placeholder="Brand Name (if different) — e.g. ZenFit" className={inp} value={clientForm.brandName} onChange={cf('brandName')} /></div>
-                      <div><input placeholder="Business Category — e.g. Health & Wellness, F&B" className={inp} value={clientForm.category} onChange={cf('category')} /></div>
+                      <div><input required placeholder="Business Name *" className={inp} value={clientForm.businessName} onChange={cf('businessName')} /></div>
+                      <div><input placeholder="Brand Name (if different)" className={inp} value={clientForm.brandName} onChange={cf('brandName')} /></div>
+                      <div><input placeholder="Business Category" className={inp} value={clientForm.category} onChange={cf('category')} /></div>
                       <div><label className={lbl}>Year of Establishment</label><input placeholder="e.g. 2019" className={inp} value={clientForm.yearEst} onChange={cf('yearEst')} /></div>
                       <div className="sm:col-span-2"><label className={lbl}>Short Business Description</label><textarea rows={2} placeholder="Briefly describe the business…" className={inp} value={clientForm.description} onChange={cf('description')} /></div>
                       <div><label className={lbl}>Website URL</label><input placeholder="https://example.com" className={inp} value={clientForm.website} onChange={cf('website')} /></div>
