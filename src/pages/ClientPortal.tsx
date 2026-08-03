@@ -301,6 +301,10 @@ ${contextText || "No matching guidelines found."}
 
             const email = session.user.email;
             if (email) {
+                if (email.trim().toLowerCase() === '23eg510a07@anurag.edu.in') {
+                    navigate("/portal/v-magnetic-minds");
+                    return;
+                }
                 setClientEmail(email);
                 fetchClientProjects(email).then(() => {
                     setLoading(false);

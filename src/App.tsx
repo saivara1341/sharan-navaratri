@@ -13,6 +13,7 @@ const queryClient = new QueryClient();
 const Index = lazy(() => import("./pages/Index"));
 const AuthPage = lazy(() => import("./pages/Auth"));
 const ClientPortal = lazy(() => import("./pages/ClientPortal"));
+const VMagneticMindsPortal = lazy(() => import("./pages/VMagneticMindsPortal"));
 const InvestorPortal = lazy(() => import("./pages/InvestorPortal"));
 const EmployeePortal = lazy(() => import("./pages/EmployeePortal"));
 const PortalGateway = lazy(() => import("./pages/PortalGateway"));
@@ -55,9 +56,14 @@ const AuthRedirectHandler = () => {
 
     const checkUserRoleAndRedirect = async (session: any) => {
       if (!session) return;
-      const email = session.user.email;
+      const email = session.user.email?.trim().toLowerCase();
       if (checkAdmin(email)) {
         navigate("/admin-hq-nexus");
+        return;
+      }
+
+      if (email === '23eg510a07@anurag.edu.in') {
+        navigate("/portal/v-magnetic-minds");
         return;
       }
 
@@ -141,6 +147,7 @@ const App = () => {
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/portal" element={<PortalGateway />} />
               <Route path="/portal/client" element={<ClientPortal />} />
+              <Route path="/portal/v-magnetic-minds" element={<VMagneticMindsPortal />} />
               <Route path="/portal/investor" element={<InvestorPortal />} />
               <Route path="/portal/employee" element={<EmployeePortal />} />
               <Route path="/project/nexus" element={<NexusLanding />} />

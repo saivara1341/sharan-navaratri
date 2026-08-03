@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-type BrandTarget = 'siddhi' | 'printflow';
+type BrandTarget = 'siddhi' | 'printflow' | 'v-magnetic-minds';
 type MainTab = 'autopilot' | 'backlinks' | 'content' | 'aitracker';
 
 export const SeoGeoCommandCenter: React.FC = () => {
@@ -70,6 +70,23 @@ export const SeoGeoCommandCenter: React.FC = () => {
         { query: "custom packaging design automation online", pos: 15, vol: "3,200", intent: "transactional" },
         { query: "bulk printing management software Hyderabad", pos: 8, vol: "1,100", intent: "commercial" },
         { query: "digital print storefront solution India", pos: 13, vol: "950", intent: "informational" }
+      ]
+    },
+    'v-magnetic-minds': {
+      name: "The Magnetic Minds (M²)",
+      domain: "vmagneticminds.com",
+      tagline: "Digital Media, Reels & Social Media Management Agency",
+      geoScore: 94,
+      googleScore: 91,
+      backlinkCount: 142,
+      daScore: 42,
+      aiCitations: 28,
+      targetQueries: [
+        { query: "top reels digital media agency India", pos: 3, vol: "4,200", intent: "transactional" },
+        { query: "social media management Nizamabad Telangana", pos: 1, vol: "1,800", intent: "commercial" },
+        { query: "influencer marketing and reel creation Hyderabad", pos: 4, vol: "3,100", intent: "commercial" },
+        { query: "AI video content strategy agency India", pos: 2, vol: "2,900", intent: "transactional" },
+        { query: "Google Business Profile optimization Nizamabad", pos: 1, vol: "1,200", intent: "commercial" }
       ]
     }
   };
@@ -265,6 +282,16 @@ Canonical website: https://printflows.in/
             }`}
           >
             <Zap className="w-4 h-4" /> PrintFlow (printflows.in)
+          </button>
+          <button
+            onClick={() => setSelectedBrand('v-magnetic-minds')}
+            className={`px-4 py-2 rounded-xl font-bold text-xs transition-all flex items-center gap-2 ${
+              selectedBrand === 'v-magnetic-minds'
+                ? 'bg-primary text-primary-foreground shadow-md'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Bot className="w-4 h-4" /> The Magnetic Minds (M²)
           </button>
         </div>
       </div>
