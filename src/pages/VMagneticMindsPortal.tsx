@@ -254,10 +254,6 @@ export default function VMagneticMindsPortal() {
                 <div className="text-xs text-muted-foreground">Monthly Retainer</div>
                 <div className="text-xl font-extrabold text-foreground">{monthlyFee}<span className="text-xs text-muted-foreground font-normal"> / mo</span></div>
               </div>
-              <button onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-destructive/20 hover:border-destructive/50 text-muted-foreground hover:text-destructive text-xs font-semibold transition-all">
-                <LogOut className="w-4 h-4" /> Logout
-              </button>
             </div>
           </div>
         </motion.div>
