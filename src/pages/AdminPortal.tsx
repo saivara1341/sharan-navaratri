@@ -1062,7 +1062,7 @@ const AdminPortal = () => {
                                     <div className="space-y-2">
                                         <label className="text-[10px] uppercase font-bold text-muted-foreground">Current Stage</label>
                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                            {['Analyzing', 'Verifying', 'In Progress', 'Validated', 'Completed'].map((s) => (
+                                            {['Analyzing', 'Verifying', 'In Progress', 'Validated', 'Completed', 'Locked (Tenure Expired)'].map((s) => (
                                                 <button
                                                     key={s}
                                                     onClick={() => setEditStatus(s)}

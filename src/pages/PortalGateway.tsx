@@ -203,6 +203,7 @@ export default function PortalGateway() {
   const getLaunchPath = () => {
     if (session?.user?.email?.trim().toLowerCase() === '23eg510a07@anurag.edu.in') return "/portal/v-magnetic-minds";
     if (isAdmin) return "/admin-hq-nexus";
+    if (userRole === 'partner') return "/portal/v-magnetic-minds";
     if (userRole === 'employee') return "/portal/employee";
     if (userRole === 'client') return "/portal/client";
     if (userRole === 'investor') return "/portal/investor";
@@ -212,8 +213,9 @@ export default function PortalGateway() {
   const getRoleBadge = () => {
     if (session?.user?.email?.trim().toLowerCase() === '23eg510a07@anurag.edu.in') return "The Magnetic Minds (M²) Partner";
     if (isAdmin) return "God-Mode Admin";
+    if (userRole === 'partner') return "Agency Partner";
     if (userRole === 'employee') return "Employee / Builder";
-    if (userRole === 'client') return "Client / Partner";
+    if (userRole === 'client') return "Direct Client";
     if (userRole === 'investor') return "Venture / Investor";
     return "Member";
   };
@@ -306,27 +308,50 @@ export default function PortalGateway() {
               </div>
 
               {/* Selection cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-left">
                 {/* Client card */}
                 <motion.button
                   whileHover={{ scale: 1.02, border: "1px solid rgba(251, 146, 60, 0.3)" }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleRoleSelect('client')}
-                  className="p-6 rounded-2xl border border-border bg-background/70 hover:bg-muted flex flex-col justify-between h-64 text-left transition-all group cursor-pointer shadow-sm"
+                  className="p-5 rounded-2xl border border-border bg-background/70 hover:bg-muted flex flex-col justify-between h-64 text-left transition-all group cursor-pointer shadow-sm"
                 >
-                  <div className="space-y-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-105 transition-transform">
-                      <Briefcase className="w-6 h-6 text-primary" />
+                  <div className="space-y-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-105 transition-transform">
+                      <Briefcase className="w-5 h-5 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">Startup / Client</h3>
-                      <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                        Manage your projects, custom specifications, milestone payments, and track active developmental roadmaps.
+                      <h3 className="text-base font-bold text-foreground group-hover:text-primary transition-colors">Direct Client</h3>
+                      <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                        Access milestone roadmaps, project scheduler, GMeet booking, AI support chat, and invoice tracking.
                       </p>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold text-primary flex items-center gap-1 mt-4 group-hover:translate-x-1 transition-transform">
-                    Claim Path <ArrowRight className="w-3.5 h-3.5" />
+                  <span className="text-[10px] font-bold text-primary flex items-center gap-1 mt-3 group-hover:translate-x-1 transition-transform">
+                    Claim Client Path <ArrowRight className="w-3.5 h-3.5" />
+                  </span>
+                </motion.button>
+
+                {/* Partner card */}
+                <motion.button
+                  whileHover={{ scale: 1.02, border: "1px solid rgba(168, 85, 247, 0.3)" }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleRoleSelect('partner')}
+                  className="p-5 rounded-2xl border border-border bg-background/70 hover:bg-muted flex flex-col justify-between h-64 text-left transition-all group cursor-pointer shadow-sm"
+                >
+                  <div className="space-y-3">
+                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20 group-hover:scale-105 transition-transform">
+                      <Building2 className="w-5 h-5 text-purple-500" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-foreground group-hover:text-purple-500 transition-colors">Agency Partner</h3>
+                      <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                        For marketing/digital agencies (like V Magnetic Minds). Manage client portfolios, custom agency branding, and 12-Month SLAs.
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold text-purple-500 flex items-center gap-1 mt-3 group-hover:translate-x-1 transition-transform">
+                    Claim Partner Path <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 </motion.button>
 
@@ -335,21 +360,21 @@ export default function PortalGateway() {
                   whileHover={{ scale: 1.02, border: "1px solid rgba(234, 179, 8, 0.3)" }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleRoleSelect('investor')}
-                  className="p-6 rounded-2xl border border-border bg-background/70 hover:bg-muted flex flex-col justify-between h-64 text-left transition-all group cursor-pointer shadow-sm"
+                  className="p-5 rounded-2xl border border-border bg-background/70 hover:bg-muted flex flex-col justify-between h-64 text-left transition-all group cursor-pointer shadow-sm"
                 >
-                  <div className="space-y-4">
-                    <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center border border-accent/20 group-hover:scale-105 transition-transform">
-                      <TrendingUp className="w-6 h-6 text-accent" />
+                  <div className="space-y-3">
+                    <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center border border-accent/20 group-hover:scale-105 transition-transform">
+                      <TrendingUp className="w-5 h-5 text-accent" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-foreground group-hover:text-accent transition-colors">Venture / Investor</h3>
-                      <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                      <h3 className="text-base font-bold text-foreground group-hover:text-accent transition-colors">Venture / Investor</h3>
+                      <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
                         Discover ecosystem startup projects, view portfolio metrics, run due diligence audits, and contact founders.
                       </p>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold text-accent flex items-center gap-1 mt-4 group-hover:translate-x-1 transition-transform">
-                    Claim Path <ArrowRight className="w-3.5 h-3.5" />
+                  <span className="text-[10px] font-bold text-accent flex items-center gap-1 mt-3 group-hover:translate-x-1 transition-transform">
+                    Claim Investor Path <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 </motion.button>
 
@@ -358,21 +383,21 @@ export default function PortalGateway() {
                   whileHover={{ scale: 1.02, border: "1px solid rgba(59, 130, 246, 0.3)" }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleRoleSelect('employee')}
-                  className="p-6 rounded-2xl border border-border bg-background/70 hover:bg-muted flex flex-col justify-between h-64 text-left transition-all group cursor-pointer shadow-sm"
+                  className="p-5 rounded-2xl border border-border bg-background/70 hover:bg-muted flex flex-col justify-between h-64 text-left transition-all group cursor-pointer shadow-sm"
                 >
-                  <div className="space-y-4">
-                    <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 group-hover:scale-105 transition-transform">
-                      <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  <div className="space-y-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 group-hover:scale-105 transition-transform">
+                      <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Employee / Builder</h3>
-                      <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                      <h3 className="text-base font-bold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Employee / Builder</h3>
+                      <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
                         Access internal system task lists, manage delivery schedules, and reply to escalated client support tickets.
                       </p>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1 mt-4 group-hover:translate-x-1 transition-transform">
-                    Claim Path <ArrowRight className="w-3.5 h-3.5" />
+                  <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1 mt-3 group-hover:translate-x-1 transition-transform">
+                    Claim Builder Path <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 </motion.button>
               </div>

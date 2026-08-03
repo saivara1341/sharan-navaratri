@@ -126,6 +126,41 @@ export default function VMagneticMindsPortal() {
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
+  // ── Partner Branding Customization ─────────────────────────────────────────
+  const [agencyName, setAgencyName] = useState("V Magnetic Minds");
+  const [agencyLogoUrl, setAgencyLogoUrl] = useState("/v-magnetic-minds-logo.jpg");
+  const [showBrandingModal, setShowBrandingModal] = useState(false);
+  const [editAgencyName, setEditAgencyName] = useState(agencyName);
+  const [editAgencyLogo, setEditAgencyLogo] = useState(agencyLogoUrl);
+
+  const handleSaveBranding = (e: React.FormEvent) => {
+    e.preventDefault();
+    setAgencyName(editAgencyName.trim() || "Agency Partner");
+    setAgencyLogoUrl(editAgencyLogo.trim() || "/v-magnetic-minds-logo.jpg");
+    setShowBrandingModal(false);
+    toast.success("Agency branding updated!");
+  };
+
+  const handleDeleteClient = (id: string, name: string) => {
+    if (window.confirm(`Are you sure you want to delete client brand "${name}"?`)) {
+      setClients(prev => prev.filter(c => c.id !== id));
+      if (selectedBrandId === id) setSelectedBrandId("all");
+      toast.success(`Deleted client brand "${name}"`);
+    }
+  };
+
+  const handleToggleClientLock = (id: string, name: string) => {
+    setClients(prev => prev.map(c => {
+      if (c.id === id) {
+        const isLocked = c.status === "Locked (Tenure Expired)";
+        const nextStatus = isLocked ? "Active Optimization" : "Locked (Tenure Expired)";
+        toast.info(`Updated status for ${name}: ${nextStatus}`);
+        return { ...c, status: nextStatus };
+      }
+      return c;
+    }));
+  };
+
   // ── Add Client Form ───────────────────────────────────────────────────────
   const [showClientForm, setShowClientForm] = useState(false);
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
@@ -483,9 +518,26 @@ export default function VMagneticMindsPortal() {
                             </div>
                             {c.brandName !== c.businessName && <p className="text-xs text-muted-foreground">{c.brandName}</p>}
                           </div>
-                          <span className="text-[10px] font-bold px-2.5 py-1 bg-primary/10 text-primary rounded-lg border border-primary/20">
-                            {c.category || "General Business"}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleToggleClientLock(c.id, c.businessName)}
+                              className={`px-2 py-1 text-[10px] font-bold rounded-lg border transition-all ${
+                                c.status === "Locked (Tenure Expired)"
+                                  ? 'bg-red-500/10 text-red-400 border-red-500/30'
+                                  : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                              }`}
+                              title="Toggle Client Tenure Lock Status"
+                            >
+                              {c.status === "Locked (Tenure Expired)" ? "🔒 Locked" : "🔓 Active Tenure"}
+                            </button>
+                            <button
+                              onClick={() => handleDeleteClient(c.id, c.businessName)}
+                              className="p-1.5 text-muted-foreground hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                              title="Delete Client Brand"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
 
                         <p className="text-xs text-muted-foreground mb-4 line-clamp-2">{c.description || "No description provided."}</p>

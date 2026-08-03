@@ -20,7 +20,12 @@ import {
     Receipt,
     FileText,
     Download,
-    FolderOpen
+    FolderOpen,
+    Video,
+    Lock,
+    User,
+    Plus,
+    Phone
 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -51,7 +56,37 @@ export default function ClientPortal() {
     const [clientOrg, setClientOrg] = useState("");
     const [projects, setProjects] = useState<Submission[]>([]);
     const [refreshing, setRefreshing] = useState(false);
-    const [projectTabs, setProjectTabs] = useState<Record<string, 'roadmap' | 'payments' | 'agreements'>>({});
+    const [projectTabs, setProjectTabs] = useState<Record<string, 'roadmap' | 'scheduler' | 'gmeet' | 'payments' | 'agreements'>>({});
+
+    // Scheduler & Meeting States
+    const [scheduledMeetings, setScheduledMeetings] = useState<any[]>([
+        { id: 'mtg-1', date: '2026-08-10', time: '11:00 AM', topic: 'Phase 2 Milestone & Architecture Review', mode: 'Google Meet', link: 'https://meet.google.com/new', status: 'Confirmed' }
+    ]);
+    const [bookingDate, setBookingDate] = useState("");
+    const [bookingTime, setBookingTime] = useState("10:00 AM");
+    const [bookingTopic, setBookingTopic] = useState("");
+    const [bookingMode, setBookingMode] = useState("Google Meet");
+
+    const handleScheduleMeeting = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!bookingDate || !bookingTopic.trim()) {
+            toast.error("Please pick a date and enter a meeting topic.");
+            return;
+        }
+        const newMtg = {
+            id: `mtg-${Date.now()}`,
+            date: bookingDate,
+            time: bookingTime,
+            topic: bookingTopic,
+            mode: bookingMode,
+            link: "https://meet.google.com/new",
+            status: "Scheduled (Link Ready)"
+        };
+        setScheduledMeetings(prev => [...prev, newMtg]);
+        toast.success(`Review meeting scheduled for ${bookingDate} at ${bookingTime}!`);
+        setBookingDate("");
+        setBookingTopic("");
+    };
 
     // Chat States
     const [chatOpen, setChatOpen] = useState<Submission | null>(null);
@@ -457,21 +492,36 @@ ${contextText || "No matching guidelines found."}
                                             </div>
                                         </div>
 
+                                        {/* Tenure Lock Warning Banner */}
+                                        {(proj.status === 'Locked' || proj.status === 'Locked (Tenure Expired)' || proj.status === 'Tenure Expired') && (
+                                            <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-400 flex items-start gap-3">
+                                                <Lock className="w-5 h-5 shrink-0 mt-0.5" />
+                                                <div>
+                                                    <h4 className="text-sm font-bold text-red-400">12-Month SLA Tenure Expired & Account Locked</h4>
+                                                    <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                                                        The 12-month contract period for this workload has completed. Modifications and feature requests are locked until a formal renewal agreement is decided between Admin and Client. Contact <strong>ssaivaraprasad51@gmail.com</strong> for renewal activation.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        )}
+
                                         {/* Project Tabs Selector */}
-                                        <div className="flex border-b border-border gap-6">
-                                            {(['roadmap', 'payments', 'agreements'] as const).map((tab) => {
+                                        <div className="flex border-b border-border gap-4 overflow-x-auto no-scrollbar pb-1">
+                                            {(['roadmap', 'scheduler', 'gmeet', 'payments', 'agreements'] as const).map((tab) => {
                                                 const isActive = (projectTabs[proj.id] || 'roadmap') === tab;
                                                 return (
                                                     <button
                                                         key={tab}
                                                         onClick={() => setProjectTabs(prev => ({ ...prev, [proj.id]: tab }))}
-                                                        className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                                                        className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                                                             isActive
                                                                 ? 'text-primary border-b-2 border-primary'
                                                                 : 'text-muted-foreground hover:text-foreground'
                                                         }`}
                                                     >
                                                         {tab === 'roadmap' ? 'Roadmap & Support' :
+                                                         tab === 'scheduler' ? '📅 Meeting Scheduler' :
+                                                         tab === 'gmeet' ? '🎥 Google Meet Hub' :
                                                          tab === 'payments' ? 'Budget & Payments' : 'Agreements & SLA'}
                                                     </button>
                                                 );
@@ -542,6 +592,136 @@ ${contextText || "No matching guidelines found."}
                                                                 </div>
                                                             </div>
                                                         )}
+                                                    </div>
+                                                </motion.div>
+                                            )}
+
+                                            {(projectTabs[proj.id] || 'roadmap') === 'scheduler' && (
+                                                <motion.div key="scheduler-tab" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6 text-left">
+                                                    <div className="flex items-center justify-between">
+                                                        <div>
+                                                            <h4 className="text-sm font-extrabold text-foreground">Project Milestone Scheduler</h4>
+                                                            <p className="text-xs text-muted-foreground">Book a 1-on-1 sprint review or technical sync with Siddhi Dynamics engineers.</p>
+                                                        </div>
+                                                        <span className="text-[10px] font-bold px-2.5 py-1 bg-primary/10 text-primary border border-primary/20 rounded-lg">
+                                                            Direct Sync Available
+                                                        </span>
+                                                    </div>
+
+                                                    <form onSubmit={handleScheduleMeeting} className="glass-card p-5 rounded-2xl border border-border space-y-4">
+                                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                                            <div>
+                                                                <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Select Date *</label>
+                                                                <input
+                                                                    type="date"
+                                                                    required
+                                                                    value={bookingDate}
+                                                                    onChange={(e) => setBookingDate(e.target.value)}
+                                                                    className="w-full px-3.5 py-2 rounded-xl bg-background border border-border text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Time Slot *</label>
+                                                                <select
+                                                                    value={bookingTime}
+                                                                    onChange={(e) => setBookingTime(e.target.value)}
+                                                                    className="w-full px-3.5 py-2 rounded-xl bg-background border border-border text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                                                >
+                                                                    <option value="10:00 AM">10:00 AM IST</option>
+                                                                    <option value="02:00 PM">02:00 PM IST</option>
+                                                                    <option value="04:30 PM">04:30 PM IST</option>
+                                                                    <option value="07:00 PM">07:00 PM IST</option>
+                                                                </select>
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Meeting Mode *</label>
+                                                                <select
+                                                                    value={bookingMode}
+                                                                    onChange={(e) => setBookingMode(e.target.value)}
+                                                                    className="w-full px-3.5 py-2 rounded-xl bg-background border border-border text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                                                >
+                                                                    <option value="Google Meet">🎥 Google Meet</option>
+                                                                    <option value="Phone Call">📞 Phone / WhatsApp Call</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                        <div>
+                                                            <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Meeting Topic / Agenda *</label>
+                                                            <input
+                                                                type="text"
+                                                                required
+                                                                placeholder="e.g. Architecture review, milestone demo, budget sync..."
+                                                                value={bookingTopic}
+                                                                onChange={(e) => setBookingTopic(e.target.value)}
+                                                                className="w-full px-3.5 py-2 rounded-xl bg-background border border-border text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                                            />
+                                                        </div>
+
+                                                        <button
+                                                            type="submit"
+                                                            className="w-full py-2.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl hover:scale-[1.01] transition-all shadow-md shadow-primary/20 flex items-center justify-center gap-2"
+                                                        >
+                                                            <Calendar className="w-4 h-4" /> Confirm & Reserve Meeting Slot
+                                                        </button>
+                                                    </form>
+
+                                                    <div className="space-y-3">
+                                                        <h5 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Scheduled Review Sessions</h5>
+                                                        {scheduledMeetings.map(mtg => (
+                                                            <div key={mtg.id} className="p-4 rounded-2xl bg-muted/40 border border-border flex items-center justify-between">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="p-2.5 bg-primary/10 text-primary rounded-xl">
+                                                                        <Calendar className="w-4 h-4" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-xs font-bold text-foreground">{mtg.topic}</p>
+                                                                        <p className="text-[10px] text-muted-foreground">{mtg.date} at {mtg.time} · {mtg.mode}</p>
+                                                                    </div>
+                                                                </div>
+                                                                <a
+                                                                    href={mtg.link}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="px-3 py-1.5 bg-primary/10 text-primary hover:bg-primary/20 text-xs font-bold rounded-lg border border-primary/20 transition-all flex items-center gap-1"
+                                                                >
+                                                                    <Video className="w-3.5 h-3.5" /> Join Meet
+                                                                </a>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </motion.div>
+                                            )}
+
+                                            {(projectTabs[proj.id] || 'roadmap') === 'gmeet' && (
+                                                <motion.div key="gmeet-tab" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6 text-left">
+                                                    <div className="glass-card p-8 rounded-3xl border border-primary/30 text-center space-y-4 bg-primary/5">
+                                                        <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto">
+                                                            <Video className="w-8 h-8 text-primary animate-pulse" />
+                                                        </div>
+                                                        <div>
+                                                            <h4 className="text-lg font-extrabold text-foreground">Google Meet Instant Review Room</h4>
+                                                            <p className="text-xs text-muted-foreground max-w-md mx-auto mt-1">
+                                                                Connect instantly with Siddhi Dynamics lead engineers for live screen-sharing, code walk-throughs, and roadmap reviews.
+                                                            </p>
+                                                        </div>
+
+                                                        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                                                            <a
+                                                                href="https://meet.google.com/new"
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="w-full sm:w-auto px-6 py-3 bg-primary text-primary-foreground font-extrabold text-xs rounded-xl hover:scale-105 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                                                            >
+                                                                <Video className="w-4 h-4" /> Open Instant Google Meet Room
+                                                            </a>
+                                                            <button
+                                                                onClick={() => toast.info("Google Meet invite sent to ssaivaraprasad51@gmail.com")}
+                                                                className="w-full sm:w-auto px-6 py-3 bg-card hover:bg-muted text-foreground font-bold text-xs rounded-xl border border-border transition-all flex items-center justify-center gap-2"
+                                                            >
+                                                                <Mail className="w-4 h-4 text-primary" /> Send Meeting Alert to Admin
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </motion.div>
                                             )}
