@@ -1074,7 +1074,7 @@ export default function VMagneticMindsPortal() {
                       </div>
                     ))}
                   </div>
-                  <input type="text" required minLength={8} placeholder="e.g. 623910481923"
+                  <input type="text" required minLength={8} placeholder="Enter 12-digit UTR / Ref Number"
                     value={utrInput} onChange={e => setUtrInput(e.target.value)} className={inp} />
                   <button type="submit" disabled={submittingUtr}
                     className="w-full py-3 bg-primary text-primary-foreground font-extrabold text-sm rounded-xl hover:scale-[1.01] transition-all shadow-md shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-60">
@@ -1122,10 +1122,10 @@ export default function VMagneticMindsPortal() {
                       <div><input required placeholder="Business Name *" className={inp} value={clientForm.businessName} onChange={cf('businessName')} /></div>
                       <div><input placeholder="Brand Name (if different)" className={inp} value={clientForm.brandName} onChange={cf('brandName')} /></div>
                       <div><input placeholder="Business Category" className={inp} value={clientForm.category} onChange={cf('category')} /></div>
-                      <div><label className={lbl}>Year of Establishment</label><input placeholder="e.g. 2019" className={inp} value={clientForm.yearEst} onChange={cf('yearEst')} /></div>
+                      <div><label className={lbl}>Year of Establishment</label><input placeholder="Year of Establishment (2019)" className={inp} value={clientForm.yearEst} onChange={cf('yearEst')} /></div>
                       <div className="sm:col-span-2"><label className={lbl}>Short Business Description</label><textarea rows={2} placeholder="Briefly describe the business…" className={inp} value={clientForm.description} onChange={cf('description')} /></div>
                       <div><label className={lbl}>Website URL</label><input placeholder="https://example.com" className={inp} value={clientForm.website} onChange={cf('website')} /></div>
-                      <div><label className={lbl}>Business Working Hours</label><input placeholder="e.g. Mon–Sat 9am–8pm" className={inp} value={clientForm.hours} onChange={cf('hours')} /></div>
+                      <div><label className={lbl}>Business Working Hours</label><input placeholder="Mon–Sat 9am–8pm" className={inp} value={clientForm.hours} onChange={cf('hours')} /></div>
                       <div className="sm:col-span-2"><label className={lbl}>List of Services / Products</label><textarea rows={2} placeholder="Comma-separated or one per line…" className={inp} value={clientForm.services} onChange={cf('services')} /></div>
                     </div>
                   </section>
@@ -1152,7 +1152,7 @@ export default function VMagneticMindsPortal() {
                       <div className="sm:col-span-2"><label className={lbl}>Complete Business Address</label><textarea rows={2} placeholder="Door no., Street, Area, City, State, PIN" className={inp} value={clientForm.address} onChange={cf('address')} /></div>
                       <div><label className={lbl}>Google Maps Location / Pin URL</label><input placeholder="https://maps.app.goo.gl/…" className={inp} value={clientForm.mapsLink} onChange={cf('mapsLink')} /></div>
                       <div><label className={lbl}>Landmark</label><input placeholder="Near XYZ" className={inp} value={clientForm.landmark} onChange={cf('landmark')} /></div>
-                      <div className="sm:col-span-2"><label className={lbl}>Service Areas (if applicable)</label><input placeholder="e.g. Nizamabad, Hyderabad, All of Telangana" className={inp} value={clientForm.serviceAreas} onChange={cf('serviceAreas')} /></div>
+                      <div className="sm:col-span-2"><label className={lbl}>Service Areas (if applicable)</label><input placeholder="Nizamabad, Hyderabad, All of Telangana" className={inp} value={clientForm.serviceAreas} onChange={cf('serviceAreas')} /></div>
                     </div>
                   </section>
 
