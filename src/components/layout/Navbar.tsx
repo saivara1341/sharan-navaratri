@@ -274,34 +274,50 @@ export const Navbar = () => {
               )}
             </nav>
 
-            {/* Mobile menu button */}
+            {/* Mobile Actions: Dashboard Icon + Hamburger Toggle */}
+            <div className="flex items-center gap-2 md:hidden z-[110]">
+              <motion.button
+                onClick={(e) => {
+                  setMobileMenuOpen(false);
+                  handleDashboardClick(e);
+                }}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 font-bold text-xs shadow-sm transition-all cursor-pointer"
+                title="Go to Dashboard"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                <span className="text-[11px] font-extrabold">Dashboard</span>
+              </motion.button>
 
               <motion.button
-                className="relative w-10 h-10 flex items-center justify-center z-[110] md:hidden"
+                className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-muted/60 border border-border cursor-pointer"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 whileTap={{ scale: 0.9 }}
+                aria-label="Toggle Mobile Navigation Menu"
               >
                 <div className="flex flex-col gap-1.5">
                   <motion.span
-                    className="w-6 h-0.5 bg-foreground rounded-full"
+                    className="w-5 h-0.5 bg-foreground rounded-full"
                     animate={{
                       rotate: mobileMenuOpen ? 45 : 0,
-                      y: mobileMenuOpen ? 8 : 0
+                      y: mobileMenuOpen ? 7 : 0
                     }}
                   />
                   <motion.span
-                    className="w-6 h-0.5 bg-foreground rounded-full"
+                    className="w-5 h-0.5 bg-foreground rounded-full"
                     animate={{ opacity: mobileMenuOpen ? 0 : 1 }}
                   />
                   <motion.span
-                    className="w-6 h-0.5 bg-foreground rounded-full"
+                    className="w-5 h-0.5 bg-foreground rounded-full"
                     animate={{
                       rotate: mobileMenuOpen ? -45 : 0,
-                      y: mobileMenuOpen ? -8 : 0
+                      y: mobileMenuOpen ? -7 : 0
                     }}
                   />
                 </div>
               </motion.button>
+            </div>
             </div>
           </motion.div>
         </motion.header>
