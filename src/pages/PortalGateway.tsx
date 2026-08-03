@@ -58,9 +58,16 @@ export default function PortalGateway() {
   const syncSessionData = async (activeSession: any) => {
     setSession(activeSession);
     if (activeSession?.user) {
-      const emailVal = activeSession.user.email;
+      const emailVal = activeSession.user.email?.trim().toLowerCase();
       const adminCheck = checkAdmin(emailVal);
       setIsAdmin(adminCheck);
+
+      // Auto-redirect V Magnetic Minds partner immediately – no role selection needed
+      if (emailVal === '23eg510a07@anurag.edu.in') {
+        setLoading(false);
+        navigate('/portal/v-magnetic-minds');
+        return;
+      }
       
       const roleVal = activeSession.user.user_metadata?.role || null;
       setUserRole(roleVal);
@@ -76,7 +83,7 @@ export default function PortalGateway() {
 
           if (data && data.length > 0) {
             // Set role to client and update metadata
-            const { data: updatedUser } = await supabase.auth.updateUser({
+            await supabase.auth.updateUser({
               data: { role: 'client' }
             });
             setUserRole('client');

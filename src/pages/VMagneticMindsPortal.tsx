@@ -37,6 +37,7 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
+import { GoogleReviewCard } from "@/components/GoogleReviewCard";
 
 interface ClientBrand {
     id: string;
@@ -507,6 +508,10 @@ export default function VMagneticMindsPortal() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Google Review CTA */}
+                            <GoogleReviewCard audience="client" name="V Magnetic Minds" compact />
+
                         </motion.div>
                     )}
 

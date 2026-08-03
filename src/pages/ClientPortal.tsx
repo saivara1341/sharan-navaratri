@@ -358,9 +358,9 @@ ${contextText || "No matching guidelines found."}
                     </div>
                 </div>
 
-                {projects.length > 0 && (
-                    <GoogleReviewCard audience="client" name={clientName} compact />
-                )}
+
+                <GoogleReviewCard audience="client" name={clientName} compact />
+
 
                 {projects.length === 0 ? (
                     <div className="text-center px-6 py-10 rounded-3xl border border-primary/20 bg-card shadow-sm space-y-6">

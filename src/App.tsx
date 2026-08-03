@@ -40,6 +40,7 @@ const WebsiteDevelopment = lazy(() => import("@/pages/services/WebsiteDevelopmen
 const SaaSPlatforms = lazy(() => import("@/pages/services/SaaSPlatforms"));
 const ERPSolutions = lazy(() => import("@/pages/services/ERPSolutions"));
 const SoftwareCompanyNizamabad = lazy(() => import("@/pages/SoftwareCompanyNizamabad"));
+const ProjectSubmitForm = lazy(() => import("./pages/ProjectSubmitForm"));
 
 const AuthRedirectHandler = () => {
   const navigate = useNavigate();
@@ -143,7 +144,7 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/vision" element={<Index />} />
               <Route path="/projects" element={<Index />} />
-              <Route path="/submit" element={<Index />} />
+              <Route path="/submit" element={<ProjectSubmitForm />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/portal" element={<PortalGateway />} />
               <Route path="/portal/client" element={<ClientPortal />} />

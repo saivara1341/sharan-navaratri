@@ -26,6 +26,7 @@ import {
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
+import { GoogleReviewCard } from "@/components/GoogleReviewCard";
 
 interface Submission {
   id: string;
@@ -340,6 +341,9 @@ export default function EmployeePortal() {
             </button>
           </div>
         </div>
+
+        {/* Google Review CTA */}
+        <GoogleReviewCard audience="client" name={employeeName} compact />
 
         {/* Workspace Management Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
