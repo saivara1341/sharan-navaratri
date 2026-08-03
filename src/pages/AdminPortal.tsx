@@ -62,7 +62,45 @@ const AdminPortal = () => {
     const [chatInput, setChatInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
     const [sendingMsg, setSendingMsg] = useState(false);
-    const [viewMode, setViewMode] = useState<'submissions' | 'knowledge' | 'seo-geo'>('submissions');
+    const [viewMode, setViewMode] = useState<'submissions' | 'knowledge' | 'seo-geo' | 'users' | 'portals'>('submissions');
+
+    // ── All Portal Users ─────────────────────────────────────────────────────
+    const [allUsers, setAllUsers] = useState<any[]>([]);
+    const [usersLoading, setUsersLoading] = useState(false);
+    const [contactUser, setContactUser] = useState<any | null>(null);
+    const [userChatInput, setUserChatInput] = useState('');
+
+    const fetchAllUsers = async () => {
+        setUsersLoading(true);
+        try {
+            // Fetch all contact submissions (these are clients / partners who signed up)
+            const { data: submissions, error } = await supabase
+                .from('contact_submissions')
+                .select('id, name, email, organization, designation, inquiry_type, status, created_at')
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+
+            // Also pull Supabase Auth users list if available (admin-level)
+            const { data: authData } = await (supabase as any).auth.admin.listUsers().catch(() => ({ data: null }));
+            const authUsers: any[] = authData?.users || [];
+
+            // Merge: enrich submission entries with auth role metadata where email matches
+            const merged = (submissions || []).map((sub: any) => {
+                const authMatch = authUsers.find((u: any) => u.email?.toLowerCase() === sub.email?.toLowerCase());
+                return {
+                    ...sub,
+                    role: authMatch?.user_metadata?.role || (sub.email === '23eg510a07@anurag.edu.in' ? 'partner' : 'client'),
+                    lastLogin: authMatch?.last_sign_in_at || null,
+                    confirmed: authMatch?.email_confirmed_at ? true : false,
+                };
+            });
+            setAllUsers(merged);
+        } catch (err: any) {
+            toast.error('Failed to load users: ' + (err.message || 'Unknown error'));
+        } finally {
+            setUsersLoading(false);
+        }
+    };
 
     // Document attachments states & helper
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -411,6 +449,26 @@ const AdminPortal = () => {
                         >
                             <span>⚡</span> SEO + GEO Suite
                         </button>
+                        <button
+                            onClick={() => { setViewMode('users'); fetchAllUsers(); }}
+                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
+                                viewMode === 'users'
+                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
+                            }`}
+                        >
+                            <Users className="w-4 h-4" /> All Users
+                        </button>
+                        <button
+                            onClick={() => setViewMode('portals')}
+                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
+                                viewMode === 'portals'
+                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
+                            }`}
+                        >
+                            <ChevronRight className="w-4 h-4" /> Portals
+                        </button>
                         {viewMode === 'submissions' && (
                             <button
                                 onClick={fetchSubmissions}
@@ -420,6 +478,50 @@ const AdminPortal = () => {
                                 <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
                             </button>
                         )}
+                    </div>
+                </div>
+
+                {/* ── Admin Multi-Portal Inspection & Direct Launch Bar ────── */}
+                <div className="mb-8 p-5 glass-card rounded-2xl border border-primary/20 bg-primary/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-left">
+                    <div>
+                        <div className="flex items-center gap-2 mb-1">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-primary/20 text-primary border border-primary/30">
+                                👑 Super Admin Inspector
+                            </span>
+                            <span className="text-xs text-muted-foreground font-semibold">Live Omnipresent Access</span>
+                        </div>
+                        <h3 className="text-sm font-extrabold text-foreground">Inspect & Oversee All Ecosystem Portals</h3>
+                        <p className="text-xs text-muted-foreground">Directly launch into partner portals, client workspaces, investor desks, or employee builder hubs.</p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                        <button
+                            onClick={() => navigate('/portal/v-magnetic-minds')}
+                            className="px-3.5 py-2 rounded-xl bg-card border border-primary/30 hover:border-primary text-xs font-bold text-foreground flex items-center gap-1.5 shadow-sm transition-all"
+                            title="Inspect Agency Partner Portal"
+                        >
+                            <span>🏬</span> Agency Partner
+                        </button>
+                        <button
+                            onClick={() => navigate('/portal/client')}
+                            className="px-3.5 py-2 rounded-xl bg-card border border-blue-500/30 hover:border-blue-500 text-xs font-bold text-foreground flex items-center gap-1.5 shadow-sm transition-all"
+                            title="Inspect Direct Client Portal"
+                        >
+                            <span>🏢</span> Client Workspace
+                        </button>
+                        <button
+                            onClick={() => navigate('/portal/employee')}
+                            className="px-3.5 py-2 rounded-xl bg-card border border-emerald-500/30 hover:border-emerald-500 text-xs font-bold text-foreground flex items-center gap-1.5 shadow-sm transition-all"
+                            title="Inspect Internal Builder Portal"
+                        >
+                            <span>💻</span> Employee Hub
+                        </button>
+                        <button
+                            onClick={() => navigate('/portal/investor')}
+                            className="px-3.5 py-2 rounded-xl bg-card border border-purple-500/30 hover:border-purple-500 text-xs font-bold text-foreground flex items-center gap-1.5 shadow-sm transition-all"
+                            title="Inspect Investor Desk"
+                        >
+                            <span>📈</span> Investor Desk
+                        </button>
                     </div>
                 </div>
 
@@ -721,11 +823,254 @@ const AdminPortal = () => {
                     </AnimatePresence>
                 </div>
                     </>
-                ) : viewMode === 'knowledge' ? (
+) : viewMode === 'knowledge' ? (
                     <KnowledgeHubManager />
-                ) : (
+                ) : viewMode === 'seo-geo' ? (
                     <SeoGeoCommandCenter />
-                )}
+                ) : viewMode === 'users' ? (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 text-left">
+                        {/* Users Header */}
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h2 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
+                                    <Users className="w-6 h-6 text-primary" /> All Portal Users
+                                </h2>
+                                <p className="text-xs text-muted-foreground mt-1">All registered clients, partners, and users across every portal. You can email or chat with anyone.</p>
+                            </div>
+                            <button onClick={fetchAllUsers} className="p-3 rounded-xl glass-card hover:bg-muted/50 transition-colors" title="Refresh">
+                                <RefreshCw className={`w-5 h-5 ${usersLoading ? 'animate-spin text-primary' : ''}`} />
+                            </button>
+                        </div>
+
+                        {/* Role Summary Pills */}
+                        <div className="flex flex-wrap gap-3">
+                            {[
+                                { label: 'All', count: allUsers.length, color: 'bg-muted text-foreground border-border' },
+                                { label: 'Clients', count: allUsers.filter(u => u.role === 'client').length, color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
+                                { label: 'Partners', count: allUsers.filter(u => u.role === 'partner').length, color: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
+                                { label: 'Investors', count: allUsers.filter(u => u.role === 'investor').length, color: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
+                                { label: 'Employees', count: allUsers.filter(u => u.role === 'employee').length, color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+                            ].map(pill => (
+                                <span key={pill.label} className={`px-3.5 py-1 rounded-full text-xs font-bold border ${pill.color}`}>
+                                    {pill.label} <span className="opacity-70">({pill.count})</span>
+                                </span>
+                            ))}
+                        </div>
+
+                        {/* Users Table */}
+                        {usersLoading ? (
+                            <div className="flex items-center justify-center py-20">
+                                <RefreshCw className="w-8 h-8 text-primary animate-spin" />
+                            </div>
+                        ) : allUsers.length === 0 ? (
+                            <div className="text-center py-20 glass-card rounded-2xl border border-dashed border-border">
+                                <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                                <h3 className="text-lg font-bold mb-1">No users found</h3>
+                                <p className="text-xs text-muted-foreground">Users will appear here once they submit a form or sign in.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {allUsers.map((user, i) => (
+                                    <motion.div
+                                        key={user.id}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: i * 0.04 }}
+                                        className="glass-card p-5 rounded-2xl border border-border hover:border-primary/40 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                                    >
+                                        <div className="flex items-center gap-4 flex-1">
+                                            {/* Avatar */}
+                                            <div className="w-11 h-11 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center font-extrabold text-primary text-sm shrink-0">
+                                                {(user.name || user.email || '?')[0].toUpperCase()}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                    <span className="font-bold text-foreground text-sm truncate">{user.name || 'Unknown'}</span>
+                                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase border ${
+                                                        user.role === 'partner' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+                                                        user.role === 'investor' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
+                                                        user.role === 'employee' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                                                        'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                                                    }`}>{user.role}</span>
+                                                    {user.confirmed && <span className="text-[10px] text-emerald-400">✓ Verified</span>}
+                                                </div>
+                                                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                                                <p className="text-[11px] text-muted-foreground/60">
+                                                    {user.organization && <span>{user.organization} · </span>}
+                                                    {user.designation && <span>{user.designation} · </span>}
+                                                    Joined {user.created_at ? format(new Date(user.created_at), 'MMM dd, yyyy') : 'N/A'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <button
+                                                onClick={() => window.open(`mailto:${user.email}?subject=Message from Siddhi Dynamics Admin`)}
+                                                className="px-3.5 py-2 rounded-xl bg-muted hover:bg-muted/80 border border-border text-xs font-bold flex items-center gap-1.5 transition-all"
+                                            >
+                                                <Mail className="w-3.5 h-3.5" /> Email
+                                            </button>
+                                            <button
+                                                onClick={() => setContactUser(user)}
+                                                className="px-3.5 py-2 rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary text-xs font-bold flex items-center gap-1.5 transition-all"
+                                            >
+                                                <MessageCircle className="w-3.5 h-3.5" /> Chat
+                                            </button>
+                                            <button
+                                                onClick={() => navigate(
+                                                    user.role === 'partner' ? '/portal/v-magnetic-minds' :
+                                                    user.role === 'investor' ? '/portal/investor' :
+                                                    user.role === 'employee' ? '/portal/employee' :
+                                                    '/portal/client'
+                                                )}
+                                                className="px-3.5 py-2 rounded-xl bg-muted hover:bg-muted/80 border border-border text-xs font-bold flex items-center gap-1.5 transition-all"
+                                                title="Open their portal"
+                                            >
+                                                <ChevronRight className="w-3.5 h-3.5" /> Portal
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Quick Contact Slide-in Panel */}
+                        <AnimatePresence>
+                            {contactUser && (
+                                <motion.div
+                                    initial={{ x: '100%' }}
+                                    animate={{ x: 0 }}
+                                    exit={{ x: '100%' }}
+                                    className="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-card border-l border-border z-50 flex flex-col shadow-2xl"
+                                >
+                                    <div className="p-5 border-b border-border flex items-center justify-between">
+                                        <div>
+                                            <h3 className="font-extrabold text-foreground">{contactUser.name || contactUser.email}</h3>
+                                            <p className="text-xs text-muted-foreground">{contactUser.email} · <span className="capitalize">{contactUser.role}</span></p>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => window.open(`mailto:${contactUser.email}?subject=Message from Siddhi Dynamics`)}
+                                                className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-all"
+                                                title="Open Gmail"
+                                            >
+                                                <Mail className="w-4 h-4" />
+                                            </button>
+                                            <button onClick={() => setContactUser(null)} className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-all">
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 p-5 space-y-3 overflow-y-auto">
+                                        <div className="p-4 rounded-2xl bg-muted/40 border border-border text-xs leading-relaxed">
+                                            <div className="font-bold text-[10px] opacity-60 mb-1">Siddhi Admin</div>
+                                            Hello {contactUser.name?.split(' ')[0] || 'there'}! This is an admin message from Siddhi Dynamics. How can we help you today?
+                                        </div>
+                                    </div>
+                                    <form
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            if (!userChatInput.trim()) return;
+                                            window.open(`mailto:${contactUser.email}?subject=Message from Siddhi Dynamics&body=${encodeURIComponent(userChatInput)}`);
+                                            toast.success('Opening Gmail with your message...');
+                                            setUserChatInput('');
+                                        }}
+                                        className="flex gap-3 p-4 bg-muted border-t border-border"
+                                    >
+                                        <input
+                                            type="text"
+                                            placeholder="Type a message or note…"
+                                            value={userChatInput}
+                                            onChange={e => setUserChatInput(e.target.value)}
+                                            className="flex-1 bg-card border border-border rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                        />
+                                        <button type="submit" className="px-4 py-2.5 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl hover:scale-[1.02] transition-all flex items-center gap-1.5">
+                                            <Send className="w-4 h-4" /> Send
+                                        </button>
+                                    </form>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </motion.div>
+                ) : viewMode === 'portals' ? (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 text-left">
+                        <div>
+                            <h2 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
+                                <ChevronRight className="w-6 h-6 text-primary" /> Ecosystem Portal Launcher
+                            </h2>
+                            <p className="text-xs text-muted-foreground mt-1">Launch any portal as admin to inspect, oversee, and manage users and operations.</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            {[
+                                {
+                                    name: 'Agency / Partner Portal',
+                                    subtitle: 'V Magnetic Minds & partner agencies',
+                                    route: '/portal/v-magnetic-minds',
+                                    emoji: '🏬',
+                                    color: 'border-amber-500/30 hover:border-amber-500/60 bg-amber-500/5',
+                                    tag: 'Partners',
+                                    tagColor: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                                    desc: 'View client portfolios, SEO/GEO scores, SLA tracking, billing, and AI coordinator chat for all agency partners.'
+                                },
+                                {
+                                    name: 'Client Workspace Portal',
+                                    subtitle: 'Direct clients managing their projects',
+                                    route: '/portal/client',
+                                    emoji: '🏢',
+                                    color: 'border-blue-500/30 hover:border-blue-500/60 bg-blue-500/5',
+                                    tag: 'Clients',
+                                    tagColor: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+                                    desc: 'Track project progress, roadmaps, GMeet, scheduling, agreements, and billing for every direct client.'
+                                },
+                                {
+                                    name: 'Employee Builder Hub',
+                                    subtitle: 'Internal team and builders portal',
+                                    route: '/portal/employee',
+                                    emoji: '💻',
+                                    color: 'border-emerald-500/30 hover:border-emerald-500/60 bg-emerald-500/5',
+                                    tag: 'Team',
+                                    tagColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                    desc: 'Manage team tasks, tech stack tools, development pipelines, GitHub, and project assignments.'
+                                },
+                                {
+                                    name: 'Investor Desk',
+                                    subtitle: 'Strategic investors and supporters',
+                                    route: '/portal/investor',
+                                    emoji: '📈',
+                                    color: 'border-purple-500/30 hover:border-purple-500/60 bg-purple-500/5',
+                                    tag: 'Investors',
+                                    tagColor: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+                                    desc: 'Show funding decks, growth metrics, cap tables, investor updates, and communication history.'
+                                },
+                            ].map((portal) => (
+                                <div key={portal.route} className={`glass-card p-6 rounded-2xl border ${portal.color} transition-all flex flex-col justify-between gap-4`}>
+                                    <div>
+                                        <div className="flex items-start justify-between mb-3">
+                                            <div className="text-4xl">{portal.emoji}</div>
+                                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border ${portal.tagColor}`}>{portal.tag}</span>
+                                        </div>
+                                        <h3 className="text-lg font-extrabold text-foreground">{portal.name}</h3>
+                                        <p className="text-[11px] text-muted-foreground font-semibold mb-2">{portal.subtitle}</p>
+                                        <p className="text-xs text-muted-foreground leading-relaxed">{portal.desc}</p>
+                                    </div>
+                                    <div className="flex items-center gap-2 pt-3 border-t border-border/50">
+                                        <button
+                                            onClick={() => navigate(portal.route)}
+                                            className="flex-1 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-extrabold hover:scale-[1.02] transition-all flex items-center justify-center gap-1.5"
+                                        >
+                                            <ChevronRight className="w-4 h-4" /> Enter Portal
+                                        </button>
+                                        <button
+                                            onClick={() => { setViewMode('users'); fetchAllUsers(); }}
+                                            className="px-4 py-2.5 rounded-xl bg-muted border border-border text-xs font-bold text-foreground hover:bg-muted/80 transition-all flex items-center gap-1.5"
+                                        >
+                                            <Users className="w-4 h-4" /> View Users
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+                ) : null}
             </main>
 
             {/* Background elements */}
