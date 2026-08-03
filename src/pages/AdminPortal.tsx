@@ -599,6 +599,21 @@ const AdminPortal = () => {
                                         </div>
                                         <h4 className="font-extrabold text-sm text-foreground">{p.name}</h4>
                                         <p className="text-[11px] text-muted-foreground font-mono mt-0.5">{p.model}</p>
+                                        <button
+                                            onClick={() => {
+                                                const key = prompt(`Enter API Key for ${p.name}:`);
+                                                if (key !== null) {
+                                                    const providers = OmniRouteService.listProviders().map(item =>
+                                                        item.id === p.id ? { ...item, apiKey: key.trim() } : item
+                                                    );
+                                                    localStorage.setItem('siddhi_omniroute_providers', JSON.stringify(providers));
+                                                    toast.success(`API Key updated for ${p.name}`);
+                                                }
+                                            }}
+                                            className="mt-2 text-[10px] font-extrabold text-primary hover:underline flex items-center gap-1"
+                                        >
+                                            <Edit3 className="w-3 h-3" /> {p.apiKey ? 'Key Configured (Click to edit)' : '+ Set API Key'}
+                                        </button>
                                     </div>
                                     <div className="mt-4 pt-3 border-t border-border/50">
                                         <div className="flex items-center justify-between text-[11px] mb-1">

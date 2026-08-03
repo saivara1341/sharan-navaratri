@@ -29,12 +29,20 @@ export interface OmniRouteConfig {
 const STORAGE_KEY_PROVIDERS = 'siddhi_omniroute_providers';
 const STORAGE_KEY_CONFIG = 'siddhi_omniroute_config';
 
+const getEnvApiKey = () => {
+  return (
+    import.meta.env.VITE_GEMINI_API_KEY ||
+    import.meta.env.GEMINI_API_KEY ||
+    ''
+  );
+};
+
 const DEFAULT_PROVIDERS: OmniRouteProvider[] = [
   {
     id: 'prov-gemini-free',
     name: 'Google Gemini (Free Tier)',
     type: 'gemini',
-    apiKey: '',
+    apiKey: getEnvApiKey(),
     model: 'gemini-1.5-flash',
     priority: 1,
     status: 'active',
