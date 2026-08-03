@@ -1161,10 +1161,22 @@ export default function VMagneticMindsPortal() {
                     <h3 className="text-xs font-extrabold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
                       <Image className="w-4 h-4" /> Branding Assets
                     </h3>
-                    <div className="bg-muted rounded-xl border border-dashed border-border p-4 text-center mb-3">
-                      <p className="text-xs text-muted-foreground">📎 High-Resolution Logo (PNG/SVG), Cover Image/Banner — share via WhatsApp or email to <span className="font-semibold text-foreground">saivaraprasad@siddhidynamics.in</span></p>
+                    <div className="bg-muted rounded-xl border border-dashed border-border p-4 space-y-3">
+                      <p className="text-xs text-muted-foreground text-center">📎 High-Resolution Logo (PNG/SVG), Cover Image/Banner — share via WhatsApp or email to <span className="font-semibold text-foreground">saivaraprasad@siddhidynamics.in</span></p>
+                      <div>
+                        <label className={lbl}>Upload Logo / Banner (Optional)</label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              toast.success(`Selected logo file: ${e.target.files[0].name}`);
+                            }
+                          }}
+                          className="w-full text-xs text-muted-foreground file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary file:text-primary-foreground hover:file:opacity-90 cursor-pointer"
+                        />
+                      </div>
                     </div>
-                    <div><label className={lbl}>Brand Colors (hex codes or description)</label><input placeholder="e.g. #FF5733 (orange), #2C3E50 (dark)" className={inp} value={clientForm.brandColors} onChange={cf('brandColors')} /></div>
                   </section>
 
                   {/* ▸ Photos & Media */}
@@ -1172,8 +1184,22 @@ export default function VMagneticMindsPortal() {
                     <h3 className="text-xs font-extrabold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
                       <Star className="w-4 h-4" /> Photos & Media
                     </h3>
-                    <div className="bg-muted rounded-xl border border-dashed border-border p-4">
+                    <div className="bg-muted rounded-xl border border-dashed border-border p-4 space-y-3">
                       <p className="text-xs text-muted-foreground text-center">📸 Please share via WhatsApp or email: <strong>Exterior, Interior, Team, Product/Service, Owner/Founder photos</strong> and any <strong>short videos</strong>.<br />Send to: <span className="text-foreground font-semibold">saivaraprasad@siddhidynamics.in</span> or WhatsApp <span className="text-foreground font-semibold">+91 63036 02743</span></p>
+                      <div>
+                        <label className={lbl}>Upload Photos / Media (Optional)</label>
+                        <input
+                          type="file"
+                          multiple
+                          accept="image/*,video/*"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files.length > 0) {
+                              toast.success(`Selected ${e.target.files.length} file(s) for upload`);
+                            }
+                          }}
+                          className="w-full text-xs text-muted-foreground file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary file:text-primary-foreground hover:file:opacity-90 cursor-pointer"
+                        />
+                      </div>
                     </div>
                   </section>
 
