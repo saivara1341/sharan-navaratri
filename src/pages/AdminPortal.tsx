@@ -29,13 +29,8 @@ import {
     Edit3,
     Paperclip,
     FileText,
-    Download,
-    Cpu,
-    ShieldCheck,
-    Zap,
-    Layers
+    Download
 } from "lucide-react";
-import { OmniRouteService, OmniRouteProvider } from "@/services/omniRouteService";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
@@ -498,7 +493,6 @@ const AdminPortal = () => {
                         </div>
                         {[
                             { id: "all", label: "All types", icon: <Filter className="w-4 h-4" /> },
-                            { id: "omniroute", label: "OmniRoute AI Gateway", icon: <Cpu className="w-4 h-4 text-emerald-400" /> },
                             { id: "problem", label: "Problems", icon: <Target className="w-4 h-4" /> },
                             { id: "requirement", label: "Client Projects", icon: <ClipboardList className="w-4 h-4" /> },
                             { id: "inquiry", label: "Inquiries", icon: <HelpCircle className="w-4 h-4" /> },
@@ -538,132 +532,6 @@ const AdminPortal = () => {
                         >
                             + Add Client Project
                         </button>
-                    </motion.div>
-                )}
-
-                {filter === "omniroute" && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="mb-8 space-y-6 text-left"
-                    >
-                        {/* Gateway Header Banner */}
-                        <div className="glass-card p-6 md:p-8 rounded-3xl border border-emerald-500/30 bg-emerald-500/5 relative overflow-hidden">
-                            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
-                                <div>
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                                            Local-First Gateway Active
-                                        </span>
-                                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-primary/20 text-primary border border-primary/30">
-                                            Combos Failover: Enabled
-                                        </span>
-                                    </div>
-                                    <h2 className="text-2xl md:text-3xl font-extrabold text-foreground flex items-center gap-3">
-                                        <Cpu className="w-8 h-8 text-emerald-400" />
-                                        OmniRoute AI Credit Protection Gateway
-                                    </h2>
-                                    <p className="text-xs text-muted-foreground mt-1 max-w-2xl">
-                                        OmniRoute acts as a local proxy (`http://localhost:20128/v1`), load balancing AI API calls across 290+ providers.
-                                        If primary credits/tokens expire, it automatically cascades through backup providers to guarantee ZERO downtime.
-                                    </p>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <button
-                                        onClick={() => {
-                                            OmniRouteService.resetQuotas();
-                                            toast.success("OmniRoute provider quotas & failover routes reset!");
-                                        }}
-                                        className="px-4 py-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-bold transition-all flex items-center gap-2"
-                                    >
-                                        <RefreshCw className="w-4 h-4" /> Reset Quotas
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Providers Status Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {OmniRouteService.listProviders().map((p) => (
-                                <div key={p.id} className="glass-card p-5 rounded-2xl border border-border hover:border-emerald-500/40 transition-all flex flex-col justify-between">
-                                    <div>
-                                        <div className="flex items-center justify-between mb-2">
-                                            <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-muted text-muted-foreground">
-                                                Priority #{p.priority}
-                                            </span>
-                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
-                                                p.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
-                                            }`}>
-                                                {p.status}
-                                            </span>
-                                        </div>
-                                        <h4 className="font-extrabold text-sm text-foreground">{p.name}</h4>
-                                        <p className="text-[11px] text-muted-foreground font-mono mt-0.5">{p.model}</p>
-                                        <button
-                                            onClick={() => {
-                                                const key = prompt(`Enter API Key for ${p.name}:`);
-                                                if (key !== null) {
-                                                    const providers = OmniRouteService.listProviders().map(item =>
-                                                        item.id === p.id ? { ...item, apiKey: key.trim() } : item
-                                                    );
-                                                    localStorage.setItem('siddhi_omniroute_providers', JSON.stringify(providers));
-                                                    toast.success(`API Key updated for ${p.name}`);
-                                                }
-                                            }}
-                                            className="mt-2 text-[10px] font-extrabold text-primary hover:underline flex items-center gap-1"
-                                        >
-                                            <Edit3 className="w-3 h-3" /> {p.apiKey ? 'Key Configured (Click to edit)' : '+ Set API Key'}
-                                        </button>
-                                    </div>
-                                    <div className="mt-4 pt-3 border-t border-border/50">
-                                        <div className="flex items-center justify-between text-[11px] mb-1">
-                                            <span className="text-muted-foreground font-medium">Quota Tokens</span>
-                                            <span className="font-bold text-foreground">
-                                                {p.quotaRemainingTokens.toLocaleString()} / {p.quotaTotalTokens.toLocaleString()}
-                                            </span>
-                                        </div>
-                                        <div className="w-full bg-muted h-1.5 rounded-full overflow-hidden">
-                                            <div
-                                                className={`h-full transition-all ${p.status === 'active' ? 'bg-emerald-500' : 'bg-red-500'}`}
-                                                style={{ width: `${Math.min(100, Math.max(5, (p.quotaRemainingTokens / p.quotaTotalTokens) * 100))}%` }}
-                                            />
-                                        </div>
-                                        <div className="flex justify-between items-center text-[10px] text-muted-foreground mt-2">
-                                            <span>Requests Handled: <strong>{p.requestsHandled}</strong></span>
-                                            <span>{p.freeTier ? '🆓 Free Tier' : '💳 Paid Account'}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Integration Quick Guide */}
-                        <div className="glass-card p-6 rounded-2xl border border-border space-y-4">
-                            <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-                                <Zap className="w-5 h-5 text-amber-400" />
-                                How OmniRoute Protects You from Running Out of Credits
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                                <div className="p-4 rounded-xl bg-muted/40 border border-border">
-                                    <div className="font-bold text-foreground mb-1">1. Automatic Multi-Provider Fallback</div>
-                                    <p className="text-muted-foreground">
-                                        When an API key reaches its rate limit or runs out of credits, OmniRoute automatically routes the prompt to the next provider in line (e.g. Gemini → Groq → OpenRouter → DeepSeek) without throwing an error.
-                                    </p>
-                                </div>
-                                <div className="p-4 rounded-xl bg-muted/40 border border-border">
-                                    <div className="font-bold text-foreground mb-1">2. Local Gateway Endpoint</div>
-                                    <p className="text-muted-foreground">
-                                        Run `npx omniroute@latest` or Docker (`docker run -p 20128:20128 diegosouzapw/omniroute`) on your machine or server to activate the unified proxy endpoint at `http://localhost:20128/v1`.
-                                    </p>
-                                </div>
-                                <div className="p-4 rounded-xl bg-muted/40 border border-border">
-                                    <div className="font-bold text-foreground mb-1">3. Token Compression (RTK / Caveman)</div>
-                                    <p className="text-muted-foreground">
-                                        Built-in prompt token compressor reduces token consumption by up to 95% on large prompts, maximizing every free-tier quota and paid credit limit.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
                     </motion.div>
                 )}
 
