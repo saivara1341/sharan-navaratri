@@ -230,7 +230,7 @@ main > section:not(:first-child) {
   /* Gradient text */
   /* Red and Yellow in Light Mode, Green and Orange in Dark Mode */
   .gradient-text {
-    @apply bg-clip-text text-transparent;
+    @apply bg-clip-text text-transparent inline-block pb-2 pt-1 leading-normal;
     background-image: linear-gradient(135deg,
         #ef4444 0%, /* Red */
         #eab308 50%, /* Yellow */
@@ -245,7 +245,7 @@ main > section:not(:first-child) {
   }
 
   .gradient-text-reverse {
-    @apply bg-clip-text text-transparent;
+    @apply bg-clip-text text-transparent inline-block pb-2 pt-1 leading-normal;
     background-image: linear-gradient(135deg,
         #eab308 0%, /* Yellow */
         #f97316 50%, /* Orange */

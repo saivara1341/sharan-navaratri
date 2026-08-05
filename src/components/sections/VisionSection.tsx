@@ -291,13 +291,20 @@ export const VisionSection = () => {
               className="text-center mb-5 px-2"
             >
               <motion.span
-                className="inline-block text-primary font-medium text-xs tracking-[0.25em] uppercase mb-2"
+                className="inline-block text-primary font-medium text-xs tracking-[0.25em] uppercase mb-1"
                 initial={{ opacity: 0, y: 15 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
                 {t('vision.title')}
               </motion.span>
+
+              {/* Swiggy-style Underline */}
+              <div className="flex items-center justify-center gap-1.5 mt-1 mb-3">
+                <span className="h-1.5 w-14 rounded-full bg-gradient-to-r from-orange-500 via-amber-500 to-primary shadow-md shadow-orange-500/40 animate-pulse" />
+                <span className="h-1.5 w-3 rounded-full bg-orange-500/80" />
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+              </div>
               <h2 className="text-2xl sm:text-3xl font-bold mb-3 leading-tight text-foreground">
                 {t('vision.beyondPrototypes')}{' '}
                 <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>
@@ -343,13 +350,20 @@ export const VisionSection = () => {
               className="text-center mb-8 max-w-3xl"
             >
               <motion.span
-                className="inline-block text-primary font-medium text-sm tracking-[0.3em] uppercase mb-4"
+                className="inline-block text-primary font-medium text-sm tracking-[0.3em] uppercase mb-1"
                 initial={{ opacity: 0, y: 15 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
                 {t('vision.title')}
               </motion.span>
+
+              {/* Swiggy-style Underline */}
+              <div className="flex items-center justify-center gap-1.5 mt-1.5 mb-4">
+                <span className="h-1.5 w-16 rounded-full bg-gradient-to-r from-orange-500 via-amber-500 to-primary shadow-md shadow-orange-500/40 animate-pulse" />
+                <span className="h-1.5 w-3 rounded-full bg-orange-500/80" />
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+              </div>
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-foreground">
                 {t('vision.beyondPrototypes')}{' '}
                 <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>

@@ -813,14 +813,14 @@ export const SubmitSection = () => {
               </motion.div>
             </div>
 
-            <h2 className="mb-6">
+            <h2 className="mb-6 overflow-visible py-2">
               {isInView ? (
                 <SharedAxisX
-                  className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight gradient-text glow-text"
+                  className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight gradient-text glow-text pb-3 pt-1 inline-block leading-normal overflow-visible"
                   phrases={["Tell us your biggest operational headache"]}
                 />
               ) : (
-                <span aria-hidden="true" className="invisible text-4xl md:text-5xl lg:text-6xl font-bold">
+                <span aria-hidden="true" className="invisible text-4xl md:text-5xl lg:text-6xl font-bold pb-3 pt-1 inline-block leading-normal">
                   Tell us your biggest operational headache
                 </span>
               )}

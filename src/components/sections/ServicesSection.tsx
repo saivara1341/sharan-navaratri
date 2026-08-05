@@ -182,9 +182,17 @@ export function ServicesSection() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.65 }}
               >
-                <div className="mb-6 flex items-center gap-3 md:mb-8">
-                  <span className="h-px w-8 bg-primary" />
-                  <span className="text-xs font-bold uppercase tracking-[0.22em] text-primary">Our services</span>
+                <div className="mb-4 flex flex-col items-start gap-1">
+                  <div className="flex items-center gap-3">
+                    <span className="h-px w-8 bg-primary" />
+                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-primary">Our services</span>
+                  </div>
+                  {/* Swiggy-style Underline */}
+                  <div className="flex items-center gap-1.5 ml-11 mt-1 mb-2">
+                    <span className="h-1.5 w-14 rounded-full bg-gradient-to-r from-orange-500 via-amber-500 to-primary shadow-md shadow-orange-500/40 animate-pulse" />
+                    <span className="h-1.5 w-3 rounded-full bg-orange-500/80" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                  </div>
                 </div>
                 <h2 className="max-w-3xl text-3xl font-black leading-[0.98] tracking-[-0.045em] text-foreground sm:text-4xl md:text-6xl">
                   Everything we build,
