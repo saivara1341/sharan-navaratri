@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    /* Premium Warm Cream & Ivory Palette (Warm Linen Canvas & Charcoal Espresso Ink) */
-    --background: 36 30% 96%; /* #F7F4EE warm luxury cream canvas */
-    --foreground: 24 25% 14%; /* #241E1A rich deep espresso ink */
+    /* Rich Warm Cream & Ivory Palette (Warm Almond Linen & Dark Espresso Ink) */
+    --background: 38 35% 91%; /* #F2EAD9 rich warm cream canvas */
+    --foreground: 24 30% 12%; /* #221A14 deep warm charcoal espresso ink */
 
-    --card: 38 35% 98%; /* #FAF8F3 warm soft ivory card base */
-    --card-foreground: 24 25% 14%;
+    --card: 38 30% 96%; /* #F9F4EB warm soft ivory card base */
+    --card-foreground: 24 30% 12%;
 
-    --popover: 38 35% 98%;
-    --popover-foreground: 24 25% 14%;
+    --popover: 38 30% 96%;
+    --popover-foreground: 24 30% 12%;
 
     /* Refined Olive Green primary */
     --primary: 84 60% 35%; /* Rich refined olive green */
     --primary-foreground: 0 0% 100%; /* Crisp white text on primary buttons */
 
-    --secondary: 36 22% 92%; /* #EFECE4 warm parchment accent */
-    --secondary-foreground: 24 25% 14%;
+    --secondary: 36 25% 88%; /* #EAE1D1 warm parchment accent */
+    --secondary-foreground: 24 30% 12%;
 
-    --muted: 36 20% 90%; /* #EAE6DC warm stone tint */
-    --muted-foreground: 25 15% 35%; /* #544A42 high contrast warm readable text */
+    --muted: 36 22% 85%; /* #E4D9C7 warm stone tint */
+    --muted-foreground: 25 20% 30%; /* #453A30 high contrast warm readable text */
 
     --accent: 25 95% 53%; /* Warm vibrant accent */
     --accent-foreground: 0 0% 100%;
@@ -30,8 +30,8 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 34 18% 84%; /* #DDD6CA refined warm borders */
-    --input: 34 18% 84%;
+    --border: 34 20% 78%; /* #CFBEA8 refined warm borders */
+    --input: 34 20% 78%;
     --ring: 84 60% 35%;
 
     --radius: 0.75rem;
@@ -40,8 +40,8 @@
     --electric-glow: 84 60% 30%;
     --electric-lime: 84 60% 35%;
 
-    --glass-bg: 38 35% 98% / 0.88;
-    --glass-border: 34 18% 84% / 0.8;
+    --glass-bg: 38 30% 96% / 0.92;
+    --glass-border: 34 20% 78% / 0.8;
   }
 
   .dark {
