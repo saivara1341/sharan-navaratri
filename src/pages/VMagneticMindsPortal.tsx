@@ -46,6 +46,8 @@ interface ClientBrand {
   ctr?: string;
   conversions?: string;
   aiCitations?: string;
+  paymentStrategy?: string;
+  retainerFee?: string;
 }
 
 const BUSINESS_GOALS = [
@@ -81,14 +83,17 @@ export default function VMagneticMindsPortal() {
   // ── UPI / billing ──────────────────────────────────────────────────────────
   const upiId      = "6303602743@upi";
   const payeeName  = "Siddhi Dynamics LLP";
-  const monthlyFee = "₹1,000";
 
-  // All pending – no payment received yet (₹1,000/mo for 12 months)
-  const [invoices] = useState([
-    { id: "INV-VMM-001", month: "Month 1 (Aug 2026)", amount: "₹1,000", rawAmount: "1000", status: "Pending",  date: "2026-08-01", desc: "12-Month SLA Onboarding: SEO, GEO, AEO & GBP Setup" },
-    { id: "INV-VMM-002", month: "Month 2 (Sep 2026)", amount: "₹1,000", rawAmount: "1000", status: "Upcoming", date: "2026-09-01", desc: "Month 2 SEO/GEO Optimisation & GA Monthly Report" },
-    { id: "INV-VMM-003", month: "Month 3 (Oct 2026)", amount: "₹1,000", rawAmount: "1000", status: "Upcoming", date: "2026-10-01", desc: "Month 3 AI Search Citation Expansion & GBP Posts" },
-  ]);
+  // Dynamic Invoices per client (empty by default until generated for real clients)
+  const [invoices, setInvoices] = useState<Array<{
+    id: string;
+    month: string;
+    amount: string;
+    rawAmount: string;
+    status: string;
+    date: string;
+    desc: string;
+  }>>([]);
 
   const [payModalOpen,   setPayModalOpen]   = useState(false);
   const [selInvoice,     setSelInvoice]     = useState<typeof invoices[0] | null>(null);
@@ -176,7 +181,7 @@ export default function VMagneticMindsPortal() {
     contactName: "", mobile: "", whatsapp: "", email: "",
     address: "", mapsLink: "", landmark: "", serviceAreas: "",
     brandColors: "", fbLink: "", igLink: "", liLink: "", ytLink: "",
-    testimonials: "",
+    testimonials: "", paymentStrategy: "Custom Agreement", retainerFee: "",
   });
   const [savingClient, setSavingClient] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
@@ -374,8 +379,12 @@ export default function VMagneticMindsPortal() {
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
-                <div className="text-xs text-muted-foreground">Monthly Retainer</div>
-                <div className="text-xl font-extrabold text-foreground">{monthlyFee}<span className="text-xs text-muted-foreground font-normal"> / mo</span></div>
+                <div className="text-xs text-muted-foreground">
+                  {selectedBrand ? selectedBrand.businessName : "Partner Agency Portfolio"}
+                </div>
+                <div className="text-sm font-extrabold text-primary">
+                  {selectedBrand ? (selectedBrand.retainerFee || selectedBrand.paymentStrategy || "Custom Strategy") : `${clients.length} Client Brands`}
+                </div>
               </div>
             </div>
           </div>
@@ -431,18 +440,37 @@ export default function VMagneticMindsPortal() {
           </div>
         </motion.div>
 
-        {/* ── Billing Alert ──────────────────────────────────────────────── */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}
-          className="flex items-start gap-3 px-5 py-4 rounded-2xl bg-yellow-500/5 border border-yellow-500/30">
-          <AlertCircle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-bold text-yellow-600 dark:text-yellow-400">Payment Pending — Month 1 Invoice Due</p>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              No payment has been received yet. Please clear <strong>INV-VMM-001 (₹1,000)</strong> via UPI to activate your full SLA services.
-              Go to the <button onClick={() => setActiveTab('billing')} className="underline text-primary font-semibold">Billing tab</button> to pay now.
-            </p>
-          </div>
-        </motion.div>
+        {/* ── Billing Alert / Account Status ────────────────────────────── */}
+        {invoices.some(inv => inv.status === 'Pending') ? (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}
+            className="flex items-start gap-3 px-5 py-4 rounded-2xl bg-yellow-500/5 border border-yellow-500/30">
+            <AlertCircle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-bold text-yellow-600 dark:text-yellow-400">Payment Pending — Action Required</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Invoice <strong>{invoices.find(i => i.status === 'Pending')?.id} ({invoices.find(i => i.status === 'Pending')?.amount})</strong> is pending.
+                Go to the <button onClick={() => setActiveTab('billing')} className="underline text-primary font-semibold">Billing tab</button> to review and clear.
+              </p>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}
+            className="flex items-center justify-between px-5 py-4 rounded-2xl bg-primary/5 border border-primary/20">
+            <div className="flex items-center gap-3">
+              <ShieldCheck className="w-5 h-5 text-primary shrink-0" />
+              <div>
+                <p className="text-sm font-bold text-foreground">Client Billing & Strategy Hub</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  No pending invoices. Each client brand added will have its tailored payment strategy & SLA schedule.
+                </p>
+              </div>
+            </div>
+            <button onClick={() => { setActiveTab('clients'); setShowClientForm(true); }}
+              className="px-4 py-2 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl hover:scale-105 transition-all shrink-0 flex items-center gap-1.5">
+              <Plus className="w-3.5 h-3.5" /> Add Client Brand
+            </button>
+          </motion.div>
+        )}
 
         {/* ── Client Portfolio Tab (always accessible) ─────────────────── */}
         {activeTab === 'clients' && (
@@ -884,49 +912,65 @@ export default function VMagneticMindsPortal() {
 
                 {/* Invoices */}
                 <div className="lg:col-span-2 space-y-4">
-                  <div className="glass-card rounded-2xl border border-border p-6">
-                    <div className="flex items-center justify-between mb-5">
-                      <div>
-                        <h3 className="text-sm font-extrabold text-foreground flex items-center gap-2">
-                          <CreditCard className="w-5 h-5 text-primary" /> 12-Month SLA Payment Schedule
-                        </h3>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          Contract total: <strong>₹12,000</strong> · ₹1,000/month · <span className="text-amber-500 font-semibold">0 of 12 paid</span>
-                        </p>
+                  {invoices.length === 0 ? (
+                    <div className="glass-card rounded-2xl border border-dashed border-border p-8 text-center space-y-3">
+                      <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto text-primary">
+                        <CreditCard className="w-6 h-6" />
                       </div>
-                      <span className="text-[10px] px-2 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-lg font-bold">⚙ Admin-set · Read only</span>
+                      <h3 className="text-sm font-extrabold text-foreground">No Client Invoices Configured Yet</h3>
+                      <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                        Payment strategies (Monthly Retainer, Milestone, or Custom Project) are configured per client brand. Add a client brand to generate and track custom invoices.
+                      </p>
+                      <button onClick={() => { setActiveTab('clients'); setShowClientForm(true); }}
+                        className="px-5 py-2.5 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl hover:scale-105 transition-all inline-flex items-center gap-2">
+                        <Plus className="w-4 h-4" /> Add Client Brand & Setup Strategy
+                      </button>
                     </div>
-                    <div className="space-y-3">
-                      {invoices.map(inv => (
-                        <div key={inv.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-muted border border-border">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold text-foreground">{inv.id}</span>
-                              <span className="text-xs text-muted-foreground">· {inv.month}</span>
-                            </div>
-                            <p className="text-xs text-muted-foreground mt-0.5">{inv.desc}</p>
-                            <p className="text-[11px] text-muted-foreground/60 mt-0.5">Due: {inv.date}</p>
-                          </div>
-                          <div className="flex items-center gap-3 shrink-0">
-                            <div className="text-right">
-                              <div className="text-base font-extrabold text-foreground">{inv.amount}</div>
-                              <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${
-                                inv.status === 'Pending'  ? 'bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 border border-yellow-500/30' :
-                                inv.status === 'Paid'     ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' :
-                                                             'bg-muted text-muted-foreground border border-border'
-                              }`}>{inv.status}</span>
-                            </div>
-                            {inv.status === 'Pending' && (
-                              <button onClick={() => { setSelInvoice(inv); setPayModalOpen(true); }}
-                                className="flex items-center gap-1.5 px-3.5 py-2 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl hover:scale-[1.02] transition-all shadow-md shadow-primary/20">
-                                <QrCode className="w-3.5 h-3.5" /> Pay Now
-                              </button>
-                            )}
-                          </div>
+                  ) : (
+                    <div className="glass-card rounded-2xl border border-border p-6">
+                      <div className="flex items-center justify-between mb-5">
+                        <div>
+                          <h3 className="text-sm font-extrabold text-foreground flex items-center gap-2">
+                            <CreditCard className="w-5 h-5 text-primary" /> Active SLA Payment Schedule
+                          </h3>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            Showing active client invoices & payment status
+                          </p>
                         </div>
-                      ))}
+                        <span className="text-[10px] px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded-lg font-bold">⚙ Dynamic SLA</span>
+                      </div>
+                      <div className="space-y-3">
+                        {invoices.map(inv => (
+                          <div key={inv.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-muted border border-border">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-bold text-foreground">{inv.id}</span>
+                                <span className="text-xs text-muted-foreground">· {inv.month}</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-0.5">{inv.desc}</p>
+                              <p className="text-[11px] text-muted-foreground/60 mt-0.5">Due: {inv.date}</p>
+                            </div>
+                            <div className="flex items-center gap-3 shrink-0">
+                              <div className="text-right">
+                                <div className="text-base font-extrabold text-foreground">{inv.amount}</div>
+                                <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${
+                                  inv.status === 'Pending'  ? 'bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 border border-yellow-500/30' :
+                                  inv.status === 'Paid'     ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' :
+                                                               'bg-muted text-muted-foreground border border-border'
+                                }`}>{inv.status}</span>
+                              </div>
+                              {inv.status === 'Pending' && (
+                                <button onClick={() => { setSelInvoice(inv); setPayModalOpen(true); }}
+                                  className="flex items-center gap-1.5 px-3.5 py-2 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl hover:scale-[1.02] transition-all shadow-md shadow-primary/20">
+                                  <QrCode className="w-3.5 h-3.5" /> Pay Now
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Quick UTR */}
                   <div className="glass-card rounded-2xl border border-border p-5">
@@ -1127,6 +1171,28 @@ export default function VMagneticMindsPortal() {
                       <div><label className={lbl}>Website URL</label><input placeholder="https://example.com" className={inp} value={clientForm.website} onChange={cf('website')} /></div>
                       <div><label className={lbl}>Business Working Hours</label><input placeholder="Mon–Sat 9am–8pm" className={inp} value={clientForm.hours} onChange={cf('hours')} /></div>
                       <div className="sm:col-span-2"><label className={lbl}>List of Services / Products</label><textarea rows={2} placeholder="Comma-separated or one per line…" className={inp} value={clientForm.services} onChange={cf('services')} /></div>
+                    </div>
+                  </section>
+
+                  {/* ▸ SLA & Payment Strategy */}
+                  <section>
+                    <h3 className="text-xs font-extrabold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <CreditCard className="w-4 h-4" /> Custom SLA & Payment Strategy
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className={lbl}>Payment Strategy</label>
+                        <select className={inp} value={clientForm.paymentStrategy || "Custom Agreement"} onChange={cf('paymentStrategy')}>
+                          <option value="Custom Agreement">🤝 Custom Agreement / Discuss</option>
+                          <option value="Monthly Retainer">📅 Monthly Retainer</option>
+                          <option value="One-time Project">🚀 One-time Project Fee</option>
+                          <option value="Performance Share">📈 Performance / Revenue Share</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className={lbl}>Agreed Fee / Retainer Amount</label>
+                        <input placeholder="e.g. ₹15,000 / mo or Custom Quote" className={inp} value={clientForm.retainerFee || ""} onChange={cf('retainerFee')} />
+                      </div>
                     </div>
                   </section>
 
