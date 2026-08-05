@@ -355,7 +355,7 @@ export default function VMagneticMindsPortal() {
       </Helmet>
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 space-y-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 md:pt-36 pb-20 space-y-8">
 
         {/* ── Header Banner ──────────────────────────────────────────────── */}
         <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }}
@@ -1040,7 +1040,7 @@ export default function VMagneticMindsPortal() {
       {/* ════ PAY MODAL ════════════════════════════════════════════════════════ */}
       <AnimatePresence>
         {payModalOpen && selInvoice && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 pt-24 pb-6 bg-black/70 backdrop-blur-md overflow-y-auto">
             <motion.div initial={{ scale: 0.92, opacity: 0, y: 16 }} animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.92, opacity: 0 }}
               className="bg-card border border-border rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden">
@@ -1134,7 +1134,7 @@ export default function VMagneticMindsPortal() {
       {/* ════ ADD CLIENT MODAL ═════════════════════════════════════════════════ */}
       <AnimatePresence>
         {showClientForm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 pt-24 pb-6 bg-black/70 backdrop-blur-md overflow-y-auto">
             <motion.div initial={{ scale: 0.94, opacity: 0, y: 16 }} animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.94, opacity: 0 }}
               className="bg-card border border-border rounded-3xl w-full max-w-2xl max-h-[92vh] overflow-hidden shadow-2xl flex flex-col">

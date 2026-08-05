@@ -864,7 +864,7 @@ If you cannot answer based on our tech stack, say: "I will escalate this questio
       {/* Project Detail Modal */}
       <AnimatePresence>
         {selectedProject && (
-          <div className="fixed inset-0 bg-[#020204]/80 backdrop-blur-md flex items-center justify-center p-6 z-50">
+          <div className="fixed inset-0 bg-[#020204]/80 backdrop-blur-md flex items-center justify-center p-4 pt-24 pb-6 z-[250] overflow-y-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -997,7 +997,7 @@ If you cannot answer based on our tech stack, say: "I will escalate this questio
       {/* Slide-out Investor Support Drawer */}
       <AnimatePresence>
         {chatOpen && (
-          <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[250] flex justify-end pt-24 bg-black/60 backdrop-blur-sm">
             {/* Dismiss overlay */}
             <div className="absolute inset-0 cursor-pointer" onClick={() => setChatOpen(false)} />
             

@@ -671,7 +671,7 @@ export default function EmployeePortal() {
       {/* Development Roadmap Progress Editor Modal */}
       <AnimatePresence>
         {selectedSub && (
-          <div className="fixed inset-0 bg-[#020204]/80 backdrop-blur-md flex items-center justify-center p-6 z-50">
+          <div className="fixed inset-0 bg-[#020204]/80 backdrop-blur-md flex items-center justify-center p-4 pt-24 pb-6 z-[250] overflow-y-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}

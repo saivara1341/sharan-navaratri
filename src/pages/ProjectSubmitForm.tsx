@@ -167,7 +167,7 @@ export default function ProjectSubmitForm() {
 
             <Navbar />
 
-            <main className="pt-24 pb-16 px-4 sm:px-6 max-w-2xl mx-auto">
+            <main className="pt-32 md:pt-36 pb-16 px-4 sm:px-6 max-w-2xl mx-auto">
                 {/* Back button */}
                 <button
                     onClick={() => navigate(portalPath)}
