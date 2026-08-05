@@ -1,14 +1,23 @@
-name: Deploy to Cloudflare Pages
+name: Build & Deploy Siddhi Dynamics
 
 on:
   push:
     branches:
       - main
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    name: Deploy Siddhi Dynamics to Cloudflare Pages (CDN)
+    name: Build & Deploy to Live Site (GitHub Pages & Cloudflare)
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -29,14 +38,25 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_ADMIN_EMAILS: ${{ secrets.VITE_ADMIN_EMAILS }}
 
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Artifact to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'dist'
+
+      - name: Deploy to Live Site (GitHub Pages)
+        id: deployment
+        uses: actions/deploy-pages@v4
+
       - name: Deploy to Cloudflare Pages
         run: |
           if [ -n "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] && [ -n "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
             echo "🚀 Deploying to Cloudflare Pages..."
             npx wrangler pages deploy dist --project-name siddhidynamics
           else
-            echo "ℹ️ CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID secret is not set in GitHub repository settings."
-            echo "ℹ️ Build succeeded cleanly! To enable automated Cloudflare deployment, add secrets in GitHub settings."
+            echo "ℹ️ Build deployed to GitHub Pages! (Cloudflare API token optional)"
           fi
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
