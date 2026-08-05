@@ -30,6 +30,7 @@ jobs:
           VITE_ADMIN_EMAILS: ${{ secrets.VITE_ADMIN_EMAILS }}
 
       - name: Deploy to Cloudflare Pages
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
