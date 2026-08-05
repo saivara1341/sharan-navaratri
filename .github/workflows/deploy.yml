@@ -30,11 +30,14 @@ jobs:
           VITE_ADMIN_EMAILS: ${{ secrets.VITE_ADMIN_EMAILS }}
 
       - name: Deploy to Cloudflare Pages
-        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: siddhidynamics
-          directory: dist
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -n "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] && [ -n "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "🚀 Deploying to Cloudflare Pages..."
+            npx wrangler pages deploy dist --project-name siddhidynamics
+          else
+            echo "ℹ️ CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID secret is not set in GitHub repository settings."
+            echo "ℹ️ Build succeeded cleanly! To enable automated Cloudflare deployment, add secrets in GitHub settings."
+          fi
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
