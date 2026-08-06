@@ -14,9 +14,10 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { emailService } from "@/services/emailService";
+import OccasionDesignsSection from "@/components/portal/OccasionDesignsSection";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type Tab = 'overview' | 'seo-geo' | 'analytics' | 'clients' | 'billing' | 'chat';
+type Tab = 'overview' | 'seo-geo' | 'analytics' | 'clients' | 'billing' | 'chat' | 'occasions';
 
 interface ClientBrand {
   id: string;
@@ -56,13 +57,14 @@ const BUSINESS_GOALS = [
   "Better Google Maps Visibility", "Better AI Search Visibility"
 ];
 
-const TABS: { id: Tab; label: string; icon: React.ReactNode; desc: string }[] = [
-  { id: 'overview',  label: '12-Month Executive SLA',    icon: <Calendar className="w-5 h-5" />,      desc: 'Contract & roadmap progress' },
-  { id: 'clients',   label: 'Client Portfolio',           icon: <Users className="w-5 h-5" />,         desc: 'Select & manage client brands' },
-  { id: 'seo-geo',   label: 'SEO / GEO / AEO & GBP Hub', icon: <Search className="w-5 h-5" />,        desc: 'Search & AI score analysis' },
-  { id: 'analytics', label: 'GA Monthly Reports',         icon: <BarChart3 className="w-5 h-5" />,     desc: 'Traffic & conversion metrics' },
-  { id: 'billing',   label: 'UPI Payments & Invoices',    icon: <CreditCard className="w-5 h-5" />,    desc: 'Pay & track invoices' },
-  { id: 'chat',      label: 'AI Support Coordinator',     icon: <Bot className="w-5 h-5" />,           desc: 'Siddhi AI assistant' },
+const TABS: { id: Tab; label: string; icon: React.ReactNode; desc: string; alwaysVisible?: boolean }[] = [
+  { id: 'overview',   label: '12-Month Executive SLA',       icon: <Calendar className="w-5 h-5" />,      desc: 'Contract & roadmap progress' },
+  { id: 'clients',    label: 'Client Portfolio',              icon: <Users className="w-5 h-5" />,         desc: 'Select & manage client brands' },
+  { id: 'seo-geo',    label: 'SEO / GEO / AEO & GBP Hub',   icon: <Search className="w-5 h-5" />,        desc: 'Search & AI score analysis' },
+  { id: 'analytics',  label: 'GA Monthly Reports',            icon: <BarChart3 className="w-5 h-5" />,     desc: 'Traffic & conversion metrics' },
+  { id: 'billing',    label: 'UPI Payments & Invoices',       icon: <CreditCard className="w-5 h-5" />,    desc: 'Pay & track invoices' },
+  { id: 'chat',       label: 'AI Support Coordinator',        icon: <Bot className="w-5 h-5" />,           desc: 'Siddhi AI assistant' },
+  { id: 'occasions',  label: 'Occasion & Festive Designs',   icon: <Image className="w-5 h-5" />,         desc: 'Upload & download wishes images', alwaysVisible: true },
 ];
 
 const INITIAL_CLIENTS: ClientBrand[] = [];
@@ -472,8 +474,8 @@ export default function VMagneticMindsPortal() {
           </motion.div>
         )}
 
-        {/* ── Client Portfolio Tab (always accessible) ─────────────────── */}
-        {activeTab === 'clients' && (
+        {/* ── Client Portfolio Tab & Occasions Tab nav grid (always accessible) ── */}
+        {(activeTab === 'clients' || (activeTab === 'occasions' && selectedBrandId === 'all')) && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {TABS.map((tab, i) => (
               <motion.button key={tab.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
@@ -529,7 +531,7 @@ export default function VMagneticMindsPortal() {
         )}
 
         {/* ── No Client Selected Gate ───────────────────────────────────── */}
-        {activeTab !== 'clients' && selectedBrandId === 'all' && (
+        {activeTab !== 'clients' && activeTab !== 'occasions' && selectedBrandId === 'all' && (
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             className="glass-card rounded-3xl border border-dashed border-primary/30 p-12 text-center space-y-4"
@@ -575,8 +577,19 @@ export default function VMagneticMindsPortal() {
           </motion.div>
         )}
 
-        {/* ── Tab Content (only when a client is selected) ─────────────── */}
-        {selectedBrandId !== 'all' && (
+        {/* ── Occasions tab: always rendered regardless of client selection ── */}
+        {activeTab === 'occasions' && (
+          <AnimatePresence mode="wait">
+            <OccasionDesignsSection
+              clients={clients}
+              selectedBrandId={selectedBrandId}
+              agencyName={agencyName}
+            />
+          </AnimatePresence>
+        )}
+
+        {/* ── Tab Content (only when a client is selected, excluding occasions) ── */}
+        {selectedBrandId !== 'all' && activeTab !== 'occasions' && (
         <AnimatePresence mode="wait">
 
           {/* ═══ OVERVIEW ══════════════════════════════════════════════════ */}
