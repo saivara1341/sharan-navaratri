@@ -9,11 +9,15 @@ const isDev = import.meta.env.DEV;
 
 // ISP Bypass logic: Use local proxy only in dev mode.
 // The "Failed to fetch" error usually means the backend proxy (port 9090) isn't running.
+const envUrl = import.meta.env.VITE_SUPABASE_URL;
+const VALIDATED_URL = (envUrl && !envUrl.includes('xgrdubcpomwzbuaqtjad')) ? envUrl : FALLBACK_URL;
+
+const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const FINAL_KEY = (envKey && !envKey.includes('xgrdubcpomwzbuaqtjad')) ? envKey.trim() : FALLBACK_KEY;
+
 const EFFECTIVE_URL = isDev
     ? (typeof window !== 'undefined' ? window.location.origin + "/supabase-api" : "http://localhost:5173/supabase-api")
-    : (import.meta.env.VITE_SUPABASE_URL || FALLBACK_URL);
-
-const FINAL_KEY = (import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || FALLBACK_KEY).trim();
+    : VALIDATED_URL;
 
 if (isDev) {
     console.log(`[Supabase] Active Mode: ${import.meta.env.MODE}`);
