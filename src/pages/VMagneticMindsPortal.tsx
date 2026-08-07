@@ -228,6 +228,40 @@ export default function VMagneticMindsPortal() {
       console.error("Failed to update user metadata:", err);
     }
 
+    try {
+      if (userEmail) {
+        await supabase.from('agency_profiles').upsert({
+          user_email: userEmail.toLowerCase(),
+          agency_name: newName,
+          agency_logo: newLogo,
+          contact_person: editAgencyContact.trim(),
+          phone: editAgencyPhone.trim(),
+          website: editAgencyWebsite.trim(),
+          facebook: editAgencyFb.trim(),
+          instagram: editAgencyIg.trim(),
+          linkedin: editAgencyLi.trim(),
+          youtube: editAgencyYt.trim(),
+          custom_socials: customSocials,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'user_email' });
+
+        localStorage.setItem(`sd_agency_profile_${userEmail.toLowerCase()}`, JSON.stringify({
+          agencyName: newName,
+          agencyLogoUrl: newLogo,
+          agencyContact: editAgencyContact.trim(),
+          agencyPhone: editAgencyPhone.trim(),
+          agencyWebsite: editAgencyWebsite.trim(),
+          agencyFb: editAgencyFb.trim(),
+          agencyIg: editAgencyIg.trim(),
+          agencyLi: editAgencyLi.trim(),
+          agencyYt: editAgencyYt.trim(),
+          customSocials: customSocials
+        }));
+      }
+    } catch (err) {
+      console.error("Failed to save agency profile to Supabase DB:", err);
+    }
+
     setShowBrandingModal(false);
     toast.success(`Agency profile saved for ${newName}!`);
   };
@@ -332,6 +366,26 @@ export default function VMagneticMindsPortal() {
       try {
         localStorage.setItem(`sd_agency_clients_${userEmail.toLowerCase()}`, JSON.stringify(updatedClients));
       } catch (e) {}
+
+      supabase.from('agency_clients').upsert({
+        id: newClient.id,
+        agency_email: userEmail.toLowerCase(),
+        business_name: newClient.businessName,
+        brand_name: newClient.brandName,
+        category: newClient.category,
+        description: newClient.description,
+        website: newClient.website,
+        contact_name: newClient.contactName,
+        mobile: newClient.mobile,
+        whatsapp: clientForm.whatsapp,
+        email: newClient.email,
+        address: newClient.address,
+        services: selectedServices,
+        payment_strategy: clientForm.paymentStrategy,
+        retainer_fee: clientForm.retainerFee,
+        status: newClient.status,
+        progress: newClient.progress
+      }).then(() => {});
 
       setSelectedBrandId(newClient.id);
 
@@ -513,30 +567,76 @@ export default function VMagneticMindsPortal() {
 
   // ── Auth ───────────────────────────────────────────────────────────────────
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
         const email = (session.user.email || "").toLowerCase();
         setUserEmail(email);
 
-        let curAgencyName = "Agency Partner";
-        let curAgencyLogo = "";
+        let curAgencyName = session.user.user_metadata?.agency_name || session.user.user_metadata?.full_name || "Agency Partner";
+        let curAgencyLogo = session.user.user_metadata?.agency_logo || "";
+        let hasSavedProfile = !!session.user.user_metadata?.agency_name;
+
+        // 1. Try local storage first
+        try {
+          const localProf = localStorage.getItem(`sd_agency_profile_${email}`);
+          if (localProf) {
+            const parsed = JSON.parse(localProf);
+            if (parsed.agencyName) {
+              curAgencyName = parsed.agencyName;
+              curAgencyLogo = parsed.agencyLogoUrl || "";
+              setAgencyContact(parsed.agencyContact || "");
+              setAgencyPhone(parsed.agencyPhone || "");
+              setAgencyWebsite(parsed.agencyWebsite || "");
+              setAgencyFb(parsed.agencyFb || "");
+              setAgencyIg(parsed.agencyIg || "");
+              setAgencyLi(parsed.agencyLi || "");
+              setAgencyYt(parsed.agencyYt || "");
+              if (Array.isArray(parsed.customSocials)) setCustomSocials(parsed.customSocials);
+              hasSavedProfile = true;
+            }
+          }
+        } catch (e) {}
+
+        // 2. Fetch from Supabase agency_profiles table
+        try {
+          const { data: profile } = await supabase
+            .from('agency_profiles')
+            .select('*')
+            .eq('user_email', email)
+            .maybeSingle();
+
+          if (profile) {
+            curAgencyName = profile.agency_name || curAgencyName;
+            curAgencyLogo = profile.agency_logo !== undefined && profile.agency_logo !== null ? profile.agency_logo : curAgencyLogo;
+            setAgencyContact(profile.contact_person || "");
+            setAgencyPhone(profile.phone || "");
+            setAgencyWebsite(profile.website || "");
+            setAgencyFb(profile.facebook || "");
+            setAgencyIg(profile.instagram || "");
+            setAgencyLi(profile.linkedin || "");
+            setAgencyYt(profile.youtube || "");
+            if (Array.isArray(profile.custom_socials)) setCustomSocials(profile.custom_socials);
+            hasSavedProfile = true;
+          }
+        } catch (e) {}
 
         if (email === "23eg510a07@anurag.edu.in") {
           curAgencyName = "V Magnetic Minds";
           curAgencyLogo = "/v-magnetic-minds-logo.jpg";
-        } else {
-          curAgencyName = session.user.user_metadata?.agency_name || session.user.user_metadata?.full_name || "Agency Partner";
-          curAgencyLogo = session.user.user_metadata?.agency_logo || "";
-
-          if (!session.user.user_metadata?.agency_name) {
-            setEditAgencyName(curAgencyName);
-            setEditAgencyLogo(session.user.user_metadata?.agency_logo || "");
-            setShowBrandingModal(true);
-          }
+          hasSavedProfile = true;
         }
 
         setAgencyName(curAgencyName);
         setAgencyLogoUrl(curAgencyLogo);
+
+        if (!hasSavedProfile && email !== "23eg510a07@anurag.edu.in") {
+          setEditAgencyName(curAgencyName);
+          setEditAgencyLogo("");
+          setShowBrandingModal(true);
+        } else {
+          setShowBrandingModal(false);
+        }
+
         fetchAgencyClients(email, curAgencyName);
       }
       setLoading(false);
