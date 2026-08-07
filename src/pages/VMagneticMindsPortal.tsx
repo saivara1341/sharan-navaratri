@@ -8,7 +8,7 @@ import {
   ShieldCheck, RefreshCw, MessageCircle, Send, Zap, CreditCard, QrCode,
   Download, Building2, BarChart3, FileText, Users, Copy, Check, LogOut,
   AlertCircle, Plus, X, ChevronRight, ChevronLeft, Phone, Mail, Instagram, Youtube,
-  Facebook, Linkedin, Target, Image, Briefcase, Star, Filter, Eye, ArrowUpRight
+  Facebook, Linkedin, Target, Image, Briefcase, Star, Filter, Eye, ArrowUpRight, Lock
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -302,10 +302,25 @@ export default function VMagneticMindsPortal() {
     businessName: "", brandName: "", category: "", description: "",
     yearEst: "", website: "", services: "", hours: "",
     contactName: "", mobile: "", whatsapp: "", email: "",
-    address: "", mapsLink: "", landmark: "", serviceAreas: "",
+    address: "", addrDoorNo: "", addrStreet: "", addrArea: "", addrCity: "", addrState: "", addrPinCode: "",
+    mapsLink: "", landmark: "", serviceAreas: "",
     brandColors: "", fbLink: "", igLink: "", liLink: "", ytLink: "",
     testimonials: "", paymentStrategy: "Custom Agreement", retainerFee: "",
   });
+  const [clientCustomSocials, setClientCustomSocials] = useState<Array<{ id: string; name: string; url: string }>>([]);
+
+  const addClientCustomSocialChannel = () => {
+    setClientCustomSocials(prev => [...prev, { id: Date.now().toString(), name: '', url: '' }]);
+  };
+
+  const removeClientCustomSocialChannel = (id: string) => {
+    setClientCustomSocials(prev => prev.filter(c => c.id !== id));
+  };
+
+  const updateClientCustomSocialChannel = (id: string, field: 'name' | 'url', val: string) => {
+    setClientCustomSocials(prev => prev.map(c => c.id === id ? { ...c, [field]: val } : c));
+  };
+
   const [savingClient, setSavingClient] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -330,6 +345,14 @@ export default function VMagneticMindsPortal() {
     }
     setSavingClient(true);
     setTimeout(() => {
+      const constructedAddr = [
+        clientForm.addrDoorNo,
+        clientForm.addrStreet,
+        clientForm.addrArea,
+        clientForm.addrCity,
+        clientForm.addrState ? `${clientForm.addrState}${clientForm.addrPinCode ? ' - ' + clientForm.addrPinCode : ''}` : clientForm.addrPinCode
+      ].map(s => s?.trim()).filter(Boolean).join(", ");
+
       const newClient: ClientBrand = {
         id: `client-${Date.now()}`,
         businessName: clientForm.businessName,
@@ -1731,14 +1754,20 @@ export default function VMagneticMindsPortal() {
                       <CreditCard className="w-4 h-4" /> Custom SLA & Pricing (Assigned by Admin)
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className={lbl}>Payment Strategy</label>
-                        <select className={inp} value={clientForm.paymentStrategy || "Custom Agreement"} onChange={cf('paymentStrategy')}>
-                          <option value="Custom Agreement">🤝 Custom Agreement / Admin Quote</option>
-                          <option value="Monthly Retainer">📅 Monthly Retainer</option>
-                          <option value="One-time Project">🚀 One-time Project Fee</option>
-                          <option value="Performance Share">📈 Performance / Revenue Share</option>
-                        </select>
+                      <div className="sm:col-span-2">
+                        <label className={lbl}>Payment Strategy (Locked)</label>
+                        <div className="flex items-center justify-between p-3.5 rounded-xl bg-muted/60 border border-border">
+                          <div className="flex items-center gap-2.5">
+                            <Lock className="w-4 h-4 text-amber-500 shrink-0" />
+                            <span className="text-xs font-extrabold text-foreground">🤝 Custom Agreement / Admin Quote</span>
+                          </div>
+                          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20 uppercase tracking-wide">
+                            Locked by Admin
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground mt-1.5 leading-relaxed">
+                          Note: Payment strategy is locked to Custom Agreement / Admin Quote. Pricing is assigned directly from the Admin Portal. Once submitted, your Account Executive assigns the fee, after which you can select Cash or Online payment mode.
+                        </p>
                       </div>
                     </div>
                   </section>
@@ -1750,7 +1779,7 @@ export default function VMagneticMindsPortal() {
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div><label className={lbl}>Contact Person Name *</label><input required placeholder="Enter full name" className={inp} value={clientForm.contactName} onChange={cf('contactName')} /></div>
-                      <div><label className={lbl}>Mobile Number</label><input type="tel" maxLength={15} placeholder="Enter 10-digit mobile number" className={inp} value={clientForm.mobile} onChange={e => setClientForm(prev => ({ ...prev, mobile: e.target.value.replace(/[^0-9+\s-]/g, '') }))} /></div>
+                      <div><label className={lbl}>Mobile Number *</label><input required type="tel" maxLength={15} placeholder="Enter 10-digit mobile number" className={inp} value={clientForm.mobile} onChange={e => setClientForm(prev => ({ ...prev, mobile: e.target.value.replace(/[^0-9+\s-]/g, '') }))} /></div>
                       <div><label className={lbl}>WhatsApp Number</label><input type="tel" maxLength={15} placeholder="Enter 10-digit WhatsApp number" className={inp} value={clientForm.whatsapp} onChange={e => setClientForm(prev => ({ ...prev, whatsapp: e.target.value.replace(/[^0-9+\s-]/g, '') }))} /></div>
                       <div><label className={lbl}>Email Address</label><input type="email" placeholder="Enter official email address" className={inp} value={clientForm.email} onChange={cf('email')} /></div>
                     </div>
@@ -1827,14 +1856,49 @@ export default function VMagneticMindsPortal() {
 
                   {/* ▸ Social Media */}
                   <section>
-                    <h3 className="text-xs font-extrabold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <Globe className="w-4 h-4" /> Social Media
-                    </h3>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xs font-extrabold text-primary uppercase tracking-widest flex items-center gap-2">
+                        <Globe className="w-4 h-4" /> Social Media Channels
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={addClientCustomSocialChannel}
+                        className="px-3 py-1.5 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Add Custom Channel
+                      </button>
+                    </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="flex items-center gap-2"><Facebook className="w-4 h-4 text-blue-500 shrink-0" /><input placeholder="Facebook Page Link" className={inp} value={clientForm.fbLink} onChange={cf('fbLink')} /></div>
                       <div className="flex items-center gap-2"><Instagram className="w-4 h-4 text-pink-500 shrink-0" /><input placeholder="Instagram Profile Link" className={inp} value={clientForm.igLink} onChange={cf('igLink')} /></div>
                       <div className="flex items-center gap-2"><Linkedin className="w-4 h-4 text-blue-600 shrink-0" /><input placeholder="LinkedIn Page Link" className={inp} value={clientForm.liLink} onChange={cf('liLink')} /></div>
                       <div className="flex items-center gap-2"><Youtube className="w-4 h-4 text-red-500 shrink-0" /><input placeholder="YouTube Channel Link" className={inp} value={clientForm.ytLink} onChange={cf('ytLink')} /></div>
+
+                      {clientCustomSocials.map(soc => (
+                        <div key={soc.id} className="flex items-center gap-2 sm:col-span-2 p-2.5 rounded-xl bg-muted/40 border border-border">
+                          <input
+                            type="text"
+                            placeholder="Platform Name (e.g. X / TikTok / Threads / Telegram)"
+                            className="w-2/5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                            value={soc.name}
+                            onChange={e => updateClientCustomSocialChannel(soc.id, 'name', e.target.value)}
+                          />
+                          <input
+                            type="url"
+                            placeholder="https://platform.com/yourhandle"
+                            className="flex-1 px-3 py-2 rounded-lg border border-border bg-card text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                            value={soc.url}
+                            onChange={e => updateClientCustomSocialChannel(soc.id, 'url', e.target.value)}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeClientCustomSocialChannel(soc.id)}
+                            className="p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 text-xs transition-colors cursor-pointer"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   </section>
 
