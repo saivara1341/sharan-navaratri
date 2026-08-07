@@ -192,6 +192,11 @@ export default function VMagneticMindsPortal() {
 
   const handleSaveBranding = async (e: React.FormEvent) => {
     e.preventDefault();
+    const cleanPhone = editAgencyPhone.trim().replace(/[^0-9]/g, "");
+    if (editAgencyPhone.trim() && (cleanPhone.length < 10 || cleanPhone.length > 12)) {
+      toast.error("Please enter a valid 10-digit mobile / WhatsApp number.");
+      return;
+    }
     const newName = editAgencyName.trim() || "Agency Partner";
     const newLogo = editAgencyLogo;
 
@@ -280,6 +285,14 @@ export default function VMagneticMindsPortal() {
     e.preventDefault();
     if (!clientForm.businessName.trim() || !clientForm.contactName.trim()) {
       toast.error("Business name and contact name are required."); return;
+    }
+    const cleanMobile = clientForm.mobile.trim().replace(/[^0-9]/g, "");
+    if (clientForm.mobile.trim() && (cleanMobile.length < 10 || cleanMobile.length > 12)) {
+      toast.error("Please enter a valid 10-digit mobile number."); return;
+    }
+    const cleanWhatsapp = clientForm.whatsapp.trim().replace(/[^0-9]/g, "");
+    if (clientForm.whatsapp.trim() && (cleanWhatsapp.length < 10 || cleanWhatsapp.length > 12)) {
+      toast.error("Please enter a valid 10-digit WhatsApp number."); return;
     }
     setSavingClient(true);
     setTimeout(() => {
@@ -1422,7 +1435,7 @@ export default function VMagneticMindsPortal() {
                     </div>
                     <div>
                       <label className={lbl}>Mobile / WhatsApp Number <span className="text-destructive">*</span></label>
-                      <input required placeholder="Enter 10-digit mobile number" className={inp} value={editAgencyPhone} onChange={e => setEditAgencyPhone(e.target.value)} />
+                      <input required type="tel" maxLength={15} placeholder="Enter 10-digit mobile number" className={inp} value={editAgencyPhone} onChange={e => setEditAgencyPhone(e.target.value.replace(/[^0-9+\s-]/g, ''))} />
                     </div>
                     <div className="sm:col-span-2">
                       <label className={lbl}>Official Website URL</label>
@@ -1602,8 +1615,8 @@ export default function VMagneticMindsPortal() {
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div><label className={lbl}>Contact Person Name *</label><input required placeholder="Enter full name" className={inp} value={clientForm.contactName} onChange={cf('contactName')} /></div>
-                      <div><label className={lbl}>Mobile Number</label><input placeholder="Enter 10-digit mobile number" className={inp} value={clientForm.mobile} onChange={cf('mobile')} /></div>
-                      <div><label className={lbl}>WhatsApp Number</label><input placeholder="Enter 10-digit WhatsApp number" className={inp} value={clientForm.whatsapp} onChange={cf('whatsapp')} /></div>
+                      <div><label className={lbl}>Mobile Number</label><input type="tel" maxLength={15} placeholder="Enter 10-digit mobile number" className={inp} value={clientForm.mobile} onChange={e => setClientForm(prev => ({ ...prev, mobile: e.target.value.replace(/[^0-9+\s-]/g, '') }))} /></div>
+                      <div><label className={lbl}>WhatsApp Number</label><input type="tel" maxLength={15} placeholder="Enter 10-digit WhatsApp number" className={inp} value={clientForm.whatsapp} onChange={e => setClientForm(prev => ({ ...prev, whatsapp: e.target.value.replace(/[^0-9+\s-]/g, '') }))} /></div>
                       <div><label className={lbl}>Email Address</label><input type="email" placeholder="Enter official email address" className={inp} value={clientForm.email} onChange={cf('email')} /></div>
                     </div>
                   </section>
