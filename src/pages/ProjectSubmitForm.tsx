@@ -90,6 +90,13 @@ export default function ProjectSubmitForm() {
             toast.error("Please fill in all required fields.");
             return;
         }
+        if (phone.trim()) {
+          const cleanPhone = phone.trim().replace(/[^0-9]/g, "");
+          if (cleanPhone.length !== 10) {
+            toast.error("Mobile Number must be exactly 10 digits.");
+            return;
+          }
+        }
         if (message.trim().length < 20) {
             toast.error("Please describe your requirement in at least 20 characters.");
             return;

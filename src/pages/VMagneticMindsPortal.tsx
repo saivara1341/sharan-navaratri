@@ -57,14 +57,14 @@ const BUSINESS_GOALS = [
   "Better Google Maps Visibility", "Better AI Search Visibility"
 ];
 
-const TABS: { id: Tab; label: string; icon: React.ReactNode; desc: string; alwaysVisible?: boolean }[] = [
-  { id: 'overview',   label: '12-Month Executive SLA',       icon: <Calendar className="w-5 h-5" />,      desc: 'Contract & roadmap progress' },
-  { id: 'clients',    label: 'Client Portfolio',              icon: <Users className="w-5 h-5" />,         desc: 'Select & manage client brands' },
-  { id: 'seo-geo',    label: 'SEO / GEO / AEO & GBP Hub',   icon: <Search className="w-5 h-5" />,        desc: 'Search & AI score analysis' },
-  { id: 'analytics',  label: 'GA Monthly Reports',            icon: <BarChart3 className="w-5 h-5" />,     desc: 'Traffic & conversion metrics' },
-  { id: 'billing',    label: 'UPI Payments & Invoices',       icon: <CreditCard className="w-5 h-5" />,    desc: 'Pay & track invoices' },
-  { id: 'chat',       label: 'AI Support Coordinator',        icon: <Bot className="w-5 h-5" />,           desc: 'Siddhi AI assistant' },
-  { id: 'occasions',  label: 'Occasion & Festive Designs',   icon: <Image className="w-5 h-5" />,         desc: 'Upload & download wishes images', alwaysVisible: true },
+const TABS: { id: Tab; label: string; icon: React.ReactNode; alwaysVisible?: boolean }[] = [
+  { id: 'overview',   label: '12-Month Executive SLA',       icon: <Calendar className="w-5 h-5" /> },
+  { id: 'clients',    label: 'Client Portfolio',              icon: <Users className="w-5 h-5" /> },
+  { id: 'seo-geo',    label: 'SEO / GEO / AEO & GBP Hub',   icon: <Search className="w-5 h-5" /> },
+  { id: 'analytics',  label: 'GA Monthly Reports',            icon: <BarChart3 className="w-5 h-5" /> },
+  { id: 'billing',    label: 'UPI Payments & Invoices',       icon: <CreditCard className="w-5 h-5" /> },
+  { id: 'chat',       label: 'AI Support Coordinator',        icon: <Bot className="w-5 h-5" /> },
+  { id: 'occasions',  label: 'Occasion & Festive Designs',   icon: <Image className="w-5 h-5" />, alwaysVisible: true },
 ];
 
 const INITIAL_CLIENTS: ClientBrand[] = [];
@@ -336,12 +336,14 @@ export default function VMagneticMindsPortal() {
       toast.error("Business name and contact name are required."); return;
     }
     const cleanMobile = clientForm.mobile.trim().replace(/[^0-9]/g, "");
-    if (clientForm.mobile.trim() && (cleanMobile.length < 10 || cleanMobile.length > 12)) {
-      toast.error("Please enter a valid 10-digit mobile number."); return;
+    if (!cleanMobile || cleanMobile.length !== 10) {
+      toast.error("Mobile Number is required and must be exactly 10 digits (e.g. 9876543210). 12-digit numbers are not allowed.");
+      return;
     }
     const cleanWhatsapp = clientForm.whatsapp.trim().replace(/[^0-9]/g, "");
-    if (clientForm.whatsapp.trim() && (cleanWhatsapp.length < 10 || cleanWhatsapp.length > 12)) {
-      toast.error("Please enter a valid 10-digit WhatsApp number."); return;
+    if (clientForm.whatsapp.trim() && cleanWhatsapp.length !== 10) {
+      toast.error("WhatsApp Number must be exactly 10 digits.");
+      return;
     }
     setSavingClient(true);
     setTimeout(() => {
@@ -818,7 +820,7 @@ export default function VMagneticMindsPortal() {
               <motion.button key={tab.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex flex-col items-start gap-2 p-4 rounded-2xl border text-left transition-all group ${
+                className={`flex flex-col items-start gap-2 p-3.5 rounded-2xl border text-left transition-all group ${
                   activeTab === tab.id
                     ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20'
                     : 'glass-card border-border hover:border-primary/40 hover:shadow-sm'
@@ -829,9 +831,6 @@ export default function VMagneticMindsPortal() {
                 <div>
                   <div className={`text-xs font-extrabold leading-tight ${activeTab === tab.id ? 'text-primary-foreground' : 'text-foreground'}`}>
                     {tab.label}
-                  </div>
-                  <div className={`text-[10px] mt-0.5 ${activeTab === tab.id ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
-                    {tab.desc}
                   </div>
                 </div>
               </motion.button>
@@ -846,7 +845,7 @@ export default function VMagneticMindsPortal() {
               <motion.button key={tab.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex flex-col items-start gap-2 p-4 rounded-2xl border text-left transition-all group ${
+                className={`flex flex-col items-start gap-2 p-3.5 rounded-2xl border text-left transition-all group ${
                   activeTab === tab.id
                     ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20'
                     : 'glass-card border-border hover:border-primary/40 hover:shadow-sm'
@@ -857,9 +856,6 @@ export default function VMagneticMindsPortal() {
                 <div>
                   <div className={`text-xs font-extrabold leading-tight ${activeTab === tab.id ? 'text-primary-foreground' : 'text-foreground'}`}>
                     {tab.label}
-                  </div>
-                  <div className={`text-[10px] mt-0.5 ${activeTab === tab.id ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
-                    {tab.desc}
                   </div>
                 </div>
               </motion.button>
@@ -1032,10 +1028,10 @@ export default function VMagneticMindsPortal() {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleToggleClientLock(c.id, c.businessName)}
-                              className={`px-2 py-1 text-[10px] font-bold rounded-lg border transition-all ${
+                              className={`px-2.5 py-1 text-[10px] font-extrabold rounded-lg border transition-all cursor-pointer ${
                                 c.status === "Locked (Tenure Expired)"
-                                  ? 'bg-red-500/10 text-red-400 border-red-500/30'
-                                  : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                                  ? 'bg-red-600 text-white border-red-500 shadow-sm hover:bg-red-700'
+                                  : 'bg-emerald-600 text-white border-emerald-500 shadow-sm hover:bg-emerald-700'
                               }`}
                               title="Toggle Client Tenure Lock Status"
                             >
