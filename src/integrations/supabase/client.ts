@@ -15,14 +15,11 @@ const VALIDATED_URL = (envUrl && !envUrl.includes('xgrdubcpomwzbuaqtjad')) ? env
 const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const FINAL_KEY = (envKey && !envKey.includes('xgrdubcpomwzbuaqtjad')) ? envKey.trim() : FALLBACK_KEY;
 
-const EFFECTIVE_URL = isDev
-    ? (typeof window !== 'undefined' ? window.location.origin + "/supabase-api" : "http://localhost:5173/supabase-api")
-    : VALIDATED_URL;
+const EFFECTIVE_URL = VALIDATED_URL;
 
 if (isDev) {
     console.log(`[Supabase] Active Mode: ${import.meta.env.MODE}`);
-    console.log(`[Supabase] Native ISP Bypass: Active (Vite Direct-IP Proxy)`);
-    console.log(`[Supabase] Target: https://172.64.149.246`);
+    console.log(`[Supabase] Active Endpoint: ${EFFECTIVE_URL}`);
 }
 
 // Clean up legacy tokens from old Supabase project if present in browser storage
