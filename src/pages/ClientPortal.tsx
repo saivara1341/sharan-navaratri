@@ -26,7 +26,8 @@ import {
     Lock,
     User,
     Plus,
-    Phone
+    Phone,
+    Star
 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -635,6 +636,31 @@ ${contextText || "No matching guidelines found."}
                                                 )}
                                             </div>
                                         </div>
+
+                                         {/* Project Completion Google Review Prompt */}
+                                         {(proj.status === "Completed" || proj.progress === 100) && (
+                                             <div className="p-5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-primary/10 to-amber-500/15 border border-amber-400/40 space-y-3 text-left shadow-lg">
+                                                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                                     <div>
+                                                         <div className="flex items-center gap-2 mb-1">
+                                                             <span className="text-base">🎉</span>
+                                                             <h4 className="text-sm font-extrabold text-foreground">Project Delivered & Completed!</h4>
+                                                         </div>
+                                                         <p className="text-xs text-muted-foreground leading-relaxed">
+                                                             Your project delivery is 100% complete. We would love to hear about your experience! Please take 30 seconds to leave us a genuine review on Google — your feedback helps us grow.
+                                                         </p>
+                                                     </div>
+                                                     <a
+                                                         href="https://g.page/r/CQ8YjZSqkk-5EBM/review"
+                                                         target="_blank"
+                                                         rel="noopener noreferrer"
+                                                         className="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs flex items-center gap-2 shrink-0 shadow-md transition-all hover:scale-105"
+                                                     >
+                                                         <Star className="w-4 h-4 fill-black text-black" /> Review Us on Google ↗
+                                                     </a>
+                                                 </div>
+                                             </div>
+                                         )}
 
                                         {/* Quote & Payment Status Banner */}
                                         <div className="p-5 rounded-2xl bg-card border border-primary/30 space-y-3">

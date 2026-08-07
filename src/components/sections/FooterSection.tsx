@@ -134,14 +134,14 @@ export const FooterSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.8 }}
-            className="flex flex-wrap items-center gap-4 justify-center"
+            className="flex flex-nowrap overflow-x-auto no-scrollbar items-center gap-2.5 sm:gap-4 justify-start sm:justify-center w-full max-w-full pb-2 px-1"
           >
             {/* Small Compact Google Review Badge */}
             <motion.a
               href="https://g.page/r/CQ8YjZSqkk-5EBM/review"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.05] border border-amber-400/30 hover:border-amber-400/60 hover:bg-white/[0.08] transition-all text-xs font-sans text-slate-300"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.05] border border-amber-400/30 hover:border-amber-400/60 hover:bg-white/[0.08] transition-all text-xs font-sans text-slate-300 shrink-0"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -156,13 +156,13 @@ export const FooterSection = () => {
                   <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400" />
                 ))}
               </div>
-              <span className="font-semibold text-slate-200">Review Us</span>
+              <span className="font-semibold text-slate-200 text-[11px] whitespace-nowrap">Review Us</span>
             </motion.a>
             <motion.a
               href="https://www.linkedin.com/company/siddhi-dynamics-llp"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/30 transition-all duration-300"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl glass-card flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/30 transition-all duration-300 shrink-0"
               style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}
               whileHover={{ scale: 1.1, y: -2 }}
               whileTap={{ scale: 0.95 }}
@@ -175,7 +175,7 @@ export const FooterSection = () => {
               href="https://www.instagram.com/siddhidynamics/?igsh=djB1eXhhaGNoc3M4"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/30 transition-all duration-300"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl glass-card flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/30 transition-all duration-300 shrink-0"
               style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}
               whileHover={{ scale: 1.1, y: -2 }}
               whileTap={{ scale: 0.95 }}
@@ -190,7 +190,7 @@ export const FooterSection = () => {
               rel="noopener noreferrer"
               title="Message Siddhi Dynamics on WhatsApp"
               aria-label="Message Siddhi Dynamics on WhatsApp"
-              className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-400 hover:text-emerald-500 hover:border-emerald-500/30 transition-all duration-300"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl glass-card flex items-center justify-center text-slate-400 hover:text-emerald-500 hover:border-emerald-500/30 transition-all duration-300 shrink-0"
               style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}
               whileHover={{ scale: 1.1, y: -2 }}
               whileTap={{ scale: 0.95 }}
@@ -205,7 +205,7 @@ export const FooterSection = () => {
               rel="noopener noreferrer"
               title="WhatsApp Community"
               aria-label="Join Siddhi Dynamics WhatsApp Community"
-              className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-400 hover:text-emerald-500 hover:border-emerald-500/30 transition-all duration-300"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl glass-card flex items-center justify-center text-slate-400 hover:text-emerald-500 hover:border-emerald-500/30 transition-all duration-300 shrink-0"
               style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}
               whileHover={{ scale: 1.1, y: -2 }}
               whileTap={{ scale: 0.95 }}
@@ -214,7 +214,7 @@ export const FooterSection = () => {
             </motion.a>
             <motion.a
               href="mailto:saivaraprasad@siddhidynamics.in"
-              className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/30 transition-all duration-300"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl glass-card flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/30 transition-all duration-300 shrink-0"
               style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}
               whileHover={{ scale: 1.1, y: -2 }}
               whileTap={{ scale: 0.95 }}
