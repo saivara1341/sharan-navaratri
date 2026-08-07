@@ -292,7 +292,7 @@ export default function ProjectSubmitForm() {
                                     required
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    placeholder="Your Full Name"
+                                    placeholder="Enter full name"
                                     className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                 />
                             </div>
@@ -306,7 +306,7 @@ export default function ProjectSubmitForm() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="your@email.com"
+                                    placeholder="Enter email address"
                                     readOnly={!!sessionEmail}
                                     className={`w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all ${sessionEmail ? "opacity-70 cursor-not-allowed" : ""}`}
                                 />
@@ -326,7 +326,7 @@ export default function ProjectSubmitForm() {
                                     type="text"
                                     value={designation}
                                     onChange={(e) => setDesignation(e.target.value)}
-                                    placeholder="Your Designation"
+                                    placeholder="Enter designation or role"
                                     className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                 />
                             </div>
@@ -339,7 +339,7 @@ export default function ProjectSubmitForm() {
                                     type="text"
                                     value={organization}
                                     onChange={(e) => setOrganization(e.target.value)}
-                                    placeholder="Your Organization Name"
+                                    placeholder="Enter organization or brand name"
                                     className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                 />
                             </div>

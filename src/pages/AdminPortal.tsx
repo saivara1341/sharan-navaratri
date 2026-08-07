@@ -1882,7 +1882,7 @@ const AdminPortal = () => {
                                             <input
                                                 type="text"
                                                 required
-                                                placeholder="e.g. Client Name"
+                                                placeholder="Enter client full name"
                                                 value={createName}
                                                 onChange={e => setCreateName(e.target.value)}
                                                 className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
@@ -1893,7 +1893,7 @@ const AdminPortal = () => {
                                             <input
                                                 type="email"
                                                 required
-                                                placeholder="e.g. client@example.com"
+                                                placeholder="Enter client email address"
                                                 value={createEmail}
                                                 onChange={e => setCreateEmail(e.target.value)}
                                                 className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
@@ -1903,7 +1903,7 @@ const AdminPortal = () => {
                                             <label className="text-[10px] uppercase font-bold text-muted-foreground">Organization / Company Name</label>
                                             <input
                                                 type="text"
-                                                placeholder="e.g. Acme Tech Solutions"
+                                                placeholder="Enter organization or company name"
                                                 value={createOrg}
                                                 onChange={e => setCreateOrg(e.target.value)}
                                                 className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"

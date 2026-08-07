@@ -1379,7 +1379,7 @@ export default function VMagneticMindsPortal() {
                     <input
                       type="text"
                       required
-                      placeholder="e.g. V Magnetic Minds or Apex Digital Agency"
+                      placeholder="Enter agency or company name"
                       value={editAgencyName}
                       onChange={e => setEditAgencyName(e.target.value)}
                       className={inp}
@@ -1418,15 +1418,15 @@ export default function VMagneticMindsPortal() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className={lbl}>Lead Representative Name <span className="text-destructive">*</span></label>
-                      <input required placeholder="e.g. Rahul Sharma" className={inp} value={editAgencyContact} onChange={e => setEditAgencyContact(e.target.value)} />
+                      <input required placeholder="Enter full name" className={inp} value={editAgencyContact} onChange={e => setEditAgencyContact(e.target.value)} />
                     </div>
                     <div>
                       <label className={lbl}>Mobile / WhatsApp Number <span className="text-destructive">*</span></label>
-                      <input required placeholder="+91 98765 43210" className={inp} value={editAgencyPhone} onChange={e => setEditAgencyPhone(e.target.value)} />
+                      <input required placeholder="Enter 10-digit mobile number" className={inp} value={editAgencyPhone} onChange={e => setEditAgencyPhone(e.target.value)} />
                     </div>
                     <div className="sm:col-span-2">
                       <label className={lbl}>Official Website URL</label>
-                      <input placeholder="https://example.com" className={inp} value={editAgencyWebsite} onChange={e => setEditAgencyWebsite(e.target.value)} />
+                      <input placeholder="https://yourwebsite.com" className={inp} value={editAgencyWebsite} onChange={e => setEditAgencyWebsite(e.target.value)} />
                     </div>
                   </div>
                 </div>
@@ -1567,7 +1567,7 @@ export default function VMagneticMindsPortal() {
                       <div><input placeholder="Business Category" className={inp} value={clientForm.category} onChange={cf('category')} /></div>
                       <div><label className={lbl}>Year of Establishment</label><input placeholder="Year of Establishment (2019)" className={inp} value={clientForm.yearEst} onChange={cf('yearEst')} /></div>
                       <div className="sm:col-span-2"><label className={lbl}>Short Business Description</label><textarea rows={2} placeholder="Briefly describe the business…" className={inp} value={clientForm.description} onChange={cf('description')} /></div>
-                      <div><label className={lbl}>Website URL</label><input placeholder="https://example.com" className={inp} value={clientForm.website} onChange={cf('website')} /></div>
+                      <div><label className={lbl}>Website URL</label><input placeholder="https://yourwebsite.com" className={inp} value={clientForm.website} onChange={cf('website')} /></div>
                       <div><label className={lbl}>Business Working Hours</label><input placeholder="Mon–Sat 9am–8pm" className={inp} value={clientForm.hours} onChange={cf('hours')} /></div>
                       <div className="sm:col-span-2"><label className={lbl}>List of Services / Products</label><textarea rows={2} placeholder="Comma-separated or one per line…" className={inp} value={clientForm.services} onChange={cf('services')} /></div>
                     </div>
@@ -1601,10 +1601,10 @@ export default function VMagneticMindsPortal() {
                       <Phone className="w-4 h-4" /> Contact Details
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div><label className={lbl}>Contact Person Name *</label><input required placeholder="Full name" className={inp} value={clientForm.contactName} onChange={cf('contactName')} /></div>
-                      <div><label className={lbl}>Mobile Number</label><input placeholder="+91 XXXXX XXXXX" className={inp} value={clientForm.mobile} onChange={cf('mobile')} /></div>
-                      <div><label className={lbl}>WhatsApp Number</label><input placeholder="Same as mobile or different" className={inp} value={clientForm.whatsapp} onChange={cf('whatsapp')} /></div>
-                      <div><label className={lbl}>Email Address</label><input type="email" placeholder="contact@brand.com" className={inp} value={clientForm.email} onChange={cf('email')} /></div>
+                      <div><label className={lbl}>Contact Person Name *</label><input required placeholder="Enter full name" className={inp} value={clientForm.contactName} onChange={cf('contactName')} /></div>
+                      <div><label className={lbl}>Mobile Number</label><input placeholder="Enter 10-digit mobile number" className={inp} value={clientForm.mobile} onChange={cf('mobile')} /></div>
+                      <div><label className={lbl}>WhatsApp Number</label><input placeholder="Enter 10-digit WhatsApp number" className={inp} value={clientForm.whatsapp} onChange={cf('whatsapp')} /></div>
+                      <div><label className={lbl}>Email Address</label><input type="email" placeholder="Enter official email address" className={inp} value={clientForm.email} onChange={cf('email')} /></div>
                     </div>
                   </section>
 
