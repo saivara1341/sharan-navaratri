@@ -1681,7 +1681,46 @@ export default function VMagneticMindsPortal() {
                       <div><label className={lbl}>Year of Establishment</label><input placeholder="Year of Establishment (2019)" className={inp} value={clientForm.yearEst} onChange={cf('yearEst')} /></div>
                       <div className="sm:col-span-2"><label className={lbl}>Short Business Description</label><textarea rows={2} placeholder="Briefly describe the business…" className={inp} value={clientForm.description} onChange={cf('description')} /></div>
                       <div><label className={lbl}>Website URL</label><input placeholder="https://yourwebsite.com" className={inp} value={clientForm.website} onChange={cf('website')} /></div>
-                      <div><label className={lbl}>Business Working Hours</label><input placeholder="Mon–Sat 9am–8pm" className={inp} value={clientForm.hours} onChange={cf('hours')} /></div>
+                      <div className="sm:col-span-2 space-y-2">
+                        <label className={lbl}>Business Working Hours (Choose from checklist or type custom)</label>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          {[
+                            "Mon–Sat: 9:00 AM – 8:00 PM",
+                            "Mon–Sat: 10:00 AM – 9:00 PM",
+                            "Mon–Fri: 9:00 AM – 6:00 PM",
+                            "Mon–Sun: 24/7 (Always Open)",
+                            "Mon–Sat: 9:30 AM – 7:30 PM",
+                            "Mon–Fri: 10:00 AM – 7:00 PM"
+                          ].map((preset) => {
+                            const isSelected = clientForm.hours === preset;
+                            return (
+                              <button
+                                key={preset}
+                                type="button"
+                                onClick={() => setClientForm(prev => ({ ...prev, hours: preset }))}
+                                className={`px-3 py-2 rounded-xl border text-xs font-medium transition-all text-left flex items-center justify-between cursor-pointer ${
+                                  isSelected
+                                    ? 'border-primary bg-primary/10 text-primary font-bold shadow-sm'
+                                    : 'border-border bg-card text-foreground hover:bg-muted/60'
+                                }`}
+                              >
+                                <span className="truncate">{preset}</span>
+                                {isSelected && <Check className="w-3.5 h-3.5 text-primary shrink-0 ml-1" />}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <div className="flex items-center gap-2 pt-1">
+                          <span className="text-[11px] text-muted-foreground shrink-0 font-medium">Or custom hours:</span>
+                          <input
+                            type="text"
+                            placeholder="e.g. Tue–Sun: 11:00 AM – 11:00 PM"
+                            className={inp}
+                            value={clientForm.hours}
+                            onChange={cf('hours')}
+                          />
+                        </div>
+                      </div>
                       <div className="sm:col-span-2"><label className={lbl}>List of Services / Products</label><textarea rows={2} placeholder="Comma-separated or one per line…" className={inp} value={clientForm.services} onChange={cf('services')} /></div>
                     </div>
                   </section>
