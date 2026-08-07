@@ -390,8 +390,21 @@ export default function ProjectSubmitForm() {
                             By submitting you agree to our{" "}
                             <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a> and{" "}
                             <a href="/terms-of-service" className="text-primary hover:underline">Terms of Service</a>.
-                            Responses are typically delivered within 24 hours on business days.
                         </p>
+
+                        {/* Trust strip placed after form */}
+                        <div className="mt-6 pt-4 border-t border-border/40 flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
+                            {[
+                                { icon: '✅', text: 'Free 30-min consultation' },
+                                { icon: '🔒', text: 'Your information stays private' },
+                                { icon: '⚡', text: 'Reply within 24 hours' },
+                            ].map(({ icon, text }) => (
+                                <span key={text} className="flex items-center gap-1.5 font-medium">
+                                    <span>{icon}</span>
+                                    <span>{text}</span>
+                                </span>
+                            ))}
+                        </div>
                     </form>
                 </motion.div>
             </main>
