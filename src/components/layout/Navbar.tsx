@@ -278,19 +278,21 @@ export const Navbar = () => {
 
             {/* Mobile Actions: Dashboard Icon + Hamburger Toggle */}
             <div className="flex items-center gap-2 md:hidden z-[110]">
-              <motion.button
-                onClick={(e) => {
-                  setMobileMenuOpen(false);
-                  handleDashboardClick(e);
-                }}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 font-bold text-xs shadow-sm transition-all cursor-pointer"
-                title="Go to Dashboard"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <LayoutDashboard className="w-4 h-4" />
-                <span className="text-[11px] font-extrabold">Dashboard</span>
-              </motion.button>
+              {isLoggedIn && (
+                <motion.button
+                  onClick={(e) => {
+                    setMobileMenuOpen(false);
+                    handleDashboardClick(e);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 font-bold text-xs shadow-sm transition-all cursor-pointer"
+                  title="Go to Dashboard"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span className="text-[11px] font-extrabold">Dashboard</span>
+                </motion.button>
+              )}
 
               <motion.button
                 className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-muted/60 border border-border cursor-pointer"
