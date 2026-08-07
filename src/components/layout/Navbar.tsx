@@ -102,6 +102,21 @@ export const Navbar = () => {
     window.scrollTo(0, 0);
   };
 
+  const handleAnchorClick = (anchorId: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    if (location.pathname === '/') {
+      const el = document.getElementById(anchorId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } else {
+      navigate(`/#${anchorId}`);
+    }
+  };
+
   // Lock body scroll when mobile menu is open
   useEffect(() => {
     if (mobileMenuOpen) {
@@ -151,39 +166,75 @@ export const Navbar = () => {
                   className="relative w-full h-full object-contain dark:drop-shadow-[0_0_15px_rgba(251,146,60,0.5)]"
                 />
               </div>
-              <div className="flex flex-col">
-                <span className="font-bold text-lg text-foreground tracking-tight">
-                  SIDDHI
+              <div className="flex flex-col text-left">
+                <span className="font-extrabold text-base md:text-lg text-foreground tracking-tight whitespace-nowrap">
+                  Siddhi Dynamics LLP
                 </span>
-                <span className="text-xs text-primary font-medium tracking-[0.2em]">
-                  DYNAMICS
+                <span className="text-[10px] md:text-xs text-primary font-semibold tracking-wider whitespace-nowrap">
+                  Next-Generation AI Solutions
                 </span>
               </div>
             </motion.a>
 
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-1.5 lg:gap-2.5 whitespace-nowrap">
               <motion.a
                 href="/about"
                 onClick={(e) => { e.preventDefault(); navigate('/about'); }}
-                className="relative px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
                 whileHover={{ scale: 1.02 }}
               >
                 About
               </motion.a>
               <motion.a
+                href="/#vision"
+                onClick={handleAnchorClick('vision')}
+                className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                whileHover={{ scale: 1.02 }}
+              >
+                Vision
+              </motion.a>
+              <motion.a
+                href="/#projects"
+                onClick={handleAnchorClick('projects')}
+                className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                whileHover={{ scale: 1.02 }}
+              >
+                Projects
+              </motion.a>
+              <motion.a
                 href="/blog"
                 onClick={(e) => { e.preventDefault(); navigate('/blog'); }}
-                className="relative px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
                 whileHover={{ scale: 1.02 }}
               >
                 Blog
               </motion.a>
-
+              <motion.a
+                href="/#services"
+                onClick={handleAnchorClick('services')}
+                className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                whileHover={{ scale: 1.02 }}
+              >
+                Services
+              </motion.a>
+              <motion.a
+                href={isPortal ? '#/portal?tab=contact&type=problem' : '/submit?type=problem'}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (isPortal) window.location.hash = '#/portal?tab=contact&type=problem';
+                  else navigate('/submit?type=problem');
+                }}
+                className="px-3.5 py-2 rounded-xl text-xs lg:text-sm font-bold text-primary bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-all"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Submit Problem
+              </motion.a>
 
               {!isLoggedIn ? (
                 <motion.button
                   onClick={() => navigate('/portal')}
-                  className="relative ml-4 px-6 py-2.5 rounded-xl font-semibold text-sm overflow-hidden group"
+                  className="relative ml-2 px-5 py-2 rounded-xl font-semibold text-xs lg:text-sm overflow-hidden group"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.4, duration: 0.5 }}
@@ -197,12 +248,11 @@ export const Navbar = () => {
                   </span>
                 </motion.button>
               ) : isOnLandingPage ? (
-                // On landing page: show gradient Dashboard button and Logout
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 ml-2">
                   <motion.a
                     href={isAdmin ? "/admin-hq-nexus" : `/portal/${userRole || ''}`}
                     onClick={handleDashboardClick}
-                    className="relative px-6 py-2.5 rounded-xl font-semibold text-sm overflow-hidden group"
+                    className="relative px-5 py-2 rounded-xl font-semibold text-xs lg:text-sm overflow-hidden group shadow-sm"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.4, duration: 0.5 }}
@@ -211,14 +261,14 @@ export const Navbar = () => {
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-90 group-hover:opacity-100 transition-opacity" />
                     <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent blur-xl opacity-50 group-hover:opacity-70 transition-opacity" />
-                    <span className="relative text-primary-foreground flex items-center gap-2">
+                    <span className="relative text-primary-foreground flex items-center gap-2 font-bold">
                       <LayoutDashboard className="w-4 h-4" />
                       Dashboard
                     </span>
                   </motion.a>
                   <motion.button
                     onClick={handleLogout}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.5, duration: 0.5 }}
@@ -230,14 +280,13 @@ export const Navbar = () => {
                   </motion.button>
                 </div>
               ) : (
-                // On portal/admin pages: show Home + Contact Us (no icon) + Logout
-                <div className="flex items-center ml-4 gap-2">
+                <div className="flex items-center ml-2 gap-2">
                   {!isAdmin && (
                     <>
                       <motion.a
                         href="#/"
                         onClick={handleHomeClick}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-muted/60 hover:bg-muted text-foreground transition-colors border border-border"
+                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-muted/60 hover:bg-muted text-foreground transition-colors border border-border"
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.2, duration: 0.5 }}
@@ -247,22 +296,11 @@ export const Navbar = () => {
                         <Home className="w-4 h-4" />
                         Home
                       </motion.a>
-                      <motion.a
-                        href={isPortal ? '#/portal?tab=contact' : '#/submit'}
-                        className="flex items-center px-4 py-2.5 rounded-xl font-semibold text-sm bg-muted/60 hover:bg-muted text-foreground transition-colors border border-border ml-2"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.25, duration: 0.5 }}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        Contact Us
-                      </motion.a>
                     </>
                   )}
                   <motion.button
                     onClick={handleLogout}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
@@ -363,22 +401,67 @@ export const Navbar = () => {
                 <motion.a
                   href="/about"
                   onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/about'); }}
-                  className="text-2xl font-bold text-primary hover:text-foreground transition-colors relative z-[120]"
+                  className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.09 }}
+                  transition={{ delay: 0.08 }}
                 >
                   About
                 </motion.a>
                 <motion.a
-                  href="/blog"
-                  onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/blog'); }}
-                  className="text-2xl font-bold text-primary hover:text-foreground transition-colors relative z-[120]"
+                  href="/#vision"
+                  onClick={handleAnchorClick('vision')}
+                  className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.11 }}
+                  transition={{ delay: 0.10 }}
+                >
+                  Vision
+                </motion.a>
+                <motion.a
+                  href="/#projects"
+                  onClick={handleAnchorClick('projects')}
+                  className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.12 }}
+                >
+                  Projects
+                </motion.a>
+                <motion.a
+                  href="/blog"
+                  onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/blog'); }}
+                  className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.14 }}
                 >
                   Blog
+                </motion.a>
+                <motion.a
+                  href="/#services"
+                  onClick={handleAnchorClick('services')}
+                  className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.16 }}
+                >
+                  Services
+                </motion.a>
+                <motion.a
+                  href={isPortal ? '#/portal?tab=contact&type=problem' : '/submit?type=problem'}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMobileMenuOpen(false);
+                    if (isPortal) window.location.hash = '#/portal?tab=contact&type=problem';
+                    else navigate('/submit?type=problem');
+                  }}
+                  className="text-xl font-extrabold text-primary hover:text-primary/80 transition-colors relative z-[120]"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.18 }}
+                >
+                  Submit Problem
                 </motion.a>
               {/* Close Button */}
               <motion.button
