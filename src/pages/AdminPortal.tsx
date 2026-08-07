@@ -73,27 +73,99 @@ const AdminPortal = () => {
     const fetchAllUsers = async () => {
         setUsersLoading(true);
         try {
-            // Fetch all contact submissions (these are clients / partners who signed up)
-            const { data: submissions, error } = await supabase
+            // Fetch all contact submissions
+            const { data: submissions } = await supabase
                 .from('contact_submissions')
                 .select('id, name, email, organization, designation, inquiry_type, status, created_at')
                 .order('created_at', { ascending: false });
-            if (error) throw error;
 
-            // Also pull Supabase Auth users list if available (admin-level)
+            // Fetch waitlist entries
+            const { data: waitlist } = await supabase
+                .from('project_waitlist')
+                .select('id, name, email, project_name, created_at')
+                .order('created_at', { ascending: false });
+
+            // Pull Supabase Auth users list if available via admin API
             const { data: authData } = await (supabase as any).auth.admin.listUsers().catch(() => ({ data: null }));
             const authUsers: any[] = authData?.users || [];
 
-            // Merge: enrich submission entries with auth role metadata where email matches
-            const merged = (submissions || []).map((sub: any) => {
-                const authMatch = authUsers.find((u: any) => u.email?.toLowerCase() === sub.email?.toLowerCase());
-                return {
-                    ...sub,
-                    role: authMatch?.user_metadata?.role || (sub.email === '23eg510a07@anurag.edu.in' ? 'partner' : 'client'),
-                    lastLogin: authMatch?.last_sign_in_at || null,
-                    confirmed: authMatch?.email_confirmed_at ? true : false,
-                };
+            const userMap = new Map<string, any>();
+
+            // 1. Add Supabase Auth Users
+            authUsers.forEach((u: any) => {
+                if (!u.email) return;
+                const emailKey = u.email.toLowerCase().trim();
+                userMap.set(emailKey, {
+                    id: u.id,
+                    name: u.user_metadata?.full_name || u.user_metadata?.name || u.email.split('@')[0],
+                    email: u.email,
+                    organization: u.user_metadata?.organization || null,
+                    designation: u.user_metadata?.designation || null,
+                    inquiry_type: 'Auth Sign-In',
+                    status: 'Active',
+                    role: u.user_metadata?.role || (u.email === '23eg510a07@anurag.edu.in' ? 'partner' : 'client'),
+                    lastLogin: u.last_sign_in_at || u.created_at,
+                    confirmed: u.email_confirmed_at ? true : false,
+                    created_at: u.created_at
+                });
             });
+
+            // 2. Add Contact Submissions
+            (submissions || []).forEach((sub: any) => {
+                if (!sub.email) return;
+                const emailKey = sub.email.toLowerCase().trim();
+                const existing = userMap.get(emailKey);
+                if (existing) {
+                    userMap.set(emailKey, {
+                        ...existing,
+                        name: sub.name || existing.name,
+                        organization: sub.organization || existing.organization,
+                        designation: sub.designation || existing.designation,
+                        inquiry_type: sub.inquiry_type || existing.inquiry_type,
+                        status: sub.status || existing.status
+                    });
+                } else {
+                    userMap.set(emailKey, {
+                        id: sub.id,
+                        name: sub.name || sub.email.split('@')[0],
+                        email: sub.email,
+                        organization: sub.organization || null,
+                        designation: sub.designation || null,
+                        inquiry_type: sub.inquiry_type || 'Inquiry',
+                        status: sub.status || 'Active',
+                        role: sub.email === '23eg510a07@anurag.edu.in' ? 'partner' : 'client',
+                        lastLogin: null,
+                        confirmed: true,
+                        created_at: sub.created_at
+                    });
+                }
+            });
+
+            // 3. Add Waitlist users
+            (waitlist || []).forEach((w: any) => {
+                if (!w.email) return;
+                const emailKey = w.email.toLowerCase().trim();
+                if (!userMap.has(emailKey)) {
+                    userMap.set(emailKey, {
+                        id: w.id,
+                        name: w.name || w.email.split('@')[0],
+                        email: w.email,
+                        organization: w.project_name || null,
+                        designation: 'Waitlist',
+                        inquiry_type: 'Waitlist',
+                        status: 'Active',
+                        role: 'client',
+                        lastLogin: null,
+                        confirmed: true,
+                        created_at: w.created_at
+                    });
+                }
+            });
+
+            const merged = Array.from(userMap.values()).sort(
+                (a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+            );
+
             setAllUsers(merged);
         } catch (err: any) {
             toast.error('Failed to load users: ' + (err.message || 'Unknown error'));
