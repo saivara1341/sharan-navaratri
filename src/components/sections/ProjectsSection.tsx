@@ -754,7 +754,7 @@ export const ProjectsSection = () => {
 
   return (
     <>
-      <section id="projects" className="py-16 md:py-32 relative overflow-hidden">
+      <section id="projects" className="py-10 md:py-32 relative overflow-hidden">
         {/* Enhanced animated background */}
         <div className="absolute inset-0 pointer-events-none">
           <motion.div
@@ -804,33 +804,33 @@ export const ProjectsSection = () => {
 
         <div className="container mx-auto px-6 relative z-10" ref={ref}>
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
-            className="text-center mb-20"
+            transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+            className="text-center mb-6 md:mb-16"
           >
             <motion.span
-              className="inline-block text-accent font-medium text-sm tracking-[0.3em] uppercase mb-6"
-              initial={{ opacity: 0, y: 20 }}
+              className="inline-block text-accent font-medium text-xs sm:text-sm tracking-[0.3em] uppercase mb-2 md:mb-4"
+              initial={{ opacity: 0, y: 15 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
             >
               {t('projects.title')}
             </motion.span>
 
-            <h2 className="mb-8 font-display overflow-visible py-2">
+            <h2 className="mb-3 md:mb-6 font-display overflow-visible py-1">
               {isInView ? (
                 <KineticCenterBuild
-                  className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight gradient-text-reverse glow-text-accent pb-3 pt-1 inline-block leading-normal overflow-visible"
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight gradient-text-reverse glow-text-accent pb-1 pt-1 inline-block leading-tight md:leading-normal overflow-visible"
                   phrases={["Building the Future"]}
                 />
               ) : (
-                <span aria-hidden="true" className="invisible text-4xl md:text-5xl lg:text-6xl font-bold pb-3 pt-1 inline-block leading-normal">
+                <span aria-hidden="true" className="invisible text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold pb-1 pt-1 inline-block leading-tight md:leading-normal">
                   Building the Future
                 </span>
               )}
             </h2>
-            <p className="text-muted-foreground text-lg md:text-xl max-w-3xl mx-auto">
+            <p className="text-muted-foreground text-sm sm:text-base md:text-xl max-w-3xl mx-auto leading-relaxed">
               <Trans
                 i18nKey="projects.description"
                 components={[
@@ -841,7 +841,7 @@ export const ProjectsSection = () => {
           </motion.div>
 
         {/* Sticky Notes Grid */}
-        <div className="relative w-full mt-12 md:mt-24 mb-8 md:mb-20 max-w-7xl mx-auto px-4 md:px-8">
+        <div className="relative w-full mt-6 md:mt-16 mb-6 md:mb-16 max-w-7xl mx-auto px-2 sm:px-4 md:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-3 gap-y-6 sm:gap-x-8 sm:gap-y-12">
             {projects.map((project, index) => (
               <ProjectCard
