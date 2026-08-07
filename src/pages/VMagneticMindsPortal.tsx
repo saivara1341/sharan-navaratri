@@ -141,7 +141,7 @@ export default function VMagneticMindsPortal() {
 
   // ── Partner Agency Profile & Branding Customization ─────────────────────────
   const [agencyName, setAgencyName] = useState("V Magnetic Minds");
-  const [agencyLogoUrl, setAgencyLogoUrl] = useState("/v-magnetic-minds-logo.jpg");
+  const [agencyLogoUrl, setAgencyLogoUrl] = useState("");
   const [agencyContact, setAgencyContact] = useState("");
   const [agencyPhone, setAgencyPhone] = useState("");
   const [agencyWebsite, setAgencyWebsite] = useState("");
@@ -179,7 +179,7 @@ export default function VMagneticMindsPortal() {
   const handleSaveBranding = async (e: React.FormEvent) => {
     e.preventDefault();
     const newName = editAgencyName.trim() || "Agency Partner";
-    const newLogo = editAgencyLogo || "/v-magnetic-minds-logo.jpg";
+    const newLogo = editAgencyLogo;
 
     setAgencyName(newName);
     setAgencyLogoUrl(newLogo);
@@ -492,18 +492,18 @@ export default function VMagneticMindsPortal() {
         setUserEmail(email);
 
         let curAgencyName = "Agency Partner";
-        let curAgencyLogo = "/v-magnetic-minds-logo.jpg";
+        let curAgencyLogo = "";
 
         if (email === "23eg510a07@anurag.edu.in") {
           curAgencyName = "V Magnetic Minds";
           curAgencyLogo = "/v-magnetic-minds-logo.jpg";
         } else {
           curAgencyName = session.user.user_metadata?.agency_name || session.user.user_metadata?.full_name || "Agency Partner";
-          curAgencyLogo = session.user.user_metadata?.agency_logo || "/v-magnetic-minds-logo.jpg";
+          curAgencyLogo = session.user.user_metadata?.agency_logo || "";
 
           if (!session.user.user_metadata?.agency_name) {
             setEditAgencyName(curAgencyName);
-            setEditAgencyLogo(curAgencyLogo);
+            setEditAgencyLogo(session.user.user_metadata?.agency_logo || "");
             setShowBrandingModal(true);
           }
         }
@@ -551,10 +551,12 @@ export default function VMagneticMindsPortal() {
           <div className="absolute right-0 top-0 w-64 h-64 bg-primary/5 rounded-bl-full pointer-events-none" />
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative">
             <div className="flex items-center gap-5">
-              <div className="w-16 h-16 bg-white rounded-2xl shadow-md border border-border flex items-center justify-center shrink-0 overflow-hidden">
-                <img src={agencyLogoUrl} alt={`${agencyName} Logo`}
-                  className="w-full h-full object-contain p-1"
-                  onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+              <div className="w-16 h-16 bg-card rounded-2xl shadow-md border border-border flex items-center justify-center shrink-0 overflow-hidden">
+                {agencyLogoUrl ? (
+                  <img src={agencyLogoUrl} alt={`${agencyName} Logo`} className="w-full h-full object-contain p-1" />
+                ) : (
+                  <Building2 className="w-8 h-8 text-primary" />
+                )}
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
@@ -1382,8 +1384,12 @@ export default function VMagneticMindsPortal() {
                   <div>
                     <label className={lbl}>Upload Agency Logo (Image File Upload) *</label>
                     <div className="flex items-center gap-4 p-3 rounded-2xl bg-muted/50 border border-border">
-                      <div className="w-14 h-14 bg-white rounded-xl border border-border flex items-center justify-center overflow-hidden shrink-0">
-                        <img src={editAgencyLogo || "/v-magnetic-minds-logo.jpg"} alt="Agency Logo Preview" className="w-full h-full object-contain p-1" />
+                      <div className="w-14 h-14 bg-muted rounded-xl border border-border flex items-center justify-center overflow-hidden shrink-0">
+                        {editAgencyLogo ? (
+                          <img src={editAgencyLogo} alt="Agency Logo Preview" className="w-full h-full object-contain p-1" />
+                        ) : (
+                          <Building2 className="w-6 h-6 text-muted-foreground/50" />
+                        )}
                       </div>
                       <div className="flex-1 space-y-1">
                         <input
