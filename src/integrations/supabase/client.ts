@@ -21,8 +21,29 @@ if (isDev) {
     console.log(`[Supabase] Target: https://172.64.149.246`);
 }
 
+// Clean up legacy tokens from old Supabase project if present in browser storage
+if (typeof window !== 'undefined') {
+    try {
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+            const key = localStorage.key(i);
+            if (key && key.includes('xgrdubcpomwzbuaqtjad')) {
+                localStorage.removeItem(key);
+            }
+        }
+        for (let i = sessionStorage.length - 1; i >= 0; i--) {
+            const key = sessionStorage.key(i);
+            if (key && key.includes('xgrdubcpomwzbuaqtjad')) {
+                sessionStorage.removeItem(key);
+            }
+        }
+    } catch (e) {
+        // Ignore storage access errors
+    }
+}
+
 export const supabase = createClient<Database>(EFFECTIVE_URL, FINAL_KEY, {
   auth: {
+    storageKey: 'sb-xoqpxckowwubeqdtazks-auth-token',
     lock: async (name, acquireTimeout, fn) => await fn(),
   },
 });
