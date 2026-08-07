@@ -1158,7 +1158,7 @@ export default function VMagneticMindsPortal() {
                   <h2 className="text-base font-extrabold text-foreground flex items-center gap-2">
                     <Building2 className="w-5 h-5 text-primary" /> Add Client Brand
                   </h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">Siddhi Dynamics LLP — Client Information Required for SEO, GEO, AEO & GBP</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Siddhi Dynamics LLP — Client Onboarding & Service Requirement</p>
                 </div>
                 <button onClick={() => setShowClientForm(false)}
                   className="w-9 h-9 rounded-full bg-border hover:bg-muted-foreground/20 flex items-center justify-center text-muted-foreground transition-colors">
@@ -1169,6 +1169,26 @@ export default function VMagneticMindsPortal() {
               {/* Scrollable form body */}
               <div className="overflow-y-auto flex-1 px-6 py-6" ref={formRef}>
                 <form id="client-form" onSubmit={handleSaveClient} className="space-y-8">
+
+                  {/* ▸ Service Being Availed */}
+                  <section>
+                    <h3 className="text-xs font-extrabold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" /> Service Being Availed
+                    </h3>
+                    <div className="space-y-2">
+                      <label className={lbl}>Select Service / Solution Required *</label>
+                      <select required className={inp} value={clientForm.serviceAvailed || "SEO, GEO & AEO Programme"} onChange={cf('serviceAvailed')}>
+                        <option value="SEO, GEO & AEO Programme">🚀 SEO, GEO (AI Search) & AEO Executive Programme</option>
+                        <option value="Website Development">🌐 Website / Portal Development</option>
+                        <option value="Business Automation">⚡ Business Automation & Agentic Workflows</option>
+                        <option value="SaaS Platform Development">📱 SaaS / App Platform Development</option>
+                        <option value="ERP System">🏢 ERP & Enterprise Resource Planning System</option>
+                        <option value="Google Business Profile">📍 Google Business Profile & Map Optimization</option>
+                        <option value="Custom Scope">🤝 Custom Solution (Scope & Price assigned by Admin)</option>
+                      </select>
+                      <p className="text-[11px] text-muted-foreground">Prices for services will be evaluated & assigned from the Admin Portal after review.</p>
+                    </div>
+                  </section>
 
                   {/* ▸ Business Information */}
                   <section>
@@ -1190,21 +1210,21 @@ export default function VMagneticMindsPortal() {
                   {/* ▸ SLA & Payment Strategy */}
                   <section>
                     <h3 className="text-xs font-extrabold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <CreditCard className="w-4 h-4" /> Custom SLA & Payment Strategy
+                      <CreditCard className="w-4 h-4" /> Custom SLA & Pricing (Assigned by Admin)
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className={lbl}>Payment Strategy</label>
                         <select className={inp} value={clientForm.paymentStrategy || "Custom Agreement"} onChange={cf('paymentStrategy')}>
-                          <option value="Custom Agreement">🤝 Custom Agreement / Discuss</option>
+                          <option value="Custom Agreement">🤝 Custom Agreement / Admin Quote</option>
                           <option value="Monthly Retainer">📅 Monthly Retainer</option>
                           <option value="One-time Project">🚀 One-time Project Fee</option>
                           <option value="Performance Share">📈 Performance / Revenue Share</option>
                         </select>
                       </div>
                       <div>
-                        <label className={lbl}>Agreed Fee / Retainer Amount</label>
-                        <input placeholder="e.g. ₹15,000 / mo or Custom Quote" className={inp} value={clientForm.retainerFee || ""} onChange={cf('retainerFee')} />
+                        <label className={lbl}>Assigned Fee / Retainer Amount</label>
+                        <input placeholder="Pending Admin Review (Price assigned from Admin Portal)" className={inp} value={clientForm.retainerFee || ""} onChange={cf('retainerFee')} />
                       </div>
                     </div>
                   </section>
