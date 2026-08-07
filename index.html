@@ -54,16 +54,22 @@
   <meta name="twitter:site" content="@SiddhiDynamics" />
   <meta name="twitter:creator" content="@SiddhiDynamics" />
 
-  <!-- GitHub Pages SPA BrowserRouter Redirect Decoder -->
+  <!-- SPA BrowserRouter Redirect Decoder -->
   <script type="text/javascript">
     (function(l) {
-      if (l.search[1] === '/' ) {
+      if (l.search[1] === '/') {
         var decoded = l.search.slice(1).split('&').map(function(s) {
-          return s.replace(/~and~/g, '&')
+          return s.replace(/~and~/g, '&');
         }).join('?');
         window.history.replaceState(null, null,
           l.pathname.slice(0, -1) + decoded + l.hash
         );
+      } else if (l.search.indexOf('p=/') !== -1) {
+        var pMatch = l.search.match(/p=\/([^&]*)/);
+        if (pMatch && pMatch[1]) {
+          var targetPath = '/' + decodeURIComponent(pMatch[1].replace(/~and~/g, '&'));
+          window.history.replaceState(null, null, targetPath + l.hash);
+        }
       }
     }(window.location))
   </script>
