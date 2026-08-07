@@ -63,6 +63,12 @@ export default function PortalGateway() {
       const adminCheck = checkAdmin(emailVal);
       setIsAdmin(adminCheck);
 
+      if (adminCheck) {
+        setLoading(false);
+        navigate('/admin-hq-nexus');
+        return;
+      }
+
       // Auto-redirect V Magnetic Minds partner immediately – no role selection needed
       if (emailVal === '23eg510a07@anurag.edu.in') {
         setLoading(false);
@@ -70,8 +76,26 @@ export default function PortalGateway() {
         return;
       }
       
-      const roleVal = activeSession.user.user_metadata?.role || null;
+      let roleVal = activeSession.user.user_metadata?.role || null;
+      if (!roleVal) {
+        roleVal = 'client';
+        try {
+          await supabase.auth.updateUser({ data: { role: 'client' } });
+        } catch (e) {
+          // Ignore background update error
+        }
+      }
       setUserRole(roleVal);
+
+      // Auto-redirect OAuth logins (URLs with #access_token= or ?code=) straight to role workspace
+      if (typeof window !== 'undefined' && (window.location.hash.includes('access_token') || window.location.search.includes('code'))) {
+        setLoading(false);
+        if (roleVal === 'partner') navigate('/portal/v-magnetic-minds');
+        else if (roleVal === 'employee') navigate('/portal/employee');
+        else if (roleVal === 'investor') navigate('/portal/investor');
+        else navigate('/portal/client');
+        return;
+      }
     } else {
       setSession(null);
       setUserRole(null);
