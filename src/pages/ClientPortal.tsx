@@ -56,7 +56,7 @@ export default function ClientPortal() {
     const [clientOrg, setClientOrg] = useState("");
     const [projects, setProjects] = useState<Submission[]>([]);
     const [refreshing, setRefreshing] = useState(false);
-    const [projectTabs, setProjectTabs] = useState<Record<string, 'roadmap' | 'scheduler' | 'gmeet' | 'payments' | 'agreements'>>({});
+    const [projectTabs, setProjectTabs] = useState<Record<string, 'roadmap' | 'scheduler' | 'gmeet' | 'payments' | 'agreements' | 'contact'>>({});
 
     // Scheduler & Meeting States
     const [scheduledMeetings, setScheduledMeetings] = useState<any[]>([
@@ -393,6 +393,10 @@ ${contextText || "No matching guidelines found."}
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (!session) {
+                if (window.location.href.includes('tab=contact') || window.location.hash.includes('tab=contact')) {
+                    navigate("/submit?type=contact");
+                    return;
+                }
                 toast.error("Please sign in to access your client portal.");
                 navigate("/auth");
                 return;
@@ -469,22 +473,87 @@ ${contextText || "No matching guidelines found."}
 
 
                 {projects.length === 0 ? (
-                    <div className="glass-card rounded-3xl border border-dashed border-primary/30 p-10 text-center space-y-4 bg-card/50">
-                        <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-2">
-                            <FolderOpen className="w-8 h-8 text-primary" />
+                    <div className="space-y-6">
+                        <div className="glass-card rounded-3xl border border-dashed border-primary/30 p-10 text-center space-y-4 bg-card/50">
+                            <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-2">
+                                <FolderOpen className="w-8 h-8 text-primary" />
+                            </div>
+                            <h3 className="text-xl font-extrabold text-foreground">No Projects Found</h3>
+                            <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed">
+                                You don't have any active project roadmaps yet. Submit your project requirement to get started with custom roadmaps, milestones, and dedicated execution.
+                            </p>
+                            <div className="pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => navigate('/submit?type=requirement')}
+                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-extrabold text-sm hover:scale-105 transition-all shadow-lg shadow-primary/20 cursor-pointer"
+                                >
+                                    <Plus className="w-4 h-4" /> Submit Requirement / Add Project
+                                </button>
+                            </div>
                         </div>
-                        <h3 className="text-xl font-extrabold text-foreground">No Projects Found</h3>
-                        <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed">
-                            You don't have any active project roadmaps yet. Submit your project requirement to get started with custom roadmaps, milestones, and dedicated execution.
-                        </p>
-                        <div className="pt-2">
-                            <button
-                                type="button"
-                                onClick={() => navigate('/submit?type=requirement')}
-                                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-extrabold text-sm hover:scale-105 transition-all shadow-lg shadow-primary/20 cursor-pointer"
-                            >
-                                <Plus className="w-4 h-4" /> Submit Requirement / Add Project
-                            </button>
+
+                        {/* Always visible Contact & Support block on Client Portal */}
+                        <div className="glass-card p-6 rounded-3xl border border-border space-y-5 text-left">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                <div>
+                                    <h4 className="text-base font-extrabold text-foreground flex items-center gap-2">
+                                        <Phone className="w-5 h-5 text-primary" />
+                                        Contact Siddhi Dynamics Support & Team Lead
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        Have questions or need immediate assistance? Reach out to our engineering lead directly.
+                                    </p>
+                                </div>
+                                <a
+                                    href="https://wa.me/916303602743"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg transition-all"
+                                >
+                                    <MessageCircle className="w-4 h-4" /> WhatsApp Direct Chat
+                                </a>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="p-4 rounded-2xl bg-card border border-border space-y-2">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-xl bg-primary/10 text-primary">
+                                            <User className="w-4 h-4" />
+                                        </div>
+                                        <div>
+                                            <h5 className="text-xs font-bold text-foreground">Sai Vara Prasad</h5>
+                                            <p className="text-[10px] text-muted-foreground">Founder & Technical Lead</p>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1.5 pt-2 border-t border-border text-xs">
+                                        <div className="flex items-center justify-between text-muted-foreground">
+                                            <span>Phone:</span>
+                                            <a href="tel:+916303602743" className="font-bold text-primary hover:underline">+91 6303602743</a>
+                                        </div>
+                                        <div className="flex items-center justify-between text-muted-foreground">
+                                            <span>Email:</span>
+                                            <a href="mailto:saivaraprasad@siddhidynamics.in" className="font-bold text-primary hover:underline">saivaraprasad@siddhidynamics.in</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="p-4 rounded-2xl bg-card border border-border space-y-2">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-xl bg-primary/10 text-primary">
+                                            <Building2 className="w-4 h-4" />
+                                        </div>
+                                        <div>
+                                            <h5 className="text-xs font-bold text-foreground">Office Locations</h5>
+                                            <p className="text-[10px] text-muted-foreground">Telangana, India</p>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1 pt-2 border-t border-border text-[11px]">
+                                        <p className="text-muted-foreground"><strong className="text-foreground">Nizamabad:</strong> 3-5-260/2, Shivajinagar Road, Kotagally, 503001</p>
+                                        <p className="text-muted-foreground"><strong className="text-foreground">Hyderabad:</strong> HIVE, Anurag University, 500049</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 ) : (
@@ -609,8 +678,10 @@ ${contextText || "No matching guidelines found."}
 
                                         {/* Project Tabs Selector */}
                                         <div className="flex border-b border-border gap-4 overflow-x-auto no-scrollbar pb-1">
-                                            {(['roadmap', 'scheduler', 'gmeet', 'payments', 'agreements'] as const).map((tab) => {
-                                                const isActive = (projectTabs[proj.id] || 'roadmap') === tab;
+                                            {(['roadmap', 'scheduler', 'gmeet', 'payments', 'agreements', 'contact'] as const).map((tab) => {
+                                                const isContactUrl = window.location.href.includes('tab=contact') || window.location.hash.includes('tab=contact');
+                                                const defaultTab = isContactUrl ? 'contact' : 'roadmap';
+                                                const isActive = (projectTabs[proj.id] || defaultTab) === tab;
                                                 return (
                                                     <button
                                                         key={tab}
@@ -624,7 +695,8 @@ ${contextText || "No matching guidelines found."}
                                                         {tab === 'roadmap' ? 'Roadmap & Support' :
                                                          tab === 'scheduler' ? '📅 Meeting Scheduler' :
                                                          tab === 'gmeet' ? '🎥 Google Meet Hub' :
-                                                         tab === 'payments' ? 'Budget & Payments' : 'Agreements & SLA'}
+                                                         tab === 'payments' ? 'Budget & Payments' :
+                                                         tab === 'agreements' ? 'Agreements & SLA' : '📞 Contact & Support'}
                                                     </button>
                                                 );
                                             })}
@@ -947,6 +1019,82 @@ ${contextText || "No matching guidelines found."}
                                                                 </div>
                                                             </div>
                                                         ))}
+                                                    </div>
+                                                </motion.div>
+                                            )}
+
+                                            {(projectTabs[proj.id] || (window.location.href.includes('tab=contact') ? 'contact' : 'roadmap')) === 'contact' && (
+                                                <motion.div
+                                                    key="contact-tab"
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: -10 }}
+                                                    className="space-y-6 text-left"
+                                                >
+                                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-primary/10 border border-primary/20">
+                                                        <div>
+                                                            <h4 className="text-base font-extrabold text-foreground flex items-center gap-2">
+                                                                <Phone className="w-5 h-5 text-primary" />
+                                                                Direct Contact & Support Gateway
+                                                            </h4>
+                                                            <p className="text-xs text-muted-foreground mt-1">
+                                                                Connect directly with Siddhi Dynamics team lead and technical architects.
+                                                            </p>
+                                                        </div>
+                                                        <a
+                                                            href="https://wa.me/916303602743"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg transition-all"
+                                                        >
+                                                            <MessageCircle className="w-4 h-4" /> WhatsApp Direct Chat
+                                                        </a>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        <div className="p-5 rounded-2xl bg-card border border-border space-y-3">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20 text-primary">
+                                                                    <User className="w-5 h-5" />
+                                                                </div>
+                                                                <div>
+                                                                    <h5 className="text-sm font-bold text-foreground">Sai Vara Prasad</h5>
+                                                                    <p className="text-xs text-muted-foreground">Founder & Technical Lead</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="space-y-2 pt-2 border-t border-border text-xs">
+                                                                <div className="flex items-center justify-between text-muted-foreground">
+                                                                    <span>Direct Phone:</span>
+                                                                    <a href="tel:+916303602743" className="font-bold text-primary hover:underline">+91 6303602743</a>
+                                                                </div>
+                                                                <div className="flex items-center justify-between text-muted-foreground">
+                                                                    <span>Direct Email:</span>
+                                                                    <a href="mailto:saivaraprasad@siddhidynamics.in" className="font-bold text-primary hover:underline">saivaraprasad@siddhidynamics.in</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="p-5 rounded-2xl bg-card border border-border space-y-3">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20 text-primary">
+                                                                    <Building2 className="w-5 h-5" />
+                                                                </div>
+                                                                <div>
+                                                                    <h5 className="text-sm font-bold text-foreground">Siddhi Dynamics Headquarters</h5>
+                                                                    <p className="text-xs text-muted-foreground">Telangana, India</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="space-y-2 pt-2 border-t border-border text-xs">
+                                                                <div>
+                                                                    <strong className="text-foreground font-semibold">Nizamabad Office:</strong>
+                                                                    <p className="text-muted-foreground">3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, 503001</p>
+                                                                </div>
+                                                                <div>
+                                                                    <strong className="text-foreground font-semibold">Hyderabad Office:</strong>
+                                                                    <p className="text-muted-foreground">HIVE, Anurag University, Hyderabad, 500049</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </motion.div>
                                             )}

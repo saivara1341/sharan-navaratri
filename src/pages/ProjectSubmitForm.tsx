@@ -90,8 +90,8 @@ export default function ProjectSubmitForm() {
             toast.error("Please fill in all required fields.");
             return;
         }
-        if (message.trim().length < 15) {
-            toast.error("Please describe your requirement in at least 15 characters.");
+        if (message.trim().length < 20) {
+            toast.error("Please describe your requirement in at least 20 characters.");
             return;
         }
 
@@ -198,91 +198,53 @@ export default function ProjectSubmitForm() {
                     transition={{ duration: 0.4 }}
                 >
                     {/* Header */}
-                    <div className="mb-8">
-                        <div className="flex items-center gap-3 mb-3">
+                    <div className="mb-6">
+                        <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
                                 <FilePen className="w-5 h-5 text-primary" />
                             </div>
                             <div>
                                 <h1 className="text-2xl font-extrabold text-foreground">Submit a Project Requirement</h1>
-                                <p className="text-xs text-muted-foreground">Siddhi Dynamics · Authorized Client Portal</p>
                             </div>
                         </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                            Tell us about your project requirements to get a custom roadmap, timeline, and quote.
-                        </p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Service Selection Dropdown */}
+                        {/* Service Selection */}
                         <div>
                             <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
                                 <Briefcase className="inline w-3.5 h-3.5 mr-1" />
                                 Select Services Required <span className="text-destructive">*</span>
                             </label>
-                            <div className="relative">
-                                <button
-                                    type="button"
-                                    onClick={() => setServiceDropdownOpen(!serviceDropdownOpen)}
-                                    className="w-full p-3.5 rounded-xl border border-border bg-card hover:border-primary/40 transition-all text-left flex items-center justify-between shadow-sm cursor-pointer"
-                                >
-                                    <div className="flex flex-wrap items-center gap-1.5 min-w-0 pr-2">
-                                        {selectedServices.length === 0 ? (
-                                            <span className="text-xs text-muted-foreground font-medium">Select services required...</span>
-                                        ) : (
-                                            selectedServices.map(val => {
-                                                const opt = SERVICE_OPTIONS.find(o => o.value === val);
-                                                return (
-                                                    <span key={val} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/10 text-primary border border-primary/20 text-xs font-bold">
-                                                        {opt?.label || val}
-                                                    </span>
-                                                );
-                                            })
-                                        )}
-                                    </div>
-                                    <ChevronDown className={`w-4 h-4 text-primary shrink-0 transition-transform duration-300 ${serviceDropdownOpen ? 'rotate-180' : ''}`} />
-                                </button>
-
-                                <AnimatePresence>
-                                    {serviceDropdownOpen && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: -8, scaleY: 0.95 }}
-                                            animate={{ opacity: 1, y: 0, scaleY: 1 }}
-                                            exit={{ opacity: 0, y: -8, scaleY: 0.95 }}
-                                            transition={{ duration: 0.2 }}
-                                            className="absolute z-50 w-full mt-2 bg-card border border-border rounded-xl shadow-2xl overflow-hidden p-2 space-y-1.5 max-h-80 overflow-y-auto origin-top"
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                {SERVICE_OPTIONS.map((type) => {
+                                    const isSelected = selectedServices.includes(type.value);
+                                    return (
+                                        <button
+                                            key={type.value}
+                                            type="button"
+                                            onClick={() => toggleService(type.value)}
+                                            className={`text-left p-3.5 rounded-xl border transition-all flex flex-col justify-between cursor-pointer ${
+                                                isSelected
+                                                    ? "bg-primary/10 border-primary text-foreground ring-2 ring-primary/40 shadow-sm"
+                                                    : "bg-card border-border hover:border-primary/40 text-muted-foreground hover:text-foreground"
+                                            }`}
                                         >
-                                            {SERVICE_OPTIONS.map((type) => {
-                                                const isSelected = selectedServices.includes(type.value);
-                                                return (
-                                                    <button
-                                                        key={type.value}
-                                                        type="button"
-                                                        onClick={() => toggleService(type.value)}
-                                                        className={`w-full text-left p-3 rounded-xl border transition-all flex flex-col justify-between cursor-pointer ${
-                                                            isSelected
-                                                                ? "bg-primary/10 border-primary text-foreground ring-1 ring-primary/40 shadow-sm"
-                                                                : "bg-muted/30 border-transparent hover:border-primary/30 text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                                                        }`}
-                                                    >
-                                                        <div>
-                                                            <div className="flex items-center justify-between gap-1 mb-0.5">
-                                                                <span className="text-xs font-extrabold flex items-center gap-1.5 text-foreground">
-                                                                    <span className={`w-4 h-4 rounded-md flex items-center justify-center text-[10px] ${isSelected ? 'bg-primary text-primary-foreground font-black' : 'border border-border bg-card'}`}>
-                                                                        {isSelected ? '✓' : ''}
-                                                                    </span>
-                                                                    {type.label}
-                                                                </span>
-                                                                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">{type.price}</span>
-                                                            </div>
-                                                            <div className="text-[11px] opacity-75 pl-5 text-muted-foreground">{type.desc}</div>
-                                                        </div>
-                                                    </button>
-                                                );
-                                            })}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
+                                            <div>
+                                                <div className="flex items-center justify-between gap-1 mb-1">
+                                                    <span className="text-xs font-extrabold flex items-center gap-1.5 text-foreground">
+                                                        <span className={`w-4 h-4 rounded-md flex items-center justify-center text-[10px] ${isSelected ? 'bg-primary text-primary-foreground font-black' : 'border border-border bg-muted'}`}>
+                                                            {isSelected ? '✓' : ''}
+                                                        </span>
+                                                        {type.label}
+                                                    </span>
+                                                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">{type.price}</span>
+                                                </div>
+                                                <div className="text-[11px] opacity-75 pl-5 text-muted-foreground">{type.desc}</div>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
 
