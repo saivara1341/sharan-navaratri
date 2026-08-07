@@ -1399,11 +1399,11 @@ export default function VMagneticMindsPortal() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className={lbl}>Lead Representative Name</label>
-                      <input placeholder="e.g. Sai Vara Prasad" className={inp} value={editAgencyContact} onChange={e => setEditAgencyContact(e.target.value)} />
+                      <input placeholder="e.g. Rahul Sharma" className={inp} value={editAgencyContact} onChange={e => setEditAgencyContact(e.target.value)} />
                     </div>
                     <div>
                       <label className={lbl}>Mobile / WhatsApp Number</label>
-                      <input placeholder="+91 63036 02743" className={inp} value={editAgencyPhone} onChange={e => setEditAgencyPhone(e.target.value)} />
+                      <input placeholder="+91 98765 43210" className={inp} value={editAgencyPhone} onChange={e => setEditAgencyPhone(e.target.value)} />
                     </div>
                     <div className="sm:col-span-2">
                       <label className={lbl}>Official Website URL</label>
