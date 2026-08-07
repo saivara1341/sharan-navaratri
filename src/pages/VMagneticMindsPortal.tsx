@@ -140,7 +140,7 @@ export default function VMagneticMindsPortal() {
   };
 
   // ── Partner Agency Profile & Branding Customization ─────────────────────────
-  const [agencyName, setAgencyName] = useState("V Magnetic Minds");
+  const [agencyName, setAgencyName] = useState("Your Agency");
   const [agencyLogoUrl, setAgencyLogoUrl] = useState("");
   const [agencyContact, setAgencyContact] = useState("");
   const [agencyPhone, setAgencyPhone] = useState("");
@@ -952,7 +952,7 @@ export default function VMagneticMindsPortal() {
                 </div>
               </div>
 
-              <GoogleReviewCard audience="client" name="V Magnetic Minds" compact />
+              <GoogleReviewCard audience="client" name={agencyName} compact />
             </motion.div>
           )}
 
@@ -1331,7 +1331,7 @@ export default function VMagneticMindsPortal() {
                   <div>
                     <p className="text-sm font-extrabold text-foreground">Siddhi AI Coordinator</p>
                     <p className="text-[10px] text-emerald-500 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Active · V Magnetic Minds
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Active · {agencyName}
                     </p>
                   </div>
                 </div>

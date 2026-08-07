@@ -64,7 +64,7 @@ const AuthRedirectHandler = () => {
       }
 
       if (email === '23eg510a07@anurag.edu.in') {
-        navigate("/portal/v-magnetic-minds");
+        navigate("/portal/agency");
         return;
       }
 
@@ -79,7 +79,7 @@ const AuthRedirectHandler = () => {
         navigate("/portal/investor");
         return;
       } else if (role === 'partner') {
-        navigate("/portal/v-magnetic-minds");
+        navigate("/portal/agency");
         return;
       }
 
@@ -128,6 +128,7 @@ const App = () => {
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/portal" element={<PortalGateway />} />
               <Route path="/portal/client" element={<ClientPortal />} />
+              <Route path="/portal/agency" element={<VMagneticMindsPortal />} />
               <Route path="/portal/v-magnetic-minds" element={<VMagneticMindsPortal />} />
               <Route path="/portal/investor" element={<InvestorPortal />} />
               <Route path="/portal/employee" element={<EmployeePortal />} />

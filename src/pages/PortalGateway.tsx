@@ -72,7 +72,7 @@ export default function PortalGateway() {
       // Auto-redirect V Magnetic Minds partner immediately – no role selection needed
       if (emailVal === '23eg510a07@anurag.edu.in') {
         setLoading(false);
-        navigate('/portal/v-magnetic-minds');
+        navigate('/portal/agency');
         return;
       }
       
@@ -82,7 +82,7 @@ export default function PortalGateway() {
       // Auto-redirect OAuth logins (URLs with #access_token= or ?code=) straight to role workspace
       if (typeof window !== 'undefined' && (window.location.hash.includes('access_token') || window.location.search.includes('code'))) {
         setLoading(false);
-        if (roleVal === 'partner') navigate('/portal/v-magnetic-minds');
+        if (roleVal === 'partner') navigate('/portal/agency');
         else if (roleVal === 'employee') navigate('/portal/employee');
         else if (roleVal === 'investor') navigate('/portal/investor');
         else navigate('/portal/client');
@@ -373,7 +373,7 @@ export default function PortalGateway() {
                         Agency / Partner
                       </h3>
                       <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                        For agencies (V Magnetic Minds & partners). Onboard client portfolios, request services, and manage SLAs.
+                        For partner agencies & executive partners. Onboard client portfolios, request services, and manage SLAs.
                       </p>
                     </div>
                   </div>

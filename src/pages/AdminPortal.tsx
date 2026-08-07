@@ -1247,8 +1247,8 @@ const AdminPortal = () => {
                             {[
                                 {
                                     name: 'Agency / Partner Portal',
-                                    subtitle: 'V Magnetic Minds & partner agencies',
-                                    route: '/portal/v-magnetic-minds',
+                                    subtitle: 'Partner agency accounts',
+                                    route: '/portal/agency',
                                     emoji: '🏬',
                                     color: 'border-amber-500/30 hover:border-amber-500/60 bg-amber-500/5',
                                     tag: 'Partners',
