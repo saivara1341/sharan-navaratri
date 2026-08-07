@@ -7,7 +7,7 @@ import {
   Search, Globe, Bot, MapPin, TrendingUp, CheckCircle, Clock, Calendar,
   ShieldCheck, RefreshCw, MessageCircle, Send, Zap, CreditCard, QrCode,
   Download, Building2, BarChart3, FileText, Users, Copy, Check, LogOut,
-  AlertCircle, Plus, X, ChevronRight, Phone, Mail, Instagram, Youtube,
+  AlertCircle, Plus, X, ChevronRight, ChevronLeft, Phone, Mail, Instagram, Youtube,
   Facebook, Linkedin, Target, Image, Briefcase, Star, Filter, Eye, ArrowUpRight
 } from "lucide-react";
 import { toast } from "sonner";
@@ -537,6 +537,13 @@ export default function VMagneticMindsPortal() {
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 md:pt-36 pb-20 space-y-8">
+        <button
+          onClick={() => navigate('/portal')}
+          className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors group cursor-pointer text-left mb-2"
+        >
+          <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <span className="text-sm font-semibold">Back to Gateway</span>
+        </button>
 
         {/* ── Header Banner ──────────────────────────────────────────────── */}
         <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }}

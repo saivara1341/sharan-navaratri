@@ -27,6 +27,7 @@ import {
     User,
     Plus,
     Phone,
+    ChevronLeft,
     Star
 } from "lucide-react";
 import { format } from "date-fns";
@@ -444,7 +445,14 @@ ${contextText || "No matching guidelines found."}
             </Helmet>
 
             <main className="container mx-auto px-6 pt-32 pb-20 max-w-5xl relative z-10 space-y-12">
-                
+                <button
+                    onClick={() => navigate('/portal')}
+                    className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-2 group cursor-pointer text-left"
+                >
+                    <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                    <span className="text-sm font-semibold">Back to Gateway</span>
+                </button>
+
                 {/* Portal Header */}
                 <div className="rounded-3xl border border-border bg-card/90 px-6 py-7 shadow-sm md:px-8">
                     <div className="text-left">

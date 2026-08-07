@@ -14,6 +14,7 @@ import {
     Search,
     LogOut,
     ChevronRight,
+    ChevronLeft,
     Calendar,
     Mail,
     Briefcase,
@@ -23,7 +24,9 @@ import {
     MessageCircle,
     Send,
     X,
+    Edit,
     Edit3,
+    ShieldCheck,
     Paperclip,
     FileText,
     Download
@@ -67,6 +70,86 @@ const AdminPortal = () => {
     const [contactUser, setContactUser] = useState<any | null>(null);
     const [userChatInput, setUserChatInput] = useState('');
     const [userRoleFilter, setUserRoleFilter] = useState<'all' | 'client' | 'partner' | 'investor' | 'employee'>('all');
+
+    // Edit User Modal State
+    const [editUserModal, setEditUserModal] = useState<any | null>(null);
+    const [editUserName, setEditUserName] = useState('');
+    const [editUserEmail, setEditUserEmail] = useState('');
+    const [editUserRole, setEditUserRole] = useState<'client' | 'partner' | 'investor' | 'employee' | 'admin'>('client');
+    const [editUserOrg, setEditUserOrg] = useState('');
+    const [editUserDesignation, setEditUserDesignation] = useState('');
+    const [editUserPhone, setEditUserPhone] = useState('');
+    const [editUserQuote, setEditUserQuote] = useState('');
+    const [editUserNotes, setEditUserNotes] = useState('');
+    const [editUserVerified, setEditUserVerified] = useState(true);
+
+    const openEditUser = (user: any) => {
+        setEditUserModal(user);
+        setEditUserName(user.name || '');
+        setEditUserEmail(user.email || '');
+        setEditUserRole(user.role || 'client');
+        setEditUserOrg(user.organization || '');
+        setEditUserDesignation(user.designation || '');
+        setEditUserPhone(user.phone || '');
+        const quotes = JSON.parse(localStorage.getItem('siddhi_custom_quotes') || '{}');
+        setEditUserQuote(user.quote || quotes[user.email?.toLowerCase()] || '');
+        setEditUserNotes(user.notes || '');
+        setEditUserVerified(user.confirmed !== false);
+    };
+
+    const handleSaveUserData = () => {
+        if (!editUserModal) return;
+        const emailKey = editUserEmail.toLowerCase().trim();
+
+        const updatedUser = {
+            ...editUserModal,
+            name: editUserName,
+            email: editUserEmail,
+            role: editUserRole,
+            organization: editUserOrg,
+            designation: editUserDesignation,
+            phone: editUserPhone,
+            quote: editUserQuote,
+            notes: editUserNotes,
+            confirmed: editUserVerified,
+            updated_at: new Date().toISOString()
+        };
+
+        // 1. Save to edited users store in localStorage
+        const existingEdited = JSON.parse(localStorage.getItem('siddhi_edited_users') || '{}');
+        existingEdited[emailKey] = updatedUser;
+        localStorage.setItem('siddhi_edited_users', JSON.stringify(existingEdited));
+
+        // 2. Save custom quote to custom quotes store
+        if (editUserQuote) {
+            const quotes = JSON.parse(localStorage.getItem('siddhi_custom_quotes') || '{}');
+            quotes[emailKey] = editUserQuote;
+            localStorage.setItem('siddhi_custom_quotes', JSON.stringify(quotes));
+        }
+
+        // 3. Update agency profile if role is partner or agency
+        if (editUserRole === 'partner' || emailKey === '23eg510a07@anurag.edu.in') {
+            const currentProfile = JSON.parse(localStorage.getItem('m2_agency_profile') || '{}');
+            localStorage.setItem('m2_agency_profile', JSON.stringify({
+                ...currentProfile,
+                agencyName: editUserOrg || editUserName || "V Magnetic Minds",
+                contactPerson: editUserName,
+                email: editUserEmail,
+                phone: editUserPhone,
+                retainerFee: editUserQuote
+            }));
+        }
+
+        // 4. Update allUsers state list in AdminPortal
+        setAllUsers(prev => prev.map(u => u.email?.toLowerCase() === emailKey || u.id === editUserModal.id ? updatedUser : u));
+
+        // 5. Dispatch custom storage sync event for real-time live portal update
+        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new Event('siddhi-data-updated'));
+
+        toast.success(`Updated user details & assigned quote for ${editUserName || editUserEmail}! Live in portal.`);
+        setEditUserModal(null);
+    };
 
     const fetchAllUsers = async () => {
         setUsersLoading(true);
@@ -200,6 +283,30 @@ const AdminPortal = () => {
                         lastLogin: null,
                         confirmed: true,
                         created_at: w.created_at
+                    });
+                }
+            });
+
+            // 4. Overlay Admin-edited user data overrides & custom quotes
+            const editedUsers = JSON.parse(localStorage.getItem('siddhi_edited_users') || '{}');
+            const customQuotes = JSON.parse(localStorage.getItem('siddhi_custom_quotes') || '{}');
+
+            Object.keys(editedUsers).forEach(key => {
+                const edited = editedUsers[key];
+                const existing = userMap.get(key.toLowerCase());
+                userMap.set(key.toLowerCase(), {
+                    ...(existing || {}),
+                    ...edited,
+                    quote: edited.quote || customQuotes[key.toLowerCase()] || existing?.quote
+                });
+            });
+
+            Object.keys(customQuotes).forEach(key => {
+                const existing = userMap.get(key.toLowerCase());
+                if (existing) {
+                    userMap.set(key.toLowerCase(), {
+                        ...existing,
+                        quote: customQuotes[key.toLowerCase()]
                     });
                 }
             });
@@ -540,6 +647,14 @@ const AdminPortal = () => {
             </Helmet>
 
             <main className="container mx-auto px-6 pt-32 pb-20 relative z-10">
+                <button
+                    onClick={() => navigate('/portal')}
+                    className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-6 group cursor-pointer text-left"
+                >
+                    <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                    <span className="text-sm font-semibold">Back to Gateway</span>
+                </button>
+
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                     <div className="text-left">
                         <motion.h1
