@@ -11,7 +11,7 @@ import {
     PenTool,
     Send,
     Search,
-    Sparkles,
+    Star,
     Gift,
     PartyPopper,
     ArrowLeft,
@@ -49,7 +49,7 @@ const WishOLanding = () => {
             border: "border-purple-500/20"
         },
         {
-            icon: <Sparkles className="w-8 h-8 text-amber-400" />,
+            icon: <Star className="w-8 h-8 text-amber-400" />,
             title: t('wisho_landing.features.generate.title'),
             desc: t('wisho_landing.features.generate.desc'),
             bg: "bg-amber-500/10",
@@ -81,7 +81,7 @@ const WishOLanding = () => {
     const steps = [
         { icon: <Calendar className="w-6 h-6" />, label: t('wisho_landing.process.step1') },
         { icon: <Search className="w-6 h-6" />, label: t('wisho_landing.process.step2') },
-        { icon: <Sparkles className="w-6 h-6" />, label: t('wisho_landing.process.step3') },
+        { icon: <Star className="w-6 h-6" />, label: t('wisho_landing.process.step3') },
         { icon: <Send className="w-6 h-6" />, label: t('wisho_landing.process.step4') },
     ];
 

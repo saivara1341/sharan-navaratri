@@ -6,7 +6,6 @@ import {
   Star, 
   Handshake, 
   ArrowRight,
-  Sparkles,
   Zap,
   Globe,
   Database,

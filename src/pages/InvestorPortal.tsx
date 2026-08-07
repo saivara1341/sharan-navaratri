@@ -9,7 +9,7 @@ import {
   DollarSign, 
   BarChart3, 
   Search, 
-  Sparkles, 
+  Zap, 
   MessageCircle, 
   Send, 
   X, 
@@ -1026,7 +1026,7 @@ If you cannot answer based on our tech stack, say: "I will escalate this questio
               {/* Header */}
               <div className="p-5 border-b border-white/5 flex items-center justify-between bg-white/2">
                 <div className="flex items-center gap-2 text-left">
-                  <div className="p-2 bg-accent/10 rounded-xl"><Sparkles className="w-5 h-5 text-accent animate-pulse" /></div>
+                  <div className="p-2 bg-accent/10 rounded-xl"><Zap className="w-5 h-5 text-accent animate-pulse" /></div>
                   <div>
                     <h3 className="text-base font-bold text-white">Siddhi Strategic AI</h3>
                     <p className="text-[10px] text-muted-foreground">Investor Relations Advisory Console</p>

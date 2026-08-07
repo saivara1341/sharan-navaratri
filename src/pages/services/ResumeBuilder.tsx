@@ -3,7 +3,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { FooterSection } from "@/components/sections/FooterSection";
 import { 
   FileText, 
-  Sparkles, 
+  Bot, 
   Target, 
   CheckCircle2, 
   Download, 
@@ -49,7 +49,7 @@ const ResumeBuilder = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
             {[
               { title: "ATS Optimization", desc: "Our engine scans for keywords used by modern recruitment systems.", icon: Target, color: "emerald" },
-              { title: "Neural Copywriting", desc: "AI-generated profile summaries and experience bullets.", icon: Sparkles, color: "blue" },
+              { title: "Neural Copywriting", desc: "AI-generated profile summaries and experience bullets.", icon: Bot, color: "blue" },
               { title: "Multi-Format Export", desc: "Export to PDF, LaTeX, or interactive digital profiles.", icon: FileText, color: "purple" }
             ].map((feature, i) => (
               <motion.div

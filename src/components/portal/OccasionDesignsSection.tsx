@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Image, Upload, Download, Trash2, Eye, X, Search,
-  Filter, ChevronDown, Check, Sparkles, Copy, ZoomIn,
+  Filter, ChevronDown, Check, Copy, ZoomIn,
   ZoomOut, RotateCcw, Tag, Users, Calendar, Plus,
   ExternalLink, Star, Maximize2,
 } from "lucide-react";
@@ -409,7 +409,7 @@ export default function OccasionDesignsSection({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-primary" />
+            <Star className="w-5 h-5 text-primary fill-primary/20" />
             Occasion & Festive Designs
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">

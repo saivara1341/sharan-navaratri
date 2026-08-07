@@ -16,7 +16,7 @@ import {
     UserCircle2,
     TrendingUp,
     Users,
-    Sparkles,
+    Zap,
     Globe,
     ArrowLeft
 } from 'lucide-react';
@@ -76,7 +76,7 @@ const NilayamLanding: React.FC = () => {
         { icon: <LayoutDashboard className="w-6 h-6" />, title: t('landing.feature.command.title'), description: t('landing.feature.command.desc'), color: "bg-blue-500" },
         { icon: <Users className="w-6 h-6" />, title: t('landing.feature.tracking.title'), description: t('landing.feature.tracking.desc'), color: "bg-indigo-500" },
         { icon: <TrendingUp className="w-6 h-6" />, title: t('landing.feature.finance.title'), description: t('landing.feature.finance.desc'), color: "bg-emerald-500" },
-        { icon: <Sparkles className="w-6 h-6" />, title: t('landing.feature.predict.title'), description: t('landing.feature.predict.desc'), color: "bg-amber-500" },
+        { icon: <Zap className="w-6 h-6" />, title: t('landing.feature.predict.title'), description: t('landing.feature.predict.desc'), color: "bg-amber-500" },
     ];
 
     const tenantFeatures = [

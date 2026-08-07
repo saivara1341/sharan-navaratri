@@ -16,7 +16,7 @@ import {
     ArrowLeft,
     CheckCircle,
     Loader2,
-    Sparkles,
+    FilePen,
 } from "lucide-react";
 
 import { emailService } from "@/services/emailService";
@@ -199,7 +199,7 @@ export default function ProjectSubmitForm() {
                     <div className="mb-8">
                         <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                                <Sparkles className="w-5 h-5 text-primary" />
+                                <FilePen className="w-5 h-5 text-primary" />
                             </div>
                             <div>
                                 <h1 className="text-2xl font-extrabold text-foreground">Submit a Project Requirement</h1>
@@ -207,18 +207,17 @@ export default function ProjectSubmitForm() {
                             </div>
                         </div>
                         <p className="text-sm text-muted-foreground leading-relaxed">
-                            Tell us what you need. We'll create a custom roadmap, timeline, and assign a dedicated project manager within <strong>24 hours</strong>.
+                            Tell us about your project requirements to get a custom roadmap, timeline, and quote.
                         </p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Multiple Service Selection */}
                         <div>
-                            <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+                            <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
                                 <Briefcase className="inline w-3.5 h-3.5 mr-1" />
-                                Select Services Required (Select Multiple) <span className="text-destructive">*</span>
+                                Select Services Required <span className="text-destructive">*</span>
                             </label>
-                            <p className="text-xs text-muted-foreground mb-3">You can tap to select one or multiple services. Prices will be evaluated & assigned from the Admin Portal.</p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                 {SERVICE_OPTIONS.map((type) => {
                                     const isSelected = selectedServices.includes(type.value);
@@ -256,8 +255,9 @@ export default function ProjectSubmitForm() {
                             <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
                                 💰 Estimated Budget Preference
                             </label>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
                                 {[
+                                    { value: "below10k", label: "Below ₹10k" },
                                     { value: "flexible", label: "🤝 Custom / Discuss" },
                                     { value: "starter", label: "₹10k - ₹30k" },
                                     { value: "growth", label: "₹30k - ₹1 Lakh" },
@@ -294,7 +294,7 @@ export default function ProjectSubmitForm() {
                                     required
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    placeholder="Your full name"
+                                    placeholder="Your Full Name"
                                     className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                 />
                             </div>
@@ -328,7 +328,7 @@ export default function ProjectSubmitForm() {
                                     type="text"
                                     value={designation}
                                     onChange={(e) => setDesignation(e.target.value)}
-                                    placeholder="e.g. Co-Founder, Marketing Head"
+                                    placeholder="Your Designation"
                                     className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                 />
                             </div>
@@ -341,7 +341,7 @@ export default function ProjectSubmitForm() {
                                     type="text"
                                     value={organization}
                                     onChange={(e) => setOrganization(e.target.value)}
-                                    placeholder="e.g. V Magnetic Minds"
+                                    placeholder="Your Organization Name"
                                     className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                 />
                             </div>

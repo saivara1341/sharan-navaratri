@@ -192,7 +192,7 @@ const Auth = () => {
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Briefcase className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-base font-bold text-foreground mb-1">Direct Client</h3>
+                <h3 className="text-base font-bold text-foreground mb-1">Client</h3>
                 <p className="text-xs text-muted-foreground">Manage your projects, payments, GMeet booking, and track roadmaps.</p>
               </motion.button>
 

@@ -17,7 +17,7 @@ import {
     BrainCircuit,
     ShieldCheck,
     LayoutDashboard,
-    Sparkles,
+    Zap,
     ChevronRight,
     Trophy,
     Search,
@@ -209,7 +209,7 @@ const NexusLanding = () => {
                                         activeTab === 'admin' ? 'text-primary' :
                                             'text-orange-400'
                                         }`}>
-                                        <Sparkles className="w-5 h-5" />
+                                        <Zap className="w-5 h-5" />
                                         The Nexus Solution
                                     </h3>
                                     <ul className="space-y-4">
@@ -269,7 +269,7 @@ const NexusLanding = () => {
                                     if (lower.includes('notification')) return <Bell className="w-4 h-4 text-muted-foreground group-hover:text-accent" />;
                                     if (lower.includes('theme') || lower.includes('dual')) return <Palette className="w-4 h-4 text-muted-foreground group-hover:text-accent" />;
 
-                                    return <Sparkles className="w-4 h-4 text-muted-foreground group-hover:text-accent" />;
+                                    return <Zap className="w-4 h-4 text-muted-foreground group-hover:text-accent" />;
                                 };
 
                                 return (

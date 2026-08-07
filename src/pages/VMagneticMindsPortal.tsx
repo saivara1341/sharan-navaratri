@@ -5,7 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { GoogleReviewCard } from "@/components/GoogleReviewCard";
 import {
   Search, Globe, Bot, MapPin, TrendingUp, CheckCircle, Clock, Calendar,
-  ShieldCheck, RefreshCw, MessageCircle, Send, Sparkles, CreditCard, QrCode,
+  ShieldCheck, RefreshCw, MessageCircle, Send, Zap, CreditCard, QrCode,
   Download, Building2, BarChart3, FileText, Users, Copy, Check, LogOut,
   AlertCircle, Plus, X, ChevronRight, Phone, Mail, Instagram, Youtube,
   Facebook, Linkedin, Target, Image, Briefcase, Star, Filter, Eye, ArrowUpRight
@@ -571,7 +571,7 @@ export default function VMagneticMindsPortal() {
                 onClick={() => { setEditAgencyName(agencyName); setEditAgencyLogo(agencyLogoUrl); setShowBrandingModal(true); }}
                 className="px-4 py-2.5 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs border border-border transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
               >
-                <Sparkles className="w-4 h-4 text-primary" /> Edit Agency Profile
+                <Zap className="w-4 h-4 text-primary" /> Edit Agency Profile
               </button>
             </div>
           </div>
@@ -800,7 +800,7 @@ export default function VMagneticMindsPortal() {
               {/* 3-Phase Roadmap */}
               <div className="glass-card rounded-2xl border border-border p-6">
                 <h3 className="text-base font-extrabold text-foreground mb-5 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-primary" /> 12-Month SEO/GEO/AEO/GBP Execution Roadmap
+                  <Zap className="w-5 h-5 text-primary" /> 12-Month SEO/GEO/AEO/GBP Execution Roadmap
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {[
@@ -984,7 +984,7 @@ export default function VMagneticMindsPortal() {
                 {[
                   { title: "GEO · Generative Engine Optimisation", icon: <Bot className="w-5 h-5 text-violet-500" />, border: "border-violet-500/30", score: `${selectedBrand?.geoScore || 88} / 100`, desc: "Optimises content so AI search platforms (ChatGPT Search, Perplexity AI, Claude 3.5, Gemini) cite your brand as an authoritative answer.", items: ["ChatGPT Search citation strategy", "Perplexity AI indexing", "LLMs.txt deployment", "Brand authority schema"] },
                   { title: "SEO · Organic Search Optimisation",    icon: <Search className="w-5 h-5 text-cyan-500" />, border: "border-cyan-500/30",   score: `${selectedBrand?.seoScore || 85} / 100`, desc: "Technical + content SEO to dominate Google organic results for your target keywords.", items: ["Technical site audit", "Keyword research & mapping", "On-page optimisation", "Backlink acquisition"] },
-                  { title: "AEO · Answer Engine Optimisation",     icon: <Sparkles className="w-5 h-5 text-amber-500" />, border: "border-amber-500/30", score: `${selectedBrand?.aeoScore || 84} / 100`, desc: "Targets featured snippets, People Also Ask, and voice search so your brand answers questions first.", items: ["FAQ schema markup", "Voice search readiness", "Featured snippet targeting", "Position Zero strategy"] },
+                  { title: "AEO · Answer Engine Optimisation",     icon: <Zap className="w-5 h-5 text-amber-500" />, border: "border-amber-500/30", score: `${selectedBrand?.aeoScore || 84} / 100`, desc: "Targets featured snippets, People Also Ask, and voice search so your brand answers questions first.", items: ["FAQ schema markup", "Voice search readiness", "Featured snippet targeting", "Position Zero strategy"] },
                   { title: "GBP · Google Business Profile",        icon: <MapPin className="w-5 h-5 text-rose-500" />, border: "border-rose-500/30",  score: `${selectedBrand?.gbpScore || 92} / 100`, desc: "Full GBP setup, weekly posts, photo uploads, Q&A management, and Local Map Pack ranking.", items: ["GBP creation / optimisation", "Weekly post calendar", "Review management", "Local Map Pack tracking"] },
                 ].map(card => (
                   <div key={card.title} className={`glass-card rounded-2xl border ${card.border} p-6`}>
@@ -1465,7 +1465,7 @@ export default function VMagneticMindsPortal() {
                   {/* ▸ Services Being Availed */}
                   <section>
                     <h3 className="text-xs font-extrabold text-primary uppercase tracking-widest mb-3 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" /> Select Services Availed (Select Multiple) *
+                      <Zap className="w-4 h-4" /> Select Services Availed (Select Multiple) *
                     </h3>
                     <p className="text-xs text-muted-foreground mb-4">Tap to select all services requested for this client account. Pricing will be evaluated & assigned from the Admin Portal.</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">

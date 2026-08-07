@@ -13,7 +13,6 @@ import {
   Zap,
   ShieldCheck,
   RefreshCw,
-  Sparkles,
   Layers,
   BarChart3,
   MessageSquareText,
@@ -247,7 +246,7 @@ Canonical website: https://printflows.in/
         <div>
           <div className="flex items-center gap-3 mb-2">
             <span className="p-2 rounded-xl bg-primary/10 border border-primary/20 text-primary">
-              <Sparkles className="w-5 h-5" />
+              <Zap className="w-5 h-5" />
             </span>
             <span className="text-xs uppercase font-extrabold text-primary tracking-[0.2em]">
               Autonomous SEO + GEO + AEO Intelligence Suite
@@ -596,7 +595,7 @@ Canonical website: https://printflows.in/
                   onClick={handleGenerateQuotable}
                   className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs flex items-center gap-2 hover:scale-105 transition-transform cursor-pointer"
                 >
-                  <Sparkles className="w-4 h-4" /> Generate Citable Passage
+                  <Zap className="w-4 h-4" /> Generate Citable Passage
                 </button>
 
                 {citableBlock && (

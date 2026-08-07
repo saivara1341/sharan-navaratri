@@ -14,7 +14,8 @@ import {
     MessageCircle, 
     Send, 
     X, 
-    Sparkles,
+    Zap,
+    Bot,
     DollarSign,
     CreditCard,
     Receipt,
@@ -31,7 +32,6 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
-import projectSubmissionIllustration from "@/assets/project-submission-empty-state.png";
 import { GoogleReviewCard } from "@/components/GoogleReviewCard";
 
 interface Submission {
@@ -469,19 +469,23 @@ ${contextText || "No matching guidelines found."}
 
 
                 {projects.length === 0 ? (
-                    <div className="text-center px-6 py-10 rounded-3xl border border-primary/20 bg-card shadow-sm space-y-6">
-                        <img
-                            src={projectSubmissionIllustration}
-                            alt="Project roadmap ready for a new submission"
-                            className="mx-auto w-full max-w-xl rounded-2xl object-cover"
-                        />
-                        <button
-                            type="button"
-                            onClick={() => navigate('/submit?type=requirement')}
-                            className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:scale-105 transition-all shadow-lg shadow-primary/20"
-                        >
-                            Start Submitting Form
-                        </button>
+                    <div className="glass-card rounded-3xl border border-dashed border-primary/30 p-10 text-center space-y-4 bg-card/50">
+                        <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-2">
+                            <FolderOpen className="w-8 h-8 text-primary" />
+                        </div>
+                        <h3 className="text-xl font-extrabold text-foreground">No Projects Found</h3>
+                        <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed">
+                            You don't have any active project roadmaps yet. Submit your project requirement to get started with custom roadmaps, milestones, and dedicated execution.
+                        </p>
+                        <div className="pt-2">
+                            <button
+                                type="button"
+                                onClick={() => navigate('/submit?type=requirement')}
+                                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-extrabold text-sm hover:scale-105 transition-all shadow-lg shadow-primary/20 cursor-pointer"
+                            >
+                                <Plus className="w-4 h-4" /> Submit Requirement / Add Project
+                            </button>
+                        </div>
                     </div>
                 ) : (
                     <div className="space-y-8">
@@ -584,7 +588,7 @@ ${contextText || "No matching guidelines found."}
                                                         onClick={() => setAcceptQuoteModal(proj)}
                                                         className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-extrabold text-xs hover:scale-105 transition-all shadow-lg shadow-primary/20 shrink-0 cursor-pointer flex items-center gap-1.5"
                                                     >
-                                                        <Sparkles className="w-4 h-4" /> Review & Accept Quote
+                                                        <Zap className="w-4 h-4" /> Review & Accept Quote
                                                     </button>
                                                 )}
                                             </div>
@@ -998,7 +1002,7 @@ ${contextText || "No matching guidelines found."}
                                     </div>
                                 ) : chatMessages.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center h-full text-[#8696a0] text-center gap-2 px-6">
-                                        <Sparkles className="w-10 h-10 text-primary animate-pulse mb-2" />
+                                        <Bot className="w-10 h-10 text-primary animate-pulse mb-2" />
                                         <p className="font-semibold text-white">Welcome to Siddhi Support Hub</p>
                                         <p className="text-xs max-w-xs leading-relaxed text-center">Ask any questions about your project scope, targets, or custom requirements. Our AI assistant will answer based on our internal files.</p>
                                     </div>
@@ -1019,7 +1023,7 @@ ${contextText || "No matching guidelines found."}
                                                             <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                                                                 isAI ? 'bg-primary/20 text-primary' : 'bg-blue-500/20 text-blue-400'
                                                             }`}>
-                                                                {isAI ? <Sparkles className="w-4 h-4" /> : <ShieldCheck className="w-4 h-4" />}
+                                                                {isAI ? <Bot className="w-4 h-4" /> : <ShieldCheck className="w-4 h-4" />}
                                                             </div>
                                                         )}
                                                         <div className="flex flex-col text-left">
@@ -1086,7 +1090,7 @@ ${contextText || "No matching guidelines found."}
                             <div className="p-6 border-b border-border bg-muted/40 flex items-center justify-between">
                                 <div className="text-left">
                                     <h3 className="font-extrabold text-lg text-foreground flex items-center gap-2">
-                                        <Sparkles className="w-5 h-5 text-primary" /> Accept Quote & Select Payment Terms
+                                        <Zap className="w-5 h-5 text-primary" /> Accept Quote & Select Payment Terms
                                     </h3>
                                     <p className="text-xs text-muted-foreground mt-0.5">Assigned Quote: <strong className="text-primary">{parseProjectMetadata(acceptQuoteModal.bounty_reward).agreement || "Assigned Quote"}</strong></p>
                                 </div>

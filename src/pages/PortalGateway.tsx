@@ -15,7 +15,7 @@ import {
   Loader2, 
   LogOut, 
   ShieldAlert, 
-  Sparkles,
+  Zap,
   ChevronRight,
   ShieldCheck,
   CheckCircle,
@@ -221,7 +221,7 @@ export default function PortalGateway() {
     if (isAdmin) return "God-Mode Admin";
     if (userRole === 'partner') return "Agency Partner";
     if (userRole === 'employee') return "Employee / Builder";
-    if (userRole === 'client') return "Direct Client";
+    if (userRole === 'client') return "Client";
     if (userRole === 'investor') return "Venture / Investor";
     return "Member";
   };
@@ -308,7 +308,7 @@ export default function PortalGateway() {
               {/* Header */}
               <div className="text-center space-y-3">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-extrabold uppercase tracking-widest text-primary">
-                  <Sparkles className="w-3.5 h-3.5" /> Welcome to Siddhi Dynamics Ecosystem
+                  <Zap className="w-3.5 h-3.5" /> Welcome to Siddhi Dynamics Ecosystem
                 </div>
                 <h1 className="text-2xl md:text-4xl font-black text-foreground tracking-tight">Select Your Portal Workspace</h1>
                 <p className="text-muted-foreground text-xs md:text-sm max-w-lg mx-auto leading-relaxed">
@@ -334,7 +334,7 @@ export default function PortalGateway() {
                     </div>
                     <div>
                       <h3 className="text-lg font-extrabold text-foreground group-hover:text-primary transition-colors flex items-center gap-1.5">
-                        Direct Client
+                        Client
                       </h3>
                       <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                         Track project roadmaps, schedule GMeet reviews, manage quote approvals, and view invoice disbursements.

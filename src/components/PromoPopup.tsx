@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { X, Printer, Sparkles, ArrowRight } from "lucide-react";
+import { X, Printer, Zap, ArrowRight } from "lucide-react";
 
 const FEATURES = [
     {
@@ -9,7 +9,7 @@ const FEATURES = [
         color: "from-[#FF6B00] to-[#FF8b3d]",
     },
     {
-        icon: <Sparkles className="w-5 h-5" />,
+        icon: <Zap className="w-5 h-5" />,
         title: "Delivered Fast",
         desc: "Direct shipping from local printing hubs in Hyderabad & Nizamabad.",
         color: "from-amber-500 to-orange-600",

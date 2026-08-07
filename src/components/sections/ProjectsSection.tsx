@@ -9,7 +9,6 @@ import {
   Home, 
   Landmark, 
   LucideIcon, 
-  Sparkles, 
   ExternalLink, 
   Bell, 
   ArrowRight, 

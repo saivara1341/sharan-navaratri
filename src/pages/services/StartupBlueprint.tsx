@@ -4,7 +4,6 @@ import { FooterSection } from "@/components/sections/FooterSection";
 import { 
   Rocket, 
   Map, 
-  Sparkles, 
   CheckCircle2, 
   ArrowRight, 
   Code2, 
@@ -92,7 +91,7 @@ const StartupBlueprint = () => {
                     className="glass-card p-12 rounded-[40px] bg-gradient-to-br from-white/10 to-transparent border border-white/10 text-center relative overflow-hidden"
                 >
                     <div className="absolute top-0 right-0 p-8">
-                        <Sparkles className="w-12 h-12 text-primary opacity-20 animate-pulse" />
+                        <Rocket className="w-12 h-12 text-primary opacity-20 animate-pulse" />
                     </div>
                     
                     <h2 className="text-3xl font-bold mb-8">Ready to Blueprint?</h2>

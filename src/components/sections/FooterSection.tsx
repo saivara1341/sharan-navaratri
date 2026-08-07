@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Users } from 'lucide-react';
 import siddhiLogo from '@/assets/siddhi-logo.png';
+import { GoogleReviewCard } from '@/components/GoogleReviewCard';
+import { GoogleReviewNotificationBanner } from '@/components/GoogleReviewNotificationBanner';
 
 const nizamabadAddress = '3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001, India';
 const nizamabadMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`Siddhi Dynamics LLP, ${nizamabadAddress}`)}`;
@@ -55,7 +57,14 @@ export const FooterSection = () => {
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       />
 
+      <GoogleReviewNotificationBanner />
+
       <div className="container mx-auto px-6 relative z-10">
+        {/* Google Reviews Card placed above footer */}
+        <div className="mb-14">
+          <GoogleReviewCard audience="visitor" />
+        </div>
+
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
           <motion.a
             href="/"

@@ -11,7 +11,7 @@ import {
   Building2, 
   ExternalLink,
   ArrowRight,
-  Sparkles,
+  Award,
   Rocket,
   CheckCircle2,
   FileText,
@@ -262,7 +262,7 @@ const ResourceHub = () => {
                 </div>
                 {activeTab === 'founder' && (
                     <div className="flex items-center gap-2 text-xs font-bold text-orange-500 uppercase tracking-widest bg-orange-500/10 px-4 py-2 rounded-full border border-orange-500/20">
-                        <Sparkles className="w-4 h-4" />
+                        <Award className="w-4 h-4" />
                         Featured: Startup Sahayak
                     </div>
                 )}
@@ -335,7 +335,7 @@ const ResourceHub = () => {
                                 { title: "DPIIT", icon: Building2 },
                                 { title: "Sahayak", icon: Target },
                                 { title: "MAARG", icon: Users },
-                                { title: "Grants", icon: Sparkles }
+                                { title: "Grants", icon: Award }
                             ].map((badge) => (
                                 <div key={badge.title} className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center justify-center text-center">
                                     <badge.icon className="w-6 h-6 text-primary mb-2" />

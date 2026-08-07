@@ -119,7 +119,7 @@ const AdminPortal = () => {
                     id: 'client-ld',
                     name: 'Lie Detection',
                     email: 'liedetection44@gmail.com',
-                    organization: 'Direct Client Account',
+                    organization: 'Client Account',
                     designation: 'Client User',
                     inquiry_type: 'Auth Sign-In',
                     status: 'Active',
@@ -618,7 +618,7 @@ const AdminPortal = () => {
                         <button
                             onClick={() => navigate('/portal/client')}
                             className="px-3.5 py-2 rounded-xl bg-card border border-blue-500/30 hover:border-blue-500 text-xs font-bold text-foreground flex items-center gap-1.5 shadow-sm transition-all"
-                            title="Inspect Direct Client Portal"
+                            title="Inspect Client Portal"
                         >
                             <span>🏢</span> Client Workspace
                         </button>
@@ -1142,13 +1142,13 @@ const AdminPortal = () => {
                                 },
                                 {
                                     name: 'Client Workspace Portal',
-                                    subtitle: 'Direct clients managing their projects',
+                                    subtitle: 'Clients managing their projects',
                                     route: '/portal/client',
                                     emoji: '🏢',
                                     color: 'border-blue-500/30 hover:border-blue-500/60 bg-blue-500/5',
                                     tag: 'Clients',
                                     tagColor: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-                                    desc: 'Track project progress, roadmaps, GMeet, scheduling, agreements, and billing for every direct client.'
+                                    desc: 'Track project progress, roadmaps, GMeet, scheduling, agreements, and billing for every client.'
                                 },
                                 {
                                     name: 'Employee Builder Hub',
