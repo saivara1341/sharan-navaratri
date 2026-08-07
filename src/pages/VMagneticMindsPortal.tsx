@@ -1483,7 +1483,7 @@ export default function VMagneticMindsPortal() {
                 <div className="pt-3 border-t border-border flex justify-end gap-3 shrink-0">
                   <button type="button" onClick={() => setShowBrandingModal(false)} className="px-4 py-2.5 rounded-xl border border-border text-xs font-bold text-muted-foreground hover:text-foreground cursor-pointer">Cancel</button>
                   <button type="submit" className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-extrabold text-xs hover:scale-105 transition-all shadow-md shadow-primary/20 cursor-pointer">
-                    Save Agency Profile
+                    Save
                   </button>
                 </div>
               </form>
