@@ -433,9 +433,6 @@ const Index = () => {
         <ServicesSection />
         <ProjectsSection />
         <SubmitSection />
-        <div className="container mx-auto px-6 py-10">
-          <GoogleReviewCard />
-        </div>
         <AIOContent />
       </main>
       <FooterSection />
