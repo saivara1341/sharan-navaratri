@@ -1740,10 +1740,6 @@ export default function VMagneticMindsPortal() {
                           <option value="Performance Share">📈 Performance / Revenue Share</option>
                         </select>
                       </div>
-                      <div>
-                        <label className={lbl}>Assigned Fee / Retainer Amount</label>
-                        <input placeholder="Pending Admin Review (Price assigned from Admin Portal)" className={inp} value={clientForm.retainerFee || ""} onChange={cf('retainerFee')} />
-                      </div>
                     </div>
                   </section>
 
