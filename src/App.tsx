@@ -150,6 +150,8 @@ const App = () => {
               <Route path="/shipping-delivery-policy" element={<ShippingDeliveryPolicy />} />
               <Route path="/cookie-policy" element={<CookiePolicy />} />
               <Route path="/contact-information" element={<ContactInformation />} />
+              <Route path="/contact" element={<ContactInformation />} />
+              <Route path="/contact-us" element={<ContactInformation />} />
               {/* SEO Pages */}
               <Route path="/about" element={<About />} />
               <Route path="/blog" element={<Blog />} />

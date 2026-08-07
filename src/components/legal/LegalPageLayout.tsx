@@ -19,7 +19,7 @@ export const LegalPageLayout = ({ title, description, icon, children }: LegalPag
     <Helmet>
       <title>{title} | Siddhi Dynamics</title>
       <meta name="description" content={description} />
-      <link rel="canonical" href={`https://siddhidynamics.in/${window.location.pathname.replace(/^\//, "")}`} />
+      <link rel="canonical" href={`https://siddhidynamics.in/${typeof window !== 'undefined' ? window.location.pathname.replace(/^\//, "") : ""}`} />
     </Helmet>
     <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />
 
