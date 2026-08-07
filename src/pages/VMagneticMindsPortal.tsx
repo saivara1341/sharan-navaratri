@@ -139,26 +139,70 @@ export default function VMagneticMindsPortal() {
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
-  // ── Partner Branding Customization ─────────────────────────────────────────
+  // ── Partner Agency Profile & Branding Customization ─────────────────────────
   const [agencyName, setAgencyName] = useState("V Magnetic Minds");
   const [agencyLogoUrl, setAgencyLogoUrl] = useState("/v-magnetic-minds-logo.jpg");
+  const [agencyContact, setAgencyContact] = useState("");
+  const [agencyPhone, setAgencyPhone] = useState("");
+  const [agencyWebsite, setAgencyWebsite] = useState("");
+  const [agencyFb, setAgencyFb] = useState("");
+  const [agencyIg, setAgencyIg] = useState("");
+  const [agencyLi, setAgencyLi] = useState("");
+  const [agencyYt, setAgencyYt] = useState("");
+
   const [showBrandingModal, setShowBrandingModal] = useState(false);
   const [editAgencyName, setEditAgencyName] = useState(agencyName);
   const [editAgencyLogo, setEditAgencyLogo] = useState(agencyLogoUrl);
+  const [editAgencyContact, setEditAgencyContact] = useState(agencyContact);
+  const [editAgencyPhone, setEditAgencyPhone] = useState(agencyPhone);
+  const [editAgencyWebsite, setEditAgencyWebsite] = useState(agencyWebsite);
+  const [editAgencyFb, setEditAgencyFb] = useState(agencyFb);
+  const [editAgencyIg, setEditAgencyIg] = useState(agencyIg);
+  const [editAgencyLi, setEditAgencyLi] = useState(agencyLi);
+  const [editAgencyYt, setEditAgencyYt] = useState(agencyYt);
+
+  const handleLogoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => {
+        if (uploadEvent.target?.result) {
+          const logoDataUrl = uploadEvent.target.result as string;
+          setEditAgencyLogo(logoDataUrl);
+          toast.success(`Selected logo image: ${file.name}`);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSaveBranding = async (e: React.FormEvent) => {
     e.preventDefault();
     const newName = editAgencyName.trim() || "Agency Partner";
-    const newLogo = editAgencyLogo.trim() || "/v-magnetic-minds-logo.jpg";
+    const newLogo = editAgencyLogo || "/v-magnetic-minds-logo.jpg";
 
     setAgencyName(newName);
     setAgencyLogoUrl(newLogo);
+    setAgencyContact(editAgencyContact.trim());
+    setAgencyPhone(editAgencyPhone.trim());
+    setAgencyWebsite(editAgencyWebsite.trim());
+    setAgencyFb(editAgencyFb.trim());
+    setAgencyIg(editAgencyIg.trim());
+    setAgencyLi(editAgencyLi.trim());
+    setAgencyYt(editAgencyYt.trim());
 
     try {
       await supabase.auth.updateUser({
         data: {
           agency_name: newName,
-          agency_logo: newLogo
+          agency_logo: newLogo,
+          agency_contact: editAgencyContact.trim(),
+          agency_phone: editAgencyPhone.trim(),
+          agency_website: editAgencyWebsite.trim(),
+          agency_fb: editAgencyFb.trim(),
+          agency_ig: editAgencyIg.trim(),
+          agency_li: editAgencyLi.trim(),
+          agency_yt: editAgencyYt.trim()
         }
       });
     } catch (err) {
@@ -166,7 +210,7 @@ export default function VMagneticMindsPortal() {
     }
 
     setShowBrandingModal(false);
-    toast.success(`Agency profile updated: ${newName}`);
+    toast.success(`Agency profile saved for ${newName}!`);
   };
 
   const handleDeleteClient = (id: string, name: string) => {
@@ -1291,14 +1335,14 @@ export default function VMagneticMindsPortal() {
           <div className="fixed inset-0 z-[260] flex items-center justify-center p-4 pt-24 pb-6 bg-black/80 backdrop-blur-md overflow-y-auto">
             <motion.div initial={{ scale: 0.92, opacity: 0, y: 16 }} animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.92, opacity: 0 }}
-              className="bg-card border border-border rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden text-left">
+              className="bg-card border border-border rounded-3xl max-w-xl w-full shadow-2xl overflow-hidden text-left flex flex-col max-h-[90vh]">
               
-              <div className="flex items-center justify-between px-6 py-4 bg-muted border-b border-border">
+              <div className="flex items-center justify-between px-6 py-4 bg-muted border-b border-border shrink-0">
                 <div className="flex items-center gap-2">
                   <Building2 className="w-5 h-5 text-primary" />
                   <div>
                     <h3 className="text-base font-extrabold text-foreground">Configure Agency Partner Profile</h3>
-                    <p className="text-[10px] text-muted-foreground">Set up your agency name and logo for your client workspace</p>
+                    <p className="text-[10px] text-muted-foreground">Upload your agency logo, social links & company details</p>
                   </div>
                 </div>
                 <button onClick={() => setShowBrandingModal(false)}
@@ -1307,34 +1351,82 @@ export default function VMagneticMindsPortal() {
                 </button>
               </div>
 
-              <form onSubmit={handleSaveBranding} className="p-6 space-y-4">
-                <div>
-                  <label className={lbl}>Agency / Company Name *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. V Magnetic Minds or Apex Digital Agency"
-                    value={editAgencyName}
-                    onChange={e => setEditAgencyName(e.target.value)}
-                    className={inp}
-                  />
+              <form onSubmit={handleSaveBranding} className="p-6 space-y-6 overflow-y-auto flex-1">
+                {/* 1. Basic Agency Identity */}
+                <div className="space-y-4">
+                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                    <Briefcase className="w-3.5 h-3.5" /> Agency Identity & Branding
+                  </h4>
+                  
+                  <div>
+                    <label className={lbl}>Agency / Company Name *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. V Magnetic Minds or Apex Digital Agency"
+                      value={editAgencyName}
+                      onChange={e => setEditAgencyName(e.target.value)}
+                      className={inp}
+                    />
+                  </div>
+
+                  {/* Logo File Upload */}
+                  <div>
+                    <label className={lbl}>Upload Agency Logo (Image File Upload) *</label>
+                    <div className="flex items-center gap-4 p-3 rounded-2xl bg-muted/50 border border-border">
+                      <div className="w-14 h-14 bg-white rounded-xl border border-border flex items-center justify-center overflow-hidden shrink-0">
+                        <img src={editAgencyLogo || "/v-magnetic-minds-logo.jpg"} alt="Agency Logo Preview" className="w-full h-full object-contain p-1" />
+                      </div>
+                      <div className="flex-1 space-y-1">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleLogoFileUpload}
+                          className="w-full text-xs text-muted-foreground file:mr-3 file:py-1.5 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary file:text-primary-foreground hover:file:opacity-90 cursor-pointer"
+                        />
+                        <p className="text-[10px] text-muted-foreground">Select a PNG, JPG, or SVG image file from your device.</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <label className={lbl}>Agency Logo Image URL (PNG/SVG/JPG)</label>
-                  <input
-                    type="text"
-                    placeholder="https://example.com/logo.png or /v-magnetic-minds-logo.jpg"
-                    value={editAgencyLogo}
-                    onChange={e => setEditAgencyLogo(e.target.value)}
-                    className={inp}
-                  />
-                  <p className="text-[10px] text-muted-foreground mt-1">Leave empty to use default agency badge logo.</p>
+                {/* 2. Contact Details */}
+                <div className="space-y-4 pt-2 border-t border-border">
+                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5" /> Contact Details & Website
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className={lbl}>Lead Representative Name</label>
+                      <input placeholder="e.g. Sai Vara Prasad" className={inp} value={editAgencyContact} onChange={e => setEditAgencyContact(e.target.value)} />
+                    </div>
+                    <div>
+                      <label className={lbl}>Mobile / WhatsApp Number</label>
+                      <input placeholder="+91 63036 02743" className={inp} value={editAgencyPhone} onChange={e => setEditAgencyPhone(e.target.value)} />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className={lbl}>Official Website URL</label>
+                      <input placeholder="https://example.com" className={inp} value={editAgencyWebsite} onChange={e => setEditAgencyWebsite(e.target.value)} />
+                    </div>
+                  </div>
                 </div>
 
-                <div className="pt-3 border-t border-border flex justify-end gap-3">
+                {/* 3. Social Media Links */}
+                <div className="space-y-4 pt-2 border-t border-border">
+                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                    <Globe className="w-3.5 h-3.5" /> Agency Social Media Channels
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex items-center gap-2"><Instagram className="w-4 h-4 text-pink-500 shrink-0" /><input placeholder="Instagram Profile Link" className={inp} value={editAgencyIg} onChange={e => setEditAgencyIg(e.target.value)} /></div>
+                    <div className="flex items-center gap-2"><Linkedin className="w-4 h-4 text-blue-600 shrink-0" /><input placeholder="LinkedIn Page Link" className={inp} value={editAgencyLi} onChange={e => setEditAgencyLi(e.target.value)} /></div>
+                    <div className="flex items-center gap-2"><Facebook className="w-4 h-4 text-blue-500 shrink-0" /><input placeholder="Facebook Page Link" className={inp} value={editAgencyFb} onChange={e => setEditAgencyFb(e.target.value)} /></div>
+                    <div className="flex items-center gap-2"><Youtube className="w-4 h-4 text-red-500 shrink-0" /><input placeholder="YouTube Channel Link" className={inp} value={editAgencyYt} onChange={e => setEditAgencyYt(e.target.value)} /></div>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-border flex justify-end gap-3 shrink-0">
                   <button type="button" onClick={() => setShowBrandingModal(false)} className="px-4 py-2.5 rounded-xl border border-border text-xs font-bold text-muted-foreground hover:text-foreground cursor-pointer">Cancel</button>
-                  <button type="submit" className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-extrabold text-xs hover:scale-105 transition-all shadow-md shadow-primary/20 cursor-pointer">
+                  <button type="submit" className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-extrabold text-xs hover:scale-105 transition-all shadow-md shadow-primary/20 cursor-pointer">
                     Save Agency Profile
                   </button>
                 </div>
