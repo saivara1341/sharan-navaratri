@@ -447,7 +447,7 @@ If you cannot answer based on our tech stack, say: "I will escalate this questio
     return (
       <div className="min-h-screen bg-[#050508] text-white flex flex-col items-center justify-center gap-4">
         <RefreshCw className="w-10 h-10 animate-spin text-accent" />
-        <p className="text-muted-foreground text-sm font-medium tracking-widest uppercase">Connecting to Venture Ledger...</p>
+        <p className="text-muted-foreground text-sm font-medium tracking-widest uppercase">Loading...</p>
       </div>
     );
   }

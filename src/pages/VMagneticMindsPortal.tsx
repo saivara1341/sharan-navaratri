@@ -518,8 +518,9 @@ export default function VMagneticMindsPortal() {
 
   // ── Loading ────────────────────────────────────────────────────────────────
   if (loading) return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <RefreshCw className="w-8 h-8 animate-spin text-primary" />
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
+      <RefreshCw className="w-10 h-10 animate-spin text-primary" />
+      <p className="text-muted-foreground text-sm font-medium tracking-widest uppercase">Loading...</p>
     </div>
   );
 

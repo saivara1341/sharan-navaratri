@@ -430,7 +430,7 @@ ${contextText || "No matching guidelines found."}
         return (
             <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center gap-4">
                 <RefreshCw className="w-10 h-10 animate-spin text-primary" />
-                <p className="text-muted-foreground text-sm font-medium tracking-widest uppercase">Connecting to neural project gateway...</p>
+                <p className="text-muted-foreground text-sm font-medium tracking-widest uppercase">Loading...</p>
             </div>
         );
     }
