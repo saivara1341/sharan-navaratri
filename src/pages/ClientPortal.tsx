@@ -95,6 +95,62 @@ export default function ClientPortal() {
     const [chatLoading, setChatLoading] = useState(false);
     const [sendingMsg, setSendingMsg] = useState(false);
 
+    // Quote Acceptance & Payment Terms States
+    const [acceptQuoteModal, setAcceptQuoteModal] = useState<Submission | null>(null);
+    const [selectedStructure, setSelectedStructure] = useState<string>("50-50");
+    const [selectedPayMode, setSelectedPayMode] = useState<"online" | "cash">("online");
+    const [quoteUtr, setQuoteUtr] = useState<string>("");
+    const [submittingQuote, setSubmittingQuote] = useState<boolean>(false);
+
+    const handleConfirmQuoteAndPayment = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!acceptQuoteModal) return;
+        if (selectedPayMode === "online" && !quoteUtr.trim()) {
+            toast.error("Please enter your UTR / Transaction Reference Number for online payment.");
+            return;
+        }
+
+        setSubmittingQuote(true);
+        try {
+            const structureLabels: Record<string, string> = {
+                "monthly": "📅 Monthly Retainer",
+                "50-50": "🌓 50% Advance & 50% Upon Completion",
+                "advance-milestone": "🚀 Custom Advance + Milestone Balance",
+                "full": "💎 100% Upfront Payment"
+            };
+
+            const payModeLabel = selectedPayMode === "online"
+                ? `Online Payment / UPI (UTR: ${quoteUtr.trim()})`
+                : "Cash Payment (In-person collection by Sai Vara Prasad)";
+
+            const meta = parseProjectMetadata(acceptQuoteModal.bounty_reward);
+            const assignedPrice = meta.agreement || "Assigned Quote";
+
+            const updatedMessage = `${acceptQuoteModal.message}\n\n[ACCEPTED QUOTE: ${assignedPrice}]\n[PAYMENT STRUCTURE: ${structureLabels[selectedStructure] || selectedStructure}]\n[PAYMENT MODE: ${payModeLabel}]\n[TIMESTAMP: ${new Date().toISOString()}]`;
+
+            const { error } = await supabase
+                .from('contact_submissions')
+                .update({
+                    status: "Quote Accepted (Project Started)",
+                    progress: acceptQuoteModal.progress && acceptQuoteModal.progress > 0 ? acceptQuoteModal.progress : 25,
+                    message: updatedMessage
+                })
+                .eq('id', acceptQuoteModal.id);
+
+            if (error) throw error;
+
+            toast.success("Quote Accepted! Payment terms confirmed and project started.");
+            setAcceptQuoteModal(null);
+            setQuoteUtr("");
+            fetchClientProjects(clientEmail);
+        } catch (err: any) {
+            console.error("Quote confirm error:", err);
+            toast.error(err.message || "Failed to confirm quote.");
+        } finally {
+            setSubmittingQuote(false);
+        }
+    };
+
     const openClientChat = async (proj: Submission) => {
         setChatOpen(proj);
         setChatLoading(true);
@@ -503,6 +559,33 @@ ${contextText || "No matching guidelines found."}
                                                     >
                                                         Launch Website / SaaS <ExternalLink className="w-3.5 h-3.5" />
                                                     </a>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Quote & Payment Status Banner */}
+                                        <div className="p-5 rounded-2xl bg-card border border-primary/30 space-y-3">
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                                <div>
+                                                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary">Pricing & Quote Status</span>
+                                                    <h4 className="text-base font-extrabold text-foreground mt-0.5">
+                                                        {meta.agreement ? `💰 Assigned Custom Quote: ${meta.agreement}` : "🤝 Quoted / Informed by Sai Vara Prasad"}
+                                                    </h4>
+                                                    <p className="text-xs text-muted-foreground mt-0.5">
+                                                        {meta.agreement
+                                                            ? "Sai Vara Prasad has assigned your custom price quote. Accept quote below to choose your payment plan."
+                                                            : "Sai Vara Prasad is currently evaluating your requirement. Assigned pricing will appear here once reviewed."}
+                                                    </p>
+                                                </div>
+
+                                                {meta.agreement && proj.status !== 'Completed' && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setAcceptQuoteModal(proj)}
+                                                        className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-extrabold text-xs hover:scale-105 transition-all shadow-lg shadow-primary/20 shrink-0 cursor-pointer flex items-center gap-1.5"
+                                                    >
+                                                        <Sparkles className="w-4 h-4" /> Review & Accept Quote
+                                                    </button>
                                                 )}
                                             </div>
                                         </div>
@@ -986,6 +1069,124 @@ ${contextText || "No matching guidelines found."}
                             </div>
                         </motion.div>
                     </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* ====== QUOTE ACCEPTANCE & PAYMENT TERMS MODAL ====== */}
+            <AnimatePresence>
+                {acceptQuoteModal && (
+                    <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 pt-24 pb-6 bg-black/80 backdrop-blur-md overflow-y-auto">
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="w-full max-w-xl bg-card border border-border rounded-3xl overflow-hidden shadow-2xl flex flex-col"
+                        >
+                            {/* Header */}
+                            <div className="p-6 border-b border-border bg-muted/40 flex items-center justify-between">
+                                <div className="text-left">
+                                    <h3 className="font-extrabold text-lg text-foreground flex items-center gap-2">
+                                        <Sparkles className="w-5 h-5 text-primary" /> Accept Quote & Select Payment Terms
+                                    </h3>
+                                    <p className="text-xs text-muted-foreground mt-0.5">Assigned Quote: <strong className="text-primary">{parseProjectMetadata(acceptQuoteModal.bounty_reward).agreement || "Assigned Quote"}</strong></p>
+                                </div>
+                                <button onClick={() => setAcceptQuoteModal(null)} className="p-2 rounded-xl hover:bg-muted text-foreground"><X className="w-5 h-5" /></button>
+                            </div>
+
+                            <form onSubmit={handleConfirmQuoteAndPayment} className="p-6 space-y-6 text-left">
+                                {/* Step 1: Select Payment Structure */}
+                                <div className="space-y-3">
+                                    <label className="text-xs font-extrabold uppercase tracking-wider text-primary">1. Select Payment Structure *</label>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        {[
+                                            { id: "50-50", title: "🌓 50% Advance & 50% Completion", desc: "50% upfront deposit to initiate, 50% upon final handoff" },
+                                            { id: "monthly", title: "📅 Monthly Retainer", desc: "Equal monthly retainer payments" },
+                                            { id: "advance-milestone", title: "🚀 Custom Advance + Milestones", desc: "Custom deposit upfront, balance linked to roadmap phases" },
+                                            { id: "full", title: "💎 100% Upfront Priority", desc: "100% upfront with priority development queue" },
+                                        ].map(st => (
+                                            <button
+                                                key={st.id}
+                                                type="button"
+                                                onClick={() => setSelectedStructure(st.id)}
+                                                className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                                                    selectedStructure === st.id
+                                                        ? "bg-primary/10 border-primary text-foreground ring-2 ring-primary/40"
+                                                        : "bg-muted/40 border-border text-muted-foreground hover:text-foreground"
+                                                }`}
+                                            >
+                                                <p className="text-xs font-extrabold">{st.title}</p>
+                                                <p className="text-[11px] opacity-75 mt-0.5">{st.desc}</p>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Step 2: Select Payment Method / Mode */}
+                                <div className="space-y-3">
+                                    <label className="text-xs font-extrabold uppercase tracking-wider text-primary">2. Select Payment Method / Mode *</label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedPayMode("online")}
+                                            className={`p-4 rounded-2xl border text-center font-bold text-xs transition-all cursor-pointer ${
+                                                selectedPayMode === "online"
+                                                    ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20"
+                                                    : "bg-muted/40 border-border text-muted-foreground hover:text-foreground"
+                                            }`}
+                                        >
+                                            💳 Online / UPI / Card
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedPayMode("cash")}
+                                            className={`p-4 rounded-2xl border text-center font-bold text-xs transition-all cursor-pointer ${
+                                                selectedPayMode === "cash"
+                                                    ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20"
+                                                    : "bg-muted/40 border-border text-muted-foreground hover:text-foreground"
+                                            }`}
+                                        >
+                                            💵 Cash Payment
+                                        </button>
+                                    </div>
+
+                                    {selectedPayMode === "online" ? (
+                                        <div className="p-4 rounded-2xl bg-muted/50 border border-border space-y-3">
+                                            <div className="flex items-center justify-between text-xs">
+                                                <span className="text-muted-foreground font-semibold">Official UPI ID:</span>
+                                                <span className="font-mono font-extrabold text-primary">6303602743@upi</span>
+                                            </div>
+                                            <div className="flex items-center justify-between text-xs">
+                                                <span className="text-muted-foreground font-semibold">Payee Name:</span>
+                                                <span className="font-bold text-foreground">Siddhi Dynamics LLP</span>
+                                            </div>
+                                            <div className="space-y-1 pt-1">
+                                                <label className="text-[10px] font-bold uppercase text-muted-foreground">Transaction UTR / Reference No. *</label>
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    placeholder="e.g. 623910482019"
+                                                    value={quoteUtr}
+                                                    onChange={e => setQuoteUtr(e.target.value)}
+                                                    className="w-full px-3 py-2 rounded-xl border border-border bg-card text-foreground text-xs focus:outline-none focus:ring-1 focus:ring-primary font-mono"
+                                                />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs leading-relaxed">
+                                            💵 <strong>Cash Payment Selected:</strong> Cash payment will be collected in-person directly by Sai Vara Prasad or an authorized Siddhi Dynamics representative upon agreement verification.
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="pt-3 border-t border-border flex justify-end gap-3">
+                                    <button type="button" onClick={() => setAcceptQuoteModal(null)} className="px-5 py-2.5 rounded-xl border border-border text-xs font-bold text-muted-foreground hover:text-foreground cursor-pointer">Cancel</button>
+                                    <button type="submit" disabled={submittingQuote} className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-extrabold text-xs hover:scale-105 transition-all shadow-lg shadow-primary/20 cursor-pointer">
+                                        {submittingQuote ? "Confirming..." : "Confirm & Start Project"}
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
                 )}
             </AnimatePresence>
         </div>
