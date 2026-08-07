@@ -300,121 +300,176 @@ export default function PortalGateway() {
           {session && !userRole && !isAdmin && (
             <motion.div
               key="role-selection"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="w-full max-w-4xl mx-auto glass-card bg-card/80 p-8 border border-border shadow-xl rounded-3xl relative text-center space-y-8"
+              exit={{ opacity: 0, y: -15 }}
+              className="space-y-8 max-w-6xl mx-auto"
             >
-              <div className="space-y-2">
-                <div className="p-2.5 bg-primary/10 rounded-xl w-fit mx-auto border border-primary/20"><Sparkles className="w-6 h-6 text-primary animate-pulse" /></div>
-                <h1 className="text-3xl font-extrabold text-foreground">Welcome to Siddhi Dynamics</h1>
-                <p className="text-muted-foreground text-sm max-w-md mx-auto">
-                  Please select how you'll be using our platform to set up your dashboard.
+              {/* Header */}
+              <div className="text-center space-y-3">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-extrabold uppercase tracking-widest text-primary">
+                  <Sparkles className="w-3.5 h-3.5" /> Welcome to Siddhi Dynamics Ecosystem
+                </div>
+                <h1 className="text-2xl md:text-4xl font-black text-foreground tracking-tight">Select Your Portal Workspace</h1>
+                <p className="text-muted-foreground text-xs md:text-sm max-w-lg mx-auto leading-relaxed">
+                  Choose your authorized role below to set up your tailored workspace and access your dashboard.
                 </p>
               </div>
 
-              {/* Selection cards */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-left">
-                {/* Client card */}
+              {/* Selection cards grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 text-left">
+                {/* 🏢 Client Card */}
                 <motion.button
-                  whileHover={{ scale: 1.02, border: "1px solid rgba(251, 146, 60, 0.3)" }}
+                  whileHover={{ scale: 1.02, y: -4 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleRoleSelect('client')}
-                  className="p-5 rounded-2xl border border-border bg-background/70 hover:bg-muted flex flex-col justify-between h-64 text-left transition-all group cursor-pointer shadow-sm"
+                  className="relative overflow-hidden p-6 rounded-3xl border border-primary/30 bg-gradient-to-b from-primary/10 via-card/80 to-card hover:border-primary flex flex-col justify-between h-full min-h-[300px] text-left transition-all group cursor-pointer shadow-lg hover:shadow-primary/10"
                 >
-                  <div className="space-y-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-105 transition-transform">
-                      <Briefcase className="w-5 h-5 text-primary" />
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-2xl bg-primary/20 border border-primary/40 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
+                        <Briefcase className="w-6 h-6 text-primary" />
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">Client Workspace</span>
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-foreground group-hover:text-primary transition-colors">Direct Client</h3>
-                      <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                        Access milestone roadmaps, project scheduler, GMeet booking, AI support chat, and invoice tracking.
+                      <h3 className="text-lg font-extrabold text-foreground group-hover:text-primary transition-colors flex items-center gap-1.5">
+                        Direct Client
+                      </h3>
+                      <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                        Track project roadmaps, schedule GMeet reviews, manage quote approvals, and view invoice disbursements.
                       </p>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold text-primary flex items-center gap-1 mt-3 group-hover:translate-x-1 transition-transform">
-                    Claim Client Path <ArrowRight className="w-3.5 h-3.5" />
-                  </span>
+
+                  <div className="pt-4 border-t border-border/50 mt-4 space-y-3">
+                    <div className="flex flex-wrap gap-1">
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">Roadmaps</span>
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">GMeet</span>
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">Quotes & Invoices</span>
+                    </div>
+                    <div className="w-full py-2.5 rounded-xl bg-primary/10 group-hover:bg-primary group-hover:text-primary-foreground text-primary font-extrabold text-xs transition-all flex items-center justify-center gap-2 border border-primary/20">
+                      Enter Client Workspace <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
                 </motion.button>
 
-                {/* Partner card */}
+                {/* 🏬 Partner Card */}
                 <motion.button
-                  whileHover={{ scale: 1.02, border: "1px solid rgba(168, 85, 247, 0.3)" }}
+                  whileHover={{ scale: 1.02, y: -4 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleRoleSelect('partner')}
-                  className="p-5 rounded-2xl border border-border bg-background/70 hover:bg-muted flex flex-col justify-between h-64 text-left transition-all group cursor-pointer shadow-sm"
+                  className="relative overflow-hidden p-6 rounded-3xl border border-purple-500/30 bg-gradient-to-b from-purple-500/10 via-card/80 to-card hover:border-purple-500 flex flex-col justify-between h-full min-h-[300px] text-left transition-all group cursor-pointer shadow-lg hover:shadow-purple-500/10"
                 >
-                  <div className="space-y-3">
-                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20 group-hover:scale-105 transition-transform">
-                      <Building2 className="w-5 h-5 text-purple-500" />
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
+                        <Building2 className="w-6 h-6 text-purple-400" />
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">Agency Partner</span>
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-foreground group-hover:text-purple-500 transition-colors">Agency Partner</h3>
-                      <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                        For marketing/digital agencies (like V Magnetic Minds). Manage client portfolios, custom agency branding, and 12-Month SLAs.
+                      <h3 className="text-lg font-extrabold text-foreground group-hover:text-purple-400 transition-colors">
+                        Agency / Partner
+                      </h3>
+                      <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                        For agencies (V Magnetic Minds & partners). Onboard client portfolios, request services, and manage SLAs.
                       </p>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold text-purple-500 flex items-center gap-1 mt-3 group-hover:translate-x-1 transition-transform">
-                    Claim Partner Path <ArrowRight className="w-3.5 h-3.5" />
-                  </span>
-                </motion.button>
 
-                {/* Investor card */}
-                <motion.button
-                  whileHover={{ scale: 1.02, border: "1px solid rgba(234, 179, 8, 0.3)" }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleRoleSelect('investor')}
-                  className="p-5 rounded-2xl border border-border bg-background/70 hover:bg-muted flex flex-col justify-between h-64 text-left transition-all group cursor-pointer shadow-sm"
-                >
-                  <div className="space-y-3">
-                    <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center border border-accent/20 group-hover:scale-105 transition-transform">
-                      <TrendingUp className="w-5 h-5 text-accent" />
+                  <div className="pt-4 border-t border-border/50 mt-4 space-y-3">
+                    <div className="flex flex-wrap gap-1">
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">Multi-Client</span>
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">Branding</span>
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">SLA Tracking</span>
                     </div>
-                    <div>
-                      <h3 className="text-base font-bold text-foreground group-hover:text-accent transition-colors">Venture / Investor</h3>
-                      <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                        Discover ecosystem startup projects, view portfolio metrics, run due diligence audits, and contact founders.
-                      </p>
+                    <div className="w-full py-2.5 rounded-xl bg-purple-500/10 group-hover:bg-purple-500 group-hover:text-white text-purple-400 font-extrabold text-xs transition-all flex items-center justify-center gap-2 border border-purple-500/20">
+                      Enter Partner Portal <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold text-accent flex items-center gap-1 mt-3 group-hover:translate-x-1 transition-transform">
-                    Claim Investor Path <ArrowRight className="w-3.5 h-3.5" />
-                  </span>
                 </motion.button>
 
-                {/* Employee card */}
+                {/* 💻 Employee / Builder Card */}
                 <motion.button
-                  whileHover={{ scale: 1.02, border: "1px solid rgba(59, 130, 246, 0.3)" }}
+                  whileHover={{ scale: 1.02, y: -4 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleRoleSelect('employee')}
-                  className="p-5 rounded-2xl border border-border bg-background/70 hover:bg-muted flex flex-col justify-between h-64 text-left transition-all group cursor-pointer shadow-sm"
+                  className="relative overflow-hidden p-6 rounded-3xl border border-blue-500/30 bg-gradient-to-b from-blue-500/10 via-card/80 to-card hover:border-blue-500 flex flex-col justify-between h-full min-h-[300px] text-left transition-all group cursor-pointer shadow-lg hover:shadow-blue-500/10"
                 >
-                  <div className="space-y-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 group-hover:scale-105 transition-transform">
-                      <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-2xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
+                        <Users className="w-6 h-6 text-blue-400" />
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">Team Builder</span>
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Employee / Builder</h3>
-                      <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                        Access internal system task lists, manage delivery schedules, and reply to escalated client support tickets.
+                      <h3 className="text-lg font-extrabold text-foreground group-hover:text-blue-400 transition-colors">
+                        Employee / Team
+                      </h3>
+                      <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                        Internal team hub for project task lists, development pipelines, GitHub sync, and support ticketing.
                       </p>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1 mt-3 group-hover:translate-x-1 transition-transform">
-                    Claim Builder Path <ArrowRight className="w-3.5 h-3.5" />
-                  </span>
+
+                  <div className="pt-4 border-t border-border/50 mt-4 space-y-3">
+                    <div className="flex flex-wrap gap-1">
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">Task Board</span>
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">GitHub</span>
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">Tickets</span>
+                    </div>
+                    <div className="w-full py-2.5 rounded-xl bg-blue-500/10 group-hover:bg-blue-500 group-hover:text-white text-blue-400 font-extrabold text-xs transition-all flex items-center justify-center gap-2 border border-blue-500/20">
+                      Enter Employee Hub <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </motion.button>
+
+                {/* 📈 Investor Card */}
+                <motion.button
+                  whileHover={{ scale: 1.02, y: -4 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleRoleSelect('investor')}
+                  className="relative overflow-hidden p-6 rounded-3xl border border-emerald-500/30 bg-gradient-to-b from-emerald-500/10 via-card/80 to-card hover:border-emerald-500 flex flex-col justify-between h-full min-h-[300px] text-left transition-all group cursor-pointer shadow-lg hover:shadow-emerald-500/10"
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
+                        <TrendingUp className="w-6 h-6 text-emerald-400" />
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Investor Desk</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-extrabold text-foreground group-hover:text-emerald-400 transition-colors">
+                        Venture / Investor
+                      </h3>
+                      <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                        Access strategic pitch decks, growth metrics, cap table summaries, and founder communication history.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-border/50 mt-4 space-y-3">
+                    <div className="flex flex-wrap gap-1">
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">Pitch Decks</span>
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">Metrics</span>
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">Cap Tables</span>
+                    </div>
+                    <div className="w-full py-2.5 rounded-xl bg-emerald-500/10 group-hover:bg-emerald-500 group-hover:text-white text-emerald-400 font-extrabold text-xs transition-all flex items-center justify-center gap-2 border border-emerald-500/20">
+                      Enter Investor Desk <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
                 </motion.button>
               </div>
 
               {/* Secondary actions */}
-              <div className="pt-6 border-t border-border">
+              <div className="pt-6 border-t border-border flex justify-center">
                 <button
                   onClick={handleLogout}
-                  className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-red-400 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-muted/50 hover:bg-muted border border-border text-xs font-bold text-muted-foreground hover:text-red-400 transition-all cursor-pointer shadow-sm"
                 >
-                  <LogOut className="w-4 h-4" /> Cancel Onboarding & Logout
+                  <LogOut className="w-4 h-4" /> Cancel Onboarding & Sign Out
                 </button>
               </div>
             </motion.div>
