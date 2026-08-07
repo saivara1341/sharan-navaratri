@@ -450,7 +450,7 @@ ${contextText || "No matching guidelines found."}
                     className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-2 group cursor-pointer text-left"
                 >
                     <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <span className="text-sm font-semibold">Back to Gateway</span>
+                    <span className="text-sm font-semibold">Back</span>
                 </button>
 
                 {/* Portal Header */}

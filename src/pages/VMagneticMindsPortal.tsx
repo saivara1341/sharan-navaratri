@@ -161,6 +161,20 @@ export default function VMagneticMindsPortal() {
   const [editAgencyLi, setEditAgencyLi] = useState(agencyLi);
   const [editAgencyYt, setEditAgencyYt] = useState(agencyYt);
 
+  const [customSocials, setCustomSocials] = useState<{ id: string; name: string; url: string }[]>([]);
+
+  const addCustomSocialChannel = () => {
+    setCustomSocials(prev => [...prev, { id: 'soc-' + Date.now(), name: '', url: '' }]);
+  };
+
+  const removeCustomSocialChannel = (id: string) => {
+    setCustomSocials(prev => prev.filter(s => s.id !== id));
+  };
+
+  const updateCustomSocialChannel = (id: string, field: 'name' | 'url', val: string) => {
+    setCustomSocials(prev => prev.map(s => s.id === id ? { ...s, [field]: val } : s));
+  };
+
   const handleLogoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -542,7 +556,7 @@ export default function VMagneticMindsPortal() {
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors group cursor-pointer text-left mb-2"
         >
           <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          <span className="text-sm font-semibold">Back to Gateway</span>
+          <span className="text-sm font-semibold">Back</span>
         </button>
 
         {/* ── Header Banner ──────────────────────────────────────────────── */}
@@ -564,7 +578,7 @@ export default function VMagneticMindsPortal() {
                   <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full border border-primary/20">Agency Partner</span>
                 </div>
                 <h1 className="text-2xl md:text-3xl font-extrabold text-foreground">{agencyName} Portal</h1>
-                <p className="text-xs text-muted-foreground mt-0.5">{userEmail} · 12-Month SLA Active</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{userEmail}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -1411,30 +1425,66 @@ export default function VMagneticMindsPortal() {
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className={lbl}>Lead Representative Name</label>
-                      <input placeholder="e.g. Sai Vara Prasad" className={inp} value={editAgencyContact} onChange={e => setEditAgencyContact(e.target.value)} />
+                      <label className={lbl}>Lead Representative Name <span className="text-destructive">*</span></label>
+                      <input required placeholder="e.g. Rahul Sharma" className={inp} value={editAgencyContact} onChange={e => setEditAgencyContact(e.target.value)} />
                     </div>
                     <div>
-                      <label className={lbl}>Mobile / WhatsApp Number</label>
-                      <input placeholder="e.g. 6303602743" className={inp} value={editAgencyPhone} onChange={e => setEditAgencyPhone(e.target.value)} />
+                      <label className={lbl}>Mobile / WhatsApp Number <span className="text-destructive">*</span></label>
+                      <input required placeholder="+91 98765 43210" className={inp} value={editAgencyPhone} onChange={e => setEditAgencyPhone(e.target.value)} />
                     </div>
                     <div className="sm:col-span-2">
                       <label className={lbl}>Official Website URL</label>
-                      <input placeholder="https://siddhidynamics.in" className={inp} value={editAgencyWebsite} onChange={e => setEditAgencyWebsite(e.target.value)} />
+                      <input placeholder="https://example.com" className={inp} value={editAgencyWebsite} onChange={e => setEditAgencyWebsite(e.target.value)} />
                     </div>
                   </div>
                 </div>
 
                 {/* 3. Social Media Links */}
                 <div className="space-y-4 pt-2 border-t border-border">
-                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-primary flex items-center gap-1.5">
-                    <Globe className="w-3.5 h-3.5" /> Agency Social Media Channels
-                  </h4>
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-extrabold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                      <Globe className="w-3.5 h-3.5" /> Agency Social Media Channels
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={addCustomSocialChannel}
+                      className="px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Add Channel
+                    </button>
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="flex items-center gap-2"><Instagram className="w-4 h-4 text-pink-500 shrink-0" /><input placeholder="Instagram Profile Link" className={inp} value={editAgencyIg} onChange={e => setEditAgencyIg(e.target.value)} /></div>
                     <div className="flex items-center gap-2"><Linkedin className="w-4 h-4 text-blue-600 shrink-0" /><input placeholder="LinkedIn Page Link" className={inp} value={editAgencyLi} onChange={e => setEditAgencyLi(e.target.value)} /></div>
                     <div className="flex items-center gap-2"><Facebook className="w-4 h-4 text-blue-500 shrink-0" /><input placeholder="Facebook Page Link" className={inp} value={editAgencyFb} onChange={e => setEditAgencyFb(e.target.value)} /></div>
                     <div className="flex items-center gap-2"><Youtube className="w-4 h-4 text-red-500 shrink-0" /><input placeholder="YouTube Channel Link" className={inp} value={editAgencyYt} onChange={e => setEditAgencyYt(e.target.value)} /></div>
+
+                    {customSocials.map(soc => (
+                      <div key={soc.id} className="flex items-center gap-2 sm:col-span-2 p-2.5 rounded-xl bg-muted/40 border border-border">
+                        <input
+                          type="text"
+                          placeholder="Platform Name (e.g. X / TikTok / Threads)"
+                          className="w-2/5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                          value={soc.name}
+                          onChange={e => updateCustomSocialChannel(soc.id, 'name', e.target.value)}
+                        />
+                        <input
+                          type="url"
+                          placeholder="https://platform.com/yourhandle"
+                          className="flex-1 px-3 py-2 rounded-lg border border-border bg-card text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                          value={soc.url}
+                          onChange={e => updateCustomSocialChannel(soc.id, 'url', e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeCustomSocialChannel(soc.id)}
+                          className="p-2 text-muted-foreground hover:text-destructive transition-colors rounded-lg hover:bg-muted shrink-0"
+                          title="Remove Channel"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </div>
 

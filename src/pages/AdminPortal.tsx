@@ -652,7 +652,7 @@ const AdminPortal = () => {
                     className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-6 group cursor-pointer text-left"
                 >
                     <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <span className="text-sm font-semibold">Back to Gateway</span>
+                    <span className="text-sm font-semibold">Back</span>
                 </button>
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
