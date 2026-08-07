@@ -1907,8 +1907,22 @@ export default function VMagneticMindsPortal() {
                     <h3 className="text-xs font-extrabold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
                       <CheckCircle className="w-4 h-4" /> Business Credibility
                     </h3>
-                    <div><label className={lbl}>Customer Testimonials / Reviews (if available)</label>
-                      <textarea rows={3} placeholder="Paste any existing testimonials or Google review links…" className={inp} value={clientForm.testimonials} onChange={cf('testimonials')} />
+                    <div className="bg-muted rounded-xl border border-dashed border-border p-4 space-y-3">
+                      <div>
+                        <label className={lbl}>Customer Testimonials & Reviews File Upload (Doc, Image, Video — Multiple Files Allowed)</label>
+                        <p className="text-[11px] text-muted-foreground mb-2">Upload client review screenshots, video testimonials, PDF recommendation letters, or document files.</p>
+                        <input
+                          type="file"
+                          multiple
+                          accept="image/*,video/*,.pdf,.doc,.docx,.txt"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files.length > 0) {
+                              toast.success(`Selected ${e.target.files.length} testimonial / review file(s) for upload`);
+                            }
+                          }}
+                          className="w-full text-xs text-muted-foreground file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary file:text-primary-foreground hover:file:opacity-90 cursor-pointer"
+                        />
+                      </div>
                     </div>
                   </section>
 
