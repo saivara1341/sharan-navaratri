@@ -77,14 +77,6 @@ export default function PortalGateway() {
       }
       
       let roleVal = activeSession.user.user_metadata?.role || null;
-      if (!roleVal) {
-        roleVal = 'client';
-        try {
-          await supabase.auth.updateUser({ data: { role: 'client' } });
-        } catch (e) {
-          // Ignore background update error
-        }
-      }
       setUserRole(roleVal);
 
       // Auto-redirect OAuth logins (URLs with #access_token= or ?code=) straight to role workspace

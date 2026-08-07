@@ -50,13 +50,8 @@ const Auth = () => {
       return;
     }
 
-    // If user has no role set yet (e.g. first-time Google login), default to 'client' role and redirect
-    try {
-      await supabase.auth.updateUser({ data: { role: 'client' } });
-    } catch (e) {
-      // Ignore background metadata update error
-    }
-    navigate("/portal/client");
+    // If user has no role set yet (e.g. first-time Google login), redirect to Portal Gateway to choose role
+    navigate("/portal");
   };
 
   useEffect(() => {
