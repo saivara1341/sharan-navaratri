@@ -11,3 +11,5 @@ cwd = "."
 
 [env.production]
 VITE_SUPABASE_URL = "https://xoqpxckowwubeqdtazks.supabase.co"
+VITE_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Db5k1uOh50NIY-GPvMm0HQ_OMnOz8D7"
+VITE_SUPABASE_ANON_KEY = "sb_publishable_Db5k1uOh50NIY-GPvMm0HQ_OMnOz8D7"

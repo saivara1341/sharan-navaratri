@@ -13,9 +13,9 @@ To ensure your application's connection to Supabase works correctly when deploye
 
 | Secret Name | Description | Value |
 | :--- | :--- | :--- |
-| `VITE_SUPABASE_URL` | Your Supabase Project URL | `https://xgrdubcpomwzbuaqtjad.supabase.co` |
-| `VITE_SUPABASE_ANON_KEY` | Your Supabase Anon Key | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...O52EhG_2iOjl4Ba2yknPcnqswAk8GIVrAQceEe0ImzI` |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Your Supabase Publishable Key | `sb_publishable_uNY2DQElUWlsaO8n-CkYUA_NWJ5PMmN` |
+| `VITE_SUPABASE_URL` | Your Supabase Project URL | `https://xoqpxckowwubeqdtazks.supabase.co` |
+| `VITE_SUPABASE_ANON_KEY` | Your Supabase Anon Key | `sb_publishable_Db5k1uOh50NIY-GPvMm0HQ_OMnOz8D7` |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Your Supabase Publishable Key | `sb_publishable_Db5k1uOh50NIY-GPvMm0HQ_OMnOz8D7` |
 
 ## Why is this necessary?
 
