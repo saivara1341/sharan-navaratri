@@ -829,20 +829,6 @@ export const SubmitSection = () => {
               We'll map your process and show you exactly what AI can automate — in a single conversation.
               Responses within <strong className="text-foreground">24 hours</strong>.
             </p>
-
-            {/* Trust strip above form */}
-            <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
-              {[
-                { icon: '✅', text: 'Free 30-min consultation' },
-                { icon: '🔒', text: 'Your information stays private' },
-                { icon: '⚡', text: 'Reply within 24 hours' },
-              ].map(({ icon, text }) => (
-                <span key={text} className="flex items-center gap-1.5">
-                  <span>{icon}</span>
-                  <span>{text}</span>
-                </span>
-              ))}
-            </div>
           </div>
 
           <motion.div
@@ -872,6 +858,20 @@ export const SubmitSection = () => {
               {renderFormFields()}
             </form>
           </motion.div>
+
+          {/* Trust strip placed after form */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
+            {[
+              { icon: '✅', text: 'Free 30-min consultation' },
+              { icon: '🔒', text: 'Your information stays private' },
+              { icon: '⚡', text: 'Reply within 24 hours' },
+            ].map(({ icon, text }) => (
+              <span key={text} className="flex items-center gap-1.5 font-medium">
+                <span>{icon}</span>
+                <span>{text}</span>
+              </span>
+            ))}
+          </div>
 
           {/* Process explanation */}
           <motion.div
