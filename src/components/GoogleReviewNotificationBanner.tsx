@@ -38,7 +38,7 @@ export function GoogleReviewNotificationBanner() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 30, scale: 0.9 }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          className="fixed bottom-5 right-5 z-50 max-w-sm w-[calc(100vw-2.5rem)] rounded-2xl border border-amber-400/40 bg-zinc-950/95 p-4 shadow-[0_10px_35px_rgba(245,158,11,0.25)] backdrop-blur-xl text-white font-sans"
+          className="fixed bottom-24 right-4 md:right-8 md:bottom-28 z-[110] max-w-sm w-[calc(100vw-2.5rem)] rounded-2xl border border-amber-400/40 bg-zinc-950/95 p-4 shadow-[0_10px_35px_rgba(245,158,11,0.25)] backdrop-blur-xl text-white font-sans"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-2">
