@@ -1,9 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseService } from "@/services/supabaseService";
-import { KnowledgeHubManager } from "@/components/admin/KnowledgeHubManager";
-import { SeoGeoCommandCenter } from "@/components/admin/SeoGeoCommandCenter";
-
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import {
@@ -62,7 +59,7 @@ const AdminPortal = () => {
     const [chatInput, setChatInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
     const [sendingMsg, setSendingMsg] = useState(false);
-    const [viewMode, setViewMode] = useState<'submissions' | 'knowledge' | 'seo-geo' | 'users' | 'portals'>('submissions');
+    const [viewMode, setViewMode] = useState<'submissions' | 'users' | 'portals'>('submissions');
 
     // ── All Portal Users ─────────────────────────────────────────────────────
     const [allUsers, setAllUsers] = useState<any[]>([]);
@@ -89,7 +86,51 @@ const AdminPortal = () => {
             const { data: authData } = await (supabase as any).auth.admin.listUsers().catch(() => ({ data: null }));
             const authUsers: any[] = authData?.users || [];
 
+            // Default system accounts (including V Magnetic Minds Agency Partner)
+            const defaultAccounts = [
+                {
+                    id: 'admin-01',
+                    name: 'Sai Vara Prasad (Admin)',
+                    email: 'ssaivaraprasad51@gmail.com',
+                    organization: 'Siddhi Dynamics LLP',
+                    designation: 'God-Mode Admin',
+                    inquiry_type: 'System Admin',
+                    status: 'Active',
+                    role: 'admin',
+                    lastLogin: new Date().toISOString(),
+                    confirmed: true,
+                    created_at: '2026-08-01T00:00:00.000Z'
+                },
+                {
+                    id: 'partner-vmm',
+                    name: 'V Magnetic Minds Agency',
+                    email: '23eg510a07@anurag.edu.in',
+                    organization: 'V Magnetic Minds',
+                    designation: 'Executive Agency Partner',
+                    inquiry_type: 'Agency Partner SLA',
+                    status: 'Active SLA',
+                    role: 'partner',
+                    lastLogin: new Date().toISOString(),
+                    confirmed: true,
+                    created_at: '2026-08-01T00:00:00.000Z'
+                },
+                {
+                    id: 'client-ld',
+                    name: 'Lie Detection',
+                    email: 'liedetection44@gmail.com',
+                    organization: 'Direct Client Account',
+                    designation: 'Client User',
+                    inquiry_type: 'Auth Sign-In',
+                    status: 'Active',
+                    role: 'client',
+                    lastLogin: new Date().toISOString(),
+                    confirmed: true,
+                    created_at: '2026-08-01T00:00:00.000Z'
+                }
+            ];
+
             const userMap = new Map<string, any>();
+            defaultAccounts.forEach(u => userMap.set(u.email.toLowerCase(), u));
 
             // 1. Add Supabase Auth Users
             authUsers.forEach((u: any) => {
@@ -520,26 +561,6 @@ const AdminPortal = () => {
                             }`}
                         >
                             Submissions
-                        </button>
-                        <button
-                            onClick={() => setViewMode('knowledge')}
-                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
-                                viewMode === 'knowledge'
-                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
-                            }`}
-                        >
-                            Knowledge Hub
-                        </button>
-                        <button
-                            onClick={() => setViewMode('seo-geo')}
-                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
-                                viewMode === 'seo-geo'
-                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
-                            }`}
-                        >
-                            <span>⚡</span> SEO + GEO Suite
                         </button>
                         <button
                             onClick={() => { setViewMode('users'); fetchAllUsers(); }}
