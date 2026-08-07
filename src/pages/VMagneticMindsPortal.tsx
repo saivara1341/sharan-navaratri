@@ -177,6 +177,15 @@ export default function VMagneticMindsPortal() {
   // ── Add Client Form ───────────────────────────────────────────────────────
   const [showClientForm, setShowClientForm] = useState(false);
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
+  const [selectedServices, setSelectedServices] = useState<string[]>(["SEO, GEO & AEO Programme"]);
+
+  const togglePartnerService = (srv: string) => {
+    setSelectedServices(prev =>
+      prev.includes(srv)
+        ? (prev.length > 1 ? prev.filter(x => x !== srv) : prev)
+        : [...prev, srv]
+    );
+  };
   const [clientForm, setClientForm] = useState({
     businessName: "", brandName: "", category: "", description: "",
     yearEst: "", website: "", services: "", hours: "",
@@ -232,6 +241,19 @@ export default function VMagneticMindsPortal() {
       };
       setClients(prev => [...prev, newClient]);
       setSelectedBrandId(newClient.id);
+
+      // Automatically insert request into contact_submissions so it shows up in Admin Portal Requests
+      supabase.from("contact_submissions").insert({
+        name: clientForm.contactName || clientForm.businessName,
+        email: (clientForm.email || "23eg510a07@anurag.edu.in").toLowerCase(),
+        organization: `${clientForm.businessName} (V Magnetic Minds Client)`,
+        designation: "Agency Onboarding Request",
+        inquiry_type: selectedServices.join(", "),
+        message: `[Services Availed: ${selectedServices.join(", ")}]\n[Business Name: ${clientForm.businessName}]\n[Website: ${clientForm.website || 'N/A'}]\n[Category: ${clientForm.category || 'N/A'}]\n${clientForm.description || ''}`,
+        status: "New Request",
+        progress: 0,
+      }).then(() => {});
+
       setSavingClient(false);
       setShowClientForm(false);
       setClientForm({
@@ -1170,23 +1192,41 @@ export default function VMagneticMindsPortal() {
               <div className="overflow-y-auto flex-1 px-6 py-6" ref={formRef}>
                 <form id="client-form" onSubmit={handleSaveClient} className="space-y-8">
 
-                  {/* ▸ Service Being Availed */}
+                  {/* ▸ Services Being Availed */}
                   <section>
-                    <h3 className="text-xs font-extrabold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" /> Service Being Availed
+                    <h3 className="text-xs font-extrabold text-primary uppercase tracking-widest mb-3 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" /> Select Services Availed (Select Multiple) *
                     </h3>
-                    <div className="space-y-2">
-                      <label className={lbl}>Select Service / Solution Required *</label>
-                      <select required className={inp} value={clientForm.serviceAvailed || "SEO, GEO & AEO Programme"} onChange={cf('serviceAvailed')}>
-                        <option value="SEO, GEO & AEO Programme">🚀 SEO, GEO (AI Search) & AEO Executive Programme</option>
-                        <option value="Website Development">🌐 Website / Portal Development</option>
-                        <option value="Business Automation">⚡ Business Automation & Agentic Workflows</option>
-                        <option value="SaaS Platform Development">📱 SaaS / App Platform Development</option>
-                        <option value="ERP System">🏢 ERP & Enterprise Resource Planning System</option>
-                        <option value="Google Business Profile">📍 Google Business Profile & Map Optimization</option>
-                        <option value="Custom Scope">🤝 Custom Solution (Scope & Price assigned by Admin)</option>
-                      </select>
-                      <p className="text-[11px] text-muted-foreground">Prices for services will be evaluated & assigned from the Admin Portal after review.</p>
+                    <p className="text-xs text-muted-foreground mb-4">Tap to select all services requested for this client account. Pricing will be evaluated & assigned from the Admin Portal.</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {[
+                        { id: "SEO, GEO & AEO Programme", label: "🚀 SEO, GEO & AEO Executive Programme" },
+                        { id: "Website Development", label: "🌐 Website / Portal Development" },
+                        { id: "Business Automation", label: "⚡ Business Automation & Workflows" },
+                        { id: "SaaS Platform Development", label: "📱 SaaS / App Platform Development" },
+                        { id: "ERP System", label: "🏢 ERP System" },
+                        { id: "Google Business Profile", label: "📍 Google Business Profile & Maps" },
+                        { id: "Custom Scope", label: "🤝 Custom Solution / Custom Quote" },
+                      ].map((srv) => {
+                        const isSel = selectedServices.includes(srv.id);
+                        return (
+                          <button
+                            key={srv.id}
+                            type="button"
+                            onClick={() => togglePartnerService(srv.id)}
+                            className={`p-3 rounded-xl border text-xs font-bold text-left transition-all cursor-pointer flex items-center gap-2 ${
+                              isSel
+                                ? "bg-primary/10 border-primary text-foreground ring-2 ring-primary/40 shadow-sm"
+                                : "bg-card border-border hover:border-primary/40 text-muted-foreground hover:text-foreground"
+                            }`}
+                          >
+                            <span className={`w-4 h-4 rounded-md flex items-center justify-center text-[10px] shrink-0 ${isSel ? 'bg-primary text-primary-foreground font-black' : 'border border-border bg-muted'}`}>
+                              {isSel ? '✓' : ''}
+                            </span>
+                            <span className="truncate">{srv.label}</span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </section>
 
@@ -1261,15 +1301,15 @@ export default function VMagneticMindsPortal() {
                       <Image className="w-4 h-4" /> Branding Assets
                     </h3>
                     <div className="bg-muted rounded-xl border border-dashed border-border p-4 space-y-3">
-                      <p className="text-xs text-muted-foreground text-center">📎 High-Resolution Logo (PNG/SVG), Cover Image/Banner — share via WhatsApp or email to <span className="font-semibold text-foreground">saivaraprasad@siddhidynamics.in</span></p>
                       <div>
-                        <label className={lbl}>Upload Logo / Banner (Optional)</label>
+                        <label className={lbl}>Upload Logos, Banners & Brand Assets (Select Multiple)</label>
                         <input
                           type="file"
-                          accept="image/*"
+                          multiple
+                          accept="image/*,.svg,.png,.jpg,.jpeg"
                           onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) {
-                              toast.success(`Selected logo file: ${e.target.files[0].name}`);
+                            if (e.target.files && e.target.files.length > 0) {
+                              toast.success(`Selected ${e.target.files.length} branding file(s) for upload`);
                             }
                           }}
                           className="w-full text-xs text-muted-foreground file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary file:text-primary-foreground hover:file:opacity-90 cursor-pointer"
@@ -1284,16 +1324,15 @@ export default function VMagneticMindsPortal() {
                       <Star className="w-4 h-4" /> Photos & Media
                     </h3>
                     <div className="bg-muted rounded-xl border border-dashed border-border p-4 space-y-3">
-                      <p className="text-xs text-muted-foreground text-center">📸 Please share via WhatsApp or email: <strong>Exterior, Interior, Team, Product/Service, Owner/Founder photos</strong> and any <strong>short videos</strong>.<br />Send to: <span className="text-foreground font-semibold">saivaraprasad@siddhidynamics.in</span> or WhatsApp <span className="text-foreground font-semibold">+91 63036 02743</span></p>
                       <div>
-                        <label className={lbl}>Upload Photos / Media (Optional)</label>
+                        <label className={lbl}>Upload Photos & Short Videos (Select Multiple)</label>
                         <input
                           type="file"
                           multiple
                           accept="image/*,video/*"
                           onChange={(e) => {
                             if (e.target.files && e.target.files.length > 0) {
-                              toast.success(`Selected ${e.target.files.length} file(s) for upload`);
+                              toast.success(`Selected ${e.target.files.length} photo/video file(s) for upload`);
                             }
                           }}
                           className="w-full text-xs text-muted-foreground file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary file:text-primary-foreground hover:file:opacity-90 cursor-pointer"

@@ -1628,37 +1628,53 @@ const AdminPortal = () => {
                                         </div>
                                         <div className="space-y-1">
                                             <label className="text-[10px] uppercase font-bold text-muted-foreground">Contractual Agreement & SLA Summary</label>
-                                            <input
-                                                type="text"
-                                                placeholder="e.g., SLA signed v1.1 - 99.9% availability, 12 months maintenance support"
-                                                value={editAgreement}
-                                                onChange={e => setEditAgreement(e.target.value)}
-                                                className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                                            />
-                                        </div>
+                                             <label className="text-[10px] uppercase font-bold text-primary">💰 Assigned Amount / Price Quote to Charge (₹ / $)</label>
+                                             <input
+                                                 type="text"
+                                                 placeholder="e.g. ₹25,000 / $500 or ₹15,000 / mo"
+                                                 value={editAgreement}
+                                                 onChange={e => setEditAgreement(e.target.value)}
+                                                 className="w-full bg-card border border-primary/40 text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary font-bold"
+                                             />
+                                             <p className="text-[10px] text-muted-foreground">This amount will be assigned & billed to the client once accepted.</p>
+                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Progress & Status */}
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-border pb-2">Status & Milestones</h4>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] uppercase font-bold text-muted-foreground">Current Stage</label>
-                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                            {['Analyzing', 'Verifying', 'In Progress', 'Validated', 'Completed', 'Locked (Tenure Expired)'].map((s) => (
-                                                <button
-                                                    key={s}
-                                                    onClick={() => setEditStatus(s)}
-                                                    className={`px-3 py-2 rounded-xl text-xs font-medium transition-all ${editStatus === s
-                                                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                                                        : "bg-muted text-muted-foreground hover:bg-muted/80 border border-border"
-                                                        }`}
-                                                >
-                                                    {s}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
+                                     <h4 className="text-xs font-bold uppercase tracking-widest text-primary border-b border-border pb-2">Status & Project Milestone</h4>
+                                     <div className="space-y-2">
+                                         <label className="text-[10px] uppercase font-bold text-muted-foreground">Current Stage / Status</label>
+                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                             {[
+                                                 'New Request',
+                                                 'Quote Sent',
+                                                 'Quote Accepted (Project Started)',
+                                                 'In Progress',
+                                                 'Completed',
+                                                 'Locked (Tenure Expired)'
+                                             ].map((s) => (
+                                                 <button
+                                                     key={s}
+                                                     type="button"
+                                                     onClick={() => {
+                                                         setEditStatus(s);
+                                                         if (s === 'Quote Accepted (Project Started)' && editProgress === 0) {
+                                                             setEditProgress(25);
+                                                             toast.success("Quote Accepted! Project marked as Started & Active (25% Initial Phase).");
+                                                         }
+                                                     }}
+                                                     className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${editStatus === s
+                                                         ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 ring-2 ring-primary"
+                                                         : "bg-muted text-muted-foreground hover:bg-muted/80 border border-border"
+                                                         }`}
+                                                 >
+                                                     {s}
+                                                 </button>
+                                             ))}
+                                         </div>
+                                     </div>
 
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center">

@@ -21,21 +21,20 @@ import {
 
 import { emailService } from "@/services/emailService";
 
-const INQUIRY_TYPES = [
-    { value: "requirement",  label: "Project Requirement",      desc: "Share your requirement — Custom Quote", price: "Flexible Budget" },
-    { value: "seo-geo",      label: "SEO / GEO / AEO Services", desc: "Search & AI score analysis",          price: "Starts @ ₹15,000/mo" },
-    { value: "website",      label: "Website Development",      desc: "Custom Web / Landing Page",           price: "Starts @ ₹25,000" },
-    { value: "automation",   label: "Business Automation",      desc: "Workflow / RPA / AI Automation",      price: "Starts @ ₹35,000" },
-    { value: "saas",         label: "SaaS / App Platform",      desc: "Full-stack MVP Development",          price: "Custom Scope" },
-    { value: "erp",          label: "ERP / Management System",  desc: "Enterprise Resource Planning",        price: "Custom Scope" },
-    { value: "gbp",          label: "Google Business Profile",  desc: "Local GMB & Map Optimisation",        price: "Starts @ ₹8,000/mo" },
-    { value: "call-request", label: "📞 Request 1-on-1 Call",   desc: "Discuss requirement & budget on call",price: "FREE 15-Min Call" },
+const SERVICE_OPTIONS = [
+    { value: "seo-geo",      label: "🚀 SEO, GEO & AEO Programme", desc: "Search & AI score optimization",       price: "Price Assigned by Admin" },
+    { value: "website",      label: "🌐 Website / Portal Development", desc: "Custom Web App / Landing Page",     price: "Price Assigned by Admin" },
+    { value: "automation",   label: "⚡ Business Automation",      desc: "Workflow / RPA / AI Agent Automation",price: "Price Assigned by Admin" },
+    { value: "saas",         label: "📱 SaaS / App Platform",      desc: "Full-stack MVP Development",          price: "Price Assigned by Admin" },
+    { value: "erp",          label: "🏢 ERP System",              desc: "Enterprise Resource Planning",        price: "Price Assigned by Admin" },
+    { value: "gbp",          label: "📍 Google Business Profile",  desc: "Local GMB & Map Optimisation",        price: "Price Assigned by Admin" },
+    { value: "custom",       label: "🤝 Custom Solution",         desc: "Tailored enterprise scope & quote",   price: "Price Assigned by Admin" },
 ];
 
 export default function ProjectSubmitForm() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const defaultType = searchParams.get("type") || "requirement";
+    const defaultType = searchParams.get("type") || "website";
 
     const [step, setStep] = useState<"form" | "success">("form");
     const [submitting, setSubmitting] = useState(false);
@@ -48,9 +47,17 @@ export default function ProjectSubmitForm() {
     const [email, setEmail] = useState("");
     const [designation, setDesignation] = useState("");
     const [organization, setOrganization] = useState("");
-    const [inquiryType, setInquiryType] = useState(defaultType);
+    const [selectedServices, setSelectedServices] = useState<string[]>([defaultType]);
     const [preferredBudget, setPreferredBudget] = useState("flexible");
     const [message, setMessage] = useState("");
+
+    const toggleService = (val: string) => {
+        setSelectedServices(prev =>
+            prev.includes(val)
+                ? (prev.length > 1 ? prev.filter(s => s !== val) : prev)
+                : [...prev, val]
+        );
+    };
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
@@ -81,22 +88,28 @@ export default function ProjectSubmitForm() {
             toast.error("Please fill in all required fields.");
             return;
         }
-        if (message.trim().length < 20) {
-            toast.error("Please describe your requirement in at least 20 characters.");
+        if (message.trim().length < 15) {
+            toast.error("Please describe your requirement in at least 15 characters.");
             return;
         }
 
         setSubmitting(true);
         try {
-            const formattedMessage = `[Budget Preference: ${preferredBudget.toUpperCase()}] ${message.trim()}`;
+            const servicesString = selectedServices.map(s => {
+                const item = SERVICE_OPTIONS.find(o => o.value === s);
+                return item ? item.label : s;
+            }).join(", ");
+
+            const formattedMessage = `[Selected Services: ${servicesString}] [Budget Preference: ${preferredBudget.toUpperCase()}]\n\n${message.trim()}`;
+
             const { error } = await supabase.from("contact_submissions").insert({
                 name: name.trim(),
                 email: email.trim().toLowerCase(),
                 designation: designation.trim() || null,
                 organization: organization.trim() || null,
-                inquiry_type: inquiryType,
+                inquiry_type: servicesString,
                 message: formattedMessage,
-                status: "New",
+                status: "New Request",
                 progress: 0,
             });
 
@@ -106,12 +119,12 @@ export default function ProjectSubmitForm() {
             emailService.projectStart(
                 email.trim().toLowerCase(),
                 name.trim(),
-                `${inquiryType.toUpperCase()} Requirement`,
-                "Within 24 Hours (Review & Scope Call)"
+                servicesString,
+                "Pending Review (Price Quote Assigned from Admin Portal)"
             );
 
             setStep("success");
-            toast.success("Requirement submitted! Siddhi Dynamics team will reach out within 24 hours.");
+            toast.success("Project requirement submitted successfully!");
         } catch (err: any) {
             console.error("Submit error:", err);
             toast.error(err.message || "Submission failed. Please try again.");
@@ -199,33 +212,42 @@ export default function ProjectSubmitForm() {
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Inquiry Type Selection */}
+                        {/* Multiple Service Selection */}
                         <div>
-                            <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">
+                            <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
                                 <Briefcase className="inline w-3.5 h-3.5 mr-1" />
-                                What are you looking for? <span className="text-destructive">*</span>
+                                Select Services Required (Select Multiple) <span className="text-destructive">*</span>
                             </label>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                {INQUIRY_TYPES.map((type) => (
-                                    <button
-                                        key={type.value}
-                                        type="button"
-                                        onClick={() => setInquiryType(type.value)}
-                                        className={`text-left p-3.5 rounded-xl border transition-all flex flex-col justify-between ${
-                                            inquiryType === type.value
-                                                ? "bg-primary/10 border-primary text-foreground ring-1 ring-primary/30"
-                                                : "bg-card border-border hover:border-primary/40 text-muted-foreground hover:text-foreground"
-                                        }`}
-                                    >
-                                        <div>
-                                            <div className="flex items-center justify-between gap-1">
-                                                <span className="text-sm font-bold">{type.label}</span>
-                                                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">{type.price}</span>
+                            <p className="text-xs text-muted-foreground mb-3">You can tap to select one or multiple services. Prices will be evaluated & assigned from the Admin Portal.</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                {SERVICE_OPTIONS.map((type) => {
+                                    const isSelected = selectedServices.includes(type.value);
+                                    return (
+                                        <button
+                                            key={type.value}
+                                            type="button"
+                                            onClick={() => toggleService(type.value)}
+                                            className={`text-left p-3.5 rounded-xl border transition-all flex flex-col justify-between cursor-pointer ${
+                                                isSelected
+                                                    ? "bg-primary/10 border-primary text-foreground ring-2 ring-primary/40 shadow-sm"
+                                                    : "bg-card border-border hover:border-primary/40 text-muted-foreground hover:text-foreground"
+                                            }`}
+                                        >
+                                            <div>
+                                                <div className="flex items-center justify-between gap-1 mb-1">
+                                                    <span className="text-xs font-extrabold flex items-center gap-1.5">
+                                                        <span className={`w-4 h-4 rounded-md flex items-center justify-center text-[10px] ${isSelected ? 'bg-primary text-primary-foreground font-black' : 'border border-border bg-muted'}`}>
+                                                            {isSelected ? '✓' : ''}
+                                                        </span>
+                                                        {type.label}
+                                                    </span>
+                                                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">{type.price}</span>
+                                                </div>
+                                                <div className="text-[11px] opacity-75 pl-5">{type.desc}</div>
                                             </div>
-                                            <div className="text-xs mt-1 opacity-70">{type.desc}</div>
-                                        </div>
-                                    </button>
-                                ))}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
 
