@@ -551,20 +551,12 @@ export default function VMagneticMindsPortal() {
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 md:pt-36 pb-20 space-y-8">
-        <button
-          onClick={() => navigate('/portal')}
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors group cursor-pointer text-left mb-2"
-        >
-          <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          <span className="text-sm font-semibold">Back</span>
-        </button>
-
         {/* ── Header Banner ──────────────────────────────────────────────── */}
         <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }}
           className="glass-card rounded-3xl border border-border p-6 md:p-8 relative overflow-hidden shadow-sm">
           <div className="absolute right-0 top-0 w-64 h-64 bg-primary/5 rounded-bl-full pointer-events-none" />
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative">
-            <div className="flex items-center gap-5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative">
+            <div className="flex items-center gap-4 flex-1 min-w-0">
               <div className="w-16 h-16 bg-card rounded-2xl shadow-md border border-border flex items-center justify-center shrink-0 overflow-hidden">
                 {agencyLogoUrl ? (
                   <img src={agencyLogoUrl} alt={`${agencyName} Logo`} className="w-full h-full object-contain p-1" />
@@ -572,17 +564,17 @@ export default function VMagneticMindsPortal() {
                   <Building2 className="w-8 h-8 text-primary" />
                 )}
               </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">{agencyName}</span>
-                  <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full border border-primary/20">Agency Partner</span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary truncate">{agencyName}</span>
+                  <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full border border-primary/20 shrink-0">Agency Partner</span>
                 </div>
-                <h1 className="text-2xl md:text-3xl font-extrabold text-foreground">{agencyName} Portal</h1>
-                <p className="text-xs text-muted-foreground mt-0.5">{userEmail}</p>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground truncate">{agencyName} Portal</h1>
+                <p className="text-xs text-muted-foreground mt-0.5 truncate">{userEmail}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="text-right hidden sm:block">
+            <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
+              <div className="text-right hidden md:block">
                 <div className="text-xs text-muted-foreground">
                   {selectedBrand ? selectedBrand.businessName : "Partner Agency Portfolio"}
                 </div>
@@ -593,7 +585,7 @@ export default function VMagneticMindsPortal() {
               <button
                 type="button"
                 onClick={() => { setEditAgencyName(agencyName); setEditAgencyLogo(agencyLogoUrl); setShowBrandingModal(true); }}
-                className="px-4 py-2.5 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs border border-border transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                className="px-4 py-2.5 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs border border-border transition-all flex items-center gap-1.5 cursor-pointer shadow-sm shrink-0"
               >
                 <Zap className="w-4 h-4 text-primary" /> Edit Agency Profile
               </button>
