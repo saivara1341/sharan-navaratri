@@ -42,6 +42,8 @@ interface ClientBrand {
   aeoScore: number;
   status: string;
   progress: number;
+  tenureMonths?: number;        // Admin-set contract duration in months
+  tenureStartDate?: string;     // Admin-set start date (YYYY-MM-DD)
   monthlyImpressions?: string;
   monthlyClicks?: string;
   ctr?: string;
@@ -57,14 +59,14 @@ const BUSINESS_GOALS = [
   "Better Google Maps Visibility", "Better AI Search Visibility"
 ];
 
-const TABS: { id: Tab; label: string; icon: React.ReactNode; alwaysVisible?: boolean }[] = [
-  { id: 'overview',   label: '12-Month Executive SLA',       icon: <Calendar className="w-5 h-5" /> },
-  { id: 'clients',    label: 'Client Portfolio',              icon: <Users className="w-5 h-5" /> },
-  { id: 'seo-geo',    label: 'SEO / GEO / AEO & GBP Hub',   icon: <Search className="w-5 h-5" /> },
-  { id: 'analytics',  label: 'GA Monthly Reports',            icon: <BarChart3 className="w-5 h-5" /> },
-  { id: 'billing',    label: 'UPI Payments & Invoices',       icon: <CreditCard className="w-5 h-5" /> },
-  { id: 'chat',       label: 'AI Support Coordinator',        icon: <Bot className="w-5 h-5" /> },
-  { id: 'occasions',  label: 'Occasion & Festive Designs',   icon: <Image className="w-5 h-5" />, alwaysVisible: true },
+const BASE_TABS: { id: Tab; baseLabel: string; icon: React.ReactNode; desc: string; alwaysVisible?: boolean }[] = [
+  { id: 'overview',   baseLabel: 'Executive SLA',              icon: <Calendar className="w-5 h-5" />,      desc: 'Contract & roadmap progress' },
+  { id: 'clients',    baseLabel: 'Client Portfolio',           icon: <Users className="w-5 h-5" />,         desc: 'Select & manage client brands' },
+  { id: 'seo-geo',    baseLabel: 'SEO / GEO / AEO & GBP Hub', icon: <Search className="w-5 h-5" />,        desc: 'Search & AI score analysis' },
+  { id: 'analytics',  baseLabel: 'GA Monthly Reports',         icon: <BarChart3 className="w-5 h-5" />,     desc: 'Traffic & conversion metrics' },
+  { id: 'billing',    baseLabel: 'UPI Payments & Invoices',    icon: <CreditCard className="w-5 h-5" />,    desc: 'Pay & track invoices' },
+  { id: 'chat',       baseLabel: 'AI Support Coordinator',     icon: <Bot className="w-5 h-5" />,           desc: 'Siddhi AI assistant' },
+  { id: 'occasions',  baseLabel: 'Occasion & Festive Designs', icon: <Image className="w-5 h-5" />,         desc: 'Upload & download wishes images', alwaysVisible: true },
 ];
 
 const INITIAL_CLIENTS: ClientBrand[] = [];
@@ -372,17 +374,19 @@ export default function VMagneticMindsPortal() {
         socialLi:     clientForm.liLink,
         socialYt:     clientForm.ytLink,
         addedAt:      new Date().toISOString().split('T')[0],
-        geoScore: 82,
-        seoScore: 78,
-        gbpScore: 84,
-        aeoScore: 76,
+        geoScore: 0,
+        seoScore: 0,
+        gbpScore: 0,
+        aeoScore: 0,
         status: "Onboarding & Audit",
-        progress: 30,
-        monthlyImpressions: "4,500",
-        monthlyClicks: "580",
-        ctr: "12.8%",
-        conversions: "45",
-        aiCitations: "12",
+        progress: 0,
+        tenureMonths: undefined,
+        tenureStartDate: undefined,
+        monthlyImpressions: undefined,
+        monthlyClicks: undefined,
+        ctr: undefined,
+        conversions: undefined,
+        aiCitations: undefined,
       };
       const clientEmailVal = clientForm.email.trim() ? clientForm.email.trim().toLowerCase() : userEmail.toLowerCase();
       
@@ -563,12 +567,14 @@ export default function VMagneticMindsPortal() {
         address: "",
         goals: [],
         addedAt: s.created_at ? s.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
-        geoScore: 82,
-        seoScore: 78,
-        gbpScore: 84,
-        aeoScore: 76,
+        geoScore: 0,
+        seoScore: 0,
+        gbpScore: 0,
+        aeoScore: 0,
         status: s.status || "New Request",
-        progress: s.progress || 0
+        progress: s.progress || 0,
+        tenureMonths: undefined,
+        tenureStartDate: undefined,
       }));
 
       const combined = [...localClients];
@@ -813,53 +819,42 @@ export default function VMagneticMindsPortal() {
           </motion.div>
         )}
 
-        {/* ── Client Portfolio Tab & Occasions Tab nav grid (always accessible) ── */}
-        {(activeTab === 'clients' || (activeTab === 'occasions' && selectedBrandId === 'all')) && (
+        {/* ── Tab nav grid — shown in Client Portfolio tab OR when a client is selected ── */}
+        {(activeTab === 'clients' || (activeTab === 'occasions' && selectedBrandId === 'all') || (activeTab !== 'clients' && selectedBrandId !== 'all')) && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {TABS.map((tab, i) => (
-              <motion.button key={tab.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex flex-col items-start gap-2 p-3.5 rounded-2xl border text-left transition-all group ${
-                  activeTab === tab.id
-                    ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20'
-                    : 'glass-card border-border hover:border-primary/40 hover:shadow-sm'
-                }`}>
-                <div className={`${activeTab === tab.id ? 'text-primary-foreground' : 'text-primary'}`}>
-                  {tab.icon}
-                </div>
-                <div>
-                  <div className={`text-xs font-extrabold leading-tight ${activeTab === tab.id ? 'text-primary-foreground' : 'text-foreground'}`}>
-                    {tab.label}
+            {BASE_TABS.map((tab, i) => {
+              // Build dynamic label: for overview, prefix with actual tenure from selected client
+              const tenureLabel = selectedBrand?.tenureMonths
+                ? `${selectedBrand.tenureMonths}-Month Executive SLA`
+                : '12-Month Executive SLA';
+              const label = tab.id === 'overview' ? tenureLabel : tab.baseLabel;
+              const isActive = activeTab === tab.id;
+              return (
+                <motion.button key={tab.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex flex-col items-start gap-2 p-3.5 rounded-2xl border text-left transition-all group ${
+                    isActive
+                      ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20'
+                      : 'glass-card border-border hover:border-primary/40 hover:shadow-sm'
+                  }`}>
+                  <div className={isActive ? 'text-primary-foreground' : 'text-primary'}>
+                    {tab.icon}
                   </div>
-                </div>
-              </motion.button>
-            ))}
-          </div>
-        )}
-
-        {/* ── Tab Grid (only when client selected) ─────────────────────── */}
-        {activeTab !== 'clients' && selectedBrandId !== 'all' && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {TABS.map((tab, i) => (
-              <motion.button key={tab.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex flex-col items-start gap-2 p-3.5 rounded-2xl border text-left transition-all group ${
-                  activeTab === tab.id
-                    ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20'
-                    : 'glass-card border-border hover:border-primary/40 hover:shadow-sm'
-                }`}>
-                <div className={`${activeTab === tab.id ? 'text-primary-foreground' : 'text-primary'}`}>
-                  {tab.icon}
-                </div>
-                <div>
-                  <div className={`text-xs font-extrabold leading-tight ${activeTab === tab.id ? 'text-primary-foreground' : 'text-foreground'}`}>
-                    {tab.label}
+                  <div>
+                    <div className={`text-xs font-extrabold leading-tight ${isActive ? 'text-primary-foreground' : 'text-foreground'}`}>
+                      {label}
+                    </div>
+                    {/* Show desc subtitles only in client-specific platform (when a client is selected) */}
+                    {selectedBrandId !== 'all' && (
+                      <div className={`text-[10px] mt-0.5 ${isActive ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                        {tab.desc}
+                      </div>
+                    )}
                   </div>
-                </div>
-              </motion.button>
-            ))}
+                </motion.button>
+              );
+            })}
           </div>
         )}
 
@@ -928,22 +923,49 @@ export default function VMagneticMindsPortal() {
           {/* ═══ OVERVIEW ══════════════════════════════════════════════════ */}
           {activeTab === 'overview' && (
             <motion.div key="overview" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[
-                  { label: "Plan Duration", value: "12 Months", sub: "Aug 2026 – Aug 2027", icon: <Calendar className="w-5 h-5 text-primary" />, accent: "border-primary/20" },
-                  { label: "Client Brands Managed", value: `${clients.length} Brands`, sub: selectedBrand ? `Filtering: ${selectedBrand.businessName}` : "Viewing All Clients", icon: <Users className="w-5 h-5 text-blue-500" />, accent: "border-blue-500/20" },
-                  { label: "SLA Status",     value: "Active", sub: "Payment pending", icon: <ShieldCheck className="w-5 h-5 text-emerald-500" />, accent: "border-emerald-500/20" },
-                ].map(s => (
-                  <div key={s.label} className={`glass-card rounded-2xl border ${s.accent} p-5 flex items-start gap-4`}>
-                    <div className="p-2.5 bg-muted rounded-xl">{s.icon}</div>
-                    <div>
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{s.label}</div>
-                      <div className="text-xl font-extrabold text-foreground mt-0.5">{s.value}</div>
-                      <div className="text-xs text-muted-foreground">{s.sub}</div>
+              {/* Dynamic SLA Summary — based on admin-set client tenure */}
+              {(() => {
+                const tenure = selectedBrand?.tenureMonths;
+                const startDate = selectedBrand?.tenureStartDate;
+                const tenureLabel = tenure ? `${tenure}-Month Executive SLA` : '12-Month Executive SLA';
+                let endLabel = 'Pending Admin Setup';
+                if (startDate && tenure) {
+                  const start = new Date(startDate);
+                  const end = new Date(start);
+                  end.setMonth(end.getMonth() + tenure);
+                  endLabel = `${start.toLocaleString('default', { month: 'short', year: 'numeric' })} – ${end.toLocaleString('default', { month: 'short', year: 'numeric' })}`;
+                }
+                const slaStatus = selectedBrand?.status === 'Locked (Tenure Expired)' ? 'Tenure Expired' : (startDate ? 'Active' : 'Pending Setup');
+                const slaColor = slaStatus === 'Active' ? 'text-emerald-500' : slaStatus === 'Tenure Expired' ? 'text-red-500' : 'text-amber-500';
+                return (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="glass-card rounded-2xl border border-primary/20 p-5 flex items-start gap-4">
+                      <div className="p-2.5 bg-muted rounded-xl"><Calendar className="w-5 h-5 text-primary" /></div>
+                      <div>
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Plan Duration</div>
+                        <div className="text-xl font-extrabold text-foreground mt-0.5">{tenure ? `${tenure} Months` : '⏳ Pending'}</div>
+                        <div className="text-xs text-muted-foreground">{endLabel}</div>
+                      </div>
+                    </div>
+                    <div className="glass-card rounded-2xl border border-blue-500/20 p-5 flex items-start gap-4">
+                      <div className="p-2.5 bg-muted rounded-xl"><Users className="w-5 h-5 text-blue-500" /></div>
+                      <div>
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Client Brand</div>
+                        <div className="text-xl font-extrabold text-foreground mt-0.5 truncate">{selectedBrand?.businessName || '—'}</div>
+                        <div className="text-xs text-muted-foreground">{selectedBrand?.category || '—'}</div>
+                      </div>
+                    </div>
+                    <div className="glass-card rounded-2xl border border-emerald-500/20 p-5 flex items-start gap-4">
+                      <div className="p-2.5 bg-muted rounded-xl"><ShieldCheck className="w-5 h-5 text-emerald-500" /></div>
+                      <div>
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">SLA Status</div>
+                        <div className={`text-xl font-extrabold mt-0.5 ${slaColor}`}>{slaStatus}</div>
+                        <div className="text-xs text-muted-foreground">{tenureLabel}</div>
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                );
+              })()}
 
               {/* 3-Phase Roadmap */}
               <div className="glass-card rounded-2xl border border-border p-6">
@@ -1187,14 +1209,17 @@ export default function VMagneticMindsPortal() {
                 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {[
-                    { label: "Organic Impressions", val: selectedBrand?.monthlyImpressions || "35,700" },
-                    { label: "Organic Clicks",       val: selectedBrand?.monthlyClicks || "4,790" },
-                    { label: "CTR %",                val: selectedBrand?.ctr || "13.4%" },
-                    { label: "AI Citations (GEO)",    val: selectedBrand?.aiCitations || "73" },
+                    { label: "Organic Impressions", val: selectedBrand?.monthlyImpressions || null },
+                    { label: "Organic Clicks",       val: selectedBrand?.monthlyClicks || null },
+                    { label: "CTR %",                val: selectedBrand?.ctr || null },
+                    { label: "AI Citations (GEO)",    val: selectedBrand?.aiCitations || null },
                   ].map(m => (
                     <div key={m.label} className="bg-muted rounded-xl p-4 text-center border border-border">
-                      <div className="text-2xl font-extrabold text-foreground">{m.val}</div>
+                      <div className={`text-2xl font-extrabold ${m.val ? 'text-foreground' : 'text-muted-foreground/40'}`}>
+                        {m.val || '—'}
+                      </div>
                       <div className="text-[10px] font-bold text-muted-foreground mt-1 uppercase tracking-wider">{m.label}</div>
+                      {!m.val && <div className="text-[9px] text-amber-500 font-bold mt-1">Pending Admin Update</div>}
                     </div>
                   ))}
                 </div>
