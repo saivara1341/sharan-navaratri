@@ -318,17 +318,10 @@ ${contextText || "No matching guidelines found."}
                     deadline: parsed.deadline || "",
                     website_url: parsed.website_url || "",
                     agreement: parsed.agreement || "",
-                    budget_total: parsed.budget_total || "$12,500",
-                    budget_paid: parsed.budget_paid || "$4,500",
-                    invoices: parsed.invoices || [
-                        { id: "INV-2026-001", description: "Initial Milestone: Discovery & Architecture Blueprint", amount: "$3,750", status: "Paid", date: "2026-06-10" },
-                        { id: "INV-2026-002", description: "Second Milestone: Alpha Engine Core & DB Integration", amount: "$5,000", status: "Pending", date: "2026-07-25" },
-                        { id: "INV-2026-003", description: "Final Milestone: Deployment, Handoff & Maintenance SLA", amount: "$3,750", status: "Upcoming", date: "2026-08-30" }
-                    ],
-                    agreements: parsed.agreements || [
-                        { name: "Master Services Agreement (MSA) v1.4", date: "2026-06-01", status: "Signed", url: "#" },
-                        { name: "Mutual Non-Disclosure Agreement (NDA)", date: "2026-05-28", status: "Signed", url: "#" }
-                    ]
+                    budget_total: parsed.budget_total || "",
+                    budget_paid: parsed.budget_paid || "",
+                    invoices: Array.isArray(parsed.invoices) ? parsed.invoices : [],
+                    agreements: Array.isArray(parsed.agreements) ? parsed.agreements : [],
                 };
             }
         } catch (e) {
@@ -338,17 +331,10 @@ ${contextText || "No matching guidelines found."}
             deadline: "",
             website_url: "",
             agreement: bountyReward || "",
-            budget_total: "$12,500",
-            budget_paid: "$4,500",
-            invoices: [
-                { id: "INV-2026-001", description: "Initial Milestone: Discovery & Architecture Blueprint", amount: "$3,750", status: "Paid", date: "2026-06-10" },
-                { id: "INV-2026-002", description: "Second Milestone: Alpha Engine Core & DB Integration", amount: "$5,000", status: "Pending", date: "2026-07-25" },
-                { id: "INV-2026-003", description: "Final Milestone: Deployment, Handoff & Maintenance SLA", amount: "$3,750", status: "Upcoming", date: "2026-08-30" }
-            ],
-            agreements: [
-                { name: "Master Services Agreement (MSA) v1.4", date: "2026-06-01", status: "Signed", url: "#" },
-                { name: "Mutual Non-Disclosure Agreement (NDA)", date: "2026-05-28", status: "Signed", url: "#" }
-            ]
+            budget_total: "",
+            budget_paid: "",
+            invoices: [],
+            agreements: [],
         };
     };
 
@@ -943,7 +929,8 @@ ${contextText || "No matching guidelines found."}
                                                     className="space-y-6"
                                                 >
                                                     {/* Budget Stats Grid */}
-                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                    {meta.budget_total ? (
+                                                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                         <div className="p-4 bg-muted/30 rounded-2xl border border-border flex items-center gap-3.5">
                                                             <div className="p-2.5 bg-primary/10 rounded-xl border border-primary/20">
                                                                 <DollarSign className="w-5 h-5 text-primary" />
@@ -960,7 +947,7 @@ ${contextText || "No matching guidelines found."}
                                                             </div>
                                                             <div>
                                                                 <p className="text-[9px] font-bold text-muted-foreground uppercase">Milestones Disbursed</p>
-                                                                <p className="text-lg font-bold text-foreground mt-0.5">{meta.budget_paid}</p>
+                                                                <p className="text-lg font-bold text-foreground mt-0.5">{meta.budget_paid || '₹0'}</p>
                                                             </div>
                                                         </div>
 
@@ -971,16 +958,29 @@ ${contextText || "No matching guidelines found."}
                                                             <div>
                                                                 <p className="text-[9px] font-bold text-muted-foreground uppercase">Retainer / Outstanding</p>
                                                                 <p className="text-lg font-bold text-foreground mt-0.5">
-                                                                    {`$${(parseInt(meta.budget_total.replace(/[^0-9]/g, '')) - parseInt(meta.budget_paid.replace(/[^0-9]/g, ''))).toLocaleString()}`}
+                                                                    {(() => {
+                                                                        const total = parseInt((meta.budget_total || '0').replace(/[^0-9]/g, ''));
+                                                                        const paid = parseInt((meta.budget_paid || '0').replace(/[^0-9]/g, ''));
+                                                                        const remaining = isNaN(total) || isNaN(paid) ? 0 : total - paid;
+                                                                        return `₹${remaining.toLocaleString('en-IN')}`;
+                                                                    })()}
                                                                 </p>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                      </div>
+                                                    ) : (
+                                                      <div className="p-6 rounded-2xl bg-muted/30 border border-dashed border-border text-center space-y-2">
+                                                        <DollarSign className="w-8 h-8 text-muted-foreground mx-auto" />
+                                                        <p className="text-sm font-bold text-foreground">Quote Pending Review</p>
+                                                        <p className="text-xs text-muted-foreground">Sai Vara Prasad is evaluating your requirement. Your custom quote and payment schedule will appear here once assigned.</p>
+                                                      </div>
+                                                    )}
 
                                                     {/* Invoices Table */}
                                                     <div className="space-y-2">
                                                         <h4 className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Milestone Disbursement Schedule</h4>
-                                                        <div className="overflow-x-auto border border-border rounded-2xl bg-muted/30">
+                                                        {meta.invoices.length > 0 ? (
+                                                          <div className="overflow-x-auto border border-border rounded-2xl bg-muted/30">
                                                             <table className="w-full text-left border-collapse">
                                                                 <thead>
                                                                     <tr className="border-b border-border bg-muted/50 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -1011,7 +1011,13 @@ ${contextText || "No matching guidelines found."}
                                                                     ))}
                                                                 </tbody>
                                                             </table>
-                                                        </div>
+                                                          </div>
+                                                        ) : (
+                                                          <div className="p-5 rounded-2xl bg-muted/20 border border-dashed border-border text-center">
+                                                            <Receipt className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
+                                                            <p className="text-xs text-muted-foreground">No milestone invoices issued yet. Invoices will appear here once your project quote is finalized and the payment schedule is set by your project lead.</p>
+                                                          </div>
+                                                        )}
                                                     </div>
                                                 </motion.div>
                                             )}
@@ -1026,7 +1032,7 @@ ${contextText || "No matching guidelines found."}
                                                 >
                                                     <h4 className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Executed Legal Agreements</h4>
                                                     <div className="grid grid-cols-1 gap-3">
-                                                        {meta.agreements.map((doc: any, idx: number) => (
+                                                        {meta.agreements.length > 0 ? meta.agreements.map((doc: any, idx: number) => (
                                                             <div 
                                                                 key={idx} 
                                                                 className="flex items-center justify-between p-4 bg-muted/30 hover:bg-muted border border-border rounded-2xl transition-all"
@@ -1052,7 +1058,13 @@ ${contextText || "No matching guidelines found."}
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                        ))}
+                                                        )) : (
+                                                            <div className="p-6 rounded-2xl bg-muted/20 border border-dashed border-border text-center space-y-2">
+                                                                <FileText className="w-7 h-7 text-muted-foreground mx-auto" />
+                                                                <p className="text-sm font-bold text-foreground">No Agreements Uploaded Yet</p>
+                                                                <p className="text-xs text-muted-foreground">Your signed MSA, NDA, and SLA documents will appear here once your project lead uploads them. Contact <strong>saivaraprasad@siddhidynamics.in</strong> if you need a copy urgently.</p>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </motion.div>
                                             )}

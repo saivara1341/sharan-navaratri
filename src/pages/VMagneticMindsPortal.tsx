@@ -195,7 +195,7 @@ export default function VMagneticMindsPortal() {
   const handleSaveBranding = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanPhone = editAgencyPhone.trim().replace(/[^0-9]/g, "");
-    if (editAgencyPhone.trim() && (cleanPhone.length < 10 || cleanPhone.length > 12)) {
+    if (editAgencyPhone.trim() && cleanPhone.length !== 10) {
       toast.error("Please enter a valid 10-digit mobile / WhatsApp number.");
       return;
     }
@@ -310,6 +310,8 @@ export default function VMagneticMindsPortal() {
     testimonials: "", paymentStrategy: "Custom Agreement", retainerFee: "",
   });
   const [clientCustomSocials, setClientCustomSocials] = useState<Array<{ id: string; name: string; url: string }>>([]);
+  const [testimonialFiles, setTestimonialFiles] = useState<File[]>([]);
+
 
   const addClientCustomSocialChannel = () => {
     setClientCustomSocials(prev => [...prev, { id: Date.now().toString(), name: '', url: '' }]);
@@ -442,11 +444,16 @@ export default function VMagneticMindsPortal() {
         businessName: "", brandName: "", category: "", description: "",
         yearEst: "", website: "", services: "", hours: "",
         contactName: "", mobile: "", whatsapp: "", email: "",
-        address: "", mapsLink: "", landmark: "", serviceAreas: "",
+        address: "",
+        addrDoorNo: "", addrStreet: "", addrArea: "", addrCity: "", addrState: "", addrPinCode: "",
+        mapsLink: "", landmark: "", serviceAreas: "",
         brandColors: "", fbLink: "", igLink: "", liLink: "", ytLink: "",
-        testimonials: "",
+        testimonials: "", paymentStrategy: "Custom Agreement", retainerFee: "",
       });
       setSelectedGoals([]);
+      setClientCustomSocials([]);
+      setTestimonialFiles([]);
+      setSelectedServices(["SEO, GEO & AEO Programme"]);
       toast.success(`${newClient.businessName} added & selected for analysis!`);
     }, 800);
   };
@@ -536,12 +543,66 @@ export default function VMagneticMindsPortal() {
 
   const fetchAgencyClients = async (email: string, currentAgencyName: string) => {
     try {
+      // 1. First try agency_clients table (Supabase-persisted, admin-editable)
+      const { data: dbAgencyClients, error: dbErr } = await supabase
+        .from('agency_clients')
+        .select('*')
+        .eq('agency_email', email.toLowerCase());
+
+      if (!dbErr && dbAgencyClients && dbAgencyClients.length > 0) {
+        // Map from snake_case DB columns to camelCase ClientBrand interface
+        const mapped: ClientBrand[] = dbAgencyClients.map((c: any) => ({
+          id: c.id,
+          businessName: c.business_name || 'Client Business',
+          brandName: c.brand_name || c.business_name || '',
+          category: c.category || '',
+          description: c.description || '',
+          website: c.website || '',
+          contactName: c.contact_name || '',
+          mobile: c.mobile || '',
+          email: c.email || '',
+          address: c.address || '',
+          goals: c.goals || [],
+          socialFb: c.social_fb || '',
+          socialIg: c.social_ig || '',
+          socialLi: c.social_li || '',
+          socialYt: c.social_yt || '',
+          addedAt: c.created_at ? c.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+          geoScore: c.geo_score || 0,
+          seoScore: c.seo_score || 0,
+          gbpScore: c.gbp_score || 0,
+          aeoScore: c.aeo_score || 0,
+          status: c.status || 'Onboarding & Audit',
+          progress: c.progress || 0,
+          tenureMonths: c.tenure_months || undefined,
+          tenureStartDate: c.tenure_start_date || undefined,
+          monthlyImpressions: c.monthly_impressions || undefined,
+          monthlyClicks: c.monthly_clicks || undefined,
+          ctr: c.ctr || undefined,
+          conversions: undefined,
+          aiCitations: c.ai_citations || undefined,
+          paymentStrategy: c.payment_strategy || 'Custom Agreement',
+          retainerFee: c.retainer_fee || undefined,
+        }));
+        setClients(mapped);
+        // Also persist to localStorage as fallback cache
+        localStorage.setItem(`sd_agency_clients_${email.toLowerCase()}`, JSON.stringify(mapped));
+        return;
+      }
+
+      // 2. Fallback: check localStorage
       let localClients: ClientBrand[] = [];
       try {
         const stored = localStorage.getItem(`sd_agency_clients_${email.toLowerCase()}`);
         if (stored) localClients = JSON.parse(stored);
       } catch (e) {}
 
+      if (localClients.length > 0) {
+        setClients(localClients);
+        return;
+      }
+
+      // 3. Fallback: derive from contact_submissions (legacy flow)
       const { data } = await supabase.from('contact_submissions').select('*');
       const dbSubmissions = data || [];
 
@@ -577,17 +638,8 @@ export default function VMagneticMindsPortal() {
         tenureStartDate: undefined,
       }));
 
-      const combined = [...localClients];
-      dbClients.forEach(dbc => {
-        if (!combined.some(c => c.businessName.toLowerCase() === dbc.businessName.toLowerCase() || c.id === dbc.id)) {
-          combined.push(dbc);
-        }
-      });
-
-      if (combined.length > 0) {
-        setClients(combined);
-      } else if (email.toLowerCase() === "23eg510a07@anurag.edu.in") {
-        setClients(INITIAL_CLIENTS);
+      if (dbClients.length > 0) {
+        setClients(dbClients);
       } else {
         setClients([]);
       }
@@ -595,6 +647,7 @@ export default function VMagneticMindsPortal() {
       console.error("Error fetching agency clients:", err);
     }
   };
+
 
   // ── Auth ───────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -674,7 +727,42 @@ export default function VMagneticMindsPortal() {
     });
   }, []);
 
-  // ── Loading ────────────────────────────────────────────────────────────────
+  // ── Load invoices from Supabase whenever client selection changes ───────────
+  useEffect(() => {
+    if (!userEmail) return;
+    const loadInvoices = async () => {
+      try {
+        let query = supabase
+          .from('agency_invoices')
+          .select('*')
+          .eq('agency_email', userEmail.toLowerCase())
+          .order('created_at', { ascending: false });
+
+        // If a specific client is selected, filter by client_id
+        if (selectedBrandId && selectedBrandId !== 'all') {
+          query = query.eq('client_id', selectedBrandId);
+        }
+
+        const { data, error } = await query;
+        if (!error && data) {
+          setInvoices(data.map((inv: any) => ({
+            id: inv.id,
+            month: inv.month,
+            amount: inv.amount,
+            rawAmount: inv.raw_amount || inv.amount?.replace(/[^0-9]/g, '') || '0',
+            status: inv.status || 'Pending',
+            date: inv.due_date || '',
+            desc: inv.description || '',
+          })));
+        }
+      } catch (err) {
+        console.error('Failed to load invoices:', err);
+      }
+    };
+    loadInvoices();
+  }, [userEmail, selectedBrandId]);
+
+
   if (loading) return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
       <RefreshCw className="w-10 h-10 animate-spin text-primary" />

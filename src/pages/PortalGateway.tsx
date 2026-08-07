@@ -186,7 +186,7 @@ export default function PortalGateway() {
       
       // Redirect to correct portal
       if (role === 'partner') {
-        navigate('/portal/v-magnetic-minds');
+        navigate('/portal/agency');
       } else {
         navigate(`/portal/${role}`);
       }
@@ -209,7 +209,7 @@ export default function PortalGateway() {
   const getLaunchPath = () => {
     if (session?.user?.email?.trim().toLowerCase() === '23eg510a07@anurag.edu.in') return "/portal/v-magnetic-minds";
     if (isAdmin) return "/admin-hq-nexus";
-    if (userRole === 'partner') return "/portal/v-magnetic-minds";
+    if (userRole === 'partner') return "/portal/agency";
     if (userRole === 'employee') return "/portal/employee";
     if (userRole === 'client') return "/portal/client";
     if (userRole === 'investor') return "/portal/investor";

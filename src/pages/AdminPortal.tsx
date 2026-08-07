@@ -29,7 +29,13 @@ import {
     ShieldCheck,
     Paperclip,
     FileText,
-    Download
+    Download,
+    BarChart3,
+    TrendingUp,
+    Plus,
+    CreditCard,
+    Zap,
+    Lock
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -62,7 +68,142 @@ const AdminPortal = () => {
     const [chatInput, setChatInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
     const [sendingMsg, setSendingMsg] = useState(false);
-    const [viewMode, setViewMode] = useState<'submissions' | 'users' | 'portals'>('submissions');
+    const [viewMode, setViewMode] = useState<'submissions' | 'users' | 'portals' | 'agency'>('submissions');
+
+    // ── Agency Clients Management ────────────────────────────────────────────
+    const [agencyClients, setAgencyClients] = useState<any[]>([]);
+    const [agencyClientsLoading, setAgencyClientsLoading] = useState(false);
+    const [agencySearchTerm, setAgencySearchTerm] = useState('');
+    const [editAgencyClient, setEditAgencyClient] = useState<any | null>(null);
+    // Edit fields for agency client
+    const [acTenureMonths, setAcTenureMonths] = useState('');
+    const [acTenureStart, setAcTenureStart] = useState('');
+    const [acRetainerFee, setAcRetainerFee] = useState('');
+    const [acGeoScore, setAcGeoScore] = useState('');
+    const [acSeoScore, setAcSeoScore] = useState('');
+    const [acGbpScore, setAcGbpScore] = useState('');
+    const [acAeoScore, setAcAeoScore] = useState('');
+    const [acImpressions, setAcImpressions] = useState('');
+    const [acClicks, setAcClicks] = useState('');
+    const [acCtr, setAcCtr] = useState('');
+    const [acCitations, setAcCitations] = useState('');
+    const [acStatus, setAcStatus] = useState('');
+    const [acProgress, setAcProgress] = useState(0);
+    const [savingAc, setSavingAc] = useState(false);
+    // Invoice creation
+    const [acInvoiceMonth, setAcInvoiceMonth] = useState('');
+    const [acInvoiceAmount, setAcInvoiceAmount] = useState('');
+    const [acInvoiceDesc, setAcInvoiceDesc] = useState('');
+    const [acInvoiceDue, setAcInvoiceDue] = useState('');
+    const [creatingInvoice, setCreatingInvoice] = useState(false);
+
+    const fetchAgencyClients = async () => {
+        setAgencyClientsLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('agency_clients')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            setAgencyClients(data || []);
+        } catch (err: any) {
+            toast.error('Failed to load agency clients: ' + (err.message || 'Unknown'));
+        } finally {
+            setAgencyClientsLoading(false);
+        }
+    };
+
+    const openEditAgencyClient = (client: any) => {
+        setEditAgencyClient(client);
+        setAcTenureMonths(client.tenure_months?.toString() || '');
+        setAcTenureStart(client.tenure_start_date || '');
+        setAcRetainerFee(client.retainer_fee || '');
+        setAcGeoScore(client.geo_score?.toString() || '0');
+        setAcSeoScore(client.seo_score?.toString() || '0');
+        setAcGbpScore(client.gbp_score?.toString() || '0');
+        setAcAeoScore(client.aeo_score?.toString() || '0');
+        setAcImpressions(client.monthly_impressions || '');
+        setAcClicks(client.monthly_clicks || '');
+        setAcCtr(client.ctr || '');
+        setAcCitations(client.ai_citations || '');
+        setAcStatus(client.status || 'Onboarding & Audit');
+        setAcProgress(client.progress || 0);
+        setAcInvoiceMonth('');
+        setAcInvoiceAmount('');
+        setAcInvoiceDesc('');
+        setAcInvoiceDue('');
+    };
+
+    const handleSaveAgencyClient = async () => {
+        if (!editAgencyClient) return;
+        setSavingAc(true);
+        try {
+            const updates: any = {
+                tenure_months: acTenureMonths ? parseInt(acTenureMonths) : null,
+                tenure_start_date: acTenureStart || null,
+                retainer_fee: acRetainerFee || null,
+                geo_score: parseInt(acGeoScore) || 0,
+                seo_score: parseInt(acSeoScore) || 0,
+                gbp_score: parseInt(acGbpScore) || 0,
+                aeo_score: parseInt(acAeoScore) || 0,
+                monthly_impressions: acImpressions || null,
+                monthly_clicks: acClicks || null,
+                ctr: acCtr || null,
+                ai_citations: acCitations || null,
+                status: acStatus,
+                progress: acProgress,
+                updated_at: new Date().toISOString(),
+            };
+            const { error } = await supabase
+                .from('agency_clients')
+                .update(updates)
+                .eq('id', editAgencyClient.id);
+            if (error) throw error;
+            setAgencyClients(prev => prev.map(c =>
+                c.id === editAgencyClient.id ? { ...c, ...updates } : c
+            ));
+            toast.success(`Updated ${editAgencyClient.business_name} — live in agency portal!`);
+            setEditAgencyClient(null);
+        } catch (err: any) {
+            toast.error('Save failed: ' + (err.message || 'Unknown'));
+        } finally {
+            setSavingAc(false);
+        }
+    };
+
+    const handleCreateInvoice = async () => {
+        if (!editAgencyClient || !acInvoiceMonth || !acInvoiceAmount) {
+            toast.error('Month and Amount are required for invoice.');
+            return;
+        }
+        setCreatingInvoice(true);
+        try {
+            const invoiceId = `INV-${Date.now()}`;
+            const { error } = await supabase
+                .from('agency_invoices')
+                .insert({
+                    id: invoiceId,
+                    agency_email: editAgencyClient.agency_email,
+                    client_id: editAgencyClient.id,
+                    month: acInvoiceMonth,
+                    amount: `₹${acInvoiceAmount}`,
+                    raw_amount: acInvoiceAmount,
+                    status: 'Pending',
+                    due_date: acInvoiceDue || null,
+                    description: acInvoiceDesc || `Monthly retainer — ${editAgencyClient.business_name}`,
+                });
+            if (error) throw error;
+            toast.success(`Invoice ${invoiceId} created for ${editAgencyClient.business_name}!`);
+            setAcInvoiceMonth('');
+            setAcInvoiceAmount('');
+            setAcInvoiceDesc('');
+            setAcInvoiceDue('');
+        } catch (err: any) {
+            toast.error('Invoice creation failed: ' + (err.message || 'Unknown'));
+        } finally {
+            setCreatingInvoice(false);
+        }
+    };
 
     // ── All Portal Users ─────────────────────────────────────────────────────
     const [allUsers, setAllUsers] = useState<any[]>([]);
@@ -689,6 +830,16 @@ const AdminPortal = () => {
                             <Users className="w-4 h-4" /> All Users
                         </button>
                         <button
+                            onClick={() => { setViewMode('agency'); fetchAgencyClients(); }}
+                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
+                                viewMode === 'agency'
+                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
+                            }`}
+                        >
+                            <Building2 className="w-4 h-4" /> Agency Clients
+                        </button>
+                        <button
                             onClick={() => setViewMode('portals')}
                             className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
                                 viewMode === 'portals'
@@ -698,13 +849,13 @@ const AdminPortal = () => {
                         >
                             <ChevronRight className="w-4 h-4" /> Portals
                         </button>
-                        {viewMode === 'submissions' && (
+                        {(viewMode === 'submissions' || viewMode === 'agency') && (
                             <button
-                                onClick={fetchSubmissions}
+                                onClick={viewMode === 'agency' ? fetchAgencyClients : fetchSubmissions}
                                 className="p-3 rounded-xl glass-card hover:bg-muted/50 transition-colors group"
                                 title="Refresh Data"
                             >
-                                <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                                <RefreshCw className={`w-5 h-5 ${(loading || agencyClientsLoading) ? 'animate-spin' : ''}`} />
                             </button>
                         )}
                     </div>
@@ -724,7 +875,7 @@ const AdminPortal = () => {
                     </div>
                     <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
                         <button
-                            onClick={() => navigate('/portal/v-magnetic-minds')}
+                            onClick={() => navigate('/portal/agency')}
                             className="px-3.5 py-2 rounded-xl bg-card border border-primary/30 hover:border-primary text-xs font-bold text-foreground flex items-center gap-1.5 shadow-sm transition-all"
                             title="Inspect Agency Partner Portal"
                         >
@@ -1161,7 +1312,7 @@ const AdminPortal = () => {
                                             </button>
                                             <button
                                                 onClick={() => navigate(
-                                                    user.role === 'partner' ? '/portal/v-magnetic-minds' :
+                                                    user.role === 'partner' ? '/portal/agency' :
                                                     user.role === 'investor' ? '/portal/investor' :
                                                     user.role === 'employee' ? '/portal/employee' :
                                                     '/portal/client'
@@ -1235,6 +1386,102 @@ const AdminPortal = () => {
                             )}
                         </AnimatePresence>
                     </motion.div>
+                ) : viewMode === 'agency' ? (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 text-left">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h2 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
+                                    <Building2 className="w-6 h-6 text-primary" /> Agency Client Management
+                                </h2>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                    Set SLA tenure, retainer fee, SEO/GEO/GBP/AEO scores, GA analytics, and create invoices for each agency client.
+                                </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Search clients..."
+                                    value={agencySearchTerm}
+                                    onChange={e => setAgencySearchTerm(e.target.value)}
+                                    className="px-4 py-2 rounded-xl border border-border bg-card text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary/30 w-52"
+                                />
+                            </div>
+                        </div>
+
+                        {agencyClientsLoading ? (
+                            <div className="flex items-center justify-center py-20">
+                                <RefreshCw className="w-8 h-8 animate-spin text-primary" />
+                            </div>
+                        ) : agencyClients.length === 0 ? (
+                            <div className="glass-card rounded-2xl border border-dashed border-border p-16 text-center">
+                                <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                                <h3 className="text-lg font-extrabold text-foreground mb-2">No Agency Clients Found</h3>
+                                <p className="text-sm text-muted-foreground">Agency clients will appear here once they are added by an agency partner.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                {agencyClients
+                                    .filter(c =>
+                                        !agencySearchTerm ||
+                                        c.business_name?.toLowerCase().includes(agencySearchTerm.toLowerCase()) ||
+                                        c.agency_email?.toLowerCase().includes(agencySearchTerm.toLowerCase()) ||
+                                        c.category?.toLowerCase().includes(agencySearchTerm.toLowerCase())
+                                    )
+                                    .map(client => (
+                                        <div key={client.id} className="glass-card rounded-2xl border border-border p-5 space-y-4">
+                                            {/* Client Header */}
+                                            <div className="flex items-start justify-between">
+                                                <div>
+                                                    <h3 className="font-extrabold text-base text-foreground">{client.business_name}</h3>
+                                                    <p className="text-xs text-muted-foreground">{client.category || '—'} · {client.agency_email}</p>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`px-2 py-0.5 rounded-lg text-[10px] font-extrabold border ${
+                                                        client.status === 'Locked (Tenure Expired)' ? 'bg-red-600/20 text-red-400 border-red-500/30' :
+                                                        client.status === 'Active Optimization' ? 'bg-emerald-600/20 text-emerald-400 border-emerald-500/30' :
+                                                        'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                                                    }`}>{client.status || 'Onboarding'}</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Score Summary */}
+                                            <div className="grid grid-cols-4 gap-2 text-center bg-muted/60 rounded-xl p-3">
+                                                {[['GEO', client.geo_score, 'text-violet-400'], ['SEO', client.seo_score, 'text-cyan-400'], ['GBP', client.gbp_score, 'text-rose-400'], ['AEO', client.aeo_score, 'text-amber-400']].map(([label, val, color]) => (
+                                                    <div key={label as string}>
+                                                        <div className={`text-[9px] font-extrabold uppercase ${color}`}>{label}</div>
+                                                        <div className="text-sm font-extrabold text-foreground">{val || 0}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* SLA Info */}
+                                            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                                <Calendar className="w-3.5 h-3.5 text-primary" />
+                                                <span>
+                                                    {client.tenure_months ? `${client.tenure_months}-Month SLA` : '⏳ Tenure not set'}
+                                                    {client.tenure_start_date && ` · From ${client.tenure_start_date}`}
+                                                </span>
+                                            </div>
+
+                                            {/* Retainer */}
+                                            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                                <CreditCard className="w-3.5 h-3.5 text-primary" />
+                                                <span>{client.retainer_fee ? `₹${client.retainer_fee}/month` : '⏳ Fee not set'}</span>
+                                            </div>
+
+                                            {/* Edit Button */}
+                                            <button
+                                                onClick={() => openEditAgencyClient(client)}
+                                                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary/10 hover:bg-primary/20 text-primary font-extrabold text-xs rounded-xl border border-primary/20 transition-all"
+                                            >
+                                                <Edit className="w-4 h-4" /> Edit Scores, SLA & Billing
+                                            </button>
+                                        </div>
+                                    ))}
+                            </div>
+                        )}
+                    </motion.div>
+
                 ) : viewMode === 'portals' ? (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 text-left">
                         <div>
@@ -2024,6 +2271,233 @@ const AdminPortal = () => {
                         </motion.div>
                     </motion.div>
                 )}
+            </AnimatePresence>
+            {/* ══════════════════════════════════════════════════════════════════ */}
+            {/* AGENCY CLIENT EDIT MODAL ══════════════════════════════════════════ */}
+            {/* ══════════════════════════════════════════════════════════════════ */}
+            <AnimatePresence>
+            {editAgencyClient && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                    onClick={e => e.target === e.currentTarget && setEditAgencyClient(null)}
+                >
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-card border border-border rounded-3xl shadow-2xl"
+                    >
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card z-10">
+                            <div>
+                                <h3 className="text-lg font-extrabold text-foreground">{editAgencyClient.business_name}</h3>
+                                <p className="text-xs text-muted-foreground">{editAgencyClient.agency_email} · {editAgencyClient.category}</p>
+                            </div>
+                            <button onClick={() => setEditAgencyClient(null)} className="p-2 hover:bg-muted rounded-xl transition-colors">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <div className="p-6 space-y-8">
+                            {/* ── SLA & Fee ─── */}
+                            <div className="space-y-4">
+                                <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary border-b border-border pb-2 flex items-center gap-2">
+                                    <Calendar className="w-4 h-4" /> SLA Tenure & Retainer Fee
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Tenure (Months) *</label>
+                                        <select
+                                            value={acTenureMonths}
+                                            onChange={e => setAcTenureMonths(e.target.value)}
+                                            className="w-full bg-muted border border-border text-foreground rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                        >
+                                            <option value="">Select duration...</option>
+                                            {[3, 6, 9, 12, 18, 24, 36].map(m => (
+                                                <option key={m} value={m}>{m} Months{m === 12 ? ' (Standard)' : ''}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Start Date *</label>
+                                        <input
+                                            type="date"
+                                            value={acTenureStart}
+                                            onChange={e => setAcTenureStart(e.target.value)}
+                                            className="w-full bg-muted border border-border text-foreground rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Monthly Retainer Fee (₹) *</label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g., 3000 (no ₹ sign needed)"
+                                        value={acRetainerFee}
+                                        onChange={e => setAcRetainerFee(e.target.value.replace(/[^0-9]/g, ''))}
+                                        className="w-full bg-muted border border-border text-foreground rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                    />
+                                    {acRetainerFee && <p className="text-xs text-emerald-400 mt-1 font-bold">₹{parseInt(acRetainerFee).toLocaleString('en-IN')}/month · ₹{(parseInt(acRetainerFee) * (parseInt(acTenureMonths) || 12)).toLocaleString('en-IN')} total for {acTenureMonths || 12} months</p>}
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Status</label>
+                                        <select
+                                            value={acStatus}
+                                            onChange={e => setAcStatus(e.target.value)}
+                                            className="w-full bg-muted border border-border text-foreground rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                        >
+                                            {['Onboarding & Audit', 'Active Optimization', 'Review Phase', 'Locked (Tenure Expired)', 'Completed'].map(s => (
+                                                <option key={s} value={s}>{s}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Progress ({acProgress}%)</label>
+                                        <input
+                                            type="range" min={0} max={100} step={5}
+                                            value={acProgress}
+                                            onChange={e => setAcProgress(parseInt(e.target.value))}
+                                            className="w-full accent-primary mt-2"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* ── SEO/GEO/GBP/AEO Scores ─── */}
+                            <div className="space-y-4">
+                                <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary border-b border-border pb-2 flex items-center gap-2">
+                                    <TrendingUp className="w-4 h-4" /> Monthly Score Update (0–100)
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {[
+                                        { label: 'GEO Score (AI Visibility)', val: acGeoScore, set: setAcGeoScore, color: 'text-violet-400' },
+                                        { label: 'SEO Score (Search)', val: acSeoScore, set: setAcSeoScore, color: 'text-cyan-400' },
+                                        { label: 'GBP Score (Maps)', val: acGbpScore, set: setAcGbpScore, color: 'text-rose-400' },
+                                        { label: 'AEO Score (Answers)', val: acAeoScore, set: setAcAeoScore, color: 'text-amber-400' },
+                                    ].map(({ label, val, set, color }) => (
+                                        <div key={label}>
+                                            <label className={`block text-[10px] font-bold uppercase tracking-widest mb-1.5 ${color}`}>{label}</label>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="number" min={0} max={100}
+                                                    value={val}
+                                                    onChange={e => set(Math.min(100, Math.max(0, parseInt(e.target.value) || 0)).toString())}
+                                                    className="w-full bg-muted border border-border text-foreground rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                                />
+                                                <span className={`text-lg font-extrabold min-w-[40px] text-right ${parseInt(val) >= 75 ? 'text-emerald-400' : parseInt(val) >= 50 ? 'text-amber-400' : 'text-red-400'}`}>{val || 0}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* ── GA Monthly Analytics ─── */}
+                            <div className="space-y-4">
+                                <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary border-b border-border pb-2 flex items-center gap-2">
+                                    <BarChart3 className="w-4 h-4" /> GA Monthly Analytics
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {[
+                                        { label: 'Organic Impressions', val: acImpressions, set: setAcImpressions, ph: 'e.g., 12,450' },
+                                        { label: 'Organic Clicks', val: acClicks, set: setAcClicks, ph: 'e.g., 1,230' },
+                                        { label: 'CTR %', val: acCtr, set: setAcCtr, ph: 'e.g., 9.8%' },
+                                        { label: 'AI Citations (GEO)', val: acCitations, set: setAcCitations, ph: 'e.g., 34' },
+                                    ].map(({ label, val, set, ph }) => (
+                                        <div key={label}>
+                                            <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">{label}</label>
+                                            <input
+                                                type="text"
+                                                placeholder={ph}
+                                                value={val}
+                                                onChange={e => set(e.target.value)}
+                                                className="w-full bg-muted border border-border text-foreground rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* ── Create Invoice ─── */}
+                            <div className="space-y-4 bg-muted/30 rounded-2xl p-4 border border-border">
+                                <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary flex items-center gap-2">
+                                    <CreditCard className="w-4 h-4" /> Create Invoice for this Client
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Month *</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g., August 2026"
+                                            value={acInvoiceMonth}
+                                            onChange={e => setAcInvoiceMonth(e.target.value)}
+                                            className="w-full bg-muted border border-border text-foreground rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Amount (₹) *</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g., 3000"
+                                            value={acInvoiceAmount}
+                                            onChange={e => setAcInvoiceAmount(e.target.value.replace(/[^0-9]/g, ''))}
+                                            className="w-full bg-muted border border-border text-foreground rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Due Date</label>
+                                        <input
+                                            type="date"
+                                            value={acInvoiceDue}
+                                            onChange={e => setAcInvoiceDue(e.target.value)}
+                                            className="w-full bg-muted border border-border text-foreground rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Description</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Monthly SEO/GEO retainer"
+                                            value={acInvoiceDesc}
+                                            onChange={e => setAcInvoiceDesc(e.target.value)}
+                                            className="w-full bg-muted border border-border text-foreground rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                        />
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={handleCreateInvoice}
+                                    disabled={creatingInvoice}
+                                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl transition-all disabled:opacity-50"
+                                >
+                                    {creatingInvoice ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                                    Create & Send Invoice
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="flex gap-3 p-6 border-t border-border bg-muted/30 sticky bottom-0">
+                            <button
+                                onClick={() => setEditAgencyClient(null)}
+                                className="flex-1 py-3 rounded-xl bg-muted text-foreground font-semibold hover:bg-muted/80 transition-colors border border-border text-sm"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSaveAgencyClient}
+                                disabled={savingAc}
+                                className="flex-[2] py-3 rounded-xl bg-primary text-primary-foreground font-extrabold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                            >
+                                {savingAc ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+                                Save & Push to Agency Portal
+                            </button>
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
             </AnimatePresence>
         </div>
     );
