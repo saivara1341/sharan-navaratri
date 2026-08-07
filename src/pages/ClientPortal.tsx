@@ -326,6 +326,14 @@ ${contextText || "No matching guidelines found."}
         toast.success("Project status synchronized.");
     };
 
+    const checkAdmin = (emailToCheck?: string) => {
+        if (!emailToCheck) return false;
+        const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com")
+            .split(",")
+            .map((e: string) => e.trim().toLowerCase());
+        return adminEmails.includes(emailToCheck.trim().toLowerCase());
+    };
+
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (!session) {
@@ -335,13 +343,20 @@ ${contextText || "No matching guidelines found."}
             }
 
             const email = session.user.email;
+            const role = session.user.user_metadata?.role;
+
+            if (!role && !checkAdmin(email)) {
+                navigate("/portal");
+                return;
+            }
+
             if (email) {
                 if (email.trim().toLowerCase() === '23eg510a07@anurag.edu.in') {
                     navigate("/portal/v-magnetic-minds");
                     return;
                 }
                 setClientEmail(email);
-                fetchClientProjects(email).then(() => {
+                fetchClientProjects(email).finally(() => {
                     setLoading(false);
                 });
             } else {

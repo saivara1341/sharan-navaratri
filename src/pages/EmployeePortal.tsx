@@ -92,6 +92,14 @@ export default function EmployeePortal() {
     }
   };
 
+  const checkAdmin = (emailToCheck?: string) => {
+    if (!emailToCheck) return false;
+    const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com")
+      .split(",")
+      .map((e: string) => e.trim().toLowerCase());
+    return adminEmails.includes(emailToCheck.trim().toLowerCase());
+  };
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
@@ -100,10 +108,18 @@ export default function EmployeePortal() {
         return;
       }
 
-      setEmployeeEmail(session.user.email || "");
+      const email = session.user.email || "";
+      const role = session.user.user_metadata?.role;
+
+      if (!role && !checkAdmin(email)) {
+        navigate("/portal");
+        return;
+      }
+
+      setEmployeeEmail(email);
       setEmployeeName(session.user.user_metadata?.full_name || "Employee Representative");
 
-      fetchSubmissionsData().then(() => {
+      fetchSubmissionsData().finally(() => {
         setLoading(false);
       });
     });

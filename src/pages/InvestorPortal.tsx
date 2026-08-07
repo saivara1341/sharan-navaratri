@@ -248,6 +248,14 @@ export default function InvestorPortal() {
     }
   };
 
+  const checkAdmin = (emailToCheck?: string) => {
+    if (!emailToCheck) return false;
+    const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com")
+      .split(",")
+      .map((e: string) => e.trim().toLowerCase());
+    return adminEmails.includes(emailToCheck.trim().toLowerCase());
+  };
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
@@ -257,11 +265,18 @@ export default function InvestorPortal() {
       }
 
       const email = session.user.email || "";
+      const role = session.user.user_metadata?.role;
+
+      if (!role && !checkAdmin(email)) {
+        navigate("/portal");
+        return;
+      }
+
       const name = session.user.user_metadata?.full_name || "Venture Partner";
       setInvestorEmail(email);
       setInvestorName(name);
 
-      fetchPortfolioData(email).then(() => {
+      fetchPortfolioData(email).finally(() => {
         setLoading(false);
       });
     });

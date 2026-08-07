@@ -83,27 +83,6 @@ const AuthRedirectHandler = () => {
         return;
       }
 
-      // Check database to see if this email is registered
-      if (email) {
-        try {
-          const { data, error } = await supabase
-            .from('contact_submissions')
-            .select('id')
-            .eq('email', email.trim().toLowerCase())
-            .limit(1);
-
-          if (data && data.length > 0) {
-            await supabase.auth.updateUser({
-              data: { role: 'client' }
-            });
-            navigate("/portal/client");
-            return;
-          }
-        } catch (err) {
-          console.error("DB check failed for client email:", err);
-        }
-      }
-
       // If we are here, user has no role set yet. Redirect them to /portal to select role.
       if (location.pathname !== '/portal' && location.pathname !== '/portal/') {
         navigate("/portal");

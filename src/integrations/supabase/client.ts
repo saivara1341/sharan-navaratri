@@ -11,9 +11,9 @@ const isDev = import.meta.env.DEV;
 // The "Failed to fetch" error usually means the backend proxy (port 9090) isn't running.
 const EFFECTIVE_URL = isDev
     ? (typeof window !== 'undefined' ? window.location.origin + "/supabase-api" : "http://localhost:5173/supabase-api")
-    : FALLBACK_URL;
+    : (import.meta.env.VITE_SUPABASE_URL || FALLBACK_URL);
 
-const FINAL_KEY = isDev ? (import.meta.env.VITE_SUPABASE_ANON_KEY || FALLBACK_KEY) : FALLBACK_KEY;
+const FINAL_KEY = (import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || FALLBACK_KEY).trim();
 
 if (isDev) {
     console.log(`[Supabase] Active Mode: ${import.meta.env.MODE}`);

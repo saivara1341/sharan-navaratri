@@ -72,27 +72,6 @@ export default function PortalGateway() {
       
       const roleVal = activeSession.user.user_metadata?.role || null;
       setUserRole(roleVal);
-
-      // If user is logged in but doesn't have an explicit role in metadata, check if email exists in database
-      if (!roleVal && !adminCheck && emailVal) {
-        try {
-          const { data } = await supabase
-            .from('contact_submissions')
-            .select('id')
-            .eq('email', emailVal.trim().toLowerCase())
-            .limit(1);
-
-          if (data && data.length > 0) {
-            // Set role to client and update metadata
-            await supabase.auth.updateUser({
-              data: { role: 'client' }
-            });
-            setUserRole('client');
-          }
-        } catch (err) {
-          console.error("Failed to check database client records:", err);
-        }
-      }
     } else {
       setSession(null);
       setUserRole(null);
