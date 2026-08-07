@@ -146,12 +146,27 @@ export default function VMagneticMindsPortal() {
   const [editAgencyName, setEditAgencyName] = useState(agencyName);
   const [editAgencyLogo, setEditAgencyLogo] = useState(agencyLogoUrl);
 
-  const handleSaveBranding = (e: React.FormEvent) => {
+  const handleSaveBranding = async (e: React.FormEvent) => {
     e.preventDefault();
-    setAgencyName(editAgencyName.trim() || "Agency Partner");
-    setAgencyLogoUrl(editAgencyLogo.trim() || "/v-magnetic-minds-logo.jpg");
+    const newName = editAgencyName.trim() || "Agency Partner";
+    const newLogo = editAgencyLogo.trim() || "/v-magnetic-minds-logo.jpg";
+
+    setAgencyName(newName);
+    setAgencyLogoUrl(newLogo);
+
+    try {
+      await supabase.auth.updateUser({
+        data: {
+          agency_name: newName,
+          agency_logo: newLogo
+        }
+      });
+    } catch (err) {
+      console.error("Failed to update user metadata:", err);
+    }
+
     setShowBrandingModal(false);
-    toast.success("Agency branding updated!");
+    toast.success(`Agency profile updated: ${newName}`);
   };
 
   const handleDeleteClient = (id: string, name: string) => {
@@ -239,19 +254,32 @@ export default function VMagneticMindsPortal() {
         conversions: "45",
         aiCitations: "12",
       };
-      setClients(prev => [...prev, newClient]);
+      const clientEmailVal = clientForm.email.trim() ? clientForm.email.trim().toLowerCase() : userEmail.toLowerCase();
+      
+      const updatedClients = [...clients, newClient];
+      setClients(updatedClients);
+      try {
+        localStorage.setItem(`sd_agency_clients_${userEmail.toLowerCase()}`, JSON.stringify(updatedClients));
+      } catch (e) {}
+
       setSelectedBrandId(newClient.id);
 
-      // Automatically insert request into contact_submissions so it shows up in Admin Portal Requests
+      // Automatically insert request into contact_submissions with target client email so client can log in & see it!
       supabase.from("contact_submissions").insert({
         name: clientForm.contactName || clientForm.businessName,
-        email: (clientForm.email || "23eg510a07@anurag.edu.in").toLowerCase(),
-        organization: `${clientForm.businessName} (V Magnetic Minds Client)`,
-        designation: "Agency Onboarding Request",
+        email: clientEmailVal,
+        organization: `${clientForm.businessName} (${agencyName} Client)`,
+        designation: `Agency Client (via ${agencyName})`,
         inquiry_type: selectedServices.join(", "),
-        message: `[Services Availed: ${selectedServices.join(", ")}]\n[Business Name: ${clientForm.businessName}]\n[Website: ${clientForm.website || 'N/A'}]\n[Category: ${clientForm.category || 'N/A'}]\n${clientForm.description || ''}`,
+        message: `[Services Availed: ${selectedServices.join(", ")}]\n[Agency Partner: ${agencyName} (${userEmail})]\n[Business Name: ${clientForm.businessName}]\n[Website: ${clientForm.website || 'N/A'}]\n[Category: ${clientForm.category || 'N/A'}]\n${clientForm.description || ''}`,
         status: "New Request",
         progress: 0,
+        bounty_reward: JSON.stringify({
+          agency_email: userEmail.toLowerCase(),
+          agency_name: agencyName,
+          website_url: clientForm.website,
+          agreement: clientForm.retainerFee || "Pending Admin Review"
+        })
       }).then(() => {});
 
       setSavingClient(false);
@@ -352,10 +380,94 @@ export default function VMagneticMindsPortal() {
     }, 700);
   };
 
+  const fetchAgencyClients = async (email: string, currentAgencyName: string) => {
+    try {
+      let localClients: ClientBrand[] = [];
+      try {
+        const stored = localStorage.getItem(`sd_agency_clients_${email.toLowerCase()}`);
+        if (stored) localClients = JSON.parse(stored);
+      } catch (e) {}
+
+      const { data } = await supabase.from('contact_submissions').select('*');
+      const dbSubmissions = data || [];
+
+      const agencySubmissions = dbSubmissions.filter((s: any) => {
+        const metaStr = s.bounty_reward || "";
+        const msgStr = s.message || "";
+        const orgStr = s.organization || "";
+        const emailMatch = metaStr.includes(email.toLowerCase()) || s.email?.toLowerCase() === email.toLowerCase();
+        const nameMatch = orgStr.includes(currentAgencyName) || msgStr.includes(currentAgencyName);
+        return emailMatch || nameMatch;
+      });
+
+      const dbClients: ClientBrand[] = agencySubmissions.map((s: any) => ({
+        id: s.id,
+        businessName: s.organization?.replace(/\(.*?\)/g, '').trim() || s.name || "Client Business",
+        brandName: s.name || s.organization || "Client Brand",
+        category: s.inquiry_type || "General Business",
+        description: s.message || "",
+        website: "",
+        contactName: s.name || "Contact Person",
+        mobile: "",
+        email: s.email || "",
+        address: "",
+        goals: [],
+        addedAt: s.created_at ? s.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+        geoScore: 82,
+        seoScore: 78,
+        gbpScore: 84,
+        aeoScore: 76,
+        status: s.status || "New Request",
+        progress: s.progress || 0
+      }));
+
+      const combined = [...localClients];
+      dbClients.forEach(dbc => {
+        if (!combined.some(c => c.businessName.toLowerCase() === dbc.businessName.toLowerCase() || c.id === dbc.id)) {
+          combined.push(dbc);
+        }
+      });
+
+      if (combined.length > 0) {
+        setClients(combined);
+      } else if (email.toLowerCase() === "23eg510a07@anurag.edu.in") {
+        setClients(INITIAL_CLIENTS);
+      } else {
+        setClients([]);
+      }
+    } catch (err) {
+      console.error("Error fetching agency clients:", err);
+    }
+  };
+
   // ── Auth ───────────────────────────────────────────────────────────────────
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user?.email) setUserEmail(session.user.email);
+      if (session?.user) {
+        const email = (session.user.email || "").toLowerCase();
+        setUserEmail(email);
+
+        let curAgencyName = "Agency Partner";
+        let curAgencyLogo = "/v-magnetic-minds-logo.jpg";
+
+        if (email === "23eg510a07@anurag.edu.in") {
+          curAgencyName = "V Magnetic Minds";
+          curAgencyLogo = "/v-magnetic-minds-logo.jpg";
+        } else {
+          curAgencyName = session.user.user_metadata?.agency_name || session.user.user_metadata?.full_name || "Agency Partner";
+          curAgencyLogo = session.user.user_metadata?.agency_logo || "/v-magnetic-minds-logo.jpg";
+
+          if (!session.user.user_metadata?.agency_name) {
+            setEditAgencyName(curAgencyName);
+            setEditAgencyLogo(curAgencyLogo);
+            setShowBrandingModal(true);
+          }
+        }
+
+        setAgencyName(curAgencyName);
+        setAgencyLogoUrl(curAgencyLogo);
+        fetchAgencyClients(email, curAgencyName);
+      }
       setLoading(false);
     });
   }, []);
@@ -374,8 +486,8 @@ export default function VMagneticMindsPortal() {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
       <Helmet>
-        <title>V Magnetic Minds Portal | Siddhi Dynamics</title>
-        <meta name="description" content="Executive Agency Portal for V Magnetic Minds – 12-Month SEO, GEO, AEO & GBP Management." />
+        <title>{agencyName} Portal | Siddhi Dynamics</title>
+        <meta name="description" content={`Executive Agency Portal for ${agencyName} – 12-Month SEO, GEO, AEO & GBP Management.`} />
       </Helmet>
       <Navbar />
 
@@ -388,16 +500,16 @@ export default function VMagneticMindsPortal() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative">
             <div className="flex items-center gap-5">
               <div className="w-16 h-16 bg-white rounded-2xl shadow-md border border-border flex items-center justify-center shrink-0 overflow-hidden">
-                <img src="/v-magnetic-minds-logo.jpg" alt="V Magnetic Minds Logo"
-                  className="w-full h-full object-contain"
+                <img src={agencyLogoUrl} alt={`${agencyName} Logo`}
+                  className="w-full h-full object-contain p-1"
                   onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">M² The Magnetic Minds</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">{agencyName}</span>
                   <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full border border-primary/20">Agency Partner</span>
                 </div>
-                <h1 className="text-2xl md:text-3xl font-extrabold text-foreground">V Magnetic Minds Portal</h1>
+                <h1 className="text-2xl md:text-3xl font-extrabold text-foreground">{agencyName} Portal</h1>
                 <p className="text-xs text-muted-foreground mt-0.5">{userEmail} · 12-Month SLA Active</p>
               </div>
             </div>
@@ -410,6 +522,13 @@ export default function VMagneticMindsPortal() {
                   {selectedBrand ? (selectedBrand.retainerFee || selectedBrand.paymentStrategy || "Custom Strategy") : `${clients.length} Client Brands`}
                 </div>
               </div>
+              <button
+                type="button"
+                onClick={() => { setEditAgencyName(agencyName); setEditAgencyLogo(agencyLogoUrl); setShowBrandingModal(true); }}
+                className="px-4 py-2.5 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs border border-border transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+              >
+                <Sparkles className="w-4 h-4 text-primary" /> Edit Agency Profile
+              </button>
             </div>
           </div>
         </motion.div>
@@ -1161,6 +1280,65 @@ export default function VMagneticMindsPortal() {
                   </button>
                 </form>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ════ EDIT AGENCY BRANDING / SETUP PROFILE MODAL ════════════════════ */}
+      <AnimatePresence>
+        {showBrandingModal && (
+          <div className="fixed inset-0 z-[260] flex items-center justify-center p-4 pt-24 pb-6 bg-black/80 backdrop-blur-md overflow-y-auto">
+            <motion.div initial={{ scale: 0.92, opacity: 0, y: 16 }} animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              className="bg-card border border-border rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden text-left">
+              
+              <div className="flex items-center justify-between px-6 py-4 bg-muted border-b border-border">
+                <div className="flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-primary" />
+                  <div>
+                    <h3 className="text-base font-extrabold text-foreground">Configure Agency Partner Profile</h3>
+                    <p className="text-[10px] text-muted-foreground">Set up your agency name and logo for your client workspace</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowBrandingModal(false)}
+                  className="w-8 h-8 rounded-full bg-border hover:bg-muted-foreground/20 flex items-center justify-center text-muted-foreground transition-colors cursor-pointer">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveBranding} className="p-6 space-y-4">
+                <div>
+                  <label className={lbl}>Agency / Company Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. V Magnetic Minds or Apex Digital Agency"
+                    value={editAgencyName}
+                    onChange={e => setEditAgencyName(e.target.value)}
+                    className={inp}
+                  />
+                </div>
+
+                <div>
+                  <label className={lbl}>Agency Logo Image URL (PNG/SVG/JPG)</label>
+                  <input
+                    type="text"
+                    placeholder="https://example.com/logo.png or /v-magnetic-minds-logo.jpg"
+                    value={editAgencyLogo}
+                    onChange={e => setEditAgencyLogo(e.target.value)}
+                    className={inp}
+                  />
+                  <p className="text-[10px] text-muted-foreground mt-1">Leave empty to use default agency badge logo.</p>
+                </div>
+
+                <div className="pt-3 border-t border-border flex justify-end gap-3">
+                  <button type="button" onClick={() => setShowBrandingModal(false)} className="px-4 py-2.5 rounded-xl border border-border text-xs font-bold text-muted-foreground hover:text-foreground cursor-pointer">Cancel</button>
+                  <button type="submit" className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-extrabold text-xs hover:scale-105 transition-all shadow-md shadow-primary/20 cursor-pointer">
+                    Save Agency Profile
+                  </button>
+                </div>
+              </form>
             </motion.div>
           </div>
         )}
