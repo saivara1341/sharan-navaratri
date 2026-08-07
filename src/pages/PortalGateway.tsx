@@ -104,18 +104,24 @@ export default function PortalGateway() {
   };
 
   useEffect(() => {
+    const hasHashToken = typeof window !== 'undefined' && (window.location.hash.includes('access_token') || window.location.search.includes('code'));
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session: activeSession } }) => {
-      syncSessionData(activeSession).then(() => {
+      if (activeSession) {
+        syncSessionData(activeSession).then(() => setLoading(false));
+      } else if (!hasHashToken) {
         setLoading(false);
-      });
+      }
     });
 
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, activeSession) => {
-      syncSessionData(activeSession).then(() => {
+    // Listen for auth state changes (e.g. OAuth token exchange completion)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, activeSession) => {
+      if (activeSession) {
+        syncSessionData(activeSession).then(() => setLoading(false));
+      } else if (!hasHashToken) {
         setLoading(false);
-      });
+      }
     });
 
     return () => subscription.unsubscribe();
