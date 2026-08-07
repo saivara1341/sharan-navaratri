@@ -66,6 +66,7 @@ const AdminPortal = () => {
     const [usersLoading, setUsersLoading] = useState(false);
     const [contactUser, setContactUser] = useState<any | null>(null);
     const [userChatInput, setUserChatInput] = useState('');
+    const [userRoleFilter, setUserRoleFilter] = useState<'all' | 'client' | 'partner' | 'investor' | 'employee'>('all');
 
     const fetchAllUsers = async () => {
         setUsersLoading(true);
@@ -962,18 +963,26 @@ const AdminPortal = () => {
                             </button>
                         </div>
 
-                        {/* Role Summary Pills */}
+                        {/* Role Summary Pills (Interactive Filters) */}
                         <div className="flex flex-wrap gap-3">
                             {[
-                                { label: 'All', count: allUsers.length, color: 'bg-muted text-foreground border-border' },
-                                { label: 'Clients', count: allUsers.filter(u => u.role === 'client').length, color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
-                                { label: 'Partners', count: allUsers.filter(u => u.role === 'partner').length, color: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
-                                { label: 'Investors', count: allUsers.filter(u => u.role === 'investor').length, color: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
-                                { label: 'Employees', count: allUsers.filter(u => u.role === 'employee').length, color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+                                { id: 'all', label: 'All Users', count: allUsers.length, color: 'bg-muted text-foreground border-border' },
+                                { id: 'client', label: 'Clients', count: allUsers.filter(u => u.role === 'client').length, color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
+                                { id: 'partner', label: 'Partners', count: allUsers.filter(u => u.role === 'partner').length, color: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
+                                { id: 'investor', label: 'Investors', count: allUsers.filter(u => u.role === 'investor').length, color: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
+                                { id: 'employee', label: 'Employees / Team', count: allUsers.filter(u => u.role === 'employee').length, color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
                             ].map(pill => (
-                                <span key={pill.label} className={`px-3.5 py-1 rounded-full text-xs font-bold border ${pill.color}`}>
+                                <button
+                                    key={pill.id}
+                                    onClick={() => setUserRoleFilter(pill.id as any)}
+                                    className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                                        userRoleFilter === pill.id
+                                            ? 'ring-2 ring-primary ring-offset-2 ring-offset-background font-extrabold shadow-md ' + pill.color
+                                            : 'opacity-70 hover:opacity-100 ' + pill.color
+                                    }`}
+                                >
                                     {pill.label} <span className="opacity-70">({pill.count})</span>
-                                </span>
+                                </button>
                             ))}
                         </div>
 
@@ -990,7 +999,7 @@ const AdminPortal = () => {
                             </div>
                         ) : (
                             <div className="space-y-3">
-                                {allUsers.map((user, i) => (
+                                {(userRoleFilter === 'all' ? allUsers : allUsers.filter(u => u.role === userRoleFilter)).map((user, i) => (
                                     <motion.div
                                         key={user.id}
                                         initial={{ opacity: 0, y: 10 }}
@@ -1180,10 +1189,20 @@ const AdminPortal = () => {
                                             <ChevronRight className="w-4 h-4" /> Enter Portal
                                         </button>
                                         <button
-                                            onClick={() => { setViewMode('users'); fetchAllUsers(); }}
+                                            onClick={() => {
+                                                const filterMap: Record<string, any> = {
+                                                    'Partners': 'partner',
+                                                    'Clients': 'client',
+                                                    'Team': 'employee',
+                                                    'Investors': 'investor'
+                                                };
+                                                setUserRoleFilter(filterMap[portal.tag] || 'all');
+                                                setViewMode('users');
+                                                fetchAllUsers();
+                                            }}
                                             className="px-4 py-2.5 rounded-xl bg-muted border border-border text-xs font-bold text-foreground hover:bg-muted/80 transition-all flex items-center gap-1.5"
                                         >
-                                            <Users className="w-4 h-4" /> View Users
+                                            <Users className="w-4 h-4" /> View Users ({portal.tag})
                                         </button>
                                     </div>
                                 </div>
