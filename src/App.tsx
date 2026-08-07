@@ -83,10 +83,8 @@ const AuthRedirectHandler = () => {
         return;
       }
 
-      // If we are here, user has no role set yet. Redirect them to /portal to select role.
-      if (location.pathname !== '/portal' && location.pathname !== '/portal/') {
-        navigate("/portal");
-      }
+      // If user has no role set yet (e.g. Google OAuth), redirect them directly to client portal
+      navigate("/portal/client");
     };
 
     // Check initial session - ONLY redirect if user is on the auth or portal page

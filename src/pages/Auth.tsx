@@ -50,7 +50,13 @@ const Auth = () => {
       return;
     }
 
-    setNeedsRoleSelection(true);
+    // If user has no role set yet (e.g. first-time Google login), default to 'client' role and redirect
+    try {
+      await supabase.auth.updateUser({ data: { role: 'client' } });
+    } catch (e) {
+      // Ignore background metadata update error
+    }
+    navigate("/portal/client");
   };
 
   useEffect(() => {
@@ -134,7 +140,7 @@ const Auth = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin + window.location.pathname
+          redirectTo: window.location.origin + "/portal"
         }
       });
       if (error) throw error;
