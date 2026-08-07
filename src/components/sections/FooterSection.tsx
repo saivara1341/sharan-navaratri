@@ -214,9 +214,22 @@ export const FooterSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.6, duration: 0.8 }}
-          className="mt-16 pt-8 border-t border-white/10 flex flex-col items-center gap-5"
+          className="relative mt-16 pt-8 pb-8 px-6 md:px-8 border border-white/10 flex flex-col items-center gap-6 rounded-3xl bg-white/[0.02] overflow-hidden"
         >
-          <div className="flex flex-col items-center gap-5 md:flex-row md:justify-between md:w-full">
+          {/* Checkered Box Background Grid */}
+          <div 
+            className="absolute inset-0 pointer-events-none opacity-20"
+            style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.12) 1px, transparent 1px)
+              `,
+              backgroundSize: '24px 24px'
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 pointer-events-none" />
+
+          <div className="relative z-10 flex flex-col items-center gap-5 md:flex-row md:justify-between md:w-full">
             <motion.p
               className="text-sm text-slate-400"
               initial={{ opacity: 0 }}
@@ -225,7 +238,7 @@ export const FooterSection = () => {
             >
               {t('footer.copyright', { year: new Date().getFullYear() })}
             </motion.p>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-4">
               {[
                 { label: 'Privacy Policy', href: '/privacy' },
                 { label: 'Terms & Conditions', href: '/terms-and-conditions' },
@@ -247,39 +260,63 @@ export const FooterSection = () => {
             </div>
           </div>
           <motion.address
-            className="grid w-full max-w-3xl gap-3 not-italic text-left md:grid-cols-2"
+            className="relative z-10 grid w-full max-w-3xl gap-3 not-italic text-left md:grid-cols-2"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ delay: 0.8 }}
           >
             <span className="sr-only">Siddhi Dynamics LLP office locations: </span>
-            <span className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-              <strong className="mb-1 block text-sm font-semibold text-white">Nizamabad office</strong>
-              <span className="block text-xs leading-5 text-slate-400">
-                3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001
-              </span>
-              <a
-                href={nizamabadMapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 inline-flex text-xs font-semibold text-primary transition-colors hover:text-white"
-              >
-                Open in Google Maps ↗
-              </a>
+            <span className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-5 shadow-lg group hover:border-primary/40 transition-all">
+              <div 
+                className="absolute inset-0 pointer-events-none opacity-15"
+                style={{
+                  backgroundImage: `
+                    linear-gradient(to right, rgba(245, 158, 11, 0.25) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(245, 158, 11, 0.25) 1px, transparent 1px)
+                  `,
+                  backgroundSize: '20px 20px'
+                }}
+              />
+              <div className="relative z-10">
+                <strong className="mb-1 block text-sm font-semibold text-white">Nizamabad office</strong>
+                <span className="block text-xs leading-5 text-slate-400">
+                  3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001
+                </span>
+                <a
+                  href={nizamabadMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 inline-flex text-xs font-semibold text-primary transition-colors hover:text-white"
+                >
+                  Open in Google Maps ↗
+                </a>
+              </div>
             </span>
-            <span className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-              <strong className="mb-1 block text-sm font-semibold text-white">Hyderabad office</strong>
-              <span className="block text-xs leading-5 text-slate-400">
-                HIVE, Anurag University, Hyderabad, Telangana 500049
-              </span>
-              <a
-                href={hyderabadMapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 inline-flex text-xs font-semibold text-primary transition-colors hover:text-white"
-              >
-                Open in Google Maps ↗
-              </a>
+            <span className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-5 shadow-lg group hover:border-primary/40 transition-all">
+              <div 
+                className="absolute inset-0 pointer-events-none opacity-15"
+                style={{
+                  backgroundImage: `
+                    linear-gradient(to right, rgba(245, 158, 11, 0.25) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(245, 158, 11, 0.25) 1px, transparent 1px)
+                  `,
+                  backgroundSize: '20px 20px'
+                }}
+              />
+              <div className="relative z-10">
+                <strong className="mb-1 block text-sm font-semibold text-white">Hyderabad office</strong>
+                <span className="block text-xs leading-5 text-slate-400">
+                  HIVE, Anurag University, Hyderabad, Telangana 500049
+                </span>
+                <a
+                  href={hyderabadMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 inline-flex text-xs font-semibold text-primary transition-colors hover:text-white"
+                >
+                  Open in Google Maps ↗
+                </a>
+              </div>
             </span>
           </motion.address>
         </motion.div>
