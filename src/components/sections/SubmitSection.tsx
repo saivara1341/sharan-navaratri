@@ -260,7 +260,7 @@ export const SubmitSection = () => {
             <button
               type="button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-full p-4 rounded-xl border border-white/20 bg-white/[0.05] backdrop-blur-xl hover:border-primary/60 transition-all duration-300 text-left flex items-center justify-between shadow-lg shadow-black/20 focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="w-full p-4 rounded-xl border-2 border-primary/50 bg-background/50 hover:border-primary/80 transition-all duration-300 text-left flex items-center justify-between shadow-lg shadow-primary/5 focus:outline-none focus:ring-2 focus:ring-primary/50"
             >
               <div className="flex items-center gap-3">
                 <span className="text-2xl block shrink-0">
@@ -294,7 +294,7 @@ export const SubmitSection = () => {
                   animate={{ opacity: 1, y: 0, scaleY: 1 }}
                   exit={{ opacity: 0, y: -10, scaleY: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute z-50 w-full mt-2 bg-zinc-950/95 backdrop-blur-2xl border border-primary/40 rounded-xl shadow-2xl overflow-hidden origin-top"
+                  className="absolute z-50 w-full mt-2 bg-card border-2 border-primary/30 rounded-xl shadow-2xl overflow-hidden origin-top"
                 >
                   {[
                     { value: 'problem', label: t('submit.types.problem'), icon: '🎯' },
@@ -855,7 +855,7 @@ export const SubmitSection = () => {
             <form
               ref={formRef}
               onSubmit={handleSubmit}
-              className="glass-card electric-border p-8 md:p-12 relative overflow-hidden backdrop-blur-2xl bg-zinc-950/40 border border-white/15 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+              className="glass-card electric-border p-8 md:p-12 relative overflow-hidden"
             >
               {/* Dynamic glow following mouse */}
               <motion.div
