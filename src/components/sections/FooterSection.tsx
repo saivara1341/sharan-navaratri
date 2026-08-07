@@ -254,7 +254,7 @@ export const FooterSection = () => {
             >
               {t('footer.copyright', { year: new Date().getFullYear() })}
             </motion.p>
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-nowrap overflow-x-auto no-scrollbar items-center justify-center gap-2.5 sm:gap-4 max-w-full pb-1 px-1">
               {[
                 { label: 'Privacy Policy', href: '/privacy' },
                 { label: 'Terms & Conditions', href: '/terms-and-conditions' },
@@ -268,7 +268,7 @@ export const FooterSection = () => {
                   initial={{ opacity: 0 }}
                   animate={isInView ? { opacity: 1 } : {}}
                   transition={{ delay: 0.8 + index * 0.05 }}
-                  className="text-xs text-slate-400 hover:text-primary transition-colors"
+                  className="text-xs text-slate-400 hover:text-primary transition-colors shrink-0 whitespace-nowrap"
                 >
                   {link.label}
                 </motion.a>
