@@ -78,6 +78,9 @@ const AuthRedirectHandler = () => {
       } else if (role === 'investor') {
         navigate("/portal/investor");
         return;
+      } else if (role === 'partner') {
+        navigate("/portal/v-magnetic-minds");
+        return;
       }
 
       // Check database to see if this email is registered

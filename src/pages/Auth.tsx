@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
-import { Eye, EyeOff, ArrowLeft, Mail, Lock, User, Loader2, Briefcase, TrendingUp, Users } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, Mail, Lock, User, Loader2, Briefcase, TrendingUp, Users, Building2 } from "lucide-react";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
 import { emailService } from "@/services/emailService";
@@ -44,6 +44,9 @@ const Auth = () => {
       return;
     } else if (role === 'investor') {
       navigate("/portal/investor");
+      return;
+    } else if (role === 'partner') {
+      navigate("/portal/v-magnetic-minds");
       return;
     }
 
@@ -199,44 +202,57 @@ const Auth = () => {
             <h1 className="text-3xl font-bold gradient-text glow-text mb-2 pt-4">Welcome to Siddhi Dynamics</h1>
             <p className="text-muted-foreground text-base mb-12">Please select how you'll be using our platform to set up your dashboard.</p>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleRoleSelection('client')}
-                className="p-8 rounded-2xl border-2 border-border/50 hover:border-primary/50 bg-background/50 flex flex-col items-center text-center transition-all group"
+                className="p-6 rounded-2xl border-2 border-border/50 hover:border-primary/50 bg-background/50 flex flex-col items-center text-center transition-all group"
               >
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <Briefcase className="w-8 h-8 text-primary" />
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Briefcase className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-2">Startup / Client</h3>
-                <p className="text-sm text-muted-foreground">Manage your projects, payments, team, and track development progress.</p>
+                <h3 className="text-base font-bold text-foreground mb-1">Direct Client</h3>
+                <p className="text-xs text-muted-foreground">Manage your projects, payments, GMeet booking, and track roadmaps.</p>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handleRoleSelection('partner')}
+                className="p-6 rounded-2xl border-2 border-border/50 hover:border-purple-500/50 bg-background/50 flex flex-col items-center text-center transition-all group"
+              >
+                <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Building2 className="w-6 h-6 text-purple-500" />
+                </div>
+                <h3 className="text-base font-bold text-foreground mb-1">Agency Partner</h3>
+                <p className="text-xs text-muted-foreground">Manage agency client portfolios, custom branding, and SLAs.</p>
               </motion.button>
 
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleRoleSelection('investor')}
-                className="p-8 rounded-2xl border-2 border-border/50 hover:accent/50 bg-background/50 flex flex-col items-center text-center transition-all group hover:border-accent/50"
+                className="p-6 rounded-2xl border-2 border-border/50 hover:border-accent/50 bg-background/50 flex flex-col items-center text-center transition-all group"
               >
-                <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <TrendingUp className="w-8 h-8 text-accent" />
+                <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <TrendingUp className="w-6 h-6 text-accent" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-2">Venture / Investor</h3>
-                <p className="text-sm text-muted-foreground">Discover our active projects, track traction, and monitor ROI metrics.</p>
+                <h3 className="text-base font-bold text-foreground mb-1">Venture / Investor</h3>
+                <p className="text-xs text-muted-foreground">Discover active ecosystem projects, track traction, and ROI metrics.</p>
               </motion.button>
 
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleRoleSelection('employee')}
-                className="p-8 rounded-2xl border-2 border-border/50 hover:border-primary/50 bg-background/50 flex flex-col items-center text-center transition-all group"
+                className="p-6 rounded-2xl border-2 border-border/50 hover:border-blue-500/50 bg-background/50 flex flex-col items-center text-center transition-all group"
               >
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <Users className="w-8 h-8 text-primary" />
+                <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Users className="w-6 h-6 text-blue-500" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-2">Employee</h3>
-                <p className="text-sm text-muted-foreground">Access internal tasks, project assignments, and team communications.</p>
+                <h3 className="text-base font-bold text-foreground mb-1">Employee / Builder</h3>
+                <p className="text-xs text-muted-foreground">Access internal tasks, project delivery, and team communications.</p>
               </motion.button>
             </div>
             

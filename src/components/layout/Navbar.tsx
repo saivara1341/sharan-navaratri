@@ -82,6 +82,8 @@ export const Navbar = () => {
     e.preventDefault();
     if (isAdmin) {
       navigate("/admin-hq-nexus");
+    } else if (userRole === 'partner') {
+      navigate("/portal/v-magnetic-minds");
     } else if (userRole === 'employee') {
       navigate("/portal/employee");
     } else if (userRole === 'client') {

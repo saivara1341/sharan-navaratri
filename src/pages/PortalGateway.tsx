@@ -20,7 +20,8 @@ import {
   ShieldCheck,
   CheckCircle,
   Activity,
-  ArrowLeft
+  ArrowLeft,
+  Building2
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -183,7 +184,11 @@ export default function PortalGateway() {
       toast.success(`Welcome aboard! Set up completed for role: ${role}`);
       
       // Redirect to correct portal
-      navigate(`/portal/${role}`);
+      if (role === 'partner') {
+        navigate('/portal/v-magnetic-minds');
+      } else {
+        navigate(`/portal/${role}`);
+      }
     } catch (err: any) {
       console.error("Role update failed:", err);
       toast.error("Could not configure user role. Please try again.");
