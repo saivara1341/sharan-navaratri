@@ -1120,24 +1120,16 @@ export default function VMagneticMindsPortal() {
               {/* Agency High-Level Overview Header when no specific client is selected */}
               {selectedBrandId === 'all' ? (
                 <div className="glass-card rounded-3xl border border-primary/30 p-6 md:p-8 bg-primary/5 space-y-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-5">
-                    <div>
-                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-                        🏬 Agency Management Dashboard
-                      </span>
-                      <h2 className="text-2xl font-extrabold text-foreground mt-2 flex items-center gap-2">
-                        <Building2 className="w-6 h-6 text-primary" /> {agencyName} Portfolio Hub
-                      </h2>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Manage all agency clients, setup service strategies, track roadmap execution, and monitor delivery scores.
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => setShowClientForm(true)}
-                      className="px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-extrabold text-sm shadow-xl shadow-primary/20 hover:scale-105 transition-all flex items-center gap-2 shrink-0 cursor-pointer"
-                    >
-                      <Plus className="w-5 h-5" /> Add Client Brand
-                    </button>
+                  <div className="border-b border-border/60 pb-5">
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+                      🏬 Agency Management Dashboard
+                    </span>
+                    <h2 className="text-2xl font-extrabold text-foreground mt-2 flex items-center gap-2">
+                      <Building2 className="w-6 h-6 text-primary" /> {agencyName} Portfolio Hub
+                    </h2>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Manage all agency clients, setup service strategies, track roadmap execution, and monitor delivery scores.
+                    </p>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -1186,7 +1178,6 @@ export default function VMagneticMindsPortal() {
                     <div className="space-y-3 pt-2">
                       <div className="flex items-center justify-between">
                         <h3 className="text-sm font-extrabold text-foreground uppercase tracking-wider">Your Client Portfolio</h3>
-                        <button onClick={() => setShowClientForm(true)} className="text-xs font-bold text-primary hover:underline flex items-center gap-1">+ Add Client</button>
                       </div>
                       <ClientList
                         clients={clients}
@@ -1363,10 +1354,6 @@ export default function VMagneticMindsPortal() {
             <motion.div key="clients" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-extrabold text-foreground">Client Portfolio</h3>
-                <button onClick={() => setShowClientForm(true)}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl hover:scale-[1.02] transition-all shadow-md shadow-primary/20">
-                  <Plus className="w-4 h-4" /> Add Client
-                </button>
               </div>
 
               {clients.length === 0 ? (
