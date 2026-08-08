@@ -985,6 +985,13 @@ export default function VMagneticMindsPortal() {
               </div>
               <button
                 type="button"
+                onClick={() => { setActiveTab('clients'); setShowClientForm(true); }}
+                className="px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-extrabold text-xs shadow-md shadow-primary/20 hover:scale-[1.02] transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+              >
+                <Plus className="w-4 h-4" /> Add Client Brand
+              </button>
+              <button
+                type="button"
                 onClick={() => { setEditAgencyName(agencyName); setEditAgencyLogo(agencyLogoUrl); setShowBrandingModal(true); }}
                 className="px-4 py-2.5 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs border border-border transition-all flex items-center gap-1.5 cursor-pointer shadow-sm shrink-0"
               >
@@ -1572,6 +1579,10 @@ export default function VMagneticMindsPortal() {
           )}
         </AnimatePresence>
         )}
+        {/* ── Review Us Banner ──────── */}
+        <div className="pt-6">
+          <GoogleReviewCard audience="client" name={agencyName} compact />
+        </div>
       </main>
 
       {/* ════ PAY MODAL ════════════════════════════════════════════════════════ */}

@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { supabaseService } from "@/services/supabaseService";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
+import { GoogleReviewCard } from "@/components/GoogleReviewCard";
 import {
     Users,
     MessageSquare,
@@ -1575,6 +1576,9 @@ const AdminPortal = () => {
                         </div>
                     </motion.div>
                 ) : null}
+                <div className="pt-8">
+                    <GoogleReviewCard audience="visitor" name="Sai Vara Prasad" compact />
+                </div>
             </main>
 
             {/* Background elements */}
