@@ -974,8 +974,8 @@ export default function VMagneticMindsPortal() {
                 <p className="text-xs text-muted-foreground mt-0.5 truncate">{userEmail}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
-              <div className="text-right hidden md:block">
+            <div className="flex flex-wrap items-center gap-2.5 shrink-0 w-full sm:w-auto justify-start sm:justify-end">
+              <div className="text-right hidden lg:block mr-2">
                 <div className="text-xs text-muted-foreground">
                   {selectedBrand ? selectedBrand.businessName : "Partner Agency Portfolio"}
                 </div>
@@ -986,20 +986,37 @@ export default function VMagneticMindsPortal() {
               <button
                 type="button"
                 onClick={() => { setActiveTab('clients'); setShowClientForm(true); }}
-                className="px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-extrabold text-xs shadow-md shadow-primary/20 hover:scale-[1.02] transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-extrabold text-xs shadow-md shadow-primary/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-4 h-4" /> Add Client Brand
               </button>
               <button
                 type="button"
                 onClick={() => { setEditAgencyName(agencyName); setEditAgencyLogo(agencyLogoUrl); setShowBrandingModal(true); }}
-                className="px-4 py-2.5 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs border border-border transition-all flex items-center gap-1.5 cursor-pointer shadow-sm shrink-0"
+                className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs border border-border transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
               >
                 <Zap className="w-4 h-4 text-primary" /> Edit Agency Profile
               </button>
             </div>
           </div>
         </motion.div>
+
+        {/* ── Persistent Quick Action Bar ─────────────────────────────── */}
+        <div className="flex items-center justify-between p-4 rounded-2xl bg-primary/10 border border-primary/20 glass-card">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="p-2.5 rounded-xl bg-primary/20 text-primary shrink-0"><Building2 className="w-5 h-5" /></div>
+            <div className="min-w-0">
+              <div className="text-xs font-extrabold text-foreground truncate">Agency Client Portfolio & Strategy Setup</div>
+              <div className="text-[11px] text-muted-foreground truncate">{clients.length} Client Brands Registered · Click to Add New Client</div>
+            </div>
+          </div>
+          <button
+            onClick={() => { setActiveTab('clients'); setShowClientForm(true); }}
+            className="px-4 py-2 bg-primary text-primary-foreground font-extrabold text-xs rounded-xl hover:scale-105 transition-all shadow-md shadow-primary/20 flex items-center gap-1.5 shrink-0 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" /> + Add Client Brand
+          </button>
+        </div>
 
         {/* ── Client Back Bar (shown only when a client is open) ──────── */}
         {selectedBrandId !== 'all' && (
