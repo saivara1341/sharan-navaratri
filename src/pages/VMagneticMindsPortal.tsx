@@ -1001,23 +1001,6 @@ export default function VMagneticMindsPortal() {
           </div>
         </motion.div>
 
-        {/* ── Persistent Quick Action Bar ─────────────────────────────── */}
-        <div className="flex items-center justify-between p-4 rounded-2xl bg-primary/10 border border-primary/20 glass-card">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="p-2.5 rounded-xl bg-primary/20 text-primary shrink-0"><Building2 className="w-5 h-5" /></div>
-            <div className="min-w-0">
-              <div className="text-xs font-extrabold text-foreground truncate">Agency Client Portfolio & Strategy Setup</div>
-              <div className="text-[11px] text-muted-foreground truncate">{clients.length} Client Brands Registered · Click to Add New Client</div>
-            </div>
-          </div>
-          <button
-            onClick={() => { setActiveTab('clients'); setShowClientForm(true); }}
-            className="px-4 py-2 bg-primary text-primary-foreground font-extrabold text-xs rounded-xl hover:scale-105 transition-all shadow-md shadow-primary/20 flex items-center gap-1.5 shrink-0 cursor-pointer"
-          >
-            <Plus className="w-4 h-4" /> + Add Client Brand
-          </button>
-        </div>
-
         {/* ── Client Back Bar (shown only when a client is open) ──────── */}
         {selectedBrandId !== 'all' && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
@@ -1063,11 +1046,10 @@ export default function VMagneticMindsPortal() {
           </motion.div>
         )}
 
-        {/* ── Tab nav grid — always visible ── */}
-        {activeTab !== 'occasions' && (
+        {/* ── Tab nav grid — shown when a specific client brand is selected or navigating specific tabs ── */}
+        {selectedBrandId !== 'all' && activeTab !== 'occasions' && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {BASE_TABS.map((tab, i) => {
-              // Build dynamic label: for overview, prefix with actual tenure from selected client
               const tenureLabel = selectedBrand?.tenureMonths
                 ? `${selectedBrand.tenureMonths}-Month Executive SLA`
                 : 'Executive SLA & Roadmap';
@@ -1099,7 +1081,7 @@ export default function VMagneticMindsPortal() {
           </div>
         )}
 
-        {/* ── Occasions tab: always rendered ── */}
+        {/* ── Occasions tab: always rendered when selected ── */}
         {activeTab === 'occasions' && (
           <AnimatePresence mode="wait">
             <OccasionDesignsSection
@@ -1118,7 +1100,7 @@ export default function VMagneticMindsPortal() {
           {activeTab === 'overview' && (
             <motion.div key="overview" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
               {/* Agency High-Level Overview Header when no specific client is selected */}
-              {selectedBrandId === 'all' && (
+              {selectedBrandId === 'all' ? (
                 <div className="glass-card rounded-3xl border border-primary/30 p-6 md:p-8 bg-primary/5 space-y-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-5">
                     <div>
@@ -1186,7 +1168,7 @@ export default function VMagneticMindsPortal() {
                     <div className="space-y-3 pt-2">
                       <div className="flex items-center justify-between">
                         <h3 className="text-sm font-extrabold text-foreground uppercase tracking-wider">Your Client Portfolio</h3>
-                        <button onClick={() => setActiveTab('clients')} className="text-xs font-bold text-primary hover:underline">View All →</button>
+                        <button onClick={() => setShowClientForm(true)} className="text-xs font-bold text-primary hover:underline flex items-center gap-1">+ Add Client</button>
                       </div>
                       <ClientList
                         clients={clients}
@@ -1200,162 +1182,161 @@ export default function VMagneticMindsPortal() {
                     </div>
                   )}
                 </div>
-              )}
-              {/* Dynamic SLA Summary — based on admin-set client tenure */}
-              {(() => {
-                const tenure = selectedBrand?.tenureMonths;
-                const startDate = selectedBrand?.tenureStartDate;
-                const tenureLabel = tenure ? `${tenure}-Month Executive SLA` : '12-Month Executive SLA';
-                let endLabel = 'Pending Admin Setup';
-                if (startDate && tenure) {
-                  const start = new Date(startDate);
-                  const end = new Date(start);
-                  end.setMonth(end.getMonth() + tenure);
-                  endLabel = `${start.toLocaleString('default', { month: 'short', year: 'numeric' })} – ${end.toLocaleString('default', { month: 'short', year: 'numeric' })}`;
-                }
-                const slaStatus = selectedBrand?.status === 'Locked (Tenure Expired)' ? 'Tenure Expired' : (startDate ? 'Active' : 'Pending Setup');
-                const slaColor = slaStatus === 'Active' ? 'text-emerald-500' : slaStatus === 'Tenure Expired' ? 'text-red-500' : 'text-amber-500';
-                return (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="glass-card rounded-2xl border border-primary/20 p-5 flex items-start gap-4">
-                      <div className="p-2.5 bg-muted rounded-xl"><Calendar className="w-5 h-5 text-primary" /></div>
-                      <div>
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Plan Duration</div>
-                        <div className="text-xl font-extrabold text-foreground mt-0.5">{tenure ? `${tenure} Months` : '⏳ Pending'}</div>
-                        <div className="text-xs text-muted-foreground">{endLabel}</div>
-                      </div>
-                    </div>
-                    <div className="glass-card rounded-2xl border border-blue-500/20 p-5 flex items-start gap-4">
-                      <div className="p-2.5 bg-muted rounded-xl"><Users className="w-5 h-5 text-blue-500" /></div>
-                      <div>
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Client Brand</div>
-                        <div className="text-xl font-extrabold text-foreground mt-0.5 truncate">{selectedBrand?.businessName || '—'}</div>
-                        <div className="text-xs text-muted-foreground">{selectedBrand?.category || '—'}</div>
-                      </div>
-                    </div>
-                    <div className="glass-card rounded-2xl border border-emerald-500/20 p-5 flex items-start gap-4">
-                      <div className="p-2.5 bg-muted rounded-xl"><ShieldCheck className="w-5 h-5 text-emerald-500" /></div>
-                      <div>
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">SLA Status</div>
-                        <div className={`text-xl font-extrabold mt-0.5 ${slaColor}`}>{slaStatus}</div>
-                        <div className="text-xs text-muted-foreground">{tenureLabel}</div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* ── Quotation Confirmation & Payment Setup Card for Agency-Managed Clients ── */}
-              <div className="glass-card rounded-2xl border border-primary/30 p-6 bg-primary/5 space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-primary/10 pb-4">
-                  <div>
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
-                      ⚡ Service Quote & Billing Setup
-                    </span>
-                    <h3 className="text-lg font-extrabold text-foreground mt-2 flex items-center gap-2">
-                      <CreditCard className="w-5 h-5 text-primary" />
-                      Quotation & Payment Mode Confirmation
-                    </h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Confirm quote pricing & select preferred payment terms on behalf of {selectedBrand?.businessName}.
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Assigned Retainer / Fee</div>
-                    <div className="text-xl font-extrabold text-primary">
-                      {selectedBrand?.retainerFee ? `₹${parseInt(selectedBrand.retainerFee).toLocaleString('en-IN')}` : '₹3,000 / month'}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                  <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
-                    <span className="text-muted-foreground font-bold uppercase text-[10px]">Payment Structure</span>
-                    <p className="font-extrabold text-foreground">{selectedBrand?.paymentStrategy || "📅 Monthly Retainer SLA"}</p>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
-                    <span className="text-muted-foreground font-bold uppercase text-[10px]">Payment Modes Supported</span>
-                    <p className="font-extrabold text-foreground">UPI · Bank Transfer (NEFT/RTGS) · Cash</p>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
-                    <span className="text-muted-foreground font-bold uppercase text-[10px]">Verification UTR Status</span>
-                    <p className="font-extrabold text-emerald-500 flex items-center gap-1">
-                      <CheckCircle className="w-3.5 h-3.5" /> Direct Agency Settlement Active
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3 pt-2">
-                  <button
-                    onClick={() => setActiveTab('billing')}
-                    className="px-5 py-2.5 bg-primary text-primary-foreground font-extrabold text-xs rounded-xl hover:scale-[1.02] transition-all shadow-md shadow-primary/20 flex items-center gap-2"
-                  >
-                    <CreditCard className="w-4 h-4" /> Open Payment & Invoices
-                  </button>
-                  <button
-                    onClick={() => toast.success(`Quotation & payment terms re-confirmed for ${selectedBrand?.businessName}`)}
-                    className="px-4 py-2.5 bg-muted hover:bg-border text-foreground font-bold text-xs rounded-xl border border-border transition-all flex items-center gap-1.5"
-                  >
-                    <CheckCircle className="w-4 h-4 text-emerald-500" /> Confirm Quotation Terms
-                  </button>
-                </div>
-              </div>
-
-              {/* Dynamic Service Phase Roadmap — adapt based on service category */}
-              {(() => {
-                const category = (selectedBrand?.category || "").toLowerCase();
-                const isDevService = category.includes("software") || category.includes("app") || category.includes("web") || category.includes("erp") || category.includes("automation") || category.includes("ai") || category.includes("devops");
-                const isDesignService = category.includes("design") || category.includes("branding") || category.includes("ui") || category.includes("ux");
-
-                const roadmapTitle = isDevService
-                  ? "Software & System Delivery Roadmap"
-                  : isDesignService
-                  ? "UI/UX & Creative Deliverables Roadmap"
-                  : "SEO/GEO/AEO & Local Search Execution Roadmap";
-
-                const phases = isDevService
-                  ? [
-                      { phase: "Phase 1 · Months 1–2", title: "Architecture & Core Engine", color: "text-blue-500", bg: "bg-blue-500/10 border-blue-500/20", tasks: ["Requirements & DB Schema", "Core API / Backend Engine", "UI Blueprint & Wireframes", "Sprint 1 Prototype Build"] },
-                      { phase: "Phase 2 · Months 3–4", title: "Integrations & Business Logic", color: "text-violet-500", bg: "bg-violet-500/10 border-violet-500/20", tasks: ["Third-party API Integration", "Authentication & Security Audit", "Admin & Client Dashboards", "QA & Automated Tests"] },
-                      { phase: "Phase 3 · Months 5+", title: "Deployment & Scaling", color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/20", tasks: ["Production Cloud Deployment", "Performance Optimization", "Live Monitoring & Maintenance", "Feature Backlog Scaling"] }
-                    ]
-                  : isDesignService
-                  ? [
-                      { phase: "Phase 1 · Month 1", title: "Brand Identity & Research", color: "text-purple-500", bg: "bg-purple-500/10 border-purple-500/20", tasks: ["Design Discovery & Moodboards", "Logo & Typography Tokens", "Color System & Asset Guidelines", "Figma Design System Setup"] },
-                      { phase: "Phase 2 · Month 2", title: "UI/UX Prototypes", color: "text-pink-500", bg: "bg-pink-500/10 border-pink-500/20", tasks: ["High-Fidelity Wireframes", "Interactive Figma Prototype", "Usability & Accessibility Testing", "Client Design Review Signoff"] },
-                      { phase: "Phase 3 · Month 3+", title: "Handoff & Design Assets", color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/20", tasks: ["Developer Component Handoff", "Vector & Raster Export Bundles", "Social & Marketing Media Kits", "Brand Guidelines Documentation"] }
-                    ]
-                  : [
-                      { phase: "Phase 1 · Months 1–4", title: "Foundation & Audit", color: "text-blue-500", bg: "bg-blue-500/10 border-blue-500/20", tasks: ["GBP setup & optimisation", "Full SEO technical audit", "GEO keyword mapping", "Schema & structured data"] },
-                      { phase: "Phase 2 · Months 5–8", title: "Growth & Visibility",  color: "text-violet-500", bg: "bg-violet-500/10 border-violet-500/20", tasks: ["AI search (GEO) citation building", "Link acquisition campaigns", "Monthly GA reporting", "AEO featured snippet targeting"] },
-                      { phase: "Phase 3 · Months 9–12", title: "Dominance & Scale",  color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/20", tasks: ["Local Map Pack #1 defence", "Review velocity automation", "Annual analytics report", "SLA renewal & scaling review"] }
-                    ];
-
-                return (
-                  <div className="glass-card rounded-2xl border border-border p-6">
-                    <h3 className="text-base font-extrabold text-foreground mb-5 flex items-center gap-2">
-                      <Zap className="w-5 h-5 text-primary" /> {roadmapTitle}
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {phases.map(p => (
-                        <div key={p.phase} className={`rounded-xl border ${p.bg} p-5`}>
-                          <div className={`text-[10px] font-bold uppercase tracking-wider ${p.color} mb-1`}>{p.phase}</div>
-                          <div className="text-sm font-extrabold text-foreground mb-3">{p.title}</div>
-                          <ul className="space-y-2">
-                            {p.tasks.map(t => (
-                              <li key={t} className="flex items-start gap-2 text-xs text-muted-foreground">
-                                <Clock className="w-3.5 h-3.5 shrink-0 mt-0.5 text-muted-foreground/50" />{t}
-                              </li>
-                            ))}
-                          </ul>
+              ) : (
+                /* Specific Client Overview — shown only when a client is selected */
+                <>
+                  {(() => {
+                    const tenure = selectedBrand?.tenureMonths;
+                    const startDate = selectedBrand?.tenureStartDate;
+                    const tenureLabel = tenure ? `${tenure}-Month Executive SLA` : '12-Month Executive SLA';
+                    let endLabel = 'Pending Admin Setup';
+                    if (startDate && tenure) {
+                      const start = new Date(startDate);
+                      const end = new Date(start);
+                      end.setMonth(end.getMonth() + tenure);
+                      endLabel = `${start.toLocaleString('default', { month: 'short', year: 'numeric' })} – ${end.toLocaleString('default', { month: 'short', year: 'numeric' })}`;
+                    }
+                    const slaStatus = selectedBrand?.status === 'Locked (Tenure Expired)' ? 'Tenure Expired' : (startDate ? 'Active' : 'Pending Setup');
+                    const slaColor = slaStatus === 'Active' ? 'text-emerald-500' : slaStatus === 'Tenure Expired' ? 'text-red-500' : 'text-amber-500';
+                    return (
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="glass-card rounded-2xl border border-primary/20 p-5 flex items-start gap-4">
+                          <div className="p-2.5 bg-muted rounded-xl"><Calendar className="w-5 h-5 text-primary" /></div>
+                          <div>
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Plan Duration</div>
+                            <div className="text-xl font-extrabold text-foreground mt-0.5">{tenure ? `${tenure} Months` : '⏳ Pending'}</div>
+                            <div className="text-xs text-muted-foreground">{endLabel}</div>
+                          </div>
                         </div>
-                      ))}
+                        <div className="glass-card rounded-2xl border border-blue-500/20 p-5 flex items-start gap-4">
+                          <div className="p-2.5 bg-muted rounded-xl"><Users className="w-5 h-5 text-blue-500" /></div>
+                          <div>
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Client Brand</div>
+                            <div className="text-xl font-extrabold text-foreground mt-0.5 truncate">{selectedBrand?.businessName || '—'}</div>
+                            <div className="text-xs text-muted-foreground">{selectedBrand?.category || '—'}</div>
+                          </div>
+                        </div>
+                        <div className="glass-card rounded-2xl border border-emerald-500/20 p-5 flex items-start gap-4">
+                          <div className="p-2.5 bg-muted rounded-xl"><ShieldCheck className="w-5 h-5 text-emerald-500" /></div>
+                          <div>
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">SLA Status</div>
+                            <div className={`text-xl font-extrabold mt-0.5 ${slaColor}`}>{slaStatus}</div>
+                            <div className="text-xs text-muted-foreground">{tenureLabel}</div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  <div className="glass-card rounded-2xl border border-primary/30 p-6 bg-primary/5 space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-primary/10 pb-4">
+                      <div>
+                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
+                          ⚡ Service Quote & Billing Setup
+                        </span>
+                        <h3 className="text-lg font-extrabold text-foreground mt-2 flex items-center gap-2">
+                          <CreditCard className="w-5 h-5 text-primary" />
+                          Quotation & Payment Mode Confirmation
+                        </h3>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          Confirm quote pricing & select preferred payment terms on behalf of {selectedBrand?.businessName}.
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Assigned Retainer / Fee</div>
+                        <div className="text-xl font-extrabold text-primary">
+                          {selectedBrand?.retainerFee ? `₹${parseInt(selectedBrand.retainerFee).toLocaleString('en-IN')}` : '₹3,000 / month'}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                      <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
+                        <span className="text-muted-foreground font-bold uppercase text-[10px]">Payment Structure</span>
+                        <p className="font-extrabold text-foreground">{selectedBrand?.paymentStrategy || "📅 Monthly Retainer SLA"}</p>
+                      </div>
+                      <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
+                        <span className="text-muted-foreground font-bold uppercase text-[10px]">Payment Modes Supported</span>
+                        <p className="font-extrabold text-foreground">UPI · Bank Transfer (NEFT/RTGS) · Cash</p>
+                      </div>
+                      <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
+                        <span className="text-muted-foreground font-bold uppercase text-[10px]">Verification UTR Status</span>
+                        <p className="font-extrabold text-emerald-500 flex items-center gap-1">
+                          <CheckCircle className="w-3.5 h-3.5" /> Direct Agency Settlement Active
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3 pt-2">
+                      <button
+                        onClick={() => setActiveTab('billing')}
+                        className="px-5 py-2.5 bg-primary text-primary-foreground font-extrabold text-xs rounded-xl hover:scale-[1.02] transition-all shadow-md shadow-primary/20 flex items-center gap-2"
+                      >
+                        <CreditCard className="w-4 h-4" /> Open Payment & Invoices
+                      </button>
+                      <button
+                        onClick={() => toast.success(`Quotation & payment terms re-confirmed for ${selectedBrand?.businessName}`)}
+                        className="px-4 py-2.5 bg-muted hover:bg-border text-foreground font-bold text-xs rounded-xl border border-border transition-all flex items-center gap-1.5"
+                      >
+                        <CheckCircle className="w-4 h-4 text-emerald-500" /> Confirm Quotation Terms
+                      </button>
                     </div>
                   </div>
-                );
-              })()}
 
-              <GoogleReviewCard audience="client" name={agencyName} compact />
+                  {(() => {
+                    const category = (selectedBrand?.category || "").toLowerCase();
+                    const isDevService = category.includes("software") || category.includes("app") || category.includes("web") || category.includes("erp") || category.includes("automation") || category.includes("ai") || category.includes("devops");
+                    const isDesignService = category.includes("design") || category.includes("branding") || category.includes("ui") || category.includes("ux");
+
+                    const roadmapTitle = isDevService
+                      ? "Software & System Delivery Roadmap"
+                      : isDesignService
+                      ? "UI/UX & Creative Deliverables Roadmap"
+                      : "SEO/GEO/AEO & Local Search Execution Roadmap";
+
+                    const phases = isDevService
+                      ? [
+                          { phase: "Phase 1 · Months 1–2", title: "Architecture & Core Engine", color: "text-blue-500", bg: "bg-blue-500/10 border-blue-500/20", tasks: ["Requirements & DB Schema", "Core API / Backend Engine", "UI Blueprint & Wireframes", "Sprint 1 Prototype Build"] },
+                          { phase: "Phase 2 · Months 3–4", title: "Integrations & Business Logic", color: "text-violet-500", bg: "bg-violet-500/10 border-violet-500/20", tasks: ["Third-party API Integration", "Authentication & Security Audit", "Admin & Client Dashboards", "QA & Automated Tests"] },
+                          { phase: "Phase 3 · Months 5+", title: "Deployment & Scaling", color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/20", tasks: ["Production Cloud Deployment", "Performance Optimization", "Live Monitoring & Maintenance", "Feature Backlog Scaling"] }
+                        ]
+                      : isDesignService
+                      ? [
+                          { phase: "Phase 1 · Month 1", title: "Brand Identity & Research", color: "text-purple-500", bg: "bg-purple-500/10 border-purple-500/20", tasks: ["Design Discovery & Moodboards", "Logo & Typography Tokens", "Color System & Asset Guidelines", "Figma Design System Setup"] },
+                          { phase: "Phase 2 · Month 2", title: "UI/UX Prototypes", color: "text-pink-500", bg: "bg-pink-500/10 border-pink-500/20", tasks: ["High-Fidelity Wireframes", "Interactive Figma Prototype", "Usability & Accessibility Testing", "Client Design Review Signoff"] },
+                          { phase: "Phase 3 · Month 3+", title: "Handoff & Design Assets", color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/20", tasks: ["Developer Component Handoff", "Vector & Raster Export Bundles", "Social & Marketing Media Kits", "Brand Guidelines Documentation"] }
+                        ]
+                      : [
+                          { phase: "Phase 1 · Months 1–4", title: "Foundation & Audit", color: "text-blue-500", bg: "bg-blue-500/10 border-blue-500/20", tasks: ["GBP setup & optimisation", "Full SEO technical audit", "GEO keyword mapping", "Schema & structured data"] },
+                          { phase: "Phase 2 · Months 5–8", title: "Growth & Visibility",  color: "text-violet-500", bg: "bg-violet-500/10 border-violet-500/20", tasks: ["AI search (GEO) citation building", "Link acquisition campaigns", "Monthly GA reporting", "AEO featured snippet targeting"] },
+                          { phase: "Phase 3 · Months 9–12", title: "Dominance & Scale",  color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/20", tasks: ["Local Map Pack #1 defence", "Review velocity automation", "Annual analytics report", "SLA renewal & scaling review"] }
+                        ];
+
+                    return (
+                      <div className="glass-card rounded-2xl border border-border p-6">
+                        <h3 className="text-base font-extrabold text-foreground mb-5 flex items-center gap-2">
+                          <Zap className="w-5 h-5 text-primary" /> {roadmapTitle}
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          {phases.map(p => (
+                            <div key={p.phase} className={`rounded-xl border ${p.bg} p-5`}>
+                              <div className={`text-[10px] font-bold uppercase tracking-wider ${p.color} mb-1`}>{p.phase}</div>
+                              <div className="text-sm font-extrabold text-foreground mb-3">{p.title}</div>
+                              <ul className="space-y-2">
+                                {p.tasks.map(t => (
+                                  <li key={t} className="flex items-start gap-2 text-xs text-muted-foreground">
+                                    <Clock className="w-3.5 h-3.5 shrink-0 mt-0.5 text-muted-foreground/50" />{t}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </>
+              )}
             </motion.div>
           )}
 
