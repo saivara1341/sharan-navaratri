@@ -456,9 +456,11 @@ const AdminPortal = () => {
                 }
             });
 
-            const merged = Array.from(userMap.values()).sort(
-                (a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
-            );
+            const merged = Array.from(userMap.values())
+                .filter(u => u.role !== 'admin' && u.email?.toLowerCase() !== 'ssaivaraprasad51@gmail.com')
+                .sort(
+                    (a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+                );
 
             setAllUsers(merged);
         } catch (err: any) {
@@ -1269,7 +1271,9 @@ const AdminPortal = () => {
                             </div>
                         ) : (
                             <div className="space-y-3">
-                                {(userRoleFilter === 'all' ? allUsers : allUsers.filter(u => u.role === userRoleFilter)).map((user, i) => (
+                                {(userRoleFilter === 'all' ? allUsers : allUsers.filter(u => u.role === userRoleFilter))
+                                    .filter(u => u.role !== 'admin' && u.email?.toLowerCase() !== 'ssaivaraprasad51@gmail.com')
+                                    .map((user, i) => (
                                     <motion.div
                                         key={user.id}
                                         initial={{ opacity: 0, y: 10 }}
