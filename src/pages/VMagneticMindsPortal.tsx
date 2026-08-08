@@ -105,17 +105,16 @@ function ClientList({
                 : 'border-border hover:border-primary/30'
             }`}
           >
-            {/* Row — always visible */}
-            <button
-              type="button"
-              onClick={() => setExpandedId(isExpanded ? null : c.id)}
-              className="w-full flex items-center justify-between px-5 py-4 text-left"
+            {/* Row — tapping opens client dashboard directly */}
+            <div
+              onClick={() => onSelect(c.id)}
+              className="w-full flex items-center justify-between px-5 py-4 text-left cursor-pointer group"
             >
               <div className="flex items-center gap-3 min-w-0">
                 <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${
                   c.status === 'Locked (Tenure Expired)' ? 'bg-red-500' : 'bg-emerald-500'
                 }`} />
-                <span className="font-bold text-sm text-foreground truncate">{c.businessName}</span>
+                <span className="font-bold text-sm text-foreground truncate group-hover:text-primary transition-colors">{c.businessName}</span>
                 {c.category && (
                   <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full border border-border hidden sm:inline">
                     {c.category}
@@ -131,11 +130,18 @@ function ClientList({
                 <span className="text-[10px] text-muted-foreground hidden md:inline">
                   SEO {c.seoScore || 75} · GEO {c.geoScore || 80} · GBP {c.gbpScore || 85} · AEO {c.aeoScore || 78}
                 </span>
-                <ChevronRight className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
-                  isExpanded ? 'rotate-90' : ''
-                }`} />
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setExpandedId(isExpanded ? null : c.id); }}
+                  className="p-1 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+                  title="Inspect quick details"
+                >
+                  <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${
+                    isExpanded ? 'rotate-90' : ''
+                  }`} />
+                </button>
               </div>
-            </button>
+            </div>
 
             {/* Expanded details */}
             <AnimatePresence>
@@ -1001,32 +1007,44 @@ export default function VMagneticMindsPortal() {
           </div>
         </motion.div>
 
-        {/* ── Client Back Bar (shown only when a client is open) ──────── */}
+        {/* ── Client Back Bar & Admin Sync Badge (shown only when a client is open) ──────── */}
         {selectedBrandId !== 'all' && (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-between px-4 py-3 rounded-2xl border border-border bg-muted/30 glass-card">
-            <div className="flex items-center gap-3 min-w-0">
-              <button
-                onClick={() => { setSelectedBrandId('all'); setActiveTab('clients'); toast.info('Back to Client Portfolio'); }}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-muted hover:bg-border border border-border text-xs font-bold text-foreground transition-all shrink-0"
-              >
-                <ChevronLeft className="w-4 h-4" /> Back
-              </button>
-              <div className="min-w-0">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Viewing Client</div>
-                <div className="text-sm font-extrabold text-foreground truncate flex items-center gap-2">
-                  {selectedBrand?.businessName}
-                  {selectedBrand?.category && (
-                    <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold border border-primary/20 shrink-0">
-                      {selectedBrand.category}
-                    </span>
-                  )}
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+            <div className="flex items-center justify-between px-4 py-3 rounded-2xl border border-border bg-muted/30 glass-card">
+              <div className="flex items-center gap-3 min-w-0">
+                <button
+                  onClick={() => { setSelectedBrandId('all'); setActiveTab('clients'); toast.info('Back to Client Portfolio'); }}
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-muted hover:bg-border border border-border text-xs font-bold text-foreground transition-all shrink-0"
+                >
+                  <ChevronLeft className="w-4 h-4" /> Back to Client Portfolio
+                </button>
+                <div className="min-w-0">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Tracking Client</div>
+                  <div className="text-sm font-extrabold text-foreground truncate flex items-center gap-2">
+                    {selectedBrand?.businessName}
+                    {selectedBrand?.category && (
+                      <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold border border-primary/20 shrink-0">
+                        {selectedBrand.category}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
+              <div className="text-right hidden md:block shrink-0">
+                <div className="text-xs text-muted-foreground">Strategy</div>
+                <div className="text-sm font-extrabold text-primary">{selectedBrand?.retainerFee || selectedBrand?.paymentStrategy || 'Custom'}</div>
+              </div>
             </div>
-            <div className="text-right hidden md:block shrink-0">
-              <div className="text-xs text-muted-foreground">Strategy</div>
-              <div className="text-sm font-extrabold text-primary">{selectedBrand?.retainerFee || selectedBrand?.paymentStrategy || 'Custom'}</div>
+
+            <div className="p-3.5 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-between gap-3 text-xs glass-card">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
+                <span className="font-bold text-foreground truncate">Admin Telemetry Sync Active</span>
+                <span className="text-muted-foreground hidden sm:inline truncate">— Live scores, roadmap milestones & reports are populated directly by Admin.</span>
+              </div>
+              <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 shrink-0">
+                Managed by Admin
+              </span>
             </div>
           </motion.div>
         )}
