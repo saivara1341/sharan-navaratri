@@ -59,75 +59,83 @@ export const FooterSection = () => {
       <GoogleReviewNotificationBanner />
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-          <motion.a
-            href="/"
-            onClick={handleHomeClick}
-            initial={isMobile ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={isMobile ? { duration: 0 } : { duration: 0.8 }}
-            className="flex items-center gap-4 group cursor-pointer relative z-10"
-          >
-            <motion.div
-              className="relative w-14 h-14 shrink-0"
-              whileHover={{ rotate: 5, scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <div className="absolute inset-0 bg-primary/20 rounded-xl blur-xl" />
-              <img
-                src={siddhiLogo}
-                alt="Siddhi Dynamics"
-                width="56"
-                height="56"
-                loading="lazy"
-                decoding="async"
-                className="relative w-full h-full object-contain"
-              />
-            </motion.div>
-            <div className="flex flex-col">
-              <span className="font-bold text-xl text-white tracking-wide">
-                Siddhi Dynamics LLP
-              </span>
-              <span className="text-sm text-slate-400 block mt-0.5">
-                {t('hero.badge')}
+        <div className="flex flex-col gap-6">
+          {/* Desktop Line 1: Logo + Siddhi Dynamics LLP on left, Nav links on right */}
+          {/* Desktop Line 2: Next-Generation AI Solutions */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex flex-col items-center md:items-start text-center md:text-left">
+              <motion.a
+                href="/"
+                onClick={handleHomeClick}
+                initial={isMobile ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={isMobile ? { duration: 0 } : { duration: 0.8 }}
+                className="flex items-center gap-3.5 group cursor-pointer relative z-10"
+              >
+                <motion.div
+                  className="relative w-12 h-12 shrink-0"
+                  whileHover={{ rotate: 5, scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <div className="absolute inset-0 bg-primary/20 rounded-xl blur-xl" />
+                  <img
+                    src={siddhiLogo}
+                    alt="Siddhi Dynamics"
+                    width="48"
+                    height="48"
+                    loading="lazy"
+                    decoding="async"
+                    className="relative w-full h-full object-contain"
+                  />
+                </motion.div>
+                <span className="font-extrabold text-xl md:text-2xl text-white tracking-wide whitespace-nowrap">
+                  Siddhi Dynamics LLP
+                </span>
+              </motion.a>
+
+              {/* Line 2: Next-Generation AI Solutions */}
+              <span className="text-xs md:text-sm text-primary font-semibold tracking-wider mt-1 md:ml-[60px] block">
+                {t('hero.badge', 'Next-Generation AI Solutions')}
               </span>
             </div>
-          </motion.a>
 
-          <motion.nav
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            className="flex flex-wrap items-center gap-6"
-          >
-            {[
-              { name: 'About', href: '/about' },
-              { name: t('nav.vision'), href: '/#vision' },
-              { name: t('nav.projects'), href: '/#projects' },
-              { name: 'Blog', href: '/blog' },
-              { name: 'Services', href: '/services/business-automation' },
-              { name: t('nav.submit'), href: '/#submit' },
-            ].map((link, index) => (
-              <motion.a
-                key={link.name}
-                href={link.href}
-                onClick={(e) => handleNavClick(e, link.href)}
-                custom={index}
-                variants={linkVariants}
-                className="relative text-sm text-slate-400 hover:text-white transition-colors group"
-                whileHover={{ y: -3, scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {link.name}
-                <motion.span
-                  className="absolute -bottom-1 left-0 h-[2px] bg-gradient-to-r from-primary to-accent"
-                  initial={{ width: 0 }}
-                  whileHover={{ width: "100%" }}
-                  transition={{ duration: 0.3 }}
-                />
-              </motion.a>
-            ))}
-          </motion.nav>
+            {/* Nav Links in Line 1 (Right Side) */}
+            <motion.nav
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+              className="flex flex-wrap items-center justify-center md:justify-end gap-5 md:gap-6 whitespace-nowrap"
+            >
+              {[
+                { name: 'About', href: '/about' },
+                { name: t('nav.vision', 'Vision'), href: '/#vision' },
+                { name: t('nav.projects', 'Projects'), href: '/#projects' },
+                { name: 'Blog', href: '/blog' },
+                { name: 'Services', href: '/services/business-automation' },
+                { name: t('nav.submit', 'Submit Problem'), href: '/#submit' },
+              ].map((link, index) => (
+                <motion.a
+                  key={link.name}
+                  href={link.href}
+                  onClick={(e) => handleNavClick(e, link.href)}
+                  custom={index}
+                  variants={linkVariants}
+                  className="relative text-sm font-semibold text-slate-300 hover:text-white transition-colors group"
+                  whileHover={{ y: -3, scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {link.name}
+                  <motion.span
+                    className="absolute -bottom-1 left-0 h-[2px] bg-gradient-to-r from-primary to-accent"
+                    initial={{ width: 0 }}
+                    whileHover={{ width: "100%" }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </motion.a>
+              ))}
+            </motion.nav>
+          </div>
+        </div>
 
           <motion.div
             initial={{ opacity: 0, x: 30 }}
