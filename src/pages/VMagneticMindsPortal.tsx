@@ -1046,14 +1046,14 @@ export default function VMagneticMindsPortal() {
           </motion.div>
         )}
 
-        {/* ── Tab nav grid — shown in Client Portfolio tab OR when a client is selected ── */}
-        {(activeTab === 'clients' || (activeTab === 'occasions' && selectedBrandId === 'all') || (activeTab !== 'clients' && selectedBrandId !== 'all')) && (
+        {/* ── Tab nav grid — always visible ── */}
+        {activeTab !== 'occasions' && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {BASE_TABS.map((tab, i) => {
               // Build dynamic label: for overview, prefix with actual tenure from selected client
               const tenureLabel = selectedBrand?.tenureMonths
                 ? `${selectedBrand.tenureMonths}-Month Executive SLA`
-                : '12-Month Executive SLA';
+                : 'Executive SLA & Roadmap';
               const label = tab.id === 'overview' ? tenureLabel : tab.baseLabel;
               const isActive = activeTab === tab.id;
               return (
@@ -1072,12 +1072,9 @@ export default function VMagneticMindsPortal() {
                     <div className={`text-xs font-extrabold leading-tight ${isActive ? 'text-primary-foreground' : 'text-foreground'}`}>
                       {label}
                     </div>
-                    {/* Show desc subtitles only in client-specific platform (when a client is selected) */}
-                    {selectedBrandId !== 'all' && (
-                      <div className={`text-[10px] mt-0.5 ${isActive ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
-                        {tab.desc}
-                      </div>
-                    )}
+                    <div className={`text-[10px] mt-0.5 ${isActive ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                      {tab.desc}
+                    </div>
                   </div>
                 </motion.button>
               );
@@ -1085,8 +1082,7 @@ export default function VMagneticMindsPortal() {
           </div>
         )}
 
-
-        {/* ── Occasions tab: always rendered regardless of client selection ── */}
+        {/* ── Occasions tab: always rendered ── */}
         {activeTab === 'occasions' && (
           <AnimatePresence mode="wait">
             <OccasionDesignsSection
@@ -1097,13 +1093,97 @@ export default function VMagneticMindsPortal() {
           </AnimatePresence>
         )}
 
-        {/* ── Tab Content (only when a client is selected, excluding occasions) ── */}
-        {selectedBrandId !== 'all' && activeTab !== 'occasions' && (
+        {/* ── Tab Content ── */}
+        {activeTab !== 'occasions' && (
         <AnimatePresence mode="wait">
 
           {/* ═══ OVERVIEW ══════════════════════════════════════════════════ */}
           {activeTab === 'overview' && (
             <motion.div key="overview" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
+              {/* Agency High-Level Overview Header when no specific client is selected */}
+              {selectedBrandId === 'all' && (
+                <div className="glass-card rounded-3xl border border-primary/30 p-6 md:p-8 bg-primary/5 space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-5">
+                    <div>
+                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+                        🏬 Agency Management Dashboard
+                      </span>
+                      <h2 className="text-2xl font-extrabold text-foreground mt-2 flex items-center gap-2">
+                        <Building2 className="w-6 h-6 text-primary" /> {agencyName} Portfolio Hub
+                      </h2>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Manage all agency clients, setup service strategies, track roadmap execution, and monitor delivery scores.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setShowClientForm(true)}
+                      className="px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-extrabold text-sm shadow-xl shadow-primary/20 hover:scale-105 transition-all flex items-center gap-2 shrink-0 cursor-pointer"
+                    >
+                      <Plus className="w-5 h-5" /> Add Client Brand
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="p-4 rounded-2xl bg-card border border-border flex items-center gap-3">
+                      <div className="p-3 rounded-xl bg-primary/10 text-primary"><Users className="w-5 h-5" /></div>
+                      <div>
+                        <div className="text-[10px] font-bold text-muted-foreground uppercase">Managed Clients</div>
+                        <div className="text-2xl font-extrabold text-foreground">{clients.length}</div>
+                      </div>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-card border border-border flex items-center gap-3">
+                      <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-500"><ShieldCheck className="w-5 h-5" /></div>
+                      <div>
+                        <div className="text-[10px] font-bold text-muted-foreground uppercase">Active SLAs</div>
+                        <div className="text-2xl font-extrabold text-emerald-500">{clients.filter(c => c.status !== 'Locked (Tenure Expired)').length}</div>
+                      </div>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-card border border-border flex items-center gap-3">
+                      <div className="p-3 rounded-xl bg-violet-500/10 text-violet-500"><BarChart3 className="w-5 h-5" /></div>
+                      <div>
+                        <div className="text-[10px] font-bold text-muted-foreground uppercase">Avg Delivery Score</div>
+                        <div className="text-2xl font-extrabold text-violet-500">
+                          {clients.length > 0 ? Math.round(clients.reduce((acc, c) => acc + (c.seoScore || 75), 0) / clients.length) : 80}/100
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {clients.length === 0 ? (
+                    <div className="p-8 rounded-2xl bg-card border border-dashed border-primary/30 text-center space-y-3">
+                      <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto text-primary">
+                        <Plus className="w-6 h-6" />
+                      </div>
+                      <h3 className="text-sm font-extrabold text-foreground">No Client Brands Added Yet</h3>
+                      <p className="text-xs text-muted-foreground max-w-md mx-auto">
+                        Add your agency clients to begin custom service execution, milestone tracking, and score updates.
+                      </p>
+                      <button
+                        onClick={() => setShowClientForm(true)}
+                        className="px-5 py-2.5 bg-primary text-primary-foreground font-extrabold text-xs rounded-xl hover:scale-105 transition-all shadow-md shadow-primary/20 inline-flex items-center gap-2 cursor-pointer"
+                      >
+                        <Plus className="w-4 h-4" /> Add First Client Brand
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3 pt-2">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-extrabold text-foreground uppercase tracking-wider">Your Client Portfolio</h3>
+                        <button onClick={() => setActiveTab('clients')} className="text-xs font-bold text-primary hover:underline">View All →</button>
+                      </div>
+                      <ClientList
+                        clients={clients}
+                        selectedBrandId={selectedBrandId}
+                        onSelect={(id) => { setSelectedBrandId(id); setActiveTab('overview'); toast.info(`Viewing ${clients.find(c => c.id === id)?.businessName}`); }}
+                        onToggleLock={handleToggleClientLock}
+                        onDelete={handleDeleteClient}
+                        onInspectSeo={(id) => selectBrandAndOpenTab(id, 'seo-geo')}
+                        onInspectAnalytics={(id) => selectBrandAndOpenTab(id, 'analytics')}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
               {/* Dynamic SLA Summary — based on admin-set client tenure */}
               {(() => {
                 const tenure = selectedBrand?.tenureMonths;
