@@ -76,6 +76,7 @@ const AdminPortal = () => {
     const [agencySearchTerm, setAgencySearchTerm] = useState('');
     const [editAgencyClient, setEditAgencyClient] = useState<any | null>(null);
     // Edit fields for agency client
+    const [acCategory, setAcCategory] = useState('');
     const [acTenureMonths, setAcTenureMonths] = useState('');
     const [acTenureStart, setAcTenureStart] = useState('');
     const [acRetainerFee, setAcRetainerFee] = useState('');
@@ -115,6 +116,7 @@ const AdminPortal = () => {
 
     const openEditAgencyClient = (client: any) => {
         setEditAgencyClient(client);
+        setAcCategory(client.category || 'SEO, GEO & AEO Programme');
         setAcTenureMonths(client.tenure_months?.toString() || '');
         setAcTenureStart(client.tenure_start_date || '');
         setAcRetainerFee(client.retainer_fee || '');
@@ -139,6 +141,7 @@ const AdminPortal = () => {
         setSavingAc(true);
         try {
             const updates: any = {
+                category: acCategory,
                 tenure_months: acTenureMonths ? parseInt(acTenureMonths) : null,
                 tenure_start_date: acTenureStart || null,
                 retainer_fee: acRetainerFee || null,
@@ -2302,11 +2305,27 @@ const AdminPortal = () => {
                         </div>
 
                         <div className="p-6 space-y-8">
-                            {/* ── SLA & Fee ─── */}
+                            {/* ── Service Category, SLA & Fee ─── */}
                             <div className="space-y-4">
                                 <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary border-b border-border pb-2 flex items-center gap-2">
-                                    <Calendar className="w-4 h-4" /> SLA Tenure & Retainer Fee
+                                    <Calendar className="w-4 h-4" /> Service Category, SLA Tenure & Retainer Fee
                                 </h4>
+                                <div>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Service Category *</label>
+                                    <select
+                                        value={acCategory}
+                                        onChange={e => setAcCategory(e.target.value)}
+                                        className="w-full bg-muted border border-border text-foreground rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                    >
+                                        <option value="SEO, GEO & AEO Programme">SEO, GEO & AEO Marketing Programme</option>
+                                        <option value="Web & Mobile App Development">Web & Mobile App Development</option>
+                                        <option value="Software & ERP Solutions">Software & ERP Solutions</option>
+                                        <option value="AI & Machine Learning Engineering">AI & Machine Learning Engineering</option>
+                                        <option value="Business Automation & DevOps">Business Automation & DevOps</option>
+                                        <option value="UI/UX Design & Branding">UI/UX Design & Branding</option>
+                                        <option value="Custom Executive SLA">Custom Executive SLA</option>
+                                    </select>
+                                </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Tenure (Months) *</label>

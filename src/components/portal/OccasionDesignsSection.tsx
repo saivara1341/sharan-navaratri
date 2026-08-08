@@ -46,123 +46,8 @@ interface OccasionDesignsSectionProps {
   agencyName: string;
 }
 
-// ─── Preloaded Sample Occasions ───────────────────────────────────────────────
-// We use curated Unsplash-style image URLs for beautiful placeholders
-
-const PRELOADED_OCCASIONS: OccasionImage[] = [
-  {
-    id: "pre-1",
-    title: "Happy Makar Sankranti 2026",
-    category: "Traditional & Festive",
-    clientId: "all",
-    clientName: "All Clients",
-    aspectRatio: "1:1",
-    url: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&q=80",
-    caption: "🪁 Wishing you a colourful & joyful Makar Sankranti! May this festival bring warmth, prosperity & new beginnings to your family. — {Business Name}",
-    tags: ["sankranti", "festival", "kite", "traditional"],
-    uploadedAt: "2026-01-12",
-    isPreloaded: true,
-    fileName: "sankranti_2026.jpg",
-  },
-  {
-    id: "pre-2",
-    title: "Happy Diwali 2026",
-    category: "Traditional & Festive",
-    clientId: "all",
-    clientName: "All Clients",
-    aspectRatio: "1:1",
-    url: "https://images.unsplash.com/photo-1605289982774-9a6fef564df8?w=600&q=80",
-    caption: "🪔 On this auspicious occasion of Diwali, may prosperity light up your home! Warmest wishes from {Business Name}.",
-    tags: ["diwali", "festival", "lights", "traditional"],
-    uploadedAt: "2026-01-12",
-    isPreloaded: true,
-    fileName: "diwali_2026.jpg",
-  },
-  {
-    id: "pre-3",
-    title: "New Year 2026 Wishes",
-    category: "Celebration & Wishes",
-    clientId: "all",
-    clientName: "All Clients",
-    aspectRatio: "9:16",
-    url: "https://images.unsplash.com/photo-1467810563316-b5476525c0f9?w=400&h=711&q=80",
-    caption: "🎆 Happy New Year 2026! Wishing you 365 days of joy, success & abundance. With love from {Business Name}.",
-    tags: ["new year", "celebration", "fireworks", "wishes"],
-    uploadedAt: "2026-01-01",
-    isPreloaded: true,
-    fileName: "new_year_2026.jpg",
-  },
-  {
-    id: "pre-4",
-    title: "Republic Day 2026",
-    category: "National & Special Days",
-    clientId: "all",
-    clientName: "All Clients",
-    aspectRatio: "16:9",
-    url: "https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600&q=80",
-    caption: "🇮🇳 Happy Republic Day! Let us celebrate the spirit of unity, diversity & democracy. Jai Hind! — {Business Name}",
-    tags: ["republic day", "national", "india", "tricolour"],
-    uploadedAt: "2026-01-26",
-    isPreloaded: true,
-    fileName: "republic_day_2026.jpg",
-  },
-  {
-    id: "pre-5",
-    title: "Happy Birthday Greetings",
-    category: "Celebration & Wishes",
-    clientId: "all",
-    clientName: "All Clients",
-    aspectRatio: "1:1",
-    url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
-    caption: "🎂 Wishing you a very Happy Birthday! May all your dreams come true. Warmest wishes from {Business Name}.",
-    tags: ["birthday", "celebration", "wishes", "cake"],
-    uploadedAt: "2026-01-12",
-    isPreloaded: true,
-    fileName: "birthday_wishes.jpg",
-  },
-  {
-    id: "pre-6",
-    title: "Holi 2026 – Festival of Colours",
-    category: "Traditional & Festive",
-    clientId: "all",
-    clientName: "All Clients",
-    aspectRatio: "1:1",
-    url: "https://images.unsplash.com/photo-1615309662534-6c6e96db6f7c?w=600&q=80",
-    caption: "🌈 May the colours of Holi fill your life with happiness & love! Festive wishes from {Business Name}.",
-    tags: ["holi", "colours", "festival", "traditional"],
-    uploadedAt: "2026-03-14",
-    isPreloaded: true,
-    fileName: "holi_2026.jpg",
-  },
-  {
-    id: "pre-7",
-    title: "Eid Mubarak 2026",
-    category: "Traditional & Festive",
-    clientId: "all",
-    clientName: "All Clients",
-    aspectRatio: "1:1",
-    url: "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=600&q=80",
-    caption: "☪️ Eid Mubarak! May this blessed occasion bring joy, peace and prosperity to you and your family. — {Business Name}",
-    tags: ["eid", "ramzan", "festival", "wishes"],
-    uploadedAt: "2026-03-30",
-    isPreloaded: true,
-    fileName: "eid_mubarak_2026.jpg",
-  },
-  {
-    id: "pre-8",
-    title: "Independence Day 2026",
-    category: "National & Special Days",
-    clientId: "all",
-    clientName: "All Clients",
-    aspectRatio: "16:9",
-    url: "https://images.unsplash.com/photo-1558522195-e1201b090344?w=600&q=80",
-    caption: "🇮🇳 Happy Independence Day! Proud to be Indian. Jai Hind! — {Business Name}",
-    tags: ["independence day", "national", "india", "freedom"],
-    uploadedAt: "2026-08-15",
-    isPreloaded: true,
-    fileName: "independence_day_2026.jpg",
-  },
-];
+// No preloaded demo data — only admin-uploaded images are shown
+const PRELOADED_OCCASIONS: OccasionImage[] = [];
 
 const CATEGORIES: OccasionCategory[] = [
   "Traditional & Festive",
@@ -195,10 +80,13 @@ export default function OccasionDesignsSection({
   agencyName,
 }: OccasionDesignsSectionProps) {
   // ── State ──────────────────────────────────────────────────────────────────
-  const [occasions, setOccasions] = useState<OccasionImage[]>(PRELOADED_OCCASIONS);
+  const [occasions, setOccasions] = useState<OccasionImage[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState<OccasionCategory | "All">("All");
-  const [filterClient, setFilterClient] = useState<string>("all");
+  // Default filterClient to the currently selected brand if one is chosen
+  const [filterClient, setFilterClient] = useState<string>(selectedBrandId !== "all" ? selectedBrandId : "all");
+  // Which client to view images for (when no brand pre-selected)
+  const [viewingClientId, setViewingClientId] = useState<string>(selectedBrandId !== "all" ? selectedBrandId : "");
 
   // Upload modal
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -223,26 +111,21 @@ export default function OccasionDesignsSection({
   const [captionCopied, setCaptionCopied] = useState(false);
 
   // ── Filtered Data ──────────────────────────────────────────────────────────
-  const filtered = occasions.filter(occ => {
-    const matchSearch = !searchQuery ||
-      occ.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      occ.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchCategory = filterCategory === "All" || occ.category === filterCategory;
-    const matchClient =
-      filterClient === "all" ||
-      occ.clientId === "all" ||
-      occ.clientId === filterClient;
-    return matchSearch && matchCategory && matchClient;
-  });
+  // Determine the effective client to filter by
+  const effectiveClientId = selectedBrandId !== "all" ? selectedBrandId : viewingClientId;
 
-  // Pinned selected-client items first
-  const sorted = [...filtered].sort((a, b) => {
-    const aIsClient = a.clientId === selectedBrandId;
-    const bIsClient = b.clientId === selectedBrandId;
-    if (aIsClient && !bIsClient) return -1;
-    if (!aIsClient && bIsClient) return 1;
-    return 0;
-  });
+  const filtered = effectiveClientId
+    ? occasions.filter(occ => {
+        const matchSearch = !searchQuery ||
+          occ.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          occ.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+        const matchCategory = filterCategory === "All" || occ.category === filterCategory;
+        const matchClient = occ.clientId === effectiveClientId || occ.clientId === "all";
+        return matchSearch && matchCategory && matchClient;
+      })
+    : [];
+
+  const sorted = [...filtered];
 
   // ── File Upload Handler ────────────────────────────────────────────────────
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -413,35 +296,59 @@ export default function OccasionDesignsSection({
             Occasion & Festive Designs
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Upload custom wishes &amp; festival images for each client. Clients can view &amp; download anytime.
+            {effectiveClientId
+              ? `Showing designs shared by admin for ${clients.find(c => c.id === effectiveClientId)?.businessName || "selected client"}.`
+              : "Select a client below to view their occasion & festive images."}
           </p>
         </div>
         <button
           onClick={() => setShowUploadModal(true)}
           className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl hover:scale-[1.03] transition-all shadow-md shadow-primary/20 shrink-0"
         >
-          <Upload className="w-4 h-4" /> Upload Occasion Design
+          <Upload className="w-4 h-4" /> Upload Design
         </button>
       </div>
 
-      {/* ── Stats Strip ─────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          { label: "Total Designs",    value: occasions.length,                                          icon: <Image className="w-4 h-4 text-primary" /> },
-          { label: "Client-Specific",  value: occasions.filter(o => o.clientId !== "all").length,        icon: <Users className="w-4 h-4 text-blue-500" /> },
-          { label: "Festival / Trad.", value: occasions.filter(o => o.category === "Traditional & Festive").length, icon: <Star className="w-4 h-4 text-amber-500" /> },
-          { label: "This Month",       value: occasions.filter(o => o.uploadedAt.startsWith(new Date().toISOString().slice(0,7))).length, icon: <Calendar className="w-4 h-4 text-emerald-500" /> },
-        ].map(s => (
-          <div key={s.label} className="glass-card rounded-2xl border border-border p-4 flex items-center gap-3">
-            <div className="p-2 bg-muted rounded-xl shrink-0">{s.icon}</div>
-            <div>
-              <div className="text-xl font-extrabold text-foreground">{s.value}</div>
-              <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{s.label}</div>
-            </div>
+      {/* ── Client Picker (when no client pre-selected) ───────────────────────── */}
+      {!effectiveClientId && clients.length > 0 && (
+        <div className="glass-card rounded-2xl border border-border p-5 space-y-3">
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Select a client to view their designs</p>
+          <div className="flex flex-wrap gap-2">
+            {clients.map(c => (
+              <button
+                key={c.id}
+                onClick={() => setViewingClientId(c.id)}
+                className="flex items-center gap-2 px-4 py-2 bg-card border border-primary/30 hover:border-primary hover:bg-primary/5 text-sm font-bold text-foreground rounded-xl transition-all"
+              >
+                🏢 {c.businessName}
+              </button>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
 
+      {/* ── Stats Strip ─────────────────────────────────────────────────────── */}
+      {effectiveClientId && (
+        <div className="flex items-center gap-3 px-1">
+          <span className="text-xs font-bold text-muted-foreground">
+            {filtered.filter(o => o.clientId === effectiveClientId).length} client-specific design{filtered.filter(o => o.clientId === effectiveClientId).length !== 1 ? 's' : ''}
+          </span>
+          <span className="text-xs text-muted-foreground">·</span>
+          <span className="text-xs text-muted-foreground">{sorted.length} total shown</span>
+          {selectedBrandId === 'all' && (
+            <button
+              onClick={() => setViewingClientId('')}
+              className="ml-auto text-xs text-primary font-semibold hover:underline flex items-center gap-1"
+            >
+              <X className="w-3 h-3" /> Switch client
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Show filter bar and grid only when a client is effectively selected */}
+      {effectiveClientId && (
+        <>
       {/* ── Filter Bar ──────────────────────────────────────────────────────── */}
       <div className="glass-card rounded-2xl border border-border p-4 flex flex-col sm:flex-row gap-3">
         {/* Search */}
@@ -677,6 +584,8 @@ export default function OccasionDesignsSection({
             );
           })}
         </div>
+      )}
+        </>
       )}
 
       {/* ════════════════════════════════════════════════════════════════════════

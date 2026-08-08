@@ -60,16 +60,185 @@ const BUSINESS_GOALS = [
 ];
 
 const BASE_TABS: { id: Tab; baseLabel: string; icon: React.ReactNode; desc: string; alwaysVisible?: boolean }[] = [
-  { id: 'overview',   baseLabel: 'Executive SLA',              icon: <Calendar className="w-5 h-5" />,      desc: 'Contract & roadmap progress' },
-  { id: 'clients',    baseLabel: 'Client Portfolio',           icon: <Users className="w-5 h-5" />,         desc: 'Select & manage client brands' },
-  { id: 'seo-geo',    baseLabel: 'SEO / GEO / AEO & GBP Hub', icon: <Search className="w-5 h-5" />,        desc: 'Search & AI score analysis' },
-  { id: 'analytics',  baseLabel: 'GA Monthly Reports',         icon: <BarChart3 className="w-5 h-5" />,     desc: 'Traffic & conversion metrics' },
-  { id: 'billing',    baseLabel: 'UPI Payments & Invoices',    icon: <CreditCard className="w-5 h-5" />,    desc: 'Pay & track invoices' },
+  { id: 'overview',   baseLabel: 'Executive SLA & Roadmap',      icon: <Calendar className="w-5 h-5" />,      desc: 'Contract & milestone progress' },
+  { id: 'clients',    baseLabel: 'Client Portfolio',           icon: <Users className="w-5 h-5" />,         desc: 'Select & manage agency client brands' },
+  { id: 'seo-geo',    baseLabel: 'Service Metrics & Scores',    icon: <Search className="w-5 h-5" />,        desc: 'Live KPI & deliverable scores' },
+  { id: 'analytics',  baseLabel: 'Service Reports & Analytics',icon: <BarChart3 className="w-5 h-5" />,     desc: 'Traffic, uptime & delivery reports' },
+  { id: 'billing',    baseLabel: 'Quotation, Payments & Billing',icon: <CreditCard className="w-5 h-5" />,    desc: 'Confirm quotes & setup payment mode' },
   { id: 'chat',       baseLabel: 'AI Support Coordinator',     icon: <Bot className="w-5 h-5" />,           desc: 'Siddhi AI assistant' },
-  { id: 'occasions',  baseLabel: 'Occasion & Festive Designs', icon: <Image className="w-5 h-5" />,         desc: 'Upload & download wishes images', alwaysVisible: true },
+  { id: 'occasions',  baseLabel: 'Occasion & Festive Designs', icon: <Image className="w-5 h-5" />,         desc: 'Wishes images per client', alwaysVisible: true },
 ];
 
 const INITIAL_CLIENTS: ClientBrand[] = [];
+
+// ─── ClientList Sub-component: compact list, tap to expand ────────────────────
+function ClientList({
+  clients,
+  selectedBrandId,
+  onSelect,
+  onToggleLock,
+  onDelete,
+  onInspectSeo,
+  onInspectAnalytics,
+}: {
+  clients: ClientBrand[];
+  selectedBrandId: string;
+  onSelect: (id: string) => void;
+  onToggleLock: (id: string, name: string) => void;
+  onDelete: (id: string, name: string) => void;
+  onInspectSeo: (id: string) => void;
+  onInspectAnalytics: (id: string) => void;
+}) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  return (
+    <div className="space-y-2">
+      {clients.map((c) => {
+        const isExpanded = expandedId === c.id;
+        const isSelected = selectedBrandId === c.id;
+        return (
+          <div
+            key={c.id}
+            className={`glass-card rounded-2xl border transition-all ${
+              isSelected
+                ? 'border-primary/50 bg-primary/5'
+                : 'border-border hover:border-primary/30'
+            }`}
+          >
+            {/* Row — always visible */}
+            <button
+              type="button"
+              onClick={() => setExpandedId(isExpanded ? null : c.id)}
+              className="w-full flex items-center justify-between px-5 py-4 text-left"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${
+                  c.status === 'Locked (Tenure Expired)' ? 'bg-red-500' : 'bg-emerald-500'
+                }`} />
+                <span className="font-bold text-sm text-foreground truncate">{c.businessName}</span>
+                {c.category && (
+                  <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full border border-border hidden sm:inline">
+                    {c.category}
+                  </span>
+                )}
+                {isSelected && (
+                  <span className="text-[9px] font-extrabold bg-primary text-primary-foreground px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">
+                    Selected
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2 shrink-0 ml-2">
+                <span className="text-[10px] text-muted-foreground hidden md:inline">
+                  SEO {c.seoScore || 75} · GEO {c.geoScore || 80} · GBP {c.gbpScore || 85} · AEO {c.aeoScore || 78}
+                </span>
+                <ChevronRight className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
+                  isExpanded ? 'rotate-90' : ''
+                }`} />
+              </div>
+            </button>
+
+            {/* Expanded details */}
+            <AnimatePresence>
+              {isExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <div className="px-5 pb-5 space-y-4 border-t border-border pt-4">
+                    {/* Scores row */}
+                    <div className="grid grid-cols-4 gap-2 p-3 bg-muted/60 rounded-xl border border-border text-center">
+                      <div>
+                        <div className="text-[9px] font-bold uppercase text-violet-500">GEO</div>
+                        <div className="text-sm font-extrabold text-foreground">{c.geoScore || 80}/100</div>
+                      </div>
+                      <div>
+                        <div className="text-[9px] font-bold uppercase text-cyan-500">SEO</div>
+                        <div className="text-sm font-extrabold text-foreground">{c.seoScore || 75}/100</div>
+                      </div>
+                      <div>
+                        <div className="text-[9px] font-bold uppercase text-rose-500">GBP</div>
+                        <div className="text-sm font-extrabold text-foreground">{c.gbpScore || 85}/100</div>
+                      </div>
+                      <div>
+                        <div className="text-[9px] font-bold uppercase text-amber-500">AEO</div>
+                        <div className="text-sm font-extrabold text-foreground">{c.aeoScore || 78}/100</div>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    {c.description && (
+                      <p className="text-xs text-muted-foreground leading-relaxed">{c.description}</p>
+                    )}
+
+                    {/* Goals */}
+                    {c.goals.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {c.goals.map(g => (
+                          <span key={g} className="text-[10px] bg-muted px-2.5 py-0.5 rounded-full border border-border text-muted-foreground font-medium">
+                            {g}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Contact info */}
+                    <div className="grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
+                      {c.mobile && <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-primary" />{c.mobile}</span>}
+                      {c.email && <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-primary" />{c.email}</span>}
+                      {c.website && <span className="flex items-center gap-1.5 col-span-2 truncate"><Globe className="w-3.5 h-3.5 text-primary" />{c.website}</span>}
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => onSelect(c.id)}
+                        className="flex items-center gap-1.5 px-3 py-2 bg-primary text-primary-foreground font-bold text-xs rounded-xl transition-all hover:scale-[1.02]"
+                      >
+                        <Eye className="w-3.5 h-3.5" /> View Dashboard
+                      </button>
+                      <button
+                        onClick={() => onInspectSeo(c.id)}
+                        className="flex items-center gap-1.5 px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary font-bold text-xs rounded-xl border border-primary/20 transition-all"
+                      >
+                        <Search className="w-3.5 h-3.5" /> SEO/GEO Analysis
+                      </button>
+                      <button
+                        onClick={() => onInspectAnalytics(c.id)}
+                        className="flex items-center gap-1.5 px-3 py-2 bg-muted hover:bg-border text-foreground font-bold text-xs rounded-xl border border-border transition-all"
+                      >
+                        <BarChart3 className="w-3.5 h-3.5 text-primary" /> GA Analytics
+                      </button>
+                      <button
+                        onClick={() => onToggleLock(c.id, c.businessName)}
+                        className={`flex items-center gap-1.5 px-3 py-2 text-xs font-extrabold rounded-xl border transition-all ${
+                          c.status === 'Locked (Tenure Expired)'
+                            ? 'bg-red-600 text-white border-red-500 hover:bg-red-700'
+                            : 'bg-emerald-600 text-white border-emerald-500 hover:bg-emerald-700'
+                        }`}
+                      >
+                        <Lock className="w-3.5 h-3.5" />
+                        {c.status === 'Locked (Tenure Expired)' ? 'Locked' : 'Active'}
+                      </button>
+                      <button
+                        onClick={() => onDelete(c.id, c.businessName)}
+                        className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl border border-transparent hover:border-red-500/20 transition-all"
+                      >
+                        <X className="w-3.5 h-3.5" /> Remove
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function VMagneticMindsPortal() {
@@ -528,7 +697,7 @@ export default function VMagneticMindsPortal() {
 
       // ── SLA / contract / duration ──────────────────────────────────────
       else if (/sla|contract|duration|months|plan|12 month|start/i.test(lower)) {
-        reply = `Your SLA with Siddhi Dynamics is a 12-Month Executive Programme.\n\n📅 Contract: Aug 2026 – Aug 2027\n💰 Retainer: ${monthlyFee} per client per month\n🏢 Clients: ${clients.length} brand${clients.length !== 1 ? 's' : ''} managed\n⚡ Services: SEO, GEO (AI Search), AEO (Answer Engine), GBP Optimisation, GA Monthly Reports\n\nPayment is due on the 1st of each month. Current status: ${invoices[0]?.status === 'Pending' ? '⚠️ Month 1 payment pending' : '✅ Payments up to date'}`;
+        reply = `Your SLA with Siddhi Dynamics is a 12-Month Executive Programme.\n\n📅 Contract: Aug 2026 – Aug 2027\n💰 Retainer: ₹1,000 per client per month\n🏢 Clients: ${clients.length} brand${clients.length !== 1 ? 's' : ''} managed\n⚡ Services: SEO, GEO (AI Search), AEO (Answer Engine), GBP Optimisation, GA Monthly Reports\n\nPayment is due on the 1st of each month. Current status: ${invoices[0]?.status === 'Pending' ? '⚠️ Month 1 payment pending' : '✅ Payments up to date'}`;
       }
 
       // ── Fallback ───────────────────────────────────────────────────────
@@ -825,58 +994,38 @@ export default function VMagneticMindsPortal() {
           </div>
         </motion.div>
 
-        {/* ── Client Brand Selector Bar ──────────────────────────────────── */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-          className="glass-card rounded-2xl border border-border p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-muted/30">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-              <Filter className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Active Client Analysis Focus</div>
-              <div className="text-sm font-extrabold text-foreground flex items-center gap-2">
-                {selectedBrand ? selectedBrand.businessName : "All Client Brands (Agency Overview)"}
-                {selectedBrand && (
-                  <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold border border-primary/20">
-                    {selectedBrand.category}
-                  </span>
-                )}
+        {/* ── Client Back Bar (shown only when a client is open) ──────── */}
+        {selectedBrandId !== 'all' && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+            className="flex items-center justify-between px-4 py-3 rounded-2xl border border-border bg-muted/30 glass-card">
+            <div className="flex items-center gap-3 min-w-0">
+              <button
+                onClick={() => { setSelectedBrandId('all'); setActiveTab('clients'); toast.info('Back to Client Portfolio'); }}
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-muted hover:bg-border border border-border text-xs font-bold text-foreground transition-all shrink-0"
+              >
+                <ChevronLeft className="w-4 h-4" /> Back
+              </button>
+              <div className="min-w-0">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Viewing Client</div>
+                <div className="text-sm font-extrabold text-foreground truncate flex items-center gap-2">
+                  {selectedBrand?.businessName}
+                  {selectedBrand?.category && (
+                    <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold border border-primary/20 shrink-0">
+                      {selectedBrand.category}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+            <div className="text-right hidden md:block shrink-0">
+              <div className="text-xs text-muted-foreground">Strategy</div>
+              <div className="text-sm font-extrabold text-primary">{selectedBrand?.retainerFee || selectedBrand?.paymentStrategy || 'Custom'}</div>
+            </div>
+          </motion.div>
+        )}
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <select
-              value={selectedBrandId}
-              onChange={(e) => {
-                setSelectedBrandId(e.target.value);
-                const b = clients.find(c => c.id === e.target.value);
-                if (b) toast.info(`Switched focus to ${b.businessName}`);
-                else toast.info("Viewing all agency client brands");
-              }}
-              className="flex-1 sm:w-72 px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-xs font-bold focus:outline-none focus:ring-2 focus:ring-primary/30 shadow-sm"
-            >
-              <option value="all">🌟 All Brands (VMM Overview)</option>
-              {clients.map(c => (
-                <option key={c.id} value={c.id}>
-                  🏢 {c.businessName} ({c.category || "Client Brand"})
-                </option>
-              ))}
-            </select>
-            {selectedBrandId !== "all" && (
-              <button
-                onClick={() => { setSelectedBrandId("all"); toast.info("Viewing all client brands"); }}
-                className="px-3.5 py-2.5 text-xs font-bold text-muted-foreground hover:text-foreground border border-border rounded-xl hover:bg-muted transition-colors"
-                title="Reset to All Brands"
-              >
-                Clear
-              </button>
-            )}
-          </div>
-        </motion.div>
-
-        {/* ── Billing Alert / Account Status ────────────────────────────── */}
-        {invoices.some(inv => inv.status === 'Pending') ? (
+        {/* ── Pending Payment Alert (only shown when there are pending invoices) ── */}
+        {invoices.some(inv => inv.status === 'Pending') && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}
             className="flex items-start gap-3 px-5 py-4 rounded-2xl bg-yellow-500/5 border border-yellow-500/30">
             <AlertCircle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
@@ -887,23 +1036,6 @@ export default function VMagneticMindsPortal() {
                 Go to the <button onClick={() => setActiveTab('billing')} className="underline text-primary font-semibold">Billing tab</button> to review and clear.
               </p>
             </div>
-          </motion.div>
-        ) : (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}
-            className="flex items-center justify-between px-5 py-4 rounded-2xl bg-primary/5 border border-primary/20">
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="w-5 h-5 text-primary shrink-0" />
-              <div>
-                <p className="text-sm font-bold text-foreground">Client Billing & Strategy Hub</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  No pending invoices. Each client brand added will have its tailored payment strategy & SLA schedule.
-                </p>
-              </div>
-            </div>
-            <button onClick={() => { setActiveTab('clients'); setShowClientForm(true); }}
-              className="px-4 py-2 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl hover:scale-105 transition-all shrink-0 flex items-center gap-1.5">
-              <Plus className="w-3.5 h-3.5" /> Add Client Brand
-            </button>
           </motion.div>
         )}
 
@@ -946,52 +1078,6 @@ export default function VMagneticMindsPortal() {
           </div>
         )}
 
-        {/* ── No Client Selected Gate ───────────────────────────────────── */}
-        {activeTab !== 'clients' && activeTab !== 'occasions' && selectedBrandId === 'all' && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-            className="glass-card rounded-3xl border border-dashed border-primary/30 p-12 text-center space-y-4"
-          >
-            {clients.length === 0 ? (
-              <>
-                <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto">
-                  <Users className="w-10 h-10 text-primary" />
-                </div>
-                <h3 className="text-xl font-extrabold text-foreground">No Clients Added Yet</h3>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  Add your first client brand to unlock the 12-Month SLA dashboard, SEO/GEO analysis, reports, billing, and AI coordinator.
-                </p>
-                <button
-                  onClick={() => { setActiveTab('clients'); setShowClientForm(true); }}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground text-sm font-extrabold rounded-xl hover:scale-[1.02] transition-all shadow-md shadow-primary/20 mx-auto"
-                >
-                  <Plus className="w-4 h-4" /> Add First Client Brand
-                </button>
-              </>
-            ) : (
-              <>
-                <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto">
-                  <Filter className="w-10 h-10 text-primary" />
-                </div>
-                <h3 className="text-xl font-extrabold text-foreground">Select a Client to Continue</h3>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  Pick a client brand from the dropdown above to view their 12-Month SLA, SEO/GEO scores, GA reports, billing, and AI support.
-                </p>
-                <div className="flex flex-wrap gap-3 justify-center mt-2">
-                  {clients.map(c => (
-                    <button
-                      key={c.id}
-                      onClick={() => { setSelectedBrandId(c.id); setActiveTab('overview'); toast.info(`Viewing ${c.businessName}`); }}
-                      className="flex items-center gap-2 px-4 py-2.5 bg-card border border-primary/30 hover:border-primary hover:bg-primary/5 text-sm font-bold text-foreground rounded-xl transition-all"
-                    >
-                      🏢 {c.businessName}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-          </motion.div>
-        )}
 
         {/* ── Occasions tab: always rendered regardless of client selection ── */}
         {activeTab === 'occasions' && (
@@ -1055,31 +1141,115 @@ export default function VMagneticMindsPortal() {
                 );
               })()}
 
-              {/* 3-Phase Roadmap */}
-              <div className="glass-card rounded-2xl border border-border p-6">
-                <h3 className="text-base font-extrabold text-foreground mb-5 flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-primary" /> 12-Month SEO/GEO/AEO/GBP Execution Roadmap
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {[
-                    { phase: "Phase 1 · Months 1–4", title: "Foundation & Audit", color: "text-blue-500", bg: "bg-blue-500/10 border-blue-500/20", tasks: ["GBP setup & optimisation", "Full SEO technical audit", "GEO keyword mapping", "Schema & structured data"] },
-                    { phase: "Phase 2 · Months 5–8", title: "Growth & Visibility",  color: "text-violet-500", bg: "bg-violet-500/10 border-violet-500/20", tasks: ["AI search (GEO) citation building", "Link acquisition campaigns", "Monthly GA reporting", "AEO featured snippet targeting"] },
-                    { phase: "Phase 3 · Months 9–12", title: "Dominance & Scale",  color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/20", tasks: ["Local Map Pack #1 defence", "Review velocity automation", "Annual analytics report", "SLA renewal & scaling review"] },
-                  ].map(p => (
-                    <div key={p.phase} className={`rounded-xl border ${p.bg} p-5`}>
-                      <div className={`text-[10px] font-bold uppercase tracking-wider ${p.color} mb-1`}>{p.phase}</div>
-                      <div className="text-sm font-extrabold text-foreground mb-3">{p.title}</div>
-                      <ul className="space-y-2">
-                        {p.tasks.map(t => (
-                          <li key={t} className="flex items-start gap-2 text-xs text-muted-foreground">
-                            <Clock className="w-3.5 h-3.5 shrink-0 mt-0.5 text-muted-foreground/50" />{t}
-                          </li>
-                        ))}
-                      </ul>
+              {/* ── Quotation Confirmation & Payment Setup Card for Agency-Managed Clients ── */}
+              <div className="glass-card rounded-2xl border border-primary/30 p-6 bg-primary/5 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-primary/10 pb-4">
+                  <div>
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
+                      ⚡ Service Quote & Billing Setup
+                    </span>
+                    <h3 className="text-lg font-extrabold text-foreground mt-2 flex items-center gap-2">
+                      <CreditCard className="w-5 h-5 text-primary" />
+                      Quotation & Payment Mode Confirmation
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Confirm quote pricing & select preferred payment terms on behalf of {selectedBrand?.businessName}.
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Assigned Retainer / Fee</div>
+                    <div className="text-xl font-extrabold text-primary">
+                      {selectedBrand?.retainerFee ? `₹${parseInt(selectedBrand.retainerFee).toLocaleString('en-IN')}` : '₹3,000 / month'}
                     </div>
-                  ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                  <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
+                    <span className="text-muted-foreground font-bold uppercase text-[10px]">Payment Structure</span>
+                    <p className="font-extrabold text-foreground">{selectedBrand?.paymentStrategy || "📅 Monthly Retainer SLA"}</p>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
+                    <span className="text-muted-foreground font-bold uppercase text-[10px]">Payment Modes Supported</span>
+                    <p className="font-extrabold text-foreground">UPI · Bank Transfer (NEFT/RTGS) · Cash</p>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
+                    <span className="text-muted-foreground font-bold uppercase text-[10px]">Verification UTR Status</span>
+                    <p className="font-extrabold text-emerald-500 flex items-center gap-1">
+                      <CheckCircle className="w-3.5 h-3.5" /> Direct Agency Settlement Active
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3 pt-2">
+                  <button
+                    onClick={() => setActiveTab('billing')}
+                    className="px-5 py-2.5 bg-primary text-primary-foreground font-extrabold text-xs rounded-xl hover:scale-[1.02] transition-all shadow-md shadow-primary/20 flex items-center gap-2"
+                  >
+                    <CreditCard className="w-4 h-4" /> Open Payment & Invoices
+                  </button>
+                  <button
+                    onClick={() => toast.success(`Quotation & payment terms re-confirmed for ${selectedBrand?.businessName}`)}
+                    className="px-4 py-2.5 bg-muted hover:bg-border text-foreground font-bold text-xs rounded-xl border border-border transition-all flex items-center gap-1.5"
+                  >
+                    <CheckCircle className="w-4 h-4 text-emerald-500" /> Confirm Quotation Terms
+                  </button>
                 </div>
               </div>
+
+              {/* Dynamic Service Phase Roadmap — adapt based on service category */}
+              {(() => {
+                const category = (selectedBrand?.category || "").toLowerCase();
+                const isDevService = category.includes("software") || category.includes("app") || category.includes("web") || category.includes("erp") || category.includes("automation") || category.includes("ai") || category.includes("devops");
+                const isDesignService = category.includes("design") || category.includes("branding") || category.includes("ui") || category.includes("ux");
+
+                const roadmapTitle = isDevService
+                  ? "Software & System Delivery Roadmap"
+                  : isDesignService
+                  ? "UI/UX & Creative Deliverables Roadmap"
+                  : "SEO/GEO/AEO & Local Search Execution Roadmap";
+
+                const phases = isDevService
+                  ? [
+                      { phase: "Phase 1 · Months 1–2", title: "Architecture & Core Engine", color: "text-blue-500", bg: "bg-blue-500/10 border-blue-500/20", tasks: ["Requirements & DB Schema", "Core API / Backend Engine", "UI Blueprint & Wireframes", "Sprint 1 Prototype Build"] },
+                      { phase: "Phase 2 · Months 3–4", title: "Integrations & Business Logic", color: "text-violet-500", bg: "bg-violet-500/10 border-violet-500/20", tasks: ["Third-party API Integration", "Authentication & Security Audit", "Admin & Client Dashboards", "QA & Automated Tests"] },
+                      { phase: "Phase 3 · Months 5+", title: "Deployment & Scaling", color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/20", tasks: ["Production Cloud Deployment", "Performance Optimization", "Live Monitoring & Maintenance", "Feature Backlog Scaling"] }
+                    ]
+                  : isDesignService
+                  ? [
+                      { phase: "Phase 1 · Month 1", title: "Brand Identity & Research", color: "text-purple-500", bg: "bg-purple-500/10 border-purple-500/20", tasks: ["Design Discovery & Moodboards", "Logo & Typography Tokens", "Color System & Asset Guidelines", "Figma Design System Setup"] },
+                      { phase: "Phase 2 · Month 2", title: "UI/UX Prototypes", color: "text-pink-500", bg: "bg-pink-500/10 border-pink-500/20", tasks: ["High-Fidelity Wireframes", "Interactive Figma Prototype", "Usability & Accessibility Testing", "Client Design Review Signoff"] },
+                      { phase: "Phase 3 · Month 3+", title: "Handoff & Design Assets", color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/20", tasks: ["Developer Component Handoff", "Vector & Raster Export Bundles", "Social & Marketing Media Kits", "Brand Guidelines Documentation"] }
+                    ]
+                  : [
+                      { phase: "Phase 1 · Months 1–4", title: "Foundation & Audit", color: "text-blue-500", bg: "bg-blue-500/10 border-blue-500/20", tasks: ["GBP setup & optimisation", "Full SEO technical audit", "GEO keyword mapping", "Schema & structured data"] },
+                      { phase: "Phase 2 · Months 5–8", title: "Growth & Visibility",  color: "text-violet-500", bg: "bg-violet-500/10 border-violet-500/20", tasks: ["AI search (GEO) citation building", "Link acquisition campaigns", "Monthly GA reporting", "AEO featured snippet targeting"] },
+                      { phase: "Phase 3 · Months 9–12", title: "Dominance & Scale",  color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/20", tasks: ["Local Map Pack #1 defence", "Review velocity automation", "Annual analytics report", "SLA renewal & scaling review"] }
+                    ];
+
+                return (
+                  <div className="glass-card rounded-2xl border border-border p-6">
+                    <h3 className="text-base font-extrabold text-foreground mb-5 flex items-center gap-2">
+                      <Zap className="w-5 h-5 text-primary" /> {roadmapTitle}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {phases.map(p => (
+                        <div key={p.phase} className={`rounded-xl border ${p.bg} p-5`}>
+                          <div className={`text-[10px] font-bold uppercase tracking-wider ${p.color} mb-1`}>{p.phase}</div>
+                          <div className="text-sm font-extrabold text-foreground mb-3">{p.title}</div>
+                          <ul className="space-y-2">
+                            {p.tasks.map(t => (
+                              <li key={t} className="flex items-start gap-2 text-xs text-muted-foreground">
+                                <Clock className="w-3.5 h-3.5 shrink-0 mt-0.5 text-muted-foreground/50" />{t}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
 
               <GoogleReviewCard audience="client" name={agencyName} compact />
             </motion.div>
@@ -1087,15 +1257,12 @@ export default function VMagneticMindsPortal() {
 
           {/* ═══ CLIENT PORTFOLIO TAB ══════════════════════════════════════ */}
           {activeTab === 'clients' && (
-            <motion.div key="clients" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
+            <motion.div key="clients" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
               <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-extrabold text-foreground">Client Portfolio & Brands</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">Select any client below to inspect their individual SEO, GEO, AEO, GBP scores & analytics.</p>
-                </div>
+                <h3 className="text-base font-extrabold text-foreground">Client Portfolio</h3>
                 <button onClick={() => setShowClientForm(true)}
                   className="flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl hover:scale-[1.02] transition-all shadow-md shadow-primary/20">
-                  <Plus className="w-4 h-4" /> Add Client Brand
+                  <Plus className="w-4 h-4" /> Add Client
                 </button>
               </div>
 
@@ -1114,104 +1281,15 @@ export default function VMagneticMindsPortal() {
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {clients.map(c => {
-                    const isSelected = selectedBrandId === c.id;
-                    return (
-                      <div key={c.id} className={`glass-card rounded-2xl border p-6 transition-all relative ${
-                        isSelected
-                          ? 'border-primary shadow-lg shadow-primary/10 bg-primary/5 ring-1 ring-primary/30'
-                          : 'border-border hover:border-primary/40'
-                      }`}>
-                        <div className="flex items-start justify-between mb-3">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-extrabold text-lg text-foreground">{c.businessName}</h4>
-                              {isSelected && (
-                                <span className="px-2 py-0.5 text-[9px] font-extrabold bg-primary text-primary-foreground rounded-full uppercase tracking-wider">
-                                  Selected
-                                </span>
-                              )}
-                            </div>
-                            {c.brandName !== c.businessName && <p className="text-xs text-muted-foreground">{c.brandName}</p>}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => handleToggleClientLock(c.id, c.businessName)}
-                              className={`px-2.5 py-1 text-[10px] font-extrabold rounded-lg border transition-all cursor-pointer ${
-                                c.status === "Locked (Tenure Expired)"
-                                  ? 'bg-red-600 text-white border-red-500 shadow-sm hover:bg-red-700'
-                                  : 'bg-emerald-600 text-white border-emerald-500 shadow-sm hover:bg-emerald-700'
-                              }`}
-                              title="Toggle Client Tenure Lock Status"
-                            >
-                              {c.status === "Locked (Tenure Expired)" ? "🔒 Locked" : "🔓 Active Tenure"}
-                            </button>
-                            <button
-                              onClick={() => handleDeleteClient(c.id, c.businessName)}
-                              className="p-1.5 text-muted-foreground hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                              title="Delete Client Brand"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-
-                        <p className="text-xs text-muted-foreground mb-4 line-clamp-2">{c.description || "No description provided."}</p>
-
-                        {/* Scores preview bar */}
-                        <div className="grid grid-cols-4 gap-2 mb-4 p-3 bg-muted/60 rounded-xl border border-border text-center">
-                          <div>
-                            <div className="text-[9px] font-bold uppercase text-violet-500">GEO</div>
-                            <div className="text-sm font-extrabold text-foreground">{c.geoScore || 80}/100</div>
-                          </div>
-                          <div>
-                            <div className="text-[9px] font-bold uppercase text-cyan-500">SEO</div>
-                            <div className="text-sm font-extrabold text-foreground">{c.seoScore || 75}/100</div>
-                          </div>
-                          <div>
-                            <div className="text-[9px] font-bold uppercase text-rose-500">GBP</div>
-                            <div className="text-sm font-extrabold text-foreground">{c.gbpScore || 85}/100</div>
-                          </div>
-                          <div>
-                            <div className="text-[9px] font-bold uppercase text-amber-500">AEO</div>
-                            <div className="text-sm font-extrabold text-foreground">{c.aeoScore || 78}/100</div>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap gap-1 mb-4">
-                          {c.goals.map(g => (
-                            <span key={g} className="text-[10px] bg-muted px-2.5 py-0.5 rounded-full border border-border text-muted-foreground font-medium">
-                              {g}
-                            </span>
-                          ))}
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-2 text-[11px] text-muted-foreground border-t border-border pt-4 mb-4">
-                          <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-primary" />{c.mobile || "—"}</span>
-                          <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-primary" />{c.email || "—"}</span>
-                          {c.website && <span className="flex items-center gap-1.5 col-span-2 truncate"><Globe className="w-3.5 h-3.5 text-primary" />{c.website}</span>}
-                        </div>
-
-                        {/* Interactive Analysis Actions */}
-                        <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-border/60">
-                          <button
-                            onClick={() => selectBrandAndOpenTab(c.id, 'seo-geo')}
-                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary font-bold text-xs rounded-xl border border-primary/20 transition-all"
-                          >
-                            <Search className="w-3.5 h-3.5" /> Inspect SEO/GEO Analysis
-                          </button>
-                          <button
-                            onClick={() => selectBrandAndOpenTab(c.id, 'analytics')}
-                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-muted hover:bg-border text-foreground font-bold text-xs rounded-xl border border-border transition-all"
-                          >
-                            <BarChart3 className="w-3.5 h-3.5 text-primary" /> View GA Analytics
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                <ClientList
+                  clients={clients}
+                  selectedBrandId={selectedBrandId}
+                  onSelect={(id) => { setSelectedBrandId(id); setActiveTab('overview'); toast.info(`Viewing ${clients.find(c => c.id === id)?.businessName}`); }}
+                  onToggleLock={handleToggleClientLock}
+                  onDelete={handleDeleteClient}
+                  onInspectSeo={(id) => selectBrandAndOpenTab(id, 'seo-geo')}
+                  onInspectAnalytics={(id) => selectBrandAndOpenTab(id, 'analytics')}
+                />
               )}
             </motion.div>
           )}
