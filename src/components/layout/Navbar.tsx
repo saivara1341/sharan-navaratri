@@ -166,11 +166,12 @@ export const Navbar = () => {
                   className="relative w-full h-full object-contain dark:drop-shadow-[0_0_15px_rgba(251,146,60,0.5)]"
                 />
               </div>
-              <div className="flex flex-col text-left">
+              <div className="flex flex-col md:flex-row md:items-center gap-0.5 md:gap-2 text-left">
                 <span className="font-extrabold text-base md:text-lg text-foreground tracking-tight whitespace-nowrap">
                   Siddhi Dynamics LLP
                 </span>
-                <span className="text-[10px] md:text-xs text-primary font-semibold tracking-wider whitespace-nowrap">
+                <span className="text-[10px] md:text-xs text-primary font-semibold tracking-wider whitespace-nowrap flex items-center gap-1.5">
+                  <span className="hidden md:inline text-muted-foreground/40">•</span>
                   Next-Generation AI Solutions
                 </span>
               </div>
