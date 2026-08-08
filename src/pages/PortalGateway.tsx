@@ -207,7 +207,7 @@ export default function PortalGateway() {
   };
 
   const getLaunchPath = () => {
-    if (session?.user?.email?.trim().toLowerCase() === '23eg510a07@anurag.edu.in') return "/portal/v-magnetic-minds";
+    if (session?.user?.email?.trim().toLowerCase() === '23eg510a07@anurag.edu.in') return "/portal/agency";
     if (isAdmin) return "/admin-hq-nexus";
     if (userRole === 'partner') return "/portal/agency";
     if (userRole === 'employee') return "/portal/employee";
