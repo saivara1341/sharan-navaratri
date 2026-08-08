@@ -872,6 +872,8 @@ If you cannot answer based on our tech stack, say: "I will escalate this questio
                 </div>
               </div>
             </motion.div>
+          )}
+        </AnimatePresence>
         <div className="pt-8">
           <GoogleReviewCard audience="investor" name="Investor" compact />
         </div>

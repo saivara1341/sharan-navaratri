@@ -33,7 +33,7 @@ export const Navbar = () => {
     { name: t('nav.submitChallenge', 'Submit Your Challenge'), href: isPortal ? '#/portal?tab=contact&type=problem' : '#/submit?type=problem' },
     { name: t('nav.buildProject', 'Build Your Project'), href: isPortal ? '#/portal?tab=contact&type=requirement' : '#/submit?type=requirement' },
     { name: t('nav.exploreProjects', 'Explore Projects'), href: isPortal ? '#/portal?tab=contact&type=inquiry' : '#/submit?type=inquiry' },
-    { name: t('nav.contactUs', 'Contact Us'), href: isPortal ? '#/portal?tab=contact' : '#/submit' },
+    { name: t('nav.contactUs', 'Contact Us'), href: '/contact' },
   ];
 
   const headerOpacity = useTransform(scrollY, [0, 30], [0, 1]);

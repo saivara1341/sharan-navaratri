@@ -679,6 +679,8 @@ export default function EmployeePortal() {
                   </div>
                 )}
               </div>
+            </div>
+          )}
           <div className="pt-8">
             <GoogleReviewCard audience="visitor" name="Team" compact />
           </div>

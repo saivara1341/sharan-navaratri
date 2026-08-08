@@ -131,6 +131,20 @@ const ContactInformation = () => (
           Business enquiries are acknowledged within 24-48 business hours. For project submissions, you will receive a customized roadmap, timeline, and quote directly from founder Sai Vara Prasad.
         </p>
       </section>
+
+      {/* Interactive Form CTA */}
+      <section className="p-8 rounded-3xl bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/30 text-center space-y-4">
+        <h3 className="text-xl font-extrabold text-white">Have a Project or Challenge to Discuss?</h3>
+        <p className="text-xs text-slate-300 max-w-md mx-auto">
+          Submit your project requirements or technical problem directly to receive a tailored 12-month SLA strategy and quotation.
+        </p>
+        <a
+          href="/submit"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-extrabold text-xs shadow-lg shadow-primary/20 hover:scale-105 transition-all cursor-pointer"
+        >
+          <Mail className="w-4 h-4" /> Submit Requirement / Challenge
+        </a>
+      </section>
     </div>
   </LegalPageLayout>
 );

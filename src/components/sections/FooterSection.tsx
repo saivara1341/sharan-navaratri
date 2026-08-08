@@ -112,7 +112,8 @@ export const FooterSection = () => {
                 { name: t('nav.projects', 'Projects'), href: '/#projects' },
                 { name: 'Blog', href: '/blog' },
                 { name: 'Services', href: '/services/business-automation' },
-                { name: t('nav.submit', 'Submit Problem'), href: '/#submit' },
+                { name: t('nav.submit', 'Submit Problem'), href: '/submit?type=problem' },
+                { name: 'Contact Us', href: '/contact' },
               ].map((link, index) => (
                 <motion.a
                   key={link.name}
@@ -135,7 +136,6 @@ export const FooterSection = () => {
               ))}
             </motion.nav>
           </div>
-        </div>
 
           <motion.div
             initial={{ opacity: 0, x: 30 }}
