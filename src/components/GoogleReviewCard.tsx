@@ -49,15 +49,56 @@ export function GoogleReviewCard({
 }: GoogleReviewCardProps) {
   const content = copy[audience];
 
+  if (compact) {
+    return (
+      <motion.section
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        aria-label="Google review invitation"
+        className="relative overflow-hidden rounded-2xl border border-amber-400/30 px-5 py-4 shadow-lg glass-card flex flex-col sm:flex-row items-center justify-between gap-4"
+        style={{
+          background: 'linear-gradient(135deg, #110e07 0%, #0d0d10 50%, #080a0d 100%)',
+        }}
+      >
+        <div className="flex items-center gap-3.5 min-w-0">
+          <div className="flex items-center gap-1 shrink-0">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400 drop-shadow-[0_0_5px_rgba(251,191,36,0.6)]" />
+            ))}
+          </div>
+          <div className="min-w-0 text-left">
+            <h3 className="text-xs font-extrabold text-white truncate flex items-center gap-2">
+              <span>Rate Your Experience with Siddhi Dynamics</span>
+            </h3>
+            <p className="text-[11px] text-amber-200/80 truncate">
+              {name ? `Thank you, ${name} · Share your feedback on Google` : 'Share your genuine review on Google'}
+            </p>
+          </div>
+        </div>
+
+        <a
+          href={GOOGLE_REVIEW_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-amber-400 px-4 py-2 text-xs font-extrabold text-black shadow-md shadow-amber-400/20 transition-all hover:scale-105 hover:bg-amber-300 active:scale-95"
+          aria-label="Review us on Google"
+        >
+          <GoogleLogo />
+          Review us on Google
+          <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        </a>
+      </motion.section>
+    );
+  }
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
       aria-label="Google review invitation"
-      className={`relative overflow-hidden rounded-3xl border border-amber-400/30 shadow-[0_8px_60px_rgba(245,158,11,0.12)] ${
-        compact ? 'px-6 py-7' : 'px-6 py-9 md:px-10'
-      }`}
+      className="relative overflow-hidden rounded-3xl border border-amber-400/30 px-6 py-9 md:px-10 shadow-[0_8px_60px_rgba(245,158,11,0.12)]"
       style={{
         background: 'linear-gradient(135deg, #110e07 0%, #0d0d10 50%, #080a0d 100%)',
       }}
@@ -80,22 +121,10 @@ export function GoogleReviewCard({
             <MessageSquareQuote className="h-4 w-4" />
             {name ? `Thank you, ${name}` : content.eyebrow}
           </div>
-          <h2 className={`${compact ? 'text-xl' : 'text-2xl md:text-3xl'} font-black tracking-tight text-white`}>
+          <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white">
             {content.title}
           </h2>
           <p className="mt-3 max-w-xl text-sm leading-6 text-slate-300">{content.description}</p>
-
-          {/* Prompt chips */}
-          <div className="mt-4 flex flex-wrap gap-2" aria-label="Helpful topics to mention">
-            {content.prompts.map((prompt) => (
-              <span
-                key={prompt}
-                className="rounded-full border border-amber-400/20 bg-amber-400/5 px-3 py-1 text-[11px] font-semibold text-amber-200"
-              >
-                {prompt}
-              </span>
-            ))}
-          </div>
         </div>
 
         {/* CTA Button */}
