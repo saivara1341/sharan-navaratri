@@ -109,6 +109,18 @@ const AuthRedirectHandler = () => {
   return null;
 };
 
+const PageLoadingFallback = () => (
+  <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4" aria-busy="true" aria-label="Loading page">
+    <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center animate-pulse">
+      <span className="text-primary font-extrabold text-xl">S</span>
+    </div>
+    <div className="flex items-center gap-2">
+      <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
+      <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Siddhi Dynamics Loading…</span>
+    </div>
+  </div>
+);
+
 const App = () => {
   return (
     <HelmetProvider>
@@ -119,7 +131,7 @@ const App = () => {
           <BrowserRouter>
             <AuthRedirectHandler />
             <SiteIntro />
-            <Suspense fallback={<div className="min-h-screen bg-background" aria-busy="true" aria-label="Loading page" />}>
+            <Suspense fallback={<PageLoadingFallback />}>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/vision" element={<Index />} />
