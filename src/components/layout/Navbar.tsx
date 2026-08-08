@@ -132,7 +132,7 @@ export const Navbar = () => {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
-        className="fixed top-0 left-0 right-0 z-[100]"
+        className="fixed top-0 left-0 right-0 z-[100] pt-[env(safe-area-inset-top,0px)]"
       >
         {/* Robust Glass Background */}
         <motion.div
@@ -383,7 +383,7 @@ export const Navbar = () => {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -50, opacity: 0 }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="relative flex flex-col items-center justify-center min-h-screen py-20 gap-8 px-6 overflow-y-auto"
+                className="relative flex flex-col items-center justify-center min-h-[100dvh] pt-[calc(5rem+env(safe-area-inset-top,0px))] pb-[calc(3rem+env(safe-area-inset-bottom,0px))] gap-8 px-6 overflow-y-auto"
               >
                 {/* Mobile Menu Content starts with Home */}
 
@@ -466,7 +466,7 @@ export const Navbar = () => {
                 </motion.a>
               {/* Close Button */}
               <motion.button
-                className="absolute top-8 right-6 w-12 h-12 flex items-center justify-center rounded-2xl bg-card border border-border text-foreground hover:text-primary hover:border-primary/30 transition-all z-[120]"
+                className="absolute top-[calc(1.5rem+env(safe-area-inset-top,0px))] right-[calc(1.5rem+env(safe-area-inset-right,0px))] w-12 h-12 flex items-center justify-center rounded-2xl bg-card border border-border text-foreground hover:text-primary hover:border-primary/30 transition-all z-[120]"
                 onClick={() => setMobileMenuOpen(false)}
                 initial={{ opacity: 0, rotate: -90 }}
                 animate={{ opacity: 1, rotate: 0 }}

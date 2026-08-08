@@ -39,7 +39,7 @@ export const FloatingNav = () => {
   ];
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100]">
+    <div className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-[100]">
       <motion.nav
         ref={navRef}
         onMouseMove={handleMouseMove}

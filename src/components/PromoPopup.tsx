@@ -66,7 +66,7 @@ export default function PromoPopup({ allowed = true }: { allowed?: boolean }) {
                     borderBottomRightRadius: 0,
                     boxShadow: "0 -10px 40px rgba(0,0,0,0.6), 0 0 80px rgba(255,107,0,0.15)",
                     position: "relative",
-                    padding: "0 0 24px 0",
+                    padding: "0 0 calc(24px + env(safe-area-inset-bottom, 0px)) 0",
                     fontFamily: "'Inter', sans-serif"
                 }}
             >
@@ -74,8 +74,7 @@ export default function PromoPopup({ allowed = true }: { allowed?: boolean }) {
                     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;800&display=swap');
                     
                     .promo-container {
-                        height: 52vh;
-                        max-height: 52vh;
+                        max-height: calc(82vh - env(safe-area-inset-bottom, 0px));
                     }
                     .font-display {
                         font-family: 'Space Grotesk', sans-serif;

@@ -60,7 +60,7 @@ export const LiquidMetalUpButton = ({ onClick }: { onClick: () => void }) => {
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
       onClick={onClick}
-      className="fixed bottom-8 right-8 z-[90] w-14 h-14 rounded-full transition-all flex items-center justify-center cursor-pointer group hover:opacity-90"
+      className="fixed bottom-[calc(2rem+env(safe-area-inset-bottom,0px))] right-[calc(1.5rem+env(safe-area-inset-right,0px))] z-[90] w-14 h-14 rounded-full transition-all flex items-center justify-center cursor-pointer group hover:opacity-90"
       style={{
         backgroundColor: "#1d1d1d", // from user's --bg-color
         color: "#65615f",           // from user's --icon-color
