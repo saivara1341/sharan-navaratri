@@ -166,7 +166,11 @@ export const Navbar = () => {
                   className="relative w-full h-full object-contain dark:drop-shadow-[0_0_15px_rgba(251,146,60,0.5)]"
                 />
               </div>
-
+              <div className="flex flex-col md:flex-row md:items-center gap-0.5 md:gap-2 text-left">
+                <span className="font-extrabold text-base md:text-lg text-foreground tracking-tight whitespace-nowrap">
+                  Siddhi Dynamics
+                </span>
+              </div>
             </motion.a>
 
             <nav className="hidden md:flex items-center gap-1.5 lg:gap-2.5 whitespace-nowrap">
