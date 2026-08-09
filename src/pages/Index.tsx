@@ -178,7 +178,7 @@ const Index = () => {
   const keywords = "Siddhi, Siddhi Dynamics, Deep-Tech AI, GenAI, Agentic AI, Business Automation, Startup Sahayak, AI Architecture, India AI Startup, Siddhi AI";
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-clip">
+    <div className="min-h-screen bg-background text-foreground">
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />
