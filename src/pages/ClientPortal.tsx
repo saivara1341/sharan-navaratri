@@ -422,6 +422,10 @@ ${contextText || "No matching guidelines found."}
         );
     }
 
+    const activeProjectCount = projects.filter(p => p.status !== "Completed").length;
+    const completedCount = projects.filter(p => p.status === "Completed").length;
+    const nextMeeting = scheduledMeetings[0];
+
     return (
         <div className="min-h-screen bg-background text-foreground font-sans relative overflow-x-hidden">
             <Navbar />
@@ -440,27 +444,67 @@ ${contextText || "No matching guidelines found."}
                 </button>
 
                 {/* Portal Header */}
-                <div className="rounded-3xl border border-border bg-card/90 px-6 py-7 shadow-sm md:px-8">
-                    <div className="text-left">
-                        <span className="text-xs uppercase font-bold text-primary tracking-[0.25em]">Siddhi Dynamics Portal</span>
-                        <h1 className="text-3xl font-extrabold mt-1 text-foreground">
-                            {clientOrg ? `${clientOrg} Dashboard` : "Your Project Workspace"}
-                        </h1>
-                        <p className="text-muted-foreground text-xs mt-1">
-                            Authorized Representative: <span className="text-foreground font-semibold">{clientName || "Client"}</span> ({clientEmail})
-                        </p>
+                <div className="relative overflow-hidden rounded-[2rem] border border-primary/20 bg-gradient-to-br from-card via-background to-primary/5 px-6 py-7 shadow-sm md:px-8">
+                    <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,0.16),transparent_36%),radial-gradient(circle_at_bottom_left,rgba(34,197,94,0.12),transparent_28%)]" />
+                    <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                        <div className="text-left max-w-3xl">
+                            <span className="text-xs uppercase font-bold text-primary tracking-[0.25em]">Client Command Center</span>
+                            <h1 className="text-3xl font-extrabold mt-1 text-foreground">
+                                {clientOrg ? `${clientOrg} Dashboard` : "Your Project Workspace"}
+                            </h1>
+                            <p className="text-muted-foreground text-xs mt-2 leading-relaxed max-w-2xl">
+                                A single place to review project progress, approve deliverables, book reviews, and keep support conversations moving without friction.
+                            </p>
+                            <p className="text-muted-foreground text-xs mt-2">
+                                Authorized Representative: <span className="text-foreground font-semibold">{clientName || "Client"}</span> ({clientEmail})
+                            </p>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={handleRefresh}
+                                disabled={refreshing}
+                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-background/80 hover:bg-background text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                                title="Sync Roadmap Progress"
+                            >
+                                <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+                                <span className="text-xs font-bold uppercase tracking-widest">Refresh</span>
+                            </button>
+                        </div>
                     </div>
-                    
-                    <div className="mt-5 flex items-center gap-3">
-                        <button
-                            onClick={handleRefresh}
-                            disabled={refreshing}
-                            className="p-2.5 rounded-xl border border-border bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-all cursor-pointer"
-                            title="Sync Roadmap Progress"
-                        >
-                            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-                        </button>
+
+                    <div className="relative mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        {[
+                            { label: "Active Workstreams", value: activeProjectCount, icon: Briefcase, tone: "text-primary" },
+                            { label: "Milestones Delivered", value: completedCount, icon: CheckCircle, tone: "text-emerald-500" },
+                            { label: "Next Review", value: nextMeeting ? nextMeeting.date : "TBD", icon: Calendar, tone: "text-violet-500" },
+                        ].map((item) => (
+                            <div key={item.label} className="rounded-2xl border border-border bg-card/80 p-4">
+                                <div className="flex items-center justify-between gap-3">
+                                    <div>
+                                        <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">{item.label}</div>
+                                        <div className="mt-2 text-2xl font-extrabold text-foreground">{item.value}</div>
+                                    </div>
+                                    <item.icon className={`w-5 h-5 ${item.tone}`} />
+                                </div>
+                            </div>
+                        ))}
                     </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                    {[
+                        { title: "Project Health", desc: "Track roadmap status and milestones.", icon: Activity },
+                        { title: "Approvals", desc: "Review quotes, agreements, and deliverables.", icon: ShieldCheck },
+                        { title: "Meetings", desc: "Schedule syncs and review sessions.", icon: Calendar },
+                        { title: "Support", desc: "Open chat anytime with the delivery team.", icon: MessageCircle },
+                    ].map((item) => (
+                        <div key={item.title} className="rounded-2xl border border-border bg-card/80 p-5 text-left">
+                            <item.icon className="w-5 h-5 text-primary" />
+                            <h3 className="mt-3 text-sm font-extrabold text-foreground">{item.title}</h3>
+                            <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                        </div>
+                    ))}
                 </div>
 
 

@@ -960,9 +960,9 @@ export default function VMagneticMindsPortal() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 md:pt-36 pb-20 space-y-8">
         {/* ── Header Banner ──────────────────────────────────────────────── */}
         <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }}
-          className="glass-card rounded-3xl border border-border p-6 md:p-8 relative overflow-hidden shadow-sm">
-          <div className="absolute right-0 top-0 w-64 h-64 bg-primary/5 rounded-bl-full pointer-events-none" />
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative">
+          className="glass-card rounded-[2rem] border border-primary/20 p-6 md:p-8 relative overflow-hidden shadow-sm bg-gradient-to-br from-card via-background to-primary/5">
+          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.16),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(14,165,233,0.12),transparent_28%)]" />
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between relative">
             <div className="flex items-center gap-4 flex-1 min-w-0">
               <div className="w-16 h-16 bg-card rounded-2xl shadow-md border border-border flex items-center justify-center shrink-0 overflow-hidden">
                 {agencyLogoUrl ? (
@@ -977,7 +977,10 @@ export default function VMagneticMindsPortal() {
                   <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full border border-primary/20 shrink-0">Agency Partner</span>
                 </div>
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground truncate">{agencyName} Portal</h1>
-                <p className="text-xs text-muted-foreground mt-0.5 truncate">{userEmail}</p>
+                <p className="text-xs text-muted-foreground mt-2 max-w-2xl leading-relaxed">
+                  Manage acquisition, onboarding, retention, reporting, and billing from one agency command center. This workspace is built to help your team win clients faster and keep every account visible.
+                </p>
+                <p className="text-xs text-muted-foreground mt-2 truncate">{userEmail}</p>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2.5 shrink-0 w-full sm:w-auto justify-start sm:justify-end">
@@ -1005,7 +1008,40 @@ export default function VMagneticMindsPortal() {
               </button>
             </div>
           </div>
+
+          <div className="relative mt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+            {[
+              { label: "Managed Clients", value: clients.length, icon: Users, tone: "text-primary" },
+              { label: "Active SLAs", value: clients.filter(c => c.status !== 'Locked (Tenure Expired)').length, icon: ShieldCheck, tone: "text-emerald-500" },
+              { label: "Open Billing Items", value: invoices.filter(inv => inv.status === 'Pending').length, icon: CreditCard, tone: "text-amber-500" },
+              { label: "Growth Score Avg", value: clients.length ? `${Math.round(clients.reduce((acc, c) => acc + (c.seoScore || 75), 0) / clients.length)}/100` : "80/100", icon: TrendingUp, tone: "text-violet-500" },
+            ].map((item) => (
+              <div key={item.label} className="rounded-2xl border border-border bg-card/80 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">{item.label}</div>
+                    <div className="mt-2 text-2xl font-extrabold text-foreground">{item.value}</div>
+                  </div>
+                  <item.icon className={`w-5 h-5 ${item.tone}`} />
+                </div>
+              </div>
+            ))}
+          </div>
         </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            { title: "Client Acquisition", desc: "Capture new leads, assign services, and move prospects into managed SLAs.", icon: Plus },
+            { title: "Delivery Visibility", desc: "Review SEO, GEO, GBP, and AEO performance without digging through tabs.", icon: BarChart3 },
+            { title: "Retention & Billing", desc: "Track invoices, renewals, and payment status in one place.", icon: CreditCard },
+          ].map((item) => (
+            <div key={item.title} className="rounded-2xl border border-border bg-card/80 p-5">
+              <item.icon className="w-5 h-5 text-primary" />
+              <h3 className="mt-3 text-sm font-extrabold text-foreground">{item.title}</h3>
+              <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </div>
 
         {/* ── Client Back Bar & Admin Sync Badge (shown only when a client is open) ──────── */}
         {selectedBrandId !== 'all' && (
