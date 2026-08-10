@@ -8,7 +8,7 @@ import {
   ShieldCheck, RefreshCw, MessageCircle, Send, Zap, CreditCard, QrCode,
   Download, Building2, BarChart3, FileText, Users, Copy, Check, LogOut,
   AlertCircle, Plus, X, ChevronRight, ChevronLeft, Phone, Mail, Instagram, Youtube,
-  Facebook, Linkedin, Target, Image, Briefcase, Star, Filter, Eye, ArrowUpRight, Lock
+  Facebook, Linkedin, Target, Image, Briefcase, Star, Filter, Eye, ArrowUpRight, Lock, Link2
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -465,6 +465,9 @@ export default function VMagneticMindsPortal() {
 
   // ── Add Client Form ───────────────────────────────────────────────────────
   const [showClientForm, setShowClientForm] = useState(false);
+  const [showIntakeLinkModal, setShowIntakeLinkModal] = useState(false);
+  const [creatingIntakeLink, setCreatingIntakeLink] = useState(false);
+  const [intakeLink, setIntakeLink] = useState("");
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [selectedServices, setSelectedServices] = useState<string[]>(["SEO, GEO & AEO Programme"]);
 
@@ -502,6 +505,22 @@ export default function VMagneticMindsPortal() {
 
   const [savingClient, setSavingClient] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
+
+  const createIntakeLink = async () => {
+    setCreatingIntakeLink(true);
+    const { data, error } = await supabase.functions.invoke('agency-client-intake', {
+      body: { action: 'create', agencyName }
+    });
+    setCreatingIntakeLink(false);
+    if (error || !data?.token) {
+      toast.error(data?.error || 'Could not create a secure intake link. Please try again.');
+      return;
+    }
+    const link = `${window.location.origin}/agency-intake/${data.token}`;
+    setIntakeLink(link);
+    try { await navigator.clipboard.writeText(link); toast.success('One-time intake link created and copied.'); }
+    catch { toast.success('One-time intake link created.'); }
+  };
 
   const cf = (key: keyof typeof clientForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setClientForm(prev => ({ ...prev, [key]: e.target.value }));
@@ -1390,6 +1409,10 @@ export default function VMagneticMindsPortal() {
             <motion.div key="clients" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-extrabold text-foreground">Client Portfolio</h3>
+                <button onClick={() => { setIntakeLink(""); setShowIntakeLinkModal(true); }}
+                  className="inline-flex items-center gap-2 px-3.5 py-2.5 bg-primary/10 border border-primary/20 text-primary text-xs font-extrabold rounded-xl hover:bg-primary/20 transition-all">
+                  <Link2 className="w-4 h-4" /> Share intake form
+                </button>
               </div>
 
               {clients.length === 0 ? (
@@ -1946,6 +1969,20 @@ export default function VMagneticMindsPortal() {
       </AnimatePresence>
 
       {/* ════ ADD CLIENT MODAL ═════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {showIntakeLinkModal && (
+          <div className="fixed inset-0 z-[255] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+            <motion.div initial={{ scale: 0.94, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.94, opacity: 0 }} className="bg-card border border-border rounded-3xl max-w-lg w-full p-6 shadow-2xl">
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div><h2 className="text-base font-extrabold text-foreground flex items-center gap-2"><Link2 className="w-5 h-5 text-primary" /> Share client intake form</h2><p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">Create a secure link for one client. It accepts exactly one completed response, then closes permanently.</p></div>
+                <button onClick={() => setShowIntakeLinkModal(false)} className="p-2 rounded-full hover:bg-muted text-muted-foreground"><X className="w-4 h-4" /></button>
+              </div>
+              {intakeLink ? <div className="space-y-3"><label className={lbl}>One-time link</label><div className="flex gap-2"><input readOnly value={intakeLink} className={`${inp} text-xs`} /><button onClick={() => copyText(intakeLink, 'Intake link')} className="px-3 rounded-xl bg-primary text-primary-foreground"><Copy className="w-4 h-4" /></button></div><p className="text-[11px] text-amber-600 dark:text-amber-400">Send this only to the intended person. Anyone who submits it first consumes the link.</p></div> : <button onClick={createIntakeLink} disabled={creatingIntakeLink} className="w-full py-3 rounded-xl bg-primary text-primary-foreground text-sm font-extrabold disabled:opacity-60">{creatingIntakeLink ? 'Creating secure link…' : 'Create and copy one-time link'}</button>}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {showClientForm && (
           <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 pt-24 pb-6 bg-black/70 backdrop-blur-md overflow-y-auto">

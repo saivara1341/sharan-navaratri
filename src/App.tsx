@@ -41,6 +41,7 @@ const SaaSPlatforms = lazy(() => import("@/pages/services/SaaSPlatforms"));
 const ERPSolutions = lazy(() => import("@/pages/services/ERPSolutions"));
 const SoftwareCompanyNizamabad = lazy(() => import("@/pages/SoftwareCompanyNizamabad"));
 const ProjectSubmitForm = lazy(() => import("./pages/ProjectSubmitForm"));
+const AgencyClientIntake = lazy(() => import("./pages/AgencyClientIntake"));
 
 const AuthRedirectHandler = () => {
   const navigate = useNavigate();
@@ -141,6 +142,7 @@ const App = () => {
               <Route path="/portal" element={<PortalGateway />} />
               <Route path="/portal/client" element={<ClientPortal />} />
               <Route path="/portal/agency" element={<VMagneticMindsPortal />} />
+              <Route path="/agency-intake/:token" element={<AgencyClientIntake />} />
               <Route path="/portal/v-magnetic-minds" element={<VMagneticMindsPortal />} />
               <Route path="/portal/investor" element={<InvestorPortal />} />
               <Route path="/portal/employee" element={<EmployeePortal />} />
