@@ -340,15 +340,26 @@ ${contextText || "No matching guidelines found."}
 
     const fetchClientProjects = async (email: string) => {
         try {
-            const { data, error } = await supabase
+            const normalizedEmail = email.trim().toLowerCase();
+            const [{ data, error }, { data: profile }] = await Promise.all([
+                supabase
                 .from('contact_submissions')
                 .select('*')
-                .eq('email', email.trim().toLowerCase())
-                .order('created_at', { ascending: false });
+                .eq('email', normalizedEmail)
+                .order('created_at', { ascending: false }),
+                (supabase as any).from('portal_users').select('quote').eq('email', normalizedEmail).maybeSingle(),
+            ]);
 
             if (error) throw error;
 
-            const clientProjects = data || [];
+            // A quote assigned from Admin User Management is available even when
+            // the project was created before quote metadata existed.
+            const clientProjects = (data || []).map((project: Submission) => {
+                if (!profile?.quote) return project;
+                const meta = parseProjectMetadata(project.bounty_reward);
+                if (meta.agreement) return project;
+                return { ...project, bounty_reward: JSON.stringify({ ...meta, agreement: profile.quote }) };
+            });
             setProjects(clientProjects);
 
             if (clientProjects.length > 0) {

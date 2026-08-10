@@ -158,6 +158,14 @@ const AdminPortal = () => {
                 progress: acProgress,
                 updated_at: new Date().toISOString(),
             };
+            // Only an explicit admin fee change publishes a quotation to the agency.
+            if (!acRetainerFee.trim()) {
+                updates.admin_quote_assigned = false;
+                updates.admin_quote_assigned_at = null;
+            } else if (acRetainerFee !== (editAgencyClient.retainer_fee || '')) {
+                updates.admin_quote_assigned = true;
+                updates.admin_quote_assigned_at = new Date().toISOString();
+            }
             const { error } = await supabase
                 .from('agency_clients')
                 .update(updates)
@@ -242,12 +250,14 @@ const AdminPortal = () => {
         setEditUserVerified(user.confirmed !== false);
     };
 
-    const handleSaveUserData = () => {
+    const handleSaveUserData = async () => {
         if (!editUserModal) return;
         const emailKey = editUserEmail.toLowerCase().trim();
-
+        if (!emailKey) {
+            toast.error('A valid email is required.');
+            return;
+        }
         const updatedUser = {
-            ...editUserModal,
             name: editUserName,
             email: editUserEmail,
             role: editUserRole,
@@ -259,51 +269,29 @@ const AdminPortal = () => {
             confirmed: editUserVerified,
             updated_at: new Date().toISOString()
         };
-
-        // 1. Save to edited users store in localStorage
-        const existingEdited = JSON.parse(localStorage.getItem('siddhi_edited_users') || '{}');
-        existingEdited[emailKey] = updatedUser;
-        localStorage.setItem('siddhi_edited_users', JSON.stringify(existingEdited));
-
-        // 2. Save custom quote to custom quotes store
-        if (editUserQuote) {
-            const quotes = JSON.parse(localStorage.getItem('siddhi_custom_quotes') || '{}');
-            quotes[emailKey] = editUserQuote;
-            localStorage.setItem('siddhi_custom_quotes', JSON.stringify(quotes));
+        try {
+            const { error } = await supabase.functions.invoke('admin-user-management', {
+                body: { ...updatedUser, id: editUserModal.id, previousEmail: editUserModal.email },
+            });
+            if (error) throw error;
+            setAllUsers(prev => prev.map(u => u.id === editUserModal.id || u.email?.toLowerCase() === editUserModal.email?.toLowerCase() ? { ...u, ...updatedUser } : u));
+            toast.success(`Saved ${editUserName || editUserEmail}. Their portal and quotation are now synchronized.`);
+            setEditUserModal(null);
+            fetchSubmissions();
+        } catch (error: any) {
+            toast.error(error.message || 'Could not save user details.');
         }
-
-        // 3. Update agency profile if role is partner or agency
-        if (editUserRole === 'partner' || emailKey === '23eg510a07@anurag.edu.in') {
-            const currentProfile = JSON.parse(localStorage.getItem('m2_agency_profile') || '{}');
-            localStorage.setItem('m2_agency_profile', JSON.stringify({
-                ...currentProfile,
-                agencyName: editUserOrg || editUserName || "V Magnetic Minds",
-                contactPerson: editUserName,
-                email: editUserEmail,
-                phone: editUserPhone,
-                retainerFee: editUserQuote
-            }));
-        }
-
-        // 4. Update allUsers state list in AdminPortal
-        setAllUsers(prev => prev.map(u => u.email?.toLowerCase() === emailKey || u.id === editUserModal.id ? updatedUser : u));
-
-        // 5. Dispatch custom storage sync event for real-time live portal update
-        window.dispatchEvent(new Event('storage'));
-        window.dispatchEvent(new Event('siddhi-data-updated'));
-
-        toast.success(`Updated user details & assigned quote for ${editUserName || editUserEmail}! Live in portal.`);
-        setEditUserModal(null);
     };
 
     const fetchAllUsers = async () => {
         setUsersLoading(true);
         try {
             // Fetch all contact submissions
-            const { data: submissions } = await supabase
+            const { data: submissions, error: submissionsError } = await supabase
                 .from('contact_submissions')
                 .select('id, name, email, organization, designation, inquiry_type, status, created_at')
                 .order('created_at', { ascending: false });
+            if (submissionsError) throw submissionsError;
 
             // Fetch waitlist entries
             const { data: waitlist } = await supabase
@@ -311,71 +299,39 @@ const AdminPortal = () => {
                 .select('id, name, email, project_name, created_at')
                 .order('created_at', { ascending: false });
 
-            // Pull Supabase Auth users list if available via admin API
-            const { data: authData } = await (supabase as any).auth.admin.listUsers().catch(() => ({ data: null }));
-            const authUsers: any[] = authData?.users || [];
-
-            // Default system accounts (including V Magnetic Minds Agency Partner)
-            const defaultAccounts = [
-                {
-                    id: 'admin-01',
-                    name: 'Sai Vara Prasad (Admin)',
-                    email: 'ssaivaraprasad51@gmail.com',
-                    organization: 'Siddhi Dynamics LLP',
-                    designation: 'God-Mode Admin',
-                    inquiry_type: 'System Admin',
-                    status: 'Active',
-                    role: 'admin',
-                    lastLogin: new Date().toISOString(),
-                    confirmed: true,
-                    created_at: '2026-08-01T00:00:00.000Z'
-                },
-                {
-                    id: 'partner-vmm',
-                    name: 'V Magnetic Minds Agency',
-                    email: '23eg510a07@anurag.edu.in',
-                    organization: 'V Magnetic Minds',
-                    designation: 'Executive Agency Partner',
-                    inquiry_type: 'Agency Partner SLA',
-                    status: 'Active SLA',
-                    role: 'partner',
-                    lastLogin: new Date().toISOString(),
-                    confirmed: true,
-                    created_at: '2026-08-01T00:00:00.000Z'
-                },
-                {
-                    id: 'client-ld',
-                    name: 'Lie Detection',
-                    email: 'liedetection44@gmail.com',
-                    organization: 'Client Account',
-                    designation: 'Client User',
-                    inquiry_type: 'Auth Sign-In',
-                    status: 'Active',
-                    role: 'client',
-                    lastLogin: new Date().toISOString(),
-                    confirmed: true,
-                    created_at: '2026-08-01T00:00:00.000Z'
-                }
-            ];
+            const { data: portalProfiles } = await (supabase as any)
+                .from('portal_users').select('*').order('created_at', { ascending: false });
 
             const userMap = new Map<string, any>();
-            defaultAccounts.forEach(u => userMap.set(u.email.toLowerCase(), u));
+            const { data: authResponse, error: authError } = await supabase.functions.invoke('admin-user-management', { body: { action: 'list' } });
+            if (authError) throw authError;
+            (authResponse?.users || []).forEach((u: any) => {
+                if (!u.email) return;
+                userMap.set(u.email.toLowerCase().trim(), {
+                    ...u,
+                    name: u.name || u.email.split('@')[0],
+                    inquiry_type: 'Auth Sign-In',
+                    status: 'Active',
+                });
+            });
 
-            // 1. Add Supabase Auth Users
-            authUsers.forEach((u: any) => {
+            // 1. Add persisted portal users (not the browser-only cache).
+            (portalProfiles || []).forEach((u: any) => {
                 if (!u.email) return;
                 const emailKey = u.email.toLowerCase().trim();
                 userMap.set(emailKey, {
-                    id: u.id,
-                    name: u.user_metadata?.full_name || u.user_metadata?.name || u.email.split('@')[0],
+                    id: u.auth_user_id || u.id,
+                    name: u.name || u.email.split('@')[0],
                     email: u.email,
-                    organization: u.user_metadata?.organization || null,
-                    designation: u.user_metadata?.designation || null,
+                    organization: u.organization || null,
+                    designation: u.designation || null,
                     inquiry_type: 'Auth Sign-In',
                     status: 'Active',
-                    role: u.user_metadata?.role || (u.email === '23eg510a07@anurag.edu.in' ? 'partner' : 'client'),
-                    lastLogin: u.last_sign_in_at || u.created_at,
-                    confirmed: u.email_confirmed_at ? true : false,
+                    role: u.role || (u.email === '23eg510a07@anurag.edu.in' ? 'partner' : 'client'),
+                    quote: u.quote,
+                    notes: u.notes,
+                    lastLogin: null,
+                    confirmed: u.confirmed,
                     created_at: u.created_at
                 });
             });
@@ -428,30 +384,6 @@ const AdminPortal = () => {
                         lastLogin: null,
                         confirmed: true,
                         created_at: w.created_at
-                    });
-                }
-            });
-
-            // 4. Overlay Admin-edited user data overrides & custom quotes
-            const editedUsers = JSON.parse(localStorage.getItem('siddhi_edited_users') || '{}');
-            const customQuotes = JSON.parse(localStorage.getItem('siddhi_custom_quotes') || '{}');
-
-            Object.keys(editedUsers).forEach(key => {
-                const edited = editedUsers[key];
-                const existing = userMap.get(key.toLowerCase());
-                userMap.set(key.toLowerCase(), {
-                    ...(existing || {}),
-                    ...edited,
-                    quote: edited.quote || customQuotes[key.toLowerCase()] || existing?.quote
-                });
-            });
-
-            Object.keys(customQuotes).forEach(key => {
-                const existing = userMap.get(key.toLowerCase());
-                if (existing) {
-                    userMap.set(key.toLowerCase(), {
-                        ...existing,
-                        quote: customQuotes[key.toLowerCase()]
                     });
                 }
             });

@@ -51,6 +51,7 @@ interface ClientBrand {
   aiCitations?: string;
   paymentStrategy?: string;
   retainerFee?: string;
+  adminQuoteAssigned?: boolean;
 }
 
 const BUSINESS_GOALS = [
@@ -128,7 +129,7 @@ function ClientList({
               </div>
               <div className="flex items-center gap-2 shrink-0 ml-2">
                 <span className="text-[10px] text-muted-foreground hidden md:inline">
-                  SEO {c.seoScore || 75} · GEO {c.geoScore || 80} · GBP {c.gbpScore || 85} · AEO {c.aeoScore || 78}
+                  {c.seoScore || c.geoScore || c.gbpScore || c.aeoScore ? `SEO ${c.seoScore} · GEO ${c.geoScore} · GBP ${c.gbpScore} · AEO ${c.aeoScore}` : 'Metrics pending admin setup'}
                 </span>
                 <button
                   type="button"
@@ -158,19 +159,19 @@ function ClientList({
                     <div className="grid grid-cols-4 gap-2 p-3 bg-muted/60 rounded-xl border border-border text-center">
                       <div>
                         <div className="text-[9px] font-bold uppercase text-violet-500">GEO</div>
-                        <div className="text-sm font-extrabold text-foreground">{c.geoScore || 80}/100</div>
+                        <div className="text-sm font-extrabold text-foreground">{c.geoScore || '—'}{c.geoScore ? '/100' : ''}</div>
                       </div>
                       <div>
                         <div className="text-[9px] font-bold uppercase text-cyan-500">SEO</div>
-                        <div className="text-sm font-extrabold text-foreground">{c.seoScore || 75}/100</div>
+                        <div className="text-sm font-extrabold text-foreground">{c.seoScore || '—'}{c.seoScore ? '/100' : ''}</div>
                       </div>
                       <div>
                         <div className="text-[9px] font-bold uppercase text-rose-500">GBP</div>
-                        <div className="text-sm font-extrabold text-foreground">{c.gbpScore || 85}/100</div>
+                        <div className="text-sm font-extrabold text-foreground">{c.gbpScore || '—'}{c.gbpScore ? '/100' : ''}</div>
                       </div>
                       <div>
                         <div className="text-[9px] font-bold uppercase text-amber-500">AEO</div>
-                        <div className="text-sm font-extrabold text-foreground">{c.aeoScore || 78}/100</div>
+                        <div className="text-sm font-extrabold text-foreground">{c.aeoScore || '—'}{c.aeoScore ? '/100' : ''}</div>
                       </div>
                     </div>
 
@@ -294,7 +295,7 @@ export default function VMagneticMindsPortal() {
     e.preventDefault();
     if (utrInput.trim().length < 8) { toast.error("Enter a valid UTR (min 8 digits)"); return; }
     setSubmittingUtr(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       // Trigger confirmation email
       emailService.paymentConfirm(
         "ssaivaraprasad51@gmail.com",
@@ -544,7 +545,7 @@ export default function VMagneticMindsPortal() {
       return;
     }
     setSavingClient(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       const constructedAddr = [
         clientForm.addrDoorNo,
         clientForm.addrStreet,
@@ -586,13 +587,8 @@ export default function VMagneticMindsPortal() {
       };
       const clientEmailVal = clientForm.email.trim() ? clientForm.email.trim().toLowerCase() : userEmail.toLowerCase();
       
-      const updatedClients = [...clients, newClient];
-      setClients(updatedClients);
       try {
-        localStorage.setItem(`sd_agency_clients_${userEmail.toLowerCase()}`, JSON.stringify(updatedClients));
-      } catch (e) {}
-
-      supabase.from('agency_clients').upsert({
+        const { error: clientError } = await supabase.from('agency_clients').upsert({
         id: newClient.id,
         agency_email: userEmail.toLowerCase(),
         business_name: newClient.businessName,
@@ -610,17 +606,16 @@ export default function VMagneticMindsPortal() {
         retainer_fee: clientForm.retainerFee,
         status: newClient.status,
         progress: newClient.progress
-      }).then(() => {});
+        });
+        if (clientError) throw clientError;
 
-      setSelectedBrandId(newClient.id);
-
-      // Automatically insert request into contact_submissions with target client email so client can log in & see it!
-      supabase.from("contact_submissions").insert({
+        // Keep the client workspace and Admin HQ in the same persisted workflow.
+        const { error: requestError } = await supabase.from("contact_submissions").insert({
         name: clientForm.contactName || clientForm.businessName,
         email: clientEmailVal,
         organization: `${clientForm.businessName} (${agencyName} Client)`,
         designation: `Agency Client (via ${agencyName})`,
-        inquiry_type: selectedServices.join(", "),
+        inquiry_type: "requirement",
         message: `[Services Availed: ${selectedServices.join(", ")}]\n[Agency Partner: ${agencyName} (${userEmail})]\n[Business Name: ${clientForm.businessName}]\n[Website: ${clientForm.website || 'N/A'}]\n[Category: ${clientForm.category || 'N/A'}]\n${clientForm.description || ''}`,
         status: "New Request",
         progress: 0,
@@ -628,9 +623,19 @@ export default function VMagneticMindsPortal() {
           agency_email: userEmail.toLowerCase(),
           agency_name: agencyName,
           website_url: clientForm.website,
-          agreement: clientForm.retainerFee || "Pending Admin Review"
+          agency_proposed_fee: clientForm.retainerFee || null
         })
-      }).then(() => {});
+        });
+        if (requestError) throw requestError;
+
+        setClients(prev => [...prev, newClient]);
+        setSelectedBrandId(newClient.id);
+      } catch (error: any) {
+        console.error('Failed to save agency client:', error);
+        toast.error(error.message || 'Client could not be saved. Please try again.');
+        setSavingClient(false);
+        return;
+      }
 
       setSavingClient(false);
       setShowClientForm(false);
@@ -777,6 +782,7 @@ export default function VMagneticMindsPortal() {
           aiCitations: c.ai_citations || undefined,
           paymentStrategy: c.payment_strategy || 'Custom Agreement',
           retainerFee: c.retainer_fee || undefined,
+          adminQuoteAssigned: c.admin_quote_assigned === true,
         }));
         setClients(mapped);
         // Also persist to localStorage as fallback cache
@@ -1031,9 +1037,9 @@ export default function VMagneticMindsPortal() {
           <div className="relative mt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
             {[
               { label: "Managed Clients", value: clients.length, icon: Users, tone: "text-primary" },
-              { label: "Active SLAs", value: clients.filter(c => c.status !== 'Locked (Tenure Expired)').length, icon: ShieldCheck, tone: "text-emerald-500" },
+              { label: "Active SLAs", value: clients.filter(c => c.tenureMonths && c.status !== 'Locked (Tenure Expired)').length, icon: ShieldCheck, tone: "text-emerald-500" },
               { label: "Open Billing Items", value: invoices.filter(inv => inv.status === 'Pending').length, icon: CreditCard, tone: "text-amber-500" },
-              { label: "Growth Score Avg", value: clients.length ? `${Math.round(clients.reduce((acc, c) => acc + (c.seoScore || 75), 0) / clients.length)}/100` : "80/100", icon: TrendingUp, tone: "text-violet-500" },
+              { label: "Growth Score Avg", value: clients.some(c => c.seoScore) ? `${Math.round(clients.reduce((acc, c) => acc + c.seoScore, 0) / clients.filter(c => c.seoScore).length)}/100` : "—", icon: TrendingUp, tone: "text-violet-500" },
             ].map((item) => (
               <div key={item.label} className="rounded-2xl border border-border bg-card/80 p-4">
                 <div className="flex items-center justify-between gap-3">
@@ -1087,18 +1093,18 @@ export default function VMagneticMindsPortal() {
               </div>
               <div className="text-right hidden md:block shrink-0">
                 <div className="text-xs text-muted-foreground">Strategy</div>
-                <div className="text-sm font-extrabold text-primary">{selectedBrand?.retainerFee || selectedBrand?.paymentStrategy || 'Custom'}</div>
+                <div className="text-sm font-extrabold text-primary">{selectedBrand?.adminQuoteAssigned ? selectedBrand.retainerFee : 'Awaiting admin setup'}</div>
               </div>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-between gap-3 text-xs glass-card">
               <div className="flex items-center gap-2.5 min-w-0">
                 <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
-                <span className="font-bold text-foreground truncate">Admin Telemetry Sync Active</span>
-                <span className="text-muted-foreground hidden sm:inline truncate">— Live scores, roadmap milestones & reports are populated directly by Admin.</span>
+                <span className="font-bold text-foreground truncate">{selectedBrand?.tenureMonths ? 'Admin setup is active' : 'Awaiting admin setup'}</span>
+                <span className="text-muted-foreground hidden sm:inline truncate">{selectedBrand?.tenureMonths ? '— Contract and delivery data are provided by Admin.' : '— No quote, SLA, score, or delivery work has been assigned yet.'}</span>
               </div>
               <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 shrink-0">
-                Managed by Admin
+                {selectedBrand?.tenureMonths ? 'Active' : 'Pending'}
               </span>
             </div>
           </motion.div>
@@ -1249,7 +1255,7 @@ export default function VMagneticMindsPortal() {
               ) : (
                 /* Specific Client Overview — shown only when a client is selected */
                 <>
-                  {(() => {
+                  {selectedBrand?.tenureMonths ? (() => {
                     const tenure = selectedBrand?.tenureMonths;
                     const startDate = selectedBrand?.tenureStartDate;
                     const tenureLabel = tenure ? `${tenure}-Month Executive SLA` : '12-Month Executive SLA';
@@ -1290,8 +1296,15 @@ export default function VMagneticMindsPortal() {
                         </div>
                       </div>
                     );
-                  })()}
+                  })() : (
+                    <div className="glass-card rounded-2xl border border-dashed border-border p-8 text-center">
+                      <Clock className="w-8 h-8 mx-auto text-muted-foreground mb-3" />
+                      <h3 className="font-extrabold text-foreground">Delivery plan not assigned</h3>
+                      <p className="text-xs text-muted-foreground mt-2">The roadmap will appear after the admin approves the SLA and starts this client’s work.</p>
+                    </div>
+                  )}
 
+                  {selectedBrand?.adminQuoteAssigned && selectedBrand.retainerFee && (
                   <div className="glass-card rounded-2xl border border-primary/30 p-6 bg-primary/5 space-y-4">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-primary/10 pb-4">
                       <div>
@@ -1309,7 +1322,7 @@ export default function VMagneticMindsPortal() {
                       <div className="text-right">
                         <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Assigned Retainer / Fee</div>
                         <div className="text-xl font-extrabold text-primary">
-                          {selectedBrand?.retainerFee ? `₹${parseInt(selectedBrand.retainerFee).toLocaleString('en-IN')}` : '₹3,000 / month'}
+                          {`₹${parseInt(selectedBrand.retainerFee).toLocaleString('en-IN')}`}
                         </div>
                       </div>
                     </div>
@@ -1317,7 +1330,7 @@ export default function VMagneticMindsPortal() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                       <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
                         <span className="text-muted-foreground font-bold uppercase text-[10px]">Payment Structure</span>
-                        <p className="font-extrabold text-foreground">{selectedBrand?.paymentStrategy || "📅 Monthly Retainer SLA"}</p>
+                        <p className="font-extrabold text-foreground">{selectedBrand.paymentStrategy || "Custom Agreement"}</p>
                       </div>
                       <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
                         <span className="text-muted-foreground font-bold uppercase text-[10px]">Payment Modes Supported</span>
@@ -1346,8 +1359,9 @@ export default function VMagneticMindsPortal() {
                       </button>
                     </div>
                   </div>
+                  )}
 
-                  {(() => {
+                  {selectedBrand?.tenureMonths ? (() => {
                     const category = (selectedBrand?.category || "").toLowerCase();
                     const isDevService = category.includes("software") || category.includes("app") || category.includes("web") || category.includes("erp") || category.includes("automation") || category.includes("ai") || category.includes("devops");
                     const isDesignService = category.includes("design") || category.includes("branding") || category.includes("ui") || category.includes("ux");
@@ -1398,7 +1412,13 @@ export default function VMagneticMindsPortal() {
                         </div>
                       </div>
                     );
-                  })()}
+                  })() : (
+                    <div className="glass-card rounded-2xl border border-dashed border-border p-8 text-center">
+                      <Clock className="w-8 h-8 mx-auto text-muted-foreground mb-3" />
+                      <h3 className="font-extrabold text-foreground">Delivery plan not assigned</h3>
+                      <p className="text-xs text-muted-foreground mt-2">The roadmap will appear after the admin approves the SLA and starts this client’s work.</p>
+                    </div>
+                  )}
                 </>
               )}
             </motion.div>
