@@ -28,7 +28,10 @@ import {
     Plus,
     Phone,
     ChevronLeft,
-    Star
+    Star,
+    Activity,
+    Building2,
+    Mail
 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";

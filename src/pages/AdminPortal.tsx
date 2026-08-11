@@ -1,6 +1,10 @@
+import { AdminClientsConsole } from "@/components/requirements/AdminClientsConsole";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseService } from "@/services/supabaseService";
+import { emailService } from "@/services/emailService";
+import { KnowledgeHubManager } from "@/components/admin/KnowledgeHubManager";
+import SeoGeoCommandCenter from "@/components/admin/SeoGeoCommandCenter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { GoogleReviewCard } from "@/components/GoogleReviewCard";
@@ -69,7 +73,7 @@ const AdminPortal = () => {
     const [chatInput, setChatInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
     const [sendingMsg, setSendingMsg] = useState(false);
-    const [viewMode, setViewMode] = useState<'submissions' | 'users' | 'portals' | 'agency'>('submissions');
+    const [viewMode, setViewMode] = useState<'submissions' | 'users' | 'portals' | 'agency' | 'knowledge' | 'seo-geo' | 'clients'>('submissions');
 
     // ── Agency Clients Management ────────────────────────────────────────────
     const [agencyClients, setAgencyClients] = useState<any[]>([]);
@@ -199,7 +203,7 @@ const AdminPortal = () => {
                     client_id: editAgencyClient.id,
                     month: acInvoiceMonth,
                     amount: `₹${acInvoiceAmount}`,
-                    raw_amount: acInvoiceAmount,
+                    raw_amount: Number(acInvoiceAmount) || 0,
                     status: 'Pending',
                     due_date: acInvoiceDue || null,
                     description: acInvoiceDesc || `Monthly retainer — ${editAgencyClient.business_name}`,
@@ -758,6 +762,16 @@ const AdminPortal = () => {
                             Submissions
                         </button>
                         <button
+                            onClick={() => setViewMode('clients')}
+                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
+                                viewMode === 'clients'
+                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
+                            }`}
+                        >
+                            <Building2 className="w-4 h-4" /> Clients & Requirements
+                        </button>
+                        <button
                             onClick={() => { setViewMode('users'); fetchAllUsers(); }}
                             className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
                                 viewMode === 'users'
@@ -1148,7 +1162,9 @@ const AdminPortal = () => {
                     </AnimatePresence>
                 </div>
                     </>
-) : viewMode === 'knowledge' ? (
+) : viewMode === 'clients' ? (
+                    <AdminClientsConsole adminEmail="ssaivaraprasad51@gmail.com" />
+                ) : viewMode === 'knowledge' ? (
                     <KnowledgeHubManager />
                 ) : viewMode === 'seo-geo' ? (
                     <SeoGeoCommandCenter />

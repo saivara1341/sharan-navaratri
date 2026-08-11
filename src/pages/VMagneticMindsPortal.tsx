@@ -899,7 +899,7 @@ export default function VMagneticMindsPortal() {
             setAgencyIg(profile.instagram || "");
             setAgencyLi(profile.linkedin || "");
             setAgencyYt(profile.youtube || "");
-            if (Array.isArray(profile.custom_socials)) setCustomSocials(profile.custom_socials);
+            if (Array.isArray(profile.custom_socials)) setCustomSocials((profile.custom_socials as any));
             hasSavedProfile = true;
           }
         } catch (e) {}

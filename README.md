@@ -1,9 +1,5 @@
 # Welcome to your Lovable project
 
-## Product blueprint
-
-The complete client onboarding, services, agreements, billing, payment, role, delivery, and UX specification is in [docs/CLIENT_OPERATIONS_PRD.md](docs/CLIENT_OPERATIONS_PRD.md). The matching Supabase foundation migration is `supabase/migrations/20260811000000_client_operations_hub.sql`.
-
 ## Project info
 
 **URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID

@@ -196,7 +196,7 @@ const PinnedFeatureCard = ({
 
 export const VisionSection = () => {
   const { t } = useTranslation();
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const containerRef = useRef<HTMLDivElement>(null);
   const desktopContainerRef = useRef<HTMLDivElement>(null);
