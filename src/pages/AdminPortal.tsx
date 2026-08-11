@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseService } from "@/services/supabaseService";
+import { emailService } from "@/services/emailService";
+import { KnowledgeHubManager } from "@/components/admin/KnowledgeHubManager";
+import SeoGeoCommandCenter from "@/components/admin/SeoGeoCommandCenter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { GoogleReviewCard } from "@/components/GoogleReviewCard";
@@ -69,7 +72,7 @@ const AdminPortal = () => {
     const [chatInput, setChatInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
     const [sendingMsg, setSendingMsg] = useState(false);
-    const [viewMode, setViewMode] = useState<'submissions' | 'users' | 'portals' | 'agency'>('submissions');
+    const [viewMode, setViewMode] = useState<'submissions' | 'users' | 'portals' | 'agency' | 'knowledge' | 'seo-geo' | 'clients'>('submissions');
 
     // ── Agency Clients Management ────────────────────────────────────────────
     const [agencyClients, setAgencyClients] = useState<any[]>([]);
@@ -199,7 +202,7 @@ const AdminPortal = () => {
                     client_id: editAgencyClient.id,
                     month: acInvoiceMonth,
                     amount: `₹${acInvoiceAmount}`,
-                    raw_amount: acInvoiceAmount,
+                    raw_amount: Number(acInvoiceAmount) || 0,
                     status: 'Pending',
                     due_date: acInvoiceDue || null,
                     description: acInvoiceDesc || `Monthly retainer — ${editAgencyClient.business_name}`,

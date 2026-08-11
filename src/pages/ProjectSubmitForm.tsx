@@ -52,6 +52,7 @@ export default function ProjectSubmitForm() {
     const [serviceDropdownOpen, setServiceDropdownOpen] = useState(false);
     const [preferredBudget, setPreferredBudget] = useState("flexible");
     const [message, setMessage] = useState("");
+    const [phone, setPhone] = useState("");
 
     const toggleService = (val: string) => {
         setSelectedServices(prev =>
@@ -168,7 +169,7 @@ export default function ProjectSubmitForm() {
                                 Back to My Portal
                             </button>
                             <button
-                                onClick={() => { setStep("form"); setMessage(""); setInquiryType("requirement"); }}
+                                onClick={() => { setStep("form"); setMessage(""); setSelectedServices([defaultType]); }}
                                 className="px-6 py-2.5 bg-secondary text-secondary-foreground font-semibold rounded-xl hover:opacity-80 transition text-sm"
                             >
                                 Submit Another

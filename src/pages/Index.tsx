@@ -94,7 +94,7 @@ const Index = () => {
 
     // Autoscroll logic for landing page
     if (pathname === '/') {
-      let scrollTimer: NodeJS.Timeout;
+      let scrollTimer: ReturnType<typeof setTimeout>;
       let autoscrollActive = false;
 
       const startAutoscroll = () => {

@@ -21,7 +21,8 @@ import {
   ChevronRight, 
   Activity, 
   Check, 
-  SlidersHorizontal 
+  SlidersHorizontal,
+  X
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";

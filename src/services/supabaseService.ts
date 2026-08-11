@@ -57,7 +57,7 @@ export const supabaseService = {
     async addToWaitlist(entry: any) {
         const { data, error } = await supabase.from('project_waitlist').insert([entry]).select();
         if (error) throw new Error(`Waitlist DB Error: ${error.message}`);
-        return data;
+        return { status: "created", data } as { status: string; data: any };
     },
 
     async getWaitlistEntries(email?: string, seed?: string) {
@@ -72,7 +72,7 @@ export const supabaseService = {
     async updateSubmission(id: string, updates: Partial<any>) {
         const { data, error } = await supabase
             .from('contact_submissions')
-            .update(updates)
+            .update(updates as never)
             .eq('id', id)
             .select();
 
