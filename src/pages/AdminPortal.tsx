@@ -761,6 +761,16 @@ const AdminPortal = () => {
                             Submissions
                         </button>
                         <button
+                            onClick={() => setViewMode('clients')}
+                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
+                                viewMode === 'clients'
+                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
+                            }`}
+                        >
+                            <Building2 className="w-4 h-4" /> Clients & Requirements
+                        </button>
+                        <button
                             onClick={() => { setViewMode('users'); fetchAllUsers(); }}
                             className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
                                 viewMode === 'users'
