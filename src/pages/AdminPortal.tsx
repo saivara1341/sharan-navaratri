@@ -1163,7 +1163,7 @@ const AdminPortal = () => {
                 </div>
                     </>
 ) : viewMode === 'clients' ? (
-                    <AdminClientsConsole adminEmail={userEmail || 'ssaivaraprasad51@gmail.com'} />
+                    <AdminClientsConsole adminEmail="ssaivaraprasad51@gmail.com" />
                 ) : viewMode === 'knowledge' ? (
                     <KnowledgeHubManager />
                 ) : viewMode === 'seo-geo' ? (
