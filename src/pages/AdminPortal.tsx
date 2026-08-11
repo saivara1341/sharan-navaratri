@@ -1,3 +1,4 @@
+import { AdminClientsConsole } from "@/components/requirements/AdminClientsConsole";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseService } from "@/services/supabaseService";
@@ -1161,7 +1162,9 @@ const AdminPortal = () => {
                     </AnimatePresence>
                 </div>
                     </>
-) : viewMode === 'knowledge' ? (
+) : viewMode === 'clients' ? (
+                    <AdminClientsConsole adminEmail={userEmail || 'ssaivaraprasad51@gmail.com'} />
+                ) : viewMode === 'knowledge' ? (
                     <KnowledgeHubManager />
                 ) : viewMode === 'seo-geo' ? (
                     <SeoGeoCommandCenter />
