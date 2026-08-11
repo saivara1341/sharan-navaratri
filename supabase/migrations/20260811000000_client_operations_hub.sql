@@ -170,9 +170,9 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
   SELECT EXISTS (
-    SELECT 1 FROM public.organisation_memberships
-    WHERE organisation_id = target_organisation_id
-      AND user_id = (select auth.uid())
+    SELECT 1 FROM public.organisation_memberships AS membership
+    WHERE membership.organisation_id = target_organisation_id
+      AND membership.user_id = (select auth.uid())
   );
 $$;
 REVOKE ALL ON FUNCTION public.is_organisation_member(uuid) FROM PUBLIC;
@@ -182,31 +182,31 @@ GRANT EXECUTE ON FUNCTION public.is_organisation_member(uuid) TO authenticated;
 -- is_portal_admin() function; invites, membership changes and reconciliation
 -- must run in a trusted server-side function.
 CREATE POLICY "Members can view their organisations" ON public.organisations FOR SELECT TO authenticated
-  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(id)));
+  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(organisations.id)));
 CREATE POLICY "Members can view memberships in their organisations" ON public.organisation_memberships FOR SELECT TO authenticated
-  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(organisation_id)));
+  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(organisation_memberships.organisation_id)));
 
 CREATE POLICY "Members can view organisation projects" ON public.client_projects FOR SELECT TO authenticated
-  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(organisation_id)));
+  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(client_projects.organisation_id)));
 CREATE POLICY "Members can view organisation service requests" ON public.service_requests FOR SELECT TO authenticated
-  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(organisation_id)));
+  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(service_requests.organisation_id)));
 CREATE POLICY "Members can create service requests" ON public.service_requests FOR INSERT TO authenticated
-  WITH CHECK (submitted_by = (select auth.uid()) AND (select public.is_organisation_member(organisation_id)));
+  WITH CHECK (submitted_by = (select auth.uid()) AND (select public.is_organisation_member(service_requests.organisation_id)));
 CREATE POLICY "Request authors can revise their requests" ON public.service_requests FOR UPDATE TO authenticated
-  USING (submitted_by = (select auth.uid()) AND (select public.is_organisation_member(organisation_id)))
-  WITH CHECK (submitted_by = (select auth.uid()) AND (select public.is_organisation_member(organisation_id)));
+  USING (submitted_by = (select auth.uid()) AND (select public.is_organisation_member(service_requests.organisation_id)))
+  WITH CHECK (submitted_by = (select auth.uid()) AND (select public.is_organisation_member(service_requests.organisation_id)));
 CREATE POLICY "Members can view organisation agreements" ON public.agreements FOR SELECT TO authenticated
-  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(organisation_id)));
+  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(agreements.organisation_id)));
 CREATE POLICY "Members can view organisation invoices" ON public.invoices FOR SELECT TO authenticated
-  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(organisation_id)));
+  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(invoices.organisation_id)));
 CREATE POLICY "Members can view organisation payments" ON public.payment_submissions FOR SELECT TO authenticated
-  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(organisation_id)));
+  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(payment_submissions.organisation_id)));
 CREATE POLICY "Members can submit their organisation payments" ON public.payment_submissions FOR INSERT TO authenticated
-  WITH CHECK (submitted_by = (select auth.uid()) AND (select public.is_organisation_member(organisation_id)));
+  WITH CHECK (submitted_by = (select auth.uid()) AND (select public.is_organisation_member(payment_submissions.organisation_id)));
 CREATE POLICY "Members can view organisation approvals" ON public.approval_requests FOR SELECT TO authenticated
-  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(organisation_id)));
+  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(approval_requests.organisation_id)));
 CREATE POLICY "Members can view organisation audit events" ON public.audit_events FOR SELECT TO authenticated
-  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(organisation_id)));
+  USING ((select public.is_portal_admin()) OR (select public.is_organisation_member(audit_events.organisation_id)));
 
 -- Only trusted operations staff can mutate operational records. This prevents
 -- a client from self-approving an agreement or marking an invoice paid.
