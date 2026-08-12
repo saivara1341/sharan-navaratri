@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { GoogleReviewCard } from "@/components/GoogleReviewCard";
+import { RequirementsPanel } from "@/components/requirements/RequirementsPanel";
 
 interface Submission {
     id: string;
@@ -449,6 +450,8 @@ ${contextText || "No matching guidelines found."}
             </Helmet>
 
             <main className="container mx-auto px-6 pt-32 pb-20 max-w-5xl relative z-10 space-y-12">
+                <RequirementsPanel viewerEmail={clientEmail} role="client" />
+
                 <button
                     onClick={() => navigate('/portal')}
                     className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-2 group cursor-pointer text-left"

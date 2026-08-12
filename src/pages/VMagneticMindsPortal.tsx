@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { emailService } from "@/services/emailService";
 import OccasionDesignsSection from "@/components/portal/OccasionDesignsSection";
+import { RequirementsPanel } from "@/components/requirements/RequirementsPanel";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Tab = 'overview' | 'seo-geo' | 'analytics' | 'clients' | 'billing' | 'chat' | 'occasions';
@@ -983,6 +984,8 @@ export default function VMagneticMindsPortal() {
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 md:pt-36 pb-20 space-y-8">
+        <RequirementsPanel viewerEmail={userEmail} role="partner" agencyEmail={userEmail} title="Client Requirements" subtitle="Submit and track requirements on behalf of your clients." />
+
         {/* ── Header Banner ──────────────────────────────────────────────── */}
         <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }}
           className="glass-card rounded-[2rem] border border-primary/20 p-6 md:p-8 relative overflow-hidden shadow-sm bg-gradient-to-br from-card via-background to-primary/5">
