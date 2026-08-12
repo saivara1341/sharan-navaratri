@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { embedText, extractFileText } from "@/lib/geminiClient";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -69,7 +70,6 @@ export const KnowledgeHubManager = () => {
     const [kbContent, setKbContent] = useState("");
     const [kbFileType, setKbFileType] = useState("text");
     const [kbSaving, setKbSaving] = useState(false);
-    const [geminiKey, setGeminiKey] = useState(() => localStorage.getItem('vite_gemini_api_key') || "");
     const [fileUploading, setFileUploading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
 
@@ -96,71 +96,16 @@ export const KnowledgeHubManager = () => {
         fetchKbEntries();
     }, []);
 
-    const handleSaveGeminiKey = (key: string) => {
-        setGeminiKey(key);
-        localStorage.setItem('vite_gemini_api_key', key);
-        toast.success("Gemini API Key saved locally!");
-    };
-
-    const generateEmbedding = async (text: string, apiKey: string) => {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                model: 'models/text-embedding-004',
-                content: {
-                    parts: [{ text: text }]
-                }
-            })
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error?.message || 'Embedding generation failed');
-        return data.embedding.values;
-    };
-
-    const extractTextFromFile = async (base64Data: string, mimeType: string, apiKey: string) => {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [
-                        {
-                            inlineData: {
-                                mimeType: mimeType,
-                                data: base64Data
-                            }
-                        },
-                        {
-                            text: "Extract all detailed factual information, business rules, pricing list, guidelines, and text content from this document/image. Return a comprehensive, clean, structured text output summarizing everything found. Do not add conversational intro/outro."
-                        }
-                    ]
-                }]
-            })
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error?.message || 'File processing failed');
-        return data.candidates[0].content.parts[0].text;
-    };
-
     const handleSaveManualEntry = async () => {
         if (!kbTitle.trim() || !kbContent.trim()) {
             toast.error("Please provide both a title and content.");
-            return;
-        }
-        if (!geminiKey) {
-            toast.error("Please save your Gemini API Key first to generate vector embeddings.");
             return;
         }
 
         setKbSaving(true);
         try {
             toast.loading("Generating vector embeddings...", { id: "kb-save" });
-            const vector = await generateEmbedding(kbContent, geminiKey);
+            const vector = await embedText(kbContent);
 
             toast.loading("Writing to vector database...", { id: "kb-save" });
             const { error } = await supabase
@@ -189,10 +134,6 @@ export const KnowledgeHubManager = () => {
     const handleKbFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        if (!geminiKey) {
-            toast.error("Please save your Gemini API Key first to process documents.");
-            return;
-        }
 
         setFileUploading(true);
         try {
@@ -228,11 +169,11 @@ export const KnowledgeHubManager = () => {
             if (!mimeType) {
                 mimeType = file.name.endsWith('.docx') ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'application/pdf';
             }
-            const extractedText = await extractTextFromFile(base64Data, mimeType, geminiKey);
+            const extractedText = await extractFileText(base64Data, mimeType);
 
             // 4. Generate embeddings
             toast.loading("Generating vector embeddings...", { id: "kb-upload" });
-            const vector = await generateEmbedding(extractedText, geminiKey);
+            const vector = await embedText(extractedText);
 
             // 5. Save to knowledge_base
             const { error: dbError } = await supabase

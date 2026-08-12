@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { embedText, generateContent } from "@/lib/geminiClient";
 import { Navbar } from "@/components/layout/Navbar";
 import { 
     Briefcase, 
@@ -221,25 +222,8 @@ export default function ClientPortal() {
 
             if (userMsgError) throw userMsgError;
 
-            // 2. Generate embedding for query & query knowledge base
-            const apiKey = import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem('vite_gemini_api_key');
-            if (!apiKey) {
-                setSendingMsg(false);
-                return;
-            }
-
-            // Generate query vector
-            const embedResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    model: 'models/text-embedding-004',
-                    content: { parts: [{ text: userMsg }] }
-                })
-            });
-            if (!embedResponse.ok) throw new Error("Embedding generation failed");
-            const embedData = await embedResponse.json();
-            const queryVector = embedData.embedding.values;
+            // 2. Generate embedding for query via secure edge function
+            const queryVector = await embedText(userMsg);
 
             // Fetch context matching query vector
             const { data: matchedDocs, error: matchError } = await supabase.rpc('match_knowledge_base', {
@@ -271,18 +255,7 @@ ${contextText || "No matching guidelines found."}
                 parts: [{ text: userMsg }]
             });
 
-            const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: historyPayload,
-                    systemInstruction: { parts: [{ text: systemInstruction }] }
-                })
-            });
-
-            if (!geminiResponse.ok) throw new Error("Gemini AI generation failed");
-            const geminiData = await geminiResponse.json();
-            const aiText = geminiData.candidates[0].content.parts[0].text;
+            const aiText = await generateContent(historyPayload, systemInstruction);
 
             const isEscalated = aiText.includes('[ESCFLAG]');
             const cleanAiText = aiText.replace('[ESCFLAG]', '').trim();
