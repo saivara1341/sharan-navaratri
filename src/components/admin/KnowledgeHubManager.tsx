@@ -235,30 +235,16 @@ export const KnowledgeHubManager = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Left Panel: Settings & Add Content */}
                 <div className="lg:col-span-5 space-y-6">
-                    {/* Gemini API Settings */}
+                    {/* AI Service Status */}
                     <div className="glass-card p-6 electric-border">
                         <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                            ⚙️ Gemini API Key
+                            ⚙️ AI Processing
                         </h3>
-                        <p className="text-xs text-muted-foreground mb-4">
-                            An API Key is required to generate vector embeddings and run Multimodal OCR (parsing PDFs and images). The key is stored locally in your browser.
+                        <p className="text-xs text-muted-foreground">
+                            Vector embeddings and Multimodal OCR run on our secure server. No API key is stored in your browser.
                         </p>
-                        <div className="flex gap-2">
-                            <input
-                                type="password"
-                                placeholder="Paste Gemini API Key..."
-                                value={geminiKey}
-                                onChange={(e) => setGeminiKey(e.target.value)}
-                                className="flex-1 bg-card border border-border text-foreground rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                            />
-                            <button
-                                onClick={() => handleSaveGeminiKey(geminiKey)}
-                                className="bg-primary hover:bg-primary/80 text-primary-foreground font-bold px-4 py-2.5 rounded-xl text-sm transition-all shadow-md"
-                            >
-                                Save
-                            </button>
-                        </div>
                     </div>
+
 
                     {/* Upload PDF / Images */}
                     <div className="glass-card p-6 electric-border">
