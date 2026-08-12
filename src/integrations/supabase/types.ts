@@ -693,6 +693,10 @@ export type Database = {
           total_value: number
         }[]
       }
+      toggle_project_like: {
+        Args: { _delta: number; _project_id: string }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never

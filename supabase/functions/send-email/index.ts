@@ -27,7 +27,10 @@ import {
   buildAdminMessage,
 } from './templates.ts';
 
+import { createClient } from 'npm:@supabase/supabase-js@2';
+
 const RESEND_API_URL = 'https://api.resend.com/emails';
+const ADMIN_EMAIL = 'ssaivaraprasad51@gmail.com';
 
 const TEMPLATE_MAP: Record<string, (data: any) => { subject: string; html: string }> = {
   welcome: buildWelcome,
@@ -65,6 +68,30 @@ Deno.serve(async (req: Request) => {
     });
   }
 
+  // --- Auth: only signed-in users may send email ---
+  const authHeader = req.headers.get('Authorization') ?? '';
+  if (!authHeader.startsWith('Bearer ')) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+    });
+  }
+
+  const supabaseClient = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_ANON_KEY')!,
+    { global: { headers: { Authorization: authHeader } } },
+  );
+  const { data: userData, error: authError } = await supabaseClient.auth.getUser();
+  if (authError || !userData?.user?.email) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+    });
+  }
+  const callerEmail = userData.user.email.toLowerCase();
+  const isAdmin = callerEmail === ADMIN_EMAIL;
+
   try {
     const body = await req.json();
     const { template, to, data } = body as {
@@ -78,6 +105,14 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: 'Missing template, to, or data' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Non-admins may only send email to their own address
+    if (!isAdmin && String(to).toLowerCase() !== callerEmail) {
+      return new Response(JSON.stringify({ error: 'Forbidden recipient' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
       });
     }
 

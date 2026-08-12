@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { generateContent } from "@/lib/geminiClient";
 import { Navbar } from "@/components/layout/Navbar";
 import { 
   TrendingUp, 
@@ -352,13 +353,7 @@ export default function InvestorPortal() {
 
       if (userErr) throw userErr;
 
-      // 2. Generate Gemini response
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem('vite_gemini_api_key');
-      if (!apiKey) {
-        setSendingMsg(false);
-        return;
-      }
-
+      // 2. Generate Gemini response via secure edge function
       const systemInstruction = `You are Siddhi Investor Relations Assistant, an AI advisor representing Siddhi Dynamics. 
 Answer the investor's questions about the venture portfolio, active project roadmaps, and technological architectures.
 Be professional, analytical, and informative. Frame your answers with financial and strategic intelligence.
@@ -377,18 +372,7 @@ If you cannot answer based on our tech stack, say: "I will escalate this questio
         parts: [{ text: msg }]
       });
 
-      const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: historyPayload,
-          systemInstruction: { parts: [{ text: systemInstruction }] }
-        })
-      });
-
-      if (!geminiResponse.ok) throw new Error("Gemini API call failed");
-      const geminiData = await geminiResponse.json();
-      const aiText = geminiData.candidates[0].content.parts[0].text;
+      const aiText = await generateContent(historyPayload, systemInstruction);
 
       const isEscalated = aiText.includes('[ESCFLAG]');
       const cleanAiText = aiText.replace('[ESCFLAG]', '').trim();
