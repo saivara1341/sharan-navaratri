@@ -167,7 +167,7 @@ export const Navbar = () => {
                 />
               </div>
               <div className="flex flex-col md:flex-row md:items-center gap-0.5 md:gap-2 text-left">
-                <span className="font-extrabold text-base md:text-lg text-foreground tracking-tight whitespace-nowrap">
+                <span className="font-extrabold text-lg md:text-xl text-foreground tracking-tight whitespace-nowrap">
                   Siddhi Dynamics
                 </span>
               </div>
