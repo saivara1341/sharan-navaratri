@@ -81,21 +81,22 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
       onLikeChange(newLiked, newCount);
     }
 
-    // Persist real count to Supabase if projectId is present
+    // Persist real count via a secure server-side counter
     if (projectId) {
       try {
-        await (supabase as any).from('project_likes').upsert(
-          {
-            project_id: projectId,
-            likes_count: newCount,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: 'project_id' }
-        );
+        const { data, error } = await (supabase as any).rpc('toggle_project_like', {
+          _project_id: projectId,
+          _delta: newLiked ? 1 : -1,
+        });
+        if (!error && typeof data === 'number') {
+          setCount(data);
+          localStorage.setItem(storageKeyCount, String(data));
+        }
       } catch (err) {
         console.warn('Like count persistence notice:', err);
       }
     }
+
 
     if (newLiked) {
       // Trigger pop animation
