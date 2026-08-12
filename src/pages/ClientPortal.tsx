@@ -227,7 +227,7 @@ export default function ClientPortal() {
 
             // Fetch context matching query vector
             const { data: matchedDocs, error: matchError } = await supabase.rpc('match_knowledge_base', {
-                query_embedding: queryVector,
+                query_embedding: queryVector as unknown as string,
                 match_threshold: 0.3,
                 match_count: 3
             });

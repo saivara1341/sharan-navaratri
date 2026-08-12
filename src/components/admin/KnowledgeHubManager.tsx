@@ -114,7 +114,7 @@ export const KnowledgeHubManager = () => {
                     file_name: kbTitle.trim(),
                     file_type: kbFileType,
                     content: kbContent.trim(),
-                    embedding: vector
+                    embedding: vector as unknown as string
                 });
 
             if (error) throw error;
@@ -182,7 +182,7 @@ export const KnowledgeHubManager = () => {
                     file_name: file.name,
                     file_type: fileExt || 'unknown',
                     content: extractedText,
-                    embedding: vector
+                    embedding: vector as unknown as string
                 });
 
             if (dbError) throw dbError;
