@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { GoogleReviewCard } from "@/components/GoogleReviewCard";
+import { RequirementsPanel } from "@/components/requirements/RequirementsPanel";
 
 interface Submission {
   id: string;
@@ -330,6 +331,8 @@ export default function EmployeePortal() {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[150px] pointer-events-none z-0" />
 
       <main className="container mx-auto px-6 pt-32 pb-20 max-w-6xl relative z-10 space-y-12">
+        <RequirementsPanel viewerEmail={employeeEmail} role="employee" title="Assigned Work" subtitle="Requirements assigned to you, with status and progress controls." canSubmit={false} />
+
         
         {/* Portal Header */}
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-6">

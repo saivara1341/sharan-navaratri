@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { GoogleReviewCard } from "@/components/GoogleReviewCard";
+import { InvestorPipelineRollup } from "@/components/requirements/InvestorPipelineRollup";
 
 interface StartupProject {
   id: string;
@@ -467,6 +468,8 @@ If you cannot answer based on our tech stack, say: "I will escalate this questio
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[150px] pointer-events-none z-0" />
 
       <main className="container mx-auto px-6 pt-32 pb-20 max-w-6xl relative z-10 space-y-12">
+        <InvestorPipelineRollup />
+
         
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-6">
