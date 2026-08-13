@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { ConsentCheckbox } from '@/components/legal/ConsentCheckbox';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Star, Loader2, CheckCircle } from 'lucide-react';
 import { useTranslation, Trans } from 'react-i18next';
@@ -24,6 +25,7 @@ export const WaitlistModal = ({ isOpen, onClose, projectId, projectName, accentC
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [consentGiven, setConsentGiven] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const { toast } = useToast();
 
@@ -51,6 +53,15 @@ export const WaitlistModal = ({ isOpen, onClose, projectId, projectName, accentC
       return;
     }
 
+    if (!consentGiven) {
+      toast({
+        title: "Consent required",
+        description: "Please consent to us using your details to notify you about this product.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -60,6 +71,8 @@ export const WaitlistModal = ({ isOpen, onClose, projectId, projectName, accentC
         name: name.trim(),
         email: email.trim().toLowerCase(),
         idea_rating: rating > 0 ? rating : null,
+        consent_given: true,
+        consent_at: new Date().toISOString(),
         comment: comment.trim() || null,
       });
 
@@ -218,6 +231,13 @@ export const WaitlistModal = ({ isOpen, onClose, projectId, projectName, accentC
                       className="input-premium py-3 min-h-[100px] resize-none"
                     />
                   </div>
+
+                  <ConsentCheckbox
+                    checked={consentGiven}
+                    onChange={setConsentGiven}
+                    purpose="adding me to this product waitlist and notifying me about its launch"
+                    id="waitlist-consent"
+                  />
 
                   <button
                     type="submit"

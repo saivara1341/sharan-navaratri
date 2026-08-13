@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { ConsentCheckbox } from "@/components/legal/ConsentCheckbox";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/layout/Navbar";
 import { Helmet } from "react-helmet-async";
@@ -85,6 +86,8 @@ export default function ProjectSubmitForm() {
         });
     }, []);
 
+    const [consentGiven, setConsentGiven] = useState(false);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!name.trim() || !email.trim() || !message.trim()) {
@@ -100,6 +103,11 @@ export default function ProjectSubmitForm() {
         }
         if (message.trim().length < 20) {
             toast.error("Please describe your requirement in at least 20 characters.");
+            return;
+        }
+
+        if (!consentGiven) {
+            toast.error("Please give consent to process your details before submitting.");
             return;
         }
 
@@ -121,6 +129,8 @@ export default function ProjectSubmitForm() {
                 message: formattedMessage,
                 status: "New Request",
                 progress: 0,
+                consent_given: true,
+                consent_at: new Date().toISOString(),
             });
 
             if (error) throw error;
@@ -371,6 +381,12 @@ export default function ProjectSubmitForm() {
                                 {message.length} chars {message.length < 20 && <span className="text-yellow-500">(min 20)</span>}
                             </div>
                         </div>
+
+                        <ConsentCheckbox
+                            checked={consentGiven}
+                            onChange={setConsentGiven}
+                            purpose="reviewing my project requirement, preparing a quote and contacting me about it"
+                        />
 
                         {/* Submit */}
                         <div className="flex flex-col sm:flex-row gap-3 pt-2">

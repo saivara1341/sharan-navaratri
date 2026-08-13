@@ -1,132 +1,151 @@
-import { motion } from "framer-motion";
-import { Navbar } from "@/components/layout/Navbar";
-import { FooterSection } from "@/components/sections/FooterSection";
-import { Shield, Lock, Eye, FileText, ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
+import { Shield } from "lucide-react";
+import { LegalContact, LegalPageLayout } from "@/components/legal/LegalPageLayout";
 
-const PrivacyPolicy = () => {
-  return (
-    <div className="min-h-screen bg-background relative overflow-hidden flex flex-col font-inter">
-      <Navbar />
-      <Helmet>
-        <title>Privacy Policy | Siddhi Dynamics</title>
-      </Helmet>
+const PrivacyPolicy = () => (
+  <LegalPageLayout
+    title="Privacy Notice"
+    description="How Siddhi Dynamics LLP collects, uses and protects your personal data under India's Digital Personal Data Protection Act, 2023."
+    icon={<Shield className="w-8 h-8" />}
+  >
+    <section>
+      <h2 className="text-xl font-bold text-foreground">1. Who we are</h2>
+      <p className="text-muted-foreground leading-relaxed">
+        <strong>Siddhi Dynamics LLP</strong> ("we", "us") is the <strong>Data Fiduciary</strong> for the personal data
+        processed through https://siddhidynamics.in and our client, partner, employee and investor portals. This notice
+        is issued under Section 5 of the Digital Personal Data Protection Act, 2023 ("DPDP Act") and describes, in
+        clear and plain language, what personal data we process, why, and the rights you have as a{" "}
+        <strong>Data Principal</strong>.
+      </p>
+    </section>
 
-      {/* Background patterns */}
-      <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />
-      
-      <div className="container relative z-10 mx-auto px-6 pt-32 pb-20 flex-grow">
-        <Link 
-          to="/" 
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-8 group"
-        >
-          <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          <span>Back to Matrix</span>
-        </Link>
-
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-4xl mx-auto glass-card p-8 md:p-12 rounded-3xl bg-white/5 border border-white/10"
-        >
-          <div className="flex items-center gap-4 mb-8">
-            <div className="p-3 rounded-2xl bg-primary/10 text-primary">
-              <Shield className="w-8 h-8" />
-            </div>
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold gradient-text">Privacy Policy</h1>
-              <p className="text-muted-foreground">Last Updated: July 30, 2026</p>
-            </div>
-          </div>
-
-          <div className="prose prose-invert prose-emerald max-w-none space-y-8">
-            <section>
-              <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-                <Eye className="w-5 h-5 text-primary" /> 1. Introduction
-              </h2>
-              <p className="text-muted-foreground leading-relaxed">
-                At <strong>Siddhi Dynamics</strong> ("we," "us," or "our"), we respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, and safeguard your information when you use our website (https://siddhidynamics.in) and our AI architectural services.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-                <Lock className="w-5 h-5 text-primary" /> 2. Information We Collect
-              </h2>
-              <p className="text-muted-foreground leading-relaxed">
-                When you interact with our platform, we may collect:
-              </p>
-              <ul className="list-disc pl-6 text-muted-foreground space-y-2">
-                <li><strong>Identity Data:</strong> Full name and professional role.</li>
-                <li><strong>Contact Data:</strong> Email address provided via Google OAuth.</li>
-                <li><strong>Profile Data:</strong> We may receive your Google profile picture and name when you authenticate via Google OAuth to personalize your dashboard experience.</li>
-                <li><strong>Technical Data:</strong> IP address, browser type, and usage patterns.</li>
-                <li><strong>Submission Data:</strong> Any architectural queries or project details you submit through our Neural Hub.</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-                <FileText className="w-5 h-5 text-primary" /> 3. How We Use Your Data
-              </h2>
-              <p className="text-muted-foreground leading-relaxed">
-                Your data is used to:
-              </p>
-              <ul className="list-disc pl-6 text-muted-foreground space-y-2">
-                <li>Provide and maintain our AI services.</li>
-                <li>Authenticate your identity via Google OAuth.</li>
-                <li>Communicate with you regarding your project submissions.</li>
-                <li>Improve our Neural Engine and user experience.</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-                <Shield className="w-5 h-5 text-primary" /> 4. Data Security
-              </h2>
-              <p className="text-muted-foreground leading-relaxed">
-                We implement state-of-the-art security measures, including encryption and secure authentication through Supabase, to prevent your personal data from being accidentally lost, used, or accessed in an unauthorized way.
-              </p>
-            </section>
-
-            <section>
-                <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-primary" /> 5. Data Retention and Deletion
-                </h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  We retain your personal data only for as long as necessary to fulfill the purposes we collected it for, including for the purposes of satisfying any legal, accounting, or reporting requirements. 
-                </p>
-                <p className="text-muted-foreground mt-2">
-                  You have the right to request the deletion of your account and associated data at any time. To request data deletion, please contact us at <a href="mailto:saivaraprasad@siddhidynamics.in" className="text-primary hover:underline">saivaraprasad@siddhidynamics.in</a>. Upon verification of your request, we will remove your personal information from our active databases within 30 days.
-                </p>
-            </section>
-
-            <section>
-                <h2 className="text-xl font-bold text-foreground">6. Your Legal Rights</h2>
-                <p className="text-muted-foreground leading-relaxed">
-                    Under certain circumstances, you have rights under data protection laws in relation to your personal data, including the right to request access, correction, or erasure of your data.
-                </p>
-            </section>
-
-            <section className="pt-8 border-t border-white/5">
-              <h2 className="text-xl font-bold text-foreground">7. Contact Us</h2>
-              <p className="text-muted-foreground">
-                For any questions about this Privacy Policy, please contact our support team:
-              </p>
-              <a 
-                href="mailto:saivaraprasad@siddhidynamics.in"
-                className="text-primary hover:underline font-bold"
-              >
-                saivaraprasad@siddhidynamics.in
-              </a>
-            </section>
-          </div>
-        </motion.div>
+    <section>
+      <h2 className="text-xl font-bold text-foreground">2. Personal data we collect and why</h2>
+      <div className="overflow-x-auto not-prose mt-3">
+        <table className="w-full text-left text-xs">
+          <thead>
+            <tr className="text-foreground">
+              <th className="p-3 border-b border-white/10">Data</th>
+              <th className="p-3 border-b border-white/10">Purpose (specified use)</th>
+              <th className="p-3 border-b border-white/10">Lawful basis</th>
+            </tr>
+          </thead>
+          <tbody className="text-muted-foreground">
+            <tr>
+              <td className="p-3 border-b border-white/5">Name, email, phone, organisation, designation</td>
+              <td className="p-3 border-b border-white/5">Responding to enquiries, project quotes, onboarding you to a portal</td>
+              <td className="p-3 border-b border-white/5">Your consent</td>
+            </tr>
+            <tr>
+              <td className="p-3 border-b border-white/5">Requirement descriptions, project files, messages</td>
+              <td className="p-3 border-b border-white/5">Delivering the services you requested and keeping a delivery record</td>
+              <td className="p-3 border-b border-white/5">Consent / performance of our engagement</td>
+            </tr>
+            <tr>
+              <td className="p-3 border-b border-white/5">Google account name, email and profile picture (if you sign in with Google)</td>
+              <td className="p-3 border-b border-white/5">Authenticating you and personalising your portal</td>
+              <td className="p-3 border-b border-white/5">Your consent</td>
+            </tr>
+            <tr>
+              <td className="p-3 border-b border-white/5">Waitlist name, email, product rating</td>
+              <td className="p-3 border-b border-white/5">Notifying you about the product you asked to be notified about</td>
+              <td className="p-3 border-b border-white/5">Your consent</td>
+            </tr>
+            <tr>
+              <td className="p-3 border-b border-white/5">Device, browser and usage data</td>
+              <td className="p-3 border-b border-white/5">Site security and, where you allow it, aggregated analytics</td>
+              <td className="p-3 border-b border-white/5">Legitimate uses (security) / your consent (analytics)</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <FooterSection />
-    </div>
-  );
-};
+      <p className="text-muted-foreground leading-relaxed mt-3">
+        We collect only the data necessary for these purposes (Section 6(1)). We do not sell personal data and we do
+        not use it for automated decisions that produce legal effects.
+      </p>
+    </section>
+
+    <section>
+      <h2 className="text-xl font-bold text-foreground">3. Consent and withdrawal</h2>
+      <p className="text-muted-foreground leading-relaxed">
+        Where we rely on consent, we ask for it at the point of collection with an unticked checkbox alongside this
+        notice. Consent is free, specific, informed, unconditional and unambiguous. You may withdraw it at any time —
+        withdrawal is as easy as giving it — from the{" "}
+        <Link to="/data-rights" className="text-primary hover:underline">Data Rights</Link> page. Withdrawal does not
+        affect processing carried out before withdrawal, and we will stop processing and erase the data unless a law
+        requires us to retain it.
+      </p>
+    </section>
+
+    <section>
+      <h2 className="text-xl font-bold text-foreground">4. Children and persons with disability</h2>
+      <p className="text-muted-foreground leading-relaxed">
+        Our services are not directed at children under 18. In line with Section 9 of the DPDP Act, we do not knowingly
+        process a child's personal data without verifiable parental consent, and we never undertake tracking,
+        behavioural monitoring or targeted advertising directed at children. If you believe a child has provided us
+        data, contact our Grievance Officer and we will erase it.
+      </p>
+    </section>
+
+    <section>
+      <h2 className="text-xl font-bold text-foreground">5. Data Processors and sharing</h2>
+      <p className="text-muted-foreground leading-relaxed">
+        We engage Data Processors under contract to operate the platform — cloud hosting and database/authentication
+        infrastructure, transactional email delivery, and AI processing for assistant features. They act only on our
+        instructions. We also share data where disclosure is required by law or a court order. Any transfer outside
+        India is made only to countries not restricted by the Central Government under Section 16.
+      </p>
+    </section>
+
+    <section>
+      <h2 className="text-xl font-bold text-foreground">6. Security safeguards</h2>
+      <p className="text-muted-foreground leading-relaxed">
+        As required by Section 8(5), we maintain reasonable security safeguards: encryption in transit, row-level
+        access control on every database table, role-based portal access, server-side handling of API keys and secrets,
+        input validation and rate limiting, and least-privilege access for our team. In the event of a personal data
+        breach we will notify the Data Protection Board of India and every affected Data Principal without delay.
+      </p>
+    </section>
+
+    <section>
+      <h2 className="text-xl font-bold text-foreground">7. Retention and erasure</h2>
+      <p className="text-muted-foreground leading-relaxed">
+        We keep personal data only while the purpose is being served or while a legal, accounting or contractual
+        obligation requires retention. Enquiry and waitlist data is erased within 24 months of your last interaction;
+        engagement records are retained for the statutory period applicable to our books of account. When you withdraw
+        consent or the purpose is no longer served, we erase the data and instruct our Processors to do the same.
+      </p>
+    </section>
+
+    <section>
+      <h2 className="text-xl font-bold text-foreground">8. Your rights</h2>
+      <ul className="list-disc pl-6 text-muted-foreground space-y-2">
+        <li><strong>Right to information</strong> — a summary of your data and the processing we carry out (Sec. 11).</li>
+        <li><strong>Right to correction and erasure</strong> — correct, complete, update or erase your data (Sec. 12).</li>
+        <li><strong>Right to grievance redressal</strong> — a readily available means of complaint (Sec. 13).</li>
+        <li><strong>Right to nominate</strong> — nominate a person to exercise your rights on death or incapacity (Sec. 14).</li>
+        <li><strong>Right to withdraw consent</strong> at any time (Sec. 6(4)–(6)).</li>
+      </ul>
+      <p className="text-muted-foreground leading-relaxed mt-3">
+        Exercise any of these on the{" "}
+        <Link to="/data-rights" className="text-primary hover:underline">Data Rights</Link> page. We respond within 30
+        days. You also have a duty under Section 15 not to furnish false particulars or file frivolous complaints.
+      </p>
+    </section>
+
+    <section>
+      <h2 className="text-xl font-bold text-foreground">9. Grievance Officer</h2>
+      <p className="text-muted-foreground leading-relaxed">
+        Sarugu Sai Vara Prasad — Founder &amp; Designated Partner, and Grievance Officer under Section 13 of the DPDP
+        Act, 2023.<br />
+        Email: <a className="text-primary hover:underline" href="mailto:saivaraprasad@siddhidynamics.in">saivaraprasad@siddhidynamics.in</a><br />
+        Phone: <a className="text-primary hover:underline" href="tel:+916303602743">+91 63036 02743</a><br />
+        If unsatisfied with our response, you may complain to the Data Protection Board of India.
+      </p>
+    </section>
+
+    <LegalContact />
+  </LegalPageLayout>
+);
 
 export default PrivacyPolicy;
