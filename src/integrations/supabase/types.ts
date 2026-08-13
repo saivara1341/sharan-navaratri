@@ -348,6 +348,8 @@ export type Database = {
         Row: {
           assigned_to: string | null
           bounty_reward: string | null
+          consent_at: string | null
+          consent_given: boolean
           created_at: string | null
           designation: string | null
           email: string
@@ -363,6 +365,8 @@ export type Database = {
         Insert: {
           assigned_to?: string | null
           bounty_reward?: string | null
+          consent_at?: string | null
+          consent_given?: boolean
           created_at?: string | null
           designation?: string | null
           email: string
@@ -378,6 +382,8 @@ export type Database = {
         Update: {
           assigned_to?: string | null
           bounty_reward?: string | null
+          consent_at?: string | null
+          consent_given?: boolean
           created_at?: string | null
           designation?: string | null
           email?: string
@@ -389,6 +395,48 @@ export type Database = {
           organization?: string | null
           progress?: number
           status?: string
+        }
+        Relationships: []
+      }
+      dpdp_requests: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          details: string
+          email: string
+          full_name: string
+          id: string
+          phone: string | null
+          request_type: string
+          resolved_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          details: string
+          email: string
+          full_name: string
+          id?: string
+          phone?: string | null
+          request_type: string
+          resolved_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          details?: string
+          email?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          request_type?: string
+          resolved_at?: string | null
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -490,6 +538,8 @@ export type Database = {
       }
       project_waitlist: {
         Row: {
+          consent_at: string | null
+          consent_given: boolean
           created_at: string
           email: string
           id: string
@@ -499,6 +549,8 @@ export type Database = {
           project_name: string
         }
         Insert: {
+          consent_at?: string | null
+          consent_given?: boolean
           created_at?: string
           email: string
           id?: string
@@ -508,6 +560,8 @@ export type Database = {
           project_name: string
         }
         Update: {
+          consent_at?: string | null
+          consent_given?: boolean
           created_at?: string
           email?: string
           id?: string
