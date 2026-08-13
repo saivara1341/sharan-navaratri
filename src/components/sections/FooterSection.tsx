@@ -267,6 +267,7 @@ export const FooterSection = () => {
                 { label: 'Privacy Policy', href: '/privacy' },
                 { label: 'Terms & Conditions', href: '/terms-and-conditions' },
                 { label: 'Cookie Policy', href: '/cookie-policy' },
+                { label: 'Your Data Rights', href: '/data-rights' },
                 { label: 'Contact Information', href: '/contact-information' },
               ].map((link, index) => (
                 <motion.a

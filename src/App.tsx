@@ -8,6 +8,7 @@ import { lazy, Suspense, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SiteIntro } from "@/components/SiteIntro";
+import { CookieConsentBanner } from "@/components/legal/CookieConsentBanner";
 
 const queryClient = new QueryClient();
 const Index = lazy(() => import("./pages/Index"));
@@ -29,6 +30,7 @@ const RefundCancellationPolicy = lazy(() => import("./pages/RefundCancellationPo
 const ShippingDeliveryPolicy = lazy(() => import("./pages/ShippingDeliveryPolicy"));
 const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 const ContactInformation = lazy(() => import("./pages/ContactInformation"));
+const DataRights = lazy(() => import("./pages/DataRights"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ResourceHub = lazy(() => import("@/pages/services/ResourceHub"));
 const ResumeBuilder = lazy(() => import("@/pages/services/ResumeBuilder"));
@@ -132,6 +134,7 @@ const App = () => {
           <BrowserRouter>
             <AuthRedirectHandler />
             <SiteIntro />
+            <CookieConsentBanner />
             <Suspense fallback={<PageLoadingFallback />}>
             <Routes>
               <Route path="/" element={<Index />} />
@@ -164,6 +167,8 @@ const App = () => {
               <Route path="/refund-cancellation-policy" element={<RefundCancellationPolicy />} />
               <Route path="/shipping-delivery-policy" element={<ShippingDeliveryPolicy />} />
               <Route path="/cookie-policy" element={<CookiePolicy />} />
+              <Route path="/data-rights" element={<DataRights />} />
+              <Route path="/grievance-redressal" element={<DataRights />} />
               <Route path="/contact-information" element={<ContactInformation />} />
               <Route path="/contact" element={<ContactInformation />} />
               <Route path="/contact-us" element={<ContactInformation />} />
