@@ -1,3 +1,4 @@
+import { ConsentCheckbox } from "@/components/legal/ConsentCheckbox";
 import { motion, useInView, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -177,8 +178,14 @@ export const SubmitSection = () => {
     }
   };
 
+  const [consentGiven, setConsentGiven] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!consentGiven) {
+      toast.error("Please give consent to process your details before submitting.");
+      return;
+    }
     setIsSubmitting(true);
 
     try {
@@ -208,6 +215,8 @@ export const SubmitSection = () => {
         organization: validatedData.organization?.trim() || null,
         inquiry_type: validatedData.inquiryType,
         message: validatedData.message.trim(),
+        consent_given: true,
+        consent_at: new Date().toISOString(),
       });
 
       if (formData.inquiryType === 'problem') {
@@ -225,6 +234,7 @@ export const SubmitSection = () => {
       setRequirementDesc('');
       setOtherSector('');
       setBusinessSector('E-commerce');
+      setConsentGiven(false);
       setProjectType('Static Website / Landing Page');
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -623,6 +633,15 @@ export const SubmitSection = () => {
             </motion.div>
           </div>
         )}
+
+        <div className="pt-2">
+          <ConsentCheckbox
+            checked={consentGiven}
+            onChange={setConsentGiven}
+            purpose="responding to my enquiry and contacting me about it"
+            id="submit-section-consent"
+          />
+        </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
           <motion.button
