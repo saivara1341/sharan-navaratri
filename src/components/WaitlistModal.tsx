@@ -232,6 +232,13 @@ export const WaitlistModal = ({ isOpen, onClose, projectId, projectName, accentC
                     />
                   </div>
 
+                  <ConsentCheckbox
+                    checked={consentGiven}
+                    onChange={setConsentGiven}
+                    purpose="adding me to this product waitlist and notifying me about its launch"
+                    id="waitlist-consent"
+                  />
+
                   <button
                     type="submit"
                     disabled={isSubmitting}
