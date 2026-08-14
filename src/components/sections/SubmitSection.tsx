@@ -262,7 +262,7 @@ export const SubmitSection = () => {
     return (
       <div className="relative z-10 space-y-4 sm:space-y-6">
         {/* Inquiry Type Selector (Dropdown) */}
-        <div className="space-y-1.5 sm:space-y-2">
+        <div className="space-y-1.5 sm:space-y-2 mt-2 sm:mt-4">
           <label className="block text-xs sm:text-sm font-medium text-foreground">
             {t('submit.discussLabel')}
           </label>
