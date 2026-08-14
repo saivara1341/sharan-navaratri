@@ -72,49 +72,19 @@ export const LotusEmblem = ({ className = "w-6 h-6", color = "currentColor" }: {
   </svg>
 );
 
-// Vintage Ornamental Corner Filigree Bracket
-const VintageCorner = ({ className = '', style }: { className?: string; style?: React.CSSProperties }) => (
-  <svg viewBox="0 0 60 60" className={`w-9 h-9 sm:w-11 sm:h-11 pointer-events-none absolute ${className}`} style={style} fill="none">
-    {/* Outer corner L-bracket */}
-    <path d="M 4 56 L 4 16 C 4 9.4 9.4 4 16 4 L 56 4" stroke="currentColor" strokeWidth="1.6" />
-    {/* Inner dashed hairline */}
-    <path d="M 9 48 L 9 18 C 9 13 13 9 18 9 L 48 9" stroke="currentColor" strokeWidth="0.9" strokeDasharray="3 2" opacity="0.75" />
-    {/* Baroque acanthus scroll flourish inside corner */}
-    <path d="M 15 15 C 22 8 30 11 27 19 C 24 25 16 22 19 16 C 21 12 26 14 24 18" stroke="currentColor" strokeWidth="1.2" />
-    <path d="M 12 32 C 14 24 22 22 25 28 C 27 32 23 35 20 32" stroke="currentColor" strokeWidth="0.9" opacity="0.8" />
-    <path d="M 32 12 C 24 14 22 22 28 25 C 32 27 35 23 32 20" stroke="currentColor" strokeWidth="0.9" opacity="0.8" />
-    {/* Corner finial rosettes */}
-    <circle cx="5" cy="5" r="2.5" fill="currentColor" />
-    <circle cx="5" cy="5" r="1" fill="#ffffff" />
-    <circle cx="15" cy="15" r="1.8" fill="currentColor" />
-    <circle cx="4" cy="56" r="1.5" fill="currentColor" />
-    <circle cx="56" cy="4" r="1.5" fill="currentColor" />
-  </svg>
-);
-
-// Vintage Ornate Header & Divider Flourish
-const VintageCrest = ({ color = 'currentColor', className = '' }: { color?: string; className?: string }) => (
-  <svg viewBox="0 0 200 24" className={`w-40 sm:w-52 h-4 pointer-events-none ${className}`} fill="none" style={{ color }}>
-    <path d="M 100 3 C 92 3 86 9 78 9 C 66 9 56 2 42 2 C 28 2 16 14 0 14" stroke="currentColor" strokeWidth="1.2" />
-    <path d="M 100 3 C 108 3 114 9 122 9 C 134 9 144 2 158 2 C 172 2 184 14 200 14" stroke="currentColor" strokeWidth="1.2" />
-    <path d="M 92 13 C 86 18 78 18 70 15 C 64 12 60 14 56 18" stroke="currentColor" strokeWidth="0.8" opacity="0.75" />
-    <path d="M 108 13 C 114 18 122 18 130 15 C 136 12 140 14 144 18" stroke="currentColor" strokeWidth="0.8" opacity="0.75" />
-    {/* Center Royal Diamond Seal */}
-    <polygon points="100,0 106,8 100,16 94,8" fill="currentColor" />
-    <circle cx="100" cy="8" r="2" fill="#ffffff" />
-    <circle cx="78" cy="9" r="1.5" fill="currentColor" />
-    <circle cx="122" cy="9" r="1.5" fill="currentColor" />
-  </svg>
-);
+// Exact Royal Indian Cusped Arch Silhouette (Matching reference photo from Wedding Project India)
+const INDIAN_JHAROKHA_PATH = "M 50 3 C 47 4.5, 42 7.5, 36 9.5 C 30 11.5, 23 15.5, 20 21 C 16 26, 12 32, 9 38 C 5 44, 5 56, 9 62 C 12 68, 16 74, 20 79 C 23 84.5, 30 88.5, 36 90.5 C 42 92.5, 47 95.5, 50 97 C 53 95.5, 58 92.5, 64 90.5 C 70 88.5, 77 84.5, 80 79 C 84 74, 88 68, 91 62 C 95 56, 95 44, 91 38 C 88 32, 84 26, 80 21 C 77 15.5, 70 11.5, 64 9.5 C 58 7.5, 53 4.5, 50 3 Z";
+const INDIAN_JHAROKHA_INNER = "M 50 6.5 C 47.5 8, 43 10.5, 38 12.5 C 32 14.5, 26 18.5, 23 23.5 C 19 28.5, 15 34.5, 12 40 C 9 46, 9 54, 12 60 C 15 65.5, 19 71.5, 23 76.5 C 26 81.5, 32 85.5, 38 87.5 C 43 89.5, 47.5 92, 50 93.5 C 52.5 92, 57 89.5, 62 87.5 C 68 85.5, 74 81.5, 77 76.5 C 81 71.5, 85 65.5, 88 60 C 91 54, 91 46, 88 40 C 85 34.5, 81 28.5, 77 23.5 C 74 18.5, 68 14.5, 62 12.5 C 57 10.5, 52.5 8, 50 6.5 Z";
+const INDIAN_JHAROKHA_CLIP = "M 0.50 0.03 C 0.47 0.045, 0.42 0.075, 0.36 0.095 C 0.30 0.115, 0.23 0.155, 0.20 0.21 C 0.16 0.26, 0.12 0.32, 0.09 0.38 C 0.05 0.44, 0.05 0.56, 0.09 0.62 C 0.12 0.68, 0.16 0.74, 0.20 0.79 C 0.23 0.845, 0.30 0.885, 0.36 0.905 C 0.42 0.925, 0.47 0.955, 0.50 0.97 C 0.53 0.955, 0.58 0.925, 0.64 0.905 C 0.70 0.885, 0.77 0.845, 0.80 0.79 C 0.84 0.74, 0.88 0.68, 0.91 0.62 C 0.95 0.56, 0.95 0.44, 0.91 0.38 C 0.88 0.32, 0.84 0.26, 0.80 0.21 C 0.77 0.155, 0.70 0.115, 0.64 0.095 C 0.58 0.075, 0.53 0.045, 0.50 0.03 Z";
 
 // Vintage Filigree Accent Bar
 const VintageFiligreeDivider = ({ color = 'currentColor', className = '' }: { color?: string; className?: string }) => (
-  <div className={`flex items-center justify-center gap-2 my-2.5 sm:my-3 ${className}`} style={{ color }}>
-    <span className="h-px w-10 sm:w-16 bg-gradient-to-r from-transparent via-current to-transparent opacity-60" />
-    <span className="text-[9px] rotate-45">❖</span>
-    <span className="text-[6px]">●</span>
-    <span className="text-[9px] rotate-45">❖</span>
-    <span className="h-px w-10 sm:w-16 bg-gradient-to-r from-transparent via-current to-transparent opacity-60" />
+  <div className={`flex items-center justify-center gap-2 my-2 sm:my-2.5 ${className}`} style={{ color }}>
+    <span className="h-px w-8 sm:w-14 bg-gradient-to-r from-transparent via-current to-transparent opacity-60" />
+    <span className="text-[8px] rotate-45">◆</span>
+    <span className="text-[5px]">●</span>
+    <span className="text-[8px] rotate-45">◆</span>
+    <span className="h-px w-8 sm:w-14 bg-gradient-to-r from-transparent via-current to-transparent opacity-60" />
   </div>
 );
 
@@ -146,40 +116,40 @@ const FeatureCard = ({ feature, index, isMobileCard = false }: { feature: any; i
       accent: '#f59e0b',
       accentLight: '#fde68a',
       accentMuted: 'rgba(245, 158, 11, 0.16)',
-      border: 'rgba(245, 158, 11, 0.45)',
-      borderInner: 'rgba(253, 230, 138, 0.3)',
+      border: '#f59e0b',
+      borderInner: '#fde68a',
       iconBg: 'bg-amber-500/20 text-amber-300 border border-amber-400/50 shadow-[0_0_20px_rgba(245,158,11,0.25)]',
-      bgGradient: 'radial-gradient(ellipse at 50% 0%, rgba(48, 26, 8, 0.98) 0%, rgba(18, 10, 5, 0.99) 70%, rgba(10, 6, 3, 1) 100%)',
+      bgGradient: 'radial-gradient(ellipse at 50% 15%, rgba(48, 26, 8, 0.98) 0%, rgba(20, 11, 5, 0.99) 70%, rgba(10, 6, 3, 1) 100%)',
     },
     {
       glow: 'hsl(205 95% 55% / 0.28)',
       accent: '#38bdf8',
       accentLight: '#bae6fd',
       accentMuted: 'rgba(56, 189, 248, 0.16)',
-      border: 'rgba(56, 189, 248, 0.45)',
-      borderInner: 'rgba(186, 230, 253, 0.3)',
+      border: '#38bdf8',
+      borderInner: '#bae6fd',
       iconBg: 'bg-sky-500/20 text-sky-300 border border-sky-400/50 shadow-[0_0_20px_rgba(56,189,248,0.25)]',
-      bgGradient: 'radial-gradient(ellipse at 50% 0%, rgba(10, 32, 54, 0.98) 0%, rgba(6, 18, 34, 0.99) 70%, rgba(4, 10, 20, 1) 100%)',
+      bgGradient: 'radial-gradient(ellipse at 50% 15%, rgba(10, 32, 54, 0.98) 0%, rgba(6, 18, 34, 0.99) 70%, rgba(4, 10, 20, 1) 100%)',
     },
     {
       glow: 'hsl(275 85% 65% / 0.28)',
       accent: '#c084fc',
       accentLight: '#f3e8ff',
       accentMuted: 'rgba(192, 132, 252, 0.16)',
-      border: 'rgba(192, 132, 252, 0.45)',
-      borderInner: 'rgba(243, 232, 255, 0.3)',
+      border: '#c084fc',
+      borderInner: '#f3e8ff',
       iconBg: 'bg-purple-500/20 text-purple-300 border border-purple-400/50 shadow-[0_0_20px_rgba(192,132,252,0.25)]',
-      bgGradient: 'radial-gradient(ellipse at 50% 0%, rgba(38, 14, 56, 0.98) 0%, rgba(22, 8, 34, 0.99) 70%, rgba(12, 4, 20, 1) 100%)',
+      bgGradient: 'radial-gradient(ellipse at 50% 15%, rgba(38, 14, 56, 0.98) 0%, rgba(22, 8, 34, 0.99) 70%, rgba(12, 4, 20, 1) 100%)',
     },
     {
       glow: 'hsl(155 80% 50% / 0.28)',
       accent: '#34d399',
       accentLight: '#d1fae5',
       accentMuted: 'rgba(52, 211, 153, 0.16)',
-      border: 'rgba(52, 211, 153, 0.45)',
-      borderInner: 'rgba(209, 250, 229, 0.3)',
+      border: '#34d399',
+      borderInner: '#d1fae5',
       iconBg: 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/50 shadow-[0_0_20px_rgba(52,211,153,0.25)]',
-      bgGradient: 'radial-gradient(ellipse at 50% 0%, rgba(8, 40, 24, 0.98) 0%, rgba(5, 24, 15, 0.99) 70%, rgba(3, 14, 9, 1) 100%)',
+      bgGradient: 'radial-gradient(ellipse at 50% 15%, rgba(8, 40, 24, 0.98) 0%, rgba(5, 24, 15, 0.99) 70%, rgba(3, 14, 9, 1) 100%)',
     },
   ];
   const palette = palettes[index % palettes.length];
@@ -190,108 +160,154 @@ const FeatureCard = ({ feature, index, isMobileCard = false }: { feature: any; i
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
       style={isMobileCard ? undefined : { x: springX, y: springY }}
-      className={`relative group cursor-pointer w-full mx-auto select-none ${
-        isMobileCard ? 'max-w-[325px]' : 'max-w-[340px] sm:max-w-[460px]'
+      className={`relative group cursor-pointer w-full mx-auto select-none filter drop-shadow-[0_12px_30px_rgba(0,0,0,0.45)] ${
+        isMobileCard ? 'max-w-[330px]' : 'max-w-[340px] sm:max-w-[460px]'
       }`}
     >
-      {/* Outer Glow Halo */}
-      <div
-        className="absolute -inset-2 rounded-[28px] pointer-events-none transition-opacity duration-500 blur-xl opacity-40 group-hover:opacity-75"
-        style={{ background: palette.glow }}
-      />
+      {/* Outer SVG Cusped Architectural Arch Border with Metallic Highlight */}
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none z-30 transition-all duration-500"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+      >
+        {/* Outer Primary Architectural Border */}
+        <path
+          d={INDIAN_JHAROKHA_PATH}
+          fill="none"
+          stroke={palette.border}
+          strokeWidth={isHovered ? "2.2" : "1.7"}
+          vectorEffect="non-scaling-stroke"
+          className="transition-all duration-500 opacity-95"
+        />
+        {/* Inner Dashed Concentric Arch Inset from Indian Wedding Cartouche */}
+        <path
+          d={INDIAN_JHAROKHA_INNER}
+          fill="none"
+          stroke={palette.borderInner}
+          strokeWidth="1"
+          strokeDasharray="3 2"
+          vectorEffect="non-scaling-stroke"
+          className="opacity-80 transition-all duration-500"
+        />
+      </svg>
 
-      {/* Main Vintage Ornamental Card Frame */}
+      {/* 4 Cardinal Diamond Rhombus / Finial Pins (Top, Bottom, Left, Right) */}
+      <div className="absolute top-0.5 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40">
+        <span
+          className="block w-3 sm:w-3.5 h-3 sm:h-3.5 rotate-45 border border-white/80 shadow-md transition-transform duration-500 group-hover:scale-125"
+          style={{ background: palette.accent }}
+        />
+      </div>
+      <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 translate-y-1/2 z-40">
+        <span
+          className="block w-3 sm:w-3.5 h-3 sm:h-3.5 rotate-45 border border-white/80 shadow-md transition-transform duration-500 group-hover:scale-125"
+          style={{ background: palette.accent }}
+        />
+      </div>
+      <div className="absolute left-1 top-1/2 -translate-x-1/2 -translate-y-1/2 z-40">
+        <span
+          className="block w-2.5 sm:w-3 h-2.5 sm:h-3 rotate-45 border border-white/80 shadow-md transition-transform duration-500 group-hover:scale-125"
+          style={{ background: palette.accent }}
+        />
+      </div>
+      <div className="absolute right-1 top-1/2 translate-x-1/2 -translate-y-1/2 z-40">
+        <span
+          className="block w-2.5 sm:w-3 h-2.5 sm:h-3 rotate-45 border border-white/80 shadow-md transition-transform duration-500 group-hover:scale-125"
+          style={{ background: palette.accent }}
+        />
+      </div>
+
+      {/* Main Clipped Cusped Body */}
       <div
-        className="relative w-full rounded-[24px] overflow-hidden p-5 sm:p-8 flex flex-col items-center justify-between text-center transition-all duration-500 backdrop-blur-xl border border-white/10"
+        className="relative w-full h-[375px] sm:h-[435px] px-6 sm:px-12 py-7 sm:py-9 flex flex-col items-center justify-between text-center transition-all duration-500 backdrop-blur-2xl overflow-hidden"
         style={{
+          clipPath: 'url(#vision-jharokha-clip)',
+          WebkitClipPath: 'url(#vision-jharokha-clip)',
           background: palette.bgGradient,
-          boxShadow: `
-            inset 0 0 0 1px ${palette.border},
-            inset 0 0 30px rgba(0, 0, 0, 0.6),
-            0 12px 35px -6px rgba(0, 0, 0, 0.6)
-          `,
         }}
       >
-        {/* Inner Dashed Guilloche / Filigree Inset Frame */}
-        <div
-          className="absolute inset-2 sm:inset-3 rounded-[18px] pointer-events-none transition-all duration-500"
+        {/* Inner Radial Ambient Glow */}
+        <motion.div
+          animate={{ opacity: isHovered ? 0.65 : 0.35 }}
+          className="absolute inset-0 pointer-events-none transition-opacity duration-500"
           style={{
-            border: `1px dashed ${palette.borderInner}`,
+            background: `radial-gradient(ellipse at 50% 25%, ${palette.glow} 0%, transparent 68%)`,
           }}
         />
 
-        {/* 4 Vintage Filigree Corner Ornaments */}
-        <VintageCorner className="top-1 left-1" style={{ color: palette.accent }} />
-        <VintageCorner className="top-1 right-1 -scale-x-100" style={{ color: palette.accent }} />
-        <VintageCorner className="bottom-1 left-1 -scale-y-100" style={{ color: palette.accent }} />
-        <VintageCorner className="bottom-1 right-1 -scale-x-100 -scale-y-100" style={{ color: palette.accent }} />
+        {/* Vintage Canvas Weave Micro-Pattern */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-20"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px)
+            `,
+            backgroundSize: '12px 12px',
+          }}
+        />
 
-        {/* Lotus Emblem Watermark in background */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.07] pointer-events-none">
-          <LotusEmblem className="w-56 h-56 sm:w-72 sm:h-72" color={palette.accent} />
+        {/* Lotus Watermark in background */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+          <LotusEmblem className="w-48 h-48 sm:w-64 sm:h-64" color={palette.accent} />
         </div>
 
-        {/* Vintage Top Header Crown */}
-        <div className="relative z-10 flex flex-col items-center pt-1 mb-2 sm:mb-3">
-          <VintageCrest color={palette.accent} className="mb-1" />
-          <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-black/40 border border-white/10 backdrop-blur-md">
-            <span className="text-[7px] rotate-45" style={{ color: palette.accent }}>◆</span>
-            <span className="text-[10px] sm:text-xs font-black tracking-[0.25em] uppercase font-serif" style={{ color: palette.accentLight }}>
-              PILLAR 0{index + 1}
-            </span>
-            <span className="text-[7px] rotate-45" style={{ color: palette.accent }}>◆</span>
-          </div>
-        </div>
-
-        {/* Center Vintage Scalloped Medallion for Icon */}
-        <div className="relative z-10 my-1 sm:my-2">
-          {/* Double-Ring Ornate Halo */}
-          <div className="relative p-2 rounded-2xl flex items-center justify-center">
-            {/* Medallion decorative outer ring */}
-            <div
-              className="absolute inset-0 rounded-2xl border-2 pointer-events-none transition-transform duration-500 group-hover:rotate-45"
-              style={{ borderColor: palette.border }}
-            />
-            <div
-              className="absolute inset-1 rounded-xl border border-dashed pointer-events-none"
-              style={{ borderColor: palette.accentLight, opacity: 0.5 }}
-            />
-            {/* Core Icon Box */}
-            <div className={`relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center ${palette.iconBg}`}>
-              {feature.icon}
+        {/* Content Container — bounded safely inside the cusped jharokha printable zone */}
+        <div className="relative z-10 w-full max-w-[215px] sm:max-w-[310px] mx-auto flex flex-col items-center justify-between h-full py-1">
+          {/* Top Eyebrow: Vintage Royal Header */}
+          <div className="flex flex-col items-center">
+            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-black/40 border border-white/10 backdrop-blur-md">
+              <span className="text-[7px] rotate-45" style={{ color: palette.accent }}>◆</span>
+              <span className="text-[10px] sm:text-xs font-black tracking-[0.25em] uppercase font-serif" style={{ color: palette.accentLight }}>
+                PILLAR 0{index + 1}
+              </span>
+              <span className="text-[7px] rotate-45" style={{ color: palette.accent }}>◆</span>
             </div>
           </div>
-        </div>
 
-        {/* Card Content (Title, Divider, Description) */}
-        <div className="relative z-10 w-full max-w-[280px] sm:max-w-[340px] flex flex-col items-center my-1 sm:my-2">
-          <h3 className="text-lg sm:text-2xl font-black text-white tracking-tight leading-snug font-serif drop-shadow-md">
-            {feature.title}
-          </h3>
+          {/* Icon with Vintage Ornate Medallion Frame */}
+          <div className="relative my-1">
+            <div className="relative p-1.5 rounded-2xl flex items-center justify-center">
+              <div
+                className="absolute inset-0 rounded-2xl border-2 pointer-events-none transition-transform duration-500 group-hover:rotate-45"
+                style={{ borderColor: palette.border }}
+              />
+              <div className={`relative w-11 h-11 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center ${palette.iconBg}`}>
+                {feature.icon}
+              </div>
+            </div>
+          </div>
 
-          {/* Vintage Filigree Divider */}
-          <VintageFiligreeDivider color={palette.accent} />
+          {/* Title and Description */}
+          <div className="w-full flex flex-col items-center">
+            <h3 className="text-base sm:text-xl md:text-2xl font-black text-white tracking-tight leading-snug font-serif drop-shadow-md mb-1">
+              {feature.title}
+            </h3>
 
-          <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-[260px] sm:max-w-[310px] font-normal">
-            {feature.description}
-          </p>
-        </div>
+            {/* Vintage Filigree Divider */}
+            <VintageFiligreeDivider color={palette.accent} />
 
-        {/* Bottom Vintage Royal Seal / Status Pill */}
-        <div className="relative z-10 mt-2 sm:mt-3">
-          <div
-            className="inline-flex items-center gap-2 px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full backdrop-blur-md shadow-sm font-serif"
-            style={{
-              background: palette.accentMuted,
-              border: `1px solid ${palette.border}`,
-              color: palette.accentLight,
-            }}
-          >
-            <span className="w-1.5 h-1.5 rotate-45 shrink-0" style={{ background: palette.accent }} />
-            <span className="text-[10px] sm:text-xs font-semibold tracking-wider uppercase">
-              Production-Ready Deep-Tech
-            </span>
-            <span className="w-1.5 h-1.5 rotate-45 shrink-0" style={{ background: palette.accent }} />
+            <p className="text-slate-300 text-[11px] sm:text-xs md:text-sm leading-snug sm:leading-relaxed max-w-[205px] sm:max-w-[285px] font-normal line-clamp-3 sm:line-clamp-none">
+              {feature.description}
+            </p>
+          </div>
+
+          {/* Bottom Royal Status Badge */}
+          <div className="mt-1">
+            <div
+              className="inline-flex items-center gap-1.5 px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full backdrop-blur-md shadow-sm font-serif"
+              style={{
+                background: palette.accentMuted,
+                border: `1px solid ${palette.border}`,
+                color: palette.accentLight,
+              }}
+            >
+              <span className="w-1.5 h-1.5 rotate-45 shrink-0" style={{ background: palette.accent }} />
+              <span className="text-[9px] sm:text-[10px] font-semibold tracking-wider uppercase">
+                Production-Ready Deep-Tech
+              </span>
+              <span className="w-1.5 h-1.5 rotate-45 shrink-0" style={{ background: palette.accent }} />
+            </div>
           </div>
         </div>
       </div>
@@ -623,11 +639,11 @@ export const VisionSection = () => {
 
   return (
     <section id="vision" className="bg-background relative overflow-visible py-12 md:py-0" ref={ref}>
-      {/* Hidden SVG Definitions for Royal Indian Cartouche ClipPath */}
+      {/* Hidden SVG Definitions for Royal Indian Jharokha Arch ClipPath */}
       <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
         <defs>
-          <clipPath id="vision-cartouche-shape" clipPathUnits="objectBoundingBox">
-            <path d={INDIAN_CARTOUCHE_CLIP} />
+          <clipPath id="vision-jharokha-clip" clipPathUnits="objectBoundingBox">
+            <path d={INDIAN_JHAROKHA_CLIP} />
           </clipPath>
         </defs>
       </svg>
