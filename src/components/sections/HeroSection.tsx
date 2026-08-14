@@ -180,7 +180,7 @@ export const HeroSection = () => {
           </motion.div>
 
           {/* Main heading with staggered text reveal */}
-          <h1 className="text-3xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-6xl font-bold mb-8 md:mb-5 leading-[1.1] tracking-tight break-words">
+          <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-6xl font-bold mb-8 md:mb-5 leading-[1.1] tracking-tight break-words">
             <motion.span
               className="block text-foreground"
               custom={0}
