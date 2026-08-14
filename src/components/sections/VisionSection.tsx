@@ -161,7 +161,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
       {/* Main card container */}
       <div className={`relative flex items-center justify-center ${
         isDesktopGrid
-          ? 'w-full max-w-[360px] xl:max-w-[400px] h-[460px] xl:h-[490px]'
+          ? 'w-full max-w-[420px] xl:max-w-[460px] h-[420px] xl:h-[450px]'
           : 'w-[88vw] max-w-[340px] h-[400px] sm:h-[420px]'
       }`}>
 
@@ -232,7 +232,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
 
           {/* Title — above the divider */}
           <h3 className={`font-black text-white tracking-tight leading-tight drop-shadow-sm ${
-            isDesktopGrid ? 'text-xl xl:text-2xl max-w-[300px]' : 'text-sm sm:text-base max-w-[240px]'
+            isDesktopGrid ? 'text-xl xl:text-2xl max-w-[340px]' : 'text-sm sm:text-base max-w-[240px]'
           }`}>
             {feature.title}
           </h3>
@@ -247,8 +247,8 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
           {/* Description */}
           <p className={`text-slate-300 font-normal leading-snug ${
             isDesktopGrid
-              ? 'text-sm xl:text-[15px] max-w-[280px] xl:max-w-[310px]'
-              : 'text-[11px] sm:text-xs max-w-[230px] sm:max-w-[260px]'
+              ? 'text-sm xl:text-[15px] max-w-[330px] xl:max-w-[370px] leading-relaxed'
+              : 'text-[11px] sm:text-xs max-w-[230px] sm:max-w-[260px] leading-snug'
           }`}>
             {feature.description}
           </p>
@@ -476,7 +476,7 @@ export const VisionSection = () => {
 
       {/* ─── MOBILE VIEW: Pinned Scroll Deck with Larger Cards ─────────────── */}
       <div ref={scrollStackRef} className="lg:hidden relative w-full min-h-[280vh]">
-        <div className="sticky top-14 sm:top-16 h-[calc(100dvh-3.5rem)] flex flex-col justify-start items-center pt-3 sm:pt-4 pb-2 px-3 gap-2 sm:gap-3 overflow-hidden z-20">
+        <div className="sticky top-12 sm:top-14 h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3.5rem)] flex flex-col justify-start items-center pt-5 sm:pt-6 pb-2 px-3 gap-2 sm:gap-3 overflow-hidden z-20">
           
           {/* Mobile Header */}
           <div className="text-center max-w-3xl mx-auto shrink-0">
