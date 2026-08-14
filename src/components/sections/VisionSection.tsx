@@ -158,10 +158,10 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
         style={{ background: `radial-gradient(circle at 50% 50%, ${p.primary}60 0%, transparent 70%)` }}
       />
 
-      {/* Main card container — Responsive: larger on mobile (w-[355px] h-[425px]), 4-col on desktop (w-full max-w-[290px] h-[400px]) */}
+      {/* Main card container */}
       <div className={`relative flex items-center justify-center ${
         isDesktopGrid
-          ? 'w-full max-w-[280px] xl:max-w-[305px] h-[410px] xl:h-[425px]'
+          ? 'w-full max-w-[330px] xl:max-w-[370px] h-[460px] xl:h-[490px]'
           : 'w-[92vw] max-w-[360px] sm:max-w-[400px] h-[425px] sm:h-[435px]'
       }`}>
 
@@ -221,8 +221,8 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
             : 'px-7 sm:px-10 py-6 sm:py-8 gap-2 sm:gap-2.5'
         }`}>
           
-          {/* Pillar Eyebrow */}
-          <div className="flex items-center gap-1.5 pt-1">
+          {/* Pillar Eyebrow — hidden on desktop */}
+          <div className={`flex items-center gap-1.5 pt-1 ${isDesktopGrid ? 'hidden' : ''}`}>
             <span className="text-[7px] sm:text-[8px] rotate-45" style={{ color: p.primary }}>◆</span>
             <span
               className="text-[9px] sm:text-[10px] xl:text-xs font-black uppercase tracking-[0.25em]"
@@ -244,7 +244,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
 
           {/* Title */}
           <h3 className={`font-black text-white tracking-tight leading-tight drop-shadow-sm ${
-            isDesktopGrid ? 'text-base xl:text-lg max-w-[220px]' : 'text-base sm:text-lg max-w-[260px]'
+            isDesktopGrid ? 'text-xl xl:text-2xl max-w-[280px]' : 'text-base sm:text-lg max-w-[260px]'
           }`}>
             {feature.title}
           </h3>
@@ -252,7 +252,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
           {/* Description — Full text without overflow */}
           <p className={`text-slate-300 font-normal leading-relaxed ${
             isDesktopGrid
-              ? 'text-[11px] xl:text-xs max-w-[220px] xl:max-w-[240px]'
+              ? 'text-sm xl:text-[15px] max-w-[260px] xl:max-w-[290px]'
               : 'text-xs sm:text-sm max-w-[280px] sm:max-w-[320px]'
           }`}>
             {feature.description}
@@ -471,7 +471,7 @@ export const VisionSection = () => {
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          className="grid grid-cols-4 gap-4 xl:gap-6 max-w-7xl mx-auto"
+          className="grid grid-cols-4 gap-6 xl:gap-8 max-w-[1500px] mx-auto"
         >
           {features.map((feature, index) => (
             <motion.div key={feature.title} variants={cardVariants}>
