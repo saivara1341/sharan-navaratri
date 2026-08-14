@@ -72,9 +72,51 @@ export const LotusEmblem = ({ className = "w-6 h-6", color = "currentColor" }: {
   </svg>
 );
 
-const INDIAN_CARTOUCHE_100 = "M 50 2 C 48 4, 46 7, 43 7.5 C 34 8.5, 26 12.5, 20 17.5 C 17 20, 14 24, 11 28 C 8 33, 7.5 39, 7.5 43 C 7 46, 4 48, 2 50 C 4 52, 7 54, 7.5 57 C 7.5 61, 8 67, 11 72 C 14 76, 17 80, 20 82.5 C 26 87.5, 34 91.5, 43 92.5 C 46 93, 48 96, 50 98 C 52 96, 54 93, 57 92.5 C 66 91.5, 74 87.5, 80 82.5 C 83 80, 86 76, 89 72 C 92 67, 92.5 61, 92.5 57 C 93 54, 96 52, 98 50 C 96 48, 93 46, 92.5 43 C 92.5 39, 92 33, 89 28 C 86 24, 83 20, 80 17.5 C 74 12.5, 66 8.5, 57 7.5 C 54 7, 52 4, 50 2 Z";
-const INDIAN_CARTOUCHE_CLIP = "M 0.50 0.02 C 0.48 0.04, 0.46 0.07, 0.43 0.075 C 0.34 0.085, 0.26 0.125, 0.20 0.175 C 0.17 0.20, 0.14 0.24, 0.11 0.28 C 0.08 0.33, 0.075 0.39, 0.075 0.43 C 0.07 0.46, 0.04 0.48, 0.02 0.50 C 0.04 0.52, 0.07 0.54, 0.075 0.57 C 0.075 0.61, 0.08 0.67, 0.11 0.72 C 0.14 0.76, 0.17 0.80, 0.20 0.825 C 0.26 0.875, 0.34 0.915, 0.43 0.925 C 0.46 0.93, 0.48 0.96, 0.50 0.98 C 0.52 0.96, 0.54 0.93, 0.57 0.925 C 0.66 0.915, 0.74 0.875, 0.80 0.825 C 0.83 0.80, 0.86 0.76, 0.89 0.72 C 0.92 0.67, 0.925 0.61, 0.925 0.57 C 0.93 0.54, 0.96 0.52, 0.98 0.50 C 0.96 0.48, 0.93 0.46, 0.925 0.43 C 0.925 0.39, 0.92 0.33, 0.89 0.28 C 0.86 0.24, 0.83 0.20, 0.80 0.175 C 0.74 0.125, 0.66 0.085, 0.57 0.075 C 0.54 0.07, 0.52 0.04, 0.50 0.02 Z";
-const INNER_DASHED_CARTOUCHE_100 = "M 50 6 C 48 8, 46 11, 42 11.5 C 34 12.5, 28 16, 22 20.5 C 19.5 22.5, 17 26, 14.5 30 C 12 34, 11.5 39, 11.5 42 C 11 45, 8 48, 6 50 C 8 52, 11 55, 11.5 58 C 11.5 61, 12 66, 14.5 70 C 17 74, 19.5 77.5, 22 79.5 C 28 84, 34 87.5, 42 88.5 C 46 89, 48 92, 50 94 C 52 92, 54 89, 58 88.5 C 66 87.5, 72 84, 78 79.5 C 80.5 77.5, 83 74, 85.5 70 C 88 66, 88.5 61, 88.5 58 C 89 55, 92 52, 94 50 C 92 48, 89 45, 88.5 42 C 88.5 39, 88 34, 85.5 30 C 83 26, 80.5 22.5, 78 20.5 C 72 16, 66 12.5, 58 11.5 C 54 11, 52 8, 50 6 Z";
+// Vintage Ornamental Corner Filigree Bracket
+const VintageCorner = ({ className = '', style }: { className?: string; style?: React.CSSProperties }) => (
+  <svg viewBox="0 0 60 60" className={`w-9 h-9 sm:w-11 sm:h-11 pointer-events-none absolute ${className}`} style={style} fill="none">
+    {/* Outer corner L-bracket */}
+    <path d="M 4 56 L 4 16 C 4 9.4 9.4 4 16 4 L 56 4" stroke="currentColor" strokeWidth="1.6" />
+    {/* Inner dashed hairline */}
+    <path d="M 9 48 L 9 18 C 9 13 13 9 18 9 L 48 9" stroke="currentColor" strokeWidth="0.9" strokeDasharray="3 2" opacity="0.75" />
+    {/* Baroque acanthus scroll flourish inside corner */}
+    <path d="M 15 15 C 22 8 30 11 27 19 C 24 25 16 22 19 16 C 21 12 26 14 24 18" stroke="currentColor" strokeWidth="1.2" />
+    <path d="M 12 32 C 14 24 22 22 25 28 C 27 32 23 35 20 32" stroke="currentColor" strokeWidth="0.9" opacity="0.8" />
+    <path d="M 32 12 C 24 14 22 22 28 25 C 32 27 35 23 32 20" stroke="currentColor" strokeWidth="0.9" opacity="0.8" />
+    {/* Corner finial rosettes */}
+    <circle cx="5" cy="5" r="2.5" fill="currentColor" />
+    <circle cx="5" cy="5" r="1" fill="#ffffff" />
+    <circle cx="15" cy="15" r="1.8" fill="currentColor" />
+    <circle cx="4" cy="56" r="1.5" fill="currentColor" />
+    <circle cx="56" cy="4" r="1.5" fill="currentColor" />
+  </svg>
+);
+
+// Vintage Ornate Header & Divider Flourish
+const VintageCrest = ({ color = 'currentColor', className = '' }: { color?: string; className?: string }) => (
+  <svg viewBox="0 0 200 24" className={`w-40 sm:w-52 h-4 pointer-events-none ${className}`} fill="none" style={{ color }}>
+    <path d="M 100 3 C 92 3 86 9 78 9 C 66 9 56 2 42 2 C 28 2 16 14 0 14" stroke="currentColor" strokeWidth="1.2" />
+    <path d="M 100 3 C 108 3 114 9 122 9 C 134 9 144 2 158 2 C 172 2 184 14 200 14" stroke="currentColor" strokeWidth="1.2" />
+    <path d="M 92 13 C 86 18 78 18 70 15 C 64 12 60 14 56 18" stroke="currentColor" strokeWidth="0.8" opacity="0.75" />
+    <path d="M 108 13 C 114 18 122 18 130 15 C 136 12 140 14 144 18" stroke="currentColor" strokeWidth="0.8" opacity="0.75" />
+    {/* Center Royal Diamond Seal */}
+    <polygon points="100,0 106,8 100,16 94,8" fill="currentColor" />
+    <circle cx="100" cy="8" r="2" fill="#ffffff" />
+    <circle cx="78" cy="9" r="1.5" fill="currentColor" />
+    <circle cx="122" cy="9" r="1.5" fill="currentColor" />
+  </svg>
+);
+
+// Vintage Filigree Accent Bar
+const VintageFiligreeDivider = ({ color = 'currentColor', className = '' }: { color?: string; className?: string }) => (
+  <div className={`flex items-center justify-center gap-2 my-2.5 sm:my-3 ${className}`} style={{ color }}>
+    <span className="h-px w-10 sm:w-16 bg-gradient-to-r from-transparent via-current to-transparent opacity-60" />
+    <span className="text-[9px] rotate-45">❖</span>
+    <span className="text-[6px]">●</span>
+    <span className="text-[9px] rotate-45">❖</span>
+    <span className="h-px w-10 sm:w-16 bg-gradient-to-r from-transparent via-current to-transparent opacity-60" />
+  </div>
+);
 
 const FeatureCard = ({ feature, index, isMobileCard = false }: { feature: any; index: number; isMobileCard?: boolean }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -100,148 +142,156 @@ const FeatureCard = ({ feature, index, isMobileCard = false }: { feature: any; i
 
   const palettes = [
     {
-      glow: 'hsl(25 95% 55% / 0.22)',
-      accent: '#f97316',
-      accentSoft: 'rgba(249,115,22,0.15)',
-      iconBg: 'bg-orange-500/20 text-orange-400 border border-orange-500/40',
-      bgGradient: 'linear-gradient(135deg, rgba(24,14,6,0.97) 0%, rgba(12,8,18,0.97) 100%)',
-      stripGrad: 'linear-gradient(90deg, #f97316, #fb923c)',
+      glow: 'hsl(32 95% 50% / 0.28)',
+      accent: '#f59e0b',
+      accentLight: '#fde68a',
+      accentMuted: 'rgba(245, 158, 11, 0.16)',
+      border: 'rgba(245, 158, 11, 0.45)',
+      borderInner: 'rgba(253, 230, 138, 0.3)',
+      iconBg: 'bg-amber-500/20 text-amber-300 border border-amber-400/50 shadow-[0_0_20px_rgba(245,158,11,0.25)]',
+      bgGradient: 'radial-gradient(ellipse at 50% 0%, rgba(48, 26, 8, 0.98) 0%, rgba(18, 10, 5, 0.99) 70%, rgba(10, 6, 3, 1) 100%)',
     },
     {
-      glow: 'hsl(205 95% 55% / 0.22)',
-      accent: '#0ea5e9',
-      accentSoft: 'rgba(14,165,233,0.15)',
-      iconBg: 'bg-sky-500/20 text-sky-400 border border-sky-500/40',
-      bgGradient: 'linear-gradient(135deg, rgba(6,18,30,0.97) 0%, rgba(5,10,20,0.97) 100%)',
-      stripGrad: 'linear-gradient(90deg, #0ea5e9, #38bdf8)',
+      glow: 'hsl(205 95% 55% / 0.28)',
+      accent: '#38bdf8',
+      accentLight: '#bae6fd',
+      accentMuted: 'rgba(56, 189, 248, 0.16)',
+      border: 'rgba(56, 189, 248, 0.45)',
+      borderInner: 'rgba(186, 230, 253, 0.3)',
+      iconBg: 'bg-sky-500/20 text-sky-300 border border-sky-400/50 shadow-[0_0_20px_rgba(56,189,248,0.25)]',
+      bgGradient: 'radial-gradient(ellipse at 50% 0%, rgba(10, 32, 54, 0.98) 0%, rgba(6, 18, 34, 0.99) 70%, rgba(4, 10, 20, 1) 100%)',
     },
     {
-      glow: 'hsl(275 85% 62% / 0.22)',
-      accent: '#a855f7',
-      accentSoft: 'rgba(168,85,247,0.15)',
-      iconBg: 'bg-violet-500/20 text-violet-400 border border-violet-500/40',
-      bgGradient: 'linear-gradient(135deg, rgba(20,8,32,0.97) 0%, rgba(10,6,18,0.97) 100%)',
-      stripGrad: 'linear-gradient(90deg, #a855f7, #c084fc)',
+      glow: 'hsl(275 85% 65% / 0.28)',
+      accent: '#c084fc',
+      accentLight: '#f3e8ff',
+      accentMuted: 'rgba(192, 132, 252, 0.16)',
+      border: 'rgba(192, 132, 252, 0.45)',
+      borderInner: 'rgba(243, 232, 255, 0.3)',
+      iconBg: 'bg-purple-500/20 text-purple-300 border border-purple-400/50 shadow-[0_0_20px_rgba(192,132,252,0.25)]',
+      bgGradient: 'radial-gradient(ellipse at 50% 0%, rgba(38, 14, 56, 0.98) 0%, rgba(22, 8, 34, 0.99) 70%, rgba(12, 4, 20, 1) 100%)',
     },
     {
-      glow: 'hsl(155 80% 48% / 0.22)',
-      accent: '#10b981',
-      accentSoft: 'rgba(16,185,129,0.15)',
-      iconBg: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40',
-      bgGradient: 'linear-gradient(135deg, rgba(5,22,14,0.97) 0%, rgba(4,12,10,0.97) 100%)',
-      stripGrad: 'linear-gradient(90deg, #10b981, #34d399)',
+      glow: 'hsl(155 80% 50% / 0.28)',
+      accent: '#34d399',
+      accentLight: '#d1fae5',
+      accentMuted: 'rgba(52, 211, 153, 0.16)',
+      border: 'rgba(52, 211, 153, 0.45)',
+      borderInner: 'rgba(209, 250, 229, 0.3)',
+      iconBg: 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/50 shadow-[0_0_20px_rgba(52,211,153,0.25)]',
+      bgGradient: 'radial-gradient(ellipse at 50% 0%, rgba(8, 40, 24, 0.98) 0%, rgba(5, 24, 15, 0.99) 70%, rgba(3, 14, 9, 1) 100%)',
     },
   ];
   const palette = palettes[index % palettes.length];
 
-  if (isMobileCard) {
-    // Clean modern card for mobile — no clip-path, no cartouche
-    return (
-      <div
-        className="relative w-full overflow-hidden rounded-3xl select-none"
-        style={{
-          background: palette.bgGradient,
-          boxShadow: `0 0 0 1.5px ${palette.accent}40, 0 8px 32px rgba(0,0,0,0.5), 0 0 60px ${palette.accent}18`,
-        }}
-      >
-        {/* Top accent colour strip */}
-        <div className="h-1 w-full rounded-t-3xl" style={{ background: palette.stripGrad }} />
-
-        {/* Radial glow */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ background: `radial-gradient(ellipse at 50% 0%, ${palette.glow} 0%, transparent 70%)` }}
-        />
-
-        {/* Lotus watermark */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none">
-          <LotusEmblem className="w-52 h-52" color={palette.accent} />
-        </div>
-
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center text-center px-6 pt-6 pb-7">
-          {/* Pillar eyebrow */}
-          <div className="flex items-center gap-1.5 mb-4">
-            <span className="text-[7px] rotate-45" style={{ color: palette.accent }}>◆</span>
-            <span className="text-[10px] font-extrabold uppercase tracking-[0.22em]" style={{ color: palette.accent }}>
-              Pillar 0{index + 1}
-            </span>
-            <span className="text-[7px] rotate-45" style={{ color: palette.accent }}>◆</span>
-          </div>
-
-          {/* Icon */}
-          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${palette.iconBg}`}>
-            {feature.icon}
-          </div>
-
-          {/* Title */}
-          <h3 className="text-lg font-black text-white tracking-tight leading-snug mb-3">
-            {feature.title}
-          </h3>
-
-          {/* Description */}
-          <p className="text-slate-400 text-xs leading-relaxed mb-5 max-w-[260px] mx-auto">
-            {feature.description}
-          </p>
-
-          {/* Bottom pill */}
-          <div
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold"
-            style={{
-              background: palette.accentSoft,
-              border: `1px solid ${palette.accent}40`,
-              color: palette.accent,
-            }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full" style={{ background: palette.accent }} />
-            Production-Ready Deep-Tech
-          </div>
-        </div>
-
-        {/* Bottom accent strip */}
-        <div className="h-px w-full" style={{ background: `linear-gradient(90deg, transparent, ${palette.accent}60, transparent)` }} />
-      </div>
-    );
-  }
-
-  // Desktop card keeps the original cartouche design
   return (
     <motion.div
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
-      style={{ x: springX, y: springY }}
-      className="relative group cursor-pointer w-full max-w-[340px] sm:max-w-[480px] mx-auto filter drop-shadow-[0_10px_25px_rgba(0,0,0,0.25)] select-none"
+      style={isMobileCard ? undefined : { x: springX, y: springY }}
+      className={`relative group cursor-pointer w-full mx-auto select-none ${
+        isMobileCard ? 'max-w-[325px]' : 'max-w-[340px] sm:max-w-[460px]'
+      }`}
     >
-      <svg className="absolute inset-0 w-full h-full pointer-events-none z-30 transition-all duration-500" viewBox="0 0 100 100" preserveAspectRatio="none">
-        <path d={INDIAN_CARTOUCHE_100} fill="none" stroke={palettes[index % palettes.length].accent} strokeWidth={isHovered ? "2.2" : "1.6"} vectorEffect="non-scaling-stroke" className="transition-all duration-500 opacity-90" />
-        <path d={INNER_DASHED_CARTOUCHE_100} fill="none" stroke={palettes[index % palettes.length].accentSoft.replace('0.15)', '0.6)')} strokeWidth="1" strokeDasharray="3 2" vectorEffect="non-scaling-stroke" className="opacity-75 transition-all duration-500" />
-      </svg>
-      {[{pos:'top-0 left-1/2 -translate-x-1/2 -translate-y-1/2',s:'w-3 h-3'},{pos:'bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2',s:'w-3 h-3'},{pos:'left-0 top-1/2 -translate-x-1/2 -translate-y-1/2',s:'w-2.5 h-2.5'},{pos:'right-0 top-1/2 translate-x-1/2 -translate-y-1/2',s:'w-2.5 h-2.5'}].map(({pos,s},i)=>(
-        <div key={i} className={`absolute ${pos} z-40`}>
-          <span className={`block ${s} rotate-45 border border-white/70 shadow-sm transition-transform duration-500 group-hover:scale-110`} style={{ background: palette.accent }} />
-        </div>
-      ))}
+      {/* Outer Glow Halo */}
       <div
-        className="relative w-full h-[360px] sm:h-[430px] px-6 sm:px-12 py-6 sm:py-10 flex flex-col items-center justify-center text-center transition-all duration-500 backdrop-blur-2xl overflow-hidden"
-        style={{ clipPath: 'url(#vision-cartouche-shape)', WebkitClipPath: 'url(#vision-cartouche-shape)', background: palette.bgGradient }}
+        className="absolute -inset-2 rounded-[28px] pointer-events-none transition-opacity duration-500 blur-xl opacity-40 group-hover:opacity-75"
+        style={{ background: palette.glow }}
+      />
+
+      {/* Main Vintage Ornamental Card Frame */}
+      <div
+        className="relative w-full rounded-[24px] overflow-hidden p-5 sm:p-8 flex flex-col items-center justify-between text-center transition-all duration-500 backdrop-blur-xl border border-white/10"
+        style={{
+          background: palette.bgGradient,
+          boxShadow: `
+            inset 0 0 0 1px ${palette.border},
+            inset 0 0 30px rgba(0, 0, 0, 0.6),
+            0 12px 35px -6px rgba(0, 0, 0, 0.6)
+          `,
+        }}
       >
-        <motion.div animate={{ opacity: isHovered ? 0.6 : 0.3 }} className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(circle at 50% 30%, ${palette.glow} 0%, transparent 68%)` }} />
-        <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
-          <LotusEmblem className="w-48 h-48 sm:w-64 sm:h-64" color={palette.accent} />
+        {/* Inner Dashed Guilloche / Filigree Inset Frame */}
+        <div
+          className="absolute inset-2 sm:inset-3 rounded-[18px] pointer-events-none transition-all duration-500"
+          style={{
+            border: `1px dashed ${palette.borderInner}`,
+          }}
+        />
+
+        {/* 4 Vintage Filigree Corner Ornaments */}
+        <VintageCorner className="top-1 left-1" style={{ color: palette.accent }} />
+        <VintageCorner className="top-1 right-1 -scale-x-100" style={{ color: palette.accent }} />
+        <VintageCorner className="bottom-1 left-1 -scale-y-100" style={{ color: palette.accent }} />
+        <VintageCorner className="bottom-1 right-1 -scale-x-100 -scale-y-100" style={{ color: palette.accent }} />
+
+        {/* Lotus Emblem Watermark in background */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.07] pointer-events-none">
+          <LotusEmblem className="w-56 h-56 sm:w-72 sm:h-72" color={palette.accent} />
         </div>
-        <div className="relative z-10 w-full max-w-[220px] sm:max-w-[320px] mx-auto flex flex-col items-center justify-center text-center">
-          <div className="flex items-center gap-1.5 mb-1.5">
-            <span className="text-[8px] rotate-45" style={{ color: palette.accent }}>◆</span>
-            <span className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-[0.2em]" style={{ color: palette.accent }}>Pillar 0{index + 1}</span>
-            <span className="text-[8px] rotate-45" style={{ color: palette.accent }}>◆</span>
+
+        {/* Vintage Top Header Crown */}
+        <div className="relative z-10 flex flex-col items-center pt-1 mb-2 sm:mb-3">
+          <VintageCrest color={palette.accent} className="mb-1" />
+          <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-black/40 border border-white/10 backdrop-blur-md">
+            <span className="text-[7px] rotate-45" style={{ color: palette.accent }}>◆</span>
+            <span className="text-[10px] sm:text-xs font-black tracking-[0.25em] uppercase font-serif" style={{ color: palette.accentLight }}>
+              PILLAR 0{index + 1}
+            </span>
+            <span className="text-[7px] rotate-45" style={{ color: palette.accent }}>◆</span>
           </div>
-          <div className={`w-10 h-10 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-2 sm:mb-3 ${palette.iconBg}`}>{feature.icon}</div>
-          <h3 className="text-base sm:text-xl md:text-2xl font-black mb-1 sm:mb-2 text-white tracking-tight leading-tight">{feature.title}</h3>
-          <p className="text-slate-300 text-[11px] sm:text-xs leading-snug sm:leading-relaxed max-w-[210px] sm:max-w-[290px] mx-auto mb-2.5 sm:mb-3.5 line-clamp-3 sm:line-clamp-none">{feature.description}</p>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/10 border border-white/15 text-white/90 text-[9px] sm:text-[10px] font-semibold">
+        </div>
+
+        {/* Center Vintage Scalloped Medallion for Icon */}
+        <div className="relative z-10 my-1 sm:my-2">
+          {/* Double-Ring Ornate Halo */}
+          <div className="relative p-2 rounded-2xl flex items-center justify-center">
+            {/* Medallion decorative outer ring */}
+            <div
+              className="absolute inset-0 rounded-2xl border-2 pointer-events-none transition-transform duration-500 group-hover:rotate-45"
+              style={{ borderColor: palette.border }}
+            />
+            <div
+              className="absolute inset-1 rounded-xl border border-dashed pointer-events-none"
+              style={{ borderColor: palette.accentLight, opacity: 0.5 }}
+            />
+            {/* Core Icon Box */}
+            <div className={`relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center ${palette.iconBg}`}>
+              {feature.icon}
+            </div>
+          </div>
+        </div>
+
+        {/* Card Content (Title, Divider, Description) */}
+        <div className="relative z-10 w-full max-w-[280px] sm:max-w-[340px] flex flex-col items-center my-1 sm:my-2">
+          <h3 className="text-lg sm:text-2xl font-black text-white tracking-tight leading-snug font-serif drop-shadow-md">
+            {feature.title}
+          </h3>
+
+          {/* Vintage Filigree Divider */}
+          <VintageFiligreeDivider color={palette.accent} />
+
+          <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-[260px] sm:max-w-[310px] font-normal">
+            {feature.description}
+          </p>
+        </div>
+
+        {/* Bottom Vintage Royal Seal / Status Pill */}
+        <div className="relative z-10 mt-2 sm:mt-3">
+          <div
+            className="inline-flex items-center gap-2 px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full backdrop-blur-md shadow-sm font-serif"
+            style={{
+              background: palette.accentMuted,
+              border: `1px solid ${palette.border}`,
+              color: palette.accentLight,
+            }}
+          >
             <span className="w-1.5 h-1.5 rotate-45 shrink-0" style={{ background: palette.accent }} />
-            Production-Ready Deep-Tech
+            <span className="text-[10px] sm:text-xs font-semibold tracking-wider uppercase">
+              Production-Ready Deep-Tech
+            </span>
+            <span className="w-1.5 h-1.5 rotate-45 shrink-0" style={{ background: palette.accent }} />
           </div>
         </div>
       </div>
