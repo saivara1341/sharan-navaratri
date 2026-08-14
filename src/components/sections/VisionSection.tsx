@@ -315,181 +315,7 @@ const FeatureCard = ({ feature, index, isMobileCard = false }: { feature: any; i
   );
 };
 
-// Mobile Touch & Swipe Interactive Deck with 4s Auto-Advance
-const MobileVisionDeck = ({ features }: { features: any[] }) => {
-  const [activeIdx, setActiveIdx] = useState(0);
-  const [direction, setDirection] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Auto-advance every 4 seconds unless paused by user interaction
-  useEffect(() => {
-    if (paused) return;
-    const interval = setInterval(() => {
-      setDirection(1);
-      setActiveIdx((prev) => (prev + 1) % features.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [paused, features.length]);
-
-  const handleUserInteraction = () => {
-    setPaused(true);
-    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
-    pauseTimerRef.current = setTimeout(() => setPaused(false), 8000);
-  };
-
-  const paginate = (newDirection: number) => {
-    handleUserInteraction();
-    setDirection(newDirection);
-    setActiveIdx((prev) => {
-      const next = prev + newDirection;
-      if (next < 0) return features.length - 1;
-      if (next >= features.length) return 0;
-      return next;
-    });
-  };
-
-  const variants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 120 : -120,
-      opacity: 0,
-      scale: 0.92,
-      rotateY: direction > 0 ? 15 : -15,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-      scale: 1,
-      rotateY: 0,
-      transition: {
-        x: { type: 'spring', stiffness: 300, damping: 28 },
-        opacity: { duration: 0.3 },
-        scale: { duration: 0.3 },
-        rotateY: { duration: 0.3 },
-      },
-    },
-    exit: (direction: number) => ({
-      x: direction < 0 ? 120 : -120,
-      opacity: 0,
-      scale: 0.92,
-      rotateY: direction < 0 ? 15 : -15,
-      transition: {
-        x: { type: 'spring', stiffness: 300, damping: 28 },
-        opacity: { duration: 0.25 },
-        scale: { duration: 0.25 },
-        rotateY: { duration: 0.25 },
-      },
-    }),
-  };
-
-  return (
-    <div className="w-full flex flex-col items-center py-2">
-      {/* 4 Interactive Mobile Pillar Tabs */}
-      <div className="flex items-center justify-center gap-1.5 mb-5 overflow-x-auto max-w-full px-2 py-1 scrollbar-none">
-        {features.map((f, i) => {
-          const isActive = i === activeIdx;
-          return (
-            <button
-              key={f.title}
-              onClick={() => {
-                setDirection(i > activeIdx ? 1 : -1);
-                setActiveIdx(i);
-                handleUserInteraction();
-              }}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-bold tracking-wider transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap border ${
-                isActive
-                  ? 'bg-primary text-primary-foreground border-primary shadow-[0_0_12px_rgba(245,158,11,0.35)] scale-105'
-                  : 'bg-card/80 text-muted-foreground border-border/70 hover:border-primary/40'
-              }`}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-current" />
-              <span>Pillar 0{i + 1}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Swipeable Card Container */}
-      <div className="relative w-full max-w-[340px] min-h-[390px] flex items-center justify-center">
-        <AnimatePresence initial={false} custom={direction} mode="wait">
-          <motion.div
-            key={activeIdx}
-            custom={direction}
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.3}
-            onDragStart={handleUserInteraction}
-            onDragEnd={(e, { offset, velocity }) => {
-              const swipe = Math.abs(offset.x) * velocity.x;
-              if (swipe < -50 || offset.x < -45) {
-                paginate(1);
-              } else if (swipe > 50 || offset.x > 45) {
-                paginate(-1);
-              }
-            }}
-            className="w-full flex items-center justify-center touch-pan-y"
-          >
-            <FeatureCard feature={features[activeIdx]} index={activeIdx} isMobileCard={true} />
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Floating Chevrons for Mobile */}
-        <button
-          onClick={() => paginate(-1)}
-          aria-label="Previous Vision Pillar"
-          className="absolute -left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background/90 border border-border/80 text-foreground flex items-center justify-center shadow-md backdrop-blur-md z-30 transition-transform active:scale-90 hover:scale-105"
-        >
-          <ChevronLeft className="w-4 h-4" />
-        </button>
-        <button
-          onClick={() => paginate(1)}
-          aria-label="Next Vision Pillar"
-          className="absolute -right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background/90 border border-border/80 text-foreground flex items-center justify-center shadow-md backdrop-blur-md z-30 transition-transform active:scale-90 hover:scale-105"
-        >
-          <ChevronRight className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* Pagination Dots */}
-      <div className="flex items-center gap-2 mt-4">
-        {features.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => {
-              setDirection(i > activeIdx ? 1 : -1);
-              setActiveIdx(i);
-              handleUserInteraction();
-            }}
-            aria-label={`Go to slide ${i + 1}`}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              i === activeIdx
-                ? 'w-6 bg-primary shadow-[0_0_8px_rgba(245,158,11,0.5)]'
-                : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50'
-            }`}
-          />
-        ))}
-      </div>
-
-      {/* Auto-advance Pulse Indicator */}
-      {!paused && (
-        <div className="mt-2 flex items-center gap-1 text-muted-foreground/50 text-[10px]">
-          <motion.span
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="w-1 h-1 rounded-full bg-primary"
-          />
-          <span>Auto-advancing (4s)</span>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Smooth continuous scroll stack card wrapper inside desktop pinned viewport
+// Smooth continuous scroll stack card wrapper inside pinned viewport (Mobile & Desktop)
 const StackedDeckCard = ({
   feature,
   index,
@@ -501,38 +327,47 @@ const StackedDeckCard = ({
   total: number;
   scrollYProgress: any;
 }) => {
-  // Stagger entrance based on scroll progress (0 to 0.88)
-  const interval = 0.88 / total;
-  const start = index * interval;
-  const end = (index + 1) * interval;
+  // Timing windows for 4 cards across scroll range (0.0 to 1.0)
+  // Progress 0.00 - 0.20: Card 0 is resting & fully visible as section locks
+  // Progress 0.20 - 0.42: Card 1 enters from bottom and stacks
+  // Progress 0.42 - 0.65: Card 2 enters from bottom and stacks
+  // Progress 0.65 - 0.88: Card 3 enters from bottom and stacks
+  // Progress 0.88 - 1.00: Full stack rests before section unlocks onward
 
-  // Translation Y: enters from bottom with smooth spring settle
+  const startEnter = index === 0 ? 0 : 0.20 + (index - 1) * 0.22;
+  const finishEnter = index === 0 ? 0.05 : startEnter + 0.18;
+
+  // Translation Y: Card 0 stays at 0 initially; cards 1-3 enter smoothly from bottom
   const y = useTransform(
     scrollYProgress,
     index === 0
-      ? [0, 1]
-      : [Math.max(0, start - 0.06), start + 0.03, 1],
+      ? [0, 0.25, 1]
+      : [Math.max(0, startEnter - 0.04), finishEnter, 1],
     index === 0
-      ? [0, (total - 1) * -8]
-      : [320, (total - 1 - index) * -8, (total - 1 - index) * -8]
+      ? [0, 0, (total - 1) * -6]
+      : [360, (total - 1 - index) * -6, (total - 1 - index) * -6]
   );
 
-  // Scale down earlier cards gently as new ones arrive
+  // Scale down earlier cards gently as new ones stack on top
   const scale = useTransform(
     scrollYProgress,
-    [start, Math.min(0.92, end + 0.1)],
-    [1, 1 - (total - 1 - index) * 0.03]
+    index === 0
+      ? [0, 0.25, 0.90]
+      : [startEnter, finishEnter, 0.90],
+    index === 0
+      ? [1, 1, 0.93]
+      : [0.92, 1, 1 - (total - 1 - index) * 0.025]
   );
 
-  // Opacity: smoothly fades in as card reaches its slot
+  // Opacity: Card 0 is 100% visible immediately. Subsequent cards fade in during entrance.
   const opacity = useTransform(
     scrollYProgress,
     index === 0
-      ? [0, 0.6, 0.95]
-      : [Math.max(0, start - 0.08), start, Math.min(1, start + 0.06)],
+      ? [0, 0.35, 0.90]
+      : [Math.max(0, startEnter - 0.05), finishEnter, 1],
     index === 0
       ? [1, 0.9, 0.6]
-      : [0, 0.6, 1]
+      : [0, 1, index === total - 1 ? 1 : 0.85]
   );
 
   return (
@@ -559,25 +394,24 @@ const DeckDot = ({
   total: number;
   scrollYProgress: any;
 }) => {
-  const interval = 0.88 / total;
-  const start = idx * interval;
-  const end = (idx + 1) * interval;
+  const start = idx === 0 ? 0 : 0.20 + (idx - 1) * 0.22;
+  const end = idx === 0 ? 0.20 : start + 0.22;
 
   const width = useTransform(
     scrollYProgress,
     idx === 0
-      ? [0, end, end + 0.05]
-      : [Math.max(0, start - 0.04), start, end, Math.min(1, end + 0.04)],
+      ? [0, end, end + 0.04]
+      : [Math.max(0, start - 0.03), start, end, Math.min(1, end + 0.04)],
     idx === 0
-      ? ['28px', '28px', '14px']
-      : ['14px', '28px', '28px', '14px']
+      ? ['26px', '26px', '12px']
+      : ['12px', '26px', '26px', '12px']
   );
 
   const opacity = useTransform(
     scrollYProgress,
     idx === 0
-      ? [0, end, end + 0.05]
-      : [Math.max(0, start - 0.04), start, end, Math.min(1, end + 0.04)],
+      ? [0, end, end + 0.04]
+      : [Math.max(0, start - 0.03), start, end, Math.min(1, end + 0.04)],
     idx === 0
       ? [1, 1, 0.35]
       : [0.35, 1, 1, 0.35]
@@ -589,7 +423,7 @@ const DeckDot = ({
         width,
         opacity,
       }}
-      className="h-1.5 rounded-full bg-primary"
+      className="h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(245,158,11,0.4)]"
     />
   );
 };
@@ -640,7 +474,7 @@ export const VisionSection = () => {
   ];
 
   return (
-    <section id="vision" className="bg-background relative overflow-visible py-8 md:py-0" ref={ref}>
+    <section id="vision" className="bg-background relative overflow-visible" ref={ref}>
       {/* Hidden SVG Definitions for Royal Wedding Arch ClipPath */}
       <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
         <defs>
@@ -658,37 +492,9 @@ export const VisionSection = () => {
       {/* Grid pattern */}
       <div className="absolute inset-0 grid-pattern opacity-30" />
 
-      {/* MOBILE EXPERIENCE: Fluid Touch Swipe & Tab Deck (Zero scroll locking) */}
-      <div className="block md:hidden container mx-auto px-4 relative z-10">
-        {/* Vision Header */}
-        <div className="text-center max-w-xl mx-auto pt-2 mb-4">
-          <div className="inline-flex items-center gap-1.5 text-primary font-bold text-[10px] tracking-[0.25em] uppercase mb-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
-            <LotusEmblem className="w-3 h-3" color="currentColor" />
-            <span>{t('vision.title')}</span>
-            <LotusEmblem className="w-3 h-3" color="currentColor" />
-          </div>
-
-          <h2 className="text-2xl sm:text-3xl font-black mb-1.5 leading-tight text-foreground">
-            {t('vision.beyondPrototypes')}{' '}
-            <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>
-          </h2>
-          <p className="text-muted-foreground text-xs leading-relaxed max-w-sm mx-auto">
-            <Trans
-              i18nKey="vision.visionDescription"
-              components={[
-                <span className="text-primary font-semibold" key="desc-highlight" />
-              ]}
-            />
-          </p>
-        </div>
-
-        {/* Mobile Swipe Deck */}
-        <MobileVisionDeck features={features} />
-      </div>
-
-      {/* DESKTOP EXPERIENCE: Pinned Scroll Deck Track */}
-      <div ref={scrollStackRef} className="hidden md:block relative w-full min-h-[300vh] sm:min-h-[320vh]">
-        <div className="sticky top-14 sm:top-16 md:top-20 h-[calc(100dvh-4rem)] md:h-[calc(100vh-5rem)] flex flex-col justify-between items-center py-2 sm:py-4 px-4 overflow-hidden z-20">
+      {/* Unified Pinned Scroll Deck Track (Desktop & Mobile View) */}
+      <div ref={scrollStackRef} className="relative w-full min-h-[360vh] sm:min-h-[380vh]">
+        <div className="sticky top-14 sm:top-16 md:top-20 h-[calc(100dvh-4rem)] md:h-[calc(100vh-5rem)] flex flex-col justify-between items-center py-2 sm:py-4 px-3 sm:px-4 overflow-hidden z-20">
           {/* Pinned Vision Header */}
           <div className="text-center max-w-3xl mx-auto shrink-0 pt-1">
             <div className="inline-flex items-center gap-1.5 sm:gap-2 text-primary font-bold text-[10px] sm:text-xs md:text-sm tracking-[0.25em] uppercase mb-1 sm:mb-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
@@ -712,7 +518,7 @@ export const VisionSection = () => {
           </div>
 
           {/* Stacked Cards Deck Area */}
-          <div className="relative w-full max-w-lg mx-auto flex-1 min-h-[370px] sm:min-h-[440px] flex items-center justify-center my-auto">
+          <div className="relative w-full max-w-[340px] sm:max-w-lg mx-auto flex-1 min-h-[380px] sm:min-h-[440px] flex items-center justify-center my-auto">
             {features.map((feature, index) => (
               <StackedDeckCard
                 key={feature.title}
