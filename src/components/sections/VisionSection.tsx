@@ -1,7 +1,7 @@
 import { motion, useInView, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Network, Lightbulb, Waypoints, Zap } from 'lucide-react';
+
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -233,15 +233,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
             <span className="text-[7px] sm:text-[8px] rotate-45" style={{ color: p.primary }}>◆</span>
           </div>
 
-          {/* Icon Badge */}
-          <motion.div
-            animate={isHovered ? { scale: 1.08, rotate: 3 } : { scale: 1, rotate: 0 }}
-            transition={{ duration: 0.3 }}
-            className="w-11 h-11 sm:w-13 sm:h-13 xl:w-14 xl:h-14 rounded-2xl flex items-center justify-center p-2.5"
-            style={{ background: p.iconBg }}
-          >
-            {feature.icon}
-          </motion.div>
+
 
           {/* Decorative Divider */}
           <div className="flex items-center gap-1.5 w-full max-w-[130px] sm:max-w-[160px] my-0.5">
@@ -412,25 +404,21 @@ export const VisionSection = () => {
 
   const features = [
     {
-      icon: <Network className="w-6 h-6 sm:w-7 sm:h-7" />,
       title: t('vision.features.ai.title'),
       description: t('vision.features.ai.description'),
       color: 'primary',
     },
     {
-      icon: <Lightbulb className="w-6 h-6 sm:w-7 sm:h-7" />,
       title: t('vision.features.genAi.title'),
       description: t('vision.features.genAi.description'),
       color: 'accent',
     },
     {
-      icon: <Waypoints className="w-6 h-6 sm:w-7 sm:h-7" />,
       title: t('vision.features.agenticAi.title'),
       description: t('vision.features.agenticAi.description'),
       color: 'primary',
     },
     {
-      icon: <Zap className="w-6 h-6 sm:w-7 sm:h-7" />,
       title: t('vision.features.automation.title'),
       description: t('vision.features.automation.description'),
       color: 'accent',
