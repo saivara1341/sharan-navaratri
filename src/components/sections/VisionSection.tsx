@@ -73,10 +73,10 @@ export const LotusEmblem = ({ className = "w-6 h-6", color = "currentColor" }: {
 );
 
 
-// ─── Arched Central Panel Paths (Royal Indian Cusped Jharokha, 280×380 viewBox) ─
-const ARCH_PANEL_OUTER = "M 140 16 C 152 26, 164 34, 172 44 C 184 40, 198 48, 208 62 C 222 60, 238 72, 246 90 C 256 112, 258 138, 248 162 C 242 176, 242 204, 248 218 C 258 242, 256 268, 246 290 C 238 308, 222 320, 208 318 C 198 332, 184 340, 172 336 C 164 346, 152 354, 140 364 C 128 354, 116 346, 108 336 C 96 340, 82 332, 72 318 C 58 320, 42 308, 34 290 C 24 268, 22 242, 32 218 C 38 204, 38 176, 32 162 C 22 138, 24 112, 34 90 C 42 72, 58 60, 72 62 C 82 48, 96 40, 108 44 C 116 34, 128 26, 140 16 Z";
+// ─── Arched Central Panel Paths (Royal Indian Cusped Jharokha, 340×380 viewBox) ─
+const ARCH_PANEL_OUTER = "M 170 16 C 184 26, 198 34, 208 44 C 222 40, 238 48, 252 62 C 270 60, 290 72, 302 90 C 316 112, 318 138, 306 162 C 298 176, 298 204, 306 218 C 318 242, 316 268, 302 290 C 290 308, 270 320, 252 318 C 238 332, 222 340, 208 336 C 198 346, 184 354, 170 364 C 156 354, 142 346, 132 336 C 118 340, 102 332, 88 318 C 70 320, 50 308, 38 290 C 24 268, 22 242, 34 218 C 42 204, 42 176, 34 162 C 22 138, 24 112, 38 90 C 50 72, 70 60, 88 62 C 102 48, 118 40, 132 44 C 142 34, 156 26, 170 16 Z";
 
-const ARCH_PANEL_INNER = "M 140 26 C 150 34, 160 41, 168 50 C 178 47, 190 54, 199 66 C 211 65, 225 76, 233 92 C 241 112, 243 135, 235 158 C 230 173, 230 207, 235 222 C 243 245, 241 268, 233 288 C 225 304, 211 315, 199 314 C 190 326, 178 333, 168 330 C 160 339, 150 346, 140 354 C 130 346, 120 339, 112 330 C 102 333, 90 326, 81 314 C 69 315, 55 304, 47 288 C 39 268, 37 245, 45 222 C 50 207, 50 173, 45 158 C 37 135, 39 112, 47 92 C 55 76, 69 65, 81 66 C 90 54, 102 47, 112 50 C 120 41, 130 34, 140 26 Z";
+const ARCH_PANEL_INNER = "M 170 26 C 182 34, 194 41, 204 50 C 216 47, 230 54, 242 66 C 258 65, 276 76, 286 92 C 298 112, 300 135, 290 158 C 282 173, 282 207, 290 222 C 300 245, 298 268, 286 288 C 276 304, 258 315, 242 314 C 230 326, 216 333, 204 330 C 194 339, 182 346, 170 354 C 158 346, 146 339, 136 330 C 124 333, 110 326, 98 314 C 82 315, 64 304, 54 288 C 42 268, 40 245, 50 222 C 58 207, 58 173, 50 158 C 40 135, 42 112, 54 92 C 64 76, 82 65, 98 66 C 110 54, 124 47, 136 50 C 146 41, 158 34, 170 26 Z";
 
 // ─── Feature Card — Arched Central Panel ────────────────────────────────────
 const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
@@ -140,7 +140,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
   ];
   const p = palettes[index % palettes.length];
 
-  const VW = 280, VH = 380;
+  const VW = 340, VH = 380;
 
   return (
     <motion.div
@@ -152,20 +152,20 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
     >
       {/* Outer ambient glow */}
       <motion.div
-        animate={{ opacity: isHovered ? 0.6 : 0.25, scale: isHovered ? 1.08 : 1 }}
+        animate={{ opacity: isHovered ? 0.65 : 0.25, scale: isHovered ? 1.08 : 1 }}
         transition={{ duration: 0.5 }}
-        className="absolute -inset-4 rounded-3xl blur-[40px] pointer-events-none"
+        className="absolute -inset-4 rounded-3xl blur-[45px] pointer-events-none"
         style={{ background: `radial-gradient(circle at 50% 50%, ${p.primary}90 0%, transparent 70%)` }}
       />
 
-      {/* Main card container */}
-      <div className="relative w-[280px] h-[370px] sm:w-[310px] sm:h-[410px] flex items-center justify-center">
+      {/* Main card container (increased width for spacious traditional aesthetic) */}
+      <div className="relative w-[320px] h-[370px] sm:w-[410px] sm:h-[400px] md:w-[460px] md:h-[420px] flex items-center justify-center">
 
         {/* SVG Arched Central Panel */}
         <svg
           viewBox={`0 0 ${VW} ${VH}`}
-          className="absolute inset-0 w-full h-full pointer-events-none filter drop-shadow-[0_12px_30px_rgba(0,0,0,0.7)]"
-          preserveAspectRatio="xMidYMid meet"
+          className="absolute inset-0 w-full h-full pointer-events-none filter drop-shadow-[0_14px_35px_rgba(0,0,0,0.75)]"
+          preserveAspectRatio="none"
           aria-hidden="true"
         >
           <defs>
@@ -203,25 +203,21 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
             strokeOpacity="0.65"
           />
 
-          {/* Cardinal diamond finials */}
+          {/* Vertical cardinal diamond finials only (horizontal waist rhombus removed) */}
           {/* Top Apex */}
-          <polygon points="140,6 145,16 140,26 135,16" fill={p.primary} />
+          <polygon points="170,6 175,16 170,26 165,16" fill={p.primary} />
           {/* Bottom Apex */}
-          <polygon points="140,354 145,364 140,374 135,364" fill={p.primary} />
-          {/* Left Waist */}
-          <polygon points="22,190 32,185 42,190 32,195" fill={p.primary} />
-          {/* Right Waist */}
-          <polygon points="238,190 248,185 258,190 248,195" fill={p.primary} />
+          <polygon points="170,354 175,364 170,374 165,364" fill={p.primary} />
         </svg>
 
-        {/* Card Content (Centered perfectly inside the arched central panel) */}
-        <div className="relative z-10 w-full h-full flex flex-col items-center justify-center text-center px-8 sm:px-10 py-8 gap-2 sm:gap-2.5">
+        {/* Card Content (Spacious, centered inside the wide arched central panel) */}
+        <div className="relative z-10 w-full h-full flex flex-col items-center justify-center text-center px-10 sm:px-14 md:px-16 py-8 gap-2 sm:gap-3">
           
           {/* Pillar Eyebrow */}
           <div className="flex items-center gap-1.5 pt-2">
             <span className="text-[8px] rotate-45" style={{ color: p.primary }}>◆</span>
             <span
-              className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em]"
+              className="text-[10px] sm:text-xs font-black uppercase tracking-[0.25em]"
               style={{ color: p.accent }}
             >
               Pillar 0{index + 1}
@@ -233,31 +229,31 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
           <motion.div
             animate={isHovered ? { scale: 1.1, rotate: 4 } : { scale: 1, rotate: 0 }}
             transition={{ duration: 0.3 }}
-            className={`w-11 h-11 sm:w-13 sm:h-13 rounded-2xl flex items-center justify-center ${p.iconBg}`}
+            className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center ${p.iconBg}`}
           >
             {feature.icon}
           </motion.div>
 
           {/* Decorative Divider */}
-          <div className="flex items-center gap-1.5 w-full max-w-[140px] sm:max-w-[170px] my-0.5">
+          <div className="flex items-center gap-2 w-full max-w-[160px] sm:max-w-[200px] my-0.5">
             <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${p.primary}90)` }} />
-            <span className="text-[8px]" style={{ color: p.accent }}>✦</span>
+            <span className="text-[9px]" style={{ color: p.accent }}>✦</span>
             <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, ${p.primary}90)` }} />
           </div>
 
           {/* Title */}
-          <h3 className="text-base sm:text-lg font-black text-white tracking-tight leading-tight drop-shadow-sm max-w-[200px]">
+          <h3 className="text-base sm:text-xl font-black text-white tracking-tight leading-tight drop-shadow-sm max-w-[280px]">
             {feature.title}
           </h3>
 
           {/* Description */}
-          <p className="text-slate-300 text-[11px] sm:text-xs leading-relaxed max-w-[190px] sm:max-w-[220px] font-normal line-clamp-3">
+          <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-[240px] sm:max-w-[320px] font-normal line-clamp-3">
             {feature.description}
           </p>
 
           {/* Bottom Badge */}
           <div
-            className={`mt-1 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-semibold backdrop-blur-md shadow-sm border ${p.pillBg}`}
+            className={`mt-1 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[9px] sm:text-[10px] font-semibold backdrop-blur-md shadow-sm border ${p.pillBg}`}
           >
             <span className="w-1.5 h-1.5 rotate-45" style={{ background: p.pillDot }} />
             <span className="truncate">Production-Ready Deep-Tech</span>
@@ -269,8 +265,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
 };
 
 
-// Smooth continuous scroll stack card wrapper inside pinned viewport
-// Smooth continuous scroll stack card wrapper inside pinned viewport
+// Clean single-card scroll transition — only ONE card visible at any time (no overlapping/peeking)
 const StackedDeckCard = ({
   feature,
   index,
@@ -282,39 +277,53 @@ const StackedDeckCard = ({
   total: number;
   scrollYProgress: any;
 }) => {
-  // Stagger entrance based on scroll progress (0 to 0.88, leaving 0.88-1.0 for final view before scrolling onward)
-  const interval = 0.88 / total;
-  const start = index * interval;
-  const end = (index + 1) * interval;
+  const step = 0.88 / total;
+  const start = index * step;
+  const end = (index + 1) * step;
 
-  // Translation Y: enters from bottom (index > 0) and settles into stack
-  // Each card below the top peeks up by 16px — clearly visible as a premium stacked deck
-  const y = useTransform(
-    scrollYProgress,
-    index === 0
-      ? [0, 1]
-      : [Math.max(0, start - 0.05), start + 0.04, 1],
-    index === 0
-      ? [0, (total - 1) * -16]
-      : [300, (total - 1 - index) * -16, (total - 1 - index) * -16]
-  );
-
-  // Scale down earlier cards slightly as new ones arrive on top
-  const scale = useTransform(
-    scrollYProgress,
-    [start, Math.min(0.92, end + 0.1)],
-    [1, 1 - (total - 1 - index) * 0.042]
-  );
-
-  // Opacity: bottom cards stay at 0.75 so deck is clearly visible beneath top card
+  // Single card opacity: ONLY the active card is 100% visible; all other cards are 0% opacity
   const opacity = useTransform(
     scrollYProgress,
     index === 0
-      ? [0, 0.5, 0.9]
-      : [Math.max(0, start - 0.06), start, Math.min(1, start + 0.06)],
+      ? [0, start + step * 0.7, end]
+      : index === total - 1
+      ? [start - step * 0.3, start, 1]
+      : [start - step * 0.3, start, start + step * 0.7, end],
     index === 0
-      ? [1, 0.82, 0.75]
-      : [0, 0.6, 1]
+      ? [1, 1, 0]
+      : index === total - 1
+      ? [0, 1, 1]
+      : [0, 1, 1, 0]
+  );
+
+  // Smooth slide-in from bottom and subtle exit upwards
+  const y = useTransform(
+    scrollYProgress,
+    index === 0
+      ? [0, start + step * 0.7, end]
+      : index === total - 1
+      ? [start - step * 0.3, start, 1]
+      : [start - step * 0.3, start, start + step * 0.7, end],
+    index === 0
+      ? [0, 0, -25]
+      : index === total - 1
+      ? [40, 0, 0]
+      : [40, 0, 0, -25]
+  );
+
+  // Subtle scale transition
+  const scale = useTransform(
+    scrollYProgress,
+    index === 0
+      ? [0, start + step * 0.7, end]
+      : index === total - 1
+      ? [start - step * 0.3, start, 1]
+      : [start - step * 0.3, start, start + step * 0.7, end],
+    index === 0
+      ? [1, 1, 0.96]
+      : index === total - 1
+      ? [0.96, 1, 1]
+      : [0.96, 1, 1, 0.96]
   );
 
   return (
@@ -322,7 +331,7 @@ const StackedDeckCard = ({
       style={{
         y,
         scale,
-        opacity: index === total - 1 ? 1 : opacity,
+        opacity,
         zIndex: index + 10,
       }}
       className="absolute inset-0 flex items-center justify-center pointer-events-auto"
@@ -341,9 +350,9 @@ const DeckDot = ({
   total: number;
   scrollYProgress: any;
 }) => {
-  const interval = 0.88 / total;
-  const start = idx * interval;
-  const end = (idx + 1) * interval;
+  const step = 0.88 / total;
+  const start = idx * step;
+  const end = (idx + 1) * step;
 
   const width = useTransform(
     scrollYProgress,
@@ -389,25 +398,25 @@ export const VisionSection = () => {
 
   const features = [
     {
-      icon: <Network className="w-5 h-5 sm:w-7 sm:h-7" />,
+      icon: <Network className="w-6 h-6 sm:w-7 sm:h-7" />,
       title: t('vision.features.ai.title'),
       description: t('vision.features.ai.description'),
       color: 'primary',
     },
     {
-      icon: <Lightbulb className="w-5 h-5 sm:w-7 sm:h-7" />,
+      icon: <Lightbulb className="w-6 h-6 sm:w-7 sm:h-7" />,
       title: t('vision.features.genAi.title'),
       description: t('vision.features.genAi.description'),
       color: 'accent',
     },
     {
-      icon: <Waypoints className="w-5 h-5 sm:w-7 sm:h-7" />,
+      icon: <Waypoints className="w-6 h-6 sm:w-7 sm:h-7" />,
       title: t('vision.features.agenticAi.title'),
       description: t('vision.features.agenticAi.description'),
       color: 'primary',
     },
     {
-      icon: <Zap className="w-5 h-5 sm:w-7 sm:h-7" />,
+      icon: <Zap className="w-6 h-6 sm:w-7 sm:h-7" />,
       title: t('vision.features.automation.title'),
       description: t('vision.features.automation.description'),
       color: 'accent',
@@ -422,9 +431,7 @@ export const VisionSection = () => {
   ];
 
   return (
-    <section id="vision" className="bg-background relative overflow-visible" ref={ref}>
-      {/* Mandala cards use circular shape — no clipPath needed */}
-
+    <section id="vision" className="bg-background relative overflow-visible py-10 md:py-16" ref={ref}>
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/10 to-background" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-primary/3 rounded-full blur-[150px]" />
@@ -433,18 +440,18 @@ export const VisionSection = () => {
       {/* Grid pattern */}
       <div className="absolute inset-0 grid-pattern opacity-30" />
 
-      {/* Pinned Scroll Deck Track: Locks viewport on "Beyond Prototypes, Into Production" while cards stack */}
+      {/* Pinned Scroll Deck Track: Locks viewport on "Beyond Prototypes, Into Production" with generous spacing */}
       <div ref={scrollStackRef} className="relative w-full min-h-[300vh] sm:min-h-[320vh]">
-        <div className="sticky top-14 sm:top-16 md:top-20 h-[calc(100dvh-4rem)] md:h-[calc(100vh-5rem)] flex flex-col justify-between items-center py-2 sm:py-4 px-4 overflow-hidden z-20">
-          {/* Pinned Vision Header */}
-          <div className="text-center max-w-3xl mx-auto shrink-0 pt-1">
-            <div className="inline-flex items-center gap-1.5 sm:gap-2 text-primary font-bold text-[10px] sm:text-xs md:text-sm tracking-[0.25em] uppercase mb-1 sm:mb-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+        <div className="sticky top-14 sm:top-16 md:top-20 h-[calc(100dvh-4rem)] md:h-[calc(100vh-5rem)] flex flex-col justify-between items-center py-4 sm:py-8 px-4 overflow-hidden z-20">
+          {/* Pinned Vision Header with breathing room */}
+          <div className="text-center max-w-3xl mx-auto shrink-0 pt-2 sm:pt-4">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 text-primary font-bold text-[10px] sm:text-xs md:text-sm tracking-[0.25em] uppercase mb-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
               <LotusEmblem className="w-3.5 h-3.5" color="currentColor" />
               <span>{t('vision.title')}</span>
               <LotusEmblem className="w-3.5 h-3.5" color="currentColor" />
             </div>
 
-            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black mb-1 sm:mb-2 leading-tight text-foreground">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black mb-2 leading-tight text-foreground">
               <span className="block">{t('vision.beyondPrototypes')}</span>
               <span className="block gradient-text glow-text">{t('vision.intoProduction')}</span>
             </h2>
@@ -458,8 +465,8 @@ export const VisionSection = () => {
             </p>
           </div>
 
-          {/* Stacked Cards Deck Area */}
-          <div className="relative w-full max-w-[360px] sm:max-w-[420px] mx-auto flex-1 min-h-[370px] sm:min-h-[415px] flex items-center justify-center my-auto">
+          {/* Cards Deck Area — Generous width and spacing */}
+          <div className="relative w-full max-w-[340px] sm:max-w-[440px] md:max-w-[500px] mx-auto flex-1 min-h-[380px] sm:min-h-[420px] md:min-h-[440px] flex items-center justify-center my-auto py-2">
             {features.map((feature, index) => (
               <StackedDeckCard
                 key={feature.title}
@@ -472,7 +479,7 @@ export const VisionSection = () => {
           </div>
 
           {/* Bottom Pillar Dots Indicator */}
-          <div className="flex items-center justify-center gap-2 shrink-0 pb-1 z-30">
+          <div className="flex items-center justify-center gap-2 shrink-0 pb-2 z-30">
             {features.map((_, idx) => (
               <DeckDot
                 key={idx}
