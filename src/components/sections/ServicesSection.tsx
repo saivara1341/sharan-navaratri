@@ -1,4 +1,4 @@
-import { motion, useMotionTemplate, useMotionValue, useMotionValueEvent, useScroll, useSpring } from "framer-motion";
+import { motion, useMotionTemplate, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
 import {
   ArrowUpRight,
@@ -157,7 +157,8 @@ function PinnedServiceCard({
           0,   // settles at center
           0,   // stays locked at center
           index === total - 1 ? 0 : -60, // exits smoothly upward
-        ]
+        ],
+    { clamp: true }
   );
 
   // Scale: subtle growth on entrance, slight shrink on exit
@@ -178,7 +179,8 @@ function PinnedServiceCard({
           1,
           1,
           index === total - 1 ? 1 : 0.95,
-        ]
+        ],
+    { clamp: true }
   );
 
   // Opacity: fades in from bottom, remains 1, fades out on exit
@@ -199,7 +201,8 @@ function PinnedServiceCard({
           1,
           1,
           index === total - 1 ? 1 : 0,
-        ]
+        ],
+    { clamp: true }
   );
 
   return (
