@@ -155,7 +155,7 @@ export const Navbar = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="relative w-12 h-12 md:w-14 md:h-14 flex items-center justify-center">
+              <div className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 flex items-center justify-center shrink-0">
                 <div className="absolute inset-0 dark:bg-primary/20 rounded-full blur-2xl opacity-60" />
                 <img
                   src={siddhiLogo}
@@ -167,7 +167,7 @@ export const Navbar = () => {
                 />
               </div>
               <div className="flex flex-col md:flex-row md:items-center gap-0.5 md:gap-2 text-left">
-                <span className="font-extrabold text-base md:text-xl text-foreground tracking-tight whitespace-nowrap">
+                <span className="font-black text-lg sm:text-2xl md:text-2xl lg:text-[1.65rem] text-foreground tracking-tight whitespace-nowrap leading-none">
                   Siddhi Dynamics
                 </span>
               </div>
