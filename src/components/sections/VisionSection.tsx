@@ -483,24 +483,24 @@ export const VisionSection = () => {
 
       {/* ─── MOBILE VIEW: Pinned Scroll Deck with Larger Cards ─────────────── */}
       <div ref={scrollStackRef} className="lg:hidden relative w-full min-h-[280vh]">
-        <div className="sticky top-14 sm:top-16 h-[calc(100dvh-3.8rem)] flex flex-col justify-between items-center py-2 px-3 overflow-hidden z-20">
+        <div className="sticky top-14 sm:top-16 h-[calc(100dvh-3.5rem)] flex flex-col justify-start items-center pt-3 sm:pt-4 pb-2 px-3 gap-2 sm:gap-3 overflow-hidden z-20">
           
           {/* Mobile Header */}
-          <div className="text-center max-w-3xl mx-auto shrink-0 pt-0">
+          <div className="text-center max-w-3xl mx-auto shrink-0">
             <div className="inline-flex items-center gap-1.5 text-primary font-bold text-[9px] sm:text-xs tracking-[0.25em] uppercase mb-1 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20">
               <LotusEmblem className="w-3 h-3" color="currentColor" />
               <span>{t('vision.title')}</span>
               <LotusEmblem className="w-3 h-3" color="currentColor" />
             </div>
 
-            <h2 className="text-xl sm:text-3xl font-black mb-1 leading-tight text-foreground">
+            <h2 className="text-xl sm:text-3xl font-black mb-0 leading-tight text-foreground">
               <span className="block">{t('vision.beyondPrototypes')}</span>
               <span className="block gradient-text glow-text">{t('vision.intoProduction')}</span>
             </h2>
           </div>
 
-          {/* Cards Deck Area — Sized specifically for mobile so text fits comfortably */}
-          <div className="relative w-full max-w-[370px] mx-auto flex-1 min-h-[430px] flex items-center justify-center my-0 py-0">
+          {/* Cards Deck Area */}
+          <div className="relative w-full max-w-[370px] mx-auto flex-1 min-h-[380px] flex items-center justify-center">
             {features.map((feature, index) => (
               <StackedDeckCard
                 key={feature.title}
@@ -513,7 +513,7 @@ export const VisionSection = () => {
           </div>
 
           {/* Bottom Pillar Dots Indicator */}
-          <div className="flex items-center justify-center gap-2 shrink-0 pb-1 z-30">
+          <div className="flex items-center justify-center gap-2 shrink-0 pb-2 z-30">
             {features.map((_, idx) => (
               <DeckDot
                 key={idx}
