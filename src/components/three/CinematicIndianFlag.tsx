@@ -4,6 +4,7 @@ import * as THREE from 'three';
 
 const vertexShader = `
   uniform float uTime;
+  uniform float uIsMobile;
   varying vec2 vUv;
   varying float vLight;
 
@@ -11,23 +12,28 @@ const vertexShader = `
     vUv = uv;
     vec3 p = position;
     
-    // Natural continuous flag flutter and wind waves
-    float primary = sin(uv.x * 7.5 - uTime * 2.4 + uv.y * 1.2) * 0.28;
-    float secondary = sin(uv.x * 14.0 - uTime * 3.2 + uv.y * 3.0) * 0.09;
-    float vertical = cos(uv.y * 6.5 + uv.x * 3.5 - uTime * 1.5) * 0.055;
+    // Natural continuous flag flutter and dynamic wave amplitude
+    // Reduced amplitude on mobile to eliminate bulge and keep text perfectly legible
+    float amp = mix(0.22, 0.12, uIsMobile);
+    float freqX = mix(7.0, 5.2, uIsMobile);
+    
+    float primary = sin(uv.x * freqX - uTime * 2.2 + uv.y * 1.4) * amp;
+    float secondary = sin(uv.x * (freqX * 1.8) - uTime * 3.0 + uv.y * 2.6) * (amp * 0.35);
+    float vertical = cos(uv.y * 5.2 + uv.x * 2.8 - uTime * 1.4) * (amp * 0.22);
     float wave = primary + secondary + vertical;
 
     p.z += wave;
-    p.y += sin(uv.x * 6.0 - uTime * 1.7) * 0.06;
-    p.x += cos(uv.y * 4.5 + uTime * 1.1) * 0.025;
+    p.y += sin(uv.x * 5.0 - uTime * 1.5) * (amp * 0.2);
+    p.x += cos(uv.y * 4.0 + uTime * 1.0) * (amp * 0.1);
     
-    vLight = 0.88 + wave * 0.45 + sin(uv.x * 7.5 - uTime * 2.4 + 1.2) * 0.12;
+    vLight = 0.90 + wave * 0.38 + sin(uv.x * freqX - uTime * 2.2 + 1.2) * 0.10;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
   }
 `;
 
 const fragmentShader = `
   uniform float uAspect;
+  uniform float uIsMobile;
   varying vec2 vUv;
   varying float vLight;
 
@@ -37,7 +43,7 @@ const fragmentShader = `
 
   void main() {
     // Authentic Indian Tiranga Colors
-    vec3 saffron = vec3(1.0, 0.45, 0.08); // Vibrant Indian Saffron (Kesaria)
+    vec3 saffron = vec3(1.0, 0.44, 0.08); // Vibrant Indian Saffron (Kesaria)
     vec3 ivory   = vec3(0.99, 0.99, 0.98); // Silk White
     vec3 green   = vec3(0.075, 0.52, 0.16); // India Green
     vec3 navy    = vec3(0.0, 0.0, 0.52);   // Ashoka Navy Blue
@@ -53,8 +59,11 @@ const fragmentShader = `
     }
 
     // Ashoka Chakra in Center White Band
-    // Normalizing coordinates so chakra is perfectly circular on all aspect ratios
-    vec2 chakraUv = vec2((vUv.x - 0.5) * uAspect, (vUv.y - 0.5) * 3.0);
+    // Responsive UV scaling so chakra remains perfectly circular on all screen ratios
+    float scaleX = uAspect >= 1.0 ? uAspect * 0.92 : 1.0;
+    float scaleY = uAspect >= 1.0 ? 3.0 : (1.0 / max(uAspect, 0.3)) * 1.35;
+    
+    vec2 chakraUv = vec2((vUv.x - 0.5) * scaleX, (vUv.y - 0.5) * scaleY);
     float radius = length(chakraUv);
     
     // Outer and Inner Rings
@@ -76,8 +85,8 @@ const fragmentShader = `
     }
 
     // Subtle cloth weave & lighting
-    float weave = sin(vUv.x * 1000.0) * sin(vUv.y * 700.0) * 0.012;
-    color *= clamp(vLight + weave, 0.72, 1.22);
+    float weave = sin(vUv.x * 900.0) * sin(vUv.y * 650.0) * 0.012;
+    color *= clamp(vLight + weave, 0.74, 1.20);
 
     gl_FragColor = vec4(color, 1.0);
   }
@@ -87,28 +96,33 @@ const FlagMesh = () => {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const { viewport } = useThree();
 
+  const isMobile = viewport.width < viewport.height || viewport.width < 7.0;
+
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
       uAspect: { value: viewport.width / viewport.height },
+      uIsMobile: { value: isMobile ? 1.0 : 0.0 },
     }),
     []
   );
 
   useFrame(({ clock }) => {
     if (materialRef.current) {
+      const currentIsMobile = viewport.width < viewport.height || viewport.width < 7.0;
       materialRef.current.uniforms.uTime.value = clock.elapsedTime;
       materialRef.current.uniforms.uAspect.value = viewport.width / viewport.height;
+      materialRef.current.uniforms.uIsMobile.value = currentIsMobile ? 1.0 : 0.0;
     }
   });
 
-  // Ensure geometry always overflows slightly beyond viewport edges so wave crests don't show background
-  const meshWidth = Math.max(viewport.width * 1.12, 12);
-  const meshHeight = Math.max(viewport.height * 1.12, 8);
+  // Dynamically size geometry to exact camera viewport plus slight overflow margin for wave flutter
+  const meshWidth = viewport.width * 1.08;
+  const meshHeight = viewport.height * 1.08;
 
   return (
     <mesh position={[0, 0, 0]}>
-      <planeGeometry args={[meshWidth, meshHeight, 140, 90]} />
+      <planeGeometry args={[meshWidth, meshHeight, isMobile ? 80 : 130, isMobile ? 60 : 90]} />
       <shaderMaterial
         ref={materialRef}
         uniforms={uniforms}
@@ -120,16 +134,21 @@ const FlagMesh = () => {
   );
 };
 
-export const CinematicIndianFlag = () => (
-  <div className="cinematic-flag-canvas" aria-hidden="true">
-    <Canvas
-      dpr={[1, 1.5]}
-      gl={{ alpha: false, antialias: true, powerPreference: 'high-performance' }}
-      camera={{ position: [0, 0, 6], fov: 45 }}
-      style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}
-    >
-      <FlagMesh />
-    </Canvas>
-  </div>
-);
-
+export const CinematicIndianFlag = () => {
+  return (
+    <div className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden">
+      <Canvas
+        camera={{ position: [0, 0, 5], fov: 45 }}
+        dpr={[1, 2]}
+        gl={{
+          antialias: true,
+          alpha: false,
+          powerPreference: 'high-performance',
+        }}
+        style={{ width: '100%', height: '100%' }}
+      >
+        <FlagMesh />
+      </Canvas>
+    </div>
+  );
+};
