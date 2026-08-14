@@ -72,6 +72,10 @@ export const LotusEmblem = ({ className = "w-6 h-6", color = "currentColor" }: {
   </svg>
 );
 
+const INDIAN_CARTOUCHE_100 = "M 50 2 C 48 4, 46 7, 43 7.5 C 34 8.5, 26 12.5, 20 17.5 C 17 20, 14 24, 11 28 C 8 33, 7.5 39, 7.5 43 C 7 46, 4 48, 2 50 C 4 52, 7 54, 7.5 57 C 7.5 61, 8 67, 11 72 C 14 76, 17 80, 20 82.5 C 26 87.5, 34 91.5, 43 92.5 C 46 93, 48 96, 50 98 C 52 96, 54 93, 57 92.5 C 66 91.5, 74 87.5, 80 82.5 C 83 80, 86 76, 89 72 C 92 67, 92.5 61, 92.5 57 C 93 54, 96 52, 98 50 C 96 48, 93 46, 92.5 43 C 92.5 39, 92 33, 89 28 C 86 24, 83 20, 80 17.5 C 74 12.5, 66 8.5, 57 7.5 C 54 7, 52 4, 50 2 Z";
+const INDIAN_CARTOUCHE_CLIP = "M 0.50 0.02 C 0.48 0.04, 0.46 0.07, 0.43 0.075 C 0.34 0.085, 0.26 0.125, 0.20 0.175 C 0.17 0.20, 0.14 0.24, 0.11 0.28 C 0.08 0.33, 0.075 0.39, 0.075 0.43 C 0.07 0.46, 0.04 0.48, 0.02 0.50 C 0.04 0.52, 0.07 0.54, 0.075 0.57 C 0.075 0.61, 0.08 0.67, 0.11 0.72 C 0.14 0.76, 0.17 0.80, 0.20 0.825 C 0.26 0.875, 0.34 0.915, 0.43 0.925 C 0.46 0.93, 0.48 0.96, 0.50 0.98 C 0.52 0.96, 0.54 0.93, 0.57 0.925 C 0.66 0.915, 0.74 0.875, 0.80 0.825 C 0.83 0.80, 0.86 0.76, 0.89 0.72 C 0.92 0.67, 0.925 0.61, 0.925 0.57 C 0.93 0.54, 0.96 0.52, 0.98 0.50 C 0.96 0.48, 0.93 0.46, 0.925 0.43 C 0.925 0.39, 0.92 0.33, 0.89 0.28 C 0.86 0.24, 0.83 0.20, 0.80 0.175 C 0.74 0.125, 0.66 0.085, 0.57 0.075 C 0.54 0.07, 0.52 0.04, 0.50 0.02 Z";
+const INNER_DASHED_CARTOUCHE_100 = "M 50 6 C 48 8, 46 11, 42 11.5 C 34 12.5, 28 16, 22 20.5 C 19.5 22.5, 17 26, 14.5 30 C 12 34, 11.5 39, 11.5 42 C 11 45, 8 48, 6 50 C 8 52, 11 55, 11.5 58 C 11.5 61, 12 66, 14.5 70 C 17 74, 19.5 77.5, 22 79.5 C 28 84, 34 87.5, 42 88.5 C 46 89, 48 92, 50 94 C 52 92, 54 89, 58 88.5 C 66 87.5, 72 84, 78 79.5 C 80.5 77.5, 83 74, 85.5 70 C 88 66, 88.5 61, 88.5 58 C 89 55, 92 52, 94 50 C 92 48, 89 45, 88.5 42 C 88.5 39, 88 34, 85.5 30 C 83 26, 80.5 22.5, 78 20.5 C 72 16, 66 12.5, 58 11.5 C 54 11, 52 8, 50 6 Z";
+
 const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
   const [isHovered, setIsHovered] = useState(false);
   const x = useMotionValue(0);
@@ -95,39 +99,39 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
 
   const palettes = [
     {
-      glow: 'hsl(25 95% 55% / 0.28)',
-      border: 'rgba(249, 115, 22, 0.45)',
-      borderHover: 'rgba(249, 115, 22, 0.9)',
+      glow: 'hsl(25 95% 55% / 0.2)',
+      border: '#f97316',
+      borderInner: '#fdba74',
       accentColor: '#f97316',
-      iconBg: 'bg-orange-500/20 text-orange-400 border border-orange-500/40 shadow-[0_0_25px_rgba(249,115,22,0.35)]',
-      bgGradient: 'linear-gradient(145deg, rgba(28, 16, 10, 0.92) 0%, rgba(16, 10, 22, 0.95) 100%)',
+      iconBg: 'bg-orange-500/20 text-orange-400 border border-orange-500/40 shadow-sm',
+      bgGradient: 'linear-gradient(145deg, rgba(30, 18, 10, 0.98) 0%, rgba(15, 10, 18, 0.98) 100%)',
       lotusColor: '#f97316',
     },
     {
-      glow: 'hsl(205 95% 55% / 0.28)',
-      border: 'rgba(14, 165, 233, 0.45)',
-      borderHover: 'rgba(14, 165, 233, 0.9)',
+      glow: 'hsl(205 95% 55% / 0.2)',
+      border: '#0ea5e9',
+      borderInner: '#7dd3fc',
       accentColor: '#0ea5e9',
-      iconBg: 'bg-sky-500/20 text-sky-400 border border-sky-500/40 shadow-[0_0_25px_rgba(14,165,233,0.35)]',
-      bgGradient: 'linear-gradient(145deg, rgba(8, 22, 36, 0.92) 0%, rgba(6, 12, 24, 0.95) 100%)',
+      iconBg: 'bg-sky-500/20 text-sky-400 border border-sky-500/40 shadow-sm',
+      bgGradient: 'linear-gradient(145deg, rgba(8, 24, 38, 0.98) 0%, rgba(6, 12, 22, 0.98) 100%)',
       lotusColor: '#0ea5e9',
     },
     {
-      glow: 'hsl(275 85% 62% / 0.28)',
-      border: 'rgba(168, 85, 247, 0.45)',
-      borderHover: 'rgba(168, 85, 247, 0.9)',
+      glow: 'hsl(275 85% 62% / 0.2)',
+      border: '#a855f7',
+      borderInner: '#d8b4fe',
       accentColor: '#a855f7',
-      iconBg: 'bg-violet-500/20 text-violet-400 border border-violet-500/40 shadow-[0_0_25px_rgba(168,85,247,0.35)]',
-      bgGradient: 'linear-gradient(145deg, rgba(24, 10, 36, 0.92) 0%, rgba(12, 8, 22, 0.95) 100%)',
+      iconBg: 'bg-violet-500/20 text-violet-400 border border-violet-500/40 shadow-sm',
+      bgGradient: 'linear-gradient(145deg, rgba(26, 12, 38, 0.98) 0%, rgba(12, 8, 20, 0.98) 100%)',
       lotusColor: '#a855f7',
     },
     {
-      glow: 'hsl(155 80% 48% / 0.28)',
-      border: 'rgba(16, 185, 129, 0.45)',
-      borderHover: 'rgba(16, 185, 129, 0.9)',
+      glow: 'hsl(155 80% 48% / 0.2)',
+      border: '#10b981',
+      borderInner: '#6ee7b7',
       accentColor: '#10b981',
-      iconBg: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_25px_rgba(16,185,129,0.35)]',
-      bgGradient: 'linear-gradient(145deg, rgba(8, 26, 18, 0.92) 0%, rgba(6, 14, 12, 0.95) 100%)',
+      iconBg: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-sm',
+      bgGradient: 'linear-gradient(145deg, rgba(8, 28, 20, 0.98) 0%, rgba(6, 14, 12, 0.98) 100%)',
       lotusColor: '#10b981',
     },
   ];
@@ -139,71 +143,104 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
       style={{ x: springX, y: springY }}
-      className="relative group cursor-pointer w-full max-w-[540px] mx-auto filter drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)]"
+      className="relative group cursor-pointer w-full max-w-[560px] mx-auto filter drop-shadow-[0_10px_25px_rgba(0,0,0,0.25)]"
     >
-      {/* Sleek Modern Card Body */}
+      {/* Outer SVG Arch Border with Royal Indian Architectural Outline */}
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none z-30 transition-all duration-500"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+      >
+        {/* Outer Primary Architectural Border */}
+        <path
+          d={INDIAN_CARTOUCHE_100}
+          fill="none"
+          stroke={palette.border}
+          strokeWidth={isHovered ? "2.2" : "1.6"}
+          vectorEffect="non-scaling-stroke"
+          className="transition-all duration-500 opacity-90"
+        />
+        {/* Inner Dashed Concentric Arch Inset from Indian Wedding Cartouche */}
+        <path
+          d={INNER_DASHED_CARTOUCHE_100}
+          fill="none"
+          stroke={palette.borderInner}
+          strokeWidth="1"
+          strokeDasharray="3 2"
+          vectorEffect="non-scaling-stroke"
+          className="opacity-75 transition-all duration-500"
+        />
+      </svg>
+
+      {/* 4 Cardinal Diamond Rhombus / Finial Pins (Top, Bottom, Left, Right) */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40">
+        <span
+          className="block w-3.5 h-3.5 rotate-45 border border-white/70 shadow-sm transition-transform duration-500 group-hover:scale-110"
+          style={{ background: palette.accentColor }}
+        />
+      </div>
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-40">
+        <span
+          className="block w-3.5 h-3.5 rotate-45 border border-white/70 shadow-sm transition-transform duration-500 group-hover:scale-110"
+          style={{ background: palette.accentColor }}
+        />
+      </div>
+      <div className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 z-40">
+        <span
+          className="block w-3 h-3 rotate-45 border border-white/70 shadow-sm transition-transform duration-500 group-hover:scale-110"
+          style={{ background: palette.accentColor }}
+        />
+      </div>
+      <div className="absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2 z-40">
+        <span
+          className="block w-3 h-3 rotate-45 border border-white/70 shadow-sm transition-transform duration-500 group-hover:scale-110"
+          style={{ background: palette.accentColor }}
+        />
+      </div>
+
+      {/* Clipped Card Body */}
       <div
-        className="relative w-full min-h-[380px] sm:min-h-[420px] px-6 sm:px-12 py-8 sm:py-12 flex flex-col items-center justify-center text-center transition-all duration-500 rounded-3xl overflow-hidden border backdrop-blur-2xl"
+        className="relative w-full h-[420px] sm:h-[460px] px-8 sm:px-14 py-10 sm:py-14 flex flex-col items-center justify-center text-center transition-all duration-500 backdrop-blur-2xl"
         style={{
+          clipPath: 'url(#vision-cartouche-shape)',
+          WebkitClipPath: 'url(#vision-cartouche-shape)',
           background: palette.bgGradient,
-          borderColor: isHovered ? palette.borderHover : palette.border,
-          boxShadow: isHovered
-            ? `0 0 35px ${palette.glow}, inset 0 0 20px ${palette.glow}`
-            : `0 0 15px ${palette.glow}`,
         }}
       >
-        {/* Subtle Decorative Indian Geometric Corner Accents */}
-        <div className="absolute top-3 left-3 flex items-center gap-1 opacity-60 pointer-events-none">
-          <span className="w-1.5 h-1.5 rotate-45 border" style={{ borderColor: palette.accentColor, backgroundColor: isHovered ? palette.accentColor : 'transparent' }} />
-          <span className="w-4 h-[1px]" style={{ backgroundColor: palette.accentColor }} />
-        </div>
-        <div className="absolute top-3 right-3 flex items-center gap-1 opacity-60 pointer-events-none">
-          <span className="w-4 h-[1px]" style={{ backgroundColor: palette.accentColor }} />
-          <span className="w-1.5 h-1.5 rotate-45 border" style={{ borderColor: palette.accentColor, backgroundColor: isHovered ? palette.accentColor : 'transparent' }} />
-        </div>
-        <div className="absolute bottom-3 left-3 flex items-center gap-1 opacity-60 pointer-events-none">
-          <span className="w-1.5 h-1.5 rotate-45 border" style={{ borderColor: palette.accentColor, backgroundColor: isHovered ? palette.accentColor : 'transparent' }} />
-          <span className="w-4 h-[1px]" style={{ backgroundColor: palette.accentColor }} />
-        </div>
-        <div className="absolute bottom-3 right-3 flex items-center gap-1 opacity-60 pointer-events-none">
-          <span className="w-4 h-[1px]" style={{ backgroundColor: palette.accentColor }} />
-          <span className="w-1.5 h-1.5 rotate-45 border" style={{ borderColor: palette.accentColor, backgroundColor: isHovered ? palette.accentColor : 'transparent' }} />
-        </div>
-
-        {/* Inner Radial Glow */}
+        {/* Inner Radial Glow with reduced intensity */}
         <motion.div
-          animate={{ opacity: isHovered ? 1 : 0.6 }}
+          animate={{ opacity: isHovered ? 0.6 : 0.35 }}
           className="absolute inset-0 pointer-events-none transition-opacity duration-500"
           style={{
-            background: `radial-gradient(circle at 50% 30%, ${palette.glow} 0%, transparent 70%)`,
+            background: `radial-gradient(circle at 50% 30%, ${palette.glow} 0%, transparent 68%)`,
           }}
         />
 
         {/* Lotus Emblem Watermark in background */}
         <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
-          <LotusEmblem className="w-56 h-56 sm:w-64 sm:h-64" color={palette.lotusColor} />
+          <LotusEmblem className="w-64 h-64" color={palette.lotusColor} />
         </div>
 
         {/* Feature Eyebrow Tag with Lotus Accent */}
         <div className="flex items-center gap-2 mb-3 relative z-10">
           <span className="text-[9px] rotate-45" style={{ color: palette.accentColor }}>◆</span>
-          <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.24em]" style={{ color: palette.accentColor }}>
+          <span className="text-[11px] font-extrabold uppercase tracking-[0.24em]" style={{ color: palette.accentColor }}>
             Pillar 0{index + 1}
           </span>
           <span className="text-[9px] rotate-45" style={{ color: palette.accentColor }}>◆</span>
         </div>
 
-        {/* Icon with Glowing Frame */}
+        {/* Icon with Lotus Frame */}
         <div className="relative mb-3.5 sm:mb-4 z-10">
           <div
-            className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center ${palette.iconBg}`}
+            className={`w-13 h-13 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center ${palette.iconBg}`}
           >
             {feature.icon}
           </div>
         </div>
 
         {/* Title */}
-        <h3 className="text-lg sm:text-2xl font-black mb-2 text-white tracking-tight max-w-sm drop-shadow-md relative z-10">
+        <h3 className="text-xl sm:text-2xl font-black mb-2 text-white tracking-tight max-w-sm drop-shadow-sm relative z-10">
           {feature.title}
         </h3>
 
@@ -213,7 +250,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
         </p>
 
         {/* Bottom Status / Feature Pill with Diamond */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90 text-[10px] sm:text-[11px] font-semibold backdrop-blur-md shadow-inner relative z-10">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90 text-[11px] font-semibold backdrop-blur-md shadow-sm relative z-10">
           <span className="w-1.5 h-1.5 rotate-45" style={{ background: palette.accentColor }} />
           <span>Production-Ready Deep-Tech</span>
         </div>
@@ -322,6 +359,15 @@ export const VisionSection = () => {
 
   return (
     <section id="vision" className="bg-background py-16 sm:py-28 relative overflow-visible" ref={ref}>
+      {/* Hidden SVG Definitions for Royal Indian Cartouche ClipPath */}
+      <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
+        <defs>
+          <clipPath id="vision-cartouche-shape" clipPathUnits="objectBoundingBox">
+            <path d={INDIAN_CARTOUCHE_CLIP} />
+          </clipPath>
+        </defs>
+      </svg>
+
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/10 to-background" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-primary/3 rounded-full blur-[150px]" />
