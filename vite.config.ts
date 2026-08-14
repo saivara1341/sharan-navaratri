@@ -6,29 +6,8 @@ import path from "path";
 export default defineConfig(({ mode }) => ({
   base: "/",
   server: {
-    host: true, // Listen on all interfaces
-    port: 5173,
-    strictPort: true,
-    proxy: {
-      // The browser calls /supabase-api/* which Vite rewrites and forwards server-side.
-      '/supabase-api': {
-        target: 'https://172.64.149.246', // Direct Cloudflare IP for Supabase ISP Bypass
-        changeOrigin: true,
-        secure: false, // Bypass cert mismatch for direct IP
-        rewrite: (path) => path.replace(/^\/supabase-api/, ''),
-        followRedirects: true, // Crucial for Supabase Auth flows
-        headers: {
-          'Host': 'xoqpxckowwubeqdtazks.supabase.co',
-          'Origin': 'https://xoqpxckowwubeqdtazks.supabase.co',
-          'Referer': 'https://xoqpxckowwubeqdtazks.supabase.co/',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-        }
-      },
-      '/api': {
-        target: 'http://localhost:9090',
-        changeOrigin: true,
-      }
-    },
+    host: "::",
+    port: 8080,
   },
   plugins: [react()].filter(Boolean),
   resolve: {
