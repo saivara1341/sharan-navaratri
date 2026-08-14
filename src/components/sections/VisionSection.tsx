@@ -74,122 +74,107 @@ export const LotusEmblem = ({ className = "w-6 h-6", color = "currentColor" }: {
 
 
 // ─── Sacred Geometry Mandala SVG Frame ───────────────────────────────────────
-// Generates a full mandala frame ring: outer sun-wheel, lotus petals, geometric triangles
-const MandalaFrame = ({ color, accentColor, size = 320 }: { color: string; accentColor: string; size?: number }) => {
-  const cx = size / 2;
-  const cy = size / 2;
-  const R = size / 2;
+// Fixed 300×300 viewBox — always scales responsively via w-full h-full
+const MandalaFrame = ({ color, accentColor, solidBg }: { color: string; accentColor: string; solidBg: string }) => {
+  const S = 300; // coordinate space size
+  const cx = 150, cy = 150, R = 150;
 
-  // Helper: point on circle
-  const pt = (r: number, angleDeg: number) => {
-    const a = (angleDeg - 90) * (Math.PI / 180);
+  const pt = (r: number, deg: number) => {
+    const a = (deg - 90) * (Math.PI / 180);
     return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
   };
 
-  // Outer sun-wheel triangular spikes (16 spikes)
-  const spikeCount = 16;
-  const spikePaths = Array.from({ length: spikeCount }, (_, i) => {
-    const angle = (360 / spikeCount) * i;
-    const tip = pt(R - 2, angle);
-    const lBase = pt(R - 18, angle - 8);
-    const rBase = pt(R - 18, angle + 8);
-    return `M ${tip.x} ${tip.y} L ${lBase.x} ${lBase.y} L ${rBase.x} ${rBase.y} Z`;
+  // 16 outer sun-wheel spikes
+  const spikes = Array.from({ length: 16 }, (_, i) => {
+    const ang = (360 / 16) * i;
+    const tip = pt(R - 1, ang);
+    const l = pt(R - 17, ang - 7);
+    const r2 = pt(R - 17, ang + 7);
+    return `M ${tip.x} ${tip.y} L ${l.x} ${l.y} L ${r2.x} ${r2.y} Z`;
   });
 
-  // Lotus petals (12 petals, pointed at outer, rounded at inner)
-  const petalCount = 12;
-  const petalPaths = Array.from({ length: petalCount }, (_, i) => {
-    const angle = (360 / petalCount) * i;
-    const tipPt = pt(R - 28, angle);
-    const lPt = pt(R - 56, angle - 12);
-    const rPt = pt(R - 56, angle + 12);
-    const base = pt(R - 64, angle);
-    return `M ${base.x} ${base.y} Q ${lPt.x} ${lPt.y} ${tipPt.x} ${tipPt.y} Q ${rPt.x} ${rPt.y} ${base.x} ${base.y} Z`;
+  // 12 outer lotus petals
+  const outerPetals = Array.from({ length: 12 }, (_, i) => {
+    const ang = (360 / 12) * i;
+    const tip = pt(R - 24, ang);
+    const l = pt(R - 52, ang - 11);
+    const r2 = pt(R - 52, ang + 11);
+    const base = pt(R - 60, ang);
+    return `M ${base.x} ${base.y} Q ${l.x} ${l.y} ${tip.x} ${tip.y} Q ${r2.x} ${r2.y} ${base.x} ${base.y} Z`;
   });
 
-  // Inner small petals (8 petals)
-  const innerPetalCount = 8;
-  const innerPetalPaths = Array.from({ length: innerPetalCount }, (_, i) => {
-    const angle = (360 / innerPetalCount) * i + 22.5;
-    const tipPt = pt(R - 76, angle);
-    const lPt = pt(R - 94, angle - 14);
-    const rPt = pt(R - 94, angle + 14);
-    const base = pt(R - 102, angle);
-    return `M ${base.x} ${base.y} Q ${lPt.x} ${lPt.y} ${tipPt.x} ${tipPt.y} Q ${rPt.x} ${rPt.y} ${base.x} ${base.y} Z`;
+  // 8 inner lotus petals (offset 22.5°)
+  const innerPetals = Array.from({ length: 8 }, (_, i) => {
+    const ang = (360 / 8) * i + 22.5;
+    const tip = pt(R - 72, ang);
+    const l = pt(R - 90, ang - 13);
+    const r2 = pt(R - 90, ang + 13);
+    const base = pt(R - 98, ang);
+    return `M ${base.x} ${base.y} Q ${l.x} ${l.y} ${tip.x} ${tip.y} Q ${r2.x} ${r2.y} ${base.x} ${base.y} Z`;
   });
 
-  // Diamond finials at cardinal points (N/S/E/W)
-  const cardinalDiamonds = [0, 90, 180, 270].map((angle) => {
-    const c = pt(R - 15, angle);
+  // Cardinal diamonds at N/S/E/W
+  const diamonds = [0, 90, 180, 270].map((ang) => {
+    const c = pt(R - 10, ang);
     return `M ${c.x} ${c.y - 7} L ${c.x + 5} ${c.y} L ${c.x} ${c.y + 7} L ${c.x - 5} ${c.y} Z`;
   });
 
   return (
     <svg
-      viewBox={`0 0 ${size} ${size}`}
-      width={size}
-      height={size}
+      viewBox={`0 0 ${S} ${S}`}
       className="absolute inset-0 w-full h-full pointer-events-none"
       aria-hidden="true"
+      preserveAspectRatio="xMidYMid meet"
     >
-      <defs>
-        <filter id={`mandala-glow-${color.replace('#','')}`} x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="2.5" result="blur" />
-          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-        </filter>
-      </defs>
+      {/* ① Solid opaque background circle — blocks ALL card bleed-through */}
+      <circle cx={cx} cy={cy} r={R - 18} fill={solidBg} />
 
-      {/* Outer sun-wheel spikes */}
-      {spikePaths.map((d, i) => (
-        <path key={`spike-${i}`} d={d} fill={color} fillOpacity="0.7" />
+      {/* ② Sun-wheel spikes (outside the solid bg circle, so visible) */}
+      {spikes.map((d, i) => (
+        <path key={`sp-${i}`} d={d} fill={color} fillOpacity="0.8" />
       ))}
 
-      {/* Outer ring circle */}
-      <circle cx={cx} cy={cy} r={R - 19} fill="none" stroke={color} strokeWidth="1.5" strokeOpacity="0.9" />
-      <circle cx={cx} cy={cy} r={R - 22} fill="none" stroke={accentColor} strokeWidth="0.5" strokeOpacity="0.6" strokeDasharray="4 3" />
+      {/* ③ Outer border rings */}
+      <circle cx={cx} cy={cy} r={R - 18} fill="none" stroke={color} strokeWidth="1.8" strokeOpacity="0.95" />
+      <circle cx={cx} cy={cy} r={R - 22} fill="none" stroke={accentColor} strokeWidth="0.6" strokeOpacity="0.55" strokeDasharray="4 3" />
 
-      {/* Lotus petals (outer) */}
-      {petalPaths.map((d, i) => (
-        <path key={`petal-${i}`} d={d} fill={color} fillOpacity="0.15" stroke={color} strokeWidth="0.8" strokeOpacity="0.7" />
+      {/* ④ Outer lotus petals */}
+      {outerPetals.map((d, i) => (
+        <path key={`op-${i}`} d={d} fill={color} fillOpacity="0.18" stroke={color} strokeWidth="0.9" strokeOpacity="0.75" />
       ))}
 
-      {/* Mid ring circle */}
-      <circle cx={cx} cy={cy} r={R - 58} fill="none" stroke={color} strokeWidth="1" strokeOpacity="0.7" />
+      {/* ⑤ Mid ring */}
+      <circle cx={cx} cy={cy} r={R - 56} fill="none" stroke={color} strokeWidth="1" strokeOpacity="0.65" />
 
-      {/* Inner lotus petals */}
-      {innerPetalPaths.map((d, i) => (
-        <path key={`ipetal-${i}`} d={d} fill={accentColor} fillOpacity="0.12" stroke={accentColor} strokeWidth="0.7" strokeOpacity="0.65" />
+      {/* ⑥ Inner lotus petals */}
+      {innerPetals.map((d, i) => (
+        <path key={`ip-${i}`} d={d} fill={accentColor} fillOpacity="0.14" stroke={accentColor} strokeWidth="0.8" strokeOpacity="0.6" />
       ))}
 
-      {/* Inner ring */}
-      <circle cx={cx} cy={cy} r={R - 98} fill="none" stroke={color} strokeWidth="1" strokeOpacity="0.8" />
-      <circle cx={cx} cy={cy} r={R - 104} fill="none" stroke={color} strokeWidth="0.4" strokeOpacity="0.5" strokeDasharray="3 2.5" />
+      {/* ⑦ Inner rings */}
+      <circle cx={cx} cy={cy} r={R - 94} fill="none" stroke={color} strokeWidth="1.1" strokeOpacity="0.8" />
+      <circle cx={cx} cy={cy} r={R - 99} fill="none" stroke={color} strokeWidth="0.4" strokeOpacity="0.45" strokeDasharray="3 2.5" />
 
-      {/* Star of David / Sri Yantra triangles (rotated squares) */}
+      {/* ⑧ Sri Yantra — two rotated squares (8-pointed star geometry) */}
       {[0, 45].map((rot, i) => (
         <rect
           key={`sq-${i}`}
-          x={cx - (R - 112)}
-          y={cy - (R - 112)}
-          width={(R - 112) * 2}
-          height={(R - 112) * 2}
-          fill="none"
-          stroke={color}
-          strokeWidth="0.7"
-          strokeOpacity="0.4"
+          x={cx - (R - 108)} y={cy - (R - 108)}
+          width={(R - 108) * 2} height={(R - 108) * 2}
+          fill="none" stroke={color} strokeWidth="0.8" strokeOpacity="0.35"
           transform={`rotate(${rot} ${cx} ${cy})`}
         />
       ))}
 
-      {/* Cardinal diamond finials */}
-      {cardinalDiamonds.map((d, i) => (
-        <path key={`diamond-${i}`} d={d} fill={color} fillOpacity="0.9" />
+      {/* ⑨ Cardinal diamond finials */}
+      {diamonds.map((d, i) => (
+        <path key={`dm-${i}`} d={d} fill={color} fillOpacity="1" />
       ))}
 
-      {/* Center lotus dot */}
-      <circle cx={cx} cy={cy} r={8} fill="none" stroke={color} strokeWidth="1" strokeOpacity="0.6" />
-      <circle cx={cx} cy={cy} r={4} fill={color} fillOpacity="0.4" />
-      <circle cx={cx} cy={cy} r={2} fill={accentColor} fillOpacity="0.8" />
+      {/* ⑩ Centre jewel */}
+      <circle cx={cx} cy={cy} r={10} fill="none" stroke={color} strokeWidth="1" strokeOpacity="0.5" />
+      <circle cx={cx} cy={cy} r={5} fill={color} fillOpacity="0.35" />
+      <circle cx={cx} cy={cy} r={2.5} fill={accentColor} fillOpacity="0.9" />
     </svg>
   );
 };
@@ -204,46 +189,42 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    x.set((e.clientX - rect.left - rect.width / 2) * 0.06);
-    y.set((e.clientY - rect.top - rect.height / 2) * 0.06);
+    x.set((e.clientX - rect.left - rect.width / 2) * 0.05);
+    y.set((e.clientY - rect.top - rect.height / 2) * 0.05);
   };
 
   const palettes = [
     {
-      primary:   '#f59e0b',  // Amber gold
-      accent:    '#fcd34d',  // Light gold
-      bg:        'radial-gradient(ellipse at 40% 30%, rgba(120,60,0,0.55) 0%, rgba(10,5,0,0.97) 100%)',
-      ring:      'rgba(245,158,11,0.25)',
-      iconClass: 'bg-amber-500/20 text-amber-300 border border-amber-400/40',
-      pillText:  '#fbbf24',
-      name:      'amber',
+      primary:  '#f59e0b',
+      accent:   '#fcd34d',
+      solidBg:  '#0d0600',   // fully opaque dark amber bg for mandala fill circle
+      cardBg:   'radial-gradient(ellipse at 45% 35%, #3b1c00 0%, #0d0600 65%, #060300 100%)',
+      iconClass:'bg-amber-500/20 text-amber-300 border border-amber-500/40',
+      pillText: '#fbbf24',
     },
     {
-      primary:   '#818cf8',  // Indigo
-      accent:    '#a5b4fc',
-      bg:        'radial-gradient(ellipse at 40% 30%, rgba(30,20,80,0.65) 0%, rgba(4,4,20,0.97) 100%)',
-      ring:      'rgba(129,140,248,0.22)',
-      iconClass: 'bg-indigo-500/20 text-indigo-300 border border-indigo-400/40',
-      pillText:  '#a5b4fc',
-      name:      'indigo',
+      primary:  '#818cf8',
+      accent:   '#a5b4fc',
+      solidBg:  '#04040e',
+      cardBg:   'radial-gradient(ellipse at 45% 35%, #1a1040 0%, #04040e 65%, #020210 100%)',
+      iconClass:'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40',
+      pillText: '#a5b4fc',
     },
     {
-      primary:   '#34d399',  // Emerald
-      accent:    '#6ee7b7',
-      bg:        'radial-gradient(ellipse at 40% 30%, rgba(5,50,30,0.65) 0%, rgba(2,12,8,0.97) 100%)',
-      ring:      'rgba(52,211,153,0.22)',
-      iconClass: 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40',
-      pillText:  '#6ee7b7',
-      name:      'emerald',
+      primary:  '#34d399',
+      accent:   '#6ee7b7',
+      solidBg:  '#020c07',
+      cardBg:   'radial-gradient(ellipse at 45% 35%, #062818 0%, #020c07 65%, #010804 100%)',
+      iconClass:'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40',
+      pillText: '#6ee7b7',
     },
     {
-      primary:   '#f472b6',  // Rose
-      accent:    '#fbcfe8',
-      bg:        'radial-gradient(ellipse at 40% 30%, rgba(80,10,40,0.65) 0%, rgba(15,3,10,0.97) 100%)',
-      ring:      'rgba(244,114,182,0.22)',
-      iconClass: 'bg-rose-500/20 text-rose-300 border border-rose-400/40',
-      pillText:  '#fbcfe8',
-      name:      'rose',
+      primary:  '#f472b6',
+      accent:   '#fbcfe8',
+      solidBg:  '#0d0208',
+      cardBg:   'radial-gradient(ellipse at 45% 35%, #3d0a20 0%, #0d0208 65%, #080105 100%)',
+      iconClass:'bg-rose-500/20 text-rose-300 border border-rose-500/40',
+      pillText: '#fbcfe8',
     },
   ];
   const p = palettes[index % palettes.length];
@@ -254,102 +235,97 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => { x.set(0); y.set(0); setIsHovered(false); }}
       style={{ x: springX, y: springY }}
-      className="relative w-[300px] h-[300px] sm:w-[380px] sm:h-[380px] mx-auto select-none cursor-pointer flex-shrink-0"
+      // Card outer container — same size as mandala. bg-[#050505] fills corners so NO bleed-through.
+      className="relative w-[290px] h-[290px] sm:w-[370px] sm:h-[370px] mx-auto select-none cursor-pointer flex-shrink-0 bg-[#050505]"
     >
-      {/* Outer ambient glow */}
+      {/* Ambient outer glow */}
       <motion.div
-        animate={{ opacity: isHovered ? 0.5 : 0.18, scale: isHovered ? 1.08 : 1 }}
+        animate={{ opacity: isHovered ? 0.45 : 0.15, scale: isHovered ? 1.1 : 1 }}
         transition={{ duration: 0.5 }}
-        className="absolute inset-[-12%] rounded-full blur-[40px] pointer-events-none"
-        style={{ background: `radial-gradient(circle, ${p.primary} 0%, transparent 70%)` }}
+        className="absolute inset-[-10%] rounded-full blur-[50px] pointer-events-none"
+        style={{ background: `radial-gradient(circle, ${p.primary}cc 0%, transparent 70%)` }}
       />
 
-      {/* Slowly spinning outer mandala ring */}
+      {/* Spinning outer mandala (fills entire card square via w-full h-full SVG) */}
       <motion.div
         className="absolute inset-0"
         animate={{ rotate: 360 }}
-        transition={{ duration: 90, repeat: Infinity, ease: 'linear' }}
+        transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
       >
-        <MandalaFrame color={p.primary} accentColor={p.accent} size={300} />
+        <MandalaFrame color={p.primary} accentColor={p.accent} solidBg={p.solidBg} />
       </motion.div>
 
-      {/* Counter-rotating inner ring overlay (sm size) */}
+      {/* Counter-rotating 8-diamond ring */}
       <motion.div
-        className="absolute inset-0 hidden sm:block"
+        className="absolute inset-0"
         animate={{ rotate: -360 }}
-        transition={{ duration: 90, repeat: Infinity, ease: 'linear' }}
+        transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
       >
-        <svg viewBox="0 0 380 380" className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true">
-          {/* 8 tiny diamond markers around inner area */}
+        <svg viewBox="0 0 300 300" className="w-full h-full pointer-events-none" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
           {Array.from({ length: 8 }, (_, i) => {
-            const angle = (360 / 8) * i - 90;
-            const r = 380 / 2 - 55;
-            const cx2 = 190 + r * Math.cos(angle * Math.PI / 180);
-            const cy2 = 190 + r * Math.sin(angle * Math.PI / 180);
-            return (
-              <polygon key={i} points={`${cx2},${cy2-5} ${cx2+4},${cy2} ${cx2},${cy2+5} ${cx2-4},${cy2}`}
-                fill={p.accent} fillOpacity="0.55" />
-            );
+            const ang = (360 / 8) * i - 90;
+            const r = 150 - 52;
+            const dx = 150 + r * Math.cos(ang * Math.PI / 180);
+            const dy = 150 + r * Math.sin(ang * Math.PI / 180);
+            return <polygon key={i} points={`${dx},${dy - 5} ${dx + 4},${dy} ${dx},${dy + 5} ${dx - 4},${dy}`} fill={p.accent} fillOpacity="0.6" />;
           })}
         </svg>
       </motion.div>
 
-      {/* Card body — circular */}
+      {/* Card content circle — fully opaque, inset inside the mandala rings */}
       <div
-        className="absolute inset-[13%] sm:inset-[12%] rounded-full flex flex-col items-center justify-center overflow-hidden"
-        style={{ background: p.bg, boxShadow: `0 0 0 1.5px ${p.primary}55, inset 0 0 40px ${p.ring}` }}
+        className="absolute inset-[17%] rounded-full flex flex-col items-center justify-center overflow-hidden"
+        style={{
+          background: p.cardBg,
+          boxShadow: `0 0 0 1px ${p.primary}60, 0 0 0 2px ${p.solidBg}, inset 0 0 30px ${p.primary}18`,
+        }}
       >
-        {/* Subtle inner mandala watermark */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.07] pointer-events-none">
-          <LotusEmblem className="w-full h-full" color={p.primary} />
+        {/* Faint lotus watermark */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none">
+          <LotusEmblem className="w-full h-full scale-75" color={p.primary} />
         </div>
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center px-5 gap-1.5 sm:gap-2.5">
+        <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 gap-1 sm:gap-1.5">
           {/* Pillar label */}
-          <div className="flex items-center gap-1.5 mb-0.5">
-            <span className="text-[7px] sm:text-[9px]" style={{ color: p.primary }}>◆</span>
-            <span
-              className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-[0.22em]"
-              style={{ color: p.primary }}
-            >
+          <div className="flex items-center gap-1.5">
+            <span className="text-[7px]" style={{ color: p.primary }}>◆</span>
+            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-[0.2em]" style={{ color: p.primary }}>
               Pillar 0{index + 1}
             </span>
-            <span className="text-[7px] sm:text-[9px]" style={{ color: p.primary }}>◆</span>
+            <span className="text-[7px]" style={{ color: p.primary }}>◆</span>
           </div>
 
           {/* Icon */}
           <motion.div
-            animate={isHovered ? { scale: 1.12 } : { scale: 1 }}
+            animate={isHovered ? { scale: 1.1, rotate: 5 } : { scale: 1, rotate: 0 }}
             transition={{ duration: 0.3 }}
-            className={`w-10 h-10 sm:w-13 sm:h-13 rounded-full flex items-center justify-center ${p.iconClass} shadow-md`}
+            className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center ${p.iconClass} shadow-lg`}
           >
             {feature.icon}
           </motion.div>
 
-          {/* Divider */}
-          <div className="flex items-center gap-1.5 w-full max-w-[140px] sm:max-w-[180px]">
-            <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${p.primary}80)` }} />
+          {/* Gold divider */}
+          <div className="flex items-center gap-1 w-full max-w-[120px] sm:max-w-[150px]">
+            <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${p.primary}90)` }} />
             <span className="text-[8px]" style={{ color: p.primary }}>✦</span>
-            <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, ${p.primary}80)` }} />
+            <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, ${p.primary}90)` }} />
           </div>
 
           {/* Title */}
-          <h3
-            className="text-sm sm:text-[1.05rem] font-black text-white tracking-tight leading-tight drop-shadow-sm max-w-[160px] sm:max-w-[210px]"
-          >
+          <h3 className="text-[11px] sm:text-sm font-black text-white tracking-tight leading-tight max-w-[120px] sm:max-w-[155px]">
             {feature.title}
           </h3>
 
           {/* Description */}
-          <p className="text-white/65 text-[10px] sm:text-[11px] leading-snug max-w-[150px] sm:max-w-[195px] line-clamp-3">
+          <p className="text-white/60 text-[9px] sm:text-[10px] leading-snug max-w-[115px] sm:max-w-[148px] line-clamp-3">
             {feature.description}
           </p>
 
-          {/* Bottom badge */}
+          {/* Badge */}
           <div
-            className="mt-0.5 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[8px] sm:text-[9px] font-semibold tracking-wider uppercase"
-            style={{ background: `${p.primary}15`, border: `1px solid ${p.primary}40`, color: p.pillText }}
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[7px] sm:text-[8px] font-semibold tracking-wider uppercase"
+            style={{ background: `${p.primary}18`, border: `1px solid ${p.primary}45`, color: p.pillText }}
           >
             <span className="w-1 h-1 rounded-full" style={{ background: p.primary }} />
             Production-Ready
@@ -359,7 +335,6 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
     </motion.div>
   );
 };
-
 
 
 // Smooth continuous scroll stack card wrapper inside pinned viewport
@@ -380,32 +355,33 @@ const StackedDeckCard = ({
   const end = (index + 1) * interval;
 
   // Translation Y: enters from bottom (index > 0) and settles into stack
+  // Each card below the top peeks up by 16px — clearly visible as a premium stacked deck
   const y = useTransform(
     scrollYProgress,
     index === 0
       ? [0, 1]
       : [Math.max(0, start - 0.05), start + 0.04, 1],
     index === 0
-      ? [0, (total - 1) * -8]
-      : [280, (total - 1 - index) * -8, (total - 1 - index) * -8]
+      ? [0, (total - 1) * -16]
+      : [300, (total - 1 - index) * -16, (total - 1 - index) * -16]
   );
 
-  // Scale down earlier cards slightly as new ones arrive
+  // Scale down earlier cards slightly as new ones arrive on top
   const scale = useTransform(
     scrollYProgress,
     [start, Math.min(0.92, end + 0.1)],
-    [1, 1 - (total - 1 - index) * 0.035]
+    [1, 1 - (total - 1 - index) * 0.042]
   );
 
-  // Opacity: smoothly fades in as card reaches its slot
+  // Opacity: bottom cards stay at 0.75 so deck is clearly visible beneath top card
   const opacity = useTransform(
     scrollYProgress,
     index === 0
       ? [0, 0.5, 0.9]
       : [Math.max(0, start - 0.06), start, Math.min(1, start + 0.06)],
     index === 0
-      ? [1, 0.85, 0.5]
-      : [0, 0.5, 1]
+      ? [1, 0.82, 0.75]
+      : [0, 0.6, 1]
   );
 
   return (
