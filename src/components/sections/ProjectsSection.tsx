@@ -227,14 +227,14 @@ const ProjectCard = ({
       }}
       transition={{ duration: 0.5, delay: index * 0.08 }}
       onClick={onClick}
-      className="relative w-full max-w-xs mx-auto aspect-square cursor-pointer group select-none"
+      className="relative w-full max-w-xs mx-auto min-h-[210px] sm:min-h-0 sm:aspect-square cursor-pointer group select-none flex flex-col"
       style={{
         transform: `rotate(${noteRotate}deg)`,
       }}
     >
       {/* Semi-Transparent Frosted Washi Tape Strip holding the slip */}
       <div
-        className="absolute -top-3.5 left-1/2 -translate-x-1/2 w-24 sm:w-28 h-6 sm:h-7 z-30 pointer-events-none transition-transform duration-300 group-hover:scale-105"
+        className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 sm:w-28 h-5 sm:h-7 z-30 pointer-events-none transition-transform duration-300 group-hover:scale-105"
         style={{
           transform: `translateX(-50%) rotate(${tapeRotate}deg)`,
         }}
@@ -249,13 +249,13 @@ const ProjectCard = ({
           }}
         >
           {/* Subtle tape texture line */}
-          <div className="w-full h-[1px] bg-white/40 mt-1" />
+          <div className="w-full h-[1px] bg-white/40 mt-0.5 sm:mt-1" />
         </div>
       </div>
 
       {/* Realistic Paper Slip Body */}
       <div
-        className="relative w-full h-full p-4 sm:p-6 flex flex-col items-center text-center transition-all duration-300 overflow-hidden"
+        className="relative w-full h-full flex-1 p-3 sm:p-5 flex flex-col items-center text-center transition-all duration-300 overflow-hidden justify-between"
         style={{
           background: `linear-gradient(155deg, ${palette.bg} 0%, ${palette.bg} 60%, color-mix(in srgb, ${palette.bg} 82%, #e2d5ba 18%) 100%)`,
           boxShadow: `
@@ -264,7 +264,7 @@ const ProjectCard = ({
             0 24px 38px -8px ${palette.shadow}
           `,
           border: `1px solid ${palette.edge}`,
-          borderRadius: '4px 4px 32px 4px',
+          borderRadius: '4px 4px 28px 4px',
         }}
       >
         {/* Subtle Horizontal Notebook Ruled Lines */}
@@ -277,10 +277,10 @@ const ProjectCard = ({
         />
 
         {/* Top Perforation Tear Line */}
-        <div className="absolute top-2.5 left-4 right-4 h-[1px] border-b border-dashed border-black/15 pointer-events-none" />
+        <div className="absolute top-2 left-3 right-3 sm:left-4 sm:right-4 h-[1px] border-b border-dashed border-black/15 pointer-events-none" />
 
         {/* Realistic 3D Dog-Ear Paper Corner Curl (Bottom-Right) */}
-        <div className="absolute bottom-0 right-0 w-8 h-8 sm:w-10 sm:h-10 pointer-events-none overflow-hidden z-20">
+        <div className="absolute bottom-0 right-0 w-7 h-7 sm:w-10 sm:h-10 pointer-events-none overflow-hidden z-20">
           {/* Fold Cast Shadow */}
           <div
             className="absolute inset-0"
@@ -300,18 +300,18 @@ const ProjectCard = ({
         </div>
 
         {/* Project Stamp / Code Watermark */}
-        <div className="absolute top-4 right-4 text-[9px] font-mono font-bold tracking-widest opacity-40 uppercase select-none">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 text-[8px] sm:text-[9px] font-mono font-bold tracking-widest opacity-40 uppercase select-none">
           #SD-0{index + 1}
         </div>
 
         {/* Slip Content */}
         <div
-          className="relative z-10 w-full h-full flex flex-col items-center pt-2"
+          className="relative z-10 w-full flex flex-col items-center pt-1 sm:pt-2 flex-1"
           style={{ color: palette.ink }}
         >
           {/* Logo / Icon */}
           <div
-            className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center ${project.iconBgClass || ''} ${project.iconColorClass || ''} mb-2.5 sm:mb-3.5 overflow-hidden shadow-sm shrink-0 border border-black/10`}
+            className={`w-10 h-10 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center ${project.iconBgClass || ''} ${project.iconColorClass || ''} mb-1.5 sm:mb-2.5 overflow-hidden shadow-sm shrink-0 border border-black/10`}
             style={{
               background: project.image ? '#ffffff' : palette.icon,
             }}
@@ -320,33 +320,33 @@ const ProjectCard = ({
               <img
                 src={project.image}
                 alt={`${project.name} logo`}
-                width="64"
-                height="64"
+                width="56"
+                height="56"
                 loading="lazy"
                 decoding="async"
                 className="w-full h-full object-cover"
               />
             ) : (
-              IconComponent && <IconComponent className="w-6 h-6 sm:w-8 sm:h-8" />
+              IconComponent && <IconComponent className="w-5 h-5 sm:w-7 sm:h-7" />
             )}
           </div>
 
-          {/* Title */}
-          <h3 className="text-base sm:text-lg font-black mb-1 font-display leading-tight line-clamp-2">
+          {/* Title — shrink-0 ensures title is never squeezed out */}
+          <h3 className="shrink-0 text-sm sm:text-base md:text-lg font-black mb-0.5 sm:mb-1 font-display leading-tight line-clamp-1 sm:line-clamp-2">
             {project.name}
           </h3>
 
           {/* Tagline */}
-          <p className="text-[11px] sm:text-xs font-semibold mb-2 sm:mb-3 font-sans line-clamp-2 sm:line-clamp-3 opacity-80 leading-snug">
+          <p className="text-[10px] sm:text-xs font-semibold mb-2 font-sans line-clamp-2 sm:line-clamp-3 opacity-80 leading-tight">
             {project.tagline}
           </p>
 
           {/* Footer of Slip */}
           <div className="mt-auto w-full flex items-center justify-between pt-1 border-t border-black/10">
-            <LikeButton projectId={project.id} initialCount={defaultProjectLikes[project.id] || 80} className="scale-85" />
-            <div className="flex items-center gap-1 text-[10px] sm:text-xs font-black opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all uppercase tracking-wider">
-              <span>View More</span>
-              <ArrowRight className="w-3 h-3" />
+            <LikeButton projectId={project.id} initialCount={defaultProjectLikes[project.id] || 80} className="scale-75 sm:scale-85 origin-left" />
+            <div className="flex items-center gap-0.5 sm:gap-1 text-[9px] sm:text-xs font-black opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 sm:group-hover:translate-x-1 transition-all uppercase tracking-wider">
+              <span>View</span>
+              <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
             </div>
           </div>
         </div>

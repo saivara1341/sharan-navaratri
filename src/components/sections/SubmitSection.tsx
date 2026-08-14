@@ -260,20 +260,20 @@ export const SubmitSection = () => {
 
   const renderFormFields = () => {
     return (
-      <div className="relative z-10 space-y-8">
+      <div className="relative z-10 space-y-4 sm:space-y-6">
         {/* Inquiry Type Selector (Dropdown) */}
-        <div className="space-y-3">
-          <label className="block text-sm font-medium text-foreground">
+        <div className="space-y-1.5 sm:space-y-2">
+          <label className="block text-xs sm:text-sm font-medium text-foreground">
             {t('submit.discussLabel')}
           </label>
           <div className="relative">
             <button
               type="button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-full p-4 rounded-xl border-2 border-primary/50 bg-background/50 hover:border-primary/80 transition-all duration-300 text-left flex items-center justify-between shadow-lg shadow-primary/5 focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="w-full p-3 sm:p-4 rounded-xl border-2 border-primary/50 bg-background/50 hover:border-primary/80 transition-all duration-300 text-left flex items-center justify-between shadow-lg shadow-primary/5 focus:outline-none focus:ring-2 focus:ring-primary/50"
             >
-              <div className="flex items-center gap-3">
-                <span className="text-2xl block shrink-0">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <span className="text-xl sm:text-2xl block shrink-0">
                   {
                     [
                       { value: 'problem', icon: '🎯' },
@@ -283,7 +283,7 @@ export const SubmitSection = () => {
                     ].find(o => o.value === formData.inquiryType)?.icon
                   }
                 </span>
-                <span className="text-sm font-medium text-foreground">
+                <span className="text-xs sm:text-sm font-medium text-foreground">
                   {
                     [
                       { value: 'problem', label: t('submit.types.problem') },
@@ -294,7 +294,7 @@ export const SubmitSection = () => {
                   }
                 </span>
               </div>
-              <ChevronDown className={`w-5 h-5 text-primary transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-4 h-4 sm:w-5 sm:h-5 text-primary transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             
             <AnimatePresence>
@@ -319,10 +319,10 @@ export const SubmitSection = () => {
                         setFormData(prev => ({ ...prev, inquiryType: type.value }));
                         setIsDropdownOpen(false);
                       }}
-                      className={`w-full p-4 text-left flex items-center gap-3 transition-colors ${formData.inquiryType === type.value ? 'bg-primary/20' : 'hover:bg-primary/10'}`}
+                      className={`w-full p-3 sm:p-4 text-left flex items-center gap-3 transition-colors ${formData.inquiryType === type.value ? 'bg-primary/20' : 'hover:bg-primary/10'}`}
                     >
-                      <span className="text-2xl shrink-0">{type.icon}</span>
-                      <span className={`text-sm font-medium text-foreground`}>
+                      <span className="text-xl sm:text-2xl shrink-0">{type.icon}</span>
+                      <span className={`text-xs sm:text-sm font-medium text-foreground`}>
                         {type.label}
                       </span>
                     </button>
@@ -333,11 +333,12 @@ export const SubmitSection = () => {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="space-y-2">
+        {/* Name & Email */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
+          <div className="space-y-1.5">
             <label
               htmlFor="name"
-              className={`block text-sm font-medium transition-colors duration-300 ${focusedField === 'name' ? 'text-primary' : 'text-foreground'
+              className={`block text-xs sm:text-sm font-medium transition-colors duration-300 ${focusedField === 'name' ? 'text-primary' : 'text-foreground'
                 }`}
             >
               {t('submit.fields.name')} <span className="text-primary">*</span>
@@ -359,16 +360,16 @@ export const SubmitSection = () => {
                 onFocus={() => setFocusedField('name')}
                 onBlur={() => setFocusedField(null)}
                 placeholder={t('submit.fields.namePlaceholder')}
-                className="input-premium"
+                className="input-premium py-2.5 sm:py-3.5 px-3.5 sm:px-4 text-xs sm:text-sm"
                 required
               />
             </motion.div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label
               htmlFor="email"
-              className={`block text-sm font-medium transition-colors duration-300 ${focusedField === 'email' ? 'text-primary' : 'text-foreground'
+              className={`block text-xs sm:text-sm font-medium transition-colors duration-300 ${focusedField === 'email' ? 'text-primary' : 'text-foreground'
                 }`}
             >
               {t('submit.fields.email')} <span className="text-primary">*</span>
@@ -390,21 +391,22 @@ export const SubmitSection = () => {
                 onFocus={() => setFocusedField('email')}
                 onBlur={() => setFocusedField(null)}
                 placeholder={t('submit.fields.emailPlaceholder')}
-                className="input-premium"
+                className="input-premium py-2.5 sm:py-3.5 px-3.5 sm:px-4 text-xs sm:text-sm"
                 required
               />
             </motion.div>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="space-y-2">
+        {/* Designation & Organization - 2 Columns on all screens */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-6">
+          <div className="space-y-1.5">
             <label
               htmlFor="designation"
-              className={`block text-sm font-medium transition-colors duration-300 ${focusedField === 'designation' ? 'text-primary' : 'text-foreground'
+              className={`block text-xs sm:text-sm font-medium transition-colors duration-300 truncate ${focusedField === 'designation' ? 'text-primary' : 'text-foreground'
                 }`}
             >
-              {t('submit.fields.designation')} <span className="text-muted-foreground">{t('waitlistModal.commentOptional')}</span>
+              {t('submit.fields.designation')} <span className="text-muted-foreground hidden sm:inline">{t('waitlistModal.commentOptional')}</span>
             </label>
             <motion.div
               animate={{
@@ -423,18 +425,18 @@ export const SubmitSection = () => {
                 onFocus={() => setFocusedField('designation')}
                 onBlur={() => setFocusedField(null)}
                 placeholder={t('submit.fields.designationPlaceholder')}
-                className="input-premium"
+                className="input-premium py-2.5 sm:py-3.5 px-3 sm:px-4 text-xs sm:text-sm"
               />
             </motion.div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label
               htmlFor="organization"
-              className={`block text-sm font-medium transition-colors duration-300 ${focusedField === 'organization' ? 'text-accent' : 'text-foreground'
+              className={`block text-xs sm:text-sm font-medium transition-colors duration-300 truncate ${focusedField === 'organization' ? 'text-accent' : 'text-foreground'
                 }`}
             >
-              {t('submit.fields.organization')} <span className="text-muted-foreground">{t('waitlistModal.commentOptional')}</span>
+              {t('submit.fields.organization')} <span className="text-muted-foreground hidden sm:inline">{t('waitlistModal.commentOptional')}</span>
             </label>
             <motion.div
               animate={{
@@ -453,24 +455,24 @@ export const SubmitSection = () => {
                 onFocus={() => setFocusedField('organization')}
                 onBlur={() => setFocusedField(null)}
                 placeholder={t('submit.fields.organizationPlaceholder')}
-                className="input-premium"
+                className="input-premium py-2.5 sm:py-3.5 px-3 sm:px-4 text-xs sm:text-sm"
               />
             </motion.div>
           </div>
         </div>
 
         {formData.inquiryType === 'requirement' ? (
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-6">
             {/* Business Sector Dropdown */}
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
+              <div className="space-y-1.5">
+                <label className="block text-xs sm:text-sm font-medium text-foreground">
                   Business Sector <span className="text-primary">*</span>
                 </label>
                 <select
                   value={businessSector}
                   onChange={(e) => setBusinessSector(e.target.value)}
-                  className="input-premium bg-card border border-border/50 text-foreground cursor-pointer"
+                  className="input-premium bg-card border border-border/50 text-foreground cursor-pointer py-2.5 sm:py-3.5 px-3 sm:px-4 text-xs sm:text-sm"
                   required
                 >
                   <option value="E-commerce">E-commerce</option>
@@ -490,9 +492,9 @@ export const SubmitSection = () => {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -10 }}
-                    className="space-y-2"
+                    className="space-y-1.5"
                   >
-                    <label className="block text-sm font-medium text-foreground">
+                    <label className="block text-xs sm:text-sm font-medium text-foreground">
                       Custom Sector Name <span className="text-primary">*</span>
                     </label>
                     <input
@@ -500,7 +502,7 @@ export const SubmitSection = () => {
                       value={otherSector}
                       onChange={(e) => setOtherSector(e.target.value)}
                       placeholder="Specify sector (e.g. AgriTech)"
-                      className="input-premium"
+                      className="input-premium py-2.5 sm:py-3.5 px-3 sm:px-4 text-xs sm:text-sm"
                       required
                     />
                   </motion.div>
@@ -509,11 +511,11 @@ export const SubmitSection = () => {
             </div>
 
             {/* Project Type Grid */}
-            <div className="space-y-3">
-              <label className="block text-sm font-medium text-foreground">
+            <div className="space-y-2">
+              <label className="block text-xs sm:text-sm font-medium text-foreground">
                 Project Type <span className="text-primary">*</span>
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
                 {[
                   { value: 'Static Website / Landing Page', label: 'Static / Landing', icon: '🌐' },
                   { value: 'Full-Stack Web Application', label: 'Full-Stack App', icon: '💻' },
@@ -525,7 +527,7 @@ export const SubmitSection = () => {
                     key={type.value}
                     type="button"
                     onClick={() => setProjectType(type.value)}
-                    className={`p-4 rounded-xl border-2 transition-all duration-300 text-center flex flex-col items-center justify-center gap-2 ${
+                    className={`p-2.5 sm:p-4 rounded-xl border-2 transition-all duration-300 text-center flex flex-col items-center justify-center gap-1 sm:gap-2 ${
                       projectType === type.value
                         ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
                         : 'border-border/50 hover:border-primary/50 bg-background/50'
@@ -533,8 +535,8 @@ export const SubmitSection = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <span className="text-2xl block shrink-0">{type.icon}</span>
-                    <span className="text-xs font-semibold leading-tight text-foreground">
+                    <span className="text-lg sm:text-2xl block shrink-0">{type.icon}</span>
+                    <span className="text-[10px] sm:text-xs font-semibold leading-tight text-foreground">
                       {type.label}
                     </span>
                   </motion.button>
@@ -543,8 +545,8 @@ export const SubmitSection = () => {
             </div>
 
             {/* Description Textarea */}
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-foreground">
+            <div className="space-y-1.5">
+              <label className="block text-xs sm:text-sm font-medium text-foreground">
                 Description of Requirements <span className="text-primary">*</span>
               </label>
               <motion.div
@@ -563,8 +565,8 @@ export const SubmitSection = () => {
                     onFocus={() => setFocusedField('requirementDesc')}
                     onBlur={() => setFocusedField(null)}
                     placeholder="Describe timeline, features, workflows, and business goals..."
-                    rows={6}
-                    className="input-premium resize-none pr-14"
+                    rows={3}
+                    className="input-premium resize-none pr-12 text-xs sm:text-sm py-2.5 sm:py-3.5 px-3 sm:px-4"
                     required
                   />
                   <motion.button
@@ -572,24 +574,24 @@ export const SubmitSection = () => {
                     onClick={toggleListening}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className={`absolute bottom-4 right-4 p-3 rounded-full transition-all duration-500 z-20 ${
+                    className={`absolute bottom-3 right-3 p-2.5 rounded-full transition-all duration-500 z-20 ${
                       isListening
                         ? 'bg-red-500 text-white animate-pulse shadow-[0_0_20px_rgba(239,68,68,0.5)]'
                         : 'bg-primary/10 text-primary hover:bg-primary/20'
                     }`}
                     title={isListening ? 'Stop Listening' : 'Start Voice submission'}
                   >
-                    {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                    {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                   </motion.button>
                 </div>
               </motion.div>
             </div>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label
               htmlFor="message"
-              className={`block text-sm font-medium transition-colors duration-300 ${focusedField === 'message' ? 'text-primary' : 'text-foreground'
+              className={`block text-xs sm:text-sm font-medium transition-colors duration-300 ${focusedField === 'message' ? 'text-primary' : 'text-foreground'
                 }`}
             >
               {t(`submit.fields.message.${formData.inquiryType}`)}
@@ -612,8 +614,8 @@ export const SubmitSection = () => {
                   onFocus={() => setFocusedField('message')}
                   onBlur={() => setFocusedField(null)}
                   placeholder={t(`submit.fields.message.${formData.inquiryType}Placeholder`)}
-                  rows={6}
-                  className="input-premium resize-none pr-14"
+                  rows={4}
+                  className="input-premium resize-none pr-12 text-xs sm:text-sm py-2.5 sm:py-3.5 px-3 sm:px-4"
                   required
                 />
                 <motion.button
@@ -621,20 +623,20 @@ export const SubmitSection = () => {
                   onClick={toggleListening}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className={`absolute bottom-4 right-4 p-3 rounded-full transition-all duration-500 z-20 ${isListening
+                  className={`absolute bottom-3 right-3 p-2.5 rounded-full transition-all duration-500 z-20 ${isListening
                     ? 'bg-red-500 text-white animate-pulse shadow-[0_0_20px_rgba(239,68,68,0.5)]'
                     : 'bg-primary/10 text-primary hover:bg-primary/20'
                     }`}
                   title={isListening ? "Stop Listening" : "Start Voice submission"}
                 >
-                  {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                  {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                 </motion.button>
               </div>
             </motion.div>
           </div>
         )}
 
-        <div className="pt-2">
+        <div className="pt-1">
           <ConsentCheckbox
             checked={consentGiven}
             onChange={setConsentGiven}
@@ -643,17 +645,17 @@ export const SubmitSection = () => {
           />
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
+        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 pt-2">
           <motion.button
             type="submit"
             disabled={isSubmitting}
-            className="group relative px-10 py-4 rounded-xl font-semibold text-lg overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+            className="group relative px-8 sm:px-10 py-3.5 sm:py-4 rounded-xl font-semibold text-base sm:text-lg overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto shadow-lg shadow-primary/20"
             whileHover={!isSubmitting ? { scale: 1.02 } : {}}
             whileTap={!isSubmitting ? { scale: 0.98 } : {}}
           >
             <span className="absolute inset-0 bg-gradient-to-r from-primary via-primary to-accent opacity-90 group-hover:opacity-100 transition-opacity duration-500" />
             <span className="absolute inset-0 bg-gradient-to-r from-primary via-primary to-accent blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
-            <span className="relative flex items-center justify-center gap-3 text-primary-foreground">
+            <span className="relative flex items-center justify-center gap-2 sm:gap-3 text-primary-foreground font-bold">
               {isSubmitting ? (
                 <>
                   <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -665,7 +667,7 @@ export const SubmitSection = () => {
               ) : (
                 <>
                   {t(`submit.submitButton.${formData.inquiryType}`)}
-                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                 </>
@@ -673,8 +675,8 @@ export const SubmitSection = () => {
             </span>
           </motion.button>
 
-          <p className="text-sm text-muted-foreground flex items-center gap-2">
-            <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1.5">
+            <svg className="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
             {t('submit.security')}
@@ -801,7 +803,7 @@ export const SubmitSection = () => {
   }
 
   return (
-    <section id="submit" className="pt-4 pb-32 md:pt-8 relative overflow-hidden">
+    <section id="submit" className="pt-4 pb-16 md:pt-8 md:pb-32 relative overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/5 to-background" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-primary/3 rounded-full blur-[200px]" />
@@ -809,42 +811,42 @@ export const SubmitSection = () => {
       {/* Grid pattern */}
       <div className="absolute inset-0 grid-pattern opacity-20" />
 
-      <div className="container mx-auto px-6 relative z-10" ref={ref}>
+      <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={ref}>
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
           className="max-w-4xl mx-auto"
         >
-          <div className="text-center mb-16">
-            <div className="flex items-center justify-center gap-4 mb-8 flex-wrap">
+          <div className="text-center mb-8 sm:mb-12 md:mb-16">
+            <div className="flex items-center justify-center gap-4 mb-4 sm:mb-8 flex-wrap">
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="inline-flex items-center gap-3 px-6 py-3 rounded-full glass-card electric-border"
+                className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 sm:py-3 rounded-full glass-card electric-border"
               >
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
                 </span>
-                <span className="text-sm text-muted-foreground font-medium">Free AI Discovery Call · No commitment</span>
+                <span className="text-xs sm:text-sm text-muted-foreground font-medium">Free AI Discovery Call · No commitment</span>
               </motion.div>
             </div>
 
-            <h2 className="mb-6 overflow-visible py-2">
+            <h2 className="mb-3 sm:mb-6 overflow-visible py-1 sm:py-2">
               {isInView ? (
                 <SharedAxisX
-                  className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight gradient-text glow-text pb-3 pt-1 inline-block leading-normal overflow-visible"
+                  className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight gradient-text glow-text pb-2 pt-1 inline-block leading-tight sm:leading-normal overflow-visible"
                   phrases={["Tell us your biggest operational headache"]}
                 />
               ) : (
-                <span aria-hidden="true" className="invisible text-4xl md:text-5xl lg:text-6xl font-bold pb-3 pt-1 inline-block leading-normal">
+                <span aria-hidden="true" className="invisible text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold pb-2 pt-1 inline-block leading-tight sm:leading-normal">
                   Tell us your biggest operational headache
                 </span>
               )}
             </h2>
-            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-8">
+            <p className="text-muted-foreground text-sm sm:text-lg md:text-xl max-w-2xl mx-auto mb-4 sm:mb-8">
               We'll map your process and show you exactly what AI can automate — in a single conversation.
               Responses within <strong className="text-foreground">24 hours</strong>.
             </p>
@@ -860,7 +862,7 @@ export const SubmitSection = () => {
             <form
               ref={formRef}
               onSubmit={handleSubmit}
-              className="glass-card electric-border p-8 md:p-12 relative overflow-hidden"
+              className="glass-card electric-border p-4 sm:p-8 md:p-12 rounded-2xl sm:rounded-3xl relative overflow-hidden"
             >
               {/* Dynamic glow following mouse */}
               <motion.div
@@ -879,7 +881,7 @@ export const SubmitSection = () => {
           </motion.div>
 
           {/* Trust strip placed after form */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
+          <div className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-[11px] sm:text-xs text-muted-foreground">
             {[
               { icon: '✅', text: 'Free 30-min consultation' },
               { icon: '🔒', text: 'Your information stays private' },
@@ -897,7 +899,7 @@ export const SubmitSection = () => {
             initial={{ opacity: 0, y: 40 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="mt-20 grid md:grid-cols-3 gap-8"
+            className="mt-10 sm:mt-16 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8"
           >
             {(t('submit.process', { returnObjects: true }) as any[]).map((item, index) => (
               <ProcessStepCard

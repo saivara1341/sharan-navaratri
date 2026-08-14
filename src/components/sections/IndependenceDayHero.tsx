@@ -82,6 +82,7 @@ export const IndependenceDayHero = () => {
               <FadeThrough
                 interval={2800}
                 phrases={[
+                  'move beyond prototypes into production.',
                   'empower Indian businesses.',
                   'innovate deep-tech in India.',
                   'build autonomous AI for India.',

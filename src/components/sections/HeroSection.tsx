@@ -207,8 +207,9 @@ export const HeroSection = () => {
               variants={textRevealVariants}
             >
               <FadeThrough
-                interval={3000}
+                interval={2800}
                 phrases={[
+                  'beyond prototypes into production.',
                   'automate manual work.',
                   'ship production AI.',
                   'scale with confidence.',
