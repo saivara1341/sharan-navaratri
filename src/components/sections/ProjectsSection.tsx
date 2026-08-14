@@ -58,14 +58,158 @@ interface ProjectData {
 }
 
 const notePalettes = [
-  { bg: '#FFF1B8', darkBg: '#3A2A08', edge: '#D69E2E', darkEdge: '#EAB54D', ink: '#2B2112', darkInk: '#FFF2C7', icon: '#F9D56E', darkIcon: '#6B4A0E', shadow: 'rgba(214, 158, 46, 0.26)', darkShadow: 'rgba(234, 181, 77, 0.22)' },
-  { bg: '#DDEBFF', darkBg: '#102846', edge: '#4C78B8', darkEdge: '#78A7E8', ink: '#13233D', darkInk: '#DCEBFF', icon: '#AFCBFF', darkIcon: '#1F4B7C', shadow: 'rgba(76, 120, 184, 0.26)', darkShadow: 'rgba(120, 167, 232, 0.22)' },
-  { bg: '#DDF7EA', darkBg: '#0E3124', edge: '#2F9E74', darkEdge: '#63D6A5', ink: '#102C22', darkInk: '#DDFCEF', icon: '#A7E4C2', darkIcon: '#15583D', shadow: 'rgba(47, 158, 116, 0.26)', darkShadow: 'rgba(99, 214, 165, 0.2)' },
-  { bg: '#FFE4BF', darkBg: '#3A210B', edge: '#C7792A', darkEdge: '#E8A453', ink: '#321F0D', darkInk: '#FFE7C7', icon: '#FFC980', darkIcon: '#70400D', shadow: 'rgba(199, 121, 42, 0.25)', darkShadow: 'rgba(232, 164, 83, 0.2)' },
-  { bg: '#E5E0FF', darkBg: '#211A42', edge: '#705BC7', darkEdge: '#A392F4', ink: '#201A3F', darkInk: '#E8E2FF', icon: '#C8BDFF', darkIcon: '#3A2D7A', shadow: 'rgba(112, 91, 199, 0.25)', darkShadow: 'rgba(163, 146, 244, 0.22)' },
-  { bg: '#FFDDE8', darkBg: '#3A1423', edge: '#C9567B', darkEdge: '#F184A8', ink: '#3B1421', darkInk: '#FFE0EA', icon: '#FFB4CB', darkIcon: '#7A2845', shadow: 'rgba(201, 86, 123, 0.24)', darkShadow: 'rgba(241, 132, 168, 0.22)' },
-  { bg: '#D9F3F6', darkBg: '#0E3035', edge: '#278A96', darkEdge: '#61C9D4', ink: '#0E2A2E', darkInk: '#DDFBFF', icon: '#A8DFE6', darkIcon: '#155866', shadow: 'rgba(39, 138, 150, 0.24)', darkShadow: 'rgba(97, 201, 212, 0.2)' },
-  { bg: '#E9E3D2', darkBg: '#2C2619', edge: '#8F7651', darkEdge: '#C4A36F', ink: '#2F2619', darkInk: '#EFE4C9', icon: '#D5C49C', darkIcon: '#5C492B', shadow: 'rgba(143, 118, 81, 0.24)', darkShadow: 'rgba(196, 163, 111, 0.2)' },
+  {
+    // Light
+    bg: 'linear-gradient(155deg, #FFF6D6 0%, #FFF1B8 60%, #F5E5A3 100%)',
+    edge: '#D69E2E',
+    ink: '#2B2112',
+    tagline: '#5C441E',
+    iconBg: '#FFEBA3',
+    shadow: 'rgba(214, 158, 46, 0.22)',
+    dogEar: 'linear-gradient(135deg, #FFF6D6 0%, #D5C8A8 100%)',
+    // Dark — Obsidian Amber
+    darkBg: 'linear-gradient(155deg, rgba(38, 28, 14, 0.96) 0%, rgba(22, 16, 8, 0.98) 100%)',
+    darkEdge: 'rgba(245, 158, 11, 0.45)',
+    darkInk: '#FEF3C7',
+    darkTagline: '#FDE68A',
+    darkIconBg: 'rgba(245, 158, 11, 0.16)',
+    darkShadow: 'rgba(245, 158, 11, 0.28)',
+    darkDogEar: 'linear-gradient(135deg, #4A3412 0%, #261C0E 100%)',
+    accent: '#F59E0B',
+  },
+  {
+    // Light
+    bg: 'linear-gradient(155deg, #E8F2FF 0%, #DDEBFF 60%, #C8E0FF 100%)',
+    edge: '#4C78B8',
+    ink: '#10233D',
+    tagline: '#2F4F7A',
+    iconBg: '#CBE1FF',
+    shadow: 'rgba(76, 120, 184, 0.22)',
+    dogEar: 'linear-gradient(135deg, #E8F2FF 0%, #B8D4FB 100%)',
+    // Dark — Obsidian Sapphire
+    darkBg: 'linear-gradient(155deg, rgba(14, 28, 48, 0.96) 0%, rgba(8, 16, 28, 0.98) 100%)',
+    darkEdge: 'rgba(56, 189, 248, 0.45)',
+    darkInk: '#E0F2FE',
+    darkTagline: '#BAE6FD',
+    darkIconBg: 'rgba(56, 189, 248, 0.16)',
+    darkShadow: 'rgba(56, 189, 248, 0.28)',
+    darkDogEar: 'linear-gradient(135deg, #1C3C68 0%, #0E1C30 100%)',
+    accent: '#38BDF8',
+  },
+  {
+    // Light
+    bg: 'linear-gradient(155deg, #E5FAF0 0%, #DDF7EA 60%, #C4F0D9 100%)',
+    edge: '#2F9E74',
+    ink: '#0C2A1E',
+    tagline: '#245942',
+    iconBg: '#BFF0D9',
+    shadow: 'rgba(47, 158, 116, 0.22)',
+    dogEar: 'linear-gradient(135deg, #E5FAF0 0%, #A9E4C5 100%)',
+    // Dark — Obsidian Emerald
+    darkBg: 'linear-gradient(155deg, rgba(12, 36, 26, 0.96) 0%, rgba(6, 20, 14, 0.98) 100%)',
+    darkEdge: 'rgba(52, 211, 153, 0.45)',
+    darkInk: '#D1FAE5',
+    darkTagline: '#A7F3D0',
+    darkIconBg: 'rgba(52, 211, 153, 0.16)',
+    darkShadow: 'rgba(52, 211, 153, 0.28)',
+    darkDogEar: 'linear-gradient(135deg, #1A4D36 0%, #0C241A 100%)',
+    accent: '#34D399',
+  },
+  {
+    // Light
+    bg: 'linear-gradient(155deg, #FFF0E5 0%, #FFE4BF 60%, #FED29E 100%)',
+    edge: '#C7792A',
+    ink: '#341D0C',
+    tagline: '#6C401E',
+    iconBg: '#FFD3B8',
+    shadow: 'rgba(199, 121, 42, 0.22)',
+    dogEar: 'linear-gradient(135deg, #FFF0E5 0%, #EFC28F 100%)',
+    // Dark — Obsidian Copper
+    darkBg: 'linear-gradient(155deg, rgba(40, 22, 12, 0.96) 0%, rgba(24, 13, 7, 0.98) 100%)',
+    darkEdge: 'rgba(251, 146, 60, 0.45)',
+    darkInk: '#FFEDD5',
+    darkTagline: '#FED7AA',
+    darkIconBg: 'rgba(251, 146, 60, 0.16)',
+    darkShadow: 'rgba(251, 146, 60, 0.28)',
+    darkDogEar: 'linear-gradient(135deg, #562E18 0%, #28160C 100%)',
+    accent: '#FB923C',
+  },
+  {
+    // Light
+    bg: 'linear-gradient(155deg, #F0EDFF 0%, #E5E0FF 60%, #D2C8FF 100%)',
+    edge: '#705BC7',
+    ink: '#1D143D',
+    tagline: '#44327D',
+    iconBg: '#D5CCFF',
+    shadow: 'rgba(112, 91, 199, 0.22)',
+    dogEar: 'linear-gradient(135deg, #F0EDFF 0%, #C0B2FB 100%)',
+    // Dark — Obsidian Amethyst
+    darkBg: 'linear-gradient(155deg, rgba(28, 18, 48, 0.96) 0%, rgba(16, 10, 28, 0.98) 100%)',
+    darkEdge: 'rgba(167, 139, 250, 0.45)',
+    darkInk: '#EDE9FE',
+    darkTagline: '#DDD6FE',
+    darkIconBg: 'rgba(167, 139, 250, 0.16)',
+    darkShadow: 'rgba(167, 139, 250, 0.28)',
+    darkDogEar: 'linear-gradient(135deg, #3D266B 0%, #1C1230 100%)',
+    accent: '#A78BFA',
+  },
+  {
+    // Light
+    bg: 'linear-gradient(155deg, #FFE8F0 0%, #FFDDE8 60%, #FCC4D5 100%)',
+    edge: '#C9567B',
+    ink: '#38101F',
+    tagline: '#702844',
+    iconBg: '#FFC2D6',
+    shadow: 'rgba(201, 86, 123, 0.22)',
+    dogEar: 'linear-gradient(135deg, #FFE8F0 0%, #F5ADC2 100%)',
+    // Dark — Obsidian Ruby
+    darkBg: 'linear-gradient(155deg, rgba(40, 16, 28, 0.96) 0%, rgba(24, 9, 16, 0.98) 100%)',
+    darkEdge: 'rgba(244, 114, 182, 0.45)',
+    darkInk: '#FCE7F3',
+    darkTagline: '#FBCFE8',
+    darkIconBg: 'rgba(244, 114, 182, 0.16)',
+    darkShadow: 'rgba(244, 114, 182, 0.28)',
+    darkDogEar: 'linear-gradient(135deg, #58203E 0%, #28101C 100%)',
+    accent: '#F472B6',
+  },
+  {
+    // Light
+    bg: 'linear-gradient(155deg, #E2F8FA 0%, #D9F3F6 60%, #BFE7EC 100%)',
+    edge: '#278A96',
+    ink: '#0C282D',
+    tagline: '#20515B',
+    iconBg: '#B6EEF3',
+    shadow: 'rgba(39, 138, 150, 0.22)',
+    dogEar: 'linear-gradient(135deg, #E2F8FA 0%, #A4D9E0 100%)',
+    // Dark — Obsidian Cyan
+    darkBg: 'linear-gradient(155deg, rgba(10, 32, 38, 0.96) 0%, rgba(6, 20, 24, 0.98) 100%)',
+    darkEdge: 'rgba(34, 211, 238, 0.45)',
+    darkInk: '#CFFAFE',
+    darkTagline: '#A5F3FC',
+    darkIconBg: 'rgba(34, 211, 238, 0.16)',
+    darkShadow: 'rgba(34, 211, 238, 0.28)',
+    darkDogEar: 'linear-gradient(135deg, #184B58 0%, #0A2026 100%)',
+    accent: '#22D3EE',
+  },
+  {
+    // Light
+    bg: 'linear-gradient(155deg, #F2EFE4 0%, #E9E3D2 60%, #D8CFB8 100%)',
+    edge: '#8F7651',
+    ink: '#2D2313',
+    tagline: '#58472E',
+    iconBg: '#E2D5B4',
+    shadow: 'rgba(143, 118, 81, 0.22)',
+    dogEar: 'linear-gradient(135deg, #F2EFE4 0%, #C4B99D 100%)',
+    // Dark — Obsidian Gold Sand
+    darkBg: 'linear-gradient(155deg, rgba(32, 28, 16, 0.96) 0%, rgba(20, 17, 10, 0.98) 100%)',
+    darkEdge: 'rgba(234, 179, 8, 0.45)',
+    darkInk: '#FEF9C3',
+    darkTagline: '#FEF08A',
+    darkIconBg: 'rgba(234, 179, 8, 0.16)',
+    darkShadow: 'rgba(234, 179, 8, 0.28)',
+    darkDogEar: 'linear-gradient(135deg, #483E24 0%, #201C10 100%)',
+    accent: '#EAB308',
+  },
 ];
 
 const modalPalettes: Record<string, {
@@ -240,44 +384,57 @@ const ProjectCard = ({
         }}
       >
         <div
-          className="w-full h-full rounded-[1px] shadow-[0_2px_4px_rgba(0,0,0,0.18)] opacity-85 backdrop-blur-sm"
+          className="w-full h-full rounded-[1px] shadow-[0_2px_4px_rgba(0,0,0,0.18)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.5)] opacity-85 backdrop-blur-sm bg-gradient-to-b from-white/75 to-stone-200/55 dark:from-white/20 dark:to-white/5 border-l-2 border-r-2 border-dotted border-black/20 dark:border-white/30"
           style={{
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(240,240,235,0.55) 100%)',
-            borderLeft: '2px dotted rgba(0,0,0,0.2)',
-            borderRight: '2px dotted rgba(0,0,0,0.2)',
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 5px rgba(0,0,0,0.15)',
           }}
         >
           {/* Subtle tape texture line */}
-          <div className="w-full h-[1px] bg-white/40 mt-0.5 sm:mt-1" />
+          <div className="w-full h-[1px] bg-white/40 dark:bg-white/20 mt-0.5 sm:mt-1" />
         </div>
       </div>
 
       {/* Realistic Paper Slip Body */}
       <div
-        className="relative w-full h-full flex-1 p-3 sm:p-5 flex flex-col items-center text-center transition-all duration-300 overflow-hidden justify-between"
+        className="relative w-full h-full flex-1 p-3 sm:p-5 flex flex-col items-center text-center transition-all duration-300 overflow-hidden justify-between border"
         style={{
-          background: `linear-gradient(155deg, ${palette.bg} 0%, ${palette.bg} 60%, color-mix(in srgb, ${palette.bg} 82%, #e2d5ba 18%) 100%)`,
+          borderRadius: '4px 4px 28px 4px',
+          background: `var(--slip-bg, ${palette.bg})`,
+          borderColor: `var(--slip-edge, ${palette.edge})`,
           boxShadow: `
             0 1px 2px rgba(0, 0, 0, 0.08),
             0 8px 18px -4px rgba(0, 0, 0, 0.16),
-            0 24px 38px -8px ${palette.shadow}
+            0 24px 38px -8px var(--slip-shadow, ${palette.shadow})
           `,
-          border: `1px solid ${palette.edge}`,
-          borderRadius: '4px 4px 28px 4px',
-        }}
+          '--slip-bg': palette.bg,
+          '--slip-edge': palette.edge,
+          '--slip-ink': palette.ink,
+          '--slip-tagline': palette.tagline,
+          '--slip-icon-bg': palette.iconBg,
+          '--slip-shadow': palette.shadow,
+          '--slip-dog-ear': palette.dogEar,
+        } as any}
       >
+        {/* Dark mode dynamic styling overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300 -z-0"
+          style={{
+            background: palette.darkBg,
+          }}
+        />
+
         {/* Subtle Horizontal Notebook Ruled Lines */}
         <div
-          className="absolute inset-0 pointer-events-none opacity-30"
+          className="absolute inset-0 pointer-events-none opacity-30 dark:opacity-15"
           style={{
-            backgroundImage: 'repeating-linear-gradient(transparent, transparent 25px, rgba(0, 0, 0, 0.05) 26px)',
+            backgroundImage: 'repeating-linear-gradient(transparent, transparent 25px, currentColor 26px)',
             backgroundPosition: '0 38px',
+            color: 'var(--slip-ink, #000)',
           }}
         />
 
         {/* Top Perforation Tear Line */}
-        <div className="absolute top-2 left-3 right-3 sm:left-4 sm:right-4 h-[1px] border-b border-dashed border-black/15 pointer-events-none" />
+        <div className="absolute top-2 left-3 right-3 sm:left-4 sm:right-4 h-[1px] border-b border-dashed border-black/15 dark:border-white/20 pointer-events-none" />
 
         {/* Realistic 3D Dog-Ear Paper Corner Curl (Bottom-Right) */}
         <div className="absolute bottom-0 right-0 w-7 h-7 sm:w-10 sm:h-10 pointer-events-none overflow-hidden z-20">
@@ -285,35 +442,44 @@ const ProjectCard = ({
           <div
             className="absolute inset-0"
             style={{
-              background: 'linear-gradient(135deg, transparent 48%, rgba(0,0,0,0.22) 50%, rgba(0,0,0,0.32) 100%)',
+              background: 'linear-gradient(135deg, transparent 48%, rgba(0,0,0,0.22) 50%, rgba(0,0,0,0.4) 100%)',
             }}
           />
-          {/* Folded Paper Triangle Flap */}
+          {/* Folded Paper Triangle Flap (Light) */}
           <div
-            className="absolute bottom-0 right-0 w-full h-full"
+            className="absolute bottom-0 right-0 w-full h-full dark:hidden"
             style={{
               clipPath: 'polygon(100% 0, 0 100%, 100% 100%)',
-              background: `linear-gradient(135deg, color-mix(in srgb, ${palette.bg} 85%, #fff 15%) 0%, color-mix(in srgb, ${palette.bg} 70%, #d5c8a8 30%) 100%)`,
+              background: palette.dogEar,
               boxShadow: '-2px -2px 6px rgba(0,0,0,0.18)',
+            }}
+          />
+          {/* Folded Paper Triangle Flap (Dark) */}
+          <div
+            className="absolute bottom-0 right-0 w-full h-full hidden dark:block"
+            style={{
+              clipPath: 'polygon(100% 0, 0 100%, 100% 100%)',
+              background: palette.darkDogEar,
+              boxShadow: '-2px -2px 8px rgba(0,0,0,0.5)',
             }}
           />
         </div>
 
         {/* Project Stamp / Code Watermark */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 text-[8px] sm:text-[9px] font-mono font-bold tracking-widest opacity-40 uppercase select-none">
+        <div
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 text-[8px] sm:text-[9px] font-mono font-bold tracking-widest uppercase select-none opacity-45 dark:opacity-65"
+          style={{ color: palette.accent }}
+        >
           #SD-0{index + 1}
         </div>
 
         {/* Slip Content */}
-        <div
-          className="relative z-10 w-full flex flex-col items-center pt-1 sm:pt-2 flex-1"
-          style={{ color: palette.ink }}
-        >
+        <div className="relative z-10 w-full flex flex-col items-center pt-1 sm:pt-2 flex-1 text-slate-900 dark:text-slate-100">
           {/* Logo / Icon */}
           <div
-            className={`w-10 h-10 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center ${project.iconBgClass || ''} ${project.iconColorClass || ''} mb-1.5 sm:mb-2.5 overflow-hidden shadow-sm shrink-0 border border-black/10`}
+            className={`w-10 h-10 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center ${project.iconBgClass || ''} ${project.iconColorClass || ''} mb-1.5 sm:mb-2.5 overflow-hidden shadow-sm shrink-0 border border-black/10 dark:border-white/20`}
             style={{
-              background: project.image ? '#ffffff' : palette.icon,
+              background: project.image ? '#ffffff' : palette.iconBg,
             }}
           >
             {project.image ? (
@@ -327,24 +493,39 @@ const ProjectCard = ({
                 className="w-full h-full object-cover"
               />
             ) : (
-              IconComponent && <IconComponent className="w-5 h-5 sm:w-7 sm:h-7" />
+              IconComponent && (
+                <IconComponent
+                  className="w-5 h-5 sm:w-7 sm:h-7 text-current"
+                  style={{ color: palette.accent }}
+                />
+              )
             )}
           </div>
 
-          {/* Title — shrink-0 ensures title is never squeezed out */}
-          <h3 className="shrink-0 text-sm sm:text-base md:text-lg font-black mb-0.5 sm:mb-1 font-display leading-tight line-clamp-1 sm:line-clamp-2">
-            {project.name}
+          {/* Title */}
+          <h3
+            className="shrink-0 text-sm sm:text-base md:text-lg font-black mb-0.5 sm:mb-1 font-display leading-tight line-clamp-1 sm:line-clamp-2"
+            style={{
+              color: 'var(--slip-ink, inherit)',
+            }}
+          >
+            <span className="dark:hidden" style={{ color: palette.ink }}>{project.name}</span>
+            <span className="hidden dark:inline" style={{ color: palette.darkInk }}>{project.name}</span>
           </h3>
 
           {/* Tagline */}
-          <p className="text-[10px] sm:text-xs font-semibold mb-2 font-sans line-clamp-2 sm:line-clamp-3 opacity-80 leading-tight">
-            {project.tagline}
+          <p className="text-[10px] sm:text-xs font-semibold mb-2 font-sans line-clamp-2 sm:line-clamp-3 leading-tight">
+            <span className="dark:hidden" style={{ color: palette.tagline }}>{project.tagline}</span>
+            <span className="hidden dark:inline" style={{ color: palette.darkTagline }}>{project.tagline}</span>
           </p>
 
           {/* Footer of Slip */}
-          <div className="mt-auto w-full flex items-center justify-between pt-1 border-t border-black/10">
+          <div className="mt-auto w-full flex items-center justify-between pt-1 border-t border-black/10 dark:border-white/15">
             <LikeButton projectId={project.id} initialCount={defaultProjectLikes[project.id] || 80} className="scale-75 sm:scale-85 origin-left" />
-            <div className="flex items-center gap-0.5 sm:gap-1 text-[9px] sm:text-xs font-black opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 sm:group-hover:translate-x-1 transition-all uppercase tracking-wider">
+            <div
+              className="flex items-center gap-0.5 sm:gap-1 text-[9px] sm:text-xs font-black opacity-85 group-hover:opacity-100 group-hover:translate-x-0.5 sm:group-hover:translate-x-1 transition-all uppercase tracking-wider"
+              style={{ color: palette.accent }}
+            >
               <span>View</span>
               <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
             </div>
