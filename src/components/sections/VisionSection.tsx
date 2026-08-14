@@ -1,7 +1,7 @@
-import { motion, useInView, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { motion, useInView, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform, AnimatePresence } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Network, Lightbulb, Waypoints, Zap } from 'lucide-react';
+import { Network, Lightbulb, Waypoints, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -315,7 +315,181 @@ const FeatureCard = ({ feature, index, isMobileCard = false }: { feature: any; i
   );
 };
 
-// Smooth continuous scroll stack card wrapper inside pinned viewport
+// Mobile Touch & Swipe Interactive Deck with 4s Auto-Advance
+const MobileVisionDeck = ({ features }: { features: any[] }) => {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Auto-advance every 4 seconds unless paused by user interaction
+  useEffect(() => {
+    if (paused) return;
+    const interval = setInterval(() => {
+      setDirection(1);
+      setActiveIdx((prev) => (prev + 1) % features.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [paused, features.length]);
+
+  const handleUserInteraction = () => {
+    setPaused(true);
+    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+    pauseTimerRef.current = setTimeout(() => setPaused(false), 8000);
+  };
+
+  const paginate = (newDirection: number) => {
+    handleUserInteraction();
+    setDirection(newDirection);
+    setActiveIdx((prev) => {
+      const next = prev + newDirection;
+      if (next < 0) return features.length - 1;
+      if (next >= features.length) return 0;
+      return next;
+    });
+  };
+
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 120 : -120,
+      opacity: 0,
+      scale: 0.92,
+      rotateY: direction > 0 ? 15 : -15,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      scale: 1,
+      rotateY: 0,
+      transition: {
+        x: { type: 'spring', stiffness: 300, damping: 28 },
+        opacity: { duration: 0.3 },
+        scale: { duration: 0.3 },
+        rotateY: { duration: 0.3 },
+      },
+    },
+    exit: (direction: number) => ({
+      x: direction < 0 ? 120 : -120,
+      opacity: 0,
+      scale: 0.92,
+      rotateY: direction < 0 ? 15 : -15,
+      transition: {
+        x: { type: 'spring', stiffness: 300, damping: 28 },
+        opacity: { duration: 0.25 },
+        scale: { duration: 0.25 },
+        rotateY: { duration: 0.25 },
+      },
+    }),
+  };
+
+  return (
+    <div className="w-full flex flex-col items-center py-2">
+      {/* 4 Interactive Mobile Pillar Tabs */}
+      <div className="flex items-center justify-center gap-1.5 mb-5 overflow-x-auto max-w-full px-2 py-1 scrollbar-none">
+        {features.map((f, i) => {
+          const isActive = i === activeIdx;
+          return (
+            <button
+              key={f.title}
+              onClick={() => {
+                setDirection(i > activeIdx ? 1 : -1);
+                setActiveIdx(i);
+                handleUserInteraction();
+              }}
+              className={`px-3 py-1.5 rounded-full text-[11px] font-bold tracking-wider transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap border ${
+                isActive
+                  ? 'bg-primary text-primary-foreground border-primary shadow-[0_0_12px_rgba(245,158,11,0.35)] scale-105'
+                  : 'bg-card/80 text-muted-foreground border-border/70 hover:border-primary/40'
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-current" />
+              <span>Pillar 0{i + 1}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Swipeable Card Container */}
+      <div className="relative w-full max-w-[340px] min-h-[390px] flex items-center justify-center">
+        <AnimatePresence initial={false} custom={direction} mode="wait">
+          <motion.div
+            key={activeIdx}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.3}
+            onDragStart={handleUserInteraction}
+            onDragEnd={(e, { offset, velocity }) => {
+              const swipe = Math.abs(offset.x) * velocity.x;
+              if (swipe < -50 || offset.x < -45) {
+                paginate(1);
+              } else if (swipe > 50 || offset.x > 45) {
+                paginate(-1);
+              }
+            }}
+            className="w-full flex items-center justify-center touch-pan-y"
+          >
+            <FeatureCard feature={features[activeIdx]} index={activeIdx} isMobileCard={true} />
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Floating Chevrons for Mobile */}
+        <button
+          onClick={() => paginate(-1)}
+          aria-label="Previous Vision Pillar"
+          className="absolute -left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background/90 border border-border/80 text-foreground flex items-center justify-center shadow-md backdrop-blur-md z-30 transition-transform active:scale-90 hover:scale-105"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => paginate(1)}
+          aria-label="Next Vision Pillar"
+          className="absolute -right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background/90 border border-border/80 text-foreground flex items-center justify-center shadow-md backdrop-blur-md z-30 transition-transform active:scale-90 hover:scale-105"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Pagination Dots */}
+      <div className="flex items-center gap-2 mt-4">
+        {features.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => {
+              setDirection(i > activeIdx ? 1 : -1);
+              setActiveIdx(i);
+              handleUserInteraction();
+            }}
+            aria-label={`Go to slide ${i + 1}`}
+            className={`h-1.5 rounded-full transition-all duration-300 ${
+              i === activeIdx
+                ? 'w-6 bg-primary shadow-[0_0_8px_rgba(245,158,11,0.5)]'
+                : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50'
+            }`}
+          />
+        ))}
+      </div>
+
+      {/* Auto-advance Pulse Indicator */}
+      {!paused && (
+        <div className="mt-2 flex items-center gap-1 text-muted-foreground/50 text-[10px]">
+          <motion.span
+            animate={{ opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="w-1 h-1 rounded-full bg-primary"
+          />
+          <span>Auto-advancing (4s)</span>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Smooth continuous scroll stack card wrapper inside desktop pinned viewport
 const StackedDeckCard = ({
   feature,
   index,
@@ -327,38 +501,38 @@ const StackedDeckCard = ({
   total: number;
   scrollYProgress: any;
 }) => {
-  // Stagger entrance based on scroll progress (0 to 0.88, leaving 0.88-1.0 for final view before scrolling onward)
+  // Stagger entrance based on scroll progress (0 to 0.88)
   const interval = 0.88 / total;
   const start = index * interval;
   const end = (index + 1) * interval;
 
-  // Translation Y: enters from bottom (index > 0) and settles into stack
+  // Translation Y: enters from bottom with smooth spring settle
   const y = useTransform(
     scrollYProgress,
     index === 0
       ? [0, 1]
-      : [Math.max(0, start - 0.05), start + 0.04, 1],
+      : [Math.max(0, start - 0.06), start + 0.03, 1],
     index === 0
       ? [0, (total - 1) * -8]
-      : [280, (total - 1 - index) * -8, (total - 1 - index) * -8]
+      : [320, (total - 1 - index) * -8, (total - 1 - index) * -8]
   );
 
-  // Scale down earlier cards slightly as new ones arrive
+  // Scale down earlier cards gently as new ones arrive
   const scale = useTransform(
     scrollYProgress,
     [start, Math.min(0.92, end + 0.1)],
-    [1, 1 - (total - 1 - index) * 0.035]
+    [1, 1 - (total - 1 - index) * 0.03]
   );
 
   // Opacity: smoothly fades in as card reaches its slot
   const opacity = useTransform(
     scrollYProgress,
     index === 0
-      ? [0, 0.5, 0.9]
-      : [Math.max(0, start - 0.06), start, Math.min(1, start + 0.06)],
+      ? [0, 0.6, 0.95]
+      : [Math.max(0, start - 0.08), start, Math.min(1, start + 0.06)],
     index === 0
-      ? [1, 0.85, 0.5]
-      : [0, 0.5, 1]
+      ? [1, 0.9, 0.6]
+      : [0, 0.6, 1]
   );
 
   return (
@@ -466,7 +640,7 @@ export const VisionSection = () => {
   ];
 
   return (
-    <section id="vision" className="bg-background relative overflow-visible" ref={ref}>
+    <section id="vision" className="bg-background relative overflow-visible py-8 md:py-0" ref={ref}>
       {/* Hidden SVG Definitions for Royal Wedding Arch ClipPath */}
       <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
         <defs>
@@ -484,8 +658,36 @@ export const VisionSection = () => {
       {/* Grid pattern */}
       <div className="absolute inset-0 grid-pattern opacity-30" />
 
-      {/* Pinned Scroll Deck Track: Locks viewport on "Beyond Prototypes, Into Production" while cards stack */}
-      <div ref={scrollStackRef} className="relative w-full min-h-[300vh] sm:min-h-[320vh]">
+      {/* MOBILE EXPERIENCE: Fluid Touch Swipe & Tab Deck (Zero scroll locking) */}
+      <div className="block md:hidden container mx-auto px-4 relative z-10">
+        {/* Vision Header */}
+        <div className="text-center max-w-xl mx-auto pt-2 mb-4">
+          <div className="inline-flex items-center gap-1.5 text-primary font-bold text-[10px] tracking-[0.25em] uppercase mb-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+            <LotusEmblem className="w-3 h-3" color="currentColor" />
+            <span>{t('vision.title')}</span>
+            <LotusEmblem className="w-3 h-3" color="currentColor" />
+          </div>
+
+          <h2 className="text-2xl sm:text-3xl font-black mb-1.5 leading-tight text-foreground">
+            {t('vision.beyondPrototypes')}{' '}
+            <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>
+          </h2>
+          <p className="text-muted-foreground text-xs leading-relaxed max-w-sm mx-auto">
+            <Trans
+              i18nKey="vision.visionDescription"
+              components={[
+                <span className="text-primary font-semibold" key="desc-highlight" />
+              ]}
+            />
+          </p>
+        </div>
+
+        {/* Mobile Swipe Deck */}
+        <MobileVisionDeck features={features} />
+      </div>
+
+      {/* DESKTOP EXPERIENCE: Pinned Scroll Deck Track */}
+      <div ref={scrollStackRef} className="hidden md:block relative w-full min-h-[300vh] sm:min-h-[320vh]">
         <div className="sticky top-14 sm:top-16 md:top-20 h-[calc(100dvh-4rem)] md:h-[calc(100vh-5rem)] flex flex-col justify-between items-center py-2 sm:py-4 px-4 overflow-hidden z-20">
           {/* Pinned Vision Header */}
           <div className="text-center max-w-3xl mx-auto shrink-0 pt-1">
@@ -499,7 +701,7 @@ export const VisionSection = () => {
               {t('vision.beyondPrototypes')}{' '}
               <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>
             </h2>
-            <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed max-w-xl mx-auto hidden sm:block">
+            <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed max-w-xl mx-auto">
               <Trans
                 i18nKey="vision.visionDescription"
                 components={[
