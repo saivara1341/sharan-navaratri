@@ -99,7 +99,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
 
   const palettes = [
     {
-      glow: 'hsl(25 95% 55% / 0.2)',
+      glow: 'hsl(25 95% 55% / 0.18)',
       border: '#f97316',
       borderInner: '#fdba74',
       accentColor: '#f97316',
@@ -108,7 +108,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       lotusColor: '#f97316',
     },
     {
-      glow: 'hsl(205 95% 55% / 0.2)',
+      glow: 'hsl(205 95% 55% / 0.18)',
       border: '#0ea5e9',
       borderInner: '#7dd3fc',
       accentColor: '#0ea5e9',
@@ -117,7 +117,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       lotusColor: '#0ea5e9',
     },
     {
-      glow: 'hsl(275 85% 62% / 0.2)',
+      glow: 'hsl(275 85% 62% / 0.18)',
       border: '#a855f7',
       borderInner: '#d8b4fe',
       accentColor: '#a855f7',
@@ -126,7 +126,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       lotusColor: '#a855f7',
     },
     {
-      glow: 'hsl(155 80% 48% / 0.2)',
+      glow: 'hsl(155 80% 48% / 0.18)',
       border: '#10b981',
       borderInner: '#6ee7b7',
       accentColor: '#10b981',
@@ -143,7 +143,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
       style={{ x: springX, y: springY }}
-      className="relative group cursor-pointer w-full max-w-[560px] mx-auto filter drop-shadow-[0_10px_25px_rgba(0,0,0,0.25)]"
+      className="relative group cursor-pointer w-full max-w-[340px] sm:max-w-[480px] mx-auto filter drop-shadow-[0_10px_25px_rgba(0,0,0,0.25)] select-none"
     >
       {/* Outer SVG Arch Border with Royal Indian Architectural Outline */}
       <svg
@@ -175,32 +175,32 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       {/* 4 Cardinal Diamond Rhombus / Finial Pins (Top, Bottom, Left, Right) */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40">
         <span
-          className="block w-3.5 h-3.5 rotate-45 border border-white/70 shadow-sm transition-transform duration-500 group-hover:scale-110"
+          className="block w-3 sm:w-3.5 h-3 sm:h-3.5 rotate-45 border border-white/70 shadow-sm transition-transform duration-500 group-hover:scale-110"
           style={{ background: palette.accentColor }}
         />
       </div>
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-40">
         <span
-          className="block w-3.5 h-3.5 rotate-45 border border-white/70 shadow-sm transition-transform duration-500 group-hover:scale-110"
+          className="block w-3 sm:w-3.5 h-3 sm:h-3.5 rotate-45 border border-white/70 shadow-sm transition-transform duration-500 group-hover:scale-110"
           style={{ background: palette.accentColor }}
         />
       </div>
       <div className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 z-40">
         <span
-          className="block w-3 h-3 rotate-45 border border-white/70 shadow-sm transition-transform duration-500 group-hover:scale-110"
+          className="block w-2.5 sm:w-3 h-2.5 sm:h-3 rotate-45 border border-white/70 shadow-sm transition-transform duration-500 group-hover:scale-110"
           style={{ background: palette.accentColor }}
         />
       </div>
       <div className="absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2 z-40">
         <span
-          className="block w-3 h-3 rotate-45 border border-white/70 shadow-sm transition-transform duration-500 group-hover:scale-110"
+          className="block w-2.5 sm:w-3 h-2.5 sm:h-3 rotate-45 border border-white/70 shadow-sm transition-transform duration-500 group-hover:scale-110"
           style={{ background: palette.accentColor }}
         />
       </div>
 
       {/* Clipped Card Body */}
       <div
-        className="relative w-full h-[420px] sm:h-[460px] px-8 sm:px-14 py-10 sm:py-14 flex flex-col items-center justify-center text-center transition-all duration-500 backdrop-blur-2xl"
+        className="relative w-full h-[360px] sm:h-[430px] px-6 sm:px-12 py-6 sm:py-10 flex flex-col items-center justify-center text-center transition-all duration-500 backdrop-blur-2xl overflow-hidden"
         style={{
           clipPath: 'url(#vision-cartouche-shape)',
           WebkitClipPath: 'url(#vision-cartouche-shape)',
@@ -209,7 +209,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       >
         {/* Inner Radial Glow with reduced intensity */}
         <motion.div
-          animate={{ opacity: isHovered ? 0.6 : 0.35 }}
+          animate={{ opacity: isHovered ? 0.6 : 0.3 }}
           className="absolute inset-0 pointer-events-none transition-opacity duration-500"
           style={{
             background: `radial-gradient(circle at 50% 30%, ${palette.glow} 0%, transparent 68%)`,
@@ -218,49 +218,52 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
 
         {/* Lotus Emblem Watermark in background */}
         <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
-          <LotusEmblem className="w-64 h-64" color={palette.lotusColor} />
+          <LotusEmblem className="w-48 h-48 sm:w-64 sm:h-64" color={palette.lotusColor} />
         </div>
 
-        {/* Feature Eyebrow Tag with Lotus Accent */}
-        <div className="flex items-center gap-2 mb-3 relative z-10">
-          <span className="text-[9px] rotate-45" style={{ color: palette.accentColor }}>◆</span>
-          <span className="text-[11px] font-extrabold uppercase tracking-[0.24em]" style={{ color: palette.accentColor }}>
-            Pillar 0{index + 1}
-          </span>
-          <span className="text-[9px] rotate-45" style={{ color: palette.accentColor }}>◆</span>
-        </div>
-
-        {/* Icon with Lotus Frame */}
-        <div className="relative mb-3.5 sm:mb-4 z-10">
-          <div
-            className={`w-13 h-13 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center ${palette.iconBg}`}
-          >
-            {feature.icon}
+        {/* Safe Inner Content Container — strictly bounded inside the cartouche safe area */}
+        <div className="relative z-10 w-full max-w-[220px] sm:max-w-[320px] mx-auto flex flex-col items-center justify-center text-center">
+          {/* Feature Eyebrow Tag with Lotus Accent */}
+          <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+            <span className="text-[8px] rotate-45" style={{ color: palette.accentColor }}>◆</span>
+            <span className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-[0.2em]" style={{ color: palette.accentColor }}>
+              Pillar 0{index + 1}
+            </span>
+            <span className="text-[8px] rotate-45" style={{ color: palette.accentColor }}>◆</span>
           </div>
-        </div>
 
-        {/* Title */}
-        <h3 className="text-xl sm:text-2xl font-black mb-2 text-white tracking-tight max-w-sm drop-shadow-sm relative z-10">
-          {feature.title}
-        </h3>
+          {/* Icon with Lotus Frame */}
+          <div className="relative mb-2 sm:mb-3">
+            <div
+              className={`w-10 h-10 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center ${palette.iconBg}`}
+            >
+              {feature.icon}
+            </div>
+          </div>
 
-        {/* Description */}
-        <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-xs sm:max-w-sm mx-auto mb-4 font-normal relative z-10">
-          {feature.description}
-        </p>
+          {/* Title */}
+          <h3 className="text-base sm:text-xl md:text-2xl font-black mb-1 sm:mb-2 text-white tracking-tight leading-tight drop-shadow-sm">
+            {feature.title}
+          </h3>
 
-        {/* Bottom Status / Feature Pill with Diamond */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90 text-[11px] font-semibold backdrop-blur-md shadow-sm relative z-10">
-          <span className="w-1.5 h-1.5 rotate-45" style={{ background: palette.accentColor }} />
-          <span>Production-Ready Deep-Tech</span>
+          {/* Description */}
+          <p className="text-slate-300 text-[11px] sm:text-xs md:text-sm leading-snug sm:leading-relaxed max-w-[210px] sm:max-w-[290px] mx-auto mb-2.5 sm:mb-3.5 font-normal line-clamp-3 sm:line-clamp-none">
+            {feature.description}
+          </p>
+
+          {/* Bottom Status / Feature Pill with Diamond */}
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/10 border border-white/15 text-white/90 text-[9px] sm:text-[10px] font-semibold backdrop-blur-md shadow-sm">
+            <span className="w-1.5 h-1.5 rotate-45 shrink-0" style={{ background: palette.accentColor }} />
+            <span className="truncate max-w-[170px] sm:max-w-none">Production-Ready Deep-Tech</span>
+          </div>
         </div>
       </div>
     </motion.div>
   );
 };
 
-// Smooth continuous scroll stack card wrapper
-const ScrollStackedCard = ({
+// Smooth continuous scroll stack card wrapper inside pinned viewport
+const StackedDeckCard = ({
   feature,
   index,
   total,
@@ -271,44 +274,96 @@ const ScrollStackedCard = ({
   total: number;
   scrollYProgress: any;
 }) => {
-  // Compute progress slice for this card
-  const step = 1 / total;
-  const start = index * step;
-  const end = (index + 1) * step;
+  // Stagger entrance based on scroll progress (0 to 0.88, leaving 0.88-1.0 for final view before scrolling onward)
+  const interval = 0.88 / total;
+  const start = index * interval;
+  const end = (index + 1) * interval;
 
-  // Scale down as later cards enter
+  // Translation Y: enters from bottom (index > 0) and settles into stack
+  const y = useTransform(
+    scrollYProgress,
+    index === 0
+      ? [0, 1]
+      : [Math.max(0, start - 0.05), start + 0.04, 1],
+    index === 0
+      ? [0, (total - 1) * -8]
+      : [280, (total - 1 - index) * -8, (total - 1 - index) * -8]
+  );
+
+  // Scale down earlier cards slightly as new ones arrive
   const scale = useTransform(
     scrollYProgress,
-    [start, end, Math.min(1, end + step)],
-    [1, 1, 1 - (total - 1 - index) * 0.04]
+    [start, Math.min(0.92, end + 0.1)],
+    [1, 1 - (total - 1 - index) * 0.035]
   );
 
-  // Stacked offset
-  const translateY = useTransform(
-    scrollYProgress,
-    [Math.max(0, start - step * 0.5), start, 1],
-    [index === 0 ? 0 : 80, 0, (total - 1 - index) * -8]
-  );
-
-  // Opacity for stacked effect
+  // Opacity: smoothly fades in as card reaches its slot
   const opacity = useTransform(
     scrollYProgress,
-    [Math.max(0, start - step * 0.8), start],
-    [index === 0 ? 1 : 0.2, 1]
+    index === 0
+      ? [0, 0.5, 0.9]
+      : [Math.max(0, start - 0.06), start, Math.min(1, start + 0.06)],
+    index === 0
+      ? [1, 0.85, 0.5]
+      : [0, 0.5, 1]
   );
 
   return (
     <motion.div
       style={{
+        y,
         scale,
-        y: translateY,
-        opacity,
-        zIndex: index + 1,
+        opacity: index === total - 1 ? 1 : opacity,
+        zIndex: index + 10,
       }}
-      className="sticky top-28 md:top-36 w-full flex items-center justify-center mb-12"
+      className="absolute inset-0 flex items-center justify-center pointer-events-auto"
     >
       <FeatureCard feature={feature} index={index} />
     </motion.div>
+  );
+};
+
+const DeckDot = ({
+  idx,
+  total,
+  scrollYProgress,
+}: {
+  idx: number;
+  total: number;
+  scrollYProgress: any;
+}) => {
+  const interval = 0.88 / total;
+  const start = idx * interval;
+  const end = (idx + 1) * interval;
+
+  const width = useTransform(
+    scrollYProgress,
+    idx === 0
+      ? [0, end, end + 0.05]
+      : [Math.max(0, start - 0.04), start, end, Math.min(1, end + 0.04)],
+    idx === 0
+      ? ['28px', '28px', '14px']
+      : ['14px', '28px', '28px', '14px']
+  );
+
+  const opacity = useTransform(
+    scrollYProgress,
+    idx === 0
+      ? [0, end, end + 0.05]
+      : [Math.max(0, start - 0.04), start, end, Math.min(1, end + 0.04)],
+    idx === 0
+      ? [1, 1, 0.35]
+      : [0.35, 1, 1, 0.35]
+  );
+
+  return (
+    <motion.div
+      style={{
+        width,
+        opacity,
+      }}
+      className="h-1.5 rounded-full bg-primary"
+    />
   );
 };
 
@@ -325,25 +380,25 @@ export const VisionSection = () => {
 
   const features = [
     {
-      icon: <Network className="w-8 h-8" />,
+      icon: <Network className="w-5 h-5 sm:w-7 sm:h-7" />,
       title: t('vision.features.ai.title'),
       description: t('vision.features.ai.description'),
       color: 'primary',
     },
     {
-      icon: <Lightbulb className="w-8 h-8" />,
+      icon: <Lightbulb className="w-5 h-5 sm:w-7 sm:h-7" />,
       title: t('vision.features.genAi.title'),
       description: t('vision.features.genAi.description'),
       color: 'accent',
     },
     {
-      icon: <Waypoints className="w-8 h-8" />,
+      icon: <Waypoints className="w-5 h-5 sm:w-7 sm:h-7" />,
       title: t('vision.features.agenticAi.title'),
       description: t('vision.features.agenticAi.description'),
       color: 'primary',
     },
     {
-      icon: <Zap className="w-8 h-8" />,
+      icon: <Zap className="w-5 h-5 sm:w-7 sm:h-7" />,
       title: t('vision.features.automation.title'),
       description: t('vision.features.automation.description'),
       color: 'accent',
@@ -358,7 +413,7 @@ export const VisionSection = () => {
   ];
 
   return (
-    <section id="vision" className="bg-background py-16 sm:py-28 relative overflow-visible" ref={ref}>
+    <section id="vision" className="bg-background relative overflow-visible" ref={ref}>
       {/* Hidden SVG Definitions for Royal Indian Cartouche ClipPath */}
       <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
         <defs>
@@ -376,58 +431,65 @@ export const VisionSection = () => {
       {/* Grid pattern */}
       <div className="absolute inset-0 grid-pattern opacity-30" />
 
-      <div className="container mx-auto px-6 relative z-10">
-        {/* Vision Header Text with Lotus Motif */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-          className="text-center mb-14 max-w-3xl mx-auto"
-        >
-          <motion.div
-            className="inline-flex items-center gap-2 text-primary font-bold text-xs md:text-sm tracking-[0.3em] uppercase mb-3 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20"
-            initial={{ opacity: 0, y: 15 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <LotusEmblem className="w-4 h-4" color="currentColor" />
-            <span>{t('vision.title')}</span>
-            <LotusEmblem className="w-4 h-4" color="currentColor" />
-          </motion.div>
+      {/* Pinned Scroll Deck Track: Locks viewport on "Beyond Prototypes, Into Production" while cards stack */}
+      <div ref={scrollStackRef} className="relative w-full min-h-[300vh] sm:min-h-[320vh]">
+        <div className="sticky top-14 sm:top-16 md:top-20 h-[calc(100dvh-4rem)] md:h-[calc(100vh-5rem)] flex flex-col justify-between items-center py-2 sm:py-4 px-4 overflow-hidden z-20">
+          {/* Pinned Vision Header */}
+          <div className="text-center max-w-3xl mx-auto shrink-0 pt-1">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 text-primary font-bold text-[10px] sm:text-xs md:text-sm tracking-[0.25em] uppercase mb-1 sm:mb-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+              <LotusEmblem className="w-3.5 h-3.5" color="currentColor" />
+              <span>{t('vision.title')}</span>
+              <LotusEmblem className="w-3.5 h-3.5" color="currentColor" />
+            </div>
 
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black mb-4 leading-tight text-foreground">
-            {t('vision.beyondPrototypes')}{' '}
-            <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>
-          </h2>
-          <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
-            <Trans
-              i18nKey="vision.visionDescription"
-              components={[
-                <span className="text-primary font-semibold" key="desc-highlight" />
-              ]}
-            />
-          </p>
-        </motion.div>
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black mb-1 sm:mb-2 leading-tight text-foreground">
+              {t('vision.beyondPrototypes')}{' '}
+              <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>
+            </h2>
+            <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed max-w-xl mx-auto hidden sm:block">
+              <Trans
+                i18nKey="vision.visionDescription"
+                components={[
+                  <span className="text-primary font-semibold" key="desc-highlight" />
+                ]}
+              />
+            </p>
+          </div>
 
-        {/* Continuous Sticky Stack Scroll Deck for Capability Cards */}
-        <div ref={scrollStackRef} className="relative w-full max-w-2xl mx-auto min-h-[220vh] pb-24">
-          {features.map((feature, index) => (
-            <ScrollStackedCard
-              key={feature.title}
-              feature={feature}
-              index={index}
-              total={features.length}
-              scrollYProgress={scrollYProgress}
-            />
-          ))}
+          {/* Stacked Cards Deck Area */}
+          <div className="relative w-full max-w-lg mx-auto flex-1 min-h-[370px] sm:min-h-[440px] flex items-center justify-center my-auto">
+            {features.map((feature, index) => (
+              <StackedDeckCard
+                key={feature.title}
+                feature={feature}
+                index={index}
+                total={features.length}
+                scrollYProgress={scrollYProgress}
+              />
+            ))}
+          </div>
+
+          {/* Bottom Pillar Dots Indicator */}
+          <div className="flex items-center justify-center gap-2 shrink-0 pb-1 z-30">
+            {features.map((_, idx) => (
+              <DeckDot
+                key={idx}
+                idx={idx}
+                total={features.length}
+                scrollYProgress={scrollYProgress}
+              />
+            ))}
+          </div>
         </div>
+      </div>
 
+      <div className="container mx-auto px-6 relative z-10 pb-28">
         {/* Mission statement */}
         <motion.div
           initial={{ opacity: 0, y: 60 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 1, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-          className="mt-24 relative"
+          transition={{ duration: 1, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+          className="mt-8 relative"
         >
           <div className="glass-card electric-border p-10 md:p-14 relative overflow-hidden">
             {/* Decorative glow */}
