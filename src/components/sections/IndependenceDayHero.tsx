@@ -52,7 +52,7 @@ export const IndependenceDayHero = () => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
         >
-          {/* Milestone Badge with dynamically computed years and diamond/rhombus accents */}
+          {/* Milestone Badge with 80th Independence Day and diamond/rhombus accents */}
           <motion.div
             className="independence-badge"
             initial={reduceMotion ? false : { opacity: 0, y: -10 }}
@@ -61,7 +61,7 @@ export const IndependenceDayHero = () => {
           >
             <span className="badge-rhombus orange-rhombus" />
             <span>
-              15th August · {yearsCompleted} Years of Freedom (1947–{currentYear})
+              15th August · India&apos;s {editionOrdinal}th Independence Day ({yearsCompleted} Years of Freedom)
             </span>
             <span className="badge-rhombus green-rhombus" />
           </motion.div>
@@ -71,9 +71,9 @@ export const IndependenceDayHero = () => {
               Siddhi Dynamics · Proudly Indian
             </p>
             <h1 id="independence-title">
-              Happy Independence Day
+              Happy {editionOrdinal}th Independence Day
               <span className="independence-subtitle">
-                Celebrating India&apos;s {editionOrdinal}th Independence Day
+                Celebrating {yearsCompleted} Glorious Years of Freedom (1947–{currentYear})
               </span>
             </h1>
 
