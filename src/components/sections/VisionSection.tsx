@@ -79,7 +79,7 @@ const ARCH_PANEL_OUTER = "M 170 16 C 184 26, 198 34, 208 44 C 222 40, 238 48, 25
 const ARCH_PANEL_INNER = "M 170 26 C 182 34, 194 41, 204 50 C 216 47, 230 54, 242 66 C 258 65, 276 76, 286 92 C 298 112, 300 135, 290 158 C 282 173, 282 207, 290 222 C 300 245, 298 268, 286 288 C 276 304, 258 315, 242 314 C 230 326, 216 333, 204 330 C 194 339, 182 346, 170 354 C 158 346, 146 339, 136 330 C 124 333, 110 326, 98 314 C 82 315, 64 304, 54 288 C 42 268, 40 245, 50 222 C 58 207, 58 173, 50 158 C 40 135, 42 112, 54 92 C 64 76, 82 65, 98 66 C 110 54, 124 47, 136 50 C 146 41, 158 34, 170 26 Z";
 
 // ─── Feature Card — Arched Central Panel ────────────────────────────────────
-const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
+const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; index: number; isDesktopGrid?: boolean }) => {
   const [isHovered, setIsHovered] = useState(false);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -148,7 +148,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => { x.set(0); y.set(0); setIsHovered(false); }}
       style={{ x: springX, y: springY }}
-      className="relative mx-auto select-none cursor-pointer flex-shrink-0"
+      className="relative mx-auto select-none cursor-pointer flex-shrink-0 w-full flex justify-center"
     >
       {/* Reduced subtle ambient glow */}
       <motion.div
@@ -158,10 +158,14 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
         style={{ background: `radial-gradient(circle at 50% 50%, ${p.primary}60 0%, transparent 70%)` }}
       />
 
-      {/* Main card container — Increased size on mobile (w-[350px] h-[390px]) and desktop (w-[470px] h-[420px]) */}
-      <div className="relative w-[345px] h-[385px] sm:w-[420px] sm:h-[405px] md:w-[470px] md:h-[420px] flex items-center justify-center">
+      {/* Main card container — Responsive: larger on mobile (w-[355px] h-[425px]), 4-col on desktop (w-full max-w-[290px] h-[400px]) */}
+      <div className={`relative flex items-center justify-center ${
+        isDesktopGrid
+          ? 'w-full max-w-[280px] xl:max-w-[305px] h-[410px] xl:h-[425px]'
+          : 'w-[92vw] max-w-[360px] sm:max-w-[400px] h-[425px] sm:h-[435px]'
+      }`}>
 
-        {/* SVG Arched Central Panel with reduced, clean drop shadow */}
+        {/* SVG Arched Central Panel with clean subtle drop shadow */}
         <svg
           viewBox={`0 0 ${VW} ${VH}`}
           className="absolute inset-0 w-full h-full pointer-events-none filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.35)]"
@@ -170,7 +174,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
         >
           <defs>
             {/* Inner radial gradient */}
-            <radialGradient id={`arch-radial-${index}`} cx="50%" cy="45%" r="60%">
+            <radialGradient id={`arch-radial-${index}-${isDesktopGrid ? 'grid' : 'stack'}`} cx="50%" cy="45%" r="60%">
               <stop offset="0%" stopColor={p.primary} stopOpacity="0.18" />
               <stop offset="70%" stopColor={p.solidBg} stopOpacity="0.95" />
               <stop offset="100%" stopColor={p.solidBg} stopOpacity="1" />
@@ -181,7 +185,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
           <path d={ARCH_PANEL_OUTER} fill={p.solidBg} />
 
           {/* Radial glow layer inside arch */}
-          <path d={ARCH_PANEL_OUTER} fill={`url(#arch-radial-${index})`} />
+          <path d={ARCH_PANEL_OUTER} fill={`url(#arch-radial-${index}-${isDesktopGrid ? 'grid' : 'stack'})`} />
 
           {/* Outer primary architectural border */}
           <path
@@ -210,14 +214,18 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
           <polygon points="170,354 175,364 170,374 165,364" fill={p.primary} />
         </svg>
 
-        {/* Card Content — tightened gap on mobile */}
-        <div className="relative z-10 w-full h-full flex flex-col items-center justify-center text-center px-6 sm:px-14 md:px-16 py-5 sm:py-8 gap-1.5 sm:gap-2.5">
+        {/* Card Content — No text overflow on mobile */}
+        <div className={`relative z-10 w-full h-full flex flex-col items-center justify-center text-center ${
+          isDesktopGrid
+            ? 'px-4 xl:px-6 py-6 gap-2 xl:gap-2.5'
+            : 'px-7 sm:px-10 py-6 sm:py-8 gap-2 sm:gap-2.5'
+        }`}>
           
           {/* Pillar Eyebrow */}
-          <div className="flex items-center gap-1.5 pt-1 sm:pt-2">
+          <div className="flex items-center gap-1.5 pt-1">
             <span className="text-[7px] sm:text-[8px] rotate-45" style={{ color: p.primary }}>◆</span>
             <span
-              className="text-[9px] sm:text-xs font-black uppercase tracking-[0.25em]"
+              className="text-[9px] sm:text-[10px] xl:text-xs font-black uppercase tracking-[0.25em]"
               style={{ color: p.accent }}
             >
               Pillar 0{index + 1}
@@ -229,31 +237,38 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
           <motion.div
             animate={isHovered ? { scale: 1.08, rotate: 3 } : { scale: 1, rotate: 0 }}
             transition={{ duration: 0.3 }}
-            className={`w-11 h-11 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center ${p.iconBg}`}
+            className="w-11 h-11 sm:w-13 sm:h-13 xl:w-14 xl:h-14 rounded-2xl flex items-center justify-center p-2.5"
+            style={{ background: p.iconBg }}
           >
             {feature.icon}
           </motion.div>
 
           {/* Decorative Divider */}
-          <div className="flex items-center gap-1.5 sm:gap-2 w-full max-w-[150px] sm:max-w-[200px] my-0 sm:my-0.5">
+          <div className="flex items-center gap-1.5 w-full max-w-[130px] sm:max-w-[160px] my-0.5">
             <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${p.primary}80)` }} />
-            <span className="text-[8px] sm:text-[9px]" style={{ color: p.accent }}>✦</span>
+            <span className="text-[8px]" style={{ color: p.accent }}>✦</span>
             <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, ${p.primary}80)` }} />
           </div>
 
           {/* Title */}
-          <h3 className="text-base sm:text-xl font-black text-white tracking-tight leading-tight drop-shadow-sm max-w-[280px]">
+          <h3 className={`font-black text-white tracking-tight leading-tight drop-shadow-sm ${
+            isDesktopGrid ? 'text-base xl:text-lg max-w-[220px]' : 'text-base sm:text-lg max-w-[260px]'
+          }`}>
             {feature.title}
           </h3>
 
-          {/* Description */}
-          <p className="text-slate-300 text-[11px] sm:text-sm leading-snug sm:leading-relaxed max-w-[250px] sm:max-w-[320px] font-normal line-clamp-3">
+          {/* Description — Full text without overflow */}
+          <p className={`text-slate-300 font-normal leading-relaxed ${
+            isDesktopGrid
+              ? 'text-[11px] xl:text-xs max-w-[220px] xl:max-w-[240px]'
+              : 'text-xs sm:text-sm max-w-[280px] sm:max-w-[320px]'
+          }`}>
             {feature.description}
           </p>
 
           {/* Bottom Badge */}
           <div
-            className={`mt-0.5 sm:mt-1 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-semibold backdrop-blur-md shadow-sm border ${p.pillBg}`}
+            className={`mt-1 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[8px] sm:text-[9px] font-semibold backdrop-blur-md shadow-sm border ${p.pillBg}`}
           >
             <span className="w-1.5 h-1.5 rotate-45" style={{ background: p.pillDot }} />
             <span className="truncate">Production-Ready Deep-Tech</span>
@@ -264,7 +279,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
   );
 };
 
-// Clean single-card scroll transition — only ONE card visible at any time
+// Clean single-card scroll transition for mobile
 const StackedDeckCard = ({
   feature,
   index,
@@ -335,7 +350,7 @@ const StackedDeckCard = ({
       }}
       className="absolute inset-0 flex items-center justify-center pointer-events-auto"
     >
-      <FeatureCard feature={feature} index={index} />
+      <FeatureCard feature={feature} index={index} isDesktopGrid={false} />
     </motion.div>
   );
 };
@@ -395,9 +410,6 @@ export const VisionSection = () => {
     offset: ['start start', 'end end'],
   });
 
-  // Desktop header parallax: header text moves upward as cards cycle on scroll
-  const desktopHeaderY = useTransform(scrollYProgress, [0, 0.25, 0.88], [0, -20, -40]);
-
   const features = [
     {
       icon: <Network className="w-6 h-6 sm:w-7 sm:h-7" />,
@@ -433,7 +445,7 @@ export const VisionSection = () => {
   ];
 
   return (
-    <section id="vision" className="bg-background relative overflow-visible py-4 sm:py-10 md:py-16" ref={ref}>
+    <section id="vision" className="bg-background relative overflow-visible py-6 sm:py-12 md:py-16" ref={ref}>
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/10 to-background" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-primary/3 rounded-full blur-[150px]" />
@@ -442,37 +454,65 @@ export const VisionSection = () => {
       {/* Grid pattern */}
       <div className="absolute inset-0 grid-pattern opacity-30" />
 
-      {/* Pinned Scroll Deck Track: Locks viewport on "Beyond Prototypes, Into Production" */}
-      <div ref={scrollStackRef} className="relative w-full min-h-[300vh] sm:min-h-[320vh]">
-        <div className="sticky top-14 sm:top-16 md:top-20 h-[calc(100dvh-3.8rem)] md:h-[calc(100vh-5rem)] flex flex-col justify-between items-center py-2 sm:py-6 px-3 sm:px-4 overflow-hidden z-20">
+      {/* ─── DESKTOP VIEW: 4 Cards in 1 Line Side-by-Side ─────────────────── */}
+      <div className="hidden lg:block container mx-auto px-4 relative z-10 mb-16">
+        {/* Desktop Header */}
+        <div className="text-center max-w-3xl mx-auto pt-4 mb-12">
+          <div className="inline-flex items-center gap-2 text-primary font-bold text-xs md:text-sm tracking-[0.25em] uppercase mb-3 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/20">
+            <LotusEmblem className="w-3.5 h-3.5" color="currentColor" />
+            <span>{t('vision.title')}</span>
+            <LotusEmblem className="w-3.5 h-3.5" color="currentColor" />
+          </div>
+
+          <h2 className="text-4xl md:text-5xl font-black mb-3 leading-tight text-foreground">
+            <span className="block">{t('vision.beyondPrototypes')}</span>
+            <span className="block gradient-text glow-text">{t('vision.intoProduction')}</span>
+          </h2>
+          <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+            <Trans
+              i18nKey="vision.visionDescription"
+              components={[
+                <span className="text-primary font-semibold" key="desc-highlight" />
+              ]}
+            />
+          </p>
+        </div>
+
+        {/* 4 Cards in 1 Line */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          className="grid grid-cols-4 gap-4 xl:gap-6 max-w-7xl mx-auto"
+        >
+          {features.map((feature, index) => (
+            <motion.div key={feature.title} variants={cardVariants}>
+              <FeatureCard feature={feature} index={index} isDesktopGrid={true} />
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+
+      {/* ─── MOBILE VIEW: Pinned Scroll Deck with Larger Cards ─────────────── */}
+      <div ref={scrollStackRef} className="lg:hidden relative w-full min-h-[280vh]">
+        <div className="sticky top-14 sm:top-16 h-[calc(100dvh-3.8rem)] flex flex-col justify-between items-center py-2 px-3 overflow-hidden z-20">
           
-          {/* Pinned Vision Header — with desktop upward parallax motion on scroll & reduced mobile gap */}
-          <motion.div
-            style={{ y: desktopHeaderY }}
-            className="text-center max-w-3xl mx-auto shrink-0 pt-0 sm:pt-2 transition-transform duration-100"
-          >
-            <div className="inline-flex items-center gap-1.5 text-primary font-bold text-[9px] sm:text-xs md:text-sm tracking-[0.25em] uppercase mb-1 sm:mb-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-primary/10 border border-primary/20">
-              <LotusEmblem className="w-3 h-3 sm:w-3.5 sm:h-3.5" color="currentColor" />
+          {/* Mobile Header */}
+          <div className="text-center max-w-3xl mx-auto shrink-0 pt-0">
+            <div className="inline-flex items-center gap-1.5 text-primary font-bold text-[9px] sm:text-xs tracking-[0.25em] uppercase mb-1 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20">
+              <LotusEmblem className="w-3 h-3" color="currentColor" />
               <span>{t('vision.title')}</span>
-              <LotusEmblem className="w-3 h-3 sm:w-3.5 sm:h-3.5" color="currentColor" />
+              <LotusEmblem className="w-3 h-3" color="currentColor" />
             </div>
 
-            <h2 className="text-xl sm:text-4xl md:text-5xl font-black mb-1 sm:mb-2 leading-tight text-foreground">
+            <h2 className="text-xl sm:text-3xl font-black mb-1 leading-tight text-foreground">
               <span className="block">{t('vision.beyondPrototypes')}</span>
               <span className="block gradient-text glow-text">{t('vision.intoProduction')}</span>
             </h2>
-            <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed max-w-xl mx-auto hidden sm:block">
-              <Trans
-                i18nKey="vision.visionDescription"
-                components={[
-                  <span className="text-primary font-semibold" key="desc-highlight" />
-                ]}
-              />
-            </p>
-          </motion.div>
+          </div>
 
-          {/* Cards Deck Area — Enlarged for mobile with reduced vertical gaps */}
-          <div className="relative w-full max-w-[360px] sm:max-w-[450px] md:max-w-[500px] mx-auto flex-1 min-h-[390px] sm:min-h-[415px] md:min-h-[440px] flex items-center justify-center my-0 sm:my-auto py-0 sm:py-2">
+          {/* Cards Deck Area — Sized specifically for mobile so text fits comfortably */}
+          <div className="relative w-full max-w-[370px] mx-auto flex-1 min-h-[430px] flex items-center justify-center my-0 py-0">
             {features.map((feature, index) => (
               <StackedDeckCard
                 key={feature.title}
@@ -485,7 +525,7 @@ export const VisionSection = () => {
           </div>
 
           {/* Bottom Pillar Dots Indicator */}
-          <div className="flex items-center justify-center gap-2 shrink-0 pb-1 sm:pb-2 z-30">
+          <div className="flex items-center justify-center gap-2 shrink-0 pb-1 z-30">
             {features.map((_, idx) => (
               <DeckDot
                 key={idx}
