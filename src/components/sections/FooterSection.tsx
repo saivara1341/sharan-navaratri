@@ -104,16 +104,16 @@ export const FooterSection = () => {
             <motion.nav
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
-              className="flex flex-wrap items-center justify-center md:justify-end gap-5 md:gap-6 whitespace-nowrap"
+              className="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-2.5 md:gap-x-6"
             >
               {[
                 { name: 'About', href: '/about' },
+                { name: 'Contact Us', href: '/contact' },
                 { name: t('nav.vision', 'Vision'), href: '/#vision' },
                 { name: t('nav.projects', 'Projects'), href: '/#projects' },
                 { name: 'Blog', href: '/blog' },
                 { name: 'Services', href: '/services/business-automation' },
                 { name: t('nav.submit', 'Submit Problem'), href: '/submit?type=problem' },
-                { name: 'Contact Us', href: '/contact' },
               ].map((link, index) => (
                 <motion.a
                   key={link.name}
@@ -121,7 +121,7 @@ export const FooterSection = () => {
                   onClick={(e) => handleNavClick(e, link.href)}
                   custom={index}
                   variants={linkVariants}
-                  className="relative text-sm font-semibold text-slate-300 hover:text-white transition-colors group"
+                  className="relative text-sm font-semibold text-slate-300 hover:text-white transition-colors group whitespace-nowrap"
                   whileHover={{ y: -3, scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -142,7 +142,7 @@ export const FooterSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.8 }}
-            className="flex flex-nowrap overflow-x-auto no-scrollbar items-center gap-2.5 sm:gap-4 justify-start sm:justify-center w-full max-w-full pb-2 px-1"
+            className="flex flex-wrap items-center gap-2.5 sm:gap-4 justify-center w-full max-w-full pb-2 px-1"
           >
             {/* Small Compact Google Review Badge */}
             <motion.a
@@ -262,7 +262,7 @@ export const FooterSection = () => {
             >
               {t('footer.copyright', { year: new Date().getFullYear() })}
             </motion.p>
-            <div className="flex flex-nowrap overflow-x-auto no-scrollbar items-center justify-center gap-2.5 sm:gap-4 max-w-full pb-1 px-1">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 max-w-full pb-1 px-1">
               {[
                 { label: 'Privacy Policy', href: '/privacy' },
                 { label: 'Terms & Conditions', href: '/terms-and-conditions' },
@@ -277,7 +277,7 @@ export const FooterSection = () => {
                   initial={{ opacity: 0 }}
                   animate={isInView ? { opacity: 1 } : {}}
                   transition={{ delay: 0.8 + index * 0.05 }}
-                  className="text-xs text-slate-400 hover:text-primary transition-colors shrink-0 whitespace-nowrap"
+                  className="text-xs text-slate-400 hover:text-primary transition-colors whitespace-nowrap"
                 >
                   {link.label}
                 </motion.a>
