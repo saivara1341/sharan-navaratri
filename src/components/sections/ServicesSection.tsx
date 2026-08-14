@@ -15,6 +15,7 @@ import {
   Store,
   type LucideIcon,
 } from "lucide-react";
+import { LotusEmblem } from "./VisionSection";
 
 type Service = {
   title: string;
@@ -73,35 +74,41 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
       className="pixel-service-card group relative min-h-[225px] overflow-hidden rounded-xl border border-border/70 bg-card p-6 shadow-[0_20px_70px_rgba(15,23,42,0.12)] transition-[border-color,box-shadow,transform] duration-300 hover:border-foreground/20 hover:shadow-[0_28px_90px_rgba(15,23,42,0.18)] sm:min-h-[250px] sm:p-8"
     >
       <motion.div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style={{ background: glow }} />
+      
+      {/* Top Accent Strip */}
       <div
         className="absolute inset-x-0 top-0 h-1.5 origin-left scale-x-0 transition-transform duration-500 ease-out group-hover:scale-x-100"
         style={{ backgroundColor: service.accent }}
       />
-      <div className="pointer-events-none absolute inset-3 rounded-lg border border-white/50 opacity-70 dark:border-white/10" />
-      <div className="pointer-events-none absolute bottom-4 right-4 grid grid-cols-4 gap-1 opacity-45 transition-opacity duration-300 group-hover:opacity-80">
-        {Array.from({ length: 16 }).map((_, pixelIndex) => (
-          <span
-            key={pixelIndex}
-            className="h-1.5 w-1.5"
-            style={{
-              backgroundColor: pixelIndex % 3 === 0 ? service.accent : "hsl(var(--foreground) / 0.16)",
-            }}
-          />
-        ))}
+
+      {/* Indian Ornamental Inner Border with Diamond Rhombus Corner Accents */}
+      <div className="pointer-events-none absolute inset-3 rounded-lg border border-foreground/10 opacity-70 transition-colors group-hover:border-foreground/20">
+        <span className="absolute -top-1 -left-1 w-2 h-2 rotate-45 border border-foreground/30 bg-background" style={{ borderColor: service.accent }} />
+        <span className="absolute -top-1 -right-1 w-2 h-2 rotate-45 border border-foreground/30 bg-background" style={{ borderColor: service.accent }} />
+        <span className="absolute -bottom-1 -left-1 w-2 h-2 rotate-45 border border-foreground/30 bg-background" style={{ borderColor: service.accent }} />
+        <span className="absolute -bottom-1 -right-1 w-2 h-2 rotate-45 border border-foreground/30 bg-background" style={{ borderColor: service.accent }} />
+      </div>
+
+      {/* Indian Lotus Background Watermark - Directly Visible */}
+      <div className="pointer-events-none absolute right-1 bottom-1 opacity-25 transition-all duration-500 group-hover:opacity-45 group-hover:scale-105">
+        <LotusEmblem className="w-28 h-28" color={service.accent} />
       </div>
 
       <div className="relative flex h-full flex-col">
         <div className="mb-7 flex items-start justify-between">
-          <motion.div
-            whileHover={{ rotate: -7, scale: 1.08 }}
-            className="flex h-12 w-12 items-center justify-center rounded-lg border border-border/70 bg-background/90 shadow-[0_12px_35px_rgba(15,23,42,0.10)]"
+          <div
+            className="flex h-12 w-12 items-center justify-center rounded-xl border border-border/70 bg-background/90 shadow-[0_12px_35px_rgba(15,23,42,0.10)] relative"
             style={{ color: service.accent }}
           >
             <Icon className="h-5 w-5" strokeWidth={1.8} />
-          </motion.div>
-          <span className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground/55">
-            {String(index + 1).padStart(2, "0")}
-          </span>
+            <span className="absolute -top-1 -right-1 w-1.5 h-1.5 rotate-45" style={{ background: service.accent }} />
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-[8px] rotate-45 opacity-50" style={{ color: service.accent }}>◆</span>
+            <span className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground/65 font-bold">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+          </div>
         </div>
 
         <h3 className="mb-2.5 max-w-[15rem] text-xl font-bold leading-tight tracking-tight text-foreground sm:text-[1.35rem]">

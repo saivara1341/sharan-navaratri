@@ -151,23 +151,23 @@ export const Navbar = () => {
             <motion.a
               href="#/"
               onClick={handleHomeClick}
-              className="flex items-center gap-3 group relative z-[110] cursor-pointer"
+              className="flex items-center gap-2.5 group relative z-[110] cursor-pointer"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="relative w-14 h-14 flex items-center justify-center">
+              <div className="relative w-12 h-12 md:w-14 md:h-14 flex items-center justify-center">
                 <div className="absolute inset-0 dark:bg-primary/20 rounded-full blur-2xl opacity-60" />
                 <img
                   src={siddhiLogo}
                   alt="Siddhi Dynamics Logo"
-                  width="56"
-                  height="56"
+                  width="48"
+                  height="48"
                   decoding="async"
                   className="relative w-full h-full object-contain dark:drop-shadow-[0_0_15px_rgba(251,146,60,0.5)]"
                 />
               </div>
               <div className="flex flex-col md:flex-row md:items-center gap-0.5 md:gap-2 text-left">
-                <span className="font-extrabold text-lg md:text-xl text-foreground tracking-tight whitespace-nowrap">
+                <span className="font-extrabold text-base md:text-xl text-foreground tracking-tight whitespace-nowrap">
                   Siddhi Dynamics
                 </span>
               </div>
@@ -311,24 +311,8 @@ export const Navbar = () => {
               )}
             </nav>
 
-            {/* Mobile Actions: Dashboard Icon + Hamburger Toggle */}
+            {/* Mobile Actions: Hamburger Toggle */}
             <div className="flex items-center gap-2 md:hidden z-[110]">
-              {isLoggedIn && (
-                <motion.button
-                  onClick={(e) => {
-                    setMobileMenuOpen(false);
-                    handleDashboardClick(e);
-                  }}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 font-bold text-xs shadow-sm transition-all cursor-pointer"
-                  title="Go to Dashboard"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <LayoutDashboard className="w-4 h-4" />
-                  <span className="text-[11px] font-extrabold">Dashboard</span>
-                </motion.button>
-              )}
-
               <motion.button
                 className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-muted/60 border border-border cursor-pointer"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

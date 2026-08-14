@@ -210,78 +210,144 @@ const ProjectCard = ({
   const { t } = useTranslation();
   const IconComponent = project.icon;
   const palette = notePalettes[index % notePalettes.length];
-  // Randomize rotation slightly for sticky note effect
-  const noteRotate = (index % 2 === 0 ? -1 : 1) * ((index % 3) + 1.5);
+  // Natural paper tilt variation
+  const noteRotate = (index % 2 === 0 ? -1.8 : 1.8) * ((index % 3) * 0.6 + 0.8);
+  const tapeRotate = ((index % 4) - 1.5) * 1.8;
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9, y: 50 }}
       whileInView={{ opacity: 1, scale: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      whileHover={{
+        y: -10,
+        scale: 1.03,
+        rotate: noteRotate * 0.5,
+        transition: { type: 'spring', stiffness: 300, damping: 18 },
+      }}
+      transition={{ duration: 0.5, delay: index * 0.08 }}
       onClick={onClick}
-      className="relative w-full max-w-xs mx-auto aspect-square p-3 sm:p-6 cursor-pointer group border border-[color:var(--note-edge)] bg-[image:var(--note-bg)] shadow-[0_18px_36px_var(--note-shadow)] hover:-translate-y-2 transition-all duration-300 dark:border-[color:var(--note-edge-dark)] dark:bg-[image:var(--note-bg-dark)] dark:shadow-[0_18px_36px_var(--note-shadow-dark)]"
+      className="relative w-full max-w-xs mx-auto aspect-square cursor-pointer group select-none"
       style={{
-        '--note-bg': `linear-gradient(145deg, ${palette.bg} 0%, ${palette.bg} 58%, color-mix(in srgb, ${palette.bg} 78%, white 22%) 100%)`,
-        '--note-bg-dark': `linear-gradient(145deg, ${palette.darkBg} 0%, color-mix(in srgb, ${palette.darkBg} 86%, black 14%) 100%)`,
-        '--note-shadow': palette.shadow,
-        '--note-shadow-dark': palette.darkShadow,
-        '--note-edge': palette.edge,
-        '--note-edge-dark': palette.darkEdge,
-        '--note-icon': palette.icon,
-        '--note-icon-dark': palette.darkIcon,
         transform: `rotate(${noteRotate}deg)`,
-        borderBottomRightRadius: '3rem 2.5rem',
-        borderBottomLeftRadius: '0.5rem',
-        borderTopRightRadius: '0.5rem',
-        borderTopLeftRadius: '0.5rem',
-      } as React.CSSProperties}
+      }}
     >
-      {/* Corner shadow fold effect */}
-      <div 
-        className="absolute bottom-0 right-0 w-8 h-8 sm:w-12 sm:h-12 pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity duration-300"
-        style={{
-          background: 'linear-gradient(135deg, transparent 45%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.15) 100%)',
-          borderBottomRightRadius: '3rem 2.5rem',
-        }}
-      />
-      
+      {/* Semi-Transparent Frosted Washi Tape Strip holding the slip */}
       <div
-        className="h-full flex flex-col items-center text-center pt-1 sm:pt-2 text-[color:var(--note-ink)] dark:text-[color:var(--note-ink-dark)]"
+        className="absolute -top-3.5 left-1/2 -translate-x-1/2 w-24 sm:w-28 h-6 sm:h-7 z-30 pointer-events-none transition-transform duration-300 group-hover:scale-105"
         style={{
-          '--note-ink': palette.ink,
-          '--note-ink-dark': palette.darkInk,
-        } as React.CSSProperties}
+          transform: `translateX(-50%) rotate(${tapeRotate}deg)`,
+        }}
       >
         <div
-          className={`w-10 h-10 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl flex items-center justify-center ${project.iconBgClass || 'bg-[color:var(--note-icon)] dark:bg-[color:var(--note-icon-dark)]'} ${project.iconColorClass || ''} mb-2 sm:mb-4 overflow-hidden shadow-inner shrink-0`}
+          className="w-full h-full rounded-[1px] shadow-[0_2px_4px_rgba(0,0,0,0.18)] opacity-85 backdrop-blur-sm"
+          style={{
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(240,240,235,0.55) 100%)',
+            borderLeft: '2px dotted rgba(0,0,0,0.2)',
+            borderRight: '2px dotted rgba(0,0,0,0.2)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 5px rgba(0,0,0,0.15)',
+          }}
         >
-          {project.image ? (
-            <img
-              src={project.image}
-              alt={`${project.name} logo`}
-              width="64"
-              height="64"
-              loading="lazy"
-              decoding="async"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            IconComponent && <IconComponent className="w-5 h-5 sm:w-8 sm:h-8" />
-          )}
+          {/* Subtle tape texture line */}
+          <div className="w-full h-[1px] bg-white/40 mt-1" />
         </div>
-        <h3 className="text-sm sm:text-xl font-bold mb-1 sm:mb-2 font-display leading-tight line-clamp-2">
-          {project.name}
-        </h3>
-        <p className="text-[10px] sm:text-sm font-medium mb-2 sm:mb-4 font-sans line-clamp-2 sm:line-clamp-3 opacity-75">
-          {project.tagline}
-        </p>
-        
-        <div className="mt-auto w-full flex items-center justify-between pt-1">
-          <LikeButton projectId={project.id} initialCount={defaultProjectLikes[project.id] || 80} className="scale-90" />
-          <div className="flex items-center gap-1 text-[9px] sm:text-xs font-bold opacity-70 group-hover:opacity-95 transition-opacity uppercase tracking-wider">
-            <span>Know more</span>
-            <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-1 transition-transform" />
+      </div>
+
+      {/* Realistic Paper Slip Body */}
+      <div
+        className="relative w-full h-full p-4 sm:p-6 flex flex-col items-center text-center transition-all duration-300 overflow-hidden"
+        style={{
+          background: `linear-gradient(155deg, ${palette.bg} 0%, ${palette.bg} 60%, color-mix(in srgb, ${palette.bg} 82%, #e2d5ba 18%) 100%)`,
+          boxShadow: `
+            0 1px 2px rgba(0, 0, 0, 0.08),
+            0 8px 18px -4px rgba(0, 0, 0, 0.16),
+            0 24px 38px -8px ${palette.shadow}
+          `,
+          border: `1px solid ${palette.edge}`,
+          borderRadius: '4px 4px 32px 4px',
+        }}
+      >
+        {/* Subtle Horizontal Notebook Ruled Lines */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-30"
+          style={{
+            backgroundImage: 'repeating-linear-gradient(transparent, transparent 25px, rgba(0, 0, 0, 0.05) 26px)',
+            backgroundPosition: '0 38px',
+          }}
+        />
+
+        {/* Top Perforation Tear Line */}
+        <div className="absolute top-2.5 left-4 right-4 h-[1px] border-b border-dashed border-black/15 pointer-events-none" />
+
+        {/* Realistic 3D Dog-Ear Paper Corner Curl (Bottom-Right) */}
+        <div className="absolute bottom-0 right-0 w-8 h-8 sm:w-10 sm:h-10 pointer-events-none overflow-hidden z-20">
+          {/* Fold Cast Shadow */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(135deg, transparent 48%, rgba(0,0,0,0.22) 50%, rgba(0,0,0,0.32) 100%)',
+            }}
+          />
+          {/* Folded Paper Triangle Flap */}
+          <div
+            className="absolute bottom-0 right-0 w-full h-full"
+            style={{
+              clipPath: 'polygon(100% 0, 0 100%, 100% 100%)',
+              background: `linear-gradient(135deg, color-mix(in srgb, ${palette.bg} 85%, #fff 15%) 0%, color-mix(in srgb, ${palette.bg} 70%, #d5c8a8 30%) 100%)`,
+              boxShadow: '-2px -2px 6px rgba(0,0,0,0.18)',
+            }}
+          />
+        </div>
+
+        {/* Project Stamp / Code Watermark */}
+        <div className="absolute top-4 right-4 text-[9px] font-mono font-bold tracking-widest opacity-40 uppercase select-none">
+          #SD-0{index + 1}
+        </div>
+
+        {/* Slip Content */}
+        <div
+          className="relative z-10 w-full h-full flex flex-col items-center pt-2"
+          style={{ color: palette.ink }}
+        >
+          {/* Logo / Icon */}
+          <div
+            className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center ${project.iconBgClass || ''} ${project.iconColorClass || ''} mb-2.5 sm:mb-3.5 overflow-hidden shadow-sm shrink-0 border border-black/10`}
+            style={{
+              background: project.image ? '#ffffff' : palette.icon,
+            }}
+          >
+            {project.image ? (
+              <img
+                src={project.image}
+                alt={`${project.name} logo`}
+                width="64"
+                height="64"
+                loading="lazy"
+                decoding="async"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              IconComponent && <IconComponent className="w-6 h-6 sm:w-8 sm:h-8" />
+            )}
+          </div>
+
+          {/* Title */}
+          <h3 className="text-base sm:text-lg font-black mb-1 font-display leading-tight line-clamp-2">
+            {project.name}
+          </h3>
+
+          {/* Tagline */}
+          <p className="text-[11px] sm:text-xs font-semibold mb-2 sm:mb-3 font-sans line-clamp-2 sm:line-clamp-3 opacity-80 leading-snug">
+            {project.tagline}
+          </p>
+
+          {/* Footer of Slip */}
+          <div className="mt-auto w-full flex items-center justify-between pt-1 border-t border-black/10">
+            <LikeButton projectId={project.id} initialCount={defaultProjectLikes[project.id] || 80} className="scale-85" />
+            <div className="flex items-center gap-1 text-[10px] sm:text-xs font-black opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all uppercase tracking-wider">
+              <span>View More</span>
+              <ArrowRight className="w-3 h-3" />
+            </div>
           </div>
         </div>
       </div>
@@ -300,68 +366,42 @@ const ProjectDetailsModal = ({
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const isPrimary = project.accentColor === 'primary';
   const IconComponent = project.icon;
   const palette = modalPalettes[project.id] ?? modalPalettes.archplan;
 
+  // Resolve display and target URL
+  const projectUrls: Record<string, { url: string; displayUrl: string; isExternal: boolean }> = {
+    archplan: { url: 'https://archplan.lovable.app', displayUrl: 'archplan.lovable.app', isExternal: true },
+    nexus: { url: 'https://nexuscareers.in', displayUrl: 'nexuscareers.in', isExternal: true },
+    nilayam: { url: '/project/nilayam', displayUrl: 'nilayam.siddhidynamics.in', isExternal: false },
+    indhur_farms: { url: 'https://saivara1341.github.io/indhur-farms/', displayUrl: 'indhurfarms.com', isExternal: true },
+    print_flow: { url: 'https://printflows.in/', displayUrl: 'printflows.in', isExternal: true },
+    wish0: { url: '/project/wish-o', displayUrl: 'wish0.siddhidynamics.in', isExternal: false },
+    letusknow: { url: '/project/letusknow', displayUrl: 'letusknow.siddhidynamics.in', isExternal: false },
+    dogin: { url: 'https://dogin-chi.vercel.app/', displayUrl: 'dogin-chi.vercel.app', isExternal: true },
+  };
+
+  const currentProjectUrl = projectUrls[project.id] || {
+    url: project.url || '#',
+    displayUrl: project.url ? project.url.replace(/^https?:\/\//, '') : `${project.id}.siddhidynamics.in`,
+    isExternal: Boolean(project.url),
+  };
+
   const handleActionClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-
-    if (project.id === 'nexus') {
-      window.open(project.url, '_blank', 'noopener,noreferrer');
-      return;
-    }
-
-    if (project.id === 'nilayam') {
+    if (currentProjectUrl.isExternal) {
+      window.open(currentProjectUrl.url, '_blank', 'noopener,noreferrer');
+    } else if (currentProjectUrl.url.startsWith('/')) {
       window.scrollTo(0, 0);
-      navigate('/project/nilayam');
+      navigate(currentProjectUrl.url);
       onClose();
-      return;
-    }
-
-    if (project.id === 'archplan') {
-      window.open('https://archplan.lovable.app', '_blank', 'noopener,noreferrer');
-      return;
-    }
-
-    if (project.id === 'letusknow') {
-      window.scrollTo(0, 0);
-      navigate('/project/letusknow');
-      onClose();
-      return;
-    }
-
-    if (project.id === 'wish0') {
-      window.scrollTo(0, 0);
-      navigate('/project/wish-o');
-      onClose();
-      return;
-    }
-
-    if (project.id === 'print_flow') {
-      window.open('https://printflows.in/', '_blank', 'noopener,noreferrer');
-      return;
-    }
-
-    if (project.id === 'indhur_farms') {
-      window.open('https://saivara1341.github.io/indhur-farms/', '_blank', 'noopener,noreferrer');
-      return;
-    }
-
-    if (project.id === 'dogin') {
-      window.open('https://dogin-chi.vercel.app/', '_blank', 'noopener,noreferrer');
-      return;
-    }
-
-    if (project.url) {
-      window.open(project.url, '_blank', 'noopener,noreferrer');
     } else {
       onWaitlistClick(project.id, project.name, project.accentColor as 'primary' | 'accent');
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-3 sm:p-4">
       {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -377,7 +417,7 @@ const ProjectDetailsModal = ({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-        className="relative w-full max-w-2xl border rounded-3xl p-6 sm:p-8 shadow-2xl overflow-y-auto max-h-[90vh] z-10"
+        className="relative w-full max-w-2xl border rounded-3xl p-5 sm:p-7 shadow-2xl overflow-y-auto max-h-[92vh] z-10"
         style={{
           background: palette.bg,
           borderColor: palette.border,
@@ -385,19 +425,19 @@ const ProjectDetailsModal = ({
           color: palette.text,
         }}
       >
-        {/* Grid pattern background */}
-        <div className="absolute inset-0 grid-pattern opacity-20 pointer-events-none" />
+        {/* Ambient Grid pattern */}
+        <div className="absolute inset-0 grid-pattern opacity-15 pointer-events-none" />
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: `radial-gradient(circle at 18% 8%, ${palette.accentSoft} 0%, transparent 32%), linear-gradient(180deg, rgba(255,255,255,0.32), transparent 60%)`,
+            background: `radial-gradient(circle at 20% 10%, ${palette.accentSoft} 0%, transparent 40%), linear-gradient(180deg, rgba(255,255,255,0.35), transparent 70%)`,
           }}
         />
 
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-xl border transition-all cursor-pointer z-50"
+          className="absolute top-4 right-4 p-2 rounded-xl border transition-all cursor-pointer z-50 hover:scale-105"
           style={{
             backgroundColor: palette.accentSoft,
             borderColor: palette.border,
@@ -408,13 +448,13 @@ const ProjectDetailsModal = ({
         </button>
 
         <div className="relative z-10">
-          {/* Modal Header */}
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 mb-6 text-center sm:text-left mt-2">
+          {/* Header Section with right padding for Close Button */}
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-5 text-center sm:text-left mt-1 pr-10">
             <div
-              className={`w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden ${!project.image && project.iconColorClass ? project.iconColorClass : ''}`}
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden shadow-md"
               style={{
-                backgroundColor: project.image ? palette.accentSoft : palette.chip,
-                border: `1px solid ${palette.border}`,
+                backgroundColor: '#ffffff',
+                border: `1.5px solid ${palette.border}`,
               }}
             >
               {project.image ? (
@@ -428,57 +468,52 @@ const ProjectDetailsModal = ({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                IconComponent && <IconComponent className="w-10 h-10" strokeWidth={1.5} />
+                IconComponent && <IconComponent className="w-10 h-10" style={{ color: palette.accent }} strokeWidth={1.75} />
               )}
             </div>
 
-            <div className="flex-1 min-w-0 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div>
-                <h3 className="text-3xl font-bold mb-1 font-display" style={{ color: palette.text }}>
+            <div className="flex-1 min-w-0 flex flex-col items-center sm:items-start">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
+                <h3 className="text-2xl sm:text-3xl font-black font-display tracking-tight" style={{ color: palette.text }}>
                   {project.name}
                 </h3>
-                <p className="text-base font-semibold" style={{ color: palette.accent }}>
-                  {project.tagline}
-                </p>
+                <span className="text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border shadow-sm"
+                  style={{
+                    backgroundColor: palette.accentSoft,
+                    borderColor: palette.border,
+                    color: palette.accent,
+                  }}
+                >
+                  {t(`projects.statuses.${project.statusKey}`)}
+                </span>
               </div>
-              <LikeButton projectId={project.id} initialCount={defaultProjectLikes[project.id] || 80} />
+              <p className="text-sm font-semibold mb-2.5" style={{ color: palette.accent }}>
+                {project.tagline}
+              </p>
+              <div className="flex items-center gap-2">
+                <LikeButton projectId={project.id} initialCount={defaultProjectLikes[project.id] || 80} />
+              </div>
             </div>
           </div>
 
-          {/* Description */}
-          <div className="mb-6">
-            <h4 className="text-xs uppercase font-bold tracking-[0.2em] mb-2" style={{ color: palette.muted }}>About Project</h4>
-            <p className="text-sm leading-relaxed" style={{ color: palette.text }}>
-              {project.description}
-            </p>
-          </div>
-
-          {/* Development Roadmap */}
+          {/* Development Roadmap Trackline Pipe */}
           <div
-            className="mb-8 p-5 border rounded-2xl backdrop-blur"
+            className="mb-5 p-4 border rounded-2xl backdrop-blur shadow-sm"
             style={{
               backgroundColor: palette.panel,
               borderColor: palette.border,
             }}
           >
-            <div className="flex justify-between items-end mb-3">
-              <span className="text-[10px] uppercase font-bold tracking-[0.2em]" style={{ color: palette.muted }}>Development Roadmap</span>
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${
-                project.statusKey === 'rnd'
-                  ? 'bg-amber-500/5 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20 dark:border-amber-500/30'
-                  : project.statusKey === 'lab'
-                  ? 'bg-purple-500/5 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20 dark:border-purple-500/30'
-                  : project.statusKey === 'alpha'
-                  ? 'bg-rose-500/5 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20 dark:border-rose-500/30'
-                  : project.statusKey === 'beta'
-                  ? 'bg-blue-500/5 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20 dark:border-blue-500/30'
-                  : 'bg-emerald-500/5 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 dark:border-emerald-500/30'
-              }`}>
-                {t(`projects.statuses.${project.statusKey}`)}
+            <div className="flex justify-between items-center mb-2.5">
+              <span className="text-[10px] uppercase font-bold tracking-[0.2em]" style={{ color: palette.muted }}>
+                Development Roadmap Pipeline
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-wider" style={{ color: palette.accent }}>
+                {t(`projects.stages.${project.stageKey}`)}
               </span>
             </div>
 
-            <div className="relative pt-3 pb-2">
+            <div className="relative pt-2 pb-2">
               <div className="flex justify-between items-center relative z-10">
                 {[1, 2, 3, 4, 5].map((step) => {
                   const isCompleted = step <= project.phase;
@@ -491,14 +526,14 @@ const ProjectDetailsModal = ({
                           backgroundColor: isCompleted ? palette.accent : palette.accentSoft,
                           borderColor: isCompleted ? palette.accent : palette.border,
                           color: isCompleted ? palette.buttonText : palette.muted,
-                          boxShadow: isCompleted ? `0 0 12px ${palette.shadow}` : undefined,
+                          boxShadow: isCompleted ? `0 0 10px ${palette.shadow}` : undefined,
                         }}
                       >
                         {step}
                         {isCurrent && (
                           <motion.div
-                            animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
-                            transition={{ duration: 2, repeat: Infinity }}
+                            animate={{ scale: [1, 1.45, 1], opacity: [0.6, 0, 0.6] }}
+                            transition={{ duration: 1.8, repeat: Infinity }}
                             className="absolute inset-0 rounded-full -z-10"
                             style={{ backgroundColor: palette.accent }}
                           />
@@ -509,66 +544,103 @@ const ProjectDetailsModal = ({
                 })}
               </div>
 
-              {/* Connector Line */}
-              <div className="absolute top-6 left-0 right-0 h-[2px] z-0 px-1" style={{ backgroundColor: palette.accentSoft }}>
+              {/* Trackline Pipe */}
+              <div className="absolute top-5 left-0 right-0 h-1.5 rounded-full z-0 px-2" style={{ backgroundColor: 'rgba(0,0,0,0.12)' }}>
                 <div
-                  className="h-full transition-all duration-500"
-                  style={{ width: `${(project.phase - 1) * 25}%`, backgroundColor: palette.accent }}
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${((project.phase - 1) / 4) * 100}%`,
+                    backgroundColor: palette.accent,
+                    boxShadow: `0 0 8px ${palette.accent}`,
+                  }}
                 />
               </div>
             </div>
-
-            <p className="text-[11px] font-bold uppercase tracking-widest text-center mt-3" style={{ color: palette.text }}>
-              {t(`projects.stages.${project.stageKey}`)}
-            </p>
           </div>
 
-          {/* Key Features */}
-          <div className="mb-8">
-            <h4 className="text-xs uppercase font-bold tracking-[0.2em] mb-3" style={{ color: palette.muted }}>Key Features & Modules</h4>
-            <div className="flex flex-wrap gap-2">
-              {project.features.map((feature) => (
-                <span
-                  key={feature}
-                  className="px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-200"
-                  style={{
-                    backgroundColor: palette.chip,
-                    borderColor: palette.border,
-                    color: palette.text,
-                  }}
-                >
-                  {feature}
-                </span>
-              ))}
+          {/* Aesthetic Embedded Website / Landing Page Box */}
+          <div
+            className="mb-5 border rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 group/box"
+            style={{
+              backgroundColor: '#0f172a',
+              borderColor: palette.border,
+            }}
+          >
+            {/* Browser / Portal Top Bar */}
+            <div
+              className="px-4 py-2.5 border-b flex items-center justify-between gap-2"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                borderColor: 'rgba(0, 0, 0, 0.1)',
+              }}
+            >
+              {/* Traffic light dots */}
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+              </div>
+
+              {/* URL Address Bar with click-to-open */}
+              <div
+                onClick={handleActionClick}
+                className="flex-1 max-w-sm mx-auto px-3 py-1 rounded-lg text-xs font-mono flex items-center justify-center gap-1.5 border shadow-inner text-slate-800 bg-slate-50 cursor-pointer hover:bg-white transition-colors"
+                style={{ borderColor: 'rgba(0, 0, 0, 0.15)' }}
+                title="Click to open portal"
+              >
+                <span className="text-[10px] text-emerald-600">🔒</span>
+                <span className="truncate font-semibold">{currentProjectUrl.displayUrl}</span>
+                <ExternalLink className="w-3 h-3 text-slate-400 ml-1 shrink-0" />
+              </div>
+
+              <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest hidden sm:inline-flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Live Preview
+              </span>
+            </div>
+
+            {/* Embedded Live Website Landing Page */}
+            <div className="relative w-full h-[360px] sm:h-[430px] bg-slate-950 overflow-hidden">
+              <iframe
+                src={currentProjectUrl.url}
+                title={`${project.name} live landing page preview`}
+                className="w-full h-full border-0 bg-white"
+                loading="lazy"
+                sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+              />
+
+              {/* Top-right quick access button */}
+              <button
+                onClick={handleActionClick}
+                className="absolute top-3 right-3 px-3.5 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 shadow-lg backdrop-blur-md border border-white/30 text-white transition-transform hover:scale-105 cursor-pointer z-20"
+                style={{
+                  background: palette.button,
+                  boxShadow: `0 4px 14px ${palette.shadow}`,
+                }}
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Access Portal</span>
+              </button>
             </div>
           </div>
 
-          {/* Action Button */}
-          <div className="pt-5 border-t flex flex-col sm:flex-row gap-3" style={{ borderColor: palette.border }}>
+          {/* Modal Action Buttons */}
+          <div className="pt-3 border-t flex flex-col sm:flex-row gap-3" style={{ borderColor: palette.border }}>
             <button
               onClick={handleActionClick}
-              className="flex-1 py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer"
+              className="flex-1 py-3 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer hover:opacity-95"
               style={{
                 background: palette.button,
                 color: palette.buttonText,
-                boxShadow: `0 14px 30px ${palette.shadow}`,
+                boxShadow: `0 10px 24px ${palette.shadow}`,
               }}
             >
-              {project.id === 'nexus' || project.id === 'nilayam' || project.id === 'archplan' || project.id === 'letusknow' || project.id === 'wish0' || project.url ? (
-                <>
-                  <ExternalLink className="w-4 h-4" />
-                  Access Platform
-                </>
-              ) : (
-                <>
-                  <Bell className="w-4 h-4" />
-                  Join Waitlist
-                </>
-              )}
+              <ExternalLink className="w-4 h-4" />
+              <span>Access Portal ({currentProjectUrl.displayUrl})</span>
             </button>
             <button
               onClick={onClose}
-              className="px-6 py-3.5 rounded-xl font-bold text-sm border transition-all cursor-pointer"
+              className="px-6 py-3 rounded-xl font-bold text-sm border transition-all cursor-pointer hover:bg-black/5"
               style={{
                 backgroundColor: palette.accentSoft,
                 borderColor: palette.border,

@@ -1,4 +1,4 @@
-import { motion, useInView, useMotionValue, useMotionValueEvent, useScroll, useSpring } from 'framer-motion';
+import { motion, useInView, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Network, Lightbulb, Waypoints, Zap } from 'lucide-react';
@@ -41,6 +41,41 @@ const statCounterVariants = {
   })
 };
 
+export const LotusEmblem = ({ className = "w-6 h-6", color = "currentColor" }: { className?: string; color?: string }) => (
+  <svg viewBox="0 0 100 100" className={className} fill="none">
+    <g transform="translate(50, 50)">
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+        <path
+          key={i}
+          d="M 0 -38 C 10 -24, 16 -12, 0 0 C -16 -12, -10 -24, 0 -38 Z"
+          fill={color}
+          fillOpacity="0.25"
+          stroke={color}
+          strokeWidth="1.2"
+          transform={`rotate(${angle})`}
+        />
+      ))}
+      {[22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5].map((angle, i) => (
+        <path
+          key={`inner-${i}`}
+          d="M 0 -26 C 6 -16, 10 -8, 0 0 C -10 -8, -6 -16, 0 -26 Z"
+          fill={color}
+          fillOpacity="0.5"
+          stroke={color}
+          strokeWidth="1"
+          transform={`rotate(${angle})`}
+        />
+      ))}
+      <circle r="6" fill={color} fillOpacity="0.9" />
+      <circle r="2.5" fill="#ffffff" />
+    </g>
+  </svg>
+);
+
+const INDIAN_CARTOUCHE_100 = "M 50 2 C 48 4, 46 7, 43 7.5 C 34 8.5, 26 12.5, 20 17.5 C 17 20, 14 24, 11 28 C 8 33, 7.5 39, 7.5 43 C 7 46, 4 48, 2 50 C 4 52, 7 54, 7.5 57 C 7.5 61, 8 67, 11 72 C 14 76, 17 80, 20 82.5 C 26 87.5, 34 91.5, 43 92.5 C 46 93, 48 96, 50 98 C 52 96, 54 93, 57 92.5 C 66 91.5, 74 87.5, 80 82.5 C 83 80, 86 76, 89 72 C 92 67, 92.5 61, 92.5 57 C 93 54, 96 52, 98 50 C 96 48, 93 46, 92.5 43 C 92.5 39, 92 33, 89 28 C 86 24, 83 20, 80 17.5 C 74 12.5, 66 8.5, 57 7.5 C 54 7, 52 4, 50 2 Z";
+const INDIAN_CARTOUCHE_CLIP = "M 0.50 0.02 C 0.48 0.04, 0.46 0.07, 0.43 0.075 C 0.34 0.085, 0.26 0.125, 0.20 0.175 C 0.17 0.20, 0.14 0.24, 0.11 0.28 C 0.08 0.33, 0.075 0.39, 0.075 0.43 C 0.07 0.46, 0.04 0.48, 0.02 0.50 C 0.04 0.52, 0.07 0.54, 0.075 0.57 C 0.075 0.61, 0.08 0.67, 0.11 0.72 C 0.14 0.76, 0.17 0.80, 0.20 0.825 C 0.26 0.875, 0.34 0.915, 0.43 0.925 C 0.46 0.93, 0.48 0.96, 0.50 0.98 C 0.52 0.96, 0.54 0.93, 0.57 0.925 C 0.66 0.915, 0.74 0.875, 0.80 0.825 C 0.83 0.80, 0.86 0.76, 0.89 0.72 C 0.92 0.67, 0.925 0.61, 0.925 0.57 C 0.93 0.54, 0.96 0.52, 0.98 0.50 C 0.96 0.48, 0.93 0.46, 0.925 0.43 C 0.925 0.39, 0.92 0.33, 0.89 0.28 C 0.86 0.24, 0.83 0.20, 0.80 0.175 C 0.74 0.125, 0.66 0.085, 0.57 0.075 C 0.54 0.07, 0.52 0.04, 0.50 0.02 Z";
+const INNER_DASHED_CARTOUCHE_100 = "M 50 6 C 48 8, 46 11, 42 11.5 C 34 12.5, 28 16, 22 20.5 C 19.5 22.5, 17 26, 14.5 30 C 12 34, 11.5 39, 11.5 42 C 11 45, 8 48, 6 50 C 8 52, 11 55, 11.5 58 C 11.5 61, 12 66, 14.5 70 C 17 74, 19.5 77.5, 22 79.5 C 28 84, 34 87.5, 42 88.5 C 46 89, 48 92, 50 94 C 52 92, 54 89, 58 88.5 C 66 87.5, 72 84, 78 79.5 C 80.5 77.5, 83 74, 85.5 70 C 88 66, 88.5 61, 88.5 58 C 89 55, 92 52, 94 50 C 92 48, 89 45, 88.5 42 C 88.5 39, 88 34, 85.5 30 C 83 26, 80.5 22.5, 78 20.5 C 72 16, 66 12.5, 58 11.5 C 54 11, 52 8, 50 6 Z";
+
 const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
   const [isHovered, setIsHovered] = useState(false);
   const x = useMotionValue(0);
@@ -52,8 +87,8 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    x.set((e.clientX - centerX) * 0.15);
-    y.set((e.clientY - centerY) * 0.15);
+    x.set((e.clientX - centerX) * 0.08);
+    y.set((e.clientY - centerY) * 0.08);
   };
 
   const handleMouseLeave = () => {
@@ -64,32 +99,40 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
 
   const palettes = [
     {
-      glow: 'hsl(25 85% 55% / 0.18)',
-      icon: 'bg-orange-500/15 text-orange-700 dark:text-orange-300 dark:bg-orange-500/15',
-      rail: 'bg-orange-500',
-      wash: 'linear-gradient(135deg, hsl(35 90% 92% / 0.72), hsl(42 20% 92% / 0.88))',
-      darkWash: 'linear-gradient(135deg, hsl(24 44% 13% / 0.94), hsl(20 18% 7% / 0.96))',
+      glow: 'hsl(25 95% 55% / 0.32)',
+      border: '#f97316',
+      borderInner: '#fdba74',
+      accentColor: '#f97316',
+      iconBg: 'bg-orange-500/20 text-orange-400 border border-orange-500/40 shadow-[0_0_25px_rgba(249,115,22,0.4)]',
+      bgGradient: 'linear-gradient(145deg, rgba(30, 18, 10, 0.98) 0%, rgba(15, 10, 18, 0.98) 100%)',
+      lotusColor: '#f97316',
     },
     {
-      glow: 'hsl(205 85% 55% / 0.18)',
-      icon: 'bg-sky-500/15 text-sky-800 dark:text-sky-300 dark:bg-sky-500/15',
-      rail: 'bg-sky-500',
-      wash: 'linear-gradient(135deg, hsl(205 85% 92% / 0.72), hsl(42 20% 92% / 0.88))',
-      darkWash: 'linear-gradient(135deg, hsl(210 52% 14% / 0.94), hsl(215 22% 8% / 0.96))',
+      glow: 'hsl(205 95% 55% / 0.32)',
+      border: '#0ea5e9',
+      borderInner: '#7dd3fc',
+      accentColor: '#0ea5e9',
+      iconBg: 'bg-sky-500/20 text-sky-400 border border-sky-500/40 shadow-[0_0_25px_rgba(14,165,233,0.4)]',
+      bgGradient: 'linear-gradient(145deg, rgba(8, 24, 38, 0.98) 0%, rgba(6, 12, 22, 0.98) 100%)',
+      lotusColor: '#0ea5e9',
     },
     {
-      glow: 'hsl(275 70% 55% / 0.18)',
-      icon: 'bg-violet-500/15 text-violet-800 dark:text-violet-300 dark:bg-violet-500/15',
-      rail: 'bg-violet-500',
-      wash: 'linear-gradient(135deg, hsl(275 70% 93% / 0.72), hsl(42 20% 92% / 0.88))',
-      darkWash: 'linear-gradient(135deg, hsl(270 44% 15% / 0.94), hsl(260 22% 8% / 0.96))',
+      glow: 'hsl(275 85% 62% / 0.32)',
+      border: '#a855f7',
+      borderInner: '#d8b4fe',
+      accentColor: '#a855f7',
+      iconBg: 'bg-violet-500/20 text-violet-400 border border-violet-500/40 shadow-[0_0_25px_rgba(168,85,247,0.4)]',
+      bgGradient: 'linear-gradient(145deg, rgba(26, 12, 38, 0.98) 0%, rgba(12, 8, 20, 0.98) 100%)',
+      lotusColor: '#a855f7',
     },
     {
-      glow: 'hsl(155 65% 42% / 0.18)',
-      icon: 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 dark:bg-emerald-500/15',
-      rail: 'bg-emerald-500',
-      wash: 'linear-gradient(135deg, hsl(155 65% 92% / 0.72), hsl(42 20% 92% / 0.88))',
-      darkWash: 'linear-gradient(135deg, hsl(156 46% 12% / 0.94), hsl(160 20% 7% / 0.96))',
+      glow: 'hsl(155 80% 48% / 0.32)',
+      border: '#10b981',
+      borderInner: '#6ee7b7',
+      accentColor: '#10b981',
+      iconBg: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_25px_rgba(16,185,129,0.4)]',
+      bgGradient: 'linear-gradient(145deg, rgba(8, 28, 20, 0.98) 0%, rgba(6, 14, 12, 0.98) 100%)',
+      lotusColor: '#10b981',
     },
   ];
   const palette = palettes[index % palettes.length];
@@ -100,116 +143,183 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
       style={{ x: springX, y: springY }}
-      className="relative group cursor-pointer perspective-1000 h-full"
+      className="relative group cursor-pointer w-full max-w-[560px] mx-auto filter drop-shadow-[0_25px_60px_rgba(0,0,0,0.65)]"
     >
-      <div
-        className={`glass-card bg-[image:var(--feature-wash)] p-6 sm:p-8 h-full min-h-[330px] md:min-h-[350px] transition-all duration-500 dark:bg-[image:var(--feature-wash-dark)] ${isHovered ? 'electric-border' : ''}`}
-        style={{
-          '--feature-wash': palette.wash,
-          '--feature-wash-dark': palette.darkWash,
-        } as React.CSSProperties}
+      {/* Outer SVG Arch Border with Royal Indian Architectural Outline */}
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none z-30 transition-all duration-500"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
       >
-        {/* Glow effect */}
+        {/* Outer Primary Architectural Border */}
+        <path
+          d={INDIAN_CARTOUCHE_100}
+          fill="none"
+          stroke={palette.border}
+          strokeWidth={isHovered ? "2.4" : "1.8"}
+          vectorEffect="non-scaling-stroke"
+          className="transition-all duration-500"
+        />
+        {/* Inner Dashed Concentric Arch Inset from Indian Wedding Cartouche */}
+        <path
+          d={INNER_DASHED_CARTOUCHE_100}
+          fill="none"
+          stroke={palette.borderInner}
+          strokeWidth="1"
+          strokeDasharray="3 2"
+          vectorEffect="non-scaling-stroke"
+          className="opacity-80 transition-all duration-500"
+        />
+      </svg>
+
+      {/* 4 Cardinal Diamond Rhombus / Finial Pins (Top, Bottom, Left, Right) */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40">
+        <span
+          className="block w-3.5 h-3.5 rotate-45 border border-white/70 shadow-lg transition-transform duration-500 group-hover:scale-125"
+          style={{ background: palette.accentColor, boxShadow: `0 0 14px ${palette.accentColor}` }}
+        />
+      </div>
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-40">
+        <span
+          className="block w-3.5 h-3.5 rotate-45 border border-white/70 shadow-lg transition-transform duration-500 group-hover:scale-125"
+          style={{ background: palette.accentColor, boxShadow: `0 0 14px ${palette.accentColor}` }}
+        />
+      </div>
+      <div className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 z-40">
+        <span
+          className="block w-3 h-3 rotate-45 border border-white/70 shadow-lg transition-transform duration-500 group-hover:scale-125"
+          style={{ background: palette.accentColor, boxShadow: `0 0 10px ${palette.accentColor}` }}
+        />
+      </div>
+      <div className="absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2 z-40">
+        <span
+          className="block w-3 h-3 rotate-45 border border-white/70 shadow-lg transition-transform duration-500 group-hover:scale-125"
+          style={{ background: palette.accentColor, boxShadow: `0 0 10px ${palette.accentColor}` }}
+        />
+      </div>
+
+      {/* Clipped Card Body */}
+      <div
+        className="relative w-full h-[440px] sm:h-[470px] px-8 sm:px-14 py-12 sm:py-14 flex flex-col items-center justify-center text-center transition-all duration-500 backdrop-blur-2xl"
+        style={{
+          clipPath: 'url(#vision-cartouche-shape)',
+          WebkitClipPath: 'url(#vision-cartouche-shape)',
+          background: palette.bgGradient,
+        }}
+      >
+        {/* Inner Radial Glow */}
         <motion.div
-          animate={{ opacity: isHovered ? 1 : 0 }}
-          className="absolute inset-0 pointer-events-none rounded-2xl"
+          animate={{ opacity: isHovered ? 1 : 0.65 }}
+          className="absolute inset-0 pointer-events-none transition-opacity duration-500"
           style={{
-            background: `radial-gradient(circle at 50% 0%, ${palette.glow} 0%, transparent 62%)`,
+            background: `radial-gradient(circle at 50% 30%, ${palette.glow} 0%, transparent 68%)`,
           }}
         />
 
-        {/* Icon */}
-        <motion.div
-          animate={{
-            scale: isHovered ? 1.1 : 1,
-            rotate: isHovered ? 5 : 0
-          }}
-          className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 ${palette.icon} group-hover:shadow-[0_18px_50px_rgba(0,0,0,0.14)]`}
-        >
-          {feature.icon}
-        </motion.div>
+        {/* Lotus Emblem Watermark in background */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+          <LotusEmblem className="w-64 h-64" color={palette.lotusColor} />
+        </div>
 
-        {/* Content */}
-        <h3 className="text-xl font-bold mb-3 text-foreground">
+        {/* Feature Eyebrow Tag with Lotus Accent */}
+        <div className="flex items-center gap-2 mb-3 relative z-10">
+          <span className="text-[9px] rotate-45" style={{ color: palette.accentColor }}>◆</span>
+          <span className="text-[11px] font-extrabold uppercase tracking-[0.24em]" style={{ color: palette.accentColor }}>
+            Pillar 0{index + 1}
+          </span>
+          <span className="text-[9px] rotate-45" style={{ color: palette.accentColor }}>◆</span>
+        </div>
+
+        {/* Icon with Lotus Frame */}
+        <div className="relative mb-4 sm:mb-5 z-10">
+          <div
+            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center ${palette.iconBg}`}
+          >
+            {feature.icon}
+          </div>
+        </div>
+
+        {/* Title */}
+        <h3 className="text-xl sm:text-2xl font-black mb-2.5 text-white tracking-tight max-w-sm drop-shadow-md relative z-10">
           {feature.title}
         </h3>
-        <p className="text-muted-foreground text-sm leading-relaxed">
+
+        {/* Description */}
+        <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-xs sm:max-w-sm mx-auto mb-4 font-normal relative z-10">
           {feature.description}
         </p>
 
-        {/* Hover indicator */}
-        <motion.div
-          animate={{
-            width: isHovered ? '100%' : '0%',
-            opacity: isHovered ? 1 : 0
-          }}
-          className={`absolute bottom-0 left-0 h-0.5 ${palette.rail}`}
-        />
+        {/* Bottom Status / Feature Pill with Diamond */}
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90 text-[11px] font-semibold backdrop-blur-md shadow-inner relative z-10">
+          <span className="w-1.5 h-1.5 rotate-45" style={{ background: palette.accentColor }} />
+          <span>Production-Ready Deep-Tech</span>
+        </div>
       </div>
     </motion.div>
   );
 };
 
-const PinnedFeatureCard = ({
+// Smooth continuous scroll stack card wrapper
+const ScrollStackedCard = ({
   feature,
   index,
-  activeIndex,
+  total,
+  scrollYProgress,
 }: {
   feature: any;
   index: number;
-  activeIndex: number;
+  total: number;
+  scrollYProgress: any;
 }) => {
-  const isActive = index === activeIndex;
-  const isStacked = index < activeIndex;
-  const stackDepth = activeIndex - index;
-  const isVisible = isActive || isStacked;
+  // Compute progress slice for this card
+  const step = 1 / total;
+  const start = index * step;
+  const end = (index + 1) * step;
+
+  // Scale down as later cards enter
+  const scale = useTransform(
+    scrollYProgress,
+    [start, end, Math.min(1, end + step)],
+    [1, 1, 1 - (total - 1 - index) * 0.04]
+  );
+
+  // Stacked offset
+  const translateY = useTransform(
+    scrollYProgress,
+    [Math.max(0, start - step * 0.5), start, 1],
+    [index === 0 ? 0 : 80, 0, (total - 1 - index) * -8]
+  );
+
+  // Opacity for stacked effect
+  const opacity = useTransform(
+    scrollYProgress,
+    [Math.max(0, start - step * 0.8), start],
+    [index === 0 ? 1 : 0.2, 1]
+  );
 
   return (
     <motion.div
-      className="absolute inset-0 flex items-start justify-center"
-      initial={false}
-      animate={{
-        opacity: isVisible ? 1 : 0,
-        y: isStacked ? stackDepth * 18 : isActive ? 0 : 120,
-        scale: isStacked ? 1 - stackDepth * 0.035 : isActive ? 1 : 0.94,
-      }}
-      transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
       style={{
-        zIndex: isVisible ? index + 1 : 0,
-        pointerEvents: isActive ? 'auto' : 'none',
+        scale,
+        y: translateY,
+        opacity,
+        zIndex: index + 1,
       }}
-      aria-hidden={!isVisible}
+      className="sticky top-28 md:top-36 w-full flex items-center justify-center mb-12"
     >
-      <div
-        className="w-full max-w-3xl bg-card border border-border/50 rounded-2xl shadow-2xl overflow-hidden"
-        style={{
-          boxShadow: `0 ${24 + index * 8}px ${60 + index * 8}px hsl(240 10% 5% / ${0.14 + index * 0.03})`,
-        }}
-      >
-        <FeatureCard feature={feature} index={index} />
-      </div>
+      <FeatureCard feature={feature} index={index} />
     </motion.div>
   );
 };
-
-
 
 export const VisionSection = () => {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
-  const containerRef = useRef<HTMLDivElement>(null);
-  const desktopContainerRef = useRef<HTMLDivElement>(null);
-  const [activeFeatureIndex, setActiveFeatureIndex] = useState(0);
-  const [activeDesktopIndex, setActiveDesktopIndex] = useState(0);
+  const scrollStackRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end end'],
-  });
-
-  const { scrollYProgress: desktopScrollYProgress } = useScroll({
-    target: desktopContainerRef,
+    target: scrollStackRef,
     offset: ['start start', 'end end'],
   });
 
@@ -247,24 +357,17 @@ export const VisionSection = () => {
     { value: '24/7', label: t('vision.mission.stats.autonomous') },
   ];
 
-  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    const releaseBuffer = 0.08;
-    const cardProgress = Math.min(1, latest / (1 - releaseBuffer));
-    const nextIndex = Math.min(features.length - 1, Math.max(0, Math.floor(cardProgress * features.length)));
-    setActiveFeatureIndex(nextIndex);
-  });
-
-  useMotionValueEvent(desktopScrollYProgress, 'change', (latest) => {
-    const releaseBuffer = 0.08;
-    const cardProgress = Math.min(1, latest / (1 - releaseBuffer));
-    const nextIndex = Math.min(features.length - 1, Math.max(0, Math.floor(cardProgress * features.length)));
-    setActiveDesktopIndex(nextIndex);
-  });
-
-
-
   return (
-    <section id="vision" className="bg-background py-32 relative overflow-visible" ref={ref}>
+    <section id="vision" className="bg-background py-28 relative overflow-visible" ref={ref}>
+      {/* Hidden SVG Definitions for Royal Indian Cartouche ClipPath */}
+      <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
+        <defs>
+          <clipPath id="vision-cartouche-shape" clipPathUnits="objectBoundingBox">
+            <path d={INDIAN_CARTOUCHE_CLIP} />
+          </clipPath>
+        </defs>
+      </svg>
+
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/10 to-background" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-primary/3 rounded-full blur-[150px]" />
@@ -273,110 +376,51 @@ export const VisionSection = () => {
       {/* Grid pattern */}
       <div className="absolute inset-0 grid-pattern opacity-30" />
 
-      <div className="container mx-auto px-6 relative z-10" ref={ref}>
-        {/* Mobile sticky scroll stack for AI capability cards */}
+      <div className="container mx-auto px-6 relative z-10">
+        {/* Vision Header Text with Lotus Motif */}
         <motion.div
-          ref={containerRef} 
-          className="relative mt-2 h-[calc(100svh+1400px)] md:hidden"
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+          className="text-center mb-14 max-w-3xl mx-auto"
         >
-          <div className="sticky top-28 z-20 flex flex-col items-center justify-start pt-2 pb-4">
-            {/* Mobile Header Text - pinned sticky so it stays visible under navbar while scrolling */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-              className="text-center mb-5 px-2"
-            >
-              <motion.span
-                className="inline-block text-primary font-medium text-xs tracking-[0.25em] uppercase mb-2"
-                initial={{ opacity: 0, y: 15 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                {t('vision.title')}
-              </motion.span>
-              <h2 className="text-2xl sm:text-3xl font-bold mb-3 leading-tight text-foreground">
-                {t('vision.beyondPrototypes')}{' '}
-                <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>
-              </h2>
-              <p className="text-muted-foreground text-xs sm:text-sm max-w-sm mx-auto leading-relaxed">
-                <Trans
-                  i18nKey="vision.visionDescription"
-                  components={[
-                    <span className="text-primary font-medium" />
-                  ]}
-                />
-              </p>
-            </motion.div>
+          <motion.div
+            className="inline-flex items-center gap-2 text-primary font-bold text-xs md:text-sm tracking-[0.3em] uppercase mb-3 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20"
+            initial={{ opacity: 0, y: 15 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <LotusEmblem className="w-4 h-4" color="currentColor" />
+            <span>{t('vision.title')}</span>
+            <LotusEmblem className="w-4 h-4" color="currentColor" />
+          </motion.div>
 
-            {/* Mobile Pinned Feature Cards */}
-            <div className="relative w-full h-[380px] flex items-center justify-center">
-              {features.map((feature, index) => (
-                <PinnedFeatureCard
-                  key={feature.title}
-                  feature={feature}
-                  index={index}
-                  activeIndex={activeFeatureIndex}
-                />
-              ))}
-            </div>
-          </div>
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black mb-4 leading-tight text-foreground">
+            {t('vision.beyondPrototypes')}{' '}
+            <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>
+          </h2>
+          <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
+            <Trans
+              i18nKey="vision.visionDescription"
+              components={[
+                <span className="text-primary font-semibold" key="desc-highlight" />
+              ]}
+            />
+          </p>
         </motion.div>
 
-        {/* Desktop sticky stack scroll animation */}
-        <motion.div
-          ref={desktopContainerRef}
-          className="relative mt-4 hidden h-[calc(100vh+1800px)] md:block"
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
-          <div className="sticky top-32 z-20 flex flex-col items-center justify-start max-w-5xl mx-auto pt-2 pb-6">
-            {/* Desktop Header Text - pinned sticky so it stays visible while scrolling cards */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-              className="text-center mb-8 max-w-3xl"
-            >
-              <motion.span
-                className="inline-block text-primary font-medium text-sm tracking-[0.3em] uppercase mb-4"
-                initial={{ opacity: 0, y: 15 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                {t('vision.title')}
-              </motion.span>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-foreground">
-                {t('vision.beyondPrototypes')}{' '}
-                <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>
-              </h2>
-              <p className="text-muted-foreground text-lg md:text-xl leading-relaxed">
-                <Trans
-                  i18nKey="vision.visionDescription"
-                  components={[
-                    <span className="text-primary font-medium" />
-                  ]}
-                />
-              </p>
-            </motion.div>
-
-            {/* Desktop Pinned Feature Cards */}
-            <div className="relative w-full max-w-3xl h-[360px] flex items-center justify-center">
-              {features.map((feature, index) => (
-                <PinnedFeatureCard
-                  key={feature.title}
-                  feature={feature}
-                  index={index}
-                  activeIndex={activeDesktopIndex}
-                />
-              ))}
-            </div>
-          </div>
-        </motion.div>
+        {/* Continuous Sticky Stack Scroll Deck for Capability Cards */}
+        <div ref={scrollStackRef} className="relative w-full max-w-2xl mx-auto min-h-[220vh] pb-24">
+          {features.map((feature, index) => (
+            <ScrollStackedCard
+              key={feature.title}
+              feature={feature}
+              index={index}
+              total={features.length}
+              scrollYProgress={scrollYProgress}
+            />
+          ))}
+        </div>
 
         {/* Mission statement */}
         <motion.div
