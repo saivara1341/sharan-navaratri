@@ -127,29 +127,90 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
 function PinnedServiceCard({
   service,
   index,
-  activeIndex,
+  total,
+  scrollYProgress,
 }: {
   service: Service;
   index: number;
-  activeIndex: number;
+  total: number;
+  scrollYProgress: any;
 }) {
-  const isActive = index === activeIndex;
+  const step = 0.90 / total;
+  const start = index * step;
+  const end = (index + 1) * step;
+
+  // Translation Y: enters from bottom (220px) smoothly and exits upward (-60px)
+  const y = useTransform(
+    scrollYProgress,
+    index === 0
+      ? [0, end - step * 0.25, end]
+      : [
+          Math.max(0, start - step * 0.7),
+          start,
+          end - step * 0.25,
+          index === total - 1 ? 1 : end,
+        ],
+    index === 0
+      ? [0, 0, -60]
+      : [
+          220, // smoothly enters from bottom
+          0,   // settles at center
+          0,   // stays locked at center
+          index === total - 1 ? 0 : -60, // exits smoothly upward
+        ]
+  );
+
+  // Scale: subtle growth on entrance, slight shrink on exit
+  const scale = useTransform(
+    scrollYProgress,
+    index === 0
+      ? [0, end - step * 0.25, end]
+      : [
+          Math.max(0, start - step * 0.7),
+          start,
+          end - step * 0.25,
+          index === total - 1 ? 1 : end,
+        ],
+    index === 0
+      ? [1, 1, 0.95]
+      : [
+          0.91,
+          1,
+          1,
+          index === total - 1 ? 1 : 0.95,
+        ]
+  );
+
+  // Opacity: fades in from bottom, remains 1, fades out on exit
+  const opacity = useTransform(
+    scrollYProgress,
+    index === 0
+      ? [0, end - step * 0.25, end]
+      : [
+          Math.max(0, start - step * 0.7),
+          start,
+          end - step * 0.25,
+          index === total - 1 ? 1 : end,
+        ],
+    index === 0
+      ? [1, 1, 0]
+      : [
+          0,
+          1,
+          1,
+          index === total - 1 ? 1 : 0,
+        ]
+  );
 
   return (
     <motion.div
-      className="absolute inset-0 flex items-start justify-center"
-      initial={false}
-      animate={{
-        opacity: isActive ? 1 : 0,
-        y: isActive ? 0 : index < activeIndex ? -35 : 100,
-        scale: isActive ? 1 : 0.96,
-      }}
-      transition={{ duration: 0.48, ease: [0.25, 0.1, 0.25, 1] }}
+      className="absolute inset-0 flex items-start justify-center pointer-events-auto"
       style={{
-        zIndex: isActive ? SERVICES.length + 1 : 0,
-        pointerEvents: isActive ? "auto" : "none",
+        y,
+        scale,
+        opacity,
+        zIndex: index + 10,
       }}
-      aria-hidden={!isActive}
     >
       <div
         className="w-full rounded-[1.75rem]"
@@ -170,9 +231,9 @@ export function ServicesSection() {
   });
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    const releaseBuffer = 0.06;
-    const progress = Math.min(1, latest / (1 - releaseBuffer));
-    setActiveIndex(Math.min(SERVICES.length - 1, Math.max(0, Math.floor(progress * SERVICES.length))));
+    const step = 0.90 / SERVICES.length;
+    const current = Math.min(SERVICES.length - 1, Math.max(0, Math.floor(latest / step)));
+    setActiveIndex(current);
   });
 
   return (
@@ -180,7 +241,7 @@ export function ServicesSection() {
       <div className="pointer-events-none absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-primary/[0.045] blur-[110px]" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
-        <div ref={stackRef} className="relative h-[calc(100svh+5200px)] md:h-[calc(100vh+7200px)]">
+        <div ref={stackRef} className="relative h-[calc(100svh+4800px)] md:h-[calc(100vh+6200px)]">
           <div className="sticky top-28 z-20 flex flex-col items-center pt-2 md:top-32">
             <div className="mb-7 grid w-full gap-5 lg:grid-cols-[1fr_0.9fr] lg:items-end lg:gap-16 md:mb-9">
               <motion.div
@@ -189,9 +250,15 @@ export function ServicesSection() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.65 }}
               >
-                <div className="mb-6 flex items-center gap-3 md:mb-8">
-                  <span className="h-px w-8 bg-primary" />
-                  <span className="text-xs font-bold uppercase tracking-[0.22em] text-primary">Our services</span>
+                <div className="mb-6 flex items-center justify-between md:mb-8">
+                  <div className="flex items-center gap-3">
+                    <span className="h-px w-8 bg-primary" />
+                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-primary">Our services</span>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                    {String(activeIndex + 1).padStart(2, "0")} / {String(SERVICES.length).padStart(2, "0")}
+                  </span>
                 </div>
                 <h2 className="max-w-3xl text-3xl font-black leading-[0.98] tracking-[-0.045em] text-foreground sm:text-4xl md:text-6xl">
                   Everything we build,
@@ -222,7 +289,8 @@ export function ServicesSection() {
                   key={service.title}
                   service={service}
                   index={index}
-                  activeIndex={activeIndex}
+                  total={SERVICES.length}
+                  scrollYProgress={scrollYProgress}
                 />
               ))}
             </motion.div>
