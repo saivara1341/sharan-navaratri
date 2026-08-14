@@ -161,7 +161,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
       {/* Main card container */}
       <div className={`relative flex items-center justify-center ${
         isDesktopGrid
-          ? 'w-full max-w-[420px] xl:max-w-[460px] h-[420px] xl:h-[450px]'
+          ? 'w-full h-[440px]'
           : 'w-[88vw] max-w-[340px] h-[400px] sm:h-[420px]'
       }`}>
 
@@ -169,7 +169,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
         <svg
           viewBox={`0 0 ${VW} ${VH}`}
           className="absolute inset-0 w-full h-full pointer-events-none filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.35)]"
-          preserveAspectRatio="none"
+          preserveAspectRatio={isDesktopGrid ? 'none' : 'xMidYMid meet'}
           aria-hidden="true"
         >
           <defs>
@@ -217,7 +217,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
         {/* Card Content — No text overflow on mobile */}
         <div className={`relative z-10 w-full h-full flex flex-col items-center justify-center text-center ${
           isDesktopGrid
-            ? 'px-4 xl:px-6 py-6 gap-2 xl:gap-2.5'
+            ? 'px-8 xl:px-10 py-5 gap-2'
             : 'px-7 sm:px-10 py-6 sm:py-8 gap-2 sm:gap-2.5'
         }`}>
           
@@ -232,7 +232,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
 
           {/* Title — above the divider */}
           <h3 className={`font-black text-white tracking-tight leading-tight drop-shadow-sm ${
-            isDesktopGrid ? 'text-xl xl:text-2xl max-w-[340px]' : 'text-sm sm:text-base max-w-[240px]'
+            isDesktopGrid ? 'text-lg xl:text-xl max-w-[85%]' : 'text-sm sm:text-base max-w-[240px]'
           }`}>
             {feature.title}
           </h3>
@@ -247,7 +247,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
           {/* Description */}
           <p className={`text-slate-300 font-normal leading-snug ${
             isDesktopGrid
-              ? 'text-sm xl:text-[15px] max-w-[330px] xl:max-w-[370px] leading-relaxed'
+              ? 'text-xs xl:text-sm max-w-[85%] leading-relaxed'
               : 'text-[11px] sm:text-xs max-w-[230px] sm:max-w-[260px] leading-snug'
           }`}>
             {feature.description}
@@ -476,7 +476,7 @@ export const VisionSection = () => {
 
       {/* ─── MOBILE VIEW: Pinned Scroll Deck with Larger Cards ─────────────── */}
       <div ref={scrollStackRef} className="lg:hidden relative w-full min-h-[280vh]">
-        <div className="sticky top-12 sm:top-14 h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3.5rem)] flex flex-col justify-start items-center pt-5 sm:pt-6 pb-2 px-3 gap-2 sm:gap-3 overflow-hidden z-20">
+        <div className="sticky top-12 sm:top-14 h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3.5rem)] flex flex-col justify-start items-center pt-2 sm:pt-3 pb-2 px-3 gap-1 sm:gap-2 overflow-hidden z-20">
           
           {/* Mobile Header */}
           <div className="text-center max-w-3xl mx-auto shrink-0">
