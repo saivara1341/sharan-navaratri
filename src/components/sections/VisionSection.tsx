@@ -73,15 +73,12 @@ export const LotusEmblem = ({ className = "w-6 h-6", color = "currentColor" }: {
 );
 
 
-// ─── Jharokha Arch Paths (5-cusp Mughal cusped arch, 270×370 viewBox) ─────────
-// Outer frame path
-const ARCH_OUTER = "M 18 362 Q 18 370 26 370 L 244 370 Q 252 370 252 362 L 252 172 Q 226 145 214 128 Q 202 105 190 88 Q 180 66 162 48 Q 150 32 138 48 Q 120 66 110 88 Q 98 105 86 128 Q 74 145 18 172 Z";
-// Inner concentric frame (inset ~8px)
-const ARCH_INNER = "M 26 356 Q 26 362 33 362 L 237 362 Q 244 362 244 356 L 244 175 Q 220 151 208 135 Q 196 113 184 96 Q 174 75 158 58 Q 150 44 142 58 Q 126 75 116 96 Q 104 113 92 135 Q 80 151 26 175 Z";
-// Clip path (normalized 0–1 for objectBoundingBox on 270×370 card)
-const ARCH_CLIP = "M 0.067 0.978 Q 0.067 1 0.096 1 L 0.904 1 Q 0.933 1 0.933 0.978 L 0.933 0.465 Q 0.837 0.392 0.793 0.346 Q 0.748 0.284 0.704 0.238 Q 0.667 0.178 0.6 0.130 Q 0.556 0.086 0.5 0.054 Q 0.444 0.086 0.4 0.130 Q 0.333 0.178 0.296 0.238 Q 0.252 0.284 0.207 0.346 Q 0.163 0.392 0.067 0.465 Z";
+// ─── Arched Central Panel Paths (Royal Indian Cusped Jharokha, 280×380 viewBox) ─
+const ARCH_PANEL_OUTER = "M 140 16 C 152 26, 164 34, 172 44 C 184 40, 198 48, 208 62 C 222 60, 238 72, 246 90 C 256 112, 258 138, 248 162 C 242 176, 242 204, 248 218 C 258 242, 256 268, 246 290 C 238 308, 222 320, 208 318 C 198 332, 184 340, 172 336 C 164 346, 152 354, 140 364 C 128 354, 116 346, 108 336 C 96 340, 82 332, 72 318 C 58 320, 42 308, 34 290 C 24 268, 22 242, 32 218 C 38 204, 38 176, 32 162 C 22 138, 24 112, 34 90 C 42 72, 58 60, 72 62 C 82 48, 96 40, 108 44 C 116 34, 128 26, 140 16 Z";
 
-// ─── Feature Card — Jharokha Arch Frame ──────────────────────────────────────
+const ARCH_PANEL_INNER = "M 140 26 C 150 34, 160 41, 168 50 C 178 47, 190 54, 199 66 C 211 65, 225 76, 233 92 C 241 112, 243 135, 235 158 C 230 173, 230 207, 235 222 C 243 245, 241 268, 233 288 C 225 304, 211 315, 199 314 C 190 326, 178 333, 168 330 C 160 339, 150 346, 140 354 C 130 346, 120 339, 112 330 C 102 333, 90 326, 81 314 C 69 315, 55 304, 47 288 C 39 268, 37 245, 45 222 C 50 207, 50 173, 45 158 C 37 135, 39 112, 47 92 C 55 76, 69 65, 81 66 C 90 54, 102 47, 112 50 C 120 41, 130 34, 140 26 Z";
+
+// ─── Feature Card — Arched Central Panel ────────────────────────────────────
 const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
   const [isHovered, setIsHovered] = useState(false);
   const x = useMotionValue(0);
@@ -91,52 +88,59 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    x.set((e.clientX - rect.left - rect.width / 2) * 0.04);
-    y.set((e.clientY - rect.top - rect.height / 2) * 0.04);
+    x.set((e.clientX - rect.left - rect.width / 2) * 0.05);
+    y.set((e.clientY - rect.top - rect.height / 2) * 0.05);
   };
 
   const palettes = [
     {
-      primary:  '#c8922a',   // antique gold
-      accent:   '#f5d07a',
-      cardBg:   'linear-gradient(160deg, #1a0e00 0%, #0d0700 55%, #050300 100%)',
-      glow:     'rgba(200,146,42,0.20)',
-      iconClass:'bg-amber-900/50 text-amber-300 border border-amber-600/50',
-      pillText: '#f5d07a',
-      topAccent:'#c8922a',
+      primary:   '#f59e0b',  // warm saffron gold
+      accent:    '#fde68a',  // light gold
+      border:    '#d97706',
+      borderDash:'#fbbf24',
+      solidBg:   '#0d0600',
+      radialGlow:'rgba(245, 158, 11, 0.28)',
+      iconBg:    'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm',
+      pillBg:    'bg-amber-500/15 border-amber-500/40 text-amber-300',
+      pillDot:   '#f59e0b',
     },
     {
-      primary:  '#6366f1',   // royal indigo
-      accent:   '#a5b4fc',
-      cardBg:   'linear-gradient(160deg, #080824 0%, #04040e 55%, #020208 100%)',
-      glow:     'rgba(99,102,241,0.18)',
-      iconClass:'bg-indigo-900/50 text-indigo-300 border border-indigo-500/50',
-      pillText: '#a5b4fc',
-      topAccent:'#6366f1',
+      primary:   '#38bdf8',  // sky cyan / deep indigo
+      accent:    '#bae6fd',
+      border:    '#0284c7',
+      borderDash:'#38bdf8',
+      solidBg:   '#020b14',
+      radialGlow:'rgba(56, 189, 248, 0.28)',
+      iconBg:    'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-sm',
+      pillBg:    'bg-sky-500/15 border-sky-500/40 text-sky-300',
+      pillDot:   '#38bdf8',
     },
     {
-      primary:  '#059669',   // deep emerald
-      accent:   '#6ee7b7',
-      cardBg:   'linear-gradient(160deg, #001a0e 0%, #010c07 55%, #000804 100%)',
-      glow:     'rgba(5,150,105,0.18)',
-      iconClass:'bg-emerald-900/50 text-emerald-300 border border-emerald-500/50',
-      pillText: '#6ee7b7',
-      topAccent:'#059669',
+      primary:   '#34d399',  // emerald
+      accent:    '#a7f3d0',
+      border:    '#059669',
+      borderDash:'#34d399',
+      solidBg:   '#011108',
+      radialGlow:'rgba(52, 211, 153, 0.28)',
+      iconBg:    'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm',
+      pillBg:    'bg-emerald-500/15 border-emerald-500/40 text-emerald-300',
+      pillDot:   '#34d399',
     },
     {
-      primary:  '#be185d',   // deep rose/ruby
-      accent:   '#fbcfe8',
-      cardBg:   'linear-gradient(160deg, #1a0010 0%, #0d0008 55%, #060004 100%)',
-      glow:     'rgba(190,24,93,0.18)',
-      iconClass:'bg-rose-900/50 text-rose-300 border border-rose-500/50',
-      pillText: '#fbcfe8',
-      topAccent:'#be185d',
+      primary:   '#f472b6',  // ruby rose
+      accent:    '#fbcfe8',
+      border:    '#db2777',
+      borderDash:'#f472b6',
+      solidBg:   '#12020a',
+      radialGlow:'rgba(244, 114, 182, 0.28)',
+      iconBg:    'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm',
+      pillBg:    'bg-rose-500/15 border-rose-500/40 text-rose-300',
+      pillDot:   '#f472b6',
     },
   ];
   const p = palettes[index % palettes.length];
 
-  // Shared SVG viewBox: 270 × 370
-  const VW = 270, VH = 370;
+  const VW = 280, VH = 380;
 
   return (
     <motion.div
@@ -145,168 +149,118 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       onMouseLeave={() => { x.set(0); y.set(0); setIsHovered(false); }}
       style={{ x: springX, y: springY }}
       className="relative mx-auto select-none cursor-pointer flex-shrink-0"
-      // Fixed size matching the 270×370 viewBox aspect ratio
-      // Mobile: 230×315, Desktop: 270×370
-      css-note="aspect-ratio handled by explicit w/h"
     >
-      {/* Outer ambient glow behind the arch */}
+      {/* Outer ambient glow */}
       <motion.div
-        animate={{ opacity: isHovered ? 0.5 : 0.2, scale: isHovered ? 1.06 : 1 }}
+        animate={{ opacity: isHovered ? 0.6 : 0.25, scale: isHovered ? 1.08 : 1 }}
         transition={{ duration: 0.5 }}
-        className="absolute -inset-3 blur-[35px] pointer-events-none"
-        style={{ background: `radial-gradient(ellipse at 50% 60%, ${p.primary}99 0%, transparent 70%)` }}
+        className="absolute -inset-4 rounded-3xl blur-[40px] pointer-events-none"
+        style={{ background: `radial-gradient(circle at 50% 50%, ${p.primary}90 0%, transparent 70%)` }}
       />
 
-      {/* The arch card itself — sized to 270:370 aspect */}
-      <div className="relative w-[230px] h-[315px] sm:w-[270px] sm:h-[370px]">
+      {/* Main card container */}
+      <div className="relative w-[280px] h-[370px] sm:w-[310px] sm:h-[410px] flex items-center justify-center">
 
-        {/* ① Card body — clipped to arch shape, fully opaque */}
-        <div
-          className="absolute inset-0 overflow-hidden"
-          style={{
-            clipPath: `path('${ARCH_CLIP.replace(/(\d+\.?\d*)/g, (m) => `${parseFloat(m) * VW}`).replace(/[MmLlQqZz]/g, '')}')`,
-            // Use objectBoundingBox compatible approach via SVG clipPath
-          }}
-        >
-          {/* We use a different approach — fill the arch via SVG rect + clip */}
-        </div>
-
-        {/* ② SVG layer — draws filled arch bg + all borders */}
+        {/* SVG Arched Central Panel */}
         <svg
           viewBox={`0 0 ${VW} ${VH}`}
-          className="absolute inset-0 w-full h-full"
+          className="absolute inset-0 w-full h-full pointer-events-none filter drop-shadow-[0_12px_30px_rgba(0,0,0,0.7)]"
           preserveAspectRatio="xMidYMid meet"
           aria-hidden="true"
         >
           <defs>
-            <clipPath id={`arch-clip-${index}`}>
-              <path d={ARCH_OUTER} />
-            </clipPath>
-            {/* Subtle radial glow gradient */}
-            <radialGradient id={`card-glow-${index}`} cx="50%" cy="55%" r="55%">
-              <stop offset="0%" stopColor={p.topAccent} stopOpacity="0.25" />
-              <stop offset="100%" stopColor="transparent" stopOpacity="0" />
+            {/* Inner radial gradient */}
+            <radialGradient id={`arch-radial-${index}`} cx="50%" cy="45%" r="60%">
+              <stop offset="0%" stopColor={p.primary} stopOpacity="0.22" />
+              <stop offset="70%" stopColor={p.solidBg} stopOpacity="0.95" />
+              <stop offset="100%" stopColor={p.solidBg} stopOpacity="1" />
             </radialGradient>
           </defs>
 
-          {/* Filled arch background (opaque) */}
-          <path d={ARCH_OUTER} fill="#050505" />
+          {/* Solid opaque background panel (blocks all card bleed-through) */}
+          <path d={ARCH_PANEL_OUTER} fill={p.solidBg} />
 
-          {/* Jewel-tone gradient overlay inside arch */}
-          <path d={ARCH_OUTER} fill={`url(#card-glow-${index})`} />
+          {/* Radial glow layer inside arch */}
+          <path d={ARCH_PANEL_OUTER} fill={`url(#arch-radial-${index})`} />
 
-          {/* Rich colored bg via a rect clipped to arch */}
-          <rect
-            x="0" y="0" width={VW} height={VH}
-            clipPath={`url(#arch-clip-${index})`}
-            fill="none"
-          />
-
-          {/* Outer arch border — primary color, solid */}
+          {/* Outer primary architectural border */}
           <path
-            d={ARCH_OUTER}
+            d={ARCH_PANEL_OUTER}
             fill="none"
-            stroke={p.primary}
-            strokeWidth={isHovered ? "2.2" : "1.6"}
+            stroke={p.border}
+            strokeWidth={isHovered ? "2.4" : "1.8"}
             strokeOpacity="0.95"
+            className="transition-all duration-300"
           />
 
-          {/* Inner concentric arch border — lighter, dashed */}
+          {/* Inner dashed concentric arch border */}
           <path
-            d={ARCH_INNER}
+            d={ARCH_PANEL_INNER}
             fill="none"
-            stroke={p.accent}
-            strokeWidth="0.8"
-            strokeOpacity="0.55"
-            strokeDasharray="5 3"
+            stroke={p.borderDash}
+            strokeWidth="1"
+            strokeDasharray="4 3"
+            strokeOpacity="0.65"
           />
 
-          {/* Top arch highlight line (thin gold line along arch contour) */}
-          <path
-            d={ARCH_OUTER}
-            fill="none"
-            stroke={p.accent}
-            strokeWidth="0.4"
-            strokeOpacity="0.3"
-          />
-
-          {/* Cardinal diamond finials — top, bottom, left, right */}
-          {/* Top center */}
-          <polygon points={`135,30 139,38 135,46 131,38`} fill={p.primary} fillOpacity="0.95" />
-          {/* Bottom center */}
-          <polygon points={`135,355 139,362 135,369 131,362`} fill={p.primary} fillOpacity="0.85" />
-          {/* Bottom left */}
-          <polygon points={`18,368 23,364 28,368 23,372`} fill={p.primary} fillOpacity="0.8" />
-          {/* Bottom right */}
-          <polygon points={`242,368 247,364 252,368 247,372`} fill={p.primary} fillOpacity="0.8" />
-
-          {/* Decorative horizontal rule inside arch body */}
-          <line x1="35" y1="182" x2="235" y2="182" stroke={p.primary} strokeWidth="0.6" strokeOpacity="0.3" strokeDasharray="3 4" />
-          <line x1="35" y1="350" x2="235" y2="350" stroke={p.primary} strokeWidth="0.6" strokeOpacity="0.3" strokeDasharray="3 4" />
-
-          {/* Tiny corner ornament dots at arch body corners */}
-          <circle cx="30" cy="188" r="2" fill={p.primary} fillOpacity="0.6" />
-          <circle cx="240" cy="188" r="2" fill={p.primary} fillOpacity="0.6" />
-          <circle cx="30" cy="344" r="2" fill={p.primary} fillOpacity="0.6" />
-          <circle cx="240" cy="344" r="2" fill={p.primary} fillOpacity="0.6" />
+          {/* Cardinal diamond finials */}
+          {/* Top Apex */}
+          <polygon points="140,6 145,16 140,26 135,16" fill={p.primary} />
+          {/* Bottom Apex */}
+          <polygon points="140,354 145,364 140,374 135,364" fill={p.primary} />
+          {/* Left Waist */}
+          <polygon points="22,190 32,185 42,190 32,195" fill={p.primary} />
+          {/* Right Waist */}
+          <polygon points="238,190 248,185 258,190 248,195" fill={p.primary} />
         </svg>
 
-        {/* ③ Content — positioned inside the arch body (below the arch head) */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center pt-[47%] pb-[7%] px-[10%]">
-          <div className="flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 w-full h-full">
-
-            {/* Pillar eyebrow */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[8px]" style={{ color: p.primary }}>◆</span>
-              <span
-                className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.22em]"
-                style={{ color: p.primary }}
-              >
-                Pillar 0{index + 1}
-              </span>
-              <span className="text-[8px]" style={{ color: p.primary }}>◆</span>
-            </div>
-
-            {/* Icon */}
-            <motion.div
-              animate={isHovered ? { scale: 1.12, y: -2 } : { scale: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className={`w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center ${p.iconClass} shadow-lg`}
+        {/* Card Content (Centered perfectly inside the arched central panel) */}
+        <div className="relative z-10 w-full h-full flex flex-col items-center justify-center text-center px-8 sm:px-10 py-8 gap-2 sm:gap-2.5">
+          
+          {/* Pillar Eyebrow */}
+          <div className="flex items-center gap-1.5 pt-2">
+            <span className="text-[8px] rotate-45" style={{ color: p.primary }}>◆</span>
+            <span
+              className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em]"
+              style={{ color: p.accent }}
             >
-              {feature.icon}
-            </motion.div>
+              Pillar 0{index + 1}
+            </span>
+            <span className="text-[8px] rotate-45" style={{ color: p.primary }}>◆</span>
+          </div>
 
-            {/* Gold divider */}
-            <div className="flex items-center gap-1.5 w-full max-w-[140px] sm:max-w-[170px]">
-              <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${p.primary}99)` }} />
-              <span className="text-[9px]" style={{ color: p.accent }}>✦</span>
-              <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, ${p.primary}99)` }} />
-            </div>
+          {/* Icon Badge */}
+          <motion.div
+            animate={isHovered ? { scale: 1.1, rotate: 4 } : { scale: 1, rotate: 0 }}
+            transition={{ duration: 0.3 }}
+            className={`w-11 h-11 sm:w-13 sm:h-13 rounded-2xl flex items-center justify-center ${p.iconBg}`}
+          >
+            {feature.icon}
+          </motion.div>
 
-            {/* Title */}
-            <h3
-              className="text-[11px] sm:text-[13px] font-black text-white tracking-tight leading-snug max-w-[160px] sm:max-w-[190px]"
-            >
-              {feature.title}
-            </h3>
+          {/* Decorative Divider */}
+          <div className="flex items-center gap-1.5 w-full max-w-[140px] sm:max-w-[170px] my-0.5">
+            <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${p.primary}90)` }} />
+            <span className="text-[8px]" style={{ color: p.accent }}>✦</span>
+            <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, ${p.primary}90)` }} />
+          </div>
 
-            {/* Description */}
-            <p className="text-white/60 text-[9px] sm:text-[10px] leading-snug max-w-[150px] sm:max-w-[180px] line-clamp-3">
-              {feature.description}
-            </p>
+          {/* Title */}
+          <h3 className="text-base sm:text-lg font-black text-white tracking-tight leading-tight drop-shadow-sm max-w-[200px]">
+            {feature.title}
+          </h3>
 
-            {/* Production badge */}
-            <div
-              className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[8px] sm:text-[9px] font-semibold tracking-wider uppercase"
-              style={{
-                background: `${p.primary}15`,
-                border: `1px solid ${p.primary}50`,
-                color: p.pillText,
-              }}
-            >
-              <span className="w-1.5 h-1.5 rotate-45" style={{ background: p.primary }} />
-              Production-Ready
-            </div>
+          {/* Description */}
+          <p className="text-slate-300 text-[11px] sm:text-xs leading-relaxed max-w-[190px] sm:max-w-[220px] font-normal line-clamp-3">
+            {feature.description}
+          </p>
+
+          {/* Bottom Badge */}
+          <div
+            className={`mt-1 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-semibold backdrop-blur-md shadow-sm border ${p.pillBg}`}
+          >
+            <span className="w-1.5 h-1.5 rotate-45" style={{ background: p.pillDot }} />
+            <span className="truncate">Production-Ready Deep-Tech</span>
           </div>
         </div>
       </div>
@@ -491,8 +445,8 @@ export const VisionSection = () => {
             </div>
 
             <h2 className="text-2xl sm:text-4xl md:text-5xl font-black mb-1 sm:mb-2 leading-tight text-foreground">
-              {t('vision.beyondPrototypes')}{' '}
-              <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>
+              <span className="block">{t('vision.beyondPrototypes')}</span>
+              <span className="block gradient-text glow-text">{t('vision.intoProduction')}</span>
             </h2>
             <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed max-w-xl mx-auto hidden sm:block">
               <Trans
@@ -505,7 +459,7 @@ export const VisionSection = () => {
           </div>
 
           {/* Stacked Cards Deck Area */}
-          <div className="relative w-full max-w-[400px] sm:max-w-[440px] mx-auto flex-1 min-h-[310px] sm:min-h-[400px] flex items-center justify-center my-auto">
+          <div className="relative w-full max-w-[360px] sm:max-w-[420px] mx-auto flex-1 min-h-[370px] sm:min-h-[415px] flex items-center justify-center my-auto">
             {features.map((feature, index) => (
               <StackedDeckCard
                 key={feature.title}
