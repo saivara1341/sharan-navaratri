@@ -1,7 +1,7 @@
-import { motion, useInView, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform } from 'framer-motion';
+import { motion, useInView, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Network, Lightbulb, Waypoints, Zap } from 'lucide-react';
+import { Network, Lightbulb, Waypoints, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -367,6 +367,144 @@ const DeckDot = ({
   );
 };
 
+import { ChevronLeft, ChevronRight, Network, Lightbulb, Waypoints, Zap } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
+
+// Mobile Touch & Swipe Interactive Deck
+const MobileVisionDeck = ({ features }: { features: any[] }) => {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [direction, setDirection] = useState(0);
+
+  const paginate = (newDirection: number) => {
+    setDirection(newDirection);
+    setActiveIdx((prev) => {
+      const next = prev + newDirection;
+      if (next < 0) return features.length - 1;
+      if (next >= features.length) return 0;
+      return next;
+    });
+  };
+
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 120 : -120,
+      opacity: 0,
+      scale: 0.94,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      scale: 1,
+      transition: {
+        x: { type: "spring", stiffness: 350, damping: 28 },
+        opacity: { duration: 0.22 },
+        scale: { duration: 0.22 },
+      },
+    },
+    exit: (direction: number) => ({
+      x: direction < 0 ? 120 : -120,
+      opacity: 0,
+      scale: 0.94,
+      transition: {
+        x: { type: "spring", stiffness: 350, damping: 28 },
+        opacity: { duration: 0.18 },
+        scale: { duration: 0.18 },
+      },
+    }),
+  };
+
+  return (
+    <div className="w-full flex flex-col items-center py-2 md:hidden">
+      {/* 4 Interactive Mobile Pillar Tabs */}
+      <div className="flex items-center justify-center gap-1.5 mb-5 overflow-x-auto max-w-full px-2 py-1 scrollbar-none">
+        {features.map((f, i) => {
+          const isActive = i === activeIdx;
+          return (
+            <button
+              key={f.title}
+              onClick={() => {
+                setDirection(i > activeIdx ? 1 : -1);
+                setActiveIdx(i);
+              }}
+              className={`px-3 py-1.5 rounded-full text-[11px] font-bold tracking-wider transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap border ${
+                isActive
+                  ? 'bg-primary text-primary-foreground border-primary shadow-[0_0_12px_rgba(245,158,11,0.35)] scale-105'
+                  : 'bg-card/80 text-muted-foreground border-border/70 hover:border-primary/40'
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-current" />
+              <span>Pillar 0{i + 1}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Swipeable Card Container */}
+      <div className="relative w-full max-w-[340px] min-h-[380px] flex items-center justify-center">
+        <AnimatePresence initial={false} custom={direction} mode="wait">
+          <motion.div
+            key={activeIdx}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.35}
+            onDragEnd={(e, { offset, velocity }) => {
+              const swipe = Math.abs(offset.x) * velocity.x;
+              if (swipe < -60 || offset.x < -50) {
+                paginate(1);
+              } else if (swipe > 60 || offset.x > 50) {
+                paginate(-1);
+              }
+            }}
+            className="w-full flex items-center justify-center touch-pan-y"
+          >
+            <FeatureCard feature={features[activeIdx]} index={activeIdx} />
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Floating Chevrons for Mobile */}
+        <button
+          onClick={() => paginate(-1)}
+          aria-label="Previous Vision Pillar"
+          className="absolute -left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background/90 border border-border/80 text-foreground flex items-center justify-center shadow-md backdrop-blur-md z-30 transition-transform active:scale-90 hover:scale-105"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => paginate(1)}
+          aria-label="Next Vision Pillar"
+          className="absolute -right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background/90 border border-border/80 text-foreground flex items-center justify-center shadow-md backdrop-blur-md z-30 transition-transform active:scale-90 hover:scale-105"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Pagination Dots */}
+      <div className="flex items-center gap-2 mt-4">
+        {features.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => {
+              setDirection(i > activeIdx ? 1 : -1);
+              setActiveIdx(i);
+            }}
+            aria-label={`Go to slide ${i + 1}`}
+            className={`h-1.5 rounded-full transition-all duration-300 ${
+              i === activeIdx
+                ? 'w-6 bg-primary shadow-[0_0_8px_rgba(245,158,11,0.5)]'
+                : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50'
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const VisionSection = () => {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
@@ -413,7 +551,7 @@ export const VisionSection = () => {
   ];
 
   return (
-    <section id="vision" className="bg-background relative overflow-visible" ref={ref}>
+    <section id="vision" className="bg-background relative overflow-visible py-12 md:py-0" ref={ref}>
       {/* Hidden SVG Definitions for Royal Indian Cartouche ClipPath */}
       <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
         <defs>
@@ -431,22 +569,50 @@ export const VisionSection = () => {
       {/* Grid pattern */}
       <div className="absolute inset-0 grid-pattern opacity-30" />
 
-      {/* Pinned Scroll Deck Track: Locks viewport on "Beyond Prototypes, Into Production" while cards stack */}
-      <div ref={scrollStackRef} className="relative w-full min-h-[300vh] sm:min-h-[320vh]">
-        <div className="sticky top-14 sm:top-16 md:top-20 h-[calc(100dvh-4rem)] md:h-[calc(100vh-5rem)] flex flex-col justify-between items-center py-2 sm:py-4 px-4 overflow-hidden z-20">
+      {/* MOBILE EXPERIENCE: Interactive Fluid Swipe & Tab Deck */}
+      <div className="block md:hidden container mx-auto px-4 relative z-10">
+        {/* Vision Header */}
+        <div className="text-center max-w-xl mx-auto pt-2 mb-4">
+          <div className="inline-flex items-center gap-1.5 text-primary font-bold text-[10px] tracking-[0.25em] uppercase mb-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+            <LotusEmblem className="w-3 h-3" color="currentColor" />
+            <span>{t('vision.title')}</span>
+            <LotusEmblem className="w-3 h-3" color="currentColor" />
+          </div>
+
+          <h2 className="text-2xl sm:text-3xl font-black mb-1.5 leading-tight text-foreground">
+            {t('vision.beyondPrototypes')}{' '}
+            <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>
+          </h2>
+          <p className="text-muted-foreground text-xs leading-relaxed max-w-sm mx-auto">
+            <Trans
+              i18nKey="vision.visionDescription"
+              components={[
+                <span className="text-primary font-semibold" key="desc-highlight" />
+              ]}
+            />
+          </p>
+        </div>
+
+        {/* Mobile Deck */}
+        <MobileVisionDeck features={features} />
+      </div>
+
+      {/* DESKTOP EXPERIENCE: Pinned Scroll Deck Track */}
+      <div ref={scrollStackRef} className="hidden md:block relative w-full min-h-[300vh] sm:min-h-[320vh]">
+        <div className="sticky top-14 sm:top-16 md:top-20 h-[calc(100vh-5rem)] flex flex-col justify-between items-center py-2 sm:py-4 px-4 overflow-hidden z-20">
           {/* Pinned Vision Header */}
           <div className="text-center max-w-3xl mx-auto shrink-0 pt-1">
-            <div className="inline-flex items-center gap-1.5 sm:gap-2 text-primary font-bold text-[10px] sm:text-xs md:text-sm tracking-[0.25em] uppercase mb-1 sm:mb-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 text-primary font-bold text-xs md:text-sm tracking-[0.25em] uppercase mb-1 sm:mb-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
               <LotusEmblem className="w-3.5 h-3.5" color="currentColor" />
               <span>{t('vision.title')}</span>
               <LotusEmblem className="w-3.5 h-3.5" color="currentColor" />
             </div>
 
-            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black mb-1 sm:mb-2 leading-tight text-foreground">
+            <h2 className="text-3xl md:text-5xl font-black mb-1 sm:mb-2 leading-tight text-foreground">
               {t('vision.beyondPrototypes')}{' '}
               <span className="gradient-text glow-text">{t('vision.intoProduction')}</span>
             </h2>
-            <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed max-w-xl mx-auto hidden sm:block">
+            <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-xl mx-auto">
               <Trans
                 i18nKey="vision.visionDescription"
                 components={[
@@ -457,7 +623,7 @@ export const VisionSection = () => {
           </div>
 
           {/* Stacked Cards Deck Area */}
-          <div className="relative w-full max-w-lg mx-auto flex-1 min-h-[370px] sm:min-h-[440px] flex items-center justify-center my-auto">
+          <div className="relative w-full max-w-lg mx-auto flex-1 min-h-[440px] flex items-center justify-center my-auto">
             {features.map((feature, index) => (
               <StackedDeckCard
                 key={feature.title}
