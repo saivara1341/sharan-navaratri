@@ -161,8 +161,8 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
       {/* Main card container */}
       <div className={`relative flex items-center justify-center ${
         isDesktopGrid
-          ? 'w-full max-w-[330px] xl:max-w-[370px] h-[460px] xl:h-[490px]'
-          : 'w-[92vw] max-w-[360px] sm:max-w-[400px] h-[425px] sm:h-[435px]'
+          ? 'w-full max-w-[360px] xl:max-w-[400px] h-[460px] xl:h-[490px]'
+          : 'w-[88vw] max-w-[340px] h-[400px] sm:h-[420px]'
       }`}>
 
         {/* SVG Arched Central Panel with clean subtle drop shadow */}
@@ -222,47 +222,40 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
         }`}>
           
           {/* Pillar Eyebrow — hidden on desktop */}
-          <div className={`flex items-center gap-1.5 pt-1 ${isDesktopGrid ? 'hidden' : ''}`}>
-            <span className="text-[7px] sm:text-[8px] rotate-45" style={{ color: p.primary }}>◆</span>
-            <span
-              className="text-[9px] sm:text-[10px] xl:text-xs font-black uppercase tracking-[0.25em]"
-              style={{ color: p.accent }}
-            >
+          <div className={`flex items-center gap-1.5 ${isDesktopGrid ? 'hidden' : ''}`}>
+            <span className="text-[7px] rotate-45" style={{ color: p.primary }}>◆</span>
+            <span className="text-[9px] font-black uppercase tracking-[0.25em]" style={{ color: p.accent }}>
               Pillar 0{index + 1}
             </span>
-            <span className="text-[7px] sm:text-[8px] rotate-45" style={{ color: p.primary }}>◆</span>
+            <span className="text-[7px] rotate-45" style={{ color: p.primary }}>◆</span>
           </div>
 
+          {/* Title — above the divider */}
+          <h3 className={`font-black text-white tracking-tight leading-tight drop-shadow-sm ${
+            isDesktopGrid ? 'text-xl xl:text-2xl max-w-[300px]' : 'text-sm sm:text-base max-w-[240px]'
+          }`}>
+            {feature.title}
+          </h3>
 
-
-          {/* Decorative Divider */}
-          <div className="flex items-center gap-1.5 w-full max-w-[130px] sm:max-w-[160px] my-0.5">
+          {/* Decorative Divider with ✦ */}
+          <div className="flex items-center gap-1.5 w-full max-w-[120px] sm:max-w-[150px]">
             <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${p.primary}80)` }} />
             <span className="text-[8px]" style={{ color: p.accent }}>✦</span>
             <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, ${p.primary}80)` }} />
           </div>
 
-          {/* Title */}
-          <h3 className={`font-black text-white tracking-tight leading-tight drop-shadow-sm ${
-            isDesktopGrid ? 'text-xl xl:text-2xl max-w-[280px]' : 'text-base sm:text-lg max-w-[260px]'
-          }`}>
-            {feature.title}
-          </h3>
-
-          {/* Description — Full text without overflow */}
-          <p className={`text-slate-300 font-normal leading-relaxed ${
+          {/* Description */}
+          <p className={`text-slate-300 font-normal leading-snug ${
             isDesktopGrid
-              ? 'text-sm xl:text-[15px] max-w-[260px] xl:max-w-[290px]'
-              : 'text-xs sm:text-sm max-w-[280px] sm:max-w-[320px]'
+              ? 'text-sm xl:text-[15px] max-w-[280px] xl:max-w-[310px]'
+              : 'text-[11px] sm:text-xs max-w-[230px] sm:max-w-[260px]'
           }`}>
             {feature.description}
           </p>
 
           {/* Bottom Badge */}
-          <div
-            className={`mt-1 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[8px] sm:text-[9px] font-semibold backdrop-blur-md shadow-sm border ${p.pillBg}`}
-          >
-            <span className="w-1.5 h-1.5 rotate-45" style={{ background: p.pillDot }} />
+          <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[8px] font-semibold backdrop-blur-md shadow-sm border ${p.pillBg}`}>
+            <span className="w-1.5 h-1.5 rotate-45 shrink-0" style={{ background: p.pillDot }} />
             <span className="truncate">Production-Ready Deep-Tech</span>
           </div>
         </div>
