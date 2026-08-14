@@ -99,9 +99,9 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       border:    '#d97706',
       borderDash:'#fbbf24',
       solidBg:   '#0d0600',
-      radialGlow:'rgba(245, 158, 11, 0.28)',
-      iconBg:    'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm',
-      pillBg:    'bg-amber-500/15 border-amber-500/40 text-amber-300',
+      radialGlow:'rgba(245, 158, 11, 0.15)',
+      iconBg:    'bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-sm',
+      pillBg:    'bg-amber-500/15 border-amber-500/30 text-amber-300',
       pillDot:   '#f59e0b',
     },
     {
@@ -110,9 +110,9 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       border:    '#0284c7',
       borderDash:'#38bdf8',
       solidBg:   '#020b14',
-      radialGlow:'rgba(56, 189, 248, 0.28)',
-      iconBg:    'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-sm',
-      pillBg:    'bg-sky-500/15 border-sky-500/40 text-sky-300',
+      radialGlow:'rgba(56, 189, 248, 0.15)',
+      iconBg:    'bg-sky-500/20 text-sky-300 border border-sky-500/30 shadow-sm',
+      pillBg:    'bg-sky-500/15 border-sky-500/30 text-sky-300',
       pillDot:   '#38bdf8',
     },
     {
@@ -121,9 +121,9 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       border:    '#059669',
       borderDash:'#34d399',
       solidBg:   '#011108',
-      radialGlow:'rgba(52, 211, 153, 0.28)',
-      iconBg:    'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm',
-      pillBg:    'bg-emerald-500/15 border-emerald-500/40 text-emerald-300',
+      radialGlow:'rgba(52, 211, 153, 0.15)',
+      iconBg:    'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shadow-sm',
+      pillBg:    'bg-emerald-500/15 border-emerald-500/30 text-emerald-300',
       pillDot:   '#34d399',
     },
     {
@@ -132,9 +132,9 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       border:    '#db2777',
       borderDash:'#f472b6',
       solidBg:   '#12020a',
-      radialGlow:'rgba(244, 114, 182, 0.28)',
-      iconBg:    'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm',
-      pillBg:    'bg-rose-500/15 border-rose-500/40 text-rose-300',
+      radialGlow:'rgba(244, 114, 182, 0.15)',
+      iconBg:    'bg-rose-500/20 text-rose-300 border border-rose-500/30 shadow-sm',
+      pillBg:    'bg-rose-500/15 border-rose-500/30 text-rose-300',
       pillDot:   '#f472b6',
     },
   ];
@@ -150,28 +150,28 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       style={{ x: springX, y: springY }}
       className="relative mx-auto select-none cursor-pointer flex-shrink-0"
     >
-      {/* Outer ambient glow */}
+      {/* Reduced subtle ambient glow */}
       <motion.div
-        animate={{ opacity: isHovered ? 0.65 : 0.25, scale: isHovered ? 1.08 : 1 }}
+        animate={{ opacity: isHovered ? 0.35 : 0.1, scale: isHovered ? 1.04 : 1 }}
         transition={{ duration: 0.5 }}
-        className="absolute -inset-4 rounded-3xl blur-[45px] pointer-events-none"
-        style={{ background: `radial-gradient(circle at 50% 50%, ${p.primary}90 0%, transparent 70%)` }}
+        className="absolute -inset-2 rounded-3xl blur-[20px] pointer-events-none"
+        style={{ background: `radial-gradient(circle at 50% 50%, ${p.primary}60 0%, transparent 70%)` }}
       />
 
-      {/* Main card container (increased width for spacious traditional aesthetic) */}
-      <div className="relative w-[320px] h-[370px] sm:w-[410px] sm:h-[400px] md:w-[460px] md:h-[420px] flex items-center justify-center">
+      {/* Main card container — Increased size on mobile (w-[350px] h-[390px]) and desktop (w-[470px] h-[420px]) */}
+      <div className="relative w-[345px] h-[385px] sm:w-[420px] sm:h-[405px] md:w-[470px] md:h-[420px] flex items-center justify-center">
 
-        {/* SVG Arched Central Panel */}
+        {/* SVG Arched Central Panel with reduced, clean drop shadow */}
         <svg
           viewBox={`0 0 ${VW} ${VH}`}
-          className="absolute inset-0 w-full h-full pointer-events-none filter drop-shadow-[0_14px_35px_rgba(0,0,0,0.75)]"
+          className="absolute inset-0 w-full h-full pointer-events-none filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.35)]"
           preserveAspectRatio="none"
           aria-hidden="true"
         >
           <defs>
             {/* Inner radial gradient */}
             <radialGradient id={`arch-radial-${index}`} cx="50%" cy="45%" r="60%">
-              <stop offset="0%" stopColor={p.primary} stopOpacity="0.22" />
+              <stop offset="0%" stopColor={p.primary} stopOpacity="0.18" />
               <stop offset="70%" stopColor={p.solidBg} stopOpacity="0.95" />
               <stop offset="100%" stopColor={p.solidBg} stopOpacity="1" />
             </radialGradient>
@@ -188,8 +188,8 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
             d={ARCH_PANEL_OUTER}
             fill="none"
             stroke={p.border}
-            strokeWidth={isHovered ? "2.4" : "1.8"}
-            strokeOpacity="0.95"
+            strokeWidth={isHovered ? "2.2" : "1.6"}
+            strokeOpacity="0.9"
             className="transition-all duration-300"
           />
 
@@ -198,47 +198,47 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
             d={ARCH_PANEL_INNER}
             fill="none"
             stroke={p.borderDash}
-            strokeWidth="1"
+            strokeWidth="0.9"
             strokeDasharray="4 3"
-            strokeOpacity="0.65"
+            strokeOpacity="0.55"
           />
 
-          {/* Vertical cardinal diamond finials only (horizontal waist rhombus removed) */}
+          {/* Vertical cardinal diamond finials only */}
           {/* Top Apex */}
           <polygon points="170,6 175,16 170,26 165,16" fill={p.primary} />
           {/* Bottom Apex */}
           <polygon points="170,354 175,364 170,374 165,364" fill={p.primary} />
         </svg>
 
-        {/* Card Content (Spacious, centered inside the wide arched central panel) */}
-        <div className="relative z-10 w-full h-full flex flex-col items-center justify-center text-center px-10 sm:px-14 md:px-16 py-8 gap-2 sm:gap-3">
+        {/* Card Content — tightened gap on mobile */}
+        <div className="relative z-10 w-full h-full flex flex-col items-center justify-center text-center px-6 sm:px-14 md:px-16 py-5 sm:py-8 gap-1.5 sm:gap-2.5">
           
           {/* Pillar Eyebrow */}
-          <div className="flex items-center gap-1.5 pt-2">
-            <span className="text-[8px] rotate-45" style={{ color: p.primary }}>◆</span>
+          <div className="flex items-center gap-1.5 pt-1 sm:pt-2">
+            <span className="text-[7px] sm:text-[8px] rotate-45" style={{ color: p.primary }}>◆</span>
             <span
-              className="text-[10px] sm:text-xs font-black uppercase tracking-[0.25em]"
+              className="text-[9px] sm:text-xs font-black uppercase tracking-[0.25em]"
               style={{ color: p.accent }}
             >
               Pillar 0{index + 1}
             </span>
-            <span className="text-[8px] rotate-45" style={{ color: p.primary }}>◆</span>
+            <span className="text-[7px] sm:text-[8px] rotate-45" style={{ color: p.primary }}>◆</span>
           </div>
 
           {/* Icon Badge */}
           <motion.div
-            animate={isHovered ? { scale: 1.1, rotate: 4 } : { scale: 1, rotate: 0 }}
+            animate={isHovered ? { scale: 1.08, rotate: 3 } : { scale: 1, rotate: 0 }}
             transition={{ duration: 0.3 }}
-            className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center ${p.iconBg}`}
+            className={`w-11 h-11 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center ${p.iconBg}`}
           >
             {feature.icon}
           </motion.div>
 
           {/* Decorative Divider */}
-          <div className="flex items-center gap-2 w-full max-w-[160px] sm:max-w-[200px] my-0.5">
-            <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${p.primary}90)` }} />
-            <span className="text-[9px]" style={{ color: p.accent }}>✦</span>
-            <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, ${p.primary}90)` }} />
+          <div className="flex items-center gap-1.5 sm:gap-2 w-full max-w-[150px] sm:max-w-[200px] my-0 sm:my-0.5">
+            <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${p.primary}80)` }} />
+            <span className="text-[8px] sm:text-[9px]" style={{ color: p.accent }}>✦</span>
+            <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, ${p.primary}80)` }} />
           </div>
 
           {/* Title */}
@@ -247,13 +247,13 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
           </h3>
 
           {/* Description */}
-          <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-[240px] sm:max-w-[320px] font-normal line-clamp-3">
+          <p className="text-slate-300 text-[11px] sm:text-sm leading-snug sm:leading-relaxed max-w-[250px] sm:max-w-[320px] font-normal line-clamp-3">
             {feature.description}
           </p>
 
           {/* Bottom Badge */}
           <div
-            className={`mt-1 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[9px] sm:text-[10px] font-semibold backdrop-blur-md shadow-sm border ${p.pillBg}`}
+            className={`mt-0.5 sm:mt-1 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-semibold backdrop-blur-md shadow-sm border ${p.pillBg}`}
           >
             <span className="w-1.5 h-1.5 rotate-45" style={{ background: p.pillDot }} />
             <span className="truncate">Production-Ready Deep-Tech</span>
@@ -264,8 +264,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
   );
 };
 
-
-// Clean single-card scroll transition — only ONE card visible at any time (no overlapping/peeking)
+// Clean single-card scroll transition — only ONE card visible at any time
 const StackedDeckCard = ({
   feature,
   index,
@@ -281,7 +280,7 @@ const StackedDeckCard = ({
   const start = index * step;
   const end = (index + 1) * step;
 
-  // Single card opacity: ONLY the active card is 100% visible; all other cards are 0% opacity
+  // Single card opacity: ONLY the active card is visible
   const opacity = useTransform(
     scrollYProgress,
     index === 0
@@ -296,7 +295,7 @@ const StackedDeckCard = ({
       : [0, 1, 1, 0]
   );
 
-  // Smooth slide-in from bottom and subtle exit upwards
+  // Smooth slide-in from bottom and exit upwards
   const y = useTransform(
     scrollYProgress,
     index === 0
@@ -307,8 +306,8 @@ const StackedDeckCard = ({
     index === 0
       ? [0, 0, -25]
       : index === total - 1
-      ? [40, 0, 0]
-      : [40, 0, 0, -25]
+      ? [35, 0, 0]
+      : [35, 0, 0, -25]
   );
 
   // Subtle scale transition
@@ -396,6 +395,9 @@ export const VisionSection = () => {
     offset: ['start start', 'end end'],
   });
 
+  // Desktop header parallax: header text moves upward as cards cycle on scroll
+  const desktopHeaderY = useTransform(scrollYProgress, [0, 0.25, 0.88], [0, -20, -40]);
+
   const features = [
     {
       icon: <Network className="w-6 h-6 sm:w-7 sm:h-7" />,
@@ -431,7 +433,7 @@ export const VisionSection = () => {
   ];
 
   return (
-    <section id="vision" className="bg-background relative overflow-visible py-10 md:py-16" ref={ref}>
+    <section id="vision" className="bg-background relative overflow-visible py-4 sm:py-10 md:py-16" ref={ref}>
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/10 to-background" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-primary/3 rounded-full blur-[150px]" />
@@ -440,18 +442,22 @@ export const VisionSection = () => {
       {/* Grid pattern */}
       <div className="absolute inset-0 grid-pattern opacity-30" />
 
-      {/* Pinned Scroll Deck Track: Locks viewport on "Beyond Prototypes, Into Production" with generous spacing */}
+      {/* Pinned Scroll Deck Track: Locks viewport on "Beyond Prototypes, Into Production" */}
       <div ref={scrollStackRef} className="relative w-full min-h-[300vh] sm:min-h-[320vh]">
-        <div className="sticky top-14 sm:top-16 md:top-20 h-[calc(100dvh-4rem)] md:h-[calc(100vh-5rem)] flex flex-col justify-between items-center py-4 sm:py-8 px-4 overflow-hidden z-20">
-          {/* Pinned Vision Header with breathing room */}
-          <div className="text-center max-w-3xl mx-auto shrink-0 pt-2 sm:pt-4">
-            <div className="inline-flex items-center gap-1.5 sm:gap-2 text-primary font-bold text-[10px] sm:text-xs md:text-sm tracking-[0.25em] uppercase mb-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
-              <LotusEmblem className="w-3.5 h-3.5" color="currentColor" />
+        <div className="sticky top-14 sm:top-16 md:top-20 h-[calc(100dvh-3.8rem)] md:h-[calc(100vh-5rem)] flex flex-col justify-between items-center py-2 sm:py-6 px-3 sm:px-4 overflow-hidden z-20">
+          
+          {/* Pinned Vision Header — with desktop upward parallax motion on scroll & reduced mobile gap */}
+          <motion.div
+            style={{ y: desktopHeaderY }}
+            className="text-center max-w-3xl mx-auto shrink-0 pt-0 sm:pt-2 transition-transform duration-100"
+          >
+            <div className="inline-flex items-center gap-1.5 text-primary font-bold text-[9px] sm:text-xs md:text-sm tracking-[0.25em] uppercase mb-1 sm:mb-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-primary/10 border border-primary/20">
+              <LotusEmblem className="w-3 h-3 sm:w-3.5 sm:h-3.5" color="currentColor" />
               <span>{t('vision.title')}</span>
-              <LotusEmblem className="w-3.5 h-3.5" color="currentColor" />
+              <LotusEmblem className="w-3 h-3 sm:w-3.5 sm:h-3.5" color="currentColor" />
             </div>
 
-            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black mb-2 leading-tight text-foreground">
+            <h2 className="text-xl sm:text-4xl md:text-5xl font-black mb-1 sm:mb-2 leading-tight text-foreground">
               <span className="block">{t('vision.beyondPrototypes')}</span>
               <span className="block gradient-text glow-text">{t('vision.intoProduction')}</span>
             </h2>
@@ -463,10 +469,10 @@ export const VisionSection = () => {
                 ]}
               />
             </p>
-          </div>
+          </motion.div>
 
-          {/* Cards Deck Area — Generous width and spacing */}
-          <div className="relative w-full max-w-[340px] sm:max-w-[440px] md:max-w-[500px] mx-auto flex-1 min-h-[380px] sm:min-h-[420px] md:min-h-[440px] flex items-center justify-center my-auto py-2">
+          {/* Cards Deck Area — Enlarged for mobile with reduced vertical gaps */}
+          <div className="relative w-full max-w-[360px] sm:max-w-[450px] md:max-w-[500px] mx-auto flex-1 min-h-[390px] sm:min-h-[415px] md:min-h-[440px] flex items-center justify-center my-0 sm:my-auto py-0 sm:py-2">
             {features.map((feature, index) => (
               <StackedDeckCard
                 key={feature.title}
@@ -479,7 +485,7 @@ export const VisionSection = () => {
           </div>
 
           {/* Bottom Pillar Dots Indicator */}
-          <div className="flex items-center justify-center gap-2 shrink-0 pb-2 z-30">
+          <div className="flex items-center justify-center gap-2 shrink-0 pb-1 sm:pb-2 z-30">
             {features.map((_, idx) => (
               <DeckDot
                 key={idx}
