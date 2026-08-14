@@ -73,113 +73,15 @@ export const LotusEmblem = ({ className = "w-6 h-6", color = "currentColor" }: {
 );
 
 
-// ─── Sacred Geometry Mandala SVG Frame ───────────────────────────────────────
-// Fixed 300×300 viewBox — always scales responsively via w-full h-full
-const MandalaFrame = ({ color, accentColor, solidBg }: { color: string; accentColor: string; solidBg: string }) => {
-  const S = 300; // coordinate space size
-  const cx = 150, cy = 150, R = 150;
+// ─── Jharokha Arch Paths (5-cusp Mughal cusped arch, 270×370 viewBox) ─────────
+// Outer frame path
+const ARCH_OUTER = "M 18 362 Q 18 370 26 370 L 244 370 Q 252 370 252 362 L 252 172 Q 226 145 214 128 Q 202 105 190 88 Q 180 66 162 48 Q 150 32 138 48 Q 120 66 110 88 Q 98 105 86 128 Q 74 145 18 172 Z";
+// Inner concentric frame (inset ~8px)
+const ARCH_INNER = "M 26 356 Q 26 362 33 362 L 237 362 Q 244 362 244 356 L 244 175 Q 220 151 208 135 Q 196 113 184 96 Q 174 75 158 58 Q 150 44 142 58 Q 126 75 116 96 Q 104 113 92 135 Q 80 151 26 175 Z";
+// Clip path (normalized 0–1 for objectBoundingBox on 270×370 card)
+const ARCH_CLIP = "M 0.067 0.978 Q 0.067 1 0.096 1 L 0.904 1 Q 0.933 1 0.933 0.978 L 0.933 0.465 Q 0.837 0.392 0.793 0.346 Q 0.748 0.284 0.704 0.238 Q 0.667 0.178 0.6 0.130 Q 0.556 0.086 0.5 0.054 Q 0.444 0.086 0.4 0.130 Q 0.333 0.178 0.296 0.238 Q 0.252 0.284 0.207 0.346 Q 0.163 0.392 0.067 0.465 Z";
 
-  const pt = (r: number, deg: number) => {
-    const a = (deg - 90) * (Math.PI / 180);
-    return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
-  };
-
-  // 16 outer sun-wheel spikes
-  const spikes = Array.from({ length: 16 }, (_, i) => {
-    const ang = (360 / 16) * i;
-    const tip = pt(R - 1, ang);
-    const l = pt(R - 17, ang - 7);
-    const r2 = pt(R - 17, ang + 7);
-    return `M ${tip.x} ${tip.y} L ${l.x} ${l.y} L ${r2.x} ${r2.y} Z`;
-  });
-
-  // 12 outer lotus petals
-  const outerPetals = Array.from({ length: 12 }, (_, i) => {
-    const ang = (360 / 12) * i;
-    const tip = pt(R - 24, ang);
-    const l = pt(R - 52, ang - 11);
-    const r2 = pt(R - 52, ang + 11);
-    const base = pt(R - 60, ang);
-    return `M ${base.x} ${base.y} Q ${l.x} ${l.y} ${tip.x} ${tip.y} Q ${r2.x} ${r2.y} ${base.x} ${base.y} Z`;
-  });
-
-  // 8 inner lotus petals (offset 22.5°)
-  const innerPetals = Array.from({ length: 8 }, (_, i) => {
-    const ang = (360 / 8) * i + 22.5;
-    const tip = pt(R - 72, ang);
-    const l = pt(R - 90, ang - 13);
-    const r2 = pt(R - 90, ang + 13);
-    const base = pt(R - 98, ang);
-    return `M ${base.x} ${base.y} Q ${l.x} ${l.y} ${tip.x} ${tip.y} Q ${r2.x} ${r2.y} ${base.x} ${base.y} Z`;
-  });
-
-  // Cardinal diamonds at N/S/E/W
-  const diamonds = [0, 90, 180, 270].map((ang) => {
-    const c = pt(R - 10, ang);
-    return `M ${c.x} ${c.y - 7} L ${c.x + 5} ${c.y} L ${c.x} ${c.y + 7} L ${c.x - 5} ${c.y} Z`;
-  });
-
-  return (
-    <svg
-      viewBox={`0 0 ${S} ${S}`}
-      className="absolute inset-0 w-full h-full pointer-events-none"
-      aria-hidden="true"
-      preserveAspectRatio="xMidYMid meet"
-    >
-      {/* ① Solid opaque background circle — blocks ALL card bleed-through */}
-      <circle cx={cx} cy={cy} r={R - 18} fill={solidBg} />
-
-      {/* ② Sun-wheel spikes (outside the solid bg circle, so visible) */}
-      {spikes.map((d, i) => (
-        <path key={`sp-${i}`} d={d} fill={color} fillOpacity="0.8" />
-      ))}
-
-      {/* ③ Outer border rings */}
-      <circle cx={cx} cy={cy} r={R - 18} fill="none" stroke={color} strokeWidth="1.8" strokeOpacity="0.95" />
-      <circle cx={cx} cy={cy} r={R - 22} fill="none" stroke={accentColor} strokeWidth="0.6" strokeOpacity="0.55" strokeDasharray="4 3" />
-
-      {/* ④ Outer lotus petals */}
-      {outerPetals.map((d, i) => (
-        <path key={`op-${i}`} d={d} fill={color} fillOpacity="0.18" stroke={color} strokeWidth="0.9" strokeOpacity="0.75" />
-      ))}
-
-      {/* ⑤ Mid ring */}
-      <circle cx={cx} cy={cy} r={R - 56} fill="none" stroke={color} strokeWidth="1" strokeOpacity="0.65" />
-
-      {/* ⑥ Inner lotus petals */}
-      {innerPetals.map((d, i) => (
-        <path key={`ip-${i}`} d={d} fill={accentColor} fillOpacity="0.14" stroke={accentColor} strokeWidth="0.8" strokeOpacity="0.6" />
-      ))}
-
-      {/* ⑦ Inner rings */}
-      <circle cx={cx} cy={cy} r={R - 94} fill="none" stroke={color} strokeWidth="1.1" strokeOpacity="0.8" />
-      <circle cx={cx} cy={cy} r={R - 99} fill="none" stroke={color} strokeWidth="0.4" strokeOpacity="0.45" strokeDasharray="3 2.5" />
-
-      {/* ⑧ Sri Yantra — two rotated squares (8-pointed star geometry) */}
-      {[0, 45].map((rot, i) => (
-        <rect
-          key={`sq-${i}`}
-          x={cx - (R - 108)} y={cy - (R - 108)}
-          width={(R - 108) * 2} height={(R - 108) * 2}
-          fill="none" stroke={color} strokeWidth="0.8" strokeOpacity="0.35"
-          transform={`rotate(${rot} ${cx} ${cy})`}
-        />
-      ))}
-
-      {/* ⑨ Cardinal diamond finials */}
-      {diamonds.map((d, i) => (
-        <path key={`dm-${i}`} d={d} fill={color} fillOpacity="1" />
-      ))}
-
-      {/* ⑩ Centre jewel */}
-      <circle cx={cx} cy={cy} r={10} fill="none" stroke={color} strokeWidth="1" strokeOpacity="0.5" />
-      <circle cx={cx} cy={cy} r={5} fill={color} fillOpacity="0.35" />
-      <circle cx={cx} cy={cy} r={2.5} fill={accentColor} fillOpacity="0.9" />
-    </svg>
-  );
-};
-
-// ─── Feature Card with Mandala Frame ─────────────────────────────────────────
+// ─── Feature Card — Jharokha Arch Frame ──────────────────────────────────────
 const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
   const [isHovered, setIsHovered] = useState(false);
   const x = useMotionValue(0);
@@ -189,45 +91,52 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    x.set((e.clientX - rect.left - rect.width / 2) * 0.05);
-    y.set((e.clientY - rect.top - rect.height / 2) * 0.05);
+    x.set((e.clientX - rect.left - rect.width / 2) * 0.04);
+    y.set((e.clientY - rect.top - rect.height / 2) * 0.04);
   };
 
   const palettes = [
     {
-      primary:  '#f59e0b',
-      accent:   '#fcd34d',
-      solidBg:  '#0d0600',   // fully opaque dark amber bg for mandala fill circle
-      cardBg:   'radial-gradient(ellipse at 45% 35%, #3b1c00 0%, #0d0600 65%, #060300 100%)',
-      iconClass:'bg-amber-500/20 text-amber-300 border border-amber-500/40',
-      pillText: '#fbbf24',
+      primary:  '#c8922a',   // antique gold
+      accent:   '#f5d07a',
+      cardBg:   'linear-gradient(160deg, #1a0e00 0%, #0d0700 55%, #050300 100%)',
+      glow:     'rgba(200,146,42,0.20)',
+      iconClass:'bg-amber-900/50 text-amber-300 border border-amber-600/50',
+      pillText: '#f5d07a',
+      topAccent:'#c8922a',
     },
     {
-      primary:  '#818cf8',
+      primary:  '#6366f1',   // royal indigo
       accent:   '#a5b4fc',
-      solidBg:  '#04040e',
-      cardBg:   'radial-gradient(ellipse at 45% 35%, #1a1040 0%, #04040e 65%, #020210 100%)',
-      iconClass:'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40',
+      cardBg:   'linear-gradient(160deg, #080824 0%, #04040e 55%, #020208 100%)',
+      glow:     'rgba(99,102,241,0.18)',
+      iconClass:'bg-indigo-900/50 text-indigo-300 border border-indigo-500/50',
       pillText: '#a5b4fc',
+      topAccent:'#6366f1',
     },
     {
-      primary:  '#34d399',
+      primary:  '#059669',   // deep emerald
       accent:   '#6ee7b7',
-      solidBg:  '#020c07',
-      cardBg:   'radial-gradient(ellipse at 45% 35%, #062818 0%, #020c07 65%, #010804 100%)',
-      iconClass:'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40',
+      cardBg:   'linear-gradient(160deg, #001a0e 0%, #010c07 55%, #000804 100%)',
+      glow:     'rgba(5,150,105,0.18)',
+      iconClass:'bg-emerald-900/50 text-emerald-300 border border-emerald-500/50',
       pillText: '#6ee7b7',
+      topAccent:'#059669',
     },
     {
-      primary:  '#f472b6',
+      primary:  '#be185d',   // deep rose/ruby
       accent:   '#fbcfe8',
-      solidBg:  '#0d0208',
-      cardBg:   'radial-gradient(ellipse at 45% 35%, #3d0a20 0%, #0d0208 65%, #080105 100%)',
-      iconClass:'bg-rose-500/20 text-rose-300 border border-rose-500/40',
+      cardBg:   'linear-gradient(160deg, #1a0010 0%, #0d0008 55%, #060004 100%)',
+      glow:     'rgba(190,24,93,0.18)',
+      iconClass:'bg-rose-900/50 text-rose-300 border border-rose-500/50',
       pillText: '#fbcfe8',
+      topAccent:'#be185d',
     },
   ];
   const p = palettes[index % palettes.length];
+
+  // Shared SVG viewBox: 270 × 370
+  const VW = 270, VH = 370;
 
   return (
     <motion.div
@@ -235,100 +144,169 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => { x.set(0); y.set(0); setIsHovered(false); }}
       style={{ x: springX, y: springY }}
-      // Card outer container — same size as mandala. bg-[#050505] fills corners so NO bleed-through.
-      className="relative w-[290px] h-[290px] sm:w-[370px] sm:h-[370px] mx-auto select-none cursor-pointer flex-shrink-0 bg-[#050505]"
+      className="relative mx-auto select-none cursor-pointer flex-shrink-0"
+      // Fixed size matching the 270×370 viewBox aspect ratio
+      // Mobile: 230×315, Desktop: 270×370
+      css-note="aspect-ratio handled by explicit w/h"
     >
-      {/* Ambient outer glow */}
+      {/* Outer ambient glow behind the arch */}
       <motion.div
-        animate={{ opacity: isHovered ? 0.45 : 0.15, scale: isHovered ? 1.1 : 1 }}
+        animate={{ opacity: isHovered ? 0.5 : 0.2, scale: isHovered ? 1.06 : 1 }}
         transition={{ duration: 0.5 }}
-        className="absolute inset-[-10%] rounded-full blur-[50px] pointer-events-none"
-        style={{ background: `radial-gradient(circle, ${p.primary}cc 0%, transparent 70%)` }}
+        className="absolute -inset-3 blur-[35px] pointer-events-none"
+        style={{ background: `radial-gradient(ellipse at 50% 60%, ${p.primary}99 0%, transparent 70%)` }}
       />
 
-      {/* Spinning outer mandala (fills entire card square via w-full h-full SVG) */}
-      <motion.div
-        className="absolute inset-0"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
-      >
-        <MandalaFrame color={p.primary} accentColor={p.accent} solidBg={p.solidBg} />
-      </motion.div>
+      {/* The arch card itself — sized to 270:370 aspect */}
+      <div className="relative w-[230px] h-[315px] sm:w-[270px] sm:h-[370px]">
 
-      {/* Counter-rotating 8-diamond ring */}
-      <motion.div
-        className="absolute inset-0"
-        animate={{ rotate: -360 }}
-        transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
-      >
-        <svg viewBox="0 0 300 300" className="w-full h-full pointer-events-none" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
-          {Array.from({ length: 8 }, (_, i) => {
-            const ang = (360 / 8) * i - 90;
-            const r = 150 - 52;
-            const dx = 150 + r * Math.cos(ang * Math.PI / 180);
-            const dy = 150 + r * Math.sin(ang * Math.PI / 180);
-            return <polygon key={i} points={`${dx},${dy - 5} ${dx + 4},${dy} ${dx},${dy + 5} ${dx - 4},${dy}`} fill={p.accent} fillOpacity="0.6" />;
-          })}
-        </svg>
-      </motion.div>
-
-      {/* Card content circle — fully opaque, inset inside the mandala rings */}
-      <div
-        className="absolute inset-[17%] rounded-full flex flex-col items-center justify-center overflow-hidden"
-        style={{
-          background: p.cardBg,
-          boxShadow: `0 0 0 1px ${p.primary}60, 0 0 0 2px ${p.solidBg}, inset 0 0 30px ${p.primary}18`,
-        }}
-      >
-        {/* Faint lotus watermark */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none">
-          <LotusEmblem className="w-full h-full scale-75" color={p.primary} />
+        {/* ① Card body — clipped to arch shape, fully opaque */}
+        <div
+          className="absolute inset-0 overflow-hidden"
+          style={{
+            clipPath: `path('${ARCH_CLIP.replace(/(\d+\.?\d*)/g, (m) => `${parseFloat(m) * VW}`).replace(/[MmLlQqZz]/g, '')}')`,
+            // Use objectBoundingBox compatible approach via SVG clipPath
+          }}
+        >
+          {/* We use a different approach — fill the arch via SVG rect + clip */}
         </div>
 
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 gap-1 sm:gap-1.5">
-          {/* Pillar label */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-[7px]" style={{ color: p.primary }}>◆</span>
-            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-[0.2em]" style={{ color: p.primary }}>
-              Pillar 0{index + 1}
-            </span>
-            <span className="text-[7px]" style={{ color: p.primary }}>◆</span>
-          </div>
+        {/* ② SVG layer — draws filled arch bg + all borders */}
+        <svg
+          viewBox={`0 0 ${VW} ${VH}`}
+          className="absolute inset-0 w-full h-full"
+          preserveAspectRatio="xMidYMid meet"
+          aria-hidden="true"
+        >
+          <defs>
+            <clipPath id={`arch-clip-${index}`}>
+              <path d={ARCH_OUTER} />
+            </clipPath>
+            {/* Subtle radial glow gradient */}
+            <radialGradient id={`card-glow-${index}`} cx="50%" cy="55%" r="55%">
+              <stop offset="0%" stopColor={p.topAccent} stopOpacity="0.25" />
+              <stop offset="100%" stopColor="transparent" stopOpacity="0" />
+            </radialGradient>
+          </defs>
 
-          {/* Icon */}
-          <motion.div
-            animate={isHovered ? { scale: 1.1, rotate: 5 } : { scale: 1, rotate: 0 }}
-            transition={{ duration: 0.3 }}
-            className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center ${p.iconClass} shadow-lg`}
-          >
-            {feature.icon}
-          </motion.div>
+          {/* Filled arch background (opaque) */}
+          <path d={ARCH_OUTER} fill="#050505" />
 
-          {/* Gold divider */}
-          <div className="flex items-center gap-1 w-full max-w-[120px] sm:max-w-[150px]">
-            <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${p.primary}90)` }} />
-            <span className="text-[8px]" style={{ color: p.primary }}>✦</span>
-            <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, ${p.primary}90)` }} />
-          </div>
+          {/* Jewel-tone gradient overlay inside arch */}
+          <path d={ARCH_OUTER} fill={`url(#card-glow-${index})`} />
 
-          {/* Title */}
-          <h3 className="text-[11px] sm:text-sm font-black text-white tracking-tight leading-tight max-w-[120px] sm:max-w-[155px]">
-            {feature.title}
-          </h3>
+          {/* Rich colored bg via a rect clipped to arch */}
+          <rect
+            x="0" y="0" width={VW} height={VH}
+            clipPath={`url(#arch-clip-${index})`}
+            fill="none"
+          />
 
-          {/* Description */}
-          <p className="text-white/60 text-[9px] sm:text-[10px] leading-snug max-w-[115px] sm:max-w-[148px] line-clamp-3">
-            {feature.description}
-          </p>
+          {/* Outer arch border — primary color, solid */}
+          <path
+            d={ARCH_OUTER}
+            fill="none"
+            stroke={p.primary}
+            strokeWidth={isHovered ? "2.2" : "1.6"}
+            strokeOpacity="0.95"
+          />
 
-          {/* Badge */}
-          <div
-            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[7px] sm:text-[8px] font-semibold tracking-wider uppercase"
-            style={{ background: `${p.primary}18`, border: `1px solid ${p.primary}45`, color: p.pillText }}
-          >
-            <span className="w-1 h-1 rounded-full" style={{ background: p.primary }} />
-            Production-Ready
+          {/* Inner concentric arch border — lighter, dashed */}
+          <path
+            d={ARCH_INNER}
+            fill="none"
+            stroke={p.accent}
+            strokeWidth="0.8"
+            strokeOpacity="0.55"
+            strokeDasharray="5 3"
+          />
+
+          {/* Top arch highlight line (thin gold line along arch contour) */}
+          <path
+            d={ARCH_OUTER}
+            fill="none"
+            stroke={p.accent}
+            strokeWidth="0.4"
+            strokeOpacity="0.3"
+          />
+
+          {/* Cardinal diamond finials — top, bottom, left, right */}
+          {/* Top center */}
+          <polygon points={`135,30 139,38 135,46 131,38`} fill={p.primary} fillOpacity="0.95" />
+          {/* Bottom center */}
+          <polygon points={`135,355 139,362 135,369 131,362`} fill={p.primary} fillOpacity="0.85" />
+          {/* Bottom left */}
+          <polygon points={`18,368 23,364 28,368 23,372`} fill={p.primary} fillOpacity="0.8" />
+          {/* Bottom right */}
+          <polygon points={`242,368 247,364 252,368 247,372`} fill={p.primary} fillOpacity="0.8" />
+
+          {/* Decorative horizontal rule inside arch body */}
+          <line x1="35" y1="182" x2="235" y2="182" stroke={p.primary} strokeWidth="0.6" strokeOpacity="0.3" strokeDasharray="3 4" />
+          <line x1="35" y1="350" x2="235" y2="350" stroke={p.primary} strokeWidth="0.6" strokeOpacity="0.3" strokeDasharray="3 4" />
+
+          {/* Tiny corner ornament dots at arch body corners */}
+          <circle cx="30" cy="188" r="2" fill={p.primary} fillOpacity="0.6" />
+          <circle cx="240" cy="188" r="2" fill={p.primary} fillOpacity="0.6" />
+          <circle cx="30" cy="344" r="2" fill={p.primary} fillOpacity="0.6" />
+          <circle cx="240" cy="344" r="2" fill={p.primary} fillOpacity="0.6" />
+        </svg>
+
+        {/* ③ Content — positioned inside the arch body (below the arch head) */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center pt-[47%] pb-[7%] px-[10%]">
+          <div className="flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 w-full h-full">
+
+            {/* Pillar eyebrow */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[8px]" style={{ color: p.primary }}>◆</span>
+              <span
+                className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.22em]"
+                style={{ color: p.primary }}
+              >
+                Pillar 0{index + 1}
+              </span>
+              <span className="text-[8px]" style={{ color: p.primary }}>◆</span>
+            </div>
+
+            {/* Icon */}
+            <motion.div
+              animate={isHovered ? { scale: 1.12, y: -2 } : { scale: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className={`w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center ${p.iconClass} shadow-lg`}
+            >
+              {feature.icon}
+            </motion.div>
+
+            {/* Gold divider */}
+            <div className="flex items-center gap-1.5 w-full max-w-[140px] sm:max-w-[170px]">
+              <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${p.primary}99)` }} />
+              <span className="text-[9px]" style={{ color: p.accent }}>✦</span>
+              <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, ${p.primary}99)` }} />
+            </div>
+
+            {/* Title */}
+            <h3
+              className="text-[11px] sm:text-[13px] font-black text-white tracking-tight leading-snug max-w-[160px] sm:max-w-[190px]"
+            >
+              {feature.title}
+            </h3>
+
+            {/* Description */}
+            <p className="text-white/60 text-[9px] sm:text-[10px] leading-snug max-w-[150px] sm:max-w-[180px] line-clamp-3">
+              {feature.description}
+            </p>
+
+            {/* Production badge */}
+            <div
+              className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[8px] sm:text-[9px] font-semibold tracking-wider uppercase"
+              style={{
+                background: `${p.primary}15`,
+                border: `1px solid ${p.primary}50`,
+                color: p.pillText,
+              }}
+            >
+              <span className="w-1.5 h-1.5 rotate-45" style={{ background: p.primary }} />
+              Production-Ready
+            </div>
           </div>
         </div>
       </div>
@@ -337,6 +315,7 @@ const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
 };
 
 
+// Smooth continuous scroll stack card wrapper inside pinned viewport
 // Smooth continuous scroll stack card wrapper inside pinned viewport
 const StackedDeckCard = ({
   feature,
