@@ -423,18 +423,8 @@ const ProjectCard = ({
           }}
         />
 
-        {/* Subtle Horizontal Notebook Ruled Lines */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-30 dark:opacity-15"
-          style={{
-            backgroundImage: 'repeating-linear-gradient(transparent, transparent 25px, currentColor 26px)',
-            backgroundPosition: '0 38px',
-            color: 'var(--slip-ink, #000)',
-          }}
-        />
 
-        {/* Top Perforation Tear Line */}
-        <div className="absolute top-2 left-3 right-3 sm:left-4 sm:right-4 h-[1px] border-b border-dashed border-black/15 dark:border-white/20 pointer-events-none" />
+
 
         {/* Realistic 3D Dog-Ear Paper Corner Curl (Bottom-Right) */}
         <div className="absolute bottom-0 right-0 w-7 h-7 sm:w-10 sm:h-10 pointer-events-none overflow-hidden z-20">
