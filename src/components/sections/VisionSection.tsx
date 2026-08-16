@@ -476,10 +476,10 @@ export const VisionSection = () => {
 
       {/* ─── MOBILE VIEW: Pinned Scroll Deck with Larger Cards ─────────────── */}
       <div ref={scrollStackRef} className="lg:hidden relative w-full min-h-[280vh]">
-        <div className="sticky top-12 sm:top-14 h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3.5rem)] flex flex-col justify-start items-center pt-2 sm:pt-3 pb-2 px-3 gap-1 sm:gap-2 overflow-hidden z-20">
+        <div className="sticky top-12 sm:top-14 h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3.5rem)] flex flex-col justify-start items-center pt-2 sm:pt-3 pb-2 px-3 gap-0 overflow-hidden z-20">
           
-          {/* Mobile Header */}
-          <div className="text-center max-w-3xl mx-auto shrink-0">
+          {/* Mobile Header — stays pinned/visible while the card deck scrolls */}
+          <div className="text-center max-w-3xl mx-auto shrink-0 relative z-40">
             <div className="inline-flex items-center gap-1.5 text-primary font-bold text-[9px] sm:text-xs tracking-[0.25em] uppercase mb-1 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20">
               <LotusEmblem className="w-3 h-3" color="currentColor" />
               <span>{t('vision.title')}</span>
@@ -493,7 +493,8 @@ export const VisionSection = () => {
           </div>
 
           {/* Cards Deck Area */}
-          <div className="relative w-full max-w-[370px] mx-auto flex-1 min-h-[380px] flex items-center justify-center">
+          <div className="relative w-full max-w-[370px] mx-auto flex-1 min-h-[360px] -mt-1 flex items-center justify-center">
+
             {features.map((feature, index) => (
               <StackedDeckCard
                 key={feature.title}
