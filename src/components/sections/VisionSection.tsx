@@ -161,7 +161,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
       {/* Main card container */}
       <div className={`relative flex items-center justify-center ${
         isDesktopGrid
-          ? 'w-full max-w-[360px] xl:max-w-[385px] h-[340px] xl:h-[350px]'
+          ? 'w-full max-w-[340px] xl:max-w-[365px] h-[365px] xl:h-[375px]'
           : 'w-[88vw] max-w-[325px] h-[365px] sm:h-[385px]'
       }`}>
 
@@ -217,7 +217,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
         {/* Card Content */}
         <div className={`relative z-10 w-full h-full flex flex-col items-center justify-center text-center ${
           isDesktopGrid
-            ? 'px-6 xl:px-8 py-4 gap-1.5 xl:gap-2'
+            ? 'px-8 xl:px-10 py-5 gap-1.5 xl:gap-2'
             : 'px-6 sm:px-8 py-5 sm:py-6 gap-1.5 sm:gap-2'
         }`}>
           
@@ -232,29 +232,29 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
 
           {/* Title — above the divider */}
           <h3 className={`font-black text-white tracking-tight leading-tight drop-shadow-sm ${
-            isDesktopGrid ? 'text-base xl:text-lg max-w-[90%]' : 'text-sm sm:text-base max-w-[240px]'
+            isDesktopGrid ? 'text-base xl:text-lg max-w-[240px]' : 'text-sm sm:text-base max-w-[240px]'
           }`}>
             {feature.title}
           </h3>
 
           {/* Decorative Divider with ✦ */}
-          <div className="flex items-center gap-1.5 w-full max-w-[110px] sm:max-w-[140px]">
+          <div className="flex items-center gap-1.5 w-full max-w-[110px] sm:max-w-[130px]">
             <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${p.primary}80)` }} />
             <span className="text-[8px]" style={{ color: p.accent }}>✦</span>
             <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, ${p.primary}80)` }} />
           </div>
 
-          {/* Description */}
-          <p className={`text-slate-300 font-normal leading-snug ${
+          {/* Description — firmly bound inside inner cusped arch boundary */}
+          <p className={`text-slate-300 font-normal leading-relaxed ${
             isDesktopGrid
-              ? 'text-xs xl:text-[13px] max-w-[90%] leading-relaxed'
-              : 'text-[11px] sm:text-xs max-w-[230px] sm:max-w-[260px] leading-snug'
+              ? 'text-xs xl:text-[13px] max-w-[225px] xl:max-w-[245px]'
+              : 'text-[11px] sm:text-xs max-w-[220px] sm:max-w-[240px] leading-snug'
           }`}>
             {feature.description}
           </p>
 
           {/* Bottom Badge */}
-          <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[8px] font-semibold backdrop-blur-md shadow-sm border ${p.pillBg}`}>
+          <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[8px] font-semibold backdrop-blur-md shadow-sm border mt-0.5 ${p.pillBg}`}>
             <span className="w-1.5 h-1.5 rotate-45 shrink-0" style={{ background: p.pillDot }} />
             <span className="truncate">Production-Ready Deep-Tech</span>
           </div>
@@ -477,11 +477,11 @@ export const VisionSection = () => {
 
       {/* ─── MOBILE VIEW: Pinned Scroll Deck with Cards Scrolling from Down ─── */}
       <div ref={scrollStackRef} className="lg:hidden relative w-full min-h-[300vh]">
-        <div className="sticky top-12 sm:top-14 h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3.5rem)] flex flex-col justify-start items-center pt-2 pb-1 px-3 overflow-hidden z-20">
+        <div className="sticky top-16 sm:top-20 h-[calc(100dvh-4.5rem)] sm:h-[calc(100dvh-5.5rem)] flex flex-col justify-start items-center pt-3 pb-2 px-3 overflow-hidden z-30">
           
           {/* Mobile Header: Visible Our Vision badge + tight gap to cards */}
-          <div className="text-center max-w-3xl mx-auto shrink-0 mb-0.5 relative z-40">
-            <div className="inline-flex items-center gap-1.5 text-primary font-bold text-[10px] sm:text-xs tracking-[0.25em] uppercase mb-1 px-3 py-0.5 rounded-full bg-primary/10 border border-primary/25 shadow-sm">
+          <div className="text-center max-w-3xl mx-auto shrink-0 mb-1 relative z-50">
+            <div className="inline-flex items-center gap-1.5 text-primary font-bold text-[10px] sm:text-xs tracking-[0.25em] uppercase mb-1.5 px-3.5 py-1 rounded-full bg-primary/15 border border-primary/30 shadow-md backdrop-blur-md">
               <LotusEmblem className="w-3.5 h-3.5" color="currentColor" />
               <span>{t('vision.title', 'Our Vision')}</span>
               <LotusEmblem className="w-3.5 h-3.5" color="currentColor" />
@@ -494,7 +494,7 @@ export const VisionSection = () => {
           </div>
 
           {/* Cards Deck Area - positioned directly below the header */}
-          <div className="relative w-full max-w-[340px] mx-auto h-[375px] sm:h-[395px] mt-0.5 sm:mt-1 flex items-center justify-center">
+          <div className="relative w-full max-w-[340px] mx-auto h-[365px] sm:h-[385px] mt-1 flex items-center justify-center">
             {features.map((feature, index) => (
               <StackedDeckCard
                 key={feature.title}
@@ -507,7 +507,7 @@ export const VisionSection = () => {
           </div>
 
           {/* Bottom Pillar Dots Indicator */}
-          <div className="flex items-center justify-center gap-2 shrink-0 pt-1.5 pb-1 z-30">
+          <div className="flex items-center justify-center gap-2 shrink-0 pt-2 pb-1 z-30">
             {features.map((_, idx) => (
               <DeckDot
                 key={idx}
