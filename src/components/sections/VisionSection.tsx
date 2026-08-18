@@ -162,7 +162,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
       <div className={`relative flex items-center justify-center ${
         isDesktopGrid
           ? 'w-full h-[440px]'
-          : 'w-[88vw] max-w-[340px] h-[400px] sm:h-[420px]'
+          : 'w-[88vw] max-w-[325px] h-[365px] sm:h-[385px]'
       }`}>
 
         {/* SVG Arched Central Panel with clean subtle drop shadow */}
@@ -218,7 +218,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
         <div className={`relative z-10 w-full h-full flex flex-col items-center justify-center text-center ${
           isDesktopGrid
             ? 'px-8 xl:px-10 py-5 gap-2'
-            : 'px-7 sm:px-10 py-6 sm:py-8 gap-2 sm:gap-2.5'
+            : 'px-6 sm:px-8 py-5 sm:py-6 gap-1.5 sm:gap-2'
         }`}>
           
           {/* Pillar Eyebrow — hidden on desktop */}
@@ -264,7 +264,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
   );
 };
 
-// Clean single-card scroll transition for mobile
+// Clean single-card scroll transition for mobile (cards scroll from down)
 const StackedDeckCard = ({
   feature,
   index,
@@ -276,18 +276,19 @@ const StackedDeckCard = ({
   total: number;
   scrollYProgress: any;
 }) => {
-  const step = 0.88 / total;
+  const step = 0.92 / total;
   const start = index * step;
   const end = (index + 1) * step;
+  const enterStart = Math.max(0, start - step * 0.45);
 
-  // Single card opacity: ONLY the active card is visible
+  // Single card opacity: smooth entrance as it scrolls from down
   const opacity = useTransform(
     scrollYProgress,
     index === 0
       ? [0, start + step * 0.7, end]
       : index === total - 1
-      ? [start - step * 0.3, start, 1]
-      : [start - step * 0.3, start, start + step * 0.7, end],
+      ? [enterStart, start, 1]
+      : [enterStart, start, start + step * 0.7, end],
     index === 0
       ? [1, 1, 0]
       : index === total - 1
@@ -295,34 +296,34 @@ const StackedDeckCard = ({
       : [0, 1, 1, 0]
   );
 
-  // Smooth slide-in from bottom and exit upwards
+  // Cards prominently scroll up from the bottom into place
   const y = useTransform(
     scrollYProgress,
     index === 0
       ? [0, start + step * 0.7, end]
       : index === total - 1
-      ? [start - step * 0.3, start, 1]
-      : [start - step * 0.3, start, start + step * 0.7, end],
+      ? [enterStart, start, 1]
+      : [enterStart, start, start + step * 0.7, end],
     index === 0
-      ? [0, 0, -25]
+      ? [0, 0, -30]
       : index === total - 1
-      ? [35, 0, 0]
-      : [35, 0, 0, -25]
+      ? [100, 0, 0]
+      : [100, 0, 0, -30]
   );
 
-  // Subtle scale transition
+  // Subtle scale transition as card rises
   const scale = useTransform(
     scrollYProgress,
     index === 0
       ? [0, start + step * 0.7, end]
       : index === total - 1
-      ? [start - step * 0.3, start, 1]
-      : [start - step * 0.3, start, start + step * 0.7, end],
+      ? [enterStart, start, 1]
+      : [enterStart, start, start + step * 0.7, end],
     index === 0
-      ? [1, 1, 0.96]
+      ? [1, 1, 0.94]
       : index === total - 1
-      ? [0.96, 1, 1]
-      : [0.96, 1, 1, 0.96]
+      ? [0.92, 1, 1]
+      : [0.92, 1, 1, 0.94]
   );
 
   return (
@@ -349,7 +350,7 @@ const DeckDot = ({
   total: number;
   scrollYProgress: any;
 }) => {
-  const step = 0.88 / total;
+  const step = 0.92 / total;
   const start = idx * step;
   const end = (idx + 1) * step;
 
@@ -474,27 +475,26 @@ export const VisionSection = () => {
         </motion.div>
       </div>
 
-      {/* ─── MOBILE VIEW: Pinned Scroll Deck with Larger Cards ─────────────── */}
-      <div ref={scrollStackRef} className="lg:hidden relative w-full min-h-[280vh]">
-        <div className="sticky top-12 sm:top-14 h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3.5rem)] flex flex-col justify-start items-center pt-2 sm:pt-3 pb-2 px-3 gap-0 overflow-hidden z-20">
+      {/* ─── MOBILE VIEW: Pinned Scroll Deck with Cards Scrolling from Down ─── */}
+      <div ref={scrollStackRef} className="lg:hidden relative w-full min-h-[300vh]">
+        <div className="sticky top-12 sm:top-14 h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3.5rem)] flex flex-col justify-start items-center pt-2 pb-1 px-3 overflow-hidden z-20">
           
-          {/* Mobile Header — stays pinned/visible while the card deck scrolls */}
-          <div className="text-center max-w-3xl mx-auto shrink-0 relative z-40">
-            <div className="inline-flex items-center gap-1.5 text-primary font-bold text-[9px] sm:text-xs tracking-[0.25em] uppercase mb-1 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20">
-              <LotusEmblem className="w-3 h-3" color="currentColor" />
-              <span>{t('vision.title')}</span>
-              <LotusEmblem className="w-3 h-3" color="currentColor" />
+          {/* Mobile Header: Visible Our Vision badge + tight gap to cards */}
+          <div className="text-center max-w-3xl mx-auto shrink-0 mb-0.5 relative z-40">
+            <div className="inline-flex items-center gap-1.5 text-primary font-bold text-[10px] sm:text-xs tracking-[0.25em] uppercase mb-1 px-3 py-0.5 rounded-full bg-primary/10 border border-primary/25 shadow-sm">
+              <LotusEmblem className="w-3.5 h-3.5" color="currentColor" />
+              <span>{t('vision.title', 'Our Vision')}</span>
+              <LotusEmblem className="w-3.5 h-3.5" color="currentColor" />
             </div>
 
-            <h2 className="text-xl sm:text-3xl font-black mb-0 leading-tight text-foreground">
+            <h2 className="text-lg sm:text-2xl font-black mb-0 leading-tight text-foreground">
               <span className="block">{t('vision.beyondPrototypes')}</span>
               <span className="block gradient-text glow-text">{t('vision.intoProduction')}</span>
             </h2>
           </div>
 
-          {/* Cards Deck Area */}
-          <div className="relative w-full max-w-[370px] mx-auto flex-1 min-h-[360px] -mt-1 flex items-center justify-center">
-
+          {/* Cards Deck Area - positioned directly below the header */}
+          <div className="relative w-full max-w-[340px] mx-auto h-[375px] sm:h-[395px] mt-0.5 sm:mt-1 flex items-center justify-center">
             {features.map((feature, index) => (
               <StackedDeckCard
                 key={feature.title}
@@ -507,7 +507,7 @@ export const VisionSection = () => {
           </div>
 
           {/* Bottom Pillar Dots Indicator */}
-          <div className="flex items-center justify-center gap-2 shrink-0 pb-2 z-30">
+          <div className="flex items-center justify-center gap-2 shrink-0 pt-1.5 pb-1 z-30">
             {features.map((_, idx) => (
               <DeckDot
                 key={idx}

@@ -163,8 +163,8 @@ export const WaitlistModal = ({ isOpen, onClose, projectId, projectName, accentC
                     }`}>
                     <CheckCircle className="w-10 h-10" />
                   </div>
-                  <h3 className="text-xl font-bold mb-2">{t('waitlistModal.successTitle')}</h3>
-                  <p className="text-muted-foreground">{t('waitlistModal.successDesc')}</p>
+                  <h3 className="text-xl font-bold mb-2">{t('waitlistModal.successTitle', 'You\'re on the list!')}</h3>
+                  <p className="text-muted-foreground">{t('waitlistModal.successDescription', t('waitlistModal.successDesc', 'We will notify you when this product launches.'))}</p>
                 </motion.div>
               ) : (
                 <motion.form
@@ -250,10 +250,10 @@ export const WaitlistModal = ({ isOpen, onClose, projectId, projectName, accentC
                     {isSubmitting ? (
                       <>
                         <Loader2 className="w-5 h-5 animate-spin" />
-                        {t('waitlistModal.submitting')}
+                        {t('waitlistModal.joiningButton', t('waitlistModal.submitting', 'Joining...'))}
                       </>
                     ) : (
-                      t('waitlistModal.submitButton')
+                      t('waitlistModal.joinButton', t('waitlistModal.submitButton', 'Join Waitlist'))
                     )}
                   </button>
                 </motion.form>
