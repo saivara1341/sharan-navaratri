@@ -161,7 +161,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
       {/* Main card container */}
       <div className={`relative flex items-center justify-center ${
         isDesktopGrid
-          ? 'w-full h-[440px]'
+          ? 'w-full max-w-[360px] xl:max-w-[385px] h-[340px] xl:h-[350px]'
           : 'w-[88vw] max-w-[325px] h-[365px] sm:h-[385px]'
       }`}>
 
@@ -214,15 +214,15 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
           <polygon points="170,354 175,364 170,374 165,364" fill={p.primary} />
         </svg>
 
-        {/* Card Content — No text overflow on mobile */}
+        {/* Card Content */}
         <div className={`relative z-10 w-full h-full flex flex-col items-center justify-center text-center ${
           isDesktopGrid
-            ? 'px-8 xl:px-10 py-5 gap-2'
+            ? 'px-6 xl:px-8 py-4 gap-1.5 xl:gap-2'
             : 'px-6 sm:px-8 py-5 sm:py-6 gap-1.5 sm:gap-2'
         }`}>
           
-          {/* Pillar Eyebrow — hidden on desktop */}
-          <div className={`flex items-center gap-1.5 ${isDesktopGrid ? 'hidden' : ''}`}>
+          {/* Pillar Eyebrow */}
+          <div className="flex items-center gap-1.5 mb-0.5">
             <span className="text-[7px] rotate-45" style={{ color: p.primary }}>◆</span>
             <span className="text-[9px] font-black uppercase tracking-[0.25em]" style={{ color: p.accent }}>
               Pillar 0{index + 1}
@@ -232,13 +232,13 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
 
           {/* Title — above the divider */}
           <h3 className={`font-black text-white tracking-tight leading-tight drop-shadow-sm ${
-            isDesktopGrid ? 'text-lg xl:text-xl max-w-[85%]' : 'text-sm sm:text-base max-w-[240px]'
+            isDesktopGrid ? 'text-base xl:text-lg max-w-[90%]' : 'text-sm sm:text-base max-w-[240px]'
           }`}>
             {feature.title}
           </h3>
 
           {/* Decorative Divider with ✦ */}
-          <div className="flex items-center gap-1.5 w-full max-w-[120px] sm:max-w-[150px]">
+          <div className="flex items-center gap-1.5 w-full max-w-[110px] sm:max-w-[140px]">
             <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${p.primary}80)` }} />
             <span className="text-[8px]" style={{ color: p.accent }}>✦</span>
             <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, ${p.primary}80)` }} />
@@ -247,7 +247,7 @@ const FeatureCard = ({ feature, index, isDesktopGrid = false }: { feature: any; 
           {/* Description */}
           <p className={`text-slate-300 font-normal leading-snug ${
             isDesktopGrid
-              ? 'text-xs xl:text-sm max-w-[85%] leading-relaxed'
+              ? 'text-xs xl:text-[13px] max-w-[90%] leading-relaxed'
               : 'text-[11px] sm:text-xs max-w-[230px] sm:max-w-[260px] leading-snug'
           }`}>
             {feature.description}
@@ -465,7 +465,7 @@ export const VisionSection = () => {
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          className="grid grid-cols-4 gap-6 xl:gap-8 max-w-[1500px] mx-auto"
+          className="grid grid-cols-4 gap-5 xl:gap-6 max-w-[1550px] mx-auto"
         >
           {features.map((feature, index) => (
             <motion.div key={feature.title} variants={cardVariants}>
