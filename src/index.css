@@ -1171,3 +1171,26 @@ body:has(.site-intro) {
     letter-spacing: 0.18em;
   }
 }
+
+/* Clear, accessible notification states across the application. */
+[data-sonner-toast][data-type="success"] {
+  border-color: rgb(22 163 74 / 0.5) !important;
+  background: rgb(240 253 244) !important;
+  color: rgb(20 83 45) !important;
+}
+
+[data-sonner-toast][data-type="error"] {
+  border-color: rgb(220 38 38 / 0.6) !important;
+  background: rgb(254 242 242) !important;
+  color: rgb(127 29 29) !important;
+}
+
+.dark [data-sonner-toast][data-type="success"] {
+  background: rgb(20 83 45) !important;
+  color: rgb(240 253 244) !important;
+}
+
+.dark [data-sonner-toast][data-type="error"] {
+  background: rgb(127 29 29) !important;
+  color: rgb(254 242 242) !important;
+}

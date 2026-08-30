@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ConsentCheckbox } from "@/components/legal/ConsentCheckbox";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,19 +19,36 @@ import {
     Loader2,
     FilePen,
     ChevronDown,
+    Mic,
+    Paperclip,
+    Square,
+    X,
 } from "lucide-react";
 
 import { emailService } from "@/services/emailService";
 
 const SERVICE_OPTIONS = [
-    { value: "seo-geo",      label: "🚀 SEO, GEO & AEO Programme", desc: "Search & AI score optimization",       price: "Price Assigned by Admin" },
-    { value: "website",      label: "🌐 Website / Portal Development", desc: "Custom Web App / Landing Page",     price: "Price Assigned by Admin" },
-    { value: "automation",   label: "⚡ Business Automation",      desc: "Workflow / RPA / AI Agent Automation",price: "Price Assigned by Admin" },
-    { value: "saas",         label: "📱 SaaS / App Platform",      desc: "Full-stack MVP Development",          price: "Price Assigned by Admin" },
-    { value: "erp",          label: "🏢 ERP System",              desc: "Enterprise Resource Planning",        price: "Price Assigned by Admin" },
-    { value: "gbp",          label: "📍 Google Business Profile",  desc: "Local GMB & Map Optimisation",        price: "Price Assigned by Admin" },
-    { value: "custom",       label: "🤝 Custom Solution",         desc: "Tailored enterprise scope & quote",   price: "Price Assigned by Admin" },
+    { value: "seo-geo",      label: "🚀 SEO, GEO & AEO Programme", desc: "Search & AI score optimization",       price: "Quote on review" },
+    { value: "website",      label: "🌐 Website / Portal Development", desc: "Custom Web App / Landing Page",     price: "Quote on review" },
+    { value: "automation",   label: "⚡ Business Automation",      desc: "Workflow / RPA / AI Agent Automation",price: "Quote on review" },
+    { value: "saas",         label: "📱 SaaS / App Platform",      desc: "Full-stack MVP Development",          price: "Quote on review" },
+    { value: "erp",          label: "🏢 ERP System",              desc: "Enterprise Resource Planning",        price: "Quote on review" },
+    { value: "gbp",          label: "📍 Google Business Profile",  desc: "Local GMB & Map Optimisation",        price: "Quote on review" },
+    { value: "custom",       label: "🤝 Custom Solution",         desc: "Tailored enterprise scope & quote",   price: "Quote on review" },
 ];
+
+type SpeechRecognitionEvent = Event & { results: SpeechRecognitionResultList };
+type SpeechRecognitionInstance = EventTarget & {
+    continuous: boolean;
+    interimResults: boolean;
+    lang: string;
+    start: () => void;
+    stop: () => void;
+    onresult: ((event: SpeechRecognitionEvent) => void) | null;
+    onend: (() => void) | null;
+    onerror: ((event: Event) => void) | null;
+};
+type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
 
 export default function ProjectSubmitForm() {
     const navigate = useNavigate();
@@ -54,6 +71,41 @@ export default function ProjectSubmitForm() {
     const [preferredBudget, setPreferredBudget] = useState("flexible");
     const [message, setMessage] = useState("");
     const [phone, setPhone] = useState("");
+    const [attachments, setAttachments] = useState<File[]>([]);
+    const [isListening, setIsListening] = useState(false);
+    const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+
+    const addAttachments = (files: FileList | null) => {
+        if (!files) return;
+        const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp", "image/gif", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+        const incoming = Array.from(files);
+        const invalid = incoming.find((file) => !allowedTypes.includes(file.type) || file.size > 10 * 1024 * 1024);
+        if (invalid) return toast.error("Please attach only PDFs, Word files, or images up to 10 MB each.");
+        setAttachments((current) => [...current, ...incoming].slice(0, 5));
+        if (attachments.length + incoming.length > 5) toast.error("You can attach up to 5 files.");
+    };
+
+    const toggleVoiceInput = () => {
+        if (isListening) return recognitionRef.current?.stop();
+        const browser = window as typeof window & { SpeechRecognition?: SpeechRecognitionConstructor; webkitSpeechRecognition?: SpeechRecognitionConstructor };
+        const SpeechRecognition = browser.SpeechRecognition || browser.webkitSpeechRecognition;
+        if (!SpeechRecognition) return toast.error("Voice input is not supported by this browser. Try Chrome or Edge.");
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = false;
+        recognition.lang = navigator.language || "en-IN";
+        recognition.onresult = (event) => {
+            const transcript = event.results[event.results.length - 1]?.[0]?.transcript.trim();
+            if (transcript) setMessage((current) => `${current}${current ? " " : ""}${transcript}`);
+        };
+        recognition.onerror = () => toast.error("Voice input could not start. Please check microphone permission.");
+        recognition.onend = () => setIsListening(false);
+        recognitionRef.current = recognition;
+        recognition.start();
+        setIsListening(true);
+    };
+
+    useEffect(() => () => recognitionRef.current?.stop(), []);
 
     const toggleService = (val: string) => {
         setSelectedServices(prev =>
@@ -120,7 +172,19 @@ export default function ProjectSubmitForm() {
 
             const formattedMessage = `[Selected Services: ${servicesString}] [Budget Preference: ${preferredBudget.toUpperCase()}]\n\n${message.trim()}`;
 
+            const submissionId = crypto.randomUUID();
+            const uploadedAttachments: { name: string; path: string; type: string; size: number }[] = [];
+
+            for (const file of attachments) {
+                const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+                const path = `${submissionId}/${crypto.randomUUID()}-${safeName}`;
+                const { error: uploadError } = await supabase.storage.from("project-attachments").upload(path, file, { contentType: file.type, upsert: false });
+                if (uploadError) throw uploadError;
+                uploadedAttachments.push({ name: file.name, path, type: file.type, size: file.size });
+            }
+
             const { error } = await supabase.from("contact_submissions").insert({
+                id: submissionId,
                 name: name.trim(),
                 email: email.trim().toLowerCase(),
                 designation: designation.trim() || null,
@@ -131,6 +195,7 @@ export default function ProjectSubmitForm() {
                 progress: 0,
                 consent_given: true,
                 consent_at: new Date().toISOString(),
+                attachments: uploadedAttachments,
             });
 
             if (error) throw error;
@@ -179,7 +244,7 @@ export default function ProjectSubmitForm() {
                                 Back to My Portal
                             </button>
                             <button
-                                onClick={() => { setStep("form"); setMessage(""); setSelectedServices([defaultType]); }}
+                                onClick={() => { setStep("form"); setMessage(""); setAttachments([]); setSelectedServices([defaultType]); }}
                                 className="px-6 py-2.5 bg-secondary text-secondary-foreground font-semibold rounded-xl hover:opacity-80 transition text-sm"
                             >
                                 Submit Another
@@ -256,7 +321,7 @@ export default function ProjectSubmitForm() {
                                                         </span>
                                                         {type.label}
                                                     </span>
-                                                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">{type.price}</span>
+                                                    <span className="shrink-0 whitespace-nowrap text-[9px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">{type.price}</span>
                                                 </div>
                                                 <div className="text-[11px] opacity-75 pl-5 text-muted-foreground">{type.desc}</div>
                                             </div>
@@ -293,9 +358,10 @@ export default function ProjectSubmitForm() {
                                     </button>
                                 ))}
                             </div>
-                            <p className="text-[11px] text-muted-foreground pt-1">
+                            <p className="hidden whitespace-nowrap text-[11px] text-muted-foreground pt-1 lg:block">
                                 💡 Don't worry if you're not sure! Select <strong>Custom / Discuss</strong> and we will tailor a package to your budget on a 1-on-1 call.
                             </p>
+                            <p className="pt-1 text-[11px] text-muted-foreground lg:hidden">💡 Choose <strong>Custom / Discuss</strong> and we’ll tailor a package to your budget on a 1-on-1 call.</p>
                         </div>
 
                         {/* Personal Details */}
@@ -369,14 +435,20 @@ export default function ProjectSubmitForm() {
                                 <MessageSquare className="inline w-3.5 h-3.5 mr-1" />
                                 Describe Your Requirement <span className="text-destructive">*</span>
                             </label>
-                            <textarea
-                                required
-                                rows={6}
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value)}
-                                placeholder="Tell us about your project goals, target audience, timeline, budget, and any specific features or outcomes you need..."
-                                className="w-full px-4 py-3 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all resize-none"
-                            />
+                            <div className="relative">
+                                <textarea required rows={6} value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Tell us about your project goals, target audience, timeline, budget, and any specific features or outcomes you need..." className="w-full resize-none rounded-xl border border-border bg-card px-4 py-3 pr-14 text-sm text-foreground placeholder:text-muted-foreground transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40" />
+                                <button type="button" onClick={toggleVoiceInput} aria-pressed={isListening} aria-label={isListening ? "Stop voice input" : "Start voice input"} className={`absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full border transition-colors ${isListening ? "animate-pulse border-red-500 bg-red-500 text-white" : "border-primary/30 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground"}`}>
+                                    {isListening ? <Square className="h-3.5 w-3.5 fill-current" /> : <Mic className="h-4 w-4" />}
+                                </button>
+                            </div>
+                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                                <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground">
+                                    <Paperclip className="h-3.5 w-3.5" /> Add PDFs, documents or images
+                                    <input className="sr-only" type="file" multiple accept=".pdf,.doc,.docx,image/jpeg,image/png,image/webp,image/gif" onChange={(event) => { addAttachments(event.target.files); event.currentTarget.value = ""; }} />
+                                </label>
+                                <span className="text-[11px] text-muted-foreground">Up to 5 files · 10 MB each</span>
+                            </div>
+                            {attachments.length > 0 && <ul className="mt-2 flex flex-wrap gap-2">{attachments.map((file, index) => <li key={`${file.name}-${index}`} className="inline-flex max-w-full items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-[11px] text-muted-foreground"><FileText className="h-3 w-3 shrink-0" /><span className="max-w-40 truncate">{file.name}</span><button type="button" aria-label={`Remove ${file.name}`} onClick={() => setAttachments((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="ml-1 rounded-full p-0.5 hover:bg-background hover:text-destructive"><X className="h-3.5 w-3.5" /></button></li>)}</ul>}
                             <div className="text-right text-[11px] text-muted-foreground mt-1">
                                 {message.length} chars {message.length < 20 && <span className="text-yellow-500">(min 20)</span>}
                             </div>

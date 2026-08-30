@@ -18,7 +18,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           description: "group-[.toast]:text-muted-foreground",
           actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
           cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
-          closeButton: "!top-2 !right-2 !left-auto flex items-center justify-center p-1.5 rounded-full border border-border bg-card hover:bg-primary hover:text-primary-foreground text-foreground transition-all cursor-pointer shadow-md z-50",
+          closeButton: "!top-2 !right-2 !left-auto flex h-9 w-9 items-center justify-center rounded-full border-2 border-current bg-card text-lg text-foreground hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer shadow-md z-50",
         },
       }}
       {...props}

@@ -347,6 +347,7 @@ export type Database = {
       contact_submissions: {
         Row: {
           assigned_to: string | null
+          attachments: Json
           bounty_reward: string | null
           consent_at: string | null
           consent_given: boolean
@@ -364,6 +365,7 @@ export type Database = {
         }
         Insert: {
           assigned_to?: string | null
+          attachments?: Json
           bounty_reward?: string | null
           consent_at?: string | null
           consent_given?: boolean
@@ -381,6 +383,7 @@ export type Database = {
         }
         Update: {
           assigned_to?: string | null
+          attachments?: Json
           bounty_reward?: string | null
           consent_at?: string | null
           consent_given?: boolean

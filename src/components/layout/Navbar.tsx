@@ -2,7 +2,7 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
-import siddhiLogo from '@/assets/siddhi-logo.png';
+import siddhiHeaderLogo from '@/assets/siddhi-dynamics-header-logo.png';
 import { LogOut, Home, X, LayoutDashboard, User, Bot } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -151,26 +151,18 @@ export const Navbar = () => {
             <motion.a
               href="#/"
               onClick={handleHomeClick}
-              className="flex items-center gap-2.5 group relative z-[110] cursor-pointer"
+              className="group relative z-[110] block cursor-pointer"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 flex items-center justify-center shrink-0">
-                <div className="absolute inset-0 dark:bg-primary/20 rounded-full blur-2xl opacity-60" />
-                <img
-                  src={siddhiLogo}
-                  alt="Siddhi Dynamics Logo"
-                  width="48"
-                  height="48"
-                  decoding="async"
-                  className="relative w-full h-full object-contain dark:drop-shadow-[0_0_15px_rgba(251,146,60,0.5)]"
-                />
-              </div>
-              <div className="flex flex-col md:flex-row md:items-center gap-0.5 md:gap-2 text-left">
-                <span className="font-black text-lg sm:text-2xl md:text-2xl lg:text-[1.65rem] text-foreground tracking-tight whitespace-nowrap leading-none">
-                  Siddhi Dynamics
-                </span>
-              </div>
+              <img
+                src={siddhiHeaderLogo}
+                alt="Siddhi Dynamics LLP"
+                width="176"
+                height="56"
+                decoding="async"
+                className="h-12 w-36 rounded-lg object-cover object-center shadow-sm transition-transform sm:h-14 sm:w-44 group-hover:scale-[1.02]"
+              />
             </motion.a>
 
             <nav className="hidden md:flex items-center gap-1.5 lg:gap-2.5 whitespace-nowrap">
@@ -278,23 +270,19 @@ export const Navbar = () => {
                 </div>
               ) : (
                 <div className="flex items-center ml-2 gap-2">
-                  {!isAdmin && (
-                    <>
-                      <motion.a
-                        href="#/"
-                        onClick={handleHomeClick}
-                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-muted/60 hover:bg-muted text-foreground transition-colors border border-border"
+                  <motion.a
+                    href={isAdmin ? "/admin-hq-nexus" : `/portal/${userRole || ''}`}
+                    onClick={handleDashboardClick}
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-primary/10 hover:bg-primary/20 text-primary transition-colors border border-primary/20"
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.2, duration: 0.5 }}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                      >
-                        <Home className="w-4 h-4" />
-                        Home
-                      </motion.a>
-                    </>
-                  )}
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
+                  </motion.a>
                   <motion.button
                     onClick={handleLogout}
                     className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20"
