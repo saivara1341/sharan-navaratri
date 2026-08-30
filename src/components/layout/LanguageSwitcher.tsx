@@ -41,7 +41,7 @@ export const LanguageSwitcher = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent hover:border-white/10 transition-all duration-300">
           <Languages className="w-4 h-4 text-primary" />
-          <span className="hidden sm:inline font-medium text-xs uppercase tracking-wider">{currentLanguage.code}</span>
+          <span className="font-medium text-xs uppercase tracking-wider">{currentLanguage.code}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40 bg-zinc-950/95 backdrop-blur-xl border-white/10 p-1">

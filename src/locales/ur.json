@@ -1,6 +1,12 @@
 {
     "nav": {
-        "vision": "Vision",
+    "vision": "Vision",
+    "about": "ہمارے بارے میں",
+    "home": "ہوم",
+    "blog": "بلاگ",
+    "services": "خدمات",
+    "dashboard": "ڈیش بورڈ",
+    "logout": "لاگ آؤٹ",
         "projects": "Projects",
         "submit": "Submit Problem",
         "collab": "Collab",
@@ -301,4 +307,3 @@
         "eidMubarak": "عید الفطر مبارک! 🌟"
     }
 }
-

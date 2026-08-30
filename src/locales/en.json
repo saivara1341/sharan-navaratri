@@ -1,6 +1,12 @@
 {
   "nav": {
     "vision": "Vision",
+    "about": "About",
+    "home": "Home",
+    "blog": "Blog",
+    "services": "Services",
+    "dashboard": "Dashboard",
+    "logout": "Logout",
     "projects": "Projects",
     "submit": "Submit Problem",
     "collab": "Collab",

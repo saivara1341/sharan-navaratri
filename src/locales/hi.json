@@ -1,6 +1,12 @@
 {
     "nav": {
-        "vision": "Vision",
+    "vision": "Vision",
+    "about": "हमारे बारे में",
+    "home": "होम",
+    "blog": "ब्लॉग",
+    "services": "सेवाएँ",
+    "dashboard": "डैशबोर्ड",
+    "logout": "लॉग आउट",
         "projects": "Projects",
         "submit": "Submit Problem",
         "collab": "Collab",

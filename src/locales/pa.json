@@ -1,6 +1,12 @@
 {
     "nav": {
-        "vision": "Vision",
+    "vision": "Vision",
+    "about": "ਸਾਡੇ ਬਾਰੇ",
+    "home": "ਹੋਮ",
+    "blog": "ਬਲੌਗ",
+    "services": "ਸੇਵਾਵਾਂ",
+    "dashboard": "ਡੈਸ਼ਬੋਰਡ",
+    "logout": "ਲੌਗ ਆਉਟ",
         "projects": "Projects",
         "submit": "Submit Problem",
         "collab": "Collab",
@@ -301,4 +307,3 @@
         "eidMubarak": "ਈਦ-ਉਲ-ਫਿਤਰ ਮੁਬਾਰਕ! 🌟"
     }
 }
-

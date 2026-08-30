@@ -1,6 +1,12 @@
 {
     "nav": {
-        "vision": "Vision",
+    "vision": "Vision",
+    "about": "మా గురించి",
+    "home": "హోమ్",
+    "blog": "బ్లాగ్",
+    "services": "సేవలు",
+    "dashboard": "డ్యాష్‌బోర్డ్",
+    "logout": "లాగ్ అవుట్",
         "projects": "Projects",
         "submit": "Submit Problem",
         "collab": "Collab",

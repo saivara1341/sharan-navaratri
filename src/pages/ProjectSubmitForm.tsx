@@ -73,6 +73,7 @@ export default function ProjectSubmitForm() {
     const [phone, setPhone] = useState("");
     const [attachments, setAttachments] = useState<File[]>([]);
     const [isListening, setIsListening] = useState(false);
+    const [outreachOptIn, setOutreachOptIn] = useState(false);
     const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
 
     const addAttachments = (files: FileList | null) => {
@@ -170,7 +171,10 @@ export default function ProjectSubmitForm() {
                 return item ? item.label : s;
             }).join(", ");
 
-            const formattedMessage = `[Selected Services: ${servicesString}] [Budget Preference: ${preferredBudget.toUpperCase()}]\n\n${message.trim()}`;
+            const outreachNote = outreachOptIn
+                ? " [Outreach: Open to sharing project milestones and experience on social media]"
+                : "";
+            const formattedMessage = `[Selected Services: ${servicesString}] [Budget Preference: ${preferredBudget.toUpperCase()}]${outreachNote}\n\n${message.trim()}`;
 
             const submissionId = crypto.randomUUID();
             const uploadedAttachments: { name: string; path: string; type: string; size: number }[] = [];
@@ -459,6 +463,11 @@ export default function ProjectSubmitForm() {
                             onChange={setConsentGiven}
                             purpose="reviewing my project requirement, preparing a quote and contacting me about it"
                         />
+
+                        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-3 text-xs text-muted-foreground transition-colors hover:border-primary/30">
+                            <input type="checkbox" checked={outreachOptIn} onChange={(event) => setOutreachOptIn(event.target.checked)} className="mt-0.5 h-4 w-4 rounded border-border accent-primary" />
+                            <span><strong className="text-foreground">Optional:</strong> I’m open to sharing project milestones and my experience on social media—from kick-off to completion.</span>
+                        </label>
 
                         {/* Submit */}
                         <div className="flex flex-col sm:flex-row gap-3 pt-2">

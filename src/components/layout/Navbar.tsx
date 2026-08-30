@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import siddhiHeaderLogo from '@/assets/siddhi-dynamics-header-logo.png';
 import { LogOut, Home, X, LayoutDashboard, User, Bot } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export const Navbar = () => {
   const { t } = useTranslation();
@@ -172,7 +173,7 @@ export const Navbar = () => {
                 className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
                 whileHover={{ scale: 1.02 }}
               >
-                About
+                {t('nav.about', 'About')}
               </motion.a>
               <motion.a
                 href="/#vision"
@@ -180,7 +181,7 @@ export const Navbar = () => {
                 className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
                 whileHover={{ scale: 1.02 }}
               >
-                Vision
+                {t('nav.vision', 'Vision')}
               </motion.a>
               <motion.a
                 href="/#projects"
@@ -188,7 +189,7 @@ export const Navbar = () => {
                 className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
                 whileHover={{ scale: 1.02 }}
               >
-                Projects
+                {t('nav.projects', 'Projects')}
               </motion.a>
               <motion.a
                 href="/blog"
@@ -196,7 +197,7 @@ export const Navbar = () => {
                 className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
                 whileHover={{ scale: 1.02 }}
               >
-                Blog
+                {t('nav.blog', 'Blog')}
               </motion.a>
               <motion.a
                 href="/#services"
@@ -204,7 +205,7 @@ export const Navbar = () => {
                 className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
                 whileHover={{ scale: 1.02 }}
               >
-                Services
+                {t('nav.services', 'Services')}
               </motion.a>
               <motion.a
                 href={isPortal ? '#/portal?tab=contact&type=problem' : '/submit?type=problem'}
@@ -217,8 +218,10 @@ export const Navbar = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Submit Problem
+                {t('nav.submit', 'Submit Problem')}
               </motion.a>
+
+              <LanguageSwitcher />
 
               {!isLoggedIn ? (
                 <motion.button
@@ -252,7 +255,7 @@ export const Navbar = () => {
                     <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent blur-xl opacity-50 group-hover:opacity-70 transition-opacity" />
                     <span className="relative text-primary-foreground flex items-center gap-2 font-bold">
                       <LayoutDashboard className="w-4 h-4" />
-                      Dashboard
+                      {t('nav.dashboard', 'Dashboard')}
                     </span>
                   </motion.a>
                   <motion.button
@@ -265,7 +268,7 @@ export const Navbar = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <LogOut className="w-4 h-4" />
-                    Logout
+                    {t('nav.logout', 'Logout')}
                   </motion.button>
                 </div>
               ) : (
@@ -281,7 +284,7 @@ export const Navbar = () => {
                         whileTap={{ scale: 0.95 }}
                   >
                     <LayoutDashboard className="w-4 h-4" />
-                    Dashboard
+                    {t('nav.dashboard', 'Dashboard')}
                   </motion.a>
                   <motion.button
                     onClick={handleLogout}
@@ -293,7 +296,7 @@ export const Navbar = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <LogOut className="w-4 h-4" />
-                    Logout
+                    {t('nav.logout', 'Logout')}
                   </motion.button>
                 </div>
               )}
@@ -365,7 +368,7 @@ export const Navbar = () => {
                   transition={{ delay: 0.05 }}
                 >
                   <Home className="w-8 h-8" />
-                  Home
+                  {t('nav.home', 'Home')}
                 </motion.a>
                 <motion.a
                   href="/about"
@@ -375,7 +378,7 @@ export const Navbar = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.08 }}
                 >
-                  About
+                  {t('nav.about', 'About')}
                 </motion.a>
                 <motion.a
                   href="/#vision"
@@ -385,7 +388,7 @@ export const Navbar = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.10 }}
                 >
-                  Vision
+                  {t('nav.vision', 'Vision')}
                 </motion.a>
                 <motion.a
                   href="/#projects"
@@ -395,7 +398,7 @@ export const Navbar = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.12 }}
                 >
-                  Projects
+                  {t('nav.projects', 'Projects')}
                 </motion.a>
                 <motion.a
                   href="/blog"
@@ -405,7 +408,7 @@ export const Navbar = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.14 }}
                 >
-                  Blog
+                  {t('nav.blog', 'Blog')}
                 </motion.a>
                 <motion.a
                   href="/#services"
@@ -415,7 +418,7 @@ export const Navbar = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.16 }}
                 >
-                  Services
+                  {t('nav.services', 'Services')}
                 </motion.a>
                 <motion.a
                   href={isPortal ? '#/portal?tab=contact&type=problem' : '/submit?type=problem'}
@@ -430,8 +433,11 @@ export const Navbar = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.18 }}
                 >
-                  Submit Problem
+                  {t('nav.submit', 'Submit Problem')}
                 </motion.a>
+                <div className="relative z-[120]">
+                  <LanguageSwitcher />
+                </div>
               {/* Close Button */}
               <motion.button
                 className="absolute top-[calc(1.5rem+env(safe-area-inset-top,0px))] right-[calc(1.5rem+env(safe-area-inset-right,0px))] w-12 h-12 flex items-center justify-center rounded-2xl bg-card border border-border text-foreground hover:text-primary hover:border-primary/30 transition-all z-[120]"
@@ -472,7 +478,7 @@ export const Navbar = () => {
                     transition={{ delay: 0.1 }}
                   >
                     <LayoutDashboard className="w-5 h-5" />
-                    Dashboard
+                    {t('nav.dashboard', 'Dashboard')}
                   </motion.a>
                   <motion.button
                     onClick={() => {
@@ -485,7 +491,7 @@ export const Navbar = () => {
                     transition={{ delay: 0.15 }}
                   >
                     <LogOut className="w-5 h-5" />
-                    Logout
+                    {t('nav.logout', 'Logout')}
                   </motion.button>
                 </div>
               ) : (
@@ -502,7 +508,7 @@ export const Navbar = () => {
                         transition={{ delay: 0.1 * navLinks.length + 0.05 }}
                       >
                         <Home className="w-5 h-5" />
-                        Home
+                        {t('nav.home', 'Home')}
                       </motion.a>
                       <motion.a
                         href="#/portal?tab=contact"
@@ -512,7 +518,7 @@ export const Navbar = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 * navLinks.length + 0.08 }}
                       >
-                        Contact Us
+                        {t('nav.contactUs', 'Contact Us')}
                       </motion.a>
                     </>
                   )}
@@ -527,7 +533,7 @@ export const Navbar = () => {
                     transition={{ delay: 0.1 * navLinks.length + 0.1 }}
                   >
                     <LogOut className="w-5 h-5" />
-                    Logout
+                    {t('nav.logout', 'Logout')}
                   </motion.button>
                 </div>
               )}
