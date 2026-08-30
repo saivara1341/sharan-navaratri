@@ -125,6 +125,8 @@ export default function ProjectSubmitForm() {
                 setSessionName(nm);
                 setEmail(em);
                 setName(nm);
+                setOrganization(session.user.user_metadata?.organization || "");
+                setDesignation(session.user.user_metadata?.designation || "");
 
                 // Detect portal path
                 if (em === "23eg510a07@anurag.edu.in") {
