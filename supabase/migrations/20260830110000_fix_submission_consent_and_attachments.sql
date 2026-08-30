@@ -5,6 +5,19 @@ ALTER TABLE public.contact_submissions
   ADD COLUMN IF NOT EXISTS consent_at timestamptz,
   ADD COLUMN IF NOT EXISTS attachments jsonb NOT NULL DEFAULT '[]'::jsonb;
 
+-- Some older database installations predate the portal migration that first
+-- introduced this helper. Define it here as well so this migration can run
+-- independently and keep attachment reads restricted to the portal admin.
+CREATE OR REPLACE FUNCTION public.is_portal_admin()
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY INVOKER
+SET search_path = public
+AS $$
+  SELECT lower(coalesce((select auth.jwt() ->> 'email'), '')) = 'ssaivaraprasad51@gmail.com';
+$$;
+
 -- Files are kept private. The application only lets clients upload a small,
 -- supported set of files and administrators can read them through the portal.
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
