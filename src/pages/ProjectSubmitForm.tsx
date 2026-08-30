@@ -358,8 +358,8 @@ export default function ProjectSubmitForm() {
                                     </button>
                                 ))}
                             </div>
-                            <p className="hidden whitespace-nowrap text-[11px] text-muted-foreground pt-1 lg:block">
-                                💡 Don't worry if you're not sure! Select <strong>Custom / Discuss</strong> and we will tailor a package to your budget on a 1-on-1 call.
+                            <p className="hidden whitespace-nowrap pt-1 text-[11px] text-muted-foreground lg:block">
+                                💡 Unsure? Select <strong>Custom / Discuss</strong>; we’ll tailor a package to your budget on a 1-on-1 call.
                             </p>
                             <p className="pt-1 text-[11px] text-muted-foreground lg:hidden">💡 Choose <strong>Custom / Discuss</strong> and we’ll tailor a package to your budget on a 1-on-1 call.</p>
                         </div>
