@@ -198,7 +198,6 @@ export default function ProjectSubmitForm() {
                 inquiry_type: servicesString,
                 message: formattedMessage,
                 status: "New Request",
-                progress: 0,
                 consent_given: true,
                 consent_at: new Date().toISOString(),
                 attachments: uploadedAttachments,
