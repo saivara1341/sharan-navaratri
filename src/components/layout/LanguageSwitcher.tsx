@@ -52,8 +52,10 @@ export const LanguageSwitcher = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        align="end"
-        className="z-[130] grid max-h-[min(32rem,calc(100vh-2rem))] w-[min(26rem,calc(100vw-2rem))] grid-cols-1 gap-1 overflow-y-auto rounded-2xl border-border bg-card/95 p-2 shadow-2xl backdrop-blur-xl sm:grid-cols-2"
+        align="center"
+        side="bottom"
+        sideOffset={8}
+        className="z-[130] grid max-h-[calc(100vh-9rem)] w-[min(26rem,calc(100vw-2rem))] grid-cols-1 gap-1 overflow-y-auto rounded-2xl border-border bg-card/95 p-2 shadow-2xl backdrop-blur-xl sm:grid-cols-2"
       >
         {languages.map((lang) => (
           <DropdownMenuItem

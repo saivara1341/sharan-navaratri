@@ -370,6 +370,9 @@ export const Navbar = () => {
                   <Home className="w-8 h-8" />
                   {t('nav.home', 'Home')}
                 </motion.a>
+                <div className="relative z-[120]">
+                  <LanguageSwitcher />
+                </div>
                 <motion.a
                   href="/about"
                   onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/about'); }}
@@ -435,9 +438,6 @@ export const Navbar = () => {
                 >
                   {t('nav.submit', 'Submit Problem')}
                 </motion.a>
-                <div className="relative z-[120]">
-                  <LanguageSwitcher />
-                </div>
               {/* Close Button */}
               <motion.button
                 className="absolute top-[calc(1.5rem+env(safe-area-inset-top,0px))] right-[calc(1.5rem+env(safe-area-inset-right,0px))] w-12 h-12 flex items-center justify-center rounded-2xl bg-card border border-border text-foreground hover:text-primary hover:border-primary/30 transition-all z-[120]"
