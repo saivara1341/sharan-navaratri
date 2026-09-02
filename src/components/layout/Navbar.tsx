@@ -166,7 +166,7 @@ export const Navbar = () => {
               />
             </motion.a>
 
-            <nav className="hidden md:flex items-center gap-1.5 lg:gap-2.5 whitespace-nowrap">
+            <nav className="hidden items-center gap-1.5 lg:gap-2.5 whitespace-nowrap">
               <motion.a
                 href="/about"
                 onClick={(e) => { e.preventDefault(); navigate('/about'); }}
@@ -303,7 +303,7 @@ export const Navbar = () => {
             </nav>
 
             {/* Mobile Actions: Hamburger Toggle */}
-            <div className="flex items-center gap-2 md:hidden z-[110]">
+            <div className="flex items-center gap-2 z-[110]">
               <motion.button
                 className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-muted/60 border border-border cursor-pointer"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -343,7 +343,7 @@ export const Navbar = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[105] md:hidden bg-background"
+            className="fixed inset-0 z-[105] bg-background"
           >
             <div
               className="absolute inset-0 bg-background/95 backdrop-blur-3xl"
@@ -354,7 +354,7 @@ export const Navbar = () => {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -50, opacity: 0 }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="relative flex flex-col items-center justify-center min-h-[100dvh] pt-[calc(5rem+env(safe-area-inset-top,0px))] pb-[calc(3rem+env(safe-area-inset-bottom,0px))] gap-8 px-6 overflow-y-auto"
+                className="relative flex flex-col items-center justify-center min-h-[100dvh] pt-[calc(5rem+env(safe-area-inset-top,0px))] pb-[calc(3rem+env(safe-area-inset-bottom,0px))] gap-8 px-6 overflow-y-auto md:px-10"
               >
                 {/* Mobile Menu Content starts with Home */}
 
