@@ -272,20 +272,21 @@ export default function ProjectSubmitForm() {
             <Navbar />
 
             <main className="pt-32 md:pt-36 pb-16 px-4 sm:px-6 max-w-2xl mx-auto">
-                {/* Back button */}
-                <button
-                    onClick={() => navigate(portalPath)}
-                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors group"
-                >
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    Back to Portal
-                </button>
-
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
+                    className="rounded-3xl border border-border bg-card/70 p-4 shadow-xl shadow-black/5 backdrop-blur-sm sm:p-6 md:p-8"
                 >
+                    {/* Back button */}
+                    <button
+                        onClick={() => navigate(portalPath)}
+                        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors group"
+                    >
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                        Back to Portal
+                    </button>
+
                     {/* Header */}
                     <div className="mb-6">
                         <div className="flex items-center gap-3">

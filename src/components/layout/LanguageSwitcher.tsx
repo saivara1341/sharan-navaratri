@@ -10,11 +10,15 @@ import { Languages } from "lucide-react";
 import { useEffect } from 'react';
 
 const languages = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
-  { code: 'ur', name: 'اردو', flag: '🇵🇰' },
-  { code: 'te', name: 'తెలుగు', flag: '🇮🇳' },
-  { code: 'pa', name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+  { code: 'en', name: 'English' }, { code: 'hi', name: 'हिन्दी' }, { code: 'te', name: 'తెలుగు' },
+  { code: 'ur', name: 'اردو' }, { code: 'pa', name: 'ਪੰਜਾਬੀ' }, { code: 'as', name: 'অসমীয়া' },
+  { code: 'bn', name: 'বাংলা' }, { code: 'gu', name: 'ગુજરાતી' }, { code: 'kn', name: 'ಕನ್ನಡ' },
+  { code: 'kok', name: 'कोंकणी' }, { code: 'ml', name: 'മലയാളം' }, { code: 'mr', name: 'मराठी' },
+  { code: 'ne', name: 'नेपाली' }, { code: 'or', name: 'ଓଡ଼ିଆ' }, { code: 'ta', name: 'தமிழ்' },
+  { code: 'ar', name: 'العربية' }, { code: 'de', name: 'Deutsch' }, { code: 'fr', name: 'Français' },
+  { code: 'it', name: 'Italiano' }, { code: 'ja', name: '日本語' }, { code: 'ko', name: '한국어' },
+  { code: 'pt', name: 'Português' }, { code: 'ru', name: 'Русский' }, { code: 'zh-CN', name: '简体中文' },
+  { code: 'zh-TW', name: '繁體中文' },
 ];
 
 export const LanguageSwitcher = () => {
@@ -22,7 +26,7 @@ export const LanguageSwitcher = () => {
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
-    document.documentElement.dir = lng === 'ur' ? 'rtl' : 'ltr';
+    document.documentElement.dir = ['ar', 'ur'].includes(lng) ? 'rtl' : 'ltr';
     document.documentElement.lang = lng;
     // Store in localStorage for persistence if detector doesn't
     localStorage.setItem('i18nextLng', lng);
@@ -30,7 +34,7 @@ export const LanguageSwitcher = () => {
 
   useEffect(() => {
     const lng = i18n.language || 'en';
-    document.documentElement.dir = (lng.startsWith('ur')) ? 'rtl' : 'ltr';
+    document.documentElement.dir = (lng.startsWith('ur') || lng.startsWith('ar')) ? 'rtl' : 'ltr';
     document.documentElement.lang = lng;
   }, [i18n.language]);
 
@@ -44,14 +48,13 @@ export const LanguageSwitcher = () => {
           <span className="font-medium text-xs uppercase tracking-wider">{currentLanguage.code}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-40 bg-zinc-950/95 backdrop-blur-xl border-white/10 p-1">
+      <DropdownMenuContent align="end" className="max-h-80 w-48 overflow-y-auto bg-zinc-950/95 p-1 backdrop-blur-xl border-white/10">
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
             onClick={() => changeLanguage(lang.code)}
-            className={`flex items-center gap-3 cursor-pointer py-2 px-3 rounded-lg transition-colors focus:bg-primary/10 focus:text-primary ${i18n.language.startsWith(lang.code) ? 'bg-primary/5 text-primary' : 'text-muted-foreground'}`}
+            className={`flex cursor-pointer items-center py-2 px-3 rounded-lg transition-colors focus:bg-primary/10 focus:text-primary ${i18n.language.startsWith(lang.code) ? 'bg-primary/5 text-primary' : 'text-muted-foreground'}`}
           >
-            <span className="text-lg leading-none">{lang.flag}</span>
             <span className="text-sm font-medium">{lang.name}</span>
           </DropdownMenuItem>
         ))}
