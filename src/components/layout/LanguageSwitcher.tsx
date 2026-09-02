@@ -47,15 +47,19 @@ export const LanguageSwitcher = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent hover:border-white/10 transition-all duration-300">
           <Languages className="w-4 h-4 text-primary" />
-          <span className="font-medium text-xs uppercase tracking-wider">{currentLanguage.code}</span>
+          <span className="font-medium text-xs uppercase tracking-wider md:hidden">{currentLanguage.code}</span>
+          <span className="hidden font-medium text-sm tracking-wide md:inline">{currentLanguage.name}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="max-h-80 w-48 overflow-y-auto bg-zinc-950/95 p-1 backdrop-blur-xl border-white/10">
+      <DropdownMenuContent
+        align="end"
+        className="z-[130] grid max-h-[min(32rem,calc(100vh-2rem))] w-[min(26rem,calc(100vw-2rem))] grid-cols-1 gap-1 overflow-y-auto rounded-2xl border-border bg-card/95 p-2 shadow-2xl backdrop-blur-xl sm:grid-cols-2"
+      >
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
             onSelect={() => void changeLanguage(lang.code)}
-            className={`flex cursor-pointer items-center py-2 px-3 rounded-lg transition-colors focus:bg-primary/10 focus:text-primary ${activeLanguage.toLowerCase() === lang.code.toLowerCase() ? 'bg-primary/5 text-primary' : 'text-muted-foreground'}`}
+            className={`flex cursor-pointer items-center rounded-xl px-3 py-2.5 transition-colors focus:bg-primary/10 focus:text-primary ${activeLanguage.toLowerCase() === lang.code.toLowerCase() ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}
           >
             <span className="text-sm font-medium">{lang.name}</span>
           </DropdownMenuItem>
