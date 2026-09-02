@@ -354,7 +354,7 @@ export const Navbar = () => {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -50, opacity: 0 }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="relative flex flex-col items-center justify-center min-h-[100dvh] pt-[calc(5rem+env(safe-area-inset-top,0px))] pb-[calc(3rem+env(safe-area-inset-bottom,0px))] gap-8 px-6 overflow-y-auto md:px-10"
+                className="relative flex h-[100dvh] flex-col items-center justify-start gap-4 overflow-y-auto px-6 pb-[calc(2rem+env(safe-area-inset-bottom,0px))] pt-[calc(5.5rem+env(safe-area-inset-top,0px))] md:gap-5 md:px-10"
               >
                 {/* Mobile Menu Content starts with Home */}
 
@@ -511,23 +511,12 @@ export const Navbar = () => {
                   {!isAdmin && (
                     <>
                       <motion.a
-                        href="#/"
-                        onClick={handleHomeClick}
-                        className="w-full text-center px-10 py-4 rounded-2xl font-bold text-lg bg-muted/60 border border-border text-foreground hover:text-primary transition-all flex items-center justify-center gap-2"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 * navLinks.length + 0.05 }}
-                      >
-                        <Home className="w-5 h-5" />
-                        {t('nav.home', 'Home')}
-                      </motion.a>
-                      <motion.a
                         href="#/portal?tab=contact"
                         onClick={() => setMobileMenuOpen(false)}
                         className="w-full text-center px-10 py-4 rounded-2xl font-bold text-lg bg-muted/60 border border-border text-foreground hover:text-primary transition-all flex items-center justify-center"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 * navLinks.length + 0.08 }}
+                        transition={{ delay: 0.1 * navLinks.length + 0.05 }}
                       >
                         {t('nav.contactUs', 'Contact Us')}
                       </motion.a>
