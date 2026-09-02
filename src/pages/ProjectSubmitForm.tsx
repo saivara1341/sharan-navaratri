@@ -176,7 +176,7 @@ export default function ProjectSubmitForm() {
             const outreachNote = outreachOptIn
                 ? " [Outreach: Open to sharing project milestones and experience on social media]"
                 : "";
-            const formattedMessage = `[Selected Services: ${servicesString}] [Budget Preference: ${preferredBudget.toUpperCase()}]${outreachNote}\n\n${message.trim()}`;
+            const formattedMessage = `[Selected Services: ${servicesString}] [Budget Preference: ${preferredBudget.toUpperCase()}] [Consent: granted at ${new Date().toISOString()}]${outreachNote}\n\n${message.trim()}`;
 
             const submissionId = crypto.randomUUID();
             const uploadedAttachments: { name: string; path: string; type: string; size: number }[] = [];
@@ -189,18 +189,18 @@ export default function ProjectSubmitForm() {
                 uploadedAttachments.push({ name: file.name, path, type: file.type, size: file.size });
             }
 
+            const submissionMessage = uploadedAttachments.length
+                ? `${formattedMessage}\n\n[Attachments: ${uploadedAttachments.map((file) => `${file.name} (${file.path})`).join(", ")}]`
+                : formattedMessage;
+
             const { error } = await supabase.from("contact_submissions").insert({
                 id: submissionId,
                 name: name.trim(),
                 email: email.trim().toLowerCase(),
                 designation: designation.trim() || null,
                 organization: organization.trim() || null,
-                inquiry_type: servicesString,
-                message: formattedMessage,
-                status: "New Request",
-                consent_given: true,
-                consent_at: new Date().toISOString(),
-                attachments: uploadedAttachments,
+                inquiry_type: "requirement",
+                message: submissionMessage,
             });
 
             if (error) throw error;
