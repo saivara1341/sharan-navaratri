@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Languages } from "lucide-react";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const languages = [
   { code: 'en', name: 'English' }, { code: 'hi', name: 'हिन्दी' }, { code: 'te', name: 'తెలుగు' },
@@ -23,22 +23,24 @@ const languages = [
 
 export const LanguageSwitcher = () => {
   const { i18n } = useTranslation();
+  const [activeLanguage, setActiveLanguage] = useState(i18n.resolvedLanguage || i18n.language || 'en');
 
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
+  const changeLanguage = async (lng: string) => {
+    await i18n.changeLanguage(lng);
+    setActiveLanguage(lng);
     document.documentElement.dir = ['ar', 'ur'].includes(lng) ? 'rtl' : 'ltr';
     document.documentElement.lang = lng;
-    // Store in localStorage for persistence if detector doesn't
     localStorage.setItem('i18nextLng', lng);
   };
 
   useEffect(() => {
-    const lng = i18n.language || 'en';
+    const lng = i18n.resolvedLanguage || i18n.language || 'en';
+    setActiveLanguage(lng);
     document.documentElement.dir = (lng.startsWith('ur') || lng.startsWith('ar')) ? 'rtl' : 'ltr';
     document.documentElement.lang = lng;
-  }, [i18n.language]);
+  }, [i18n.language, i18n.resolvedLanguage]);
 
-  const currentLanguage = languages.find(l => i18n.language.startsWith(l.code)) || languages[0];
+  const currentLanguage = languages.find(l => l.code.toLowerCase() === activeLanguage.toLowerCase()) || languages[0];
 
   return (
     <DropdownMenu>
@@ -52,8 +54,8 @@ export const LanguageSwitcher = () => {
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
-            onClick={() => changeLanguage(lang.code)}
-            className={`flex cursor-pointer items-center py-2 px-3 rounded-lg transition-colors focus:bg-primary/10 focus:text-primary ${i18n.language.startsWith(lang.code) ? 'bg-primary/5 text-primary' : 'text-muted-foreground'}`}
+            onSelect={() => void changeLanguage(lang.code)}
+            className={`flex cursor-pointer items-center py-2 px-3 rounded-lg transition-colors focus:bg-primary/10 focus:text-primary ${activeLanguage.toLowerCase() === lang.code.toLowerCase() ? 'bg-primary/5 text-primary' : 'text-muted-foreground'}`}
           >
             <span className="text-sm font-medium">{lang.name}</span>
           </DropdownMenuItem>

@@ -54,12 +54,28 @@ const resources = {
     "zh-TW": { translation: zhTW },
 };
 
+export const supportedLanguages = Object.keys(resources);
+
+const normalizeLanguage = (language?: string | null) => {
+    if (!language) return "en";
+    const exactMatch = supportedLanguages.find((code) => code.toLowerCase() === language.toLowerCase());
+    if (exactMatch) return exactMatch;
+
+    const baseLanguage = language.split("-")[0].toLowerCase();
+    return supportedLanguages.find((code) => code.toLowerCase() === baseLanguage) || "en";
+};
+
+const savedLanguage = typeof window === "undefined" ? "en" : localStorage.getItem("i18nextLng");
+
 i18n
     .use(initReactI18next)
     .init({
         resources,
-        lng: typeof window === "undefined" ? "en" : localStorage.getItem("i18nextLng") || "en",
+        lng: normalizeLanguage(savedLanguage),
         fallbackLng: "en",
+        supportedLngs: supportedLanguages,
+        load: "currentOnly",
+        returnNull: false,
         interpolation: {
             escapeValue: false,
         },
