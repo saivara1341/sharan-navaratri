@@ -37,10 +37,51 @@ export function parseSubmissionMessage(rawMessage: string | null | undefined): P
   // 1. Extract Selected Services
   const servicesMatch = text.match(/\[Selected Services:\s*([^\]]+)\]/i);
   if (servicesMatch) {
-    const rawList = servicesMatch[1].split(',').map(s => s.trim()).filter(Boolean);
-    // Filter out internal marker strings like "requirement", "contact"
+    const rawContent = servicesMatch[1];
+    const rawList = rawContent.split(',').map(s => s.trim()).filter(Boolean);
+    
+    // Filter out internal marker strings like "requirement", "contact", "general", "lead"
     const cleaned = rawList.filter(s => !['requirement', 'contact', 'general', 'lead'].includes(s.toLowerCase()));
-    selectedServices.push(...(cleaned.length > 0 ? cleaned : rawList));
+
+    // Recombine SEO, GEO, and AEO components into 1 single service if both/multiple are present
+    const combined: string[] = [];
+    let hasSeo = false;
+    let hasGeoOrAeo = false;
+    let seoItem = "";
+    const otherItems: string[] = [];
+
+    for (const item of cleaned) {
+      const isPureSeo = /^(🚀\s*)?SEO$/i.test(item.trim()) || /^Search Engine Optimization$/i.test(item.trim());
+      const isGeoOrAeo = /GEO/i.test(item) || /AEO/i.test(item);
+      const isFullSeoGeoAeo = /SEO/i.test(item) && (/GEO/i.test(item) || /AEO/i.test(item));
+
+      if (isFullSeoGeoAeo) {
+        hasSeo = true;
+        hasGeoOrAeo = true;
+      } else if (isPureSeo) {
+        hasSeo = true;
+        seoItem = item;
+      } else if (isGeoOrAeo) {
+        hasGeoOrAeo = true;
+      } else {
+        otherItems.push(item);
+      }
+    }
+
+    if (hasSeo && hasGeoOrAeo) {
+      // SEO + (GEO or AEO) requested -> Combine into 1 single service
+      combined.push("🚀 SEO, GEO & AEO Programme");
+    } else if (hasSeo && !hasGeoOrAeo) {
+      // Only SEO requested -> keep that as 1 service
+      combined.push(seoItem || "🚀 SEO");
+    } else if (!hasSeo && hasGeoOrAeo) {
+      // Only GEO/AEO requested
+      combined.push("GEO & AEO Programme");
+    }
+
+    combined.push(...otherItems);
+
+    selectedServices.push(...(combined.length > 0 ? combined : (cleaned.length > 0 ? cleaned : rawList)));
   }
 
   // 2. Extract Budget Preference
