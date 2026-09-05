@@ -1,6 +1,6 @@
 import React from "react";
 import { X, Printer, ShieldCheck, CheckCircle2, Building, Landmark, Download, FileText } from "lucide-react";
-import { ProjectLifecycleMeta, DEFAULT_BANKING_DETAILS } from "@/types/projectLifecycle";
+import { ProjectLifecycleMeta, DEFAULT_BANKING_DETAILS, DEFAULT_BANK_ACCOUNTS } from "@/types/projectLifecycle";
 
 interface ServiceAgreementModalProps {
   projectName: string;
@@ -114,30 +114,49 @@ export const ServiceAgreementModal: React.FC<ServiceAgreementModalProps> = ({
           </div>
 
           {/* 2. Official Banking Details (Unlocked) */}
-          <div className="space-y-2">
-            <h2 className="text-xs font-extrabold uppercase tracking-wider text-stone-950 border-b border-stone-200 pb-1.5 flex items-center justify-between">
-              <span>2. Mode of Payment & Official Banking Credentials</span>
+          <div className="space-y-2.5">
+            <div className="border-b border-stone-200 pb-1.5 flex items-center justify-between">
+              <h2 className="text-xs font-extrabold uppercase tracking-wider text-stone-950">
+                2. Mode of Payment & Official Banking Credentials
+              </h2>
               <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                Verified Banking Entity
+                Verified Official Banking
               </span>
-            </h2>
-            <div className="p-4 rounded-xl border border-stone-200 bg-stone-50/80 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div>
-                <span className="text-stone-500 font-medium">Bank Name:</span>
-                <p className="font-bold text-stone-900 mt-0.5">{bank.bank_name}</p>
-              </div>
-              <div>
-                <span className="text-stone-500 font-medium">Account Holder's Name:</span>
-                <p className="font-bold text-stone-900 mt-0.5">{bank.account_holder}</p>
-              </div>
-              <div>
-                <span className="text-stone-500 font-medium">Account Number:</span>
-                <p className="font-mono font-bold text-stone-900 mt-0.5 tracking-wider">{bank.account_number}</p>
-              </div>
-              <div>
-                <span className="text-stone-500 font-medium">IFSC Code:</span>
-                <p className="font-mono font-bold text-stone-900 mt-0.5 uppercase tracking-wider">{bank.ifsc_code}</p>
-              </div>
+            </div>
+
+            {/* Both Bank Accounts Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {(bank.accounts && bank.accounts.length > 0
+                ? bank.accounts.filter(a => a.is_selected !== false)
+                : DEFAULT_BANK_ACCOUNTS
+              ).map((acc, idx) => (
+                <div key={idx} className="p-3.5 rounded-xl border border-stone-200 bg-stone-50/90 space-y-2 text-xs">
+                  <div className="flex items-center justify-between border-b border-stone-200/70 pb-1">
+                    <span className="font-extrabold text-stone-900">{acc.account_holder}</span>
+                    <span className="text-[10px] font-semibold text-stone-600 bg-white px-2 py-0.5 rounded border border-stone-200">
+                      {acc.account_type || "Official Account"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-stone-500 text-[11px] block">Bank Name:</span>
+                    <p className="font-bold text-stone-900">{acc.bank_name}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 font-mono">
+                    <div>
+                      <span className="text-stone-500 text-[10px] block">A/C Number:</span>
+                      <p className="font-bold text-stone-900 tracking-wider">{acc.account_number}</p>
+                    </div>
+                    <div>
+                      <span className="text-stone-500 text-[10px] block">IFSC Code:</span>
+                      <p className="font-bold text-stone-900 uppercase tracking-wider">{acc.ifsc_code}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* UPI & LLP Contact Info */}
+            <div className="p-3.5 rounded-xl border border-stone-200 bg-stone-50/60 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               {bank.upi_id && (
                 <div>
                   <span className="text-stone-500 font-medium">Official UPI ID:</span>

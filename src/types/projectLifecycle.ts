@@ -1,3 +1,13 @@
+export interface BankAccount {
+  id: string;
+  account_holder: string;
+  bank_name: string;
+  account_number: string;
+  ifsc_code: string;
+  account_type?: string;
+  is_selected: boolean;
+}
+
 export interface BankingDetails {
   account_holder: string;
   bank_name: string;
@@ -10,13 +20,36 @@ export interface BankingDetails {
   poc_phone?: string;
   office_address?: string;
   share_banking_details: boolean;
+  online_payment_enabled?: boolean;
   notes?: string;
+  accounts?: BankAccount[];
 }
 
+export const DEFAULT_BANK_ACCOUNTS: BankAccount[] = [
+  {
+    id: "llp",
+    account_holder: "Siddhi Dynamics LLP",
+    bank_name: "State Bank of India (SBI)",
+    account_number: "45170121323",
+    ifsc_code: "SBIN0021632",
+    account_type: "Current / Firm Account",
+    is_selected: true
+  },
+  {
+    id: "partner",
+    account_holder: "Sarugu Sai Vara Prasad",
+    bank_name: "State Bank of India (SBI)",
+    account_number: "62495383611",
+    ifsc_code: "SBIN0021632",
+    account_type: "Designated Partner / Savings Account",
+    is_selected: true
+  }
+];
+
 export const DEFAULT_BANKING_DETAILS: BankingDetails = {
-  account_holder: "Sarugu Sai Vara Prasad",
+  account_holder: "Siddhi Dynamics LLP",
   bank_name: "State Bank of India (SBI)",
-  account_number: "62495383611",
+  account_number: "45170121323",
   ifsc_code: "SBIN0021632",
   upi_id: "6303602743@sbi",
   llpin: "ACX-6222",
@@ -25,7 +58,9 @@ export const DEFAULT_BANKING_DETAILS: BankingDetails = {
   poc_phone: "+91 6303602743",
   office_address: "3-5-260/2, Shivaji Nagar Rd, Kotagally, near Veterinary Hospital, Nizamabad, Telangana 503001",
   share_banking_details: true,
-  notes: "Advance payment is non-refundable once work commences. Balance payment due before final handover."
+  online_payment_enabled: true,
+  notes: "Advance payment is non-refundable once work commences. Balance payment due before final handover.",
+  accounts: DEFAULT_BANK_ACCOUNTS
 };
 
 export interface ClientServiceFormData {

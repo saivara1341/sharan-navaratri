@@ -1,14 +1,19 @@
 import React, { useState } from "react";
-import { X, Check, ClipboardCheck, Sparkles, Building, Phone, Mail, Calendar, Clock, ShieldCheck, AlertCircle } from "lucide-react";
+import { X, Check, ClipboardCheck, Sparkles, Building, Phone, Mail, Calendar, Clock, ShieldCheck, AlertCircle, CreditCard } from "lucide-react";
 import { ProjectLifecycleMeta, ClientServiceFormData } from "@/types/projectLifecycle";
 
 interface ServiceRequestModalProps {
-  projectName: string;
+  projectName?: string;
   clientName: string;
   clientEmail: string;
   meta: ProjectLifecycleMeta;
   onClose: () => void;
-  onSubmit: (formData: ClientServiceFormData, phone: string) => Promise<void>;
+  onSubmit: (
+    formData: ClientServiceFormData,
+    phone: string,
+    paymentStructure: string,
+    advanceAmount: string
+  ) => Promise<void>;
   saving: boolean;
 }
 
@@ -44,6 +49,17 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
   const [confirmed, setConfirmed] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  const [paymentStructure, setPaymentStructure] = useState<string>(
+    meta.payment_structure || "50% Advance + 50% on Delivery"
+  );
+
+  const quoteTotalNum = parseInt((meta.agreement || "").replace(/\D/g, "") || "0");
+  const isFullAdvance = paymentStructure.includes("100%");
+  const advanceNum = isFullAdvance
+    ? quoteTotalNum
+    : Math.round(quoteTotalNum * 0.5);
+  const currentAdvanceString = advanceNum > 0 ? `₹${advanceNum.toLocaleString("en-IN")}` : (meta.advance_amount || "50% Advance");
+
   const toggleMaterial = (item: string) => {
     setMaterials(prev => prev.includes(item) ? prev.filter(m => m !== item) : [...prev, item]);
   };
@@ -74,7 +90,7 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
       confirmed_at: new Date().toISOString()
     };
 
-    await onSubmit(formData, cleanPhone);
+    await onSubmit(formData, cleanPhone, paymentStructure, currentAdvanceString);
   };
 
   return (
@@ -99,10 +115,12 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
           <div>
             <span className="text-stone-500 font-medium">Assigned Quote:</span>{" "}
             <strong className="text-stone-900 font-bold text-sm">{meta.agreement || "Quoted Price"}</strong>
-            {meta.payment_structure && <span className="ml-2 text-stone-600">({meta.payment_structure})</span>}
+            <span className="ml-2 text-stone-600 font-semibold text-[11px] bg-white px-2 py-0.5 rounded-md border border-lime-200">
+              {paymentStructure}
+            </span>
           </div>
-          <div className="bg-white px-3 py-1 rounded-full border border-lime-200 font-bold text-primary text-xs">
-            Advance Due: {meta.advance_amount || "50% Advance"}
+          <div className="bg-primary text-white px-3.5 py-1 rounded-full font-bold text-xs shadow-sm">
+            Advance Due: {currentAdvanceString}
           </div>
         </div>
 
@@ -114,6 +132,81 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
               <span>{errorMsg}</span>
             </div>
           )}
+
+          {/* Payment Structure Selection (Client Choice) */}
+          <div className="p-4 rounded-2xl border border-lime-300 bg-lime-50/40 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                <CreditCard className="w-3.5 h-3.5" /> Select Payment Structure
+              </h3>
+              <span className="text-[10px] uppercase font-bold text-stone-500 bg-white px-2 py-0.5 rounded border border-stone-200">
+                Client Preference
+              </span>
+            </div>
+            <p className="text-[11px] text-stone-600">
+              Choose how you would like to structure your project milestone payments:
+            </p>
+
+            <div className="grid grid-cols-1 gap-2.5 pt-1">
+              {[
+                {
+                  id: "50% Advance + 50% on Delivery",
+                  title: "50% Advance + 50% on Delivery",
+                  tag: "Standard & Recommended",
+                  desc: "Start with 50% advance to trigger engineering work; remaining 50% upon final testing & delivery."
+                },
+                {
+                  id: "100% Advance",
+                  title: "100% Advance",
+                  tag: "Fast Track",
+                  desc: "Complete the entire project cost in 1 single transaction for priority queue & expedited delivery."
+                },
+                {
+                  id: "50% Advance + 25% Midway + 25% on Delivery",
+                  title: "50% Advance + 25% Midway + 25% on Delivery",
+                  tag: "Milestone Phased",
+                  desc: "Start with 50% advance, 25% upon midway prototype demo review, and final 25% upon delivery."
+                }
+              ].map(opt => {
+                const isSelected = paymentStructure === opt.id;
+                return (
+                  <label
+                    key={opt.id}
+                    onClick={() => setPaymentStructure(opt.id)}
+                    className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                      isSelected
+                        ? "bg-white border-primary ring-2 ring-primary/20 shadow-sm"
+                        : "bg-white/70 border-stone-200 hover:border-stone-300"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentStructure"
+                      value={opt.id}
+                      checked={isSelected}
+                      onChange={() => setPaymentStructure(opt.id)}
+                      className="mt-0.5 text-primary focus:ring-primary h-4 w-4 shrink-0"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-bold text-stone-900 text-xs">{opt.title}</span>
+                        <span
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${
+                            isSelected
+                              ? "bg-lime-100 text-stone-800"
+                              : "bg-stone-100 text-stone-600"
+                          }`}
+                        >
+                          {opt.tag}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-stone-500 mt-0.5">{opt.desc}</p>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Section 1: Contact Details */}
           <div className="p-4 rounded-2xl border border-stone-200 bg-stone-50/70 space-y-3">
@@ -264,7 +357,7 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
               disabled={saving}
               className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-sm shadow-xl shadow-stone-900/10 transition-all disabled:opacity-50 cursor-pointer"
             >
-              {saving ? "Submitting & Preparing Cashfree Link…" : `Confirm & Pay Advance (${meta.advance_amount || "Proceed via Cashfree"})`}
+              {saving ? "Submitting & Preparing Cashfree Link…" : `Confirm & Pay Advance (${currentAdvanceString})`}
             </button>
           </div>
         </form>

@@ -59,6 +59,8 @@ import {
     ProjectLifecycleMeta,
     BankingDetails,
     DEFAULT_BANKING_DETAILS,
+    DEFAULT_BANK_ACCOUNTS,
+    BankAccount,
     ProjectInvoice,
     ProjectUpdate
 } from "@/types/projectLifecycle";
@@ -710,8 +712,24 @@ const AdminPortal = () => {
 
         setQuoteDeadline(meta.deadline || parsed.requestedStartDate || "");
         setQuoteScope(meta.scope_summary || (parsed.selectedServices.length > 0 ? `Services: ${parsed.selectedServices.join(", ")}` : ""));
-        setQuoteShareBanking(meta.banking_details?.share_banking_details ?? true);
-        setQuoteBankDetails(meta.banking_details || { ...DEFAULT_BANKING_DETAILS });
+        const incomingBank = meta.banking_details || { ...DEFAULT_BANKING_DETAILS };
+        const initialAccounts: BankAccount[] = (incomingBank.accounts && incomingBank.accounts.length > 0)
+            ? incomingBank.accounts
+            : DEFAULT_BANK_ACCOUNTS;
+        setQuoteShareBanking(incomingBank.share_banking_details ?? true);
+        setQuoteBankDetails({
+            ...incomingBank,
+            accounts: initialAccounts,
+            online_payment_enabled: incomingBank.online_payment_enabled ?? true
+        });
+    };
+
+    const updateAccountField = (idx: number, field: keyof BankAccount, val: any) => {
+        const currentAccounts = quoteBankDetails.accounts && quoteBankDetails.accounts.length > 0
+            ? [...quoteBankDetails.accounts]
+            : [...DEFAULT_BANK_ACCOUNTS];
+        currentAccounts[idx] = { ...currentAccounts[idx], [field]: val };
+        setQuoteBankDetails({ ...quoteBankDetails, accounts: currentAccounts });
     };
 
     const handleSaveQuote = async () => {
@@ -741,6 +759,7 @@ const AdminPortal = () => {
                 });
             }
 
+            const activeAcc = quoteBankDetails.accounts?.find(a => a.is_selected) || quoteBankDetails.accounts?.[0];
             const updatedMeta: ProjectLifecycleMeta = {
                 ...currentMeta,
                 agreement: quoteAmount,
@@ -750,6 +769,10 @@ const AdminPortal = () => {
                 scope_summary: quoteScope,
                 banking_details: {
                     ...quoteBankDetails,
+                    account_holder: activeAcc?.account_holder || quoteBankDetails.account_holder,
+                    bank_name: activeAcc?.bank_name || quoteBankDetails.bank_name,
+                    account_number: activeAcc?.account_number || quoteBankDetails.account_number,
+                    ifsc_code: activeAcc?.ifsc_code || quoteBankDetails.ifsc_code,
                     share_banking_details: quoteShareBanking
                 },
                 invoices: updatedInvoices
@@ -3083,14 +3106,14 @@ const AdminPortal = () => {
 
                                 {/* Banking Details Configuration */}
                                 <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-4">
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-2.5">
                                         <div>
                                             <h4 className="font-bold text-primary uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                                                <ShieldCheck className="w-3.5 h-3.5" /> Banking Details to Share in Service Form
+                                                <ShieldCheck className="w-3.5 h-3.5" /> Official Banking & Payment Credentials
                                             </h4>
                                             <p className="text-[11px] text-muted-foreground">Select and verify the official account details to be shown in the Client Service Agreement.</p>
                                         </div>
-                                        <label className="flex items-center gap-2 cursor-pointer">
+                                        <label className="flex items-center gap-2 cursor-pointer shrink-0">
                                             <input
                                                 type="checkbox"
                                                 checked={quoteShareBanking}
@@ -3101,75 +3124,124 @@ const AdminPortal = () => {
                                         </label>
                                     </div>
 
+                                    {/* Online Payment Mode Option requested by user: ☐ Online (UPI / Bank Transfer / Payment Link) */}
+                                    <label className="flex items-start sm:items-center gap-3 cursor-pointer p-3 rounded-xl bg-card border border-border hover:border-primary transition-all">
+                                        <input
+                                            type="checkbox"
+                                            checked={quoteBankDetails.online_payment_enabled ?? true}
+                                            onChange={e => setQuoteBankDetails({ ...quoteBankDetails, online_payment_enabled: e.target.checked })}
+                                            className="rounded border-border w-4 h-4 text-primary focus:ring-primary mt-0.5 sm:mt-0 shrink-0"
+                                        />
+                                        <div className="flex-1">
+                                            <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                                                <CreditCard className="w-3.5 h-3.5 text-primary" /> Online (UPI / Bank Transfer / Payment Link)
+                                            </span>
+                                            <span className="text-[11px] text-muted-foreground block">
+                                                Allow clients to pay online via Cashfree checkout, instant UPI, or direct NEFT/IMPS/RTGS bank transfer.
+                                            </span>
+                                        </div>
+                                    </label>
+
                                     <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] leading-relaxed flex items-start gap-2">
                                         <Lock className="w-4 h-4 shrink-0 mt-0.5" />
                                         <span><strong>Protected Data:</strong> Client will only see and be able to download these banking credentials after they make the advance payment in Cashfree (or when manually approved by you).</span>
                                     </div>
 
                                     {quoteShareBanking && (
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                                            <div className="space-y-1">
-                                                <label className="font-bold text-muted-foreground">Bank Name</label>
-                                                <input
-                                                    type="text"
-                                                    value={quoteBankDetails.bank_name}
-                                                    onChange={e => setQuoteBankDetails({ ...quoteBankDetails, bank_name: e.target.value })}
-                                                    className="w-full bg-card border border-border rounded-xl px-3 py-2 text-foreground"
-                                                />
+                                        <div className="space-y-4 pt-1">
+                                            {/* Both Bank Accounts Cards */}
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                {(quoteBankDetails.accounts && quoteBankDetails.accounts.length > 0 ? quoteBankDetails.accounts : DEFAULT_BANK_ACCOUNTS).map((acc, idx) => (
+                                                    <div key={acc.id || idx} className="p-3.5 rounded-2xl bg-card border border-border space-y-2.5 shadow-sm">
+                                                        <div className="flex items-center justify-between pb-1 border-b border-border/60">
+                                                            <label className="flex items-center gap-2 cursor-pointer font-bold text-xs text-foreground">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={acc.is_selected ?? true}
+                                                                    onChange={e => updateAccountField(idx, "is_selected", e.target.checked)}
+                                                                    className="rounded border-border w-3.5 h-3.5 text-primary focus:ring-primary"
+                                                                />
+                                                                <span>{acc.account_type || `Account ${idx + 1}`}</span>
+                                                            </label>
+                                                            <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
+                                                                {acc.id === "llp" ? "Corporate LLP" : "Designated Partner"}
+                                                            </span>
+                                                        </div>
+
+                                                        <div className="space-y-1">
+                                                            <label className="text-[10px] font-bold text-muted-foreground uppercase">Account Holder's Name</label>
+                                                            <input
+                                                                type="text"
+                                                                value={acc.account_holder}
+                                                                onChange={e => updateAccountField(idx, "account_holder", e.target.value)}
+                                                                className="w-full bg-muted/40 border border-border rounded-xl px-2.5 py-1.5 text-xs text-foreground font-semibold"
+                                                            />
+                                                        </div>
+
+                                                        <div className="space-y-1">
+                                                            <label className="text-[10px] font-bold text-muted-foreground uppercase">Bank Name</label>
+                                                            <input
+                                                                type="text"
+                                                                value={acc.bank_name}
+                                                                onChange={e => updateAccountField(idx, "bank_name", e.target.value)}
+                                                                className="w-full bg-muted/40 border border-border rounded-xl px-2.5 py-1.5 text-xs text-foreground"
+                                                            />
+                                                        </div>
+
+                                                        <div className="grid grid-cols-2 gap-2">
+                                                            <div className="space-y-1">
+                                                                <label className="text-[10px] font-bold text-muted-foreground uppercase">Account Number</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={acc.account_number}
+                                                                    onChange={e => updateAccountField(idx, "account_number", e.target.value)}
+                                                                    className="w-full bg-muted/40 border border-border rounded-xl px-2.5 py-1.5 text-xs text-foreground font-mono font-bold"
+                                                                />
+                                                            </div>
+                                                            <div className="space-y-1">
+                                                                <label className="text-[10px] font-bold text-muted-foreground uppercase">IFSC Code</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={acc.ifsc_code}
+                                                                    onChange={e => updateAccountField(idx, "ifsc_code", e.target.value.toUpperCase())}
+                                                                    className="w-full bg-muted/40 border border-border rounded-xl px-2.5 py-1.5 text-xs text-foreground font-mono uppercase font-bold"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
                                             </div>
-                                            <div className="space-y-1">
-                                                <label className="font-bold text-muted-foreground">Account Holder Name</label>
-                                                <input
-                                                    type="text"
-                                                    value={quoteBankDetails.account_holder}
-                                                    onChange={e => setQuoteBankDetails({ ...quoteBankDetails, account_holder: e.target.value })}
-                                                    className="w-full bg-card border border-border rounded-xl px-3 py-2 text-foreground"
-                                                />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <label className="font-bold text-muted-foreground">Account Number</label>
-                                                <input
-                                                    type="text"
-                                                    value={quoteBankDetails.account_number}
-                                                    onChange={e => setQuoteBankDetails({ ...quoteBankDetails, account_number: e.target.value })}
-                                                    className="w-full bg-card border border-border rounded-xl px-3 py-2 text-foreground font-mono"
-                                                />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <label className="font-bold text-muted-foreground">IFSC Code</label>
-                                                <input
-                                                    type="text"
-                                                    value={quoteBankDetails.ifsc_code}
-                                                    onChange={e => setQuoteBankDetails({ ...quoteBankDetails, ifsc_code: e.target.value })}
-                                                    className="w-full bg-card border border-border rounded-xl px-3 py-2 text-foreground font-mono uppercase"
-                                                />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <label className="font-bold text-muted-foreground">UPI ID</label>
-                                                <input
-                                                    type="text"
-                                                    value={quoteBankDetails.upi_id || ""}
-                                                    onChange={e => setQuoteBankDetails({ ...quoteBankDetails, upi_id: e.target.value })}
-                                                    className="w-full bg-card border border-border rounded-xl px-3 py-2 text-foreground"
-                                                />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <label className="font-bold text-muted-foreground">LLPIN / PAN</label>
-                                                <div className="flex gap-2">
+
+                                            {/* UPI & Statutory Identifiers */}
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                                                <div className="space-y-1">
+                                                    <label className="font-bold text-muted-foreground text-[11px]">Official UPI ID</label>
                                                     <input
                                                         type="text"
-                                                        placeholder="LLPIN"
-                                                        value={quoteBankDetails.llpin || ""}
-                                                        onChange={e => setQuoteBankDetails({ ...quoteBankDetails, llpin: e.target.value })}
-                                                        className="w-1/2 bg-card border border-border rounded-xl px-3 py-2 text-foreground text-[11px]"
+                                                        value={quoteBankDetails.upi_id || ""}
+                                                        onChange={e => setQuoteBankDetails({ ...quoteBankDetails, upi_id: e.target.value })}
+                                                        placeholder="6303602743@sbi"
+                                                        className="w-full bg-card border border-border rounded-xl px-3 py-2 text-foreground text-xs font-mono"
                                                     />
-                                                    <input
-                                                        type="text"
-                                                        placeholder="PAN"
-                                                        value={quoteBankDetails.pan || ""}
-                                                        onChange={e => setQuoteBankDetails({ ...quoteBankDetails, pan: e.target.value })}
-                                                        className="w-1/2 bg-card border border-border rounded-xl px-3 py-2 text-foreground text-[11px]"
-                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="font-bold text-muted-foreground text-[11px]">LLPIN & PAN (Statutory Identifiers)</label>
+                                                    <div className="flex gap-2">
+                                                        <input
+                                                            type="text"
+                                                            placeholder="LLPIN"
+                                                            value={quoteBankDetails.llpin || ""}
+                                                            onChange={e => setQuoteBankDetails({ ...quoteBankDetails, llpin: e.target.value })}
+                                                            className="w-1/2 bg-card border border-border rounded-xl px-3 py-2 text-foreground text-xs"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            placeholder="PAN"
+                                                            value={quoteBankDetails.pan || ""}
+                                                            onChange={e => setQuoteBankDetails({ ...quoteBankDetails, pan: e.target.value })}
+                                                            className="w-1/2 bg-card border border-border rounded-xl px-3 py-2 text-foreground text-xs uppercase"
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

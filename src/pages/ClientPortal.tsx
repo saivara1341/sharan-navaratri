@@ -30,7 +30,8 @@ import { parseSubmissionMessage } from "@/lib/parseSubmissionMessage";
 import {
   ProjectLifecycleMeta,
   ClientServiceFormData,
-  ProjectInvoice
+  ProjectInvoice,
+  DEFAULT_BANK_ACCOUNTS
 } from "@/types/projectLifecycle";
 import { ServiceRequestModal } from "@/components/client/ServiceRequestModal";
 import { ServiceAgreementModal } from "@/components/client/ServiceAgreementModal";
@@ -199,7 +200,12 @@ export default function ClientPortal() {
   };
 
   // Submit Client Service Request Form & trigger Cashfree for advance
-  const handleSubmitServiceRequest = async (formData: ClientServiceFormData, phone: string) => {
+  const handleSubmitServiceRequest = async (
+    formData: ClientServiceFormData,
+    phone: string,
+    paymentStructure?: string,
+    advanceAmount?: string
+  ) => {
     if (!requestModalProject) return;
     setSubmittingRequest(true);
     try {
@@ -207,29 +213,103 @@ export default function ClientPortal() {
       await supabase.auth.updateUser({ data: { phone } });
 
       const m = parseProjectMeta(requestModalProject.bounty_reward);
+      const chosenStructure = paymentStructure || m.payment_structure || "50% Advance + 50% on Delivery";
+      const quoteTotal = parseInt((m.agreement || "").replace(/\D/g, "") || "0");
+      const is100Pct = chosenStructure.includes("100%");
+      const is3Way = chosenStructure.includes("25%");
+
       let existingInvoices = m.invoices || [];
 
-      // Ensure advance invoice exists
-      let advInvoice = existingInvoices.find(i => i.title.toLowerCase().includes("advance") || i.id === "SD-INV-001");
-      if (!advInvoice && m.agreement) {
-        const advAmount = m.advance_amount || `₹${Math.round(parseInt(m.agreement.replace(/\D/g, "") || "0") * 0.5).toLocaleString("en-IN")}`;
-        const num = parseInt(advAmount.replace(/\D/g, "") || "0");
+      // Generate invoice schedule based on chosen payment structure
+      let advInvoice: ProjectInvoice;
+      let newInvoices: ProjectInvoice[] = [];
+
+      if (is100Pct) {
+        const fullAmount = quoteTotal > 0 ? `₹${quoteTotal.toLocaleString("en-IN")}` : (m.agreement || "₹25,000");
+        const fullNum = quoteTotal > 0 ? quoteTotal : 25000;
+        advInvoice = {
+          id: "SD-INV-001",
+          title: "Full Project Payment (100% Advance)",
+          amount: fullAmount,
+          numeric_amount: fullNum,
+          due_date: new Date().toISOString().split("T")[0],
+          status: "pending",
+          description: `Full 100% advance payment to initiate expedited delivery for ${requestModalProject.organization || requestModalProject.name}.`
+        };
+        newInvoices = [advInvoice];
+      } else if (is3Way) {
+        const advNum = quoteTotal > 0 ? Math.round(quoteTotal * 0.5) : 12500;
+        const midNum = quoteTotal > 0 ? Math.round(quoteTotal * 0.25) : 6250;
+        const delNum = quoteTotal > 0 ? (quoteTotal - advNum - midNum) : 6250;
         advInvoice = {
           id: "SD-INV-001",
           title: "Advance Payment (50%)",
-          amount: advAmount,
-          numeric_amount: num || 12500,
+          amount: `₹${advNum.toLocaleString("en-IN")}`,
+          numeric_amount: advNum,
           due_date: new Date().toISOString().split("T")[0],
           status: "pending",
-          description: `Advance payment to initiate ${requestModalProject.organization || requestModalProject.name} services.`
+          description: `50% advance payment to initiate engineering for ${requestModalProject.organization || requestModalProject.name}.`
         };
-        existingInvoices = [advInvoice, ...existingInvoices];
+        newInvoices = [
+          advInvoice,
+          {
+            id: "SD-INV-002",
+            title: "Midway Milestone (25%)",
+            amount: `₹${midNum.toLocaleString("en-IN")}`,
+            numeric_amount: midNum,
+            due_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+            status: "pending",
+            description: `25% midway prototype review milestone.`
+          },
+          {
+            id: "SD-INV-003",
+            title: "Final Delivery (25%)",
+            amount: `₹${delNum.toLocaleString("en-IN")}`,
+            numeric_amount: delNum,
+            due_date: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+            status: "pending",
+            description: `Final 25% delivery handover payment.`
+          }
+        ];
+      } else {
+        // Standard 50% + 50%
+        const advNum = quoteTotal > 0 ? Math.round(quoteTotal * 0.5) : 12500;
+        const delNum = quoteTotal > 0 ? (quoteTotal - advNum) : 12500;
+        advInvoice = {
+          id: "SD-INV-001",
+          title: "Advance Payment (50%)",
+          amount: `₹${advNum.toLocaleString("en-IN")}`,
+          numeric_amount: advNum,
+          due_date: new Date().toISOString().split("T")[0],
+          status: "pending",
+          description: `50% advance payment to initiate engineering for ${requestModalProject.organization || requestModalProject.name}.`
+        };
+        newInvoices = [
+          advInvoice,
+          {
+            id: "SD-INV-002",
+            title: "Final Delivery Balance (50%)",
+            amount: `₹${delNum.toLocaleString("en-IN")}`,
+            numeric_amount: delNum,
+            due_date: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+            status: "pending",
+            description: `Final 50% delivery handover payment.`
+          }
+        ];
       }
+
+      // Keep any already paid invoices if any
+      const paidInvoices = existingInvoices.filter(i => i.status === "paid");
+      const finalInvoices = paidInvoices.length > 0
+        ? [...paidInvoices, ...newInvoices.filter(n => !paidInvoices.some(p => p.id === n.id))]
+        : newInvoices;
 
       const updatedMeta: ProjectLifecycleMeta = {
         ...m,
+        payment_structure: chosenStructure,
+        advance_amount: advanceAmount || advInvoice.amount,
         service_form: formData,
-        invoices: existingInvoices
+        invoices: finalInvoices
       };
 
       await supabase
@@ -244,9 +324,7 @@ export default function ClientPortal() {
       setRequestModalProject(null);
 
       // Trigger payment dialog for the advance invoice
-      if (advInvoice) {
-        setPayment({ project: targetProject, invoice: advInvoice });
-      }
+      setPayment({ project: targetProject, invoice: advInvoice });
 
       await load(email);
     } catch (err: any) {
@@ -740,18 +818,31 @@ export default function ClientPortal() {
 
                     {/* Unlocked Bank Preview if Paid */}
                     {isAdvPaid ? (
-                      <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 text-xs grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div>
-                          <span className="text-stone-500 font-medium">Bank Entity:</span>
-                          <p className="font-bold text-stone-900">{m.banking_details?.bank_name || "State Bank of India (SBI)"}</p>
-                        </div>
-                        <div>
-                          <span className="text-stone-500 font-medium">Account Number:</span>
-                          <p className="font-mono font-bold text-stone-900">{m.banking_details?.account_number || "62495383611"}</p>
-                        </div>
-                        <div>
-                          <span className="text-stone-500 font-medium">IFSC Code:</span>
-                          <p className="font-mono font-bold text-stone-900">{m.banking_details?.ifsc_code || "SBIN0021632"}</p>
+                      <div className="space-y-2.5">
+                        <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider block">
+                          Verified Official Bank Accounts
+                        </span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {(m.banking_details?.accounts && m.banking_details.accounts.length > 0
+                            ? m.banking_details.accounts.filter(a => a.is_selected !== false)
+                            : DEFAULT_BANK_ACCOUNTS
+                          ).map((acc, accIdx) => (
+                            <div key={accIdx} className="p-3.5 rounded-xl bg-stone-50 border border-stone-200 text-xs space-y-1.5">
+                              <div className="flex items-center justify-between">
+                                <span className="font-bold text-stone-900">{acc.account_holder}</span>
+                                {acc.account_type && (
+                                  <span className="text-[10px] bg-white border border-stone-200 px-2 py-0.5 rounded font-semibold text-stone-600">
+                                    {acc.account_type}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-stone-600">{acc.bank_name}</p>
+                              <div className="pt-1 border-t border-stone-200/60 flex items-center justify-between font-mono text-[11px]">
+                                <span>A/C: <strong>{acc.account_number}</strong></span>
+                                <span>IFSC: <strong>{acc.ifsc_code}</strong></span>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     ) : (
