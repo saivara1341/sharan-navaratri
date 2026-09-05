@@ -168,71 +168,6 @@ export const Navbar = () => {
             </motion.a>
 
             <nav className="hidden items-center gap-1.5 lg:gap-2.5 whitespace-nowrap">
-              {!isClientPortal && (
-                <>
-                  <motion.a
-                    href="/about"
-                    onClick={(e) => { e.preventDefault(); navigate('/about'); }}
-                    className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    {t('nav.about', 'About')}
-                  </motion.a>
-                  <motion.a
-                    href="/#vision"
-                    onClick={handleAnchorClick('vision')}
-                    className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    {t('nav.vision', 'Vision')}
-                  </motion.a>
-                  <motion.a
-                    href="/#projects"
-                    onClick={handleAnchorClick('projects')}
-                    className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    {t('nav.projects', 'Projects')}
-                  </motion.a>
-                  <motion.a
-                    href="/blog"
-                    onClick={(e) => { e.preventDefault(); navigate('/blog'); }}
-                    className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    {t('nav.blog', 'Blog')}
-                  </motion.a>
-                  <motion.a
-                    href="/#services"
-                    onClick={handleAnchorClick('services')}
-                    className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    {t('nav.services', 'Services')}
-                  </motion.a>
-                  <motion.a
-                    href="/contact"
-                    onClick={(e) => { e.preventDefault(); navigate('/contact'); }}
-                    className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    {t('nav.contactUs', 'Contact Us')}
-                  </motion.a>
-                  <motion.a
-                    href={isPortal ? '#/portal?tab=contact&type=problem' : '/submit?type=problem'}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      navigate('/submit?type=problem');
-                    }}
-                    className="px-3.5 py-2 rounded-xl text-xs lg:text-sm font-bold text-primary bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-all"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {t('nav.submit', 'Submit Problem')}
-                  </motion.a>
-                </>
-              )}
-
               <LanguageSwitcher />
 
               {!isLoggedIn ? (
@@ -420,7 +355,7 @@ export const Navbar = () => {
                   <LanguageSwitcher />
                 </div>
                 {!isClientPortal && (
-                  <>
+                  <div className="flex flex-col items-center gap-4 md:hidden">
                     <motion.a
                       href="/about"
                       onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/about'); }}
@@ -499,7 +434,7 @@ export const Navbar = () => {
                     >
                       {t('nav.submit', 'Submit Problem')}
                     </motion.a>
-                  </>
+                  </div>
                 )}
               {/* Close Button */}
               <motion.button
