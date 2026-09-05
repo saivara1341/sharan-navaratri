@@ -988,7 +988,7 @@ function Setup({
   const [designation, setDesignation] = useState("");
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-stone-950/45 p-4">
+    <div className="fixed inset-0 z-[250] grid place-items-center bg-stone-950/70 p-4 pt-20 pb-8 backdrop-blur-sm">
       <form
         onSubmit={e => {
           e.preventDefault();
@@ -1052,7 +1052,7 @@ function Payment({
   saving: boolean;
 }) {
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-stone-950/45 p-4">
+    <div className="fixed inset-0 z-[250] grid place-items-center bg-stone-950/70 p-4 pt-20 pb-8 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
         <div className="flex justify-between">
           <div>

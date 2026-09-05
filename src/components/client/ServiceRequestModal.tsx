@@ -78,8 +78,8 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/60 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-2xl max-h-[90vh] bg-white rounded-3xl shadow-2xl border border-stone-200 flex flex-col overflow-hidden text-stone-900 text-left">
+    <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 pt-24 pb-12 sm:p-6 sm:pt-24 sm:pb-12 bg-stone-950/80 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-2xl max-h-[85vh] bg-white rounded-3xl shadow-2xl border border-stone-200 flex flex-col overflow-hidden text-stone-900 text-left my-auto">
         {/* Header */}
         <div className="p-6 border-b border-stone-200 bg-stone-50 flex items-center justify-between">
           <div>

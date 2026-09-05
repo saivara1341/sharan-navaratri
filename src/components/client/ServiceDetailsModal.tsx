@@ -86,8 +86,8 @@ export const ServiceDetailsModal: React.FC<ServiceDetailsModalProps> = ({
     : "discovery";
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-stone-950/70 p-4 sm:p-6 md:p-10 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200">
-      <div className="relative w-full max-w-3xl rounded-3xl bg-white shadow-2xl border border-stone-200 overflow-hidden my-auto max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-[250] overflow-y-auto bg-stone-950/80 p-4 pt-24 pb-12 sm:p-6 sm:pt-24 sm:pb-12 md:p-10 md:pt-24 md:pb-12 backdrop-blur-md flex items-center justify-center animate-in fade-in duration-200">
+      <div className="relative w-full max-w-3xl rounded-3xl bg-white shadow-2xl border border-stone-200 overflow-hidden my-auto max-h-[85vh] flex flex-col">
         {/* Header */}
         <div className="bg-stone-900 text-white px-6 py-6 sm:px-8 flex items-start justify-between gap-4 shrink-0">
           <div>
