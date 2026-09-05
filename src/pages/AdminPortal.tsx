@@ -94,7 +94,7 @@ const AdminPortal = () => {
     const [chatInput, setChatInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
     const [sendingMsg, setSendingMsg] = useState(false);
-    const [viewMode, setViewMode] = useState<'submissions' | 'users' | 'portals' | 'agency' | 'knowledge' | 'seo-geo' | 'clients'>('submissions');
+    const [viewMode, setViewMode] = useState<'submissions' | 'users' | 'agency' | 'knowledge' | 'seo-geo' | 'clients'>('submissions');
 
     // ── Agency Clients Management ────────────────────────────────────────────
     const [agencyClients, setAgencyClients] = useState<any[]>([]);
@@ -1099,16 +1099,7 @@ const AdminPortal = () => {
                         >
                             <Building2 className="w-4 h-4" /> Agency Clients
                         </button>
-                        <button
-                            onClick={() => setViewMode('portals')}
-                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
-                                viewMode === 'portals'
-                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
-                            }`}
-                        >
-                            <ChevronRight className="w-4 h-4" /> Portals
-                        </button>
+
                         {(viewMode === 'submissions' || viewMode === 'agency') && (
                             <button
                                 onClick={viewMode === 'agency' ? fetchAgencyClients : fetchSubmissions}
@@ -1775,95 +1766,6 @@ const AdminPortal = () => {
                         )}
                     </motion.div>
 
-                ) : viewMode === 'portals' ? (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 text-left">
-                        <div>
-                            <h2 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
-                                <ChevronRight className="w-6 h-6 text-primary" /> Ecosystem Portal Launcher
-                            </h2>
-                            <p className="text-xs text-muted-foreground mt-1">Launch any portal as admin to inspect, oversee, and manage users and operations.</p>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            {[
-                                {
-                                    name: 'Agency / Partner Portal',
-                                    subtitle: 'Partner agency accounts',
-                                    route: '/portal/agency',
-                                    emoji: '🏬',
-                                    color: 'border-amber-500/30 hover:border-amber-500/60 bg-amber-500/5',
-                                    tag: 'Partners',
-                                    tagColor: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-                                    desc: 'View client portfolios, SEO/GEO scores, SLA tracking, billing, and AI coordinator chat for all agency partners.'
-                                },
-                                {
-                                    name: 'Client Workspace Portal',
-                                    subtitle: 'Clients managing their projects',
-                                    route: '/portal/client',
-                                    emoji: '🏢',
-                                    color: 'border-blue-500/30 hover:border-blue-500/60 bg-blue-500/5',
-                                    tag: 'Clients',
-                                    tagColor: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-                                    desc: 'Track project progress, roadmaps, GMeet, scheduling, agreements, and billing for every client.'
-                                },
-                                {
-                                    name: 'Employee Builder Hub',
-                                    subtitle: 'Internal team and builders portal',
-                                    route: '/portal/employee',
-                                    emoji: '💻',
-                                    color: 'border-emerald-500/30 hover:border-emerald-500/60 bg-emerald-500/5',
-                                    tag: 'Team',
-                                    tagColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                    desc: 'Manage team tasks, tech stack tools, development pipelines, GitHub, and project assignments.'
-                                },
-                                {
-                                    name: 'Investor Desk',
-                                    subtitle: 'Strategic investors and supporters',
-                                    route: '/portal/investor',
-                                    emoji: '📈',
-                                    color: 'border-purple-500/30 hover:border-purple-500/60 bg-purple-500/5',
-                                    tag: 'Investors',
-                                    tagColor: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-                                    desc: 'Show funding decks, growth metrics, cap tables, investor updates, and communication history.'
-                                },
-                            ].map((portal) => (
-                                <div key={portal.route} className={`glass-card p-6 rounded-2xl border ${portal.color} transition-all flex flex-col justify-between gap-4`}>
-                                    <div>
-                                        <div className="flex items-start justify-between mb-3">
-                                            <div className="text-4xl">{portal.emoji}</div>
-                                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border ${portal.tagColor}`}>{portal.tag}</span>
-                                        </div>
-                                        <h3 className="text-lg font-extrabold text-foreground">{portal.name}</h3>
-                                        <p className="text-[11px] text-muted-foreground font-semibold mb-2">{portal.subtitle}</p>
-                                        <p className="text-xs text-muted-foreground leading-relaxed">{portal.desc}</p>
-                                    </div>
-                                    <div className="flex items-center gap-2 pt-3 border-t border-border/50">
-                                        <button
-                                            onClick={() => navigate(portal.route)}
-                                            className="flex-1 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-extrabold hover:scale-[1.02] transition-all flex items-center justify-center gap-1.5"
-                                        >
-                                            <ChevronRight className="w-4 h-4" /> Enter Portal
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                const filterMap: Record<string, any> = {
-                                                    'Partners': 'partner',
-                                                    'Clients': 'client',
-                                                    'Team': 'employee',
-                                                    'Investors': 'investor'
-                                                };
-                                                setUserRoleFilter(filterMap[portal.tag] || 'all');
-                                                setViewMode('users');
-                                                fetchAllUsers();
-                                            }}
-                                            className="px-4 py-2.5 rounded-xl bg-muted border border-border text-xs font-bold text-foreground hover:bg-muted/80 transition-all flex items-center gap-1.5"
-                                        >
-                                            <Users className="w-4 h-4" /> View Users ({portal.tag})
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </motion.div>
                 ) : null}
                 <div className="pt-8">
                     <GoogleReviewCard audience="visitor" name="Sai Vara Prasad" compact />
