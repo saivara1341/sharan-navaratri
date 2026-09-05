@@ -76,7 +76,9 @@
         var pMatch = l.search.match(/p=\/([^&]*)/);
         if (pMatch && pMatch[1]) {
           var targetPath = '/' + decodeURIComponent(pMatch[1].replace(/~and~/g, '&'));
-          window.history.replaceState(null, null, targetPath + l.hash);
+          var qMatch = l.search.match(/q=([^&]*)/);
+          var queryString = qMatch && qMatch[1] ? '?' + decodeURIComponent(qMatch[1].replace(/~and~/g, '&')) : '';
+          window.history.replaceState(null, null, targetPath + queryString + l.hash);
         }
       }
     }(window.location))

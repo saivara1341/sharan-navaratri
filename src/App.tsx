@@ -99,9 +99,14 @@ const AuthRedirectHandler = () => {
       });
     }
 
-    // Listen for auth changes (like login success)
+    // Listen for auth changes (like login success) - only redirect if on auth/portal gateway
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
+      const isAuthOrPortalGate =
+        location.pathname === '/auth' ||
+        location.pathname === '/auth/' ||
+        location.pathname === '/portal' ||
+        location.pathname === '/portal/';
+      if (event === 'SIGNED_IN' && session && isAuthOrPortalGate) {
         checkUserRoleAndRedirect(session);
       }
     });
