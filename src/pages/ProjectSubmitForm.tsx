@@ -23,6 +23,7 @@ import {
     Paperclip,
     Square,
     X,
+    Sparkles,
 } from "lucide-react";
 
 import { emailService } from "@/services/emailService";
@@ -36,6 +37,18 @@ const SERVICE_OPTIONS = [
     { value: "gbp",          label: "📍 Google Business Profile",  desc: "Local GMB & Map Optimisation",        price: "Quote on review" },
     { value: "custom",       label: "🤝 Custom Solution",         desc: "Tailored enterprise scope & quote",   price: "Quote on review" },
 ];
+
+const resolveDefaultService = (value: string | null) => {
+    const normalized = value?.toLowerCase() || "";
+    if (SERVICE_OPTIONS.some((service) => service.value === normalized)) return normalized;
+    if (normalized.includes("automation")) return "automation";
+    if (normalized.includes("saas") || normalized.includes("app platform")) return "saas";
+    if (normalized.includes("erp")) return "erp";
+    if (normalized.includes("seo") || normalized.includes("geo") || normalized.includes("aeo")) return "seo-geo";
+    if (normalized.includes("google business") || normalized.includes("gbp")) return "gbp";
+    if (normalized.includes("custom")) return "custom";
+    return "website";
+};
 
 type SpeechRecognitionEvent = Event & { results: SpeechRecognitionResultList };
 type SpeechRecognitionInstance = EventTarget & {
@@ -53,7 +66,8 @@ type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
 export default function ProjectSubmitForm() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const defaultType = searchParams.get("type") || "website";
+    const defaultType = resolveDefaultService(searchParams.get("service") || searchParams.get("type"));
+    const requestedOrganization = searchParams.get("organization")?.trim() || "";
 
     const [step, setStep] = useState<"form" | "success">("form");
     const [submitting, setSubmitting] = useState(false);
@@ -71,6 +85,8 @@ export default function ProjectSubmitForm() {
     const [preferredBudget, setPreferredBudget] = useState("flexible");
     const [message, setMessage] = useState("");
     const [phone, setPhone] = useState("");
+    const [requestedStartDate, setRequestedStartDate] = useState("");
+    const [profileLoaded, setProfileLoaded] = useState(false);
     const [attachments, setAttachments] = useState<File[]>([]);
     const [isListening, setIsListening] = useState(false);
     const [outreachOptIn, setOutreachOptIn] = useState(false);
@@ -117,16 +133,32 @@ export default function ProjectSubmitForm() {
     };
 
     useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => {
+        supabase.auth.getSession().then(async ({ data: { session } }) => {
             if (session?.user) {
                 const em = session.user.email || "";
                 const nm = session.user.user_metadata?.full_name || session.user.user_metadata?.name || "";
+                const metadata = session.user.user_metadata || {};
                 setSessionEmail(em);
                 setSessionName(nm);
                 setEmail(em);
                 setName(nm);
-                setOrganization(session.user.user_metadata?.organization || "");
-                setDesignation(session.user.user_metadata?.designation || "");
+                setOrganization(metadata.organization || requestedOrganization);
+                setDesignation(metadata.designation || "");
+                setPhone(metadata.phone || "");
+
+                // The database profile may contain details saved by the client or team.
+                // Metadata remains a safe fallback while a profile record is being created.
+                const { data: profile } = await supabase
+                    .from("portal_users")
+                    .select("name, organization, designation, phone")
+                    .eq("auth_user_id", session.user.id)
+                    .maybeSingle();
+                if (profile) {
+                    setName(profile.name?.trim() || nm);
+                    setOrganization(profile.organization?.trim() || metadata.organization || requestedOrganization);
+                    setDesignation(profile.designation?.trim() || metadata.designation || "");
+                    setPhone(profile.phone?.trim() || metadata.phone || "");
+                }
 
                 // Detect portal path
                 if (em === "23eg510a07@anurag.edu.in") {
@@ -138,15 +170,16 @@ export default function ProjectSubmitForm() {
                     else setPortalPath("/portal/client");
                 }
             }
+            setProfileLoaded(true);
         });
-    }, []);
+    }, [requestedOrganization]);
 
     const [consentGiven, setConsentGiven] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!name.trim() || !email.trim() || !message.trim()) {
-            toast.error("Please fill in all required fields.");
+        if (!name.trim() || !email.trim() || !organization.trim() || !phone.trim() || !requestedStartDate || !message.trim()) {
+            toast.error("Please complete your contact details, business name, requested start date, and requirement.");
             return;
         }
         if (phone.trim()) {
@@ -168,6 +201,19 @@ export default function ProjectSubmitForm() {
 
         setSubmitting(true);
         try {
+            if (sessionEmail) {
+                const { error: profileError } = await supabase.auth.updateUser({
+                    data: {
+                        full_name: name.trim(),
+                        name: name.trim(),
+                        organization: organization.trim(),
+                        designation: designation.trim(),
+                        phone: phone.trim(),
+                    },
+                });
+                if (profileError) throw profileError;
+            }
+
             const servicesString = selectedServices.map(s => {
                 const item = SERVICE_OPTIONS.find(o => o.value === s);
                 return item ? item.label : s;
@@ -176,7 +222,7 @@ export default function ProjectSubmitForm() {
             const outreachNote = outreachOptIn
                 ? " [Outreach: Open to sharing project milestones and experience on social media]"
                 : "";
-            const formattedMessage = `[Selected Services: ${servicesString}] [Budget Preference: ${preferredBudget.toUpperCase()}] [Consent: granted at ${new Date().toISOString()}]${outreachNote}\n\n${message.trim()}`;
+            const formattedMessage = `[Selected Services: ${servicesString}] [Requested Service Start: ${requestedStartDate}] [Budget Preference: ${preferredBudget.toUpperCase()}] [Consent: granted at ${new Date().toISOString()}]${outreachNote}\n\n${message.trim()}`;
 
             const submissionId = crypto.randomUUID();
             const uploadedAttachments: { name: string; path: string; type: string; size: number }[] = [];
@@ -234,8 +280,69 @@ export default function ProjectSubmitForm() {
                         transition={{ type: "spring", duration: 0.6 }}
                         className="text-center max-w-md"
                     >
-                        <div className="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-500/40 flex items-center justify-center mx-auto mb-6">
-                            <CheckCircle className="w-10 h-10 text-emerald-400" />
+                        {/* Animated Vibrant Green Tick Mark Container */}
+                        <div className="relative w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+                            {/* Expanding Pulse Ring 1 */}
+                            <motion.div
+                                className="absolute inset-0 rounded-full bg-emerald-500/25 pointer-events-none"
+                                initial={{ scale: 0.9, opacity: 0.8 }}
+                                animate={{ scale: [0.9, 1.45, 1.6], opacity: [0.8, 0.25, 0] }}
+                                transition={{ duration: 2.2, repeat: Infinity, ease: "easeOut" }}
+                            />
+
+                            {/* Expanding Pulse Ring 2 */}
+                            <motion.div
+                                className="absolute inset-0 rounded-full bg-green-500/20 pointer-events-none"
+                                initial={{ scale: 0.9, opacity: 0.8 }}
+                                animate={{ scale: [0.9, 1.3, 1.4], opacity: [0.8, 0.2, 0] }}
+                                transition={{ duration: 2.2, delay: 0.5, repeat: Infinity, ease: "easeOut" }}
+                            />
+
+                            {/* Center Animated Badge */}
+                            <motion.div
+                                initial={{ scale: 0, rotate: -25 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                transition={{ type: "spring", stiffness: 280, damping: 18 }}
+                                className="relative z-10 w-24 h-24 rounded-full bg-gradient-to-b from-emerald-50 via-emerald-100 to-green-100 border-2 border-emerald-500 shadow-[0_12px_35px_rgba(16,185,129,0.35)] flex items-center justify-center"
+                            >
+                                <svg className="w-14 h-14" viewBox="0 0 52 52">
+                                    {/* Circular Drawing Border */}
+                                    <motion.circle
+                                        cx="26"
+                                        cy="26"
+                                        r="23"
+                                        fill="none"
+                                        stroke="#10b981"
+                                        strokeWidth="2.5"
+                                        strokeLinecap="round"
+                                        initial={{ pathLength: 0, opacity: 0 }}
+                                        animate={{ pathLength: 1, opacity: 1 }}
+                                        transition={{ duration: 0.55, ease: "easeInOut" }}
+                                    />
+                                    {/* Crisp Vibrant Green Tick Mark */}
+                                    <motion.path
+                                        d="M14 27l8 8 16-16"
+                                        fill="none"
+                                        stroke="#15803d"
+                                        strokeWidth="4"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        initial={{ pathLength: 0, opacity: 0 }}
+                                        animate={{ pathLength: 1, opacity: 1 }}
+                                        transition={{ delay: 0.35, duration: 0.45, ease: [0.65, 0, 0.35, 1] }}
+                                    />
+                                </svg>
+
+                                {/* Playful Sparkle Accent */}
+                                <motion.div
+                                    initial={{ scale: 0, opacity: 0 }}
+                                    animate={{ scale: [0, 1.2, 1], opacity: 1 }}
+                                    transition={{ delay: 0.55, duration: 0.35 }}
+                                    className="absolute -top-1 -right-1 text-emerald-600 bg-white rounded-full p-0.5 shadow-sm border border-emerald-200"
+                                >
+                                    <Sparkles className="w-4 h-4 fill-emerald-400" />
+                                </motion.div>
+                            </motion.div>
                         </div>
                         <h1 className="text-2xl font-extrabold text-foreground mb-2">Requirement Submitted!</h1>
                         <p className="text-muted-foreground mb-6 leading-relaxed">
@@ -244,13 +351,13 @@ export default function ProjectSubmitForm() {
                         <div className="flex flex-col sm:flex-row gap-3 justify-center">
                             <button
                                 onClick={() => navigate(portalPath)}
-                                className="px-6 py-2.5 bg-primary text-primary-foreground font-bold rounded-xl hover:scale-105 transition-all text-sm"
+                                className="px-6 py-2.5 bg-primary text-primary-foreground font-bold rounded-xl hover:scale-105 transition-all text-sm shadow-md"
                             >
                                 Back to My Portal
                             </button>
                             <button
-                                onClick={() => { setStep("form"); setMessage(""); setAttachments([]); setSelectedServices([defaultType]); }}
-                                className="px-6 py-2.5 bg-secondary text-secondary-foreground font-semibold rounded-xl hover:opacity-80 transition text-sm"
+                                onClick={() => { setStep("form"); setMessage(""); setAttachments([]); setSelectedServices([defaultType]); setRequestedStartDate(""); }}
+                                className="px-6 py-2.5 bg-secondary text-secondary-foreground font-semibold rounded-xl hover:opacity-80 transition text-sm border border-stone-200"
                             >
                                 Submit Another
                             </button>
@@ -299,6 +406,11 @@ export default function ProjectSubmitForm() {
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className={`rounded-2xl border p-4 text-sm ${profileLoaded && name.trim() && organization.trim() && phone.trim() ? "border-emerald-200 bg-emerald-50/70 text-emerald-900" : "border-amber-200 bg-amber-50 text-amber-950"}`}>
+                            <p className="font-bold">{profileLoaded && name.trim() && organization.trim() && phone.trim() ? "Profile details are ready" : "Complete your profile to continue"}</p>
+                            <p className="mt-1 text-xs leading-5 opacity-80">{profileLoaded && name.trim() && organization.trim() && phone.trim() ? "Your saved contact and business details were added below. You can edit them before submitting; your changes will be saved to your profile." : "Add your name, business name and mobile number below. These details are needed before we can schedule your service."}</p>
+                        </div>
+
                         {/* Service Selection */}
                         <div>
                             <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
@@ -370,7 +482,7 @@ export default function ProjectSubmitForm() {
                             <p className="pt-1 text-[11px] text-muted-foreground lg:hidden">💡 Choose <strong>Custom / Discuss</strong> and we’ll tailor a package to your budget on a 1-on-1 call.</p>
                         </div>
 
-                        {/* Personal Details */}
+                        {/* Profile and primary contact details */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
@@ -383,6 +495,21 @@ export default function ProjectSubmitForm() {
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="Enter full name"
+                                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+                                    <User className="inline w-3.5 h-3.5 mr-1" />
+                                    Mobile Number <span className="text-destructive">*</span>
+                                </label>
+                                <input
+                                    type="tel"
+                                    required
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    placeholder="Enter 10-digit mobile number"
+                                    inputMode="numeric"
                                     className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                 />
                             </div>
@@ -428,11 +555,27 @@ export default function ProjectSubmitForm() {
                                 <input
                                     type="text"
                                     value={organization}
+                                    required
                                     onChange={(e) => setOrganization(e.target.value)}
                                     placeholder="Enter organization or brand name"
                                     className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                 />
                             </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+                                Requested Service Start Date <span className="text-destructive">*</span>
+                            </label>
+                            <input
+                                type="date"
+                                required
+                                value={requestedStartDate}
+                                onChange={(e) => setRequestedStartDate(e.target.value)}
+                                min={new Date().toISOString().slice(0, 10)}
+                                className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
+                            />
+                            <p className="mt-1 text-[11px] text-muted-foreground">We confirm the final start date after reviewing the request and required materials.</p>
                         </div>
 
                         {/* Message */}

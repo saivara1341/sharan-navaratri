@@ -2,3 +2,6 @@ project_id = "xoqpxckowwubeqdtazks"
 
 [functions.agency-client-intake]
 verify_jwt = false
+
+[functions.cashfree-payments]
+verify_jwt = false

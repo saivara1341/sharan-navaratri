@@ -1,0 +1,106 @@
+export interface ParsedSubmissionMessage {
+  selectedServices: string[];
+  budgetPreference: string | null;
+  consentTimestamp: string | null;
+  outreach: string | null;
+  requestedStartDate: string | null;
+  attachments: string[];
+  cleanMessage: string;
+}
+
+/**
+ * Parses raw bracket-encoded metadata in submission messages, e.g.:
+ * [Selected Services: requirement, 🚀 SEO, GEO & AEO Programme] [Budget Preference: FLEXIBLE] [Consent: granted at ...]
+ * and returns clean structured metadata along with the actual user message.
+ */
+export function parseSubmissionMessage(rawMessage: string | null | undefined): ParsedSubmissionMessage {
+  if (!rawMessage) {
+    return {
+      selectedServices: [],
+      budgetPreference: null,
+      consentTimestamp: null,
+      outreach: null,
+      requestedStartDate: null,
+      attachments: [],
+      cleanMessage: ""
+    };
+  }
+
+  let text = rawMessage.trim();
+  const selectedServices: string[] = [];
+  let budgetPreference: string | null = null;
+  let consentTimestamp: string | null = null;
+  let outreach: string | null = null;
+  let requestedStartDate: string | null = null;
+  const attachments: string[] = [];
+
+  // 1. Extract Selected Services
+  const servicesMatch = text.match(/\[Selected Services:\s*([^\]]+)\]/i);
+  if (servicesMatch) {
+    const rawList = servicesMatch[1].split(',').map(s => s.trim()).filter(Boolean);
+    // Filter out internal marker strings like "requirement", "contact"
+    const cleaned = rawList.filter(s => !['requirement', 'contact', 'general', 'lead'].includes(s.toLowerCase()));
+    selectedServices.push(...(cleaned.length > 0 ? cleaned : rawList));
+  }
+
+  // 2. Extract Budget Preference
+  const budgetMatch = text.match(/\[Budget Preference:\s*([^\]]+)\]/i);
+  if (budgetMatch) {
+    budgetPreference = budgetMatch[1].trim();
+  }
+
+  // 3. Extract Consent
+  const consentMatch = text.match(/\[Consent:\s*(?:granted at\s*)?([^\]]+)\]/i);
+  if (consentMatch) {
+    consentTimestamp = consentMatch[1].trim();
+  }
+
+  // 4. Extract Outreach
+  const outreachMatch = text.match(/\[Outreach:\s*([^\]]+)\]/i);
+  if (outreachMatch) {
+    outreach = outreachMatch[1].trim();
+  }
+
+  // 5. Extract Requested Service Start
+  const startMatch = text.match(/\[(?:Requested Service Start|Start Date):\s*([^\]]+)\]/i);
+  if (startMatch) {
+    requestedStartDate = startMatch[1].trim();
+  }
+
+  // 6. Extract Attachments
+  const attachMatch = text.match(/\[Attachments?:\s*([^\]]+)\]/i);
+  if (attachMatch) {
+    attachments.push(...attachMatch[1].split(',').map(s => s.trim()).filter(Boolean));
+  }
+
+  // 7. Strip all bracket tags from text
+  let clean = text
+    .replace(/\[Selected Services:[^\]]*\]/gi, '')
+    .replace(/\[Budget Preference:[^\]]*\]/gi, '')
+    .replace(/\[Consent:[^\]]*\]/gi, '')
+    .replace(/\[Outreach:[^\]]*\]/gi, '')
+    .replace(/\[(?:Requested Service Start|Start Date):[^\]]*\]/gi, '')
+    .replace(/\[Attachments?:[^\]]*\]/gi, '')
+    .replace(/\[[^\]]+:[^\]]+\]/g, '') // strip any remaining generic bracket pairs like [Key: Value]
+    .trim();
+
+  // Strip all variations of boilerplate consent sentences, even if repeated or truncated
+  clean = clean
+    .replace(/I consent to Siddhi Dynamics LLP[\s\S]*/gi, '')
+    .replace(/I have read the privacy notice[\s\S]*/gi, '')
+    .trim();
+
+  const fallbackSummary = selectedServices.length > 0
+    ? `Engagement requested for ${selectedServices.join(", ")}.`
+    : "Initial project requirement and scope discovery.";
+
+  return {
+    selectedServices,
+    budgetPreference,
+    consentTimestamp,
+    outreach,
+    requestedStartDate,
+    attachments,
+    cleanMessage: clean || fallbackSummary
+  };
+}

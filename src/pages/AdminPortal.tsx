@@ -40,12 +40,28 @@ import {
     Plus,
     CreditCard,
     Zap,
-    Lock
+    Lock,
+    CheckCircle2,
+    Landmark,
+    Check,
+    Eye,
+    EyeOff,
+    Clock,
+    Sparkles
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { parseSubmissionMessage } from "@/lib/parseSubmissionMessage";
+import { parseProjectMeta, serializeProjectMeta, generateInvoiceId } from "@/lib/projectLifecycleHelper";
+import {
+    ProjectLifecycleMeta,
+    BankingDetails,
+    DEFAULT_BANKING_DETAILS,
+    ProjectInvoice,
+    ProjectUpdate
+} from "@/types/projectLifecycle";
 
 interface Submission {
     id: string;
@@ -440,24 +456,13 @@ const AdminPortal = () => {
         toast.success(`Custom file attached: ${file.name}`);
     };
 
-    // Metadata Parsing & Serialization
-    const parseProjectMetadata = (bountyReward: string | null | undefined) => {
-        try {
-            if (bountyReward && bountyReward.trim().startsWith('{')) {
-                return JSON.parse(bountyReward);
-            }
-        } catch (e) {
-            console.error("Failed to parse project metadata:", e);
-        }
-        return {
-            deadline: "",
-            website_url: "",
-            agreement: bountyReward || ""
-        };
+    // Metadata Parsing & Serialization (lifecycle compatible)
+    const parseProjectMetadata = (bountyReward: string | null | undefined): ProjectLifecycleMeta => {
+        return parseProjectMeta(bountyReward);
     };
 
     const serializeProjectMetadata = (deadline: string, websiteUrl: string, agreement: string) => {
-        return JSON.stringify({
+        return serializeProjectMeta({
             deadline,
             website_url: websiteUrl,
             agreement
@@ -476,6 +481,32 @@ const AdminPortal = () => {
     const [editDeadline, setEditDeadline] = useState("");
     const [editUrl, setEditUrl] = useState("");
     const [editAgreement, setEditAgreement] = useState("");
+
+    // Lifecycle Quote & Service Order Modal states
+    const [quoteModalSub, setQuoteModalSub] = useState<Submission | null>(null);
+    const [quoteAmount, setQuoteAmount] = useState("");
+    const [quotePaymentStructure, setQuotePaymentStructure] = useState("50% Advance + 50% on Delivery");
+    const [quoteAdvanceAmount, setQuoteAdvanceAmount] = useState("");
+    const [quoteDeadline, setQuoteDeadline] = useState("");
+    const [quoteScope, setQuoteScope] = useState("");
+    const [quoteShareBanking, setQuoteShareBanking] = useState(true);
+    const [quoteBankDetails, setQuoteBankDetails] = useState<BankingDetails>({ ...DEFAULT_BANKING_DETAILS });
+    const [savingQuote, setSavingQuote] = useState(false);
+
+    // Invoices management states
+    const [addInvoiceSub, setAddInvoiceSub] = useState<Submission | null>(null);
+    const [invoiceTitle, setInvoiceTitle] = useState("Milestone Payment");
+    const [invoiceAmount, setInvoiceAmount] = useState("");
+    const [invoiceDue, setInvoiceDue] = useState("");
+    const [invoiceDesc, setInvoiceDesc] = useState("");
+    const [savingInvoice, setSavingInvoice] = useState(false);
+
+    // Project updates modal states
+    const [postUpdateSub, setPostUpdateSub] = useState<Submission | null>(null);
+    const [updateTitle, setUpdateTitle] = useState("");
+    const [updateDesc, setUpdateDesc] = useState("");
+    const [updateVisible, setUpdateVisible] = useState(true);
+    const [savingUpdate, setSavingUpdate] = useState(false);
 
     // Create Modal states
     const [createOpen, setCreateOpen] = useState(false);
@@ -629,7 +660,13 @@ const AdminPortal = () => {
         if (!editOpen) return;
         setUpdatingSub(true);
         try {
-            const bountyStr = serializeProjectMetadata(editDeadline, editUrl, editAgreement);
+            const currentMeta = parseProjectMeta(editOpen.bounty_reward);
+            const bountyStr = serializeProjectMeta({
+                ...currentMeta,
+                deadline: editDeadline,
+                website_url: editUrl,
+                agreement: editAgreement,
+            });
             await supabaseService.updateSubmission(editOpen.id, {
                 name: editName,
                 email: editEmail,
@@ -656,6 +693,242 @@ const AdminPortal = () => {
             toast.error(`Update failed: ${error.message}`);
         } finally {
             setUpdatingSub(false);
+        }
+    };
+
+    // Lifecycle Action Handlers
+    const openQuoteModal = (sub: Submission) => {
+        setQuoteModalSub(sub);
+        const meta = parseProjectMeta(sub.bounty_reward);
+        const parsed = parseSubmissionMessage(sub.message);
+        setQuoteAmount(meta.agreement || "");
+        setQuotePaymentStructure(meta.payment_structure || "50% Advance + 50% on Delivery");
+
+        const rawNum = parseInt((meta.agreement || "").replace(/\D/g, '') || '0');
+        const defaultAdv = rawNum > 0 ? `₹${Math.round(rawNum * 0.5).toLocaleString('en-IN')}` : "";
+        setQuoteAdvanceAmount(meta.advance_amount || defaultAdv);
+
+        setQuoteDeadline(meta.deadline || parsed.requestedStartDate || "");
+        setQuoteScope(meta.scope_summary || (parsed.selectedServices.length > 0 ? `Services: ${parsed.selectedServices.join(", ")}` : ""));
+        setQuoteShareBanking(meta.banking_details?.share_banking_details ?? true);
+        setQuoteBankDetails(meta.banking_details || { ...DEFAULT_BANKING_DETAILS });
+    };
+
+    const handleSaveQuote = async () => {
+        if (!quoteModalSub) return;
+        if (!quoteAmount.trim()) {
+            toast.error("Please specify an assigned amount / price quote.");
+            return;
+        }
+        setSavingQuote(true);
+        try {
+            const currentMeta = parseProjectMeta(quoteModalSub.bounty_reward);
+            const advanceNum = parseInt(quoteAdvanceAmount.replace(/\D/g, '') || quoteAmount.replace(/\D/g, '') || '0');
+
+            let existingInvoices = currentMeta.invoices || [];
+            let updatedInvoices = [...existingInvoices];
+            const hasAdvanceInv = updatedInvoices.some(inv => inv.title.toLowerCase().includes("advance"));
+            if (!hasAdvanceInv) {
+                const advId = generateInvoiceId(updatedInvoices);
+                updatedInvoices.unshift({
+                    id: advId,
+                    title: `Advance Payment (${quotePaymentStructure.includes('100%') ? '100%' : '50%'})`,
+                    amount: quoteAdvanceAmount || quoteAmount,
+                    numeric_amount: advanceNum,
+                    due_date: new Date().toISOString().split('T')[0],
+                    status: 'pending',
+                    description: `Advance payment for ${quoteModalSub.organization || quoteModalSub.name} project services.`
+                });
+            }
+
+            const updatedMeta: ProjectLifecycleMeta = {
+                ...currentMeta,
+                agreement: quoteAmount,
+                payment_structure: quotePaymentStructure,
+                advance_amount: quoteAdvanceAmount || quoteAmount,
+                deadline: quoteDeadline,
+                scope_summary: quoteScope,
+                banking_details: {
+                    ...quoteBankDetails,
+                    share_banking_details: quoteShareBanking
+                },
+                invoices: updatedInvoices
+            };
+
+            const newStatus = "Quote Sent (Pending Client Approval)";
+            await supabaseService.updateSubmission(quoteModalSub.id, {
+                status: newStatus,
+                bounty_reward: serializeProjectMeta(updatedMeta)
+            });
+
+            toast.success("Quote & Service Order configured! Advance invoice generated.");
+            setQuoteModalSub(null);
+            if (viewDetailsSub?.id === quoteModalSub.id) {
+                setViewDetailsSub(prev => prev ? { ...prev, status: newStatus, bounty_reward: serializeProjectMeta(updatedMeta) } : null);
+            }
+            fetchSubmissions();
+        } catch (err: any) {
+            toast.error("Failed to save quote: " + (err.message || "Unknown error"));
+        } finally {
+            setSavingQuote(false);
+        }
+    };
+
+    const handleAcceptAndStartProject = async (sub: Submission) => {
+        try {
+            const currentMeta = parseProjectMeta(sub.bounty_reward);
+            const startDate = new Date().toISOString().split('T')[0];
+            const updatedMeta: ProjectLifecycleMeta = {
+                ...currentMeta,
+                service_start_date: currentMeta.service_start_date || startDate
+            };
+            const newStatus = "Quote Accepted (Project Started)";
+            await supabaseService.updateSubmission(sub.id, {
+                status: newStatus,
+                progress: Math.max(sub.progress || 0, 25),
+                bounty_reward: serializeProjectMeta(updatedMeta)
+            });
+            toast.success("Project accepted! Status updated to Project Started (25%).");
+            if (viewDetailsSub?.id === sub.id) {
+                setViewDetailsSub(prev => prev ? { ...prev, status: newStatus, progress: Math.max(sub.progress || 0, 25), bounty_reward: serializeProjectMeta(updatedMeta) } : null);
+            }
+            fetchSubmissions();
+        } catch (err: any) {
+            toast.error("Failed to accept project: " + err.message);
+        }
+    };
+
+    const openAddInvoice = (sub: Submission) => {
+        setAddInvoiceSub(sub);
+        const meta = parseProjectMeta(sub.bounty_reward);
+        setInvoiceTitle(`Milestone ${(meta.invoices?.length || 0) + 1}`);
+        setInvoiceAmount("");
+        setInvoiceDue(new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]);
+        setInvoiceDesc("");
+    };
+
+    const handleAddInvoice = async () => {
+        if (!addInvoiceSub) return;
+        if (!invoiceAmount.trim()) {
+            toast.error("Invoice amount is required.");
+            return;
+        }
+        setSavingInvoice(true);
+        try {
+            const currentMeta = parseProjectMeta(addInvoiceSub.bounty_reward);
+            const existingInvoices = currentMeta.invoices || [];
+            const newInvId = generateInvoiceId(existingInvoices);
+            const numeric = parseInt(invoiceAmount.replace(/\D/g, '') || '0');
+            const newInvoice: ProjectInvoice = {
+                id: newInvId,
+                title: invoiceTitle.trim() || `Invoice ${newInvId}`,
+                amount: invoiceAmount.trim(),
+                numeric_amount: numeric,
+                due_date: invoiceDue || new Date().toISOString().split('T')[0],
+                status: "pending",
+                description: invoiceDesc.trim() || `Service milestone invoice for ${addInvoiceSub.name}`
+            };
+            const updatedInvoices = [...existingInvoices, newInvoice];
+            const updatedMeta: ProjectLifecycleMeta = {
+                ...currentMeta,
+                invoices: updatedInvoices
+            };
+            await supabaseService.updateSubmission(addInvoiceSub.id, {
+                bounty_reward: serializeProjectMeta(updatedMeta)
+            });
+            toast.success(`Invoice ${newInvId} added successfully.`);
+            setAddInvoiceSub(null);
+            if (viewDetailsSub?.id === addInvoiceSub.id) {
+                setViewDetailsSub(prev => prev ? { ...prev, bounty_reward: serializeProjectMeta(updatedMeta) } : null);
+            }
+            fetchSubmissions();
+        } catch (err: any) {
+            toast.error("Failed to add invoice: " + err.message);
+        } finally {
+            setSavingInvoice(false);
+        }
+    };
+
+    const handleMarkInvoicePaid = async (sub: Submission, invoiceId: string) => {
+        try {
+            const currentMeta = parseProjectMeta(sub.bounty_reward);
+            const existingInvoices = currentMeta.invoices || [];
+            const nowStr = new Date().toISOString();
+            let isAdvance = false;
+            const updatedInvoices = existingInvoices.map(inv => {
+                if (inv.id === invoiceId) {
+                    if (inv.title.toLowerCase().includes("advance") || inv.id === existingInvoices[0]?.id) {
+                        isAdvance = true;
+                    }
+                    return { ...inv, status: "paid" as const, paid_at: nowStr };
+                }
+                return inv;
+            });
+            const startDate = currentMeta.service_start_date || (isAdvance ? nowStr.split('T')[0] : undefined);
+            const updatedMeta: ProjectLifecycleMeta = {
+                ...currentMeta,
+                service_start_date: startDate,
+                invoices: updatedInvoices
+            };
+            const updates: any = {
+                bounty_reward: serializeProjectMeta(updatedMeta)
+            };
+            if (isAdvance && (!sub.status || sub.status.toLowerCase().includes('quote'))) {
+                updates.status = "In Progress (Service Started)";
+                updates.progress = Math.max(sub.progress || 0, 25);
+            }
+            await supabaseService.updateSubmission(sub.id, updates);
+            toast.success(`Invoice ${invoiceId} marked as PAID. Status and banking details unlocked.`);
+            if (viewDetailsSub?.id === sub.id) {
+                setViewDetailsSub(prev => prev ? { ...prev, ...updates } : null);
+            }
+            fetchSubmissions();
+        } catch (err: any) {
+            toast.error("Failed to mark invoice paid: " + err.message);
+        }
+    };
+
+    const openPostUpdate = (sub: Submission) => {
+        setPostUpdateSub(sub);
+        setUpdateTitle("");
+        setUpdateDesc("");
+        setUpdateVisible(true);
+    };
+
+    const handlePostUpdate = async () => {
+        if (!postUpdateSub) return;
+        if (!updateTitle.trim() || !updateDesc.trim()) {
+            toast.error("Update title and description are required.");
+            return;
+        }
+        setSavingUpdate(true);
+        try {
+            const currentMeta = parseProjectMeta(postUpdateSub.bounty_reward);
+            const newUpd: ProjectUpdate = {
+                id: `upd_${Date.now()}`,
+                date: new Date().toISOString().split('T')[0],
+                title: updateTitle.trim(),
+                description: updateDesc.trim(),
+                visible_to_client: updateVisible
+            };
+            const updatedUpdates = [newUpd, ...(currentMeta.updates || [])];
+            const updatedMeta: ProjectLifecycleMeta = {
+                ...currentMeta,
+                updates: updatedUpdates
+            };
+            await supabaseService.updateSubmission(postUpdateSub.id, {
+                bounty_reward: serializeProjectMeta(updatedMeta)
+            });
+            toast.success("Project update posted successfully.");
+            setPostUpdateSub(null);
+            if (viewDetailsSub?.id === postUpdateSub.id) {
+                setViewDetailsSub(prev => prev ? { ...prev, bounty_reward: serializeProjectMeta(updatedMeta) } : null);
+            }
+            fetchSubmissions();
+        } catch (err: any) {
+            toast.error("Failed to post update: " + err.message);
+        } finally {
+            setSavingUpdate(false);
         }
     };
 
@@ -1074,70 +1347,84 @@ const AdminPortal = () => {
                                                 <div className="bg-muted/40 rounded-2xl p-6 border border-border group-hover:bg-muted/60 transition-colors relative text-left">
                                                     {(() => {
                                                         const meta = parseProjectMetadata(sub.bounty_reward);
-                                                        const isJson = sub.bounty_reward && sub.bounty_reward.trim().startsWith('{');
-                                                        if (isJson) {
-                                                            return (
-                                                                <div className="space-y-4">
-                                                                    <div className="flex flex-wrap gap-4 text-xs font-semibold text-muted-foreground mb-2 border-b border-border pb-2">
-                                                                        {meta.deadline && (
-                                                                            <span className="bg-orange-500/10 text-orange-400 border border-orange-500/20 px-2.5 py-1 rounded-lg">
-                                                                                Deadline: {meta.deadline}
-                                                                            </span>
-                                                                        )}
-                                                                        {meta.website_url && (
-                                                                            <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-1 rounded-lg truncate max-w-xs">
-                                                                                URL: <a href={meta.website_url} target="_blank" rel="noopener noreferrer" className="hover:underline text-blue-400">{meta.website_url}</a>
-                                                                            </span>
-                                                                        )}
-                                                                        {meta.agreement && (
-                                                                            <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-lg truncate max-w-xs animate-pulse">
-                                                                                Agreement: {meta.agreement}
-                                                                            </span>
-                                                                        )}
-                                                                    </div>
-                                                                    <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap relative z-10">
-                                                                        {sub.message}
-                                                                    </p>
-                                                                </div>
-                                                            );
-                                                        }
-                                                        
+                                                        const parsedMsg = parseSubmissionMessage(sub.message);
                                                         return (
-                                                            <>
-                                                                {sub.bounty_reward && (
-                                                                    <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/20 text-primary border border-primary/30 z-20">
-                                                                        <span className="text-xs font-bold tracking-tight">BOUNTY: {sub.bounty_reward}</span>
+                                                            <div className="space-y-4">
+                                                                <div className="flex flex-wrap gap-2 text-xs font-semibold mb-2 border-b border-border pb-3 items-center">
+                                                                    {meta.agreement && (
+                                                                        <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-xl flex items-center gap-1.5 font-bold">
+                                                                            <Landmark className="w-3.5 h-3.5" /> Quote: {meta.agreement}
+                                                                        </span>
+                                                                    )}
+                                                                    {meta.deadline && (
+                                                                        <span className="bg-orange-500/10 text-orange-400 border border-orange-500/20 px-2.5 py-1 rounded-xl flex items-center gap-1">
+                                                                            <Calendar className="w-3.5 h-3.5" /> Due: {meta.deadline}
+                                                                        </span>
+                                                                    )}
+                                                                    {parsedMsg.requestedStartDate && (
+                                                                        <span className="bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2.5 py-1 rounded-xl flex items-center gap-1">
+                                                                            <Clock className="w-3.5 h-3.5" /> Desired Start: {parsedMsg.requestedStartDate}
+                                                                        </span>
+                                                                    )}
+                                                                    {parsedMsg.budgetPreference && (
+                                                                        <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-1 rounded-xl">
+                                                                            Budget: {parsedMsg.budgetPreference}
+                                                                        </span>
+                                                                    )}
+                                                                    {meta.website_url && (
+                                                                        <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-1 rounded-xl truncate max-w-xs">
+                                                                            URL: <a href={meta.website_url} target="_blank" rel="noopener noreferrer" className="hover:underline text-blue-400">{meta.website_url}</a>
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+
+                                                                {/* Structured Service Chips */}
+                                                                {parsedMsg.selectedServices.length > 0 && (
+                                                                    <div className="flex flex-wrap gap-1.5">
+                                                                        {parsedMsg.selectedServices.map((srv, idx) => (
+                                                                            <span key={idx} className="px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold flex items-center gap-1">
+                                                                                <Sparkles className="w-3 h-3" /> {srv}
+                                                                            </span>
+                                                                        ))}
                                                                     </div>
                                                                 )}
-                                                                <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap relative z-10">
-                                                                    {sub.message}
+
+                                                                <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap relative z-10 text-sm">
+                                                                    {parsedMsg.cleanMessage}
                                                                 </p>
-                                                            </>
+                                                            </div>
                                                         );
                                                     })()}
                                                 </div>
                                             </div>
 
-                                            <div className="shrink-0 flex md:flex-col gap-3">
+                                            <div className="shrink-0 flex md:flex-col gap-2.5">
                                                  <button
                                                      onClick={() => setViewDetailsSub(sub)}
-                                                     className="px-5 py-2.5 rounded-xl bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 font-semibold flex items-center gap-2 transition-all text-sm"
+                                                     className="px-4 py-2 rounded-xl bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 font-semibold flex items-center gap-2 transition-all text-xs"
                                                  >
-                                                     <ClipboardList className="w-4 h-4" />
+                                                     <ClipboardList className="w-3.5 h-3.5" />
                                                      View Details
                                                  </button>
                                                  <button
-                                                     onClick={() => openChat(sub)}
-                                                     className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center gap-2 hover:scale-105 transition-transform text-sm"
+                                                     onClick={() => openQuoteModal(sub)}
+                                                     className="px-4 py-2 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 font-bold flex items-center gap-2 transition-all text-xs"
                                                  >
-                                                     <MessageCircle className="w-4 h-4" />
+                                                     <Landmark className="w-3.5 h-3.5" />
+                                                     Accept & Quote
+                                                 </button>
+                                                 <button
+                                                     onClick={() => openChat(sub)}
+                                                     className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center gap-2 hover:scale-105 transition-transform text-xs"
+                                                 >
+                                                     <MessageCircle className="w-3.5 h-3.5" />
                                                      Chat
                                                  </button>
                                                  <button
                                                      onClick={() => openEdit(sub)}
-                                                     className="px-5 py-2.5 rounded-xl bg-muted text-foreground hover:bg-muted/80 font-semibold flex items-center gap-2 transition-all text-sm border border-border"
+                                                     className="px-4 py-2 rounded-xl bg-muted text-foreground hover:bg-muted/80 font-semibold flex items-center gap-2 transition-all text-xs border border-border"
                                                  >
-                                                     <Edit3 className="w-4 h-4" />
+                                                     <Edit3 className="w-3.5 h-3.5" />
                                                      Edit
                                                  </button>
                                                  <button
@@ -1745,101 +2032,301 @@ const AdminPortal = () => {
 
             {/* ====== FULL INFORMATIVE DATA INSPECTOR MODAL ====== */}
             <AnimatePresence>
-                {viewDetailsSub && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[250] flex items-center justify-center p-4 pt-24 pb-6 bg-black/80 backdrop-blur-md overflow-y-auto"
-                        onClick={() => setViewDetailsSub(null)}
-                    >
+                {viewDetailsSub && (() => {
+                    const meta = parseProjectMetadata(viewDetailsSub.bounty_reward);
+                    const parsedMsg = parseSubmissionMessage(viewDetailsSub.message);
+                    const hasPaidAdvance = meta.invoices?.some(inv => inv.status === 'paid') || meta.service_start_date;
+                    return (
                         <motion.div
-                            initial={{ scale: 0.95, opacity: 0, y: 20 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.95, opacity: 0 }}
-                            onClick={e => e.stopPropagation()}
-                            className="w-full max-w-2xl max-h-[85vh] bg-card border border-border rounded-3xl flex flex-col overflow-hidden shadow-2xl"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[250] flex items-center justify-center p-4 pt-20 pb-6 bg-black/80 backdrop-blur-md overflow-y-auto"
+                            onClick={() => setViewDetailsSub(null)}
                         >
-                            {/* Header */}
-                            <div className="p-6 border-b border-border bg-muted/40 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                                        <ClipboardList className="w-5 h-5 text-primary" />
+                            <motion.div
+                                initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.95, opacity: 0 }}
+                                onClick={e => e.stopPropagation()}
+                                className="w-full max-w-3xl max-h-[90vh] bg-card border border-border rounded-3xl flex flex-col overflow-hidden shadow-2xl"
+                            >
+                                {/* Header */}
+                                <div className="p-6 border-b border-border bg-muted/40 flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-11 h-11 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                                            <ClipboardList className="w-6 h-6" />
+                                        </div>
+                                        <div className="text-left">
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="font-extrabold text-lg text-foreground">{viewDetailsSub.name}</h3>
+                                                <span className="text-xs px-2.5 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/20 font-bold">
+                                                    {viewDetailsSub.status || 'New Request'}
+                                                </span>
+                                            </div>
+                                            <p className="text-xs text-muted-foreground mt-0.5">
+                                                {viewDetailsSub.organization || getInquiryLabel(viewDetailsSub.inquiry_type)} · Received {format(new Date(viewDetailsSub.created_at || ""), "PPP 'at' p")}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="text-left">
-                                        <h3 className="font-extrabold text-lg text-foreground">{viewDetailsSub.name}</h3>
-                                        <p className="text-xs text-muted-foreground">{getInquiryLabel(viewDetailsSub.inquiry_type)} · Received {format(new Date(viewDetailsSub.created_at || ""), "PPP 'at' p")}</p>
-                                    </div>
-                                </div>
-                                <button onClick={() => setViewDetailsSub(null)} className="p-2 rounded-xl hover:bg-muted text-foreground transition-colors"><X className="w-5 h-5" /></button>
-                            </div>
-
-                            {/* Body */}
-                            <div className="flex-1 overflow-y-auto p-6 space-y-6 text-left">
-                                {/* Client & Organization */}
-                                <div className="p-4 rounded-2xl bg-muted/40 border border-border space-y-3">
-                                    <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary flex items-center gap-2">
-                                        <Users className="w-4 h-4" /> Client & Contact Details
-                                    </h4>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                                        <div><span className="text-muted-foreground font-semibold">Name:</span> <strong className="text-foreground">{viewDetailsSub.name}</strong></div>
-                                        <div><span className="text-muted-foreground font-semibold">Email:</span> <strong className="text-foreground">{viewDetailsSub.email}</strong></div>
-                                        <div><span className="text-muted-foreground font-semibold">Role / Designation:</span> <strong className="text-foreground">{viewDetailsSub.designation || 'Not specified'}</strong></div>
-                                        <div><span className="text-muted-foreground font-semibold">Organization:</span> <strong className="text-foreground">{viewDetailsSub.organization || 'Not specified'}</strong></div>
-                                    </div>
-                                </div>
-
-                                {/* Inquiry & Specifications */}
-                                <div className="p-4 rounded-2xl bg-muted/40 border border-border space-y-3">
-                                    <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary flex items-center gap-2">
-                                        <Briefcase className="w-4 h-4" /> Inquiry & Project Specifications
-                                    </h4>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                                        <div><span className="text-muted-foreground font-semibold">Type:</span> <span className="font-bold text-primary">{getInquiryLabel(viewDetailsSub.inquiry_type)}</span></div>
-                                        <div><span className="text-muted-foreground font-semibold">Status:</span> <span className="font-bold text-amber-400">{viewDetailsSub.status || 'New'}</span></div>
-                                        <div><span className="text-muted-foreground font-semibold">Development Phase:</span> <span className="font-bold text-emerald-400">Phase {Math.ceil((viewDetailsSub.progress || 0) / 20) || 1} ({viewDetailsSub.progress || 0}%)</span></div>
-                                        {(() => {
-                                            const meta = parseProjectMetadata(viewDetailsSub.bounty_reward);
-                                            return (
-                                                <>
-                                                    {meta.deadline && <div><span className="text-muted-foreground font-semibold">Target Deadline:</span> <strong className="text-foreground">{meta.deadline}</strong></div>}
-                                                    {meta.website_url && <div><span className="text-muted-foreground font-semibold">Website / URL:</span> <a href={meta.website_url} target="_blank" rel="noreferrer" className="text-blue-400 hover:underline">{meta.website_url}</a></div>}
-                                                    {meta.agreement && <div><span className="text-muted-foreground font-semibold">Agreement:</span> <strong className="text-foreground">{meta.agreement}</strong></div>}
-                                                </>
-                                            );
-                                        })()}
-                                    </div>
+                                    <button onClick={() => setViewDetailsSub(null)} className="p-2 rounded-xl hover:bg-muted text-foreground transition-colors">
+                                        <X className="w-5 h-5" />
+                                    </button>
                                 </div>
 
-                                {/* Full Message */}
-                                <div className="p-4 rounded-2xl bg-muted/40 border border-border space-y-2">
-                                    <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary flex items-center gap-2">
-                                        <MessageSquare className="w-4 h-4" /> Full Submitted Message / Requirements
-                                    </h4>
-                                    <div className="text-xs text-foreground/90 leading-relaxed whitespace-pre-wrap font-sans p-4 bg-card rounded-xl border border-border">
-                                        {viewDetailsSub.message}
+                                {/* Body */}
+                                <div className="flex-1 overflow-y-auto p-6 space-y-6 text-left">
+                                    {/* 1. Client & Contact */}
+                                    <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-3">
+                                        <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary flex items-center gap-2">
+                                            <Users className="w-4 h-4" /> Client & Contact Details
+                                        </h4>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                            <div><span className="text-muted-foreground font-semibold">Name:</span> <strong className="text-foreground ml-1">{viewDetailsSub.name}</strong></div>
+                                            <div><span className="text-muted-foreground font-semibold">Email:</span> <strong className="text-foreground ml-1">{viewDetailsSub.email}</strong></div>
+                                            <div><span className="text-muted-foreground font-semibold">Role / Designation:</span> <strong className="text-foreground ml-1">{viewDetailsSub.designation || 'Not specified'}</strong></div>
+                                            <div><span className="text-muted-foreground font-semibold">Organization:</span> <strong className="text-foreground ml-1">{viewDetailsSub.organization || 'Not specified'}</strong></div>
+                                        </div>
+                                    </div>
+
+                                    {/* 2. Selected Services & Preferences */}
+                                    <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-3">
+                                        <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary flex items-center gap-2">
+                                            <Sparkles className="w-4 h-4" /> Requested Services & Project Scope
+                                        </h4>
+                                        {parsedMsg.selectedServices.length > 0 ? (
+                                            <div className="flex flex-wrap gap-2">
+                                                {parsedMsg.selectedServices.map((srv, idx) => (
+                                                    <span key={idx} className="px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-primary font-bold text-xs flex items-center gap-1.5">
+                                                        <Sparkles className="w-3.5 h-3.5" /> {srv}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <p className="text-xs text-muted-foreground">General service requirement ({getInquiryLabel(viewDetailsSub.inquiry_type)})</p>
+                                        )}
+                                        <div className="flex flex-wrap gap-2 pt-2 border-t border-border/50 text-xs">
+                                            {parsedMsg.budgetPreference && (
+                                                <span className="px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20 font-semibold">
+                                                    Budget: {parsedMsg.budgetPreference}
+                                                </span>
+                                            )}
+                                            {parsedMsg.requestedStartDate && (
+                                                <span className="px-2.5 py-1 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20 font-semibold">
+                                                    Requested Start Date: {parsedMsg.requestedStartDate}
+                                                </span>
+                                            )}
+                                            {parsedMsg.consentTimestamp && (
+                                                <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
+                                                    Consent: Granted ({new Date(parsedMsg.consentTimestamp).toLocaleDateString()})
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* 3. Clean Message */}
+                                    <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-2">
+                                        <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary flex items-center gap-2">
+                                            <MessageSquare className="w-4 h-4" /> Project Requirements / Brief
+                                        </h4>
+                                        <div className="text-xs text-foreground/90 leading-relaxed whitespace-pre-wrap font-sans p-4 bg-card rounded-xl border border-border">
+                                            {parsedMsg.cleanMessage}
+                                        </div>
+                                    </div>
+
+                                    {/* 4. Quoting, Agreement & Banking Details */}
+                                    <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary flex items-center gap-2">
+                                                <Landmark className="w-4 h-4" /> Assigned Quote & Service Agreement
+                                            </h4>
+                                            <button
+                                                onClick={() => openQuoteModal(viewDetailsSub)}
+                                                className="px-3 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 text-xs font-bold transition-colors"
+                                            >
+                                                {meta.agreement ? "Modify Quote / Agreement" : "Assign Quote & Agreement"}
+                                            </button>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                            <div>
+                                                <span className="text-muted-foreground font-semibold">Agreed / Quoted Price:</span>
+                                                <strong className="text-foreground ml-1 text-sm text-emerald-400">{meta.agreement || "Not assigned yet"}</strong>
+                                            </div>
+                                            <div>
+                                                <span className="text-muted-foreground font-semibold">Payment Structure:</span>
+                                                <span className="text-foreground ml-1 font-semibold">{meta.payment_structure || "50% Advance + 50% on Delivery"}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-muted-foreground font-semibold">Service Start Date:</span>
+                                                <span className="text-foreground ml-1 font-bold">
+                                                    {meta.service_start_date ? (
+                                                        <span className="text-emerald-400 flex items-center gap-1 inline-flex"><CheckCircle2 className="w-3.5 h-3.5" /> {meta.service_start_date} (Started)</span>
+                                                    ) : (
+                                                        <span className="text-amber-400 flex items-center gap-1 inline-flex"><Clock className="w-3.5 h-3.5" /> Pending Cashfree Advance</span>
+                                                    )}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span className="text-muted-foreground font-semibold">Estimated Delivery:</span>
+                                                <strong className="text-foreground ml-1">{meta.deadline || "Per Roadmap"}</strong>
+                                            </div>
+                                        </div>
+
+                                        {/* Banking Details Sharing Status */}
+                                        <div className="p-3 rounded-xl bg-card border border-border/80 text-xs space-y-1.5 mt-2">
+                                            <div className="flex items-center justify-between">
+                                                <span className="font-bold text-foreground flex items-center gap-1.5">
+                                                    <ShieldCheck className="w-4 h-4 text-primary" /> Banking Credentials & Service Form
+                                                </span>
+                                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${hasPaidAdvance ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                                                    {hasPaidAdvance ? '🔓 Unlocked to Client' : '🔒 Locked Until Cashfree Payment'}
+                                                </span>
+                                            </div>
+                                            <p className="text-[11px] text-muted-foreground">
+                                                Configured Bank: {meta.banking_details?.bank_name || DEFAULT_BANKING_DETAILS.bank_name} (A/C: {meta.banking_details?.account_number || DEFAULT_BANKING_DETAILS.account_number}, IFSC: {meta.banking_details?.ifsc_code || DEFAULT_BANKING_DETAILS.ifsc_code})
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* 5. Invoices & Cashfree Billing Ledger */}
+                                    <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary flex items-center gap-2">
+                                                <CreditCard className="w-4 h-4" /> Invoices & Payments Ledger
+                                            </h4>
+                                            <button
+                                                onClick={() => openAddInvoice(viewDetailsSub)}
+                                                className="px-3 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 text-xs font-bold transition-colors flex items-center gap-1"
+                                            >
+                                                <Plus className="w-3.5 h-3.5" /> Add Invoice
+                                            </button>
+                                        </div>
+
+                                        {meta.invoices && meta.invoices.length > 0 ? (
+                                            <div className="space-y-2">
+                                                {meta.invoices.map((inv) => {
+                                                    const isPaid = inv.status === 'paid';
+                                                    return (
+                                                        <div key={inv.id} className="p-3 rounded-xl bg-card border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                                                            <div className="space-y-0.5">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="font-bold text-foreground">{inv.id}: {inv.title}</span>
+                                                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${isPaid ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                                                                        {isPaid ? 'PAID' : 'PENDING'}
+                                                                    </span>
+                                                                </div>
+                                                                <p className="text-muted-foreground text-[11px]">{inv.description || "Project milestone invoice"} · Due: {inv.due_date}</p>
+                                                            </div>
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="font-bold text-sm text-foreground">{inv.amount}</span>
+                                                                {!isPaid && (
+                                                                    <button
+                                                                        onClick={() => handleMarkInvoicePaid(viewDetailsSub, inv.id)}
+                                                                        className="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 text-[11px] font-bold transition-colors"
+                                                                    >
+                                                                        Mark Paid
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        ) : (
+                                            <p className="text-xs text-muted-foreground italic">No invoices issued yet. Click "Accept & Quote" to generate the advance invoice.</p>
+                                        )}
+                                    </div>
+
+                                    {/* 6. Project Timeline Updates */}
+                                    <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary flex items-center gap-2">
+                                                <TrendingUp className="w-4 h-4" /> Project Progress Updates
+                                            </h4>
+                                            <button
+                                                onClick={() => openPostUpdate(viewDetailsSub)}
+                                                className="px-3 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 text-xs font-bold transition-colors flex items-center gap-1"
+                                            >
+                                                <Plus className="w-3.5 h-3.5" /> Post Update
+                                            </button>
+                                        </div>
+
+                                        {meta.updates && meta.updates.length > 0 ? (
+                                            <div className="space-y-2">
+                                                {meta.updates.map((upd) => (
+                                                    <div key={upd.id} className="p-3 rounded-xl bg-card border border-border text-xs space-y-1">
+                                                        <div className="flex items-center justify-between">
+                                                            <strong className="text-foreground">{upd.title}</strong>
+                                                            <div className="flex items-center gap-2 text-[10px]">
+                                                                <span className="text-muted-foreground">{upd.date}</span>
+                                                                <span className={`px-2 py-0.5 rounded-full font-bold ${upd.visible_to_client ? 'bg-blue-500/20 text-blue-400' : 'bg-muted text-muted-foreground'}`}>
+                                                                    {upd.visible_to_client ? 'Visible to Client' : 'Internal'}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <p className="text-muted-foreground leading-relaxed">{upd.description}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <p className="text-xs text-muted-foreground italic">No updates logged yet. Post an update to keep client informed.</p>
+                                        )}
                                     </div>
                                 </div>
-                            </div>
 
-                            {/* Footer Actions */}
-                            <div className="p-4 bg-muted border-t border-border flex flex-wrap gap-2 justify-end">
-                                <button onClick={() => {
-                                    navigator.clipboard.writeText(`Client: ${viewDetailsSub.name}\nEmail: ${viewDetailsSub.email}\nOrg: ${viewDetailsSub.organization || 'N/A'}\nType: ${viewDetailsSub.inquiry_type}\nMessage: ${viewDetailsSub.message}`);
-                                    toast.success("Full client details copied!");
-                                }} className="px-4 py-2 bg-card border border-border hover:bg-muted text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 text-foreground">
-                                    📋 Copy Details
-                                </button>
-                                <button onClick={() => { openEdit(viewDetailsSub); setViewDetailsSub(null); }} className="px-4 py-2 bg-card border border-border hover:bg-muted text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 text-foreground">
-                                    <Edit3 className="w-3.5 h-3.5" /> Edit & Update
-                                </button>
-                                <button onClick={() => { openChat(viewDetailsSub); setViewDetailsSub(null); }} className="px-4 py-2 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl hover:scale-105 transition-all flex items-center gap-1.5">
-                                    <MessageCircle className="w-3.5 h-3.5" /> Open Chat
-                                </button>
-                            </div>
+                                {/* Footer Actions */}
+                                <div className="p-4 bg-muted border-t border-border flex flex-wrap gap-2 justify-end">
+                                    <button
+                                        onClick={() => {
+                                            openQuoteModal(viewDetailsSub);
+                                            setViewDetailsSub(null);
+                                        }}
+                                        className="px-4 py-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5"
+                                    >
+                                        <Landmark className="w-3.5 h-3.5" /> Accept & Quote
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            openAddInvoice(viewDetailsSub);
+                                            setViewDetailsSub(null);
+                                        }}
+                                        className="px-4 py-2 bg-card border border-border hover:bg-muted text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 text-foreground"
+                                    >
+                                        <CreditCard className="w-3.5 h-3.5" /> Add Invoice
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            openPostUpdate(viewDetailsSub);
+                                            setViewDetailsSub(null);
+                                        }}
+                                        className="px-4 py-2 bg-card border border-border hover:bg-muted text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 text-foreground"
+                                    >
+                                        <TrendingUp className="w-3.5 h-3.5" /> Post Update
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            openEdit(viewDetailsSub);
+                                            setViewDetailsSub(null);
+                                        }}
+                                        className="px-4 py-2 bg-card border border-border hover:bg-muted text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 text-foreground"
+                                    >
+                                        <Edit3 className="w-3.5 h-3.5" /> Edit
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            openChat(viewDetailsSub);
+                                            setViewDetailsSub(null);
+                                        }}
+                                        className="px-4 py-2 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl hover:scale-105 transition-all flex items-center gap-1.5"
+                                    >
+                                        <MessageCircle className="w-3.5 h-3.5" /> Open Chat
+                                    </button>
+                                </div>
+                            </motion.div>
                         </motion.div>
-                    </motion.div>
-                )}
+                    );
+                })()}
             </AnimatePresence>
 
             {/* ====== EDIT SUBMISSION PANEL ====== */}
@@ -2473,6 +2960,396 @@ const AdminPortal = () => {
                     </motion.div>
                 </motion.div>
             )}
+            </AnimatePresence>
+
+            {/* ====== 1. QUOTE & SERVICE ORDER MODAL ====== */}
+            <AnimatePresence>
+                {quoteModalSub && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[260] flex items-center justify-center p-4 pt-20 pb-6 bg-black/80 backdrop-blur-md overflow-y-auto"
+                        onClick={() => setQuoteModalSub(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            onClick={e => e.stopPropagation()}
+                            className="w-full max-w-2xl max-h-[90vh] bg-card border border-border rounded-3xl flex flex-col overflow-hidden shadow-2xl"
+                        >
+                            <div className="p-6 border-b border-border bg-muted/40 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                        <Landmark className="w-5 h-5" />
+                                    </div>
+                                    <div className="text-left">
+                                        <h3 className="font-extrabold text-lg text-foreground">Accept & Assign Price Quote</h3>
+                                        <p className="text-xs text-muted-foreground">Configure quote, service order terms & banking details for {quoteModalSub.name}</p>
+                                    </div>
+                                </div>
+                                <button onClick={() => setQuoteModalSub(null)} className="p-2 rounded-xl hover:bg-muted text-foreground transition-colors">
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto p-6 space-y-5 text-left text-xs">
+                                {/* Pricing & Structure */}
+                                <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-4">
+                                    <h4 className="font-bold text-primary uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                                        <Landmark className="w-3.5 h-3.5" /> Pricing & Payment Milestones
+                                    </h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div className="space-y-1">
+                                            <label className="font-bold text-foreground">Total Agreed Price (₹ / $)</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. ₹25,000"
+                                                value={quoteAmount}
+                                                onChange={e => {
+                                                    const val = e.target.value;
+                                                    setQuoteAmount(val);
+                                                    const num = parseInt(val.replace(/\D/g, '') || '0');
+                                                    if (num > 0) {
+                                                        const pct = quotePaymentStructure.includes('100%') ? 1 : 0.5;
+                                                        setQuoteAdvanceAmount(`₹${Math.round(num * pct).toLocaleString('en-IN')}`);
+                                                    }
+                                                }}
+                                                className="w-full bg-card border border-primary/40 rounded-xl px-3 py-2 text-sm font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="font-bold text-foreground">Advance Amount Due First</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. ₹12,500"
+                                                value={quoteAdvanceAmount}
+                                                onChange={e => setQuoteAdvanceAmount(e.target.value)}
+                                                className="w-full bg-card border border-border rounded-xl px-3 py-2 text-sm font-bold text-emerald-400 focus:outline-none focus:ring-2 focus:ring-primary"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <label className="font-bold text-muted-foreground">Payment Structure</label>
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                            {[
+                                                "50% Advance + 50% on Delivery",
+                                                "100% Advance",
+                                                "50% Advance + 25% Midway + 25% on Delivery"
+                                            ].map(st => (
+                                                <button
+                                                    key={st}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setQuotePaymentStructure(st);
+                                                        const num = parseInt(quoteAmount.replace(/\D/g, '') || '0');
+                                                        if (num > 0) {
+                                                            const pct = st.includes('100%') ? 1 : 0.5;
+                                                            setQuoteAdvanceAmount(`₹${Math.round(num * pct).toLocaleString('en-IN')}`);
+                                                        }
+                                                    }}
+                                                    className={`p-2.5 rounded-xl border text-left font-bold transition-all text-[11px] ${quotePaymentStructure === st ? 'bg-primary/15 border-primary text-primary shadow-sm' : 'bg-card border-border text-muted-foreground hover:bg-muted'}`}
+                                                >
+                                                    {st}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div className="space-y-1">
+                                            <label className="font-bold text-foreground">Estimated Delivery / Completion Date</label>
+                                            <input
+                                                type="date"
+                                                value={quoteDeadline}
+                                                onChange={e => setQuoteDeadline(e.target.value)}
+                                                className="w-full bg-card border border-border rounded-xl px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="font-bold text-foreground">Scope / Deliverables Summary</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. Website development & SEO setup"
+                                                value={quoteScope}
+                                                onChange={e => setQuoteScope(e.target.value)}
+                                                className="w-full bg-card border border-border rounded-xl px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Banking Details Configuration */}
+                                <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h4 className="font-bold text-primary uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                                                <ShieldCheck className="w-3.5 h-3.5" /> Banking Details to Share in Service Form
+                                            </h4>
+                                            <p className="text-[11px] text-muted-foreground">Select and verify the official account details to be shown in the Client Service Agreement.</p>
+                                        </div>
+                                        <label className="flex items-center gap-2 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={quoteShareBanking}
+                                                onChange={e => setQuoteShareBanking(e.target.checked)}
+                                                className="rounded border-border w-4 h-4 text-primary focus:ring-primary"
+                                            />
+                                            <span className="text-xs font-bold text-foreground">Share upon payment</span>
+                                        </label>
+                                    </div>
+
+                                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] leading-relaxed flex items-start gap-2">
+                                        <Lock className="w-4 h-4 shrink-0 mt-0.5" />
+                                        <span><strong>Protected Data:</strong> Client will only see and be able to download these banking credentials after they make the advance payment in Cashfree (or when manually approved by you).</span>
+                                    </div>
+
+                                    {quoteShareBanking && (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                                            <div className="space-y-1">
+                                                <label className="font-bold text-muted-foreground">Bank Name</label>
+                                                <input
+                                                    type="text"
+                                                    value={quoteBankDetails.bank_name}
+                                                    onChange={e => setQuoteBankDetails({ ...quoteBankDetails, bank_name: e.target.value })}
+                                                    className="w-full bg-card border border-border rounded-xl px-3 py-2 text-foreground"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="font-bold text-muted-foreground">Account Holder Name</label>
+                                                <input
+                                                    type="text"
+                                                    value={quoteBankDetails.account_holder}
+                                                    onChange={e => setQuoteBankDetails({ ...quoteBankDetails, account_holder: e.target.value })}
+                                                    className="w-full bg-card border border-border rounded-xl px-3 py-2 text-foreground"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="font-bold text-muted-foreground">Account Number</label>
+                                                <input
+                                                    type="text"
+                                                    value={quoteBankDetails.account_number}
+                                                    onChange={e => setQuoteBankDetails({ ...quoteBankDetails, account_number: e.target.value })}
+                                                    className="w-full bg-card border border-border rounded-xl px-3 py-2 text-foreground font-mono"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="font-bold text-muted-foreground">IFSC Code</label>
+                                                <input
+                                                    type="text"
+                                                    value={quoteBankDetails.ifsc_code}
+                                                    onChange={e => setQuoteBankDetails({ ...quoteBankDetails, ifsc_code: e.target.value })}
+                                                    className="w-full bg-card border border-border rounded-xl px-3 py-2 text-foreground font-mono uppercase"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="font-bold text-muted-foreground">UPI ID</label>
+                                                <input
+                                                    type="text"
+                                                    value={quoteBankDetails.upi_id || ""}
+                                                    onChange={e => setQuoteBankDetails({ ...quoteBankDetails, upi_id: e.target.value })}
+                                                    className="w-full bg-card border border-border rounded-xl px-3 py-2 text-foreground"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="font-bold text-muted-foreground">LLPIN / PAN</label>
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="LLPIN"
+                                                        value={quoteBankDetails.llpin || ""}
+                                                        onChange={e => setQuoteBankDetails({ ...quoteBankDetails, llpin: e.target.value })}
+                                                        className="w-1/2 bg-card border border-border rounded-xl px-3 py-2 text-foreground text-[11px]"
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        placeholder="PAN"
+                                                        value={quoteBankDetails.pan || ""}
+                                                        onChange={e => setQuoteBankDetails({ ...quoteBankDetails, pan: e.target.value })}
+                                                        className="w-1/2 bg-card border border-border rounded-xl px-3 py-2 text-foreground text-[11px]"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="p-4 bg-muted border-t border-border flex justify-end gap-2">
+                                <button
+                                    onClick={() => setQuoteModalSub(null)}
+                                    className="px-4 py-2.5 bg-card border border-border hover:bg-muted text-xs font-bold rounded-xl transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleSaveQuote}
+                                    disabled={savingQuote}
+                                    className="px-5 py-2.5 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-primary/20"
+                                >
+                                    {savingQuote ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                                    Assign Quote & Generate Advance Invoice
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* ====== 2. ADD INVOICE MODAL ====== */}
+            <AnimatePresence>
+                {addInvoiceSub && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[260] flex items-center justify-center p-4 pt-20 pb-6 bg-black/80 backdrop-blur-md overflow-y-auto"
+                        onClick={() => setAddInvoiceSub(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            onClick={e => e.stopPropagation()}
+                            className="w-full max-w-md bg-card border border-border rounded-3xl overflow-hidden shadow-2xl text-left text-xs"
+                        >
+                            <div className="p-5 border-b border-border bg-muted/40 flex items-center justify-between">
+                                <h3 className="font-extrabold text-base text-foreground flex items-center gap-2">
+                                    <CreditCard className="w-4 h-4 text-primary" /> Create Project Invoice
+                                </h3>
+                                <button onClick={() => setAddInvoiceSub(null)} className="p-1.5 rounded-lg hover:bg-muted text-foreground">
+                                    <X className="w-4 h-4" />
+                                </button>
+                            </div>
+                            <div className="p-5 space-y-4">
+                                <div className="space-y-1">
+                                    <label className="font-bold text-foreground">Invoice Title / Milestone</label>
+                                    <input
+                                        type="text"
+                                        value={invoiceTitle}
+                                        onChange={e => setInvoiceTitle(e.target.value)}
+                                        placeholder="e.g. Milestone 2 (Delivery Handover)"
+                                        className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-foreground text-xs"
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                        <label className="font-bold text-foreground">Amount (₹)</label>
+                                        <input
+                                            type="text"
+                                            value={invoiceAmount}
+                                            onChange={e => setInvoiceAmount(e.target.value)}
+                                            placeholder="e.g. ₹12,500"
+                                            className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-foreground font-bold text-xs"
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="font-bold text-foreground">Due Date</label>
+                                        <input
+                                            type="date"
+                                            value={invoiceDue}
+                                            onChange={e => setInvoiceDue(e.target.value)}
+                                            className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-foreground text-xs"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="font-bold text-foreground">Description / Deliverable Note</label>
+                                    <textarea
+                                        rows={2}
+                                        value={invoiceDesc}
+                                        onChange={e => setInvoiceDesc(e.target.value)}
+                                        placeholder="Note for client invoice receipt"
+                                        className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-foreground text-xs"
+                                    />
+                                </div>
+                            </div>
+                            <div className="p-4 bg-muted border-t border-border flex justify-end gap-2">
+                                <button onClick={() => setAddInvoiceSub(null)} className="px-4 py-2 bg-card border border-border rounded-xl font-bold">Cancel</button>
+                                <button
+                                    onClick={handleAddInvoice}
+                                    disabled={savingInvoice}
+                                    className="px-4 py-2 bg-primary text-primary-foreground font-extrabold rounded-xl hover:scale-105 transition-all disabled:opacity-50"
+                                >
+                                    {savingInvoice ? "Creating..." : "Save Invoice"}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* ====== 3. POST PROJECT UPDATE MODAL ====== */}
+            <AnimatePresence>
+                {postUpdateSub && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[260] flex items-center justify-center p-4 pt-20 pb-6 bg-black/80 backdrop-blur-md overflow-y-auto"
+                        onClick={() => setPostUpdateSub(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            onClick={e => e.stopPropagation()}
+                            className="w-full max-w-md bg-card border border-border rounded-3xl overflow-hidden shadow-2xl text-left text-xs"
+                        >
+                            <div className="p-5 border-b border-border bg-muted/40 flex items-center justify-between">
+                                <h3 className="font-extrabold text-base text-foreground flex items-center gap-2">
+                                    <TrendingUp className="w-4 h-4 text-primary" /> Post Project Update
+                                </h3>
+                                <button onClick={() => setPostUpdateSub(null)} className="p-1.5 rounded-lg hover:bg-muted text-foreground">
+                                    <X className="w-4 h-4" />
+                                </button>
+                            </div>
+                            <div className="p-5 space-y-4">
+                                <div className="space-y-1">
+                                    <label className="font-bold text-foreground">Update Headline</label>
+                                    <input
+                                        type="text"
+                                        value={updateTitle}
+                                        onChange={e => setUpdateTitle(e.target.value)}
+                                        placeholder="e.g. Discovery Complete, Design System Finalized"
+                                        className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-foreground text-xs font-bold"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="font-bold text-foreground">Update Details</label>
+                                    <textarea
+                                        rows={4}
+                                        value={updateDesc}
+                                        onChange={e => setUpdateDesc(e.target.value)}
+                                        placeholder="Details of progress made, files uploaded, or next steps..."
+                                        className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-foreground text-xs"
+                                    />
+                                </div>
+                                <label className="flex items-center gap-2 cursor-pointer pt-1">
+                                    <input
+                                        type="checkbox"
+                                        checked={updateVisible}
+                                        onChange={e => setUpdateVisible(e.target.checked)}
+                                        className="rounded border-border w-4 h-4 text-primary focus:ring-primary"
+                                    />
+                                    <span className="font-bold text-foreground">Visible to client in their portal feed</span>
+                                </label>
+                            </div>
+                            <div className="p-4 bg-muted border-t border-border flex justify-end gap-2">
+                                <button onClick={() => setPostUpdateSub(null)} className="px-4 py-2 bg-card border border-border rounded-xl font-bold">Cancel</button>
+                                <button
+                                    onClick={handlePostUpdate}
+                                    disabled={savingUpdate}
+                                    className="px-4 py-2 bg-primary text-primary-foreground font-extrabold rounded-xl hover:scale-105 transition-all disabled:opacity-50"
+                                >
+                                    {savingUpdate ? "Posting..." : "Post Update"}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
             </AnimatePresence>
         </div>
     );
