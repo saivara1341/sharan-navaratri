@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Check, ClipboardCheck, Sparkles, Building, Phone, Mail, Calendar, Clock, ShieldCheck, AlertCircle, CreditCard } from "lucide-react";
+import { X, Check, ClipboardCheck, Building, Phone, Mail, Calendar, Clock, ShieldCheck, AlertCircle, CreditCard, Target } from "lucide-react";
 import { ProjectLifecycleMeta, ClientServiceFormData } from "@/types/projectLifecycle";
 
 interface ServiceRequestModalProps {
@@ -264,7 +264,7 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
           {/* Section 2: Project Requirements & Business Goal */}
           <div className="p-4 rounded-2xl border border-stone-200 bg-stone-50/70 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-primary" /> 2. Business Goal & Expected Outcome
+              <Target className="w-3.5 h-3.5 text-primary" /> 2. Business Goal & Expected Outcome
             </h3>
             <div className="space-y-3">
               <label className="space-y-1 block">

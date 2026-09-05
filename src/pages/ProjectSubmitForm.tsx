@@ -23,7 +23,6 @@ import {
     Paperclip,
     Square,
     X,
-    Sparkles,
 } from "lucide-react";
 
 import { emailService } from "@/services/emailService";
@@ -332,16 +331,6 @@ export default function ProjectSubmitForm() {
                                         transition={{ delay: 0.35, duration: 0.45, ease: [0.65, 0, 0.35, 1] }}
                                     />
                                 </svg>
-
-                                {/* Playful Sparkle Accent */}
-                                <motion.div
-                                    initial={{ scale: 0, opacity: 0 }}
-                                    animate={{ scale: [0, 1.2, 1], opacity: 1 }}
-                                    transition={{ delay: 0.55, duration: 0.35 }}
-                                    className="absolute -top-1 -right-1 text-emerald-600 bg-white rounded-full p-0.5 shadow-sm border border-emerald-200"
-                                >
-                                    <Sparkles className="w-4 h-4 fill-emerald-400" />
-                                </motion.div>
                             </motion.div>
                         </div>
                         <h1 className="text-2xl font-extrabold text-foreground mb-2">Requirement Submitted!</h1>

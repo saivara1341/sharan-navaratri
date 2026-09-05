@@ -19,7 +19,7 @@ import {
     ArrowRight,
     CheckCircle2,
     Shield,
-    Sparkles,
+    Bot,
     Landmark,
     FileCheck2,
     Compass,
@@ -491,7 +491,7 @@ const LetUsKnowLanding = () => {
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                                         <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500"></span>
                                     </span>
-                                    <Sparkles className="w-4 h-4 text-cyan-400" />
+                                    <Bot className="w-4 h-4 text-cyan-400" />
                                     AI For Civic Governance & Citizen Empowerment
                                 </div>
 
@@ -527,7 +527,7 @@ const LetUsKnowLanding = () => {
                                         href="#live-demo"
                                         className="px-7 py-4 bg-slate-900/80 hover:bg-slate-800 text-white font-semibold text-base sm:text-lg rounded-xl border border-slate-700 hover:border-cyan-500/50 transition-all flex items-center justify-center gap-2"
                                     >
-                                        <Sparkles className="w-5 h-5 text-cyan-400" />
+                                        <Bot className="w-5 h-5 text-cyan-400" />
                                         Test Live Simulator
                                     </a>
                                 </div>
@@ -1168,7 +1168,7 @@ const LetUsKnowLanding = () => {
 
                     <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-4xl">
                         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold mb-6">
-                            <Sparkles className="w-4 h-4 text-cyan-400" />
+                            <Bot className="w-4 h-4 text-cyan-400" />
                             Next-Generation Democratic Technology
                         </div>
 
