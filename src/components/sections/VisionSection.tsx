@@ -427,7 +427,7 @@ export const VisionSection = () => {
   ];
 
   return (
-    <section id="vision" className="bg-background relative overflow-visible py-6 sm:py-12 md:py-16" ref={ref}>
+    <section id="vision" className="bg-background relative overflow-visible pt-10 sm:pt-14 pb-6 sm:py-12 md:py-16 scroll-mt-24 sm:scroll-mt-28" ref={ref}>
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/10 to-background" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-primary/3 rounded-full blur-[150px]" />
@@ -477,17 +477,17 @@ export const VisionSection = () => {
 
       {/* ─── MOBILE VIEW: Pinned Scroll Deck with Cards Scrolling from Down ─── */}
       <div ref={scrollStackRef} className="lg:hidden relative w-full min-h-[300vh]">
-        <div className="sticky top-16 sm:top-20 h-[calc(100dvh-4.5rem)] sm:h-[calc(100dvh-5.5rem)] flex flex-col justify-start items-center pt-3 pb-2 px-3 overflow-hidden z-30">
+        <div className="sticky top-20 sm:top-24 h-[calc(100dvh-5rem)] sm:h-[calc(100dvh-6rem)] flex flex-col justify-start items-center pt-6 sm:pt-8 pb-2 px-3 overflow-hidden z-30">
           
-          {/* Mobile Header: Visible Our Vision badge + tight gap to cards */}
-          <div className="text-center max-w-3xl mx-auto shrink-0 mb-1 relative z-50">
-            <div className="inline-flex items-center gap-1.5 text-primary font-bold text-[10px] sm:text-xs tracking-[0.25em] uppercase mb-1.5 px-3.5 py-1 rounded-full bg-primary/15 border border-primary/30 shadow-md backdrop-blur-md">
+          {/* Mobile Header: Visible Our Vision badge with comfortable space from fixed header */}
+          <div className="text-center max-w-3xl mx-auto shrink-0 mb-3 sm:mb-4 relative z-50">
+            <div className="inline-flex items-center gap-1.5 text-primary font-bold text-[10px] sm:text-xs tracking-[0.25em] uppercase mb-2 px-3.5 py-1.5 rounded-full bg-primary/15 border border-primary/30 shadow-md backdrop-blur-md">
               <LotusEmblem className="w-3.5 h-3.5" color="currentColor" />
               <span>{t('vision.title', 'Our Vision')}</span>
               <LotusEmblem className="w-3.5 h-3.5" color="currentColor" />
             </div>
 
-            <h2 className="text-lg sm:text-2xl font-black mb-0 leading-tight text-foreground">
+            <h2 className="text-xl sm:text-2xl font-black mb-1 leading-tight text-foreground">
               <span className="block">{t('vision.beyondPrototypes')}</span>
               <span className="block gradient-text glow-text">{t('vision.intoProduction')}</span>
             </h2>
