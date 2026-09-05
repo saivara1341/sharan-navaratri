@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/layout/Navbar";
+import { FooterSection } from "@/components/sections/FooterSection";
 import { Helmet } from "react-helmet-async";
 import { toast } from "sonner";
 import {
@@ -23,7 +24,7 @@ import {
   TrendingUp,
   FileCheck,
   Lock,
-  Sparkles
+  Settings
 } from "lucide-react";
 import { parseProjectMeta, serializeProjectMeta } from "@/lib/projectLifecycleHelper";
 import { parseSubmissionMessage } from "@/lib/parseSubmissionMessage";
@@ -73,7 +74,19 @@ export default function ClientPortal() {
   const [agreementModalProject, setAgreementModalProject] = useState<Project | null>(null);
   const [submittingRequest, setSubmittingRequest] = useState(false);
 
-  const load = async (clientEmail: string) => {
+  const [searchParams] = useSearchParams();
+
+  // Listen for query params or custom event to open profile settings
+  useEffect(() => {
+    if (searchParams.get("action") === "profile") {
+      setSetup(true);
+    }
+    const handleOpenProfile = () => setSetup(true);
+    window.addEventListener("open-client-profile-settings", handleOpenProfile);
+    return () => window.removeEventListener("open-client-profile-settings", handleOpenProfile);
+  }, [searchParams]);
+
+  const load = async (clientEmail: string, initialMetaName?: string) => {
     const { data, error } = await supabase
       .from("contact_submissions")
       .select("*")
@@ -83,6 +96,14 @@ export default function ClientPortal() {
     if (error) throw error;
     const clientProjects = (data || []) as Project[];
     setProjects(clientProjects);
+
+    // Prioritize registered profile name from client project / submission (e.g. lie_detection)
+    const registeredName = clientProjects.find(p => p.name && p.name.trim())?.name?.trim();
+    if (registeredName) {
+      setName(registeredName);
+    } else if (!initialMetaName) {
+      setName(clientEmail.split("@")[0]);
+    }
 
     if (!clientProjects.length) return setPaymentStatuses({});
 
@@ -126,10 +147,16 @@ export default function ClientPortal() {
       if (!session?.user.email) return navigate("/auth");
       if (!session.user.user_metadata?.role) return navigate("/portal");
       setEmail(session.user.email);
-      setName(session.user.user_metadata?.full_name || session.user.email.split("@")[0]);
-      setProfileComplete(Boolean(session.user.user_metadata?.organization?.trim() && session.user.user_metadata?.designation?.trim()));
+      const metadata = session.user.user_metadata || {};
+      const metaName = metadata.full_name || metadata.name || metadata.profile_name || metadata.username || metadata.display_name;
+      if (metaName) {
+        setName(metaName);
+      } else {
+        setName(session.user.email.split("@")[0]);
+      }
+      setProfileComplete(Boolean(metadata.organization?.trim() && metadata.designation?.trim()));
       try {
-        await load(session.user.email);
+        await load(session.user.email, metaName);
       } catch {
         toast.error("Your workspace could not be loaded.");
       } finally {
@@ -334,15 +361,23 @@ export default function ClientPortal() {
     }
   };
 
-  const completeSetup = async (organization: string, designation: string) => {
+  const completeSetup = async (updatedName: string, organization: string, designation: string) => {
     setSetupSaving(true);
-    const { error } = await supabase.auth.updateUser({ data: { organization, designation } });
+    const { error } = await supabase.auth.updateUser({
+      data: {
+        full_name: updatedName,
+        name: updatedName,
+        profile_name: updatedName,
+        organization,
+        designation
+      }
+    });
     setSetupSaving(false);
     if (error) return toast.error(error.message);
+    if (updatedName) setName(updatedName);
     setProfileComplete(true);
-    toast.success("Profile saved. You can now start your service request.");
+    toast.success("Profile saved successfully.");
     setSetup(false);
-    navigate(`/submit?type=requirement&organization=${encodeURIComponent(organization)}`);
   };
 
   if (loading) {
@@ -374,17 +409,25 @@ export default function ClientPortal() {
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
               <p className="text-xs font-bold uppercase tracking-[.18em] text-lime-300">Siddhi Dynamics · Client workspace</p>
-              <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">Good to see you, {name.split(" ")[0]}.</h1>
+              <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">Good to see you, {name || "Client"}.</h1>
               <p className="mt-3 max-w-xl text-sm leading-6 text-stone-300">
                 Your projects, quotes, service agreements, dates, invoices and updates—all managed in one place.
               </p>
             </div>
-            <button
-              onClick={() => navigate("/submit?type=requirement")}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-lime-300 px-4 py-3 text-sm font-bold text-stone-950 hover:bg-lime-400 transition-colors"
-            >
-              <Plus className="h-4 w-4" /> Start a request
-            </button>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => setSetup(true)}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-white hover:bg-white/20 transition-colors cursor-pointer"
+              >
+                <Settings className="h-4 w-4" /> Profile Settings
+              </button>
+              <button
+                onClick={() => navigate("/submit?type=requirement")}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-lime-300 px-4 py-3 text-sm font-bold text-stone-950 hover:bg-lime-400 transition-colors cursor-pointer"
+              >
+                <Plus className="h-4 w-4" /> Start a request
+              </button>
+            </div>
           </div>
         </section>
 
@@ -536,7 +579,7 @@ export default function ClientPortal() {
                           <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div className="space-y-1">
                               <p className="font-bold text-amber-950 text-sm flex items-center gap-1.5">
-                                <Sparkles className="w-4 h-4 text-amber-700" /> Price Quote Assigned: {m.agreement}
+                                <CreditCard className="w-4 h-4 text-amber-700" /> Price Quote Assigned: {m.agreement}
                               </p>
                               <p className="text-xs text-amber-800">
                                 Payment structure: <strong>{m.payment_structure || "50% Advance + 50% on Delivery"}</strong>. Complete the Service Request Form to confirm requirements and initiate service via Cashfree.
@@ -644,8 +687,7 @@ export default function ClientPortal() {
                           }`}>
                             {srv.isAdvPaid ? "● Active Service" : "○ Pending Onboarding / Advance"}
                           </span>
-                          <h3 className="mt-2 text-lg font-bold text-stone-900 flex items-center gap-1.5">
-                            <Sparkles className="w-4 h-4 text-primary shrink-0" />
+                          <h3 className="mt-2 text-lg font-bold text-stone-900">
                             {srv.title}
                           </h3>
                         </div>
@@ -688,7 +730,7 @@ export default function ClientPortal() {
                           onClick={() => setDetailsModalProject(srv.project)}
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-stone-200 hover:bg-stone-50 text-stone-800 text-xs font-bold transition-colors cursor-pointer"
                         >
-                          <Sparkles className="w-3.5 h-3.5 text-primary" /> Service Overview
+                          <Eye className="w-3.5 h-3.5 text-primary" /> Service Overview
                         </button>
                         {srv.isAdvPaid ? (
                           <button
@@ -717,7 +759,7 @@ export default function ClientPortal() {
                 <div className="mx-auto w-24 h-24 rounded-3xl bg-lime-100/70 border border-lime-200 flex items-center justify-center text-primary relative shadow-inner">
                   <PanelsTopLeft className="w-12 h-12 stroke-[1.6]" />
                   <div className="absolute -top-1.5 -right-1.5 w-7 h-7 rounded-full bg-stone-900 text-lime-300 flex items-center justify-center text-xs shadow-md">
-                    <Sparkles className="w-4 h-4" />
+                    <Plus className="w-4 h-4" />
                   </div>
                 </div>
 
@@ -991,6 +1033,8 @@ export default function ClientPortal() {
         }}
         paymentStatuses={paymentStatuses}
       />
+
+      <FooterSection />
     </div>
   );
 }
@@ -1072,9 +1116,10 @@ function Setup({
   name: string;
   email: string;
   onClose: () => void;
-  onComplete: (organization: string, designation: string) => void;
+  onComplete: (updatedName: string, organization: string, designation: string) => void;
   saving: boolean;
 }) {
+  const [profileName, setProfileName] = useState(name || "");
   const [organization, setOrganization] = useState("");
   const [designation, setDesignation] = useState("");
 
@@ -1083,21 +1128,31 @@ function Setup({
       <form
         onSubmit={e => {
           e.preventDefault();
-          onComplete(organization, designation);
+          onComplete(profileName, organization, designation);
         }}
         className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl"
       >
         <div className="flex justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[.16em] text-primary">One-time setup</p>
-            <h2 className="mt-1 text-xl font-semibold">Complete your client profile</h2>
+            <p className="text-xs font-bold uppercase tracking-[.16em] text-primary">Client Profile</p>
+            <h2 className="mt-1 text-xl font-semibold">Profile Settings</h2>
           </div>
-          <button type="button" onClick={onClose}>
+          <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-stone-100">
             <X className="h-5 w-5" />
           </button>
         </div>
-        <p className="mt-3 text-sm text-stone-600">Start with the details we use for your scope, agreement and billing.</p>
+        <p className="mt-3 text-sm text-stone-600">Update your profile display name, organisation, and role used across your workspace and agreements.</p>
         <div className="mt-5 grid gap-4">
+          <label className="text-sm font-bold">
+            Profile / Display Name
+            <input
+              required
+              value={profileName}
+              onChange={e => setProfileName(e.target.value)}
+              placeholder="e.g. lie_detection or your full name"
+              className="mt-2 w-full rounded-xl border border-stone-200 px-3 py-3 font-normal outline-none focus:border-primary"
+            />
+          </label>
           <label className="text-sm font-bold">
             Organisation
             <input
@@ -1119,12 +1174,12 @@ function Setup({
             />
           </label>
         </div>
-        <p className="mt-5 text-xs text-stone-500">{name} · {email}</p>
+        <p className="mt-5 text-xs text-stone-500">{email}</p>
         <button
           disabled={saving}
-          className="mt-5 w-full rounded-xl bg-stone-900 py-3 text-sm font-bold text-white disabled:opacity-60 cursor-pointer"
+          className="mt-5 w-full rounded-xl bg-stone-900 py-3 text-sm font-bold text-white disabled:opacity-60 cursor-pointer hover:bg-stone-800 transition-colors"
         >
-          {saving ? "Saving…" : "Save & start service request"}
+          {saving ? "Saving…" : "Save profile settings"}
         </button>
       </form>
     </div>

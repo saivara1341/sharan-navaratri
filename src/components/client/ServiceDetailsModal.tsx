@@ -1,7 +1,6 @@
 import React from "react";
 import {
   X,
-  Sparkles,
   Calendar,
   Clock,
   FileCheck,
@@ -121,9 +120,8 @@ export const ServiceDetailsModal: React.FC<ServiceDetailsModalProps> = ({
               {services.map((srv, idx) => (
                 <span
                   key={idx}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-lime-50 border border-lime-200 px-3 py-1.5 text-xs font-bold text-stone-900"
+                  className="inline-flex items-center rounded-xl bg-lime-50 border border-lime-200 px-3 py-1.5 text-xs font-bold text-stone-900"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-primary shrink-0" />
                   {srv}
                 </span>
               ))}

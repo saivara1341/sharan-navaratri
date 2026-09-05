@@ -208,11 +208,18 @@ export const Navbar = () => {
                 {t('nav.services', 'Services')}
               </motion.a>
               <motion.a
+                href="/contact"
+                onClick={(e) => { e.preventDefault(); navigate('/contact'); }}
+                className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                whileHover={{ scale: 1.02 }}
+              >
+                {t('nav.contactUs', 'Contact Us')}
+              </motion.a>
+              <motion.a
                 href={isPortal ? '#/portal?tab=contact&type=problem' : '/submit?type=problem'}
                 onClick={(e) => {
                   e.preventDefault();
-                  if (isPortal) window.location.hash = '#/portal?tab=contact&type=problem';
-                  else navigate('/submit?type=problem');
+                  navigate('/submit?type=problem');
                 }}
                 className="px-3.5 py-2 rounded-xl text-xs lg:text-sm font-bold text-primary bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-all"
                 whileHover={{ scale: 1.05 }}
@@ -258,6 +265,23 @@ export const Navbar = () => {
                       {t('nav.dashboard', 'Dashboard')}
                     </span>
                   </motion.a>
+                  {userRole === 'client' && (
+                    <motion.button
+                      onClick={() => {
+                        if (location.pathname === '/portal/client') {
+                          window.dispatchEvent(new CustomEvent('open-client-profile-settings'));
+                        } else {
+                          navigate('/portal/client?action=profile');
+                        }
+                      }}
+                      className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-muted/60 hover:bg-muted border border-border text-foreground hover:text-primary transition-all cursor-pointer"
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      <User className="w-4 h-4" />
+                      Profile Settings
+                    </motion.button>
+                  )}
                   <motion.button
                     onClick={handleLogout}
                     className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20"
@@ -277,15 +301,32 @@ export const Navbar = () => {
                     href={isAdmin ? "/admin-hq-nexus" : `/portal/${userRole || ''}`}
                     onClick={handleDashboardClick}
                     className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-primary/10 hover:bg-primary/20 text-primary transition-colors border border-primary/20"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.2, duration: 0.5 }}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2, duration: 0.5 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
                     <LayoutDashboard className="w-4 h-4" />
                     {t('nav.dashboard', 'Dashboard')}
                   </motion.a>
+                  {userRole === 'client' && (
+                    <motion.button
+                      onClick={() => {
+                        if (location.pathname === '/portal/client') {
+                          window.dispatchEvent(new CustomEvent('open-client-profile-settings'));
+                        } else {
+                          navigate('/portal/client?action=profile');
+                        }
+                      }}
+                      className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-muted/60 hover:bg-muted border border-border text-foreground hover:text-primary transition-all cursor-pointer"
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      <User className="w-4 h-4" />
+                      Profile Settings
+                    </motion.button>
+                  )}
                   <motion.button
                     onClick={handleLogout}
                     className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20"
@@ -424,12 +465,25 @@ export const Navbar = () => {
                   {t('nav.services', 'Services')}
                 </motion.a>
                 <motion.a
-                  href={isPortal ? '#/portal?tab=contact&type=problem' : '/submit?type=problem'}
+                  href="/contact"
                   onClick={(e) => {
                     e.preventDefault();
                     setMobileMenuOpen(false);
-                    if (isPortal) window.location.hash = '#/portal?tab=contact&type=problem';
-                    else navigate('/submit?type=problem');
+                    navigate('/contact');
+                  }}
+                  className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.17 }}
+                >
+                  {t('nav.contactUs', 'Contact Us')}
+                </motion.a>
+                <motion.a
+                  href="/submit?type=problem"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMobileMenuOpen(false);
+                    navigate('/submit?type=problem');
                   }}
                   className="text-xl font-extrabold text-primary hover:text-primary/80 transition-colors relative z-[120]"
                   initial={{ opacity: 0, y: 20 }}
@@ -480,6 +534,25 @@ export const Navbar = () => {
                     <LayoutDashboard className="w-5 h-5" />
                     {t('nav.dashboard', 'Dashboard')}
                   </motion.a>
+                  {userRole === 'client' && (
+                    <motion.button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        if (location.pathname === '/portal/client') {
+                          window.dispatchEvent(new CustomEvent('open-client-profile-settings'));
+                        } else {
+                          navigate('/portal/client?action=profile');
+                        }
+                      }}
+                      className="w-full text-center px-10 py-4 rounded-2xl font-bold text-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-center gap-2 cursor-pointer"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.12 }}
+                    >
+                      <User className="w-5 h-5" />
+                      Profile Settings
+                    </motion.button>
+                  )}
                   <motion.button
                     onClick={() => {
                       handleLogout();
@@ -508,19 +581,40 @@ export const Navbar = () => {
                     <LayoutDashboard className="w-5 h-5" />
                     {t('nav.dashboard', 'Dashboard')}
                   </motion.a>
+                  {userRole === 'client' && (
+                    <motion.button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        if (location.pathname === '/portal/client') {
+                          window.dispatchEvent(new CustomEvent('open-client-profile-settings'));
+                        } else {
+                          navigate('/portal/client?action=profile');
+                        }
+                      }}
+                      className="w-full text-center px-10 py-4 rounded-2xl font-bold text-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-center gap-2 cursor-pointer"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.12 }}
+                    >
+                      <User className="w-5 h-5" />
+                      Profile Settings
+                    </motion.button>
+                  )}
                   {!isAdmin && (
-                    <>
-                      <motion.a
-                        href="#/portal?tab=contact"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="w-full text-center px-10 py-4 rounded-2xl font-bold text-lg bg-muted/60 border border-border text-foreground hover:text-primary transition-all flex items-center justify-center"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 * navLinks.length + 0.05 }}
-                      >
-                        {t('nav.contactUs', 'Contact Us')}
-                      </motion.a>
-                    </>
+                    <motion.a
+                      href="/contact"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setMobileMenuOpen(false);
+                        navigate('/contact');
+                      }}
+                      className="w-full text-center px-10 py-4 rounded-2xl font-bold text-lg bg-muted/60 border border-border text-foreground hover:text-primary transition-all flex items-center justify-center cursor-pointer"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.15 }}
+                    >
+                      {t('nav.contactUs', 'Contact Us')}
+                    </motion.a>
                   )}
                   <motion.button
                     onClick={() => {
@@ -530,7 +624,7 @@ export const Navbar = () => {
                     className="w-full text-center px-10 py-4 rounded-2xl font-bold text-lg bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center gap-2"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 * navLinks.length + 0.1 }}
+                    transition={{ delay: 0.18 }}
                   >
                     <LogOut className="w-5 h-5" />
                     {t('nav.logout', 'Logout')}

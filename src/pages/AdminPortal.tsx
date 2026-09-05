@@ -46,8 +46,7 @@ import {
     Check,
     Eye,
     EyeOff,
-    Clock,
-    Sparkles
+    Clock
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -1405,8 +1404,8 @@ const AdminPortal = () => {
                                                                 {parsedMsg.selectedServices.length > 0 && (
                                                                     <div className="flex flex-wrap gap-1.5">
                                                                         {parsedMsg.selectedServices.map((srv, idx) => (
-                                                                            <span key={idx} className="px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold flex items-center gap-1">
-                                                                                <Sparkles className="w-3 h-3" /> {srv}
+                                                                            <span key={idx} className="px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold">
+                                                                                {srv}
                                                                             </span>
                                                                         ))}
                                                                     </div>
@@ -2115,13 +2114,13 @@ const AdminPortal = () => {
                                     {/* 2. Selected Services & Preferences */}
                                     <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-3">
                                         <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary flex items-center gap-2">
-                                            <Sparkles className="w-4 h-4" /> Requested Services & Project Scope
+                                            <PanelsTopLeft className="w-4 h-4" /> Requested Services & Project Scope
                                         </h4>
                                         {parsedMsg.selectedServices.length > 0 ? (
                                             <div className="flex flex-wrap gap-2">
                                                 {parsedMsg.selectedServices.map((srv, idx) => (
-                                                    <span key={idx} className="px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-primary font-bold text-xs flex items-center gap-1.5">
-                                                        <Sparkles className="w-3.5 h-3.5" /> {srv}
+                                                    <span key={idx} className="px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-primary font-bold text-xs">
+                                                        {srv}
                                                     </span>
                                                 ))}
                                             </div>

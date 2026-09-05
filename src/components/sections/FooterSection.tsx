@@ -6,6 +6,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Users, Star } from 'lucide-react';
 import siddhiLogo from '@/assets/siddhi-logo.png';
 import { GoogleReviewNotificationBanner } from '@/components/GoogleReviewNotificationBanner';
+import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 
 const nizamabadAddress = '3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001, India';
 const nizamabadMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`Siddhi Dynamics LLP, ${nizamabadAddress}`)}`;
@@ -40,6 +41,18 @@ export const FooterSection = () => {
 
   const handleNavClick = (e: React.MouseEvent, href: string) => {
     e.preventDefault();
+    if (href.startsWith('/#')) {
+      const anchorId = href.replace('/#', '');
+      if (window.location.pathname === '/') {
+        const el = document.getElementById(anchorId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+          return;
+        }
+      }
+      navigate(href);
+      return;
+    }
     navigate(href);
     window.scrollTo(0, 0);
   };
@@ -107,13 +120,14 @@ export const FooterSection = () => {
               className="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-2.5 md:gap-x-6"
             >
               {[
+                { name: t('nav.home', 'Home'), href: '/' },
                 { name: 'About', href: '/about' },
-                { name: 'Contact Us', href: '/contact' },
                 { name: t('nav.vision', 'Vision'), href: '/#vision' },
                 { name: t('nav.projects', 'Projects'), href: '/#projects' },
                 { name: 'Blog', href: '/blog' },
-                { name: 'Services', href: '/services/business-automation' },
+                { name: 'Services', href: '/#services' },
                 { name: t('nav.submit', 'Submit Problem'), href: '/submit?type=problem' },
+                { name: 'Contact Us', href: '/contact' },
               ].map((link, index) => (
                 <motion.a
                   key={link.name}
@@ -121,7 +135,7 @@ export const FooterSection = () => {
                   onClick={(e) => handleNavClick(e, link.href)}
                   custom={index}
                   variants={linkVariants}
-                  className="relative text-sm font-semibold text-slate-300 hover:text-white transition-colors group whitespace-nowrap"
+                  className="relative text-sm font-semibold text-slate-300 hover:text-white transition-colors group whitespace-nowrap cursor-pointer"
                   whileHover={{ y: -3, scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -134,6 +148,9 @@ export const FooterSection = () => {
                   />
                 </motion.a>
               ))}
+              <div className="inline-flex items-center ml-1">
+                <LanguageSwitcher />
+              </div>
             </motion.nav>
           </div>
 
