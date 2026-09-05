@@ -1395,6 +1395,7 @@ function Setup({
   onComplete: (updatedName: string, businessName: string, mobile: string) => void;
   saving: boolean;
 }) {
+  const { t } = useTranslation();
   const [profileName, setProfileName] = useState(name || "");
   const [businessName, setBusinessName] = useState("");
   const [mobile, setMobile] = useState(initialPhone || "");
@@ -1410,17 +1411,17 @@ function Setup({
       >
         <div className="flex justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[.16em] text-primary">Client Profile</p>
-            <h2 className="mt-1 text-xl font-semibold">Complete your profile to continue</h2>
+            <p className="text-xs font-bold uppercase tracking-[.16em] text-primary">{t('clientProfile.badge', 'Client Profile')}</p>
+            <h2 className="mt-1 text-xl font-semibold">{t('clientProfile.title', 'Complete your profile to continue')}</h2>
           </div>
           <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-stone-100">
             <X className="h-5 w-5" />
           </button>
         </div>
-        <p className="mt-3 text-sm text-stone-600">Add your name, business name and mobile number below. These details are needed before we can schedule your service.</p>
+        <p className="mt-3 text-sm text-stone-600">{t('clientProfile.desc', 'Add your name, business name and mobile number below. These details are needed before we can schedule your service.')}</p>
         <div className="mt-5 grid gap-4">
           <label className="text-sm font-bold">
-            Your Full Name
+            {t('clientProfile.fullName', 'Your Full Name')}
             <input
               required
               value={profileName}
@@ -1430,7 +1431,7 @@ function Setup({
             />
           </label>
           <label className="text-sm font-bold">
-            Business / Company Name
+            {t('clientProfile.businessName', 'Business / Company Name')}
             <input
               required
               value={businessName}
@@ -1440,7 +1441,7 @@ function Setup({
             />
           </label>
           <label className="text-sm font-bold">
-            Mobile Number
+            {t('clientProfile.mobileNumber', 'Mobile Number')}
             <input
               required
               type="tel"
@@ -1456,7 +1457,7 @@ function Setup({
           disabled={saving}
           className="mt-5 w-full rounded-xl bg-stone-900 py-3 text-sm font-bold text-white disabled:opacity-60 cursor-pointer hover:bg-stone-800 transition-colors"
         >
-          {saving ? "Saving…" : "Save & Continue"}
+          {saving ? t('clientProfile.saving', 'Saving…') : t('clientProfile.saveAndContinue', 'Save & Continue')}
         </button>
       </form>
     </div>

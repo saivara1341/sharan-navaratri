@@ -219,7 +219,7 @@ export const Navbar = () => {
                       whileTap={{ scale: 0.97 }}
                     >
                       <User className="w-4 h-4" />
-                      Profile Settings
+                      {t('nav.profileSettings', 'Profile Settings')}
                     </motion.button>
                   )}
                   <motion.button
@@ -264,7 +264,7 @@ export const Navbar = () => {
                       whileTap={{ scale: 0.97 }}
                     >
                       <User className="w-4 h-4" />
-                      Profile Settings
+                      {t('nav.profileSettings', 'Profile Settings')}
                     </motion.button>
                   )}
                   <motion.button
@@ -494,7 +494,7 @@ export const Navbar = () => {
                       transition={{ delay: 0.12 }}
                     >
                       <User className="w-5 h-5" />
-                      Profile Settings
+                      {t('nav.profileSettings', 'Profile Settings')}
                     </motion.button>
                   )}
                   <motion.button
@@ -541,7 +541,7 @@ export const Navbar = () => {
                       transition={{ delay: 0.12 }}
                     >
                       <User className="w-5 h-5" />
-                      Profile Settings
+                      {t('nav.profileSettings', 'Profile Settings')}
                     </motion.button>
                   )}
                   {!isAdmin && (

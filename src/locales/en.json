@@ -15,7 +15,8 @@
     "submitChallenge": "Submit Your Challenge",
     "buildProject": "Build Your Project",
     "exploreProjects": "Explore Projects",
-    "contactUs": "Contact Us"
+    "contactUs": "Contact Us",
+    "profileSettings": "Profile Settings"
   },
   "hero": {
     "badge": "Next-Generation AI Solutions",
@@ -714,6 +715,114 @@
       "emptyTitle": "No bills issued",
       "emptyDesc": "When a quote is approved, your invoice and Cashfree payment schedule will appear here."
     }
+  },
+  "submitForm": {
+    "title": "Submit a Project Requirement",
+    "stepIndicator": "Step {{current}} of {{total}}: {{title}}",
+    "backToPortal": "Back to Portal",
+    "prevStep": "Previous Step",
+    "steps": {
+      "profile": "Profile Details",
+      "services": "Services & Budget",
+      "scope": "Requirement & Scope",
+      "review": "Review & Submit",
+      "shortProfile": "Profile",
+      "shortServices": "Services",
+      "shortScope": "Requirement",
+      "shortReview": "Submit"
+    },
+    "profile": {
+      "readyTitle": "Profile details are ready",
+      "completeTitle": "Complete your profile to continue",
+      "readyDesc": "Your contact and business details are loaded below. You can review or edit them before proceeding to service selection.",
+      "completeDesc": "Add your name, business name and mobile number below. These details are needed before we can schedule your service.",
+      "sectionTitle": "Primary Contact & Business Information",
+      "fullName": "Full Name",
+      "mobileNumber": "Mobile Number",
+      "mobilePlaceholder": "Enter 10-digit mobile number",
+      "brandName": "Business / Brand Name",
+      "brandPlaceholder": "e.g. Indhur Farms, PrintFlow",
+      "email": "Email Address",
+      "emailHint": "Auto-filled from your signed-in session",
+      "designation": "Designation / Role (Optional)",
+      "designationPlaceholder": "e.g. Founder, CEO, CTO, Operations Head",
+      "cancel": "Cancel",
+      "next": "Next: Select Services"
+    },
+    "services": {
+      "title": "Select Services Required",
+      "selectedCount": "{{count}} Selected",
+      "quoteOnReview": "Quote on review",
+      "budgetTitle": "Estimated Budget Preference",
+      "budgetHint": "💡 Unsure? Select Custom / Discuss; we will tailor a package to your exact scope on our strategy call.",
+      "backToProfile": "Back to Profile",
+      "nextToScope": "Next: Project Scope",
+      "items": {
+        "seo-geo": { "label": "🚀 SEO, GEO & AEO Programme", "desc": "Search & AI score optimization" },
+        "website": { "label": "🌐 Website / Portal Development", "desc": "Custom Web App / Landing Page" },
+        "automation": { "label": "⚡ Business Automation", "desc": "Workflow / RPA / AI Agent Automation" },
+        "saas": { "label": "📱 SaaS / App Platform", "desc": "Full-stack MVP Development" },
+        "erp": { "label": "🏢 ERP System", "desc": "Enterprise Resource Planning" },
+        "gbp": { "label": "📍 Google Business Profile", "desc": "Local GMB & Map Optimisation" },
+        "custom": { "label": "🤝 Custom Solution", "desc": "Tailored enterprise scope & quote" }
+      },
+      "budgets": {
+        "below10k": "Below ₹10k",
+        "flexible": "🤝 Custom / Discuss",
+        "starter": "₹10k - ₹30k",
+        "growth": "₹30k - ₹1 Lakh",
+        "enterprise": "₹1 Lakh+"
+      }
+    },
+    "scope": {
+      "dateTitle": "Requested Service Start Date",
+      "dateHint": "We review and confirm the exact milestone timeline once requirements are discussed.",
+      "reqTitle": "Describe Your Requirement",
+      "reqPlaceholder": "Tell us about your project goals, features needed, target audience, preferred integrations, and desired outcomes...",
+      "addFiles": "Add PDFs, documents or images",
+      "chars": "{{count}} characters",
+      "minChars": "(minimum 20)",
+      "socialOptIn": "Optional: I’m open to sharing project milestones and my experience on social media—from kick-off to completion.",
+      "backToServices": "Back to Services",
+      "nextToReview": "Next: Review & Submit"
+    },
+    "review": {
+      "cardTitle": "Requirement Summary Review",
+      "editDetails": "Edit Details ✎",
+      "contactBusiness": "Contact & Business:",
+      "servicesDate": "Selected Services & Start Date:",
+      "targetStart": "Target Start Date:",
+      "reqOverview": "Requirement Overview:",
+      "attachmentsCount": "📎 {{count}} attachment(s) included",
+      "legalAgree": "By submitting you agree to our",
+      "privacyPolicy": "Privacy Policy",
+      "and": "and",
+      "termsOfService": "Terms of Service",
+      "submitting": "Submitting Requirement...",
+      "submitBtn": "Submit Project Requirement",
+      "back": "Back",
+      "trust": {
+        "consultation": "Free 30-min consultation",
+        "private": "Your information stays private",
+        "reply": "Reply within 24 hours"
+      }
+    },
+    "success": {
+      "title": "Requirement Submitted!",
+      "desc": "Your project requirement has been logged. The Siddhi Dynamics team will review your scope and reach out within 24 hours.",
+      "backToPortal": "Back to My Portal",
+      "submitAnother": "Submit Another"
+    }
+  },
+  "clientProfile": {
+    "badge": "Client Profile",
+    "title": "Complete your profile to continue",
+    "desc": "Add your name, business name and mobile number below. These details are needed before we can schedule your service.",
+    "fullName": "Your Full Name",
+    "businessName": "Business / Company Name",
+    "mobileNumber": "Mobile Number",
+    "saveAndContinue": "Save & Continue",
+    "saving": "Saving…"
   },
   "eid": {
     "headline": "Eid Mubarak 🌙",

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ConsentCheckbox } from "@/components/legal/ConsentCheckbox";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/layout/Navbar";
@@ -52,13 +53,6 @@ const resolveDefaultService = (value: string | null) => {
     return "website";
 };
 
-const WIZARD_STEPS = [
-    { id: 1, title: "Profile Details", short: "Profile", icon: User },
-    { id: 2, title: "Services & Budget", short: "Services", icon: Briefcase },
-    { id: 3, title: "Requirement & Scope", short: "Requirement", icon: FileText },
-    { id: 4, title: "Review & Submit", short: "Submit", icon: ShieldCheck },
-];
-
 type SpeechRecognitionEvent = Event & { results: SpeechRecognitionResultList };
 type SpeechRecognitionInstance = EventTarget & {
     continuous: boolean;
@@ -73,10 +67,36 @@ type SpeechRecognitionInstance = EventTarget & {
 type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
 
 export default function ProjectSubmitForm() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const defaultType = resolveDefaultService(searchParams.get("service") || searchParams.get("type"));
     const requestedOrganization = searchParams.get("organization")?.trim() || "";
+
+    const wizardSteps = [
+        { id: 1, title: t('submitForm.steps.profile', "Profile Details"), short: t('submitForm.steps.shortProfile', "Profile"), icon: User },
+        { id: 2, title: t('submitForm.steps.services', "Services & Budget"), short: t('submitForm.steps.shortServices', "Services"), icon: Briefcase },
+        { id: 3, title: t('submitForm.steps.scope', "Requirement & Scope"), short: t('submitForm.steps.shortScope', "Requirement"), icon: FileText },
+        { id: 4, title: t('submitForm.steps.review', "Review & Submit"), short: t('submitForm.steps.shortReview', "Submit"), icon: ShieldCheck },
+    ];
+
+    const serviceOptions = [
+        { value: "seo-geo",      label: t('submitForm.services.items.seo-geo.label', "🚀 SEO, GEO & AEO Programme"), desc: t('submitForm.services.items.seo-geo.desc', "Search & AI score optimization"),       price: t('submitForm.services.quoteOnReview', "Quote on review") },
+        { value: "website",      label: t('submitForm.services.items.website.label', "🌐 Website / Portal Development"), desc: t('submitForm.services.items.website.desc', "Custom Web App / Landing Page"),     price: t('submitForm.services.quoteOnReview', "Quote on review") },
+        { value: "automation",   label: t('submitForm.services.items.automation.label', "⚡ Business Automation"),      desc: t('submitForm.services.items.automation.desc', "Workflow / RPA / AI Agent Automation"),price: t('submitForm.services.quoteOnReview', "Quote on review") },
+        { value: "saas",         label: t('submitForm.services.items.saas.label', "📱 SaaS / App Platform"),      desc: t('submitForm.services.items.saas.desc', "Full-stack MVP Development"),          price: t('submitForm.services.quoteOnReview', "Quote on review") },
+        { value: "erp",          label: t('submitForm.services.items.erp.label', "🏢 ERP System"),              desc: t('submitForm.services.items.erp.desc', "Enterprise Resource Planning"),        price: t('submitForm.services.quoteOnReview', "Quote on review") },
+        { value: "gbp",          label: t('submitForm.services.items.gbp.label', "📍 Google Business Profile"),  desc: t('submitForm.services.items.gbp.desc', "Local GMB & Map Optimisation"),        price: t('submitForm.services.quoteOnReview', "Quote on review") },
+        { value: "custom",       label: t('submitForm.services.items.custom.label', "🤝 Custom Solution"),         desc: t('submitForm.services.items.custom.desc', "Tailored enterprise scope & quote"),   price: t('submitForm.services.quoteOnReview', "Quote on review") },
+    ];
+
+    const budgetOptions = [
+        { value: "below10k", label: t('submitForm.services.budgets.below10k', "Below ₹10k") },
+        { value: "flexible", label: t('submitForm.services.budgets.flexible', "🤝 Custom / Discuss") },
+        { value: "starter", label: t('submitForm.services.budgets.starter', "₹10k - ₹30k") },
+        { value: "growth", label: t('submitForm.services.budgets.growth', "₹30k - ₹1 Lakh") },
+        { value: "enterprise", label: t('submitForm.services.budgets.enterprise', "₹1 Lakh+") },
+    ];
 
     // Wizard Step state: 1 | 2 | 3 | 4
     const [wizardStep, setWizardStep] = useState<number>(1);
@@ -285,7 +305,7 @@ export default function ProjectSubmitForm() {
             }
 
             const servicesString = selectedServices.map(s => {
-                const item = SERVICE_OPTIONS.find(o => o.value === s);
+                const item = serviceOptions.find(o => o.value === s);
                 return item ? item.label : s;
             }).join(", ");
 
@@ -390,16 +410,16 @@ export default function ProjectSubmitForm() {
                                 </svg>
                             </motion.div>
                         </div>
-                        <h1 className="text-2xl font-extrabold text-foreground mb-2">Requirement Submitted!</h1>
+                        <h1 className="text-2xl font-extrabold text-foreground mb-2">{t('submitForm.success.title', 'Requirement Submitted!')}</h1>
                         <p className="text-muted-foreground mb-6 leading-relaxed text-sm">
-                            Your project requirement has been logged. The Siddhi Dynamics team will review your scope and reach out within <strong>24 hours</strong>.
+                            {t('submitForm.success.desc', 'Your project requirement has been logged. The Siddhi Dynamics team will review your scope and reach out within 24 hours.')}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-3 justify-center">
                             <button
                                 onClick={() => navigate(portalPath)}
                                 className="px-6 py-2.5 bg-primary text-primary-foreground font-bold rounded-xl hover:scale-105 transition-all text-sm shadow-md cursor-pointer"
                             >
-                                Back to My Portal
+                                {t('submitForm.success.backToPortal', 'Back to My Portal')}
                             </button>
                             <button
                                 onClick={() => {
@@ -412,7 +432,7 @@ export default function ProjectSubmitForm() {
                                 }}
                                 className="px-6 py-2.5 bg-secondary text-secondary-foreground font-semibold rounded-xl hover:opacity-80 transition text-sm border border-border cursor-pointer"
                             >
-                                Submit Another
+                                {t('submitForm.success.submitAnother', 'Submit Another')}
                             </button>
                         </div>
                     </motion.div>
@@ -444,7 +464,7 @@ export default function ProjectSubmitForm() {
                     className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground mb-6 transition-colors group cursor-pointer"
                 >
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <span>{wizardStep === 1 ? "Back to Portal" : "Previous Step"}</span>
+                    <span>{wizardStep === 1 ? t('submitForm.backToPortal', 'Back to Portal') : t('submitForm.prevStep', 'Previous Step')}</span>
                 </button>
 
                 <motion.div
@@ -460,8 +480,8 @@ export default function ProjectSubmitForm() {
                                 <FilePen className="w-5 h-5" />
                             </div>
                             <div>
-                                <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">Submit a Project Requirement</h1>
-                                <p className="text-xs text-muted-foreground mt-0.5">Step {wizardStep} of 4: {WIZARD_STEPS[wizardStep - 1].title}</p>
+                                <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">{t('submitForm.title', 'Submit a Project Requirement')}</h1>
+                                <p className="text-xs text-muted-foreground mt-0.5">{t('submitForm.stepIndicator', { current: wizardStep, total: 4, title: wizardSteps[wizardStep - 1]?.title || '', defaultValue: `Step ${wizardStep} of 4: ${wizardSteps[wizardStep - 1]?.title || ''}` })}</p>
                             </div>
                         </div>
                     </div>
@@ -469,7 +489,7 @@ export default function ProjectSubmitForm() {
                     {/* Step Progress Bar & Indicators */}
                     <div className="mb-8">
                         <div className="grid grid-cols-4 gap-2 mb-2.5">
-                            {WIZARD_STEPS.map((s) => {
+                            {wizardSteps.map((s) => {
                                 const isCurrent = wizardStep === s.id;
                                 const isPassed = wizardStep > s.id;
                                 const Icon = s.icon;
@@ -526,12 +546,14 @@ export default function ProjectSubmitForm() {
                                             <span className="text-xl mt-0.5">{profileLoaded && name.trim() && organization.trim() && phone.trim() ? "✅" : "👤"}</span>
                                             <div>
                                                 <p className="font-bold text-foreground">
-                                                    {profileLoaded && name.trim() && organization.trim() && phone.trim() ? "Profile details are ready" : "Complete your profile to continue"}
+                                                    {profileLoaded && name.trim() && organization.trim() && phone.trim()
+                                                        ? t('submitForm.profile.readyTitle', 'Profile details are ready')
+                                                        : t('submitForm.profile.completeTitle', 'Complete your profile to continue')}
                                                 </p>
                                                 <p className="mt-1 text-xs leading-relaxed opacity-85">
                                                     {profileLoaded && name.trim() && organization.trim() && phone.trim()
-                                                        ? "Your contact and business details are loaded below. You can review or edit them before proceeding to service selection."
-                                                        : "Add your name, business name and mobile number below. These details are needed before we can schedule your service."}
+                                                        ? t('submitForm.profile.readyDesc', 'Your contact and business details are loaded below. You can review or edit them before proceeding to service selection.')
+                                                        : t('submitForm.profile.completeDesc', 'Add your name, business name and mobile number below. These details are needed before we can schedule your service.')}
                                                 </p>
                                             </div>
                                         </div>
@@ -541,13 +563,13 @@ export default function ProjectSubmitForm() {
                                     <div className="p-4 sm:p-5 rounded-2xl bg-muted/20 border border-border space-y-4">
                                         <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 pb-2 border-b border-border/60">
                                             <User className="w-3.5 h-3.5 text-primary" />
-                                            Primary Contact &amp; Business Information
+                                            {t('submitForm.profile.sectionTitle', 'Primary Contact & Business Information')}
                                         </h2>
 
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
                                                 <label className="block text-xs font-bold text-foreground mb-1.5">
-                                                    Full Name <span className="text-destructive">*</span>
+                                                    {t('submitForm.profile.fullName', 'Full Name')} <span className="text-destructive">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
@@ -560,14 +582,14 @@ export default function ProjectSubmitForm() {
                                             </div>
                                             <div>
                                                 <label className="block text-xs font-bold text-foreground mb-1.5">
-                                                    Mobile Number <span className="text-destructive">*</span>
+                                                    {t('submitForm.profile.mobileNumber', 'Mobile Number')} <span className="text-destructive">*</span>
                                                 </label>
                                                 <input
                                                     type="tel"
                                                     required
                                                     value={phone}
                                                     onChange={(e) => setPhone(e.target.value)}
-                                                    placeholder="Enter 10-digit mobile number"
+                                                    placeholder={t('submitForm.profile.mobilePlaceholder', 'Enter 10-digit mobile number')}
                                                     inputMode="numeric"
                                                     className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                                 />
@@ -577,20 +599,20 @@ export default function ProjectSubmitForm() {
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
                                                 <label className="block text-xs font-bold text-foreground mb-1.5">
-                                                    Business / Brand Name <span className="text-destructive">*</span>
+                                                    {t('submitForm.profile.brandName', 'Business / Brand Name')} <span className="text-destructive">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
                                                     value={organization}
                                                     required
                                                     onChange={(e) => setOrganization(e.target.value)}
-                                                    placeholder="e.g. Indhur Farms, PrintFlow"
+                                                    placeholder={t('submitForm.profile.brandPlaceholder', 'e.g. Indhur Farms, PrintFlow')}
                                                     className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                                 />
                                             </div>
                                             <div>
                                                 <label className="block text-xs font-bold text-foreground mb-1.5">
-                                                    Email Address <span className="text-destructive">*</span>
+                                                    {t('submitForm.profile.email', 'Email Address')} <span className="text-destructive">*</span>
                                                 </label>
                                                 <input
                                                     type="email"
@@ -602,20 +624,20 @@ export default function ProjectSubmitForm() {
                                                     className={`w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all ${sessionEmail ? "opacity-70 cursor-not-allowed" : ""}`}
                                                 />
                                                 {sessionEmail && (
-                                                    <p className="text-[10px] text-muted-foreground mt-1">Auto-filled from your signed-in session</p>
+                                                    <p className="text-[10px] text-muted-foreground mt-1">{t('submitForm.profile.emailHint', 'Auto-filled from your signed-in session')}</p>
                                                 )}
                                             </div>
                                         </div>
 
                                         <div>
                                             <label className="block text-xs font-bold text-muted-foreground mb-1.5">
-                                                Designation / Role (Optional)
+                                                {t('submitForm.profile.designation', 'Designation / Role (Optional)')}
                                             </label>
                                             <input
                                                 type="text"
                                                 value={designation}
                                                 onChange={(e) => setDesignation(e.target.value)}
-                                                placeholder="e.g. Founder, CEO, CTO, Operations Head"
+                                                placeholder={t('submitForm.profile.designationPlaceholder', 'e.g. Founder, CEO, CTO, Operations Head')}
                                                 className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                             />
                                         </div>
@@ -628,14 +650,14 @@ export default function ProjectSubmitForm() {
                                             onClick={() => navigate(portalPath)}
                                             className="px-5 py-3 border border-border text-muted-foreground hover:text-foreground text-xs font-semibold rounded-xl transition-colors cursor-pointer"
                                         >
-                                            Cancel
+                                            {t('submitForm.profile.cancel', 'Cancel')}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={validateAndNext}
                                             className="px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer"
                                         >
-                                            Next: Select Services <ArrowRight className="w-4 h-4" />
+                                            {t('submitForm.profile.next', 'Next: Select Services')} <ArrowRight className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </motion.div>
@@ -656,12 +678,14 @@ export default function ProjectSubmitForm() {
                                         <div className="flex items-center justify-between mb-2">
                                             <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
                                                 <Briefcase className="inline w-3.5 h-3.5 mr-1 text-primary" />
-                                                Select Services Required <span className="text-destructive">*</span>
+                                                {t('submitForm.services.title', 'Select Services Required')} <span className="text-destructive">*</span>
                                             </label>
-                                            <span className="text-[11px] text-primary font-mono">{selectedServices.length} Selected</span>
+                                            <span className="text-[11px] text-primary font-mono">
+                                                {t('submitForm.services.selectedCount', { count: selectedServices.length, defaultValue: `${selectedServices.length} Selected` })}
+                                            </span>
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                            {SERVICE_OPTIONS.map((type) => {
+                                            {serviceOptions.map((type) => {
                                                 const isSelected = selectedServices.includes(type.value);
                                                 return (
                                                     <button
@@ -696,16 +720,10 @@ export default function ProjectSubmitForm() {
                                     <div className="p-4 rounded-2xl bg-muted/20 border border-border space-y-2">
                                         <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                                             <Coins className="w-3.5 h-3.5 text-primary" />
-                                            Estimated Budget Preference
+                                            {t('submitForm.services.budgetTitle', 'Estimated Budget Preference')}
                                         </label>
                                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
-                                            {[
-                                                { value: "below10k", label: "Below ₹10k" },
-                                                { value: "flexible", label: "🤝 Custom / Discuss" },
-                                                { value: "starter", label: "₹10k - ₹30k" },
-                                                { value: "growth", label: "₹30k - ₹1 Lakh" },
-                                                { value: "enterprise", label: "₹1 Lakh+" },
-                                            ].map((b) => (
+                                            {budgetOptions.map((b) => (
                                                 <button
                                                     key={b.value}
                                                     type="button"
@@ -721,7 +739,7 @@ export default function ProjectSubmitForm() {
                                             ))}
                                         </div>
                                         <p className="pt-1 text-[11px] text-muted-foreground">
-                                            💡 Unsure? Select <strong>Custom / Discuss</strong>; we will tailor a package to your exact scope on our strategy call.
+                                            {t('submitForm.services.budgetHint', '💡 Unsure? Select Custom / Discuss; we will tailor a package to your exact scope on our strategy call.')}
                                         </p>
                                     </div>
 
@@ -732,14 +750,14 @@ export default function ProjectSubmitForm() {
                                             onClick={handleBack}
                                             className="px-5 py-3 border border-border text-muted-foreground hover:text-foreground text-xs font-semibold rounded-xl transition-colors cursor-pointer flex items-center gap-1.5"
                                         >
-                                            <ArrowLeft className="w-4 h-4" /> Back to Profile
+                                            <ArrowLeft className="w-4 h-4" /> {t('submitForm.services.backToProfile', 'Back to Profile')}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={validateAndNext}
                                             className="px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer"
                                         >
-                                            Next: Project Scope <ArrowRight className="w-4 h-4" />
+                                            {t('submitForm.services.nextToScope', 'Next: Project Scope')} <ArrowRight className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </motion.div>
