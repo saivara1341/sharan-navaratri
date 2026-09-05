@@ -188,7 +188,7 @@ export const HeroSection = () => {
               animate="visible"
               variants={textRevealVariants}
             >
-              We help Indian businesses
+              {t('hero.helpLine1', 'We help Indian businesses')}
             </motion.span>
             <motion.span
               className="block text-foreground"
@@ -197,7 +197,7 @@ export const HeroSection = () => {
               animate="visible"
               variants={textRevealVariants}
             >
-              with AI systems that
+              {t('hero.helpLine2', 'with AI systems that')}
             </motion.span>
             <motion.span
               className="block min-h-[1.1em] gradient-hero glow-text"
@@ -209,10 +209,10 @@ export const HeroSection = () => {
               <FadeThrough
                 interval={2800}
                 phrases={[
-                  'beyond prototypes into production.',
-                  'automate manual work.',
-                  'ship production AI.',
-                  'scale with confidence.',
+                  t('hero.fadePhrase1', 'beyond prototypes into production.'),
+                  t('hero.fadePhrase2', 'automate manual work.'),
+                  t('hero.fadePhrase3', 'ship production AI.'),
+                  t('hero.fadePhrase4', 'scale with confidence.'),
                 ]}
               />
             </motion.span>
@@ -225,8 +225,8 @@ export const HeroSection = () => {
             transition={{ duration: 1, delay: 0.8 }}
             className="text-base sm:text-lg md:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto mb-12 md:mb-7 leading-relaxed hero-description"
           >
-            From invoice processing to custom SaaS — we build and deploy intelligent systems, not demos.
-            {' '}<span className="text-primary font-medium">Incubated at HIVE, Anurag University.</span>
+            {t('hero.descMain', 'From invoice processing to custom SaaS — we build and deploy intelligent systems, not demos.')}{' '}
+            <span className="text-primary font-medium">{t('hero.incubated', 'Incubated at HIVE, Anurag University.')}</span>
           </motion.p>
 
           {/* CTA buttons */}
@@ -245,7 +245,7 @@ export const HeroSection = () => {
               <span className="absolute inset-0 bg-gradient-to-r from-primary via-primary to-accent opacity-90 group-hover:opacity-100 transition-opacity duration-500" />
               <span className="absolute inset-0 bg-gradient-to-r from-primary via-primary to-accent blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
               <span className="relative flex items-center justify-center gap-2 whitespace-nowrap text-primary-foreground font-bold tracking-wide sm:gap-3">
-                Book a Free AI Discovery Call
+                {t('hero.ctaDiscovery', 'Book a Free AI Discovery Call')}
                 <svg className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1 sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
@@ -258,7 +258,7 @@ export const HeroSection = () => {
               whileTap={{ scale: 0.97 }}
             >
               <span className="flex items-center gap-2">
-                How we work
+                {t('hero.howWeWork', 'How we work')}
                 <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
@@ -275,21 +275,21 @@ export const HeroSection = () => {
           >
             <span className="flex items-center gap-2">
               <img src={hiveLogo} alt="HIVE" width="96" height="24" loading="lazy" decoding="async" className="h-6 w-auto rounded-sm" />
-              Incubated at HIVE · Anurag University
+              {t('hero.trustHive', 'Incubated at HIVE · Anurag University')}
             </span>
             <span className="text-border/60">|</span>
             <span className="flex items-center gap-2">
               <span className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center">
                 <span className="w-2 h-2 rounded-full bg-primary" />
               </span>
-              Production-ready AI · Not demos
+              {t('hero.trustProduction', 'Production-ready AI · Not demos')}
             </span>
             <span className="text-border/60">|</span>
             <span className="flex items-center gap-2">
               <span className="w-4 h-4 rounded-full bg-accent/20 flex items-center justify-center">
                 <span className="w-2 h-2 rounded-full bg-accent" />
               </span>
-              Built for Indian businesses
+              {t('hero.trustBuilt', 'Built for Indian businesses')}
             </span>
           </motion.div>
         </motion.div>

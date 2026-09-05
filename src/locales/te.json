@@ -20,56 +20,70 @@
     },
     "hero": {
         "badge": "నెక్స్ట్-జెనరేషన్ AI సొల్యూషన్స్",
-        "transforming": "Transforming",
-        "realWorldProblems": "Real-World Problems",
-        "into": "into",
-        "aiSolutions": "AI Solutions",
-        "description": "We are a deep-tech innovation firm converting complex challenges into scalable, <0>production-ready</0> technology solutions powered by <1>AI, Generative AI, and Agentic Intelligence</1>.",
+        "helpLine1": "మేము భారతీయ వ్యాపారాలకు సహాయం చేస్తాము",
+        "helpLine2": "AI సిస్టమ్స్‌తో",
+        "fadePhrase1": "ప్రోటోటైప్‌లకు మించి ప్రొడక్షన్‌లోకి.",
+        "fadePhrase2": "మాన్యువల్ పనిని ఆటోమేట్ చేస్తాయి.",
+        "fadePhrase3": "ప్రొడక్షన్ AIని అందిస్తాయి.",
+        "fadePhrase4": "నమ్మకంతో స్కేల్ చేస్తాయి.",
+        "descMain": "ఇన్‌వాయిస్ ప్రాసెసింగ్ నుండి అనుకూల SaaS వరకు — మేము డెమోలు కాదు, నిజమైన ఇంటెలిజెంట్ సిస్టమ్స్‌ను నిర్మించి అమలు చేస్తాము.",
+        "incubated": "HIVE, అనురాగ్ యూనివర్సిటీలో ఇంక్యుబేట్ చేయబడింది.",
+        "ctaDiscovery": "ఉచిత AI డిస్కవరీ కాల్ బుక్ చేసుకోండి",
+        "howWeWork": "మేము ఎలా పనిచేస్తాము",
+        "trustHive": "HIVE · అనురాగ్ యూనివర్సిటీ వద్ద ఇంక్యుబేట్ చేయబడింది",
+        "trustProduction": "ప్రొడక్షన్-రెడీ AI · డెమోలు కావు",
+        "trustBuilt": "భారతీయ వ్యాపారాల కోసం నిర్మించబడింది",
+        "transforming": "రూపాంతరం",
+        "realWorldProblems": "వాస్తవ ప్రపంచ సమస్యలు",
+        "into": "నుండి",
+        "aiSolutions": "AI పరిష్కారాలుగా",
+        "description": "మేము సంక్లిష్ట సవాళ్లను AI, జనరేటివ్ AI మరియు ఏజెంటిక్ ఇంటెలిజెన్స్‌తో నడిచే స్కేలబుల్, <0>ప్రొడక్షన్-రెడీ</0> టెక్నాలజీ పరిష్కారాలుగా మార్చే డీప్-టెక్ ఇన్నోవేషన్ సంస్థ.",
         "ctaSubmit": "మీ సవాలును సమర్పించండి",
         "ctaRequirements": "మీ ప్రాజెక్ట్‌ను రూపొందించండి",
         "ctaExplore": "ప్రాజెక్ట్‌లను అన్వేషించండి",
-        "scroll": "Scroll"
+        "scroll": "స్క్రోల్ చేయండి"
     },
     "vision": {
-        "title": "Our Vision",
-        "subtitle": "Driving human progress through technological excellence",
-        "beyondPrototypes": "Beyond Prototypes,",
-        "intoProduction": "Into Production",
-        "visionDescription": "We identify real-world challenges and transform them into scalable, <0>production-ready</0> technology solutions—not just demos, but <0>deployable systems</0> that create lasting impact.",
+        "title": "మా విజన్",
+        "subtitle": "సాంకేతిక శ్రేష్ఠత ద్వారా మానవ పురోగతిని నడిపించడం",
+        "beyondPrototypes": "ప్రోటోటైప్‌లకు మించి,",
+        "intoProduction": "ప్రొడక్షన్‌లోకి",
+        "visionDescription": "మేము వాస్తవ ప్రపంచ సవాళ్లను గుర్తించి, వాటిని స్కేలబుల్, <0>ప్రొడక్షన్-రెడీ</0> టెక్నాలజీ సొల్యూషన్స్‌గా మారుస్తాము — కేవలం డెమోలు మాత్రమే కాదు, శాశ్వత ప్రభావాన్ని చూపే <0>వినియోగించదగిన సిస్టమ్స్</0>.",
         "mission": {
-            "subtitle": "Our Mission",
-            "title": "Engineering the Future of <0>Intelligent Systems</0>",
-            "description": "At Siddhi Dynamics LLP, we believe every complex problem has a technological solution waiting to be built. Our mission is to bridge the gap between cutting-edge AI research and real-world applications, delivering systems that are not just innovative but immediately deployable and scalable.",
+            "subtitle": "మా లక్ష్యం",
+            "title": "<0>ఇంటెలిజెంట్ సిస్టమ్స్</0> భవిష్యత్తును నిర్మించడం",
+            "description": "సిద్ధి డైనమిక్స్ LLPలో, ప్రతి సంక్లిష్ట సమస్యకు నిర్మించాల్సిన సాంకేతిక పరిష్కారం ఉంటుందని మేము నమ్ముతున్నాము. అత్యాధునిక AI పరిశోధన మరియు వాస్తవ ప్రపంచ అనువర్తనాల మధ్య అంతరాన్ని తగ్గించడం, కేవలం వినూత్నమైనవి మాత్రమే కాకుండా తక్షణమే అమలు చేయగల మరియు స్కేలబుల్ సిస్టమ్‌లను అందించడమే మా లక్ష్యం.",
             "stats": {
-                "powered": "Powered",
-                "productionReady": "Production Ready",
-                "scalable": "Scalable",
-                "autonomous": "Autonomous"
+                "powered": "ఆధారితం",
+                "productionReady": "ప్రొడక్షన్ రెడీ",
+                "scalable": "స్కేలబుల్",
+                "autonomous": "అటానమస్ (24/7)"
             }
         },
         "features": {
             "ai": {
-                "title": "Artificial Intelligence",
-                "description": "Deep learning models and intelligent systems that adapt and evolve to solve complex problems."
+                "title": "ఆర్టిఫిషియల్ ఇంటెలిజెన్స్",
+                "description": "సంక్లిష్ట సమస్యలను పరిష్కరించడానికి అనుగుణంగా మరియు అభివృద్ధి చెందే డీప్ లెర్నింగ్ మోడల్స్ మరియు ఇంటెలిజెంట్ సిస్టమ్స్."
             },
             "genAi": {
-                "title": "Generative AI",
-                "description": "Creating new content, designs, and solutions with cutting-edge generative models."
+                "title": "జనరేటివ్ AI",
+                "description": "అత్యాధునిక జనరేటివ్ మోడల్స్‌తో కొత్త కంటెంట్, డిజైన్‌లు మరియు సొల్యూషన్‌లను సృష్టించడం."
             },
             "agenticAi": {
-                "title": "Agentic AI",
-                "description": "Autonomous AI agents that reason, plan, and execute complex multi-step workflows."
+                "title": "ఏజెంటిక్ AI",
+                "description": "సంక్లిష్టమైన బహుళ-దశల వర్క్‌ఫ్లోలను ఆలోచించే, ప్లాన్ చేసే మరియు అమలు చేసే అటానమస్ AI ఏజెంట్లు."
             },
             "automation": {
-                "title": "Intelligent Automation",
-                "description": "End-to-end automation that transforms operations with precision and reliability."
+                "title": "ఇంటెలిజెంట్ ఆటోమేషన్",
+                "description": "ఖచ్చితత్వం మరియు విశ్వసనీయతతో కార్యకలాపాలను మార్చే సమగ్ర ఆటోమేషన్."
             }
         }
     },
     "projects": {
-        "title": "Our Products",
-        "subtitle": "Building the <0>Future</0>",
-        "description": "Explore our portfolio of <0>production-ready</0> AI platforms transforming construction, education, property management, and personal automation.",
+        "title": "మా ఉత్పత్తులు",
+        "subtitle": "భవిష్యత్తును <0>నిర్మించడం</0>",
+        "subtitleClean": "భవిష్యత్తును నిర్మించడం",
+        "description": "నిర్మాణ రంగం, విద్య, ఆస్తి నిర్వహణ మరియు వ్యక్తిగత ఆటోమేషన్‌ను మార్చే మా <0>ప్రొడక్షన్-రెడీ</0> AI ప్లాట్‌ఫారమ్‌ల పోర్ట్‌ఫోలియోను అన్వేషించండి.",
         "readMore": "Read More ↓",
         "showLess": "Show Less ↑",
         "progress": "Neural Roadmap",
@@ -198,13 +212,84 @@
         "university": "Anurag University",
         "cellDescription": "Empowering startups with resources, mentorship, and a collaborative ecosystem to transform innovative ideas into successful ventures."
     },
+    "servicesSection": {
+        "label": "మా సేవలు",
+        "headingMain": "మేము నిర్మించేవన్నీ,",
+        "headingSub": "ఒక్క చూపులో.",
+        "subtext": "ఎలాంటి గందరగోళం లేదు, దాచిన నిబంధనలు లేవు — ఇదిగో పూర్తి మెనూ. రాబోయే అధ్యాయాలలో ఒక్కొక్కటి వివరంగా ఉంటాయి.",
+        "cta": "మీకు ఏమి కావాలో మాకు చెప్పండి",
+        "items": {
+            "websites": {
+                "title": "వెబ్‌సైట్లు",
+                "description": "6 శ్రేణులు, ల్యాండింగ్ పేజీ నుండి పూర్తి SaaS వరకు."
+            },
+            "ecommerce": {
+                "title": "ఈ-కామర్స్",
+                "description": "మీరు నిద్రపోతున్నప్పుడు కూడా విక్రయించే స్టోర్‌లు."
+            },
+            "seo": {
+                "title": "SEO · AEO · GEO",
+                "description": "గూగుల్ మరియు AI శోధనలో కనిపించండి."
+            },
+            "saas": {
+                "title": "SaaS ఉత్పత్తులు",
+                "description": "PG/హాస్టల్, ArchPlan, Nexus, Nilayam."
+            },
+            "industry": {
+                "title": "పరిశ్రమ ఆధారిత సైట్లు",
+                "description": "మీ పరిశ్రమ అమ్మకాల శైలికి అనుకూలంగా నిర్మించబడింది."
+            },
+            "automation": {
+                "title": "ఆటోమేషన్",
+                "description": "చాట్‌బాట్‌లు, WhatsApp, Instagram."
+            },
+            "ongoingCare": {
+                "title": "నిరంతర సంరక్షణ",
+                "description": "లాంచ్ తర్వాత కూడా మేము మీతోనే ఉంటాము."
+            },
+            "ads": {
+                "title": "Google & Meta యాడ్స్",
+                "description": "నిజమైన కస్టమర్లను తెచ్చే పెయిడ్ ప్రచారాలు."
+            },
+            "branding": {
+                "title": "బ్రాండింగ్ & డిజైన్",
+                "description": "లోగోలు, విజిటింగ్ కార్డులు, బ్రోచర్లు మరియు మరిన్ని."
+            },
+            "content": {
+                "title": "కంటెంట్ & సోషల్ మీడియా",
+                "description": "రీల్స్, పోస్ట్‌లు మరియు బ్లాగ్‌లు మీ బ్రాండ్‌ను ముందుంచుతాయి."
+            },
+            "analytics": {
+                "title": "విశ్లేషణలు & నివేదికలు",
+                "description": "స్పష్టమైన సంఖ్యలతో ఏది పనిచేస్తుందో తెలుసుకోండి."
+            }
+        }
+    },
     "submit": {
-        "title": "Submit Your Challenge",
-        "subtitle": "Let's Solve It <0>Together</0>",
-        "description": "Do you have a complex problem that needs a technological solution? We're looking for real-world challenges to tackle with our AI systems.",
-        "cta": "Submit Problem",
-        "badge": "AI-Powered Analysis",
-        "discussLabel": "What would you like to discuss?",
+        "title": "మమ్మల్ని సంప్రదించండి",
+        "subtitle": "కలిసి భవిష్యత్తును <0>నిర్మిద్దాం</0>",
+        "description": "సాంకేతిక పరిష్కారం అవసరమయ్యే సంక్లిష్ట సమస్య మీ వద్ద ఉందా? మా AI వ్యవస్థలతో పరిష్కరించడానికి మేము వాస్తవ ప్రపంచ సవాళ్ల కోసం చూస్తున్నాము.",
+        "cta": "సమస్యను సమర్పించండి",
+        "badge": "AI-ఆధారిత విశ్లేషణ",
+        "discoveryBadge": "ఉచిత AI డిస్కవరీ కాల్ · ఎటువంటి నిబద్ధత లేదు",
+        "headingMain": "మీ అతిపెద్ద కార్యాచరణ సమస్యను మాకు చెప్పండి",
+        "subtextPart1": "మేము మీ ప్రక్రియను మ్యాప్ చేసి, AI ఏమి ఆటోమేట్ చేయగలదో ఖచ్చితంగా చూపిస్తాము — ఒకే సంభాషణలో. ప్రతిస్పందనలు",
+        "subtextPart2": "24 గంటల్లో",
+        "trust": {
+            "consultation": "ఉచిత 30 నిమిషాల సంప్రదింపులు",
+            "private": "మీ సమాచారం ప్రైవేట్‌గా ఉంటుంది",
+            "reply": "24 గంటల్లో సమాధానం"
+        },
+        "consent": {
+            "part1": "నేను పైన అందించిన వ్యక్తిగత డేటాను సిద్ధి డైనమిక్స్ LLP సేకరించి ప్రాసెస్ చేయడానికి అంగీకరిస్తున్నాను: ఉద్దేశం",
+            "readNotice": "నేను చదివాను",
+            "privacyNotice": "గోప్యతా నోటీసు",
+            "part2": "మరియు నేను ఎప్పుడైనా సమ్మతిని ఉపసంహరించుకోవచ్చని లేదా యాక్సెస్, సవరణ లేదా తొలగింపును అభ్యర్థించవచ్చని అర్థం చేసుకున్నాను",
+            "dataRights": "డేటా హక్కులు",
+            "part3": "పేజీ ద్వారా.",
+            "purpose": "నా విచారణకు ప్రతిస్పందించడం మరియు నన్ను సంప్రదించడం కొరకు"
+        },
+        "discussLabel": "మీరు దేని గురించి చర్చించాలనుకుంటున్నారు?",
         "types": {
             "problem": "వాస్తవిక ప్రపంచ సమస్య",
             "requirement": "సాఫ్ట్‌వేర్ & వెబ్‌సైట్ అవసరాలు",
@@ -212,14 +297,17 @@
             "investor": "పెట్టుబడిదారులు మరియు మద్దతుదారులు"
         },
         "fields": {
-            "name": "Full Name",
-            "namePlaceholder": "Enter your name",
-            "email": "Email Address",
-            "emailPlaceholder": "your@email.com",
-            "designation": "Designation",
-            "designationPlaceholder": "Your role",
-            "organization": "Organization",
-            "organizationPlaceholder": "Company Name",
+            "name": "పూర్తి పేరు",
+            "namePlaceholder": "మీ పేరు నమోదు చేయండి",
+            "email": "ఇమెయిల్ చిరునామా",
+            "emailPlaceholder": "మీ@email.com",
+            "designation": "హోదా",
+            "designationPlaceholder": "మీ పాత్ర / హోదా",
+            "organization": "సంస్థ",
+            "organizationPlaceholder": "కంపెనీ / సంస్థ పేరు",
+            "businessSector": "వ్యాపార రంగం",
+            "customSector": "అనుకూల రంగం పేరు",
+            "projectType": "ప్రాజెక్ట్ రకం",
             "message": {
                 "problem": "సమస్య ప్రకటన",
                 "requirement": "ప్రాజెక్ట్ అవసరాలు",
@@ -238,22 +326,22 @@
             "investor": "కనెక్షన్ కోసం అభ్యర్థించండి",
             "submitting": "సమర్పిస్తోంది..."
         },
-        "security": "Your data is secured and processed by our AI",
+        "security": "మీ డేటా సురక్షితం మరియు మా AI ద్వారా ప్రాసెస్ చేయబడుతుంది",
         "process": [
             {
                 "step": "01",
-                "title": "Reach Out",
-                "description": "Share your problem, requirements, or inquiry with us"
+                "title": "సంప్రదించండి",
+                "description": "మీ సమస్య, అవసరాలు లేదా విచారణను మాతో పంచుకోండి"
             },
             {
                 "step": "02",
-                "title": "Review",
-                "description": "Our team analyzes and understands your unique needs"
+                "title": "సమీక్ష",
+                "description": "మా బృందం మీ ప్రత్యేక అవసరాలను విశ్లేషించి అర్థం చేసుకుంటుంది"
             },
             {
                 "step": "03",
-                "title": "Respond",
-                "description": "Receive personalized solutions and actionable next steps"
+                "title": "ప్రతిస్పందన",
+                "description": "వ్యక్తిగతీకరించిన పరిష్కారాలు మరియు తదుపరి కార్యాచరణలను పొందండి"
             }
         ],
         "toasts": {

@@ -19,57 +19,71 @@
         "profileSettings": "प्रोफ़ाइल सेटिंग्स"
     },
     "hero": {
-        "badge": "नेक्स्ट-जेनरेशन एआई सॉल्यूशंस",
-        "transforming": "Transforming",
-        "realWorldProblems": "Real-World Problems",
-        "into": "into",
-        "aiSolutions": "AI Solutions",
-        "description": "We are a deep-tech innovation firm converting complex challenges into scalable, <0>production-ready</0> technology solutions powered by <1>AI, Generative AI, and Agentic Intelligence</1>.",
+        "badge": "नेक्स्ट-जेनरेशन AI सॉल्यूशंस",
+        "helpLine1": "हम भारतीय व्यवसायों की मदद करते हैं",
+        "helpLine2": "ऐसे AI सिस्टम्स के साथ जो",
+        "fadePhrase1": "प्रोटोटाइप से परे प्रोडक्शन में ले जाएं।",
+        "fadePhrase2": "मैन्युअल काम को ऑटोमेट करें।",
+        "fadePhrase3": "प्रोडक्शन AI डिलीवर करें।",
+        "fadePhrase4": "विश्वास के साथ स्केल करें।",
+        "descMain": "इनवॉइस प्रोसेसिंग से लेकर कस्टम SaaS तक — हम डेमो नहीं, इंटेलिजेंट सिस्टम्स बनाते और तैनात करते हैं।",
+        "incubated": "HIVE, अनुराग यूनिवर्सिटी में इनक्यूबेटेड।",
+        "ctaDiscovery": "मुफ्त AI डिस्कवरी कॉल बुक करें",
+        "howWeWork": "हम कैसे काम करते हैं",
+        "trustHive": "HIVE · अनुराग यूनिवर्सिटी में इनक्यूबेटेड",
+        "trustProduction": "प्रोडक्शन-रेडी AI · डेमो नहीं",
+        "trustBuilt": "भारतीय व्यवसायों के लिए निर्मित",
+        "transforming": "रूपांतरण",
+        "realWorldProblems": "वास्तविक दुनिया की समस्याएं",
+        "into": "से",
+        "aiSolutions": "AI समाधानों में",
+        "description": "हम एक डीप-टेक इनोवेशन फर्म हैं जो AI, जेनरेटिव AI और एजेंटिक इंटेलिजेंस द्वारा संचालित स्केलेबल, <0>प्रोडक्शन-रेडी</0> तकनीक समाधानों में जटिल चुनौतियों को बदलते हैं।",
         "ctaSubmit": "अपना चैलेंज सबमिट करें",
         "ctaRequirements": "अपना प्रोजेक्ट बनाएं",
         "ctaExplore": "प्रोजेक्ट्स देखें",
-        "scroll": "Scroll"
+        "scroll": "स्क्रॉल करें"
     },
     "vision": {
-        "title": "Our Vision",
-        "subtitle": "Driving human progress through technological excellence",
-        "beyondPrototypes": "Beyond Prototypes,",
-        "intoProduction": "Into Production",
-        "visionDescription": "We identify real-world challenges and transform them into scalable, <0>production-ready</0> technology solutions—not just demos, but <0>deployable systems</0> that create lasting impact.",
+        "title": "हमारा विज़न",
+        "subtitle": "तकनीकी उत्कृष्टता के माध्यम से मानवीय प्रगति को आगे बढ़ाना",
+        "beyondPrototypes": "प्रोटोटाइप से परे,",
+        "intoProduction": "प्रोडक्शन में",
+        "visionDescription": "हम वास्तविक दुनिया की चुनौतियों की पहचान करते हैं और उन्हें स्केलेबल, <0>प्रोडक्शन-रेडी</0> तकनीक समाधानों में बदलते हैं—सिर्फ डेमो नहीं, बल्कि स्थायी प्रभाव पैदा करने वाले <0>तैनात करने योग्य सिस्टम</0>।",
         "mission": {
-            "subtitle": "Our Mission",
-            "title": "Engineering the Future of <0>Intelligent Systems</0>",
-            "description": "At Siddhi Dynamics LLP, we believe every complex problem has a technological solution waiting to be built. Our mission is to bridge the gap between cutting-edge AI research and real-world applications, delivering systems that are not just innovative but immediately deployable and scalable.",
+            "subtitle": "हमारा मिशन",
+            "title": "<0>इंटेलिजेंट सिस्टम्स</0> के भविष्य का निर्माण",
+            "description": "सिद्धि डायनामिक्स एलएलपी में, हमारा मानना है कि हर जटिल समस्या का एक तकनीकी समाधान होता है। हमारा मिशन अत्याधुनिक एआई अनुसंधान और वास्तविक दुनिया के अनुप्रयोगों के बीच की खाई को पाटना है, ऐसे सिस्टम प्रदान करना जो न केवल अभिनव हों बल्कि तुरंत लागू करने और स्केल करने योग्य भी हों।",
             "stats": {
-                "powered": "Powered",
-                "productionReady": "Production Ready",
-                "scalable": "Scalable",
-                "autonomous": "Autonomous"
+                "powered": "संचालित",
+                "productionReady": "प्रोडक्शन रेडी",
+                "scalable": "स्केलेबल",
+                "autonomous": "स्वायत्त (24/7)"
             }
         },
         "features": {
             "ai": {
-                "title": "Artificial Intelligence",
-                "description": "Deep learning models and intelligent systems that adapt and evolve to solve complex problems."
+                "title": "आर्टिफिशियल इंटेलिजेंस",
+                "description": "डीप लर्निंग मॉडल और इंटेलिजेंट सिस्टम जो जटिल समस्याओं को हल करने के लिए अनुकूलित होते हैं।"
             },
             "genAi": {
-                "title": "Generative AI",
-                "description": "Creating new content, designs, and solutions with cutting-edge generative models."
+                "title": "जेनरेटिव AI",
+                "description": "अत्याधुनिक जेनरेटिव मॉडल के साथ नई सामग्री, डिज़ाइन और समाधान तैयार करना।"
             },
             "agenticAi": {
-                "title": "Agentic AI",
-                "description": "Autonomous AI agents that reason, plan, and execute complex multi-step workflows."
+                "title": "एजेंटिक AI",
+                "description": "स्वायत्त AI एजेंट जो जटिल बहु-चरणीय वर्कफ़्लो को सोचते, योजना बनाते और निष्पादित करते हैं।"
             },
             "automation": {
-                "title": "Intelligent Automation",
-                "description": "End-to-end automation that transforms operations with precision and reliability."
+                "title": "इंटेलिजेंट ऑटोमेशन",
+                "description": "सटीकता और विश्वसनीयता के साथ संचालन को बदलने वाला एंड-टू-एंड ऑटोमेशन।"
             }
         }
     },
     "projects": {
-        "title": "Our Products",
-        "subtitle": "Building the <0>Future</0>",
-        "description": "Explore our portfolio of <0>production-ready</0> AI platforms transforming construction, education, property management, and personal automation.",
+        "title": "हमारे उत्पाद",
+        "subtitle": "भविष्य का <0>निर्माण</0>",
+        "subtitleClean": "भविष्य का निर्माण",
+        "description": "निर्माण, शिक्षा, संपत्ति प्रबंधन और व्यक्तिगत स्वचालन को बदलने वाले हमारे <0>प्रोडक्शन-रेडी</0> AI प्लेटफ़ॉर्म का अन्वेषण करें।",
         "readMore": "Read More ↓",
         "showLess": "Show Less ↑",
         "progress": "न्यूरल रोडमैप",
@@ -198,13 +212,84 @@
         "university": "Anurag University",
         "cellDescription": "Empowering startups with resources, mentorship, and a collaborative ecosystem to transform innovative ideas into successful ventures."
     },
+    "servicesSection": {
+        "label": "हमारी सेवाएं",
+        "headingMain": "हम जो कुछ भी बनाते हैं,",
+        "headingSub": "एक नज़र में।",
+        "subtext": "कोई भ्रम नहीं, कोई छुपी शर्तें नहीं — यह रहा पूरा मेनू। आगे के अध्यायों में प्रत्येक पर विस्तार से चर्चा होगी।",
+        "cta": "बताएं कि आपको क्या चाहिए",
+        "items": {
+            "websites": {
+                "title": "वेबसाइटें",
+                "description": "6 स्तर, लैंडिंग पेज से लेकर फुल SaaS तक।"
+            },
+            "ecommerce": {
+                "title": "ई-कॉमर्स",
+                "description": "दुकानें जो आपके सोते समय भी बेचती हैं।"
+            },
+            "seo": {
+                "title": "SEO · AEO · GEO",
+                "description": "गूगल और AI सर्च में खोजे जाएं।"
+            },
+            "saas": {
+                "title": "SaaS उत्पाद",
+                "description": "PG/हॉस्टल, ArchPlan, Nexus, Nilayam."
+            },
+            "industry": {
+                "title": "उद्योग-विशिष्ट साइटें",
+                "description": "आपके उद्योग की बिक्री पद्धति के अनुसार निर्मित।"
+            },
+            "automation": {
+                "title": "ऑटोमेशन",
+                "description": "चैटबॉट्स, व्हाट्सएप, इंस्टाग्राम।"
+            },
+            "ongoingCare": {
+                "title": "निरंतर देखभाल",
+                "description": "लॉन्च के बाद भी हम आपके साथ हैं।"
+            },
+            "ads": {
+                "title": "Google और Meta विज्ञापन",
+                "description": "वास्तविक परिणाम देने वाले सशुल्क अभियान।"
+            },
+            "branding": {
+                "title": "ब्रांडिंग और डिज़ाइन",
+                "description": "लोगो, विज़िटिंग कार्ड, ब्रोशर और बहुत कुछ।"
+            },
+            "content": {
+                "title": "सामग्री और सोशल मीडिया",
+                "description": "रील्स, पोस्ट और ब्लॉग जो आपको दृश्यमान बनाए रखते हैं।"
+            },
+            "analytics": {
+                "title": "एनालिटिक्स और रिपोर्टिंग",
+                "description": "सरल आंकड़ों में क्या काम कर रहा है।"
+            }
+        }
+    },
     "submit": {
-        "title": "Submit Your Challenge",
-        "subtitle": "Let's Solve It <0>Together</0>",
-        "description": "Do you have a complex problem that needs a technological solution? We're looking for real-world challenges to tackle with our AI systems.",
-        "cta": "Submit Problem",
-        "badge": "AI-Powered Analysis",
-        "discussLabel": "What would you like to discuss?",
+        "title": "हमसे संपर्क करें",
+        "subtitle": "आइए मिलकर भविष्य का <0>निर्माण करें</0>",
+        "description": "क्या आपके पास कोई ऐसी जटिल समस्या है जिसका तकनीकी समाधान चाहिए? हम अपने AI सिस्टम्स से हल करने के लिए वास्तविक दुनिया की चुनौतियों की तलाश कर रहे हैं।",
+        "cta": "समस्या सबमिट करें",
+        "badge": "AI-संचालित विश्लेषण",
+        "discoveryBadge": "मुफ्त AI डिस्कवरी कॉल · कोई प्रतिबद्धता नहीं",
+        "headingMain": "हमें अपनी सबसे बड़ी परिचालन समस्या बताएं",
+        "subtextPart1": "हम आपकी प्रक्रिया को मैप करेंगे और दिखाएंगे कि AI क्या स्वचालित कर सकता है — एक ही बातचीत में। उत्तर",
+        "subtextPart2": "24 घंटों के भीतर",
+        "trust": {
+            "consultation": "मुफ्त 30-मिनट का परामर्श",
+            "private": "आपकी जानकारी निजी रहती है",
+            "reply": "24 घंटों में उत्तर"
+        },
+        "consent": {
+            "part1": "मैं सिद्धि डायनामिक्स एलएलपी को उद्देश्य के लिए ऊपर प्रदान किए गए व्यक्तिगत डेटा को एकत्र और संसाधित करने की सहमति देता हूं:",
+            "readNotice": "मैंने पढ़ लिया है",
+            "privacyNotice": "गोपनीयता नोटिस",
+            "part2": "और समझता हूं कि मैं किसी भी समय सहमति वापस ले सकता हूं या पहुंच, सुधार या मिटाने का अनुरोध कर सकता हूं",
+            "dataRights": "डेटा अधिकार",
+            "part3": "पेज के माध्यम से।",
+            "purpose": "मेरी पूछताछ का उत्तर देने और मुझसे संपर्क करने के उद्देश्य से"
+        },
+        "discussLabel": "आप किस विषय पर चर्चा करना चाहते हैं?",
         "types": {
             "problem": "वास्तविक दुनिया की समस्या",
             "requirement": "सॉफ्टवेयर और वेबसाइट आवश्यकताएं",
@@ -212,14 +297,17 @@
             "investor": "निवेशक और समर्थक"
         },
         "fields": {
-            "name": "Full Name",
-            "namePlaceholder": "Enter your name",
-            "email": "Email Address",
+            "name": "पूरा नाम",
+            "namePlaceholder": "अपना नाम दर्ज करें",
+            "email": "ईमेल पता",
             "emailPlaceholder": "your@email.com",
-            "designation": "Designation",
-            "designationPlaceholder": "Your role",
-            "organization": "Organization",
-            "organizationPlaceholder": "Company Name",
+            "designation": "पद",
+            "designationPlaceholder": "आपकी भूमिका / पद",
+            "organization": "संस्था",
+            "organizationPlaceholder": "कंपनी / संस्था का नाम",
+            "businessSector": "व्यापार क्षेत्र",
+            "customSector": "कस्टम क्षेत्र का नाम",
+            "projectType": "प्रोजेक्ट प्रकार",
             "message": {
                 "problem": "समस्या का विवरण",
                 "requirement": "परियोजना आवश्यकताएं",
@@ -238,22 +326,22 @@
             "investor": "कनेक्ट के लिए अनुरोध करें",
             "submitting": "सबमिट हो रहा है..."
         },
-        "security": "Your data is secured and processed by our AI",
+        "security": "आपका डेटा सुरक्षित है और हमारे AI द्वारा प्रोसेस किया जाता है",
         "process": [
             {
                 "step": "01",
-                "title": "Reach Out",
-                "description": "Share your problem, requirements, or inquiry with us"
+                "title": "संपर्क करें",
+                "description": "अपनी समस्या, आवश्यकताएं या प्रश्न हमारे साथ साझा करें"
             },
             {
                 "step": "02",
-                "title": "Review",
-                "description": "Our team analyzes and understands your unique needs"
+                "title": "समीक्षा",
+                "description": "हमारी टीम आपकी विशिष्ट आवश्यकताओं का विश्लेषण और समझ करती है"
             },
             {
                 "step": "03",
-                "title": "Respond",
-                "description": "Receive personalized solutions and actionable next steps"
+                "title": "प्रतिक्रिया",
+                "description": "व्यक्तिगत समाधान और अगले कदम प्राप्त करें"
             }
         ],
         "toasts": {

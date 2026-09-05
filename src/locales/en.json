@@ -20,6 +20,19 @@
   },
   "hero": {
     "badge": "Next-Generation AI Solutions",
+    "helpLine1": "We help Indian businesses",
+    "helpLine2": "with AI systems that",
+    "fadePhrase1": "beyond prototypes into production.",
+    "fadePhrase2": "automate manual work.",
+    "fadePhrase3": "ship production AI.",
+    "fadePhrase4": "scale with confidence.",
+    "descMain": "From invoice processing to custom SaaS — we build and deploy intelligent systems, not demos.",
+    "incubated": "Incubated at HIVE, Anurag University.",
+    "ctaDiscovery": "Book a Free AI Discovery Call",
+    "howWeWork": "How we work",
+    "trustHive": "Incubated at HIVE · Anurag University",
+    "trustProduction": "Production-ready AI · Not demos",
+    "trustBuilt": "Built for Indian businesses",
     "transforming": "Transforming",
     "realWorldProblems": "Real-World Problems",
     "into": "into",
@@ -69,6 +82,7 @@
   "projects": {
     "title": "Our Products",
     "subtitle": "Building the <0>Future</0>",
+    "subtitleClean": "Building the Future",
     "description": "Discover our ecosystem of intelligent platforms driving innovation across <0>construction, education, real estate, agriculture, civic governance, and automated workflows.</0>",
     "readMore": "Read More ↓",
     "showLess": "Show Less ↑",
@@ -307,12 +321,83 @@
     "university": "Anurag University",
     "cellDescription": "Empowering startups with resources, mentorship, and a collaborative ecosystem to transform innovative ideas into successful ventures."
   },
+  "servicesSection": {
+    "label": "Our services",
+    "headingMain": "Everything we build,",
+    "headingSub": "in one glance.",
+    "subtext": "No confusion, no fine print — here's the entire menu. The chapters ahead go deeper on each one.",
+    "cta": "Tell us what you need",
+    "items": {
+      "websites": {
+        "title": "Websites",
+        "description": "6 tiers, landing page to full SaaS."
+      },
+      "ecommerce": {
+        "title": "E-Commerce",
+        "description": "Stores that sell while you sleep."
+      },
+      "seo": {
+        "title": "SEO · AEO · GEO",
+        "description": "Found on Google and AI search."
+      },
+      "saas": {
+        "title": "SaaS Products",
+        "description": "PG/Hostel, ArchPlan, Nexus, Nilayam."
+      },
+      "industry": {
+        "title": "Industry Sites",
+        "description": "Built for how your industry sells."
+      },
+      "automation": {
+        "title": "Automation",
+        "description": "Chatbots, WhatsApp, Instagram."
+      },
+      "ongoingCare": {
+        "title": "Ongoing Care",
+        "description": "We stay after launch day."
+      },
+      "ads": {
+        "title": "Google & Meta Ads",
+        "description": "Paid campaigns that actually convert."
+      },
+      "branding": {
+        "title": "Branding & Design",
+        "description": "Logos, visiting cards, brochures & more."
+      },
+      "content": {
+        "title": "Content & Social",
+        "description": "Reels, posts & blogs that keep you visible."
+      },
+      "analytics": {
+        "title": "Analytics & Reporting",
+        "description": "What's working, in plain numbers."
+      }
+    }
+  },
   "submit": {
     "title": "Connect With Us",
     "subtitle": "Let's Build the Future <0>Together</0>",
     "description": "We're open to collaborations, investment opportunities, and real-world challenges to drive deep-tech innovation together.",
     "cta": "Submit Problem",
     "badge": "AI-Powered Analysis",
+    "discoveryBadge": "Free AI Discovery Call · No commitment",
+    "headingMain": "Tell us your biggest operational headache",
+    "subtextPart1": "We'll map your process and show you exactly what AI can automate — in a single conversation. Responses within",
+    "subtextPart2": "24 hours",
+    "trust": {
+      "consultation": "Free 30-min consultation",
+      "private": "Your information stays private",
+      "reply": "Reply within 24 hours"
+    },
+    "consent": {
+      "part1": "I consent to Siddhi Dynamics LLP collecting and processing the personal data I provide above for the purpose of",
+      "readNotice": "I have read the",
+      "privacyNotice": "privacy notice",
+      "part2": "and understand I can withdraw consent or request access, correction or erasure at any time via the",
+      "dataRights": "Data Rights",
+      "part3": "page.",
+      "purpose": "responding to my enquiry and contacting me about it"
+    },
     "discussLabel": "What would you like to discuss?",
     "types": {
       "problem": "Real-World Problem",
@@ -329,6 +414,9 @@
       "designationPlaceholder": "Your role",
       "organization": "Organization",
       "organizationPlaceholder": "Company Name",
+      "businessSector": "Business Sector",
+      "customSector": "Custom Sector Name",
+      "projectType": "Project Type",
       "message": {
         "problem": "Problem Statement",
         "requirement": "Project Requirements",

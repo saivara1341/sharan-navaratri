@@ -15,6 +15,7 @@ import {
   Store,
   type LucideIcon,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { LotusEmblem } from "./VisionSection";
 
 type Service = {
@@ -23,20 +24,6 @@ type Service = {
   icon: LucideIcon;
   accent: string;
 };
-
-const SERVICES: Service[] = [
-  { title: "Websites", description: "6 tiers, landing page to full SaaS.", icon: Code2, accent: "#7c3aed" },
-  { title: "E-Commerce", description: "Stores that sell while you sleep.", icon: ShoppingBag, accent: "#db2777" },
-  { title: "SEO · AEO · GEO", description: "Found on Google and AI search.", icon: Search, accent: "#0284c7" },
-  { title: "SaaS Products", description: "PG/Hostel, ArchPlan, Nexus, Nilayam.", icon: Boxes, accent: "#4f46e5" },
-  { title: "Industry Sites", description: "Built for how your industry sells.", icon: Store, accent: "#059669" },
-  { title: "Automation", description: "Chatbots, WhatsApp, Instagram.", icon: Bot, accent: "#0891b2" },
-  { title: "Ongoing Care", description: "We stay after launch day.", icon: HeartHandshake, accent: "#dc2626" },
-  { title: "Google & Meta Ads", description: "Paid campaigns that actually convert.", icon: Megaphone, accent: "#2563eb" },
-  { title: "Branding & Design", description: "Logos, visiting cards, brochures & more.", icon: Brush, accent: "#9333ea" },
-  { title: "Content & Social", description: "Reels, posts & blogs that keep you visible.", icon: BrainCircuit, accent: "#c026d3" },
-  { title: "Analytics & Reporting", description: "What's working, in plain numbers.", icon: BarChart3, accent: "#16a34a" },
-];
 
 const container = {
   hidden: {},
@@ -226,16 +213,32 @@ function PinnedServiceCard({
 }
 
 export function ServicesSection() {
+  const { t } = useTranslation();
   const stackRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const services: Service[] = [
+    { title: t('servicesSection.items.websites.title', "Websites"), description: t('servicesSection.items.websites.description', "6 tiers, landing page to full SaaS."), icon: Code2, accent: "#7c3aed" },
+    { title: t('servicesSection.items.ecommerce.title', "E-Commerce"), description: t('servicesSection.items.ecommerce.description', "Stores that sell while you sleep."), icon: ShoppingBag, accent: "#db2777" },
+    { title: t('servicesSection.items.seo.title', "SEO · AEO · GEO"), description: t('servicesSection.items.seo.description', "Found on Google and AI search."), icon: Search, accent: "#0284c7" },
+    { title: t('servicesSection.items.saas.title', "SaaS Products"), description: t('servicesSection.items.saas.description', "PG/Hostel, ArchPlan, Nexus, Nilayam."), icon: Boxes, accent: "#4f46e5" },
+    { title: t('servicesSection.items.industry.title', "Industry Sites"), description: t('servicesSection.items.industry.description', "Built for how your industry sells."), icon: Store, accent: "#059669" },
+    { title: t('servicesSection.items.automation.title', "Automation"), description: t('servicesSection.items.automation.description', "Chatbots, WhatsApp, Instagram."), icon: Bot, accent: "#0891b2" },
+    { title: t('servicesSection.items.ongoingCare.title', "Ongoing Care"), description: t('servicesSection.items.ongoingCare.description', "We stay after launch day."), icon: HeartHandshake, accent: "#dc2626" },
+    { title: t('servicesSection.items.ads.title', "Google & Meta Ads"), description: t('servicesSection.items.ads.description', "Paid campaigns that actually convert."), icon: Megaphone, accent: "#2563eb" },
+    { title: t('servicesSection.items.branding.title', "Branding & Design"), description: t('servicesSection.items.branding.description', "Logos, visiting cards, brochures & more."), icon: Brush, accent: "#9333ea" },
+    { title: t('servicesSection.items.content.title', "Content & Social"), description: t('servicesSection.items.content.description', "Reels, posts & blogs that keep you visible."), icon: BrainCircuit, accent: "#c026d3" },
+    { title: t('servicesSection.items.analytics.title', "Analytics & Reporting"), description: t('servicesSection.items.analytics.description', "What's working, in plain numbers."), icon: BarChart3, accent: "#16a34a" },
+  ];
+
   const { scrollYProgress } = useScroll({
     target: stackRef,
     offset: ["start start", "end end"],
   });
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    const step = 0.90 / SERVICES.length;
-    const current = Math.min(SERVICES.length - 1, Math.max(0, Math.floor(latest / step)));
+    const step = 0.90 / services.length;
+    const current = Math.min(services.length - 1, Math.max(0, Math.floor(latest / step)));
     setActiveIndex(current);
   });
 
@@ -256,16 +259,16 @@ export function ServicesSection() {
                 <div className="mb-6 flex items-center justify-between md:mb-8">
                   <div className="flex items-center gap-3">
                     <span className="h-px w-8 bg-primary" />
-                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-primary">Our services</span>
+                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-primary">{t('servicesSection.label', 'Our services')}</span>
                   </div>
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                     <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                    {String(activeIndex + 1).padStart(2, "0")} / {String(SERVICES.length).padStart(2, "0")}
+                    {String(activeIndex + 1).padStart(2, "0")} / {String(services.length).padStart(2, "0")}
                   </span>
                 </div>
                 <h2 className="max-w-3xl text-3xl font-black leading-[0.98] tracking-[-0.045em] text-foreground sm:text-4xl md:text-6xl">
-                  Everything we build,
-                  <span className="block text-muted-foreground/55">in one glance.</span>
+                  {t('servicesSection.headingMain', 'Everything we build,')}
+                  <span className="block text-muted-foreground/55">{t('servicesSection.headingSub', 'in one glance.')}</span>
                 </h2>
               </motion.div>
 
@@ -276,7 +279,7 @@ export function ServicesSection() {
                 transition={{ duration: 0.65, delay: 0.12 }}
                 className="max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg"
               >
-                No confusion, no fine print — here's the entire menu. The chapters ahead go deeper on each one.
+                {t('servicesSection.subtext', "No confusion, no fine print — here's the entire menu. The chapters ahead go deeper on each one.")}
               </motion.p>
             </div>
 
@@ -287,12 +290,12 @@ export function ServicesSection() {
               viewport={{ once: true }}
               className="relative h-[250px] w-full max-w-5xl sm:h-[280px]"
             >
-              {SERVICES.map((service, index) => (
+              {services.map((service, index) => (
                 <PinnedServiceCard
                   key={service.title}
                   service={service}
                   index={index}
-                  total={SERVICES.length}
+                  total={services.length}
                   scrollYProgress={scrollYProgress}
                 />
               ))}
@@ -308,7 +311,7 @@ export function ServicesSection() {
           onClick={() => document.getElementById("submit")?.scrollIntoView({ behavior: "smooth" })}
           className="group mx-auto mt-12 flex items-center gap-3 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground shadow-sm transition-all hover:border-primary/40 hover:shadow-md md:mt-16"
         >
-          Tell us what you need
+          {t('servicesSection.cta', 'Tell us what you need')}
           <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </motion.button>
       </div>

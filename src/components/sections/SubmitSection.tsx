@@ -467,7 +467,7 @@ export const SubmitSection = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
               <div className="space-y-1.5">
                 <label className="block text-xs sm:text-sm font-medium text-foreground">
-                  Business Sector <span className="text-primary">*</span>
+                  {t('submit.fields.businessSector', 'Business Sector')} <span className="text-primary">*</span>
                 </label>
                 <select
                   value={businessSector}
@@ -495,7 +495,7 @@ export const SubmitSection = () => {
                     className="space-y-1.5"
                   >
                     <label className="block text-xs sm:text-sm font-medium text-foreground">
-                      Custom Sector Name <span className="text-primary">*</span>
+                      {t('submit.fields.customSector', 'Custom Sector Name')} <span className="text-primary">*</span>
                     </label>
                     <input
                       type="text"
@@ -513,7 +513,7 @@ export const SubmitSection = () => {
             {/* Project Type Grid */}
             <div className="space-y-2">
               <label className="block text-xs sm:text-sm font-medium text-foreground">
-                Project Type <span className="text-primary">*</span>
+                {t('submit.fields.projectType', 'Project Type')} <span className="text-primary">*</span>
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
                 {[
@@ -640,7 +640,7 @@ export const SubmitSection = () => {
           <ConsentCheckbox
             checked={consentGiven}
             onChange={setConsentGiven}
-            purpose="responding to my enquiry and contacting me about it"
+            purpose={t('submit.consent.purpose', 'responding to my enquiry and contacting me about it')}
             id="submit-section-consent"
           />
         </div>
@@ -830,7 +830,7 @@ export const SubmitSection = () => {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
                 </span>
-                <span className="text-xs sm:text-sm text-muted-foreground font-medium">Free AI Discovery Call · No commitment</span>
+                <span className="text-xs sm:text-sm text-muted-foreground font-medium">{t('submit.discoveryBadge', 'Free AI Discovery Call · No commitment')}</span>
               </motion.div>
             </div>
 
@@ -838,17 +838,17 @@ export const SubmitSection = () => {
               {isInView ? (
                 <SharedAxisX
                   className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight gradient-text glow-text pb-2 pt-1 inline-block leading-tight sm:leading-normal overflow-visible"
-                  phrases={["Tell us your biggest operational headache"]}
+                  phrases={[t('submit.headingMain', 'Tell us your biggest operational headache')]}
                 />
               ) : (
                 <span aria-hidden="true" className="invisible text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold pb-2 pt-1 inline-block leading-tight sm:leading-normal">
-                  Tell us your biggest operational headache
+                  {t('submit.headingMain', 'Tell us your biggest operational headache')}
                 </span>
               )}
             </h2>
             <p className="text-muted-foreground text-sm sm:text-lg md:text-xl max-w-2xl mx-auto mb-4 sm:mb-8">
-              We'll map your process and show you exactly what AI can automate — in a single conversation.
-              Responses within <strong className="text-foreground">24 hours</strong>.
+              {t('submit.subtextPart1', "We'll map your process and show you exactly what AI can automate — in a single conversation. Responses within")}{' '}
+              <strong className="text-foreground">{t('submit.subtextPart2', '24 hours')}</strong>.
             </p>
           </div>
 
@@ -883,9 +883,9 @@ export const SubmitSection = () => {
           {/* Trust strip placed after form */}
           <div className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-[11px] sm:text-xs text-muted-foreground">
             {[
-              { icon: '✅', text: 'Free 30-min consultation' },
-              { icon: '🔒', text: 'Your information stays private' },
-              { icon: '⚡', text: 'Reply within 24 hours' },
+              { icon: '✅', text: t('submit.trust.consultation', 'Free 30-min consultation') },
+              { icon: '🔒', text: t('submit.trust.private', 'Your information stays private') },
+              { icon: '⚡', text: t('submit.trust.reply', 'Reply within 24 hours') },
             ].map(({ icon, text }) => (
               <span key={text} className="flex items-center gap-1.5 font-medium">
                 <span>{icon}</span>

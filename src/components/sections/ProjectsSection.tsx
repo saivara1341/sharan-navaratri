@@ -1065,11 +1065,11 @@ export const ProjectsSection = () => {
               {isInView ? (
                 <KineticCenterBuild
                   className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight gradient-text-reverse glow-text-accent pb-1 pt-1 inline-block leading-tight md:leading-normal overflow-visible"
-                  phrases={["Building the Future"]}
+                  phrases={[t('projects.subtitleClean', 'Building the Future')]}
                 />
               ) : (
                 <span aria-hidden="true" className="invisible text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold pb-1 pt-1 inline-block leading-tight md:leading-normal">
-                  Building the Future
+                  {t('projects.subtitleClean', 'Building the Future')}
                 </span>
               )}
             </h2>
