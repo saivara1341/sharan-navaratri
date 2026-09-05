@@ -204,7 +204,7 @@ export default function ClientPortal() {
         startDate: m.service_start_date,
         deadline: m.deadline,
         agreement: m.agreement,
-        scopeSummary: m.scope_summary || parsedMsg.cleanMessage,
+        scopeSummary: m.scope_summary || (serviceList.length > 0 ? `Services: ${serviceList.join(", ")}` : parsedMsg.cleanMessage),
         isAdvPaid
       }));
     });
@@ -696,9 +696,12 @@ export default function ClientPortal() {
                         </span>
                       </div>
 
-                      <p className="text-xs text-stone-500 line-clamp-2">
-                        {srv.scopeSummary || "Tailored delivery and development as per agreed milestones."}
-                      </p>
+                      <div className="space-y-1">
+                        <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400 block">Scope / Deliverables Summary</span>
+                        <p className="text-xs font-bold text-stone-800 line-clamp-2">
+                          {srv.scopeSummary || `Services: ${srv.title}`}
+                        </p>
+                      </div>
 
                       <div className="grid grid-cols-2 gap-2 pt-2 border-t border-stone-100 text-[11px]">
                         <div>

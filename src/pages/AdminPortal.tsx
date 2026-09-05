@@ -710,7 +710,7 @@ const AdminPortal = () => {
         setQuoteAdvanceAmount(meta.advance_amount || defaultAdv);
 
         setQuoteDeadline(meta.deadline || parsed.requestedStartDate || "");
-        setQuoteScope(meta.scope_summary || (parsed.selectedServices.length > 0 ? `Services: ${parsed.selectedServices.join(", ")}` : ""));
+        setQuoteScope(meta.scope_summary || (parsed.selectedServices.length > 0 ? `Services: ${parsed.selectedServices.join(", ")}` : "Services: 🚀 SEO, GEO & AEO Programme, 🌐 Website / Portal Development"));
         const incomingBank = meta.banking_details || { ...DEFAULT_BANKING_DETAILS };
         const initialAccounts: BankAccount[] = (incomingBank.accounts && incomingBank.accounts.length > 0)
             ? incomingBank.accounts
@@ -2192,6 +2192,12 @@ const AdminPortal = () => {
                                             <div>
                                                 <span className="text-muted-foreground font-semibold">Estimated Delivery:</span>
                                                 <strong className="text-foreground ml-1">{meta.deadline || "Per Roadmap"}</strong>
+                                            </div>
+                                            <div className="sm:col-span-2 pt-2 border-t border-border/50">
+                                                <span className="text-muted-foreground font-semibold">Scope / Deliverables Summary:</span>
+                                                <strong className="text-foreground ml-1">
+                                                    {meta.scope_summary || (parsedMsg.selectedServices.length > 0 ? `Services: ${parsedMsg.selectedServices.join(", ")}` : "Services: 🚀 SEO, GEO & AEO Programme, 🌐 Website / Portal Development")}
+                                                </strong>
                                             </div>
                                         </div>
 

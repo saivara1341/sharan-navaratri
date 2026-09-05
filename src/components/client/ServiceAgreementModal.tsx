@@ -81,8 +81,8 @@ export const ServiceAgreementModal: React.FC<ServiceAgreementModalProps> = ({
               {projectName && <p className="text-stone-500 text-[11px] mt-0.5">Org: {projectName}</p>}
             </div>
             <div>
-              <p className="text-[10px] uppercase font-bold tracking-wider text-stone-500">Service Engagement</p>
-              <p className="text-sm font-bold text-stone-900 mt-0.5">{meta.scope_summary || "Digital Development & Growth Services"}</p>
+              <p className="text-[10px] uppercase font-bold tracking-wider text-stone-500">Scope / Deliverables Summary</p>
+              <p className="text-sm font-bold text-stone-900 mt-0.5">{meta.scope_summary || "Services: 🚀 SEO, GEO & AEO Programme, 🌐 Website / Portal Development"}</p>
               <p className="text-stone-600 mt-0.5">
                 Official Start Date: <strong>{meta.service_start_date || "Active upon Advance Payment"}</strong>
               </p>

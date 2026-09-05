@@ -111,20 +111,30 @@ export const ServiceDetailsModal: React.FC<ServiceDetailsModalProps> = ({
         {/* Modal Body */}
         <div className="p-6 sm:p-7 space-y-6 overflow-y-auto">
           
-          {/* Services Section */}
-          <div className="space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-stone-500">
-              Services Requested
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {services.map((srv, idx) => (
-                <span
-                  key={idx}
-                  className="inline-flex items-center rounded-xl bg-lime-50 border border-lime-200 px-3 py-1.5 text-xs font-bold text-stone-900"
-                >
-                  {srv}
-                </span>
-              ))}
+          {/* Services & Scope / Deliverables Summary Section */}
+          <div className="space-y-3 p-4 rounded-2xl bg-stone-50 border border-stone-200">
+            <div className="space-y-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-stone-500 block">
+                Scope / Deliverables Summary
+              </span>
+              <p className="text-xs font-bold text-stone-900 leading-relaxed">
+                {m.scope_summary || `Services: ${services.join(", ")}`}
+              </p>
+            </div>
+            <div className="space-y-1.5 pt-2 border-t border-stone-200/60">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 block">
+                Services Requested
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {services.map((srv, idx) => (
+                  <span
+                    key={idx}
+                    className="inline-flex items-center rounded-xl bg-white border border-stone-200 px-3 py-1.5 text-xs font-bold text-stone-900 shadow-sm"
+                  >
+                    {srv}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
 
