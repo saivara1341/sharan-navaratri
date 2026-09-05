@@ -3002,6 +3002,7 @@ const AdminPortal = () => {
                                         className="w-full bg-muted border border-border text-foreground rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                                     >
                                         <option value="SEO, GEO & AEO Programme">SEO, GEO & AEO Marketing Programme</option>
+                                        <option value="GBP Optimization">📍 GBP Optimization (Google Business Profile)</option>
                                         <option value="Web & Mobile App Development">Web & Mobile App Development</option>
                                         <option value="Software & ERP Solutions">Software & ERP Solutions</option>
                                         <option value="AI & Machine Learning Engineering">AI & Machine Learning Engineering</option>

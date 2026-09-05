@@ -43,6 +43,16 @@ export function parseSubmissionMessage(rawMessage: string | null | undefined): P
     // Filter out internal marker strings like "requirement", "contact", "general", "lead"
     const cleaned = rawList.filter(s => !['requirement', 'contact', 'general', 'lead'].includes(s.toLowerCase()));
 
+    // Normalize GBP aliases first so they aren't confused with SEO/GEO
+    const normalizeGbp = (s: string) => {
+      if (/google business profile/i.test(s) || /\bgbp\b/i.test(s) || /gbp optim/i.test(s)) {
+        return "📍 GBP Optimization";
+      }
+      return s;
+    };
+
+    const normalizedCleaned = cleaned.map(normalizeGbp);
+
     // Recombine SEO, GEO, and AEO components into 1 single service if both/multiple are present
     const combined: string[] = [];
     let hasSeo = false;
@@ -50,12 +60,16 @@ export function parseSubmissionMessage(rawMessage: string | null | undefined): P
     let seoItem = "";
     const otherItems: string[] = [];
 
-    for (const item of cleaned) {
+    for (const item of normalizedCleaned) {
       const isPureSeo = /^(🚀\s*)?SEO$/i.test(item.trim()) || /^Search Engine Optimization$/i.test(item.trim());
       const isGeoOrAeo = /GEO/i.test(item) || /AEO/i.test(item);
       const isFullSeoGeoAeo = /SEO/i.test(item) && (/GEO/i.test(item) || /AEO/i.test(item));
+      // Don't merge GBP into SEO group
+      const isGbp = /📍|GBP Optim/i.test(item);
 
-      if (isFullSeoGeoAeo) {
+      if (isGbp) {
+        otherItems.push(item);
+      } else if (isFullSeoGeoAeo) {
         hasSeo = true;
         hasGeoOrAeo = true;
       } else if (isPureSeo) {

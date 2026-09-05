@@ -929,7 +929,17 @@ export default function ClientPortal() {
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-[11px] font-bold hover:bg-amber-100 transition-colors"
                               >
-                                <MapPin className="w-3 h-3 text-amber-600" /> Google Maps <ExternalLink className="w-2.5 h-2.5 ml-0.5 text-amber-500" />
+                                <MapPin className="w-3 h-3 text-amber-600" /> Google Business <ExternalLink className="w-2.5 h-2.5 ml-0.5 text-amber-500" />
+                              </a>
+                            )}
+                            {srv.meta.analytics_url && (
+                              <a
+                                href={srv.meta.analytics_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-violet-50 border border-violet-200 text-violet-900 text-[11px] font-bold hover:bg-violet-100 transition-colors"
+                              >
+                                <TrendingUp className="w-3 h-3 text-violet-600" /> GBP Insights <ExternalLink className="w-2.5 h-2.5 ml-0.5 text-violet-500" />
                               </a>
                             )}
                           </div>
@@ -986,6 +996,7 @@ export default function ClientPortal() {
                   {[
                     ["🌐 Website / Portal Development", "Website Development"],
                     ["🚀 SEO, GEO & AEO Programme", "SEO & Search Visibility"],
+                    ["📍 GBP Optimization", "Google Business Profile"],
                     ["⚡ Business Automation & AI", "Business Automation"],
                     ["📱 Custom SaaS Platforms", "SaaS Platforms"]
                   ].map(([label, srvKey]) => (
