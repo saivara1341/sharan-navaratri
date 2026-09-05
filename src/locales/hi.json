@@ -1,20 +1,24 @@
 {
     "nav": {
-    "vision": "Vision",
-    "about": "हमारे बारे में",
-    "home": "होम",
-    "blog": "ब्लॉग",
-    "services": "सेवाएँ",
-    "dashboard": "डैशबोर्ड",
-    "logout": "लॉग आउट",
-        "projects": "Projects",
-        "submit": "Submit Problem",
-        "collab": "Collab",
-        "portal": "Go to Portal",
-        "getStarted": "Get Started"
+        "vision": "विज़न",
+        "about": "हमारे बारे में",
+        "home": "होम",
+        "blog": "ब्लॉग",
+        "services": "सेवाएँ",
+        "dashboard": "डैशबोर्ड",
+        "logout": "लॉग आउट",
+        "projects": "प्रोजेक्ट्स",
+        "submit": "समस्या सबमिट करें",
+        "submitChallenge": "अपना चैलेंज सबमिट करें",
+        "buildProject": "अपना प्रोजेक्ट बनाएं",
+        "exploreProjects": "प्रोजेक्ट्स देखें",
+        "contactUs": "संपर्क करें",
+        "collab": "सहयोग",
+        "portal": "पोर्टल",
+        "getStarted": "शुरू करें"
     },
     "hero": {
-        "badge": "Next-Generation AI Solutions",
+        "badge": "नेक्स्ट-जेनरेशन एआई सॉल्यूशंस",
         "transforming": "Transforming",
         "realWorldProblems": "Real-World Problems",
         "into": "into",
@@ -264,28 +268,94 @@
         }
     },
     "footer": {
-        "description": "Engineering the future of intelligent systems through deep-tech innovation and real-world impact.",
+        "badge": "नेक्स्ट-जेनरेशन एआई सॉल्यूशंस",
+        "reviewUs": "हमें रिव्यू दें",
+        "description": "डीप-टेक नवाचार और वास्तविक दुनिया के प्रभाव के माध्यम से बुद्धिमान प्रणालियों के भविष्य का निर्माण।",
         "product": {
-            "title": "Product",
-            "vision": "Vision",
-            "projects": "Projects",
-            "submit": "Submit Challenge",
-            "waitlist": "Join Waitlist"
+            "title": "उत्पाद",
+            "vision": "विज़न",
+            "projects": "प्रोजेक्ट्स",
+            "submit": "चैलेंज सबमिट करें",
+            "waitlist": "वेटलिस्ट में शामिल हों"
         },
         "company": {
-            "title": "Company",
-            "about": "About Us",
-            "careers": "Careers",
-            "collab": "Collab Program",
-            "contact": "Contact"
+            "title": "कंपनी",
+            "about": "हमारे बारे में",
+            "careers": "करियर",
+            "collab": "सहयोग कार्यक्रम",
+            "contact": "संपर्क"
         },
         "legal": {
-            "title": "Legal",
-            "privacy": "Privacy Policy",
-            "terms": "Terms of Service",
-            "cookies": "Cookie Policy"
+            "title": "कानूनी",
+            "privacy": "गोपनीयता नीति",
+            "terms": "नियम एवं शर्तें",
+            "cookies": "कुकी नीति",
+            "dataRights": "आपके डेटा अधिकार",
+            "contactInfo": "संपर्क जानकारी"
         },
-        "copyright": "© {{year}} Siddhi Dynamics LLP. All rights reserved."
+        "locations": {
+            "title": "सिद्धि डायनेमिक्स एलएलपी कार्यालय स्थान:",
+            "nizamabad": "निज़ामाबाद कार्यालय",
+            "hyderabad": "हैदराबाद कार्यालय",
+            "openMaps": "Google Maps में देखें ↗"
+        },
+        "copyright": "© {{year}} Siddhi Dynamics LLP. सर्वाधिकार सुरक्षित।"
+    },
+    "portal": {
+        "workspace": "सिद्धि डायनेमिक्स · क्लाइंट वर्कस्पेस",
+        "goodToSeeYou": "स्वागत है, {{name}}।",
+        "subtitle": "आपके प्रोजेक्ट, कोट्स, सेवा समझौते, तिथियां, चालान और अपडेट—सब एक ही स्थान पर प्रबंधित।",
+        "profileSettings": "प्रोफ़ाइल सेटिंग्स",
+        "startRequest": "अनुरोध शुरू करें",
+        "tabs": {
+            "overview": "अवलोकन",
+            "services": "सेवाएं",
+            "agreements": "समझौते और बैंकिंग",
+            "billing": "बिलिंग और चालान"
+        },
+        "profileAlert": {
+            "title": "जारी रखने के लिए अपनी प्रोफ़ाइल पूरी करें",
+            "desc": "नीचे अपना नाम, व्यवसाय का नाम और मोबाइल नंबर दर्ज करें। सेवा निर्धारित करने से पहले इन विवरणों की आवश्यकता होती है।",
+            "btn": "प्रोफ़ाइल पूरी करें →"
+        },
+        "metrics": {
+            "activeProjects": "सक्रिय प्रोजेक्ट",
+            "inWorkspace": "आपके वर्कस्पेस में",
+            "actionNeeded": "कार्रवाई आवश्यक",
+            "openBills": "लंबित बिल / भुगतान",
+            "deliveryProgress": "वितरण प्रगति",
+            "avgAcrossProjects": "प्रोजेक्ट्स का औसत"
+        },
+        "work": {
+            "title": "आपका कार्य",
+            "subtitle": "सक्रिय कार्यों का एक केंद्रित दृश्य।"
+        },
+        "empty": {
+            "title": "अभी कोई सक्रिय कार्य नहीं",
+            "desc": "एक सेवा चुनें और अपने लक्ष्य भेजें। हम एक स्पष्ट दायरे और प्रस्ताव के साथ वापस आएंगे।",
+            "action": "सेवाएं देखें"
+        },
+        "services": {
+            "eyebrow": "आपकी सदस्यता ली गई सेवाएं",
+            "title": "सेवाएं जिनका आप सक्रिय रूप से उपयोग कर रहे हैं।",
+            "body": "सिद्धि डायनेमिक्स के साथ आपके सभी कार्यों में लाइव प्रगति, सेवा प्रारंभ तिथियां और मील के पत्थर।",
+            "requestAnother": "अन्य सेवा का अनुरोध करें",
+            "pickTitle": "सेवा जोड़ें या चुनें",
+            "pickDesc": "आपने अभी तक किसी सेवा में नामांकन नहीं किया है। अपना अगला मील का पत्थर शुरू करने के लिए हमारे इंजीनियरिंग, डिज़ाइन और ग्रोथ कार्यक्रमों में से चुनें।",
+            "pickBtn": "सेवा चुनें और अनुरोध करें"
+        },
+        "agreements": {
+            "eyebrow": "समझौते और आधिकारिक विवरण",
+            "title": "पारदर्शी दायरा, सत्यापित बैंकिंग और डिजिटल अनुबंध।",
+            "body": "अग्रिम भुगतान पूरा होने के बाद आधिकारिक सिद्धि डायनेमिक्स एलएलपी बैंकिंग विवरण और अनुबंध यहां सुरक्षित रूप से उपलब्ध हैं।"
+        },
+        "billing": {
+            "eyebrow": "बिलिंग",
+            "title": "सुरक्षित और पारदर्शी मील का पत्थर भुगतान।",
+            "body": "कैशफ्री गेटवे (UPI, कार्ड, नेट बैंकिंग) के माध्यम से अग्रिम और मील के पत्थर चालान का सुरक्षित भुगतान करें। जीएसटी रसीदें और इतिहास यहां संग्रहीत हैं।",
+            "emptyTitle": "कोई बिल जारी नहीं",
+            "emptyDesc": "जब कोई उद्धरण स्वीकृत होगा, तो आपका चालान और भुगतान अनुसूची यहां दिखाई देगी।"
+        }
     },
     "meta": {
         "home": {

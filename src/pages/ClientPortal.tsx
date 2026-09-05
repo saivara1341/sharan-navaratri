@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/layout/Navbar";
 import { FooterSection } from "@/components/sections/FooterSection";
@@ -62,6 +63,7 @@ type Project = {
 };
 
 export default function ClientPortal() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState("");
@@ -450,10 +452,10 @@ export default function ClientPortal() {
 
   const hasSetup = profileComplete || projects.some(project => Boolean(project.name?.trim() && project.organization?.trim()));
   const tabs: [Tab, string, typeof LayoutDashboard][] = [
-    ["overview", "Overview", LayoutDashboard],
-    ["services", "Services", PanelsTopLeft],
-    ["agreements", "Agreements & Banking", FileSignature],
-    ["billing", "Billing & Invoices", WalletCards]
+    ["overview", t('portal.tabs.overview', "Overview"), LayoutDashboard],
+    ["services", t('portal.tabs.services', "Services"), PanelsTopLeft],
+    ["agreements", t('portal.tabs.agreements', "Agreements & Banking"), FileSignature],
+    ["billing", t('portal.tabs.billing', "Billing & Invoices"), WalletCards]
   ];
 
   return (
@@ -468,10 +470,10 @@ export default function ClientPortal() {
         <section className="rounded-[28px] bg-[#292a22] px-6 py-8 text-white shadow-xl shadow-stone-900/10 sm:px-9">
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[.18em] text-lime-300">Siddhi Dynamics · Client workspace</p>
-              <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">Good to see you, {name || "Client"}.</h1>
+              <p className="text-xs font-bold uppercase tracking-[.18em] text-lime-300">{t('portal.workspace', 'Siddhi Dynamics · Client workspace')}</p>
+              <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">{t('portal.goodToSeeYou', 'Good to see you, {{name}}.', { name: name || "Client" })}</h1>
               <p className="mt-3 max-w-xl text-sm leading-6 text-stone-300">
-                Your projects, quotes, service agreements, dates, invoices and updates—all managed in one place.
+                {t('portal.subtitle', 'Your projects, quotes, service agreements, dates, invoices and updates—all managed in one place.')}
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -479,13 +481,13 @@ export default function ClientPortal() {
                 onClick={() => setSetup(true)}
                 className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-white hover:bg-white/20 transition-colors cursor-pointer"
               >
-                <Settings className="h-4 w-4" /> Profile Settings
+                <Settings className="h-4 w-4" /> {t('portal.profileSettings', 'Profile Settings')}
               </button>
               <button
                 onClick={() => navigate("/submit?type=requirement")}
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-lime-300 px-4 py-3 text-sm font-bold text-stone-950 hover:bg-lime-400 transition-colors cursor-pointer"
               >
-                <Plus className="h-4 w-4" /> Start a request
+                <Plus className="h-4 w-4" /> {t('portal.startRequest', 'Start a request')}
               </button>
             </div>
           </div>
@@ -515,15 +517,15 @@ export default function ClientPortal() {
                 <div className="flex items-start gap-3">
                   <span className="text-2xl mt-0.5">👤</span>
                   <div>
-                    <p className="font-bold text-stone-900">Complete your profile to continue</p>
-                    <p className="mt-1 text-sm text-stone-600">Add your name, business name and mobile number below. These details are needed before we can schedule your service.</p>
+                    <p className="font-bold text-stone-900">{t('portal.profileAlert.title', 'Complete your profile to continue')}</p>
+                    <p className="mt-1 text-sm text-stone-600">{t('portal.profileAlert.desc', 'Add your name, business name and mobile number below. These details are needed before we can schedule your service.')}</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setSetup(true)}
                   className="shrink-0 rounded-xl bg-stone-900 px-5 py-2.5 text-sm font-bold text-white hover:bg-stone-700 transition-colors cursor-pointer"
                 >
-                  Complete Profile →
+                  {t('portal.profileAlert.btn', 'Complete Profile →')}
                 </button>
               </div>
             )}
@@ -531,14 +533,14 @@ export default function ClientPortal() {
             {/* Metrics */}
             <div className="grid gap-4 sm:grid-cols-3">
               {[
-                ["Active projects", projects.length, "In your workspace", BriefcaseBusiness],
-                ["Action needed", outstanding.length, "Open bills / payments", CreditCard],
+                [t('portal.metrics.activeProjects', "Active projects"), projects.length, t('portal.metrics.inWorkspace', "In your workspace"), BriefcaseBusiness],
+                [t('portal.metrics.actionNeeded', "Action needed"), outstanding.length, t('portal.metrics.openBills', "Open bills / payments"), CreditCard],
                 [
-                  "Delivery progress",
+                  t('portal.metrics.deliveryProgress', "Delivery progress"),
                   projects.length
                     ? `${Math.round(projects.reduce((sum, p) => sum + (p.progress || 0), 0) / projects.length)}%`
                     : "—",
-                  "Average across projects",
+                  t('portal.metrics.avgAcrossProjects', "Average across projects"),
                   CheckCircle2
                 ]
               ].map(([label, value, hint, Icon]: any) => (
@@ -552,7 +554,7 @@ export default function ClientPortal() {
             </div>
 
             {/* Active Engagements List with Quote & Service Order Actions */}
-            <Panel title="Your work" subtitle="A focused view of active engagements.">
+            <Panel title={t('portal.work.title', "Your work")} subtitle={t('portal.work.subtitle', "A focused view of active engagements.")}>
               {projects.length ? (
                 <div className="divide-y divide-stone-100">
                   {projects.map(project => {
@@ -800,9 +802,9 @@ export default function ClientPortal() {
               ) : (
                 <Empty
                   icon={BriefcaseBusiness}
-                  title="No active work yet"
-                  description="Choose a service and send your goals. We’ll return with a clear scope and proposal."
-                  action="Explore services"
+                  title={t('portal.empty.title', "No active work yet")}
+                  description={t('portal.empty.desc', "Choose a service and send your goals. We’ll return with a clear scope and proposal.")}
+                  action={t('portal.empty.action', "Explore services")}
                   onClick={() => setTab("services")}
                 />
               )}
@@ -815,15 +817,15 @@ export default function ClientPortal() {
           <section className="mt-7 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <Heading
-                eyebrow="Your Subscribed Services"
-                title="Services you are actively availing."
-                body="Live execution progress, service start dates, and milestones across all your engagements with Siddhi Dynamics."
+                eyebrow={t('portal.services.eyebrow', "Your Subscribed Services")}
+                title={t('portal.services.title', "Services you are actively availing.")}
+                body={t('portal.services.body', "Live execution progress, service start dates, and milestones across all your engagements with Siddhi Dynamics.")}
               />
               <button
                 onClick={() => navigate("/submit?type=requirement")}
                 className="inline-flex items-center gap-2 rounded-xl bg-stone-900 px-4 py-2.5 text-xs font-bold text-white hover:bg-stone-800 transition-colors shrink-0 cursor-pointer self-start sm:self-auto shadow-sm"
               >
-                <Plus className="h-4 w-4 text-lime-300" /> Request Another Service
+                <Plus className="h-4 w-4 text-lime-300" /> {t('portal.services.requestAnother', 'Request Another Service')}
               </button>
             </div>
 
@@ -985,9 +987,9 @@ export default function ClientPortal() {
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="text-2xl font-bold text-stone-900">Add or Pick Your Service</h3>
+                  <h3 className="text-2xl font-bold text-stone-900">{t('portal.services.pickTitle', 'Add or Pick Your Service')}</h3>
                   <p className="text-sm text-stone-500 max-w-md mx-auto leading-relaxed">
-                    You haven’t enrolled in any services yet. Choose from our engineering, design, and growth programmes to start your next milestone.
+                    {t('portal.services.pickDesc', 'You haven’t enrolled in any services yet. Choose from our engineering, design, and growth programmes to start your next milestone.')}
                   </p>
                 </div>
 
@@ -1015,7 +1017,7 @@ export default function ClientPortal() {
                     onClick={() => navigate("/submit?type=requirement")}
                     className="inline-flex items-center justify-center gap-2 rounded-2xl bg-stone-900 px-6 py-3.5 text-sm font-bold text-white hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/10 cursor-pointer hover:scale-105"
                   >
-                    <Plus className="h-4 w-4 text-lime-300" /> Pick & Request a Service
+                    <Plus className="h-4 w-4 text-lime-300" /> {t('portal.services.pickBtn', 'Pick & Request a Service')}
                   </button>
                 </div>
               </div>
@@ -1027,9 +1029,9 @@ export default function ClientPortal() {
         {tab === "agreements" && (
           <section className="mt-7">
             <Heading
-              eyebrow="Agreements & Official Credentials"
-              title="Transparent scope, verified banking and digital contracts."
-              body="Official Siddhi Dynamics LLP banking details and service order agreements are securely accessible here once advance payment is completed."
+              eyebrow={t('portal.agreements.eyebrow', "Agreements & Official Credentials")}
+              title={t('portal.agreements.title', "Transparent scope, verified banking and digital contracts.")}
+              body={t('portal.agreements.body', "Official Siddhi Dynamics LLP banking details and service order agreements are securely accessible here once advance payment is completed.")}
             />
             <div className="space-y-4">
               {projects.map(project => {
@@ -1136,9 +1138,9 @@ export default function ClientPortal() {
         {tab === "billing" && (
           <section className="mt-7">
             <Heading
-              eyebrow="Billing"
-              title="Secure, traceable milestone payments."
-              body="Pay advance and milestone invoices securely via Cashfree gateway (UPI, card, net banking). Tax receipts and paid histories are stored here."
+              eyebrow={t('portal.billing.eyebrow', "Billing")}
+              title={t('portal.billing.title', "Secure, traceable milestone payments.")}
+              body={t('portal.billing.body', "Pay advance and milestone invoices securely via Cashfree gateway (UPI, card, net banking). Tax receipts and paid histories are stored here.")}
             />
             <div className="space-y-3">
               {invoices.map(({ project, invoice }, i) => {
@@ -1204,8 +1206,8 @@ export default function ClientPortal() {
               <Panel>
                 <Empty
                   icon={CreditCard}
-                  title="No bills issued"
-                  description="When a quote is approved, your invoice and Cashfree payment schedule will appear here."
+                  title={t('portal.billing.emptyTitle', "No bills issued")}
+                  description={t('portal.billing.emptyDesc', "When a quote is approved, your invoice and Cashfree payment schedule will appear here.")}
                 />
               </Panel>
             )}

@@ -395,8 +395,18 @@
     "legal": {
       "title": "Legal",
       "privacy": "Privacy Policy",
-      "terms": "Terms of Service",
-      "cookies": "Cookie Policy"
+      "terms": "Terms & Conditions",
+      "cookies": "Cookie Policy",
+      "dataRights": "Your Data Rights",
+      "contactInfo": "Contact Information"
+    },
+    "badge": "Next-Generation AI Solutions",
+    "reviewUs": "Review Us",
+    "locations": {
+      "title": "Siddhi Dynamics LLP office locations:",
+      "nizamabad": "Nizamabad office",
+      "hyderabad": "Hyderabad office",
+      "openMaps": "Open in Google Maps ↗"
     },
     "copyright": "© {{year}} Siddhi Dynamics LLP. All rights reserved.",
     "services": {
@@ -647,6 +657,62 @@
       "step2": "AI Research",
       "step3": "Generate & Design",
       "step4": "Auto-Send"
+    }
+  },
+  "portal": {
+    "workspace": "Siddhi Dynamics · Client workspace",
+    "goodToSeeYou": "Good to see you, {{name}}.",
+    "subtitle": "Your projects, quotes, service agreements, dates, invoices and updates—all managed in one place.",
+    "profileSettings": "Profile Settings",
+    "startRequest": "Start a request",
+    "tabs": {
+      "overview": "Overview",
+      "services": "Services",
+      "agreements": "Agreements & Banking",
+      "billing": "Billing & Invoices"
+    },
+    "profileAlert": {
+      "title": "Complete your profile to continue",
+      "desc": "Add your name, business name and mobile number below. These details are needed before we can schedule your service.",
+      "btn": "Complete Profile →"
+    },
+    "metrics": {
+      "activeProjects": "Active projects",
+      "inWorkspace": "In your workspace",
+      "actionNeeded": "Action needed",
+      "openBills": "Open bills / payments",
+      "deliveryProgress": "Delivery progress",
+      "avgAcrossProjects": "Average across projects"
+    },
+    "work": {
+      "title": "Your work",
+      "subtitle": "A focused view of active engagements."
+    },
+    "empty": {
+      "title": "No active work yet",
+      "desc": "Choose a service and send your goals. We’ll return with a clear scope and proposal.",
+      "action": "Explore services"
+    },
+    "services": {
+      "eyebrow": "Your Subscribed Services",
+      "title": "Services you are actively availing.",
+      "body": "Live execution progress, service start dates, and milestones across all your engagements with Siddhi Dynamics.",
+      "requestAnother": "Request Another Service",
+      "pickTitle": "Add or Pick Your Service",
+      "pickDesc": "You haven’t enrolled in any services yet. Choose from our engineering, design, and growth programmes to start your next milestone.",
+      "pickBtn": "Pick & Request a Service"
+    },
+    "agreements": {
+      "eyebrow": "Agreements & Official Credentials",
+      "title": "Transparent scope, verified banking and digital contracts.",
+      "body": "Official Siddhi Dynamics LLP banking details and service order agreements are securely accessible here once advance payment is completed."
+    },
+    "billing": {
+      "eyebrow": "Billing",
+      "title": "Secure, traceable milestone payments.",
+      "body": "Pay advance and milestone invoices securely via Cashfree gateway (UPI, card, net banking). Tax receipts and paid histories are stored here.",
+      "emptyTitle": "No bills issued",
+      "emptyDesc": "When a quote is approved, your invoice and Cashfree payment schedule will appear here."
     }
   },
   "eid": {

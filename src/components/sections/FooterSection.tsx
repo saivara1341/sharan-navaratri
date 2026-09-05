@@ -121,13 +121,13 @@ export const FooterSection = () => {
             >
               {[
                 { name: t('nav.home', 'Home'), href: '/' },
-                { name: 'About', href: '/about' },
+                { name: t('nav.about', 'About'), href: '/about' },
                 { name: t('nav.vision', 'Vision'), href: '/#vision' },
                 { name: t('nav.projects', 'Projects'), href: '/#projects' },
-                { name: 'Blog', href: '/blog' },
-                { name: 'Services', href: '/#services' },
+                { name: t('nav.blog', 'Blog'), href: '/blog' },
+                { name: t('nav.services', 'Services'), href: '/#services' },
                 { name: t('nav.submit', 'Submit Problem'), href: '/submit?type=problem' },
-                { name: 'Contact Us', href: '/contact' },
+                { name: t('nav.contactUs', 'Contact Us'), href: '/contact' },
               ].map((link, index) => (
                 <motion.a
                   key={link.name}
@@ -181,7 +181,7 @@ export const FooterSection = () => {
                   <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400" />
                 ))}
               </div>
-              <span className="font-semibold text-slate-200 text-[11px] whitespace-nowrap">Review Us</span>
+              <span className="font-semibold text-slate-200 text-[11px] whitespace-nowrap">{t('footer.reviewUs', 'Review Us')}</span>
             </motion.a>
             <motion.a
               href="https://www.linkedin.com/company/siddhi-dynamics-llp"
@@ -281,11 +281,11 @@ export const FooterSection = () => {
             </motion.p>
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 max-w-full pb-1 px-1">
               {[
-                { label: 'Privacy Policy', href: '/privacy' },
-                { label: 'Terms & Conditions', href: '/terms-and-conditions' },
-                { label: 'Cookie Policy', href: '/cookie-policy' },
-                { label: 'Your Data Rights', href: '/data-rights' },
-                { label: 'Contact Information', href: '/contact-information' },
+                { label: t('footer.legal.privacy', 'Privacy Policy'), href: '/privacy' },
+                { label: t('footer.legal.terms', 'Terms & Conditions'), href: '/terms-and-conditions' },
+                { label: t('footer.legal.cookies', 'Cookie Policy'), href: '/cookie-policy' },
+                { label: t('footer.legal.dataRights', 'Your Data Rights'), href: '/data-rights' },
+                { label: t('footer.legal.contactInfo', 'Contact Information'), href: '/contact-information' },
               ].map((link, index) => (
                 <motion.a
                   key={link.href}
@@ -307,7 +307,7 @@ export const FooterSection = () => {
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ delay: 0.8 }}
           >
-            <span className="sr-only">Siddhi Dynamics LLP office locations: </span>
+            <span className="sr-only">{t('footer.locations.title', 'Siddhi Dynamics LLP office locations:')} </span>
             <span className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-5 shadow-sm group hover:border-primary/40 transition-all">
               <div 
                 className="absolute inset-0 pointer-events-none opacity-15"
@@ -320,7 +320,7 @@ export const FooterSection = () => {
                 }}
               />
               <div className="relative z-10">
-                <strong className="mb-1 block text-sm font-semibold text-white">Nizamabad office</strong>
+                <strong className="mb-1 block text-sm font-semibold text-white">{t('footer.locations.nizamabad', 'Nizamabad office')}</strong>
                 <span className="block text-xs leading-5 text-slate-400">
                   3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001
                 </span>
@@ -330,7 +330,7 @@ export const FooterSection = () => {
                   rel="noopener noreferrer"
                   className="mt-3 inline-flex text-xs font-semibold text-primary transition-colors hover:text-white"
                 >
-                  Open in Google Maps ↗
+                  {t('footer.locations.openMaps', 'Open in Google Maps ↗')}
                 </a>
               </div>
             </span>
@@ -346,7 +346,7 @@ export const FooterSection = () => {
                 }}
               />
               <div className="relative z-10">
-                <strong className="mb-1 block text-sm font-semibold text-white">Hyderabad office</strong>
+                <strong className="mb-1 block text-sm font-semibold text-white">{t('footer.locations.hyderabad', 'Hyderabad office')}</strong>
                 <span className="block text-xs leading-5 text-slate-400">
                   HIVE, Anurag University, Hyderabad, Telangana 500049
                 </span>
@@ -356,7 +356,7 @@ export const FooterSection = () => {
                   rel="noopener noreferrer"
                   className="mt-3 inline-flex text-xs font-semibold text-primary transition-colors hover:text-white"
                 >
-                  Open in Google Maps ↗
+                  {t('footer.locations.openMaps', 'Open in Google Maps ↗')}
                 </a>
               </div>
             </span>
