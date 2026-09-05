@@ -29,6 +29,7 @@ export const Navbar = () => {
     location.pathname === '/blog' ||
     location.pathname.startsWith('/services/');
   const isPortal = location.pathname.includes('/portal');
+  const isClientPortal = location.pathname.startsWith('/portal/client') || (userRole === 'client' && location.pathname.startsWith('/portal'));
 
   const navLinks = [
     { name: t('nav.submitChallenge', 'Submit Your Challenge'), href: isPortal ? '#/portal?tab=contact&type=problem' : '#/submit?type=problem' },
@@ -167,66 +168,70 @@ export const Navbar = () => {
             </motion.a>
 
             <nav className="hidden items-center gap-1.5 lg:gap-2.5 whitespace-nowrap">
-              <motion.a
-                href="/about"
-                onClick={(e) => { e.preventDefault(); navigate('/about'); }}
-                className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-                whileHover={{ scale: 1.02 }}
-              >
-                {t('nav.about', 'About')}
-              </motion.a>
-              <motion.a
-                href="/#vision"
-                onClick={handleAnchorClick('vision')}
-                className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-                whileHover={{ scale: 1.02 }}
-              >
-                {t('nav.vision', 'Vision')}
-              </motion.a>
-              <motion.a
-                href="/#projects"
-                onClick={handleAnchorClick('projects')}
-                className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-                whileHover={{ scale: 1.02 }}
-              >
-                {t('nav.projects', 'Projects')}
-              </motion.a>
-              <motion.a
-                href="/blog"
-                onClick={(e) => { e.preventDefault(); navigate('/blog'); }}
-                className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-                whileHover={{ scale: 1.02 }}
-              >
-                {t('nav.blog', 'Blog')}
-              </motion.a>
-              <motion.a
-                href="/#services"
-                onClick={handleAnchorClick('services')}
-                className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-                whileHover={{ scale: 1.02 }}
-              >
-                {t('nav.services', 'Services')}
-              </motion.a>
-              <motion.a
-                href="/contact"
-                onClick={(e) => { e.preventDefault(); navigate('/contact'); }}
-                className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-                whileHover={{ scale: 1.02 }}
-              >
-                {t('nav.contactUs', 'Contact Us')}
-              </motion.a>
-              <motion.a
-                href={isPortal ? '#/portal?tab=contact&type=problem' : '/submit?type=problem'}
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate('/submit?type=problem');
-                }}
-                className="px-3.5 py-2 rounded-xl text-xs lg:text-sm font-bold text-primary bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-all"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {t('nav.submit', 'Submit Problem')}
-              </motion.a>
+              {!isClientPortal && (
+                <>
+                  <motion.a
+                    href="/about"
+                    onClick={(e) => { e.preventDefault(); navigate('/about'); }}
+                    className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    {t('nav.about', 'About')}
+                  </motion.a>
+                  <motion.a
+                    href="/#vision"
+                    onClick={handleAnchorClick('vision')}
+                    className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    {t('nav.vision', 'Vision')}
+                  </motion.a>
+                  <motion.a
+                    href="/#projects"
+                    onClick={handleAnchorClick('projects')}
+                    className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    {t('nav.projects', 'Projects')}
+                  </motion.a>
+                  <motion.a
+                    href="/blog"
+                    onClick={(e) => { e.preventDefault(); navigate('/blog'); }}
+                    className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    {t('nav.blog', 'Blog')}
+                  </motion.a>
+                  <motion.a
+                    href="/#services"
+                    onClick={handleAnchorClick('services')}
+                    className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    {t('nav.services', 'Services')}
+                  </motion.a>
+                  <motion.a
+                    href="/contact"
+                    onClick={(e) => { e.preventDefault(); navigate('/contact'); }}
+                    className="px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    {t('nav.contactUs', 'Contact Us')}
+                  </motion.a>
+                  <motion.a
+                    href={isPortal ? '#/portal?tab=contact&type=problem' : '/submit?type=problem'}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate('/submit?type=problem');
+                    }}
+                    className="px-3.5 py-2 rounded-xl text-xs lg:text-sm font-bold text-primary bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-all"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {t('nav.submit', 'Submit Problem')}
+                  </motion.a>
+                </>
+              )}
 
               <LanguageSwitcher />
 
@@ -414,84 +419,88 @@ export const Navbar = () => {
                 <div className="relative z-[120]">
                   <LanguageSwitcher />
                 </div>
-                <motion.a
-                  href="/about"
-                  onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/about'); }}
-                  className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.08 }}
-                >
-                  {t('nav.about', 'About')}
-                </motion.a>
-                <motion.a
-                  href="/#vision"
-                  onClick={handleAnchorClick('vision')}
-                  className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.10 }}
-                >
-                  {t('nav.vision', 'Vision')}
-                </motion.a>
-                <motion.a
-                  href="/#projects"
-                  onClick={handleAnchorClick('projects')}
-                  className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.12 }}
-                >
-                  {t('nav.projects', 'Projects')}
-                </motion.a>
-                <motion.a
-                  href="/blog"
-                  onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/blog'); }}
-                  className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.14 }}
-                >
-                  {t('nav.blog', 'Blog')}
-                </motion.a>
-                <motion.a
-                  href="/#services"
-                  onClick={handleAnchorClick('services')}
-                  className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.16 }}
-                >
-                  {t('nav.services', 'Services')}
-                </motion.a>
-                <motion.a
-                  href="/contact"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setMobileMenuOpen(false);
-                    navigate('/contact');
-                  }}
-                  className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.17 }}
-                >
-                  {t('nav.contactUs', 'Contact Us')}
-                </motion.a>
-                <motion.a
-                  href="/submit?type=problem"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setMobileMenuOpen(false);
-                    navigate('/submit?type=problem');
-                  }}
-                  className="text-xl font-extrabold text-primary hover:text-primary/80 transition-colors relative z-[120]"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.18 }}
-                >
-                  {t('nav.submit', 'Submit Problem')}
-                </motion.a>
+                {!isClientPortal && (
+                  <>
+                    <motion.a
+                      href="/about"
+                      onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/about'); }}
+                      className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.08 }}
+                    >
+                      {t('nav.about', 'About')}
+                    </motion.a>
+                    <motion.a
+                      href="/#vision"
+                      onClick={handleAnchorClick('vision')}
+                      className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.10 }}
+                    >
+                      {t('nav.vision', 'Vision')}
+                    </motion.a>
+                    <motion.a
+                      href="/#projects"
+                      onClick={handleAnchorClick('projects')}
+                      className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.12 }}
+                    >
+                      {t('nav.projects', 'Projects')}
+                    </motion.a>
+                    <motion.a
+                      href="/blog"
+                      onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/blog'); }}
+                      className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.14 }}
+                    >
+                      {t('nav.blog', 'Blog')}
+                    </motion.a>
+                    <motion.a
+                      href="/#services"
+                      onClick={handleAnchorClick('services')}
+                      className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.16 }}
+                    >
+                      {t('nav.services', 'Services')}
+                    </motion.a>
+                    <motion.a
+                      href="/contact"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setMobileMenuOpen(false);
+                        navigate('/contact');
+                      }}
+                      className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.17 }}
+                    >
+                      {t('nav.contactUs', 'Contact Us')}
+                    </motion.a>
+                    <motion.a
+                      href="/submit?type=problem"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setMobileMenuOpen(false);
+                        navigate('/submit?type=problem');
+                      }}
+                      className="text-xl font-extrabold text-primary hover:text-primary/80 transition-colors relative z-[120]"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.18 }}
+                    >
+                      {t('nav.submit', 'Submit Problem')}
+                    </motion.a>
+                  </>
+                )}
               {/* Close Button */}
               <motion.button
                 className="absolute top-[calc(1.5rem+env(safe-area-inset-top,0px))] right-[calc(1.5rem+env(safe-area-inset-right,0px))] w-12 h-12 flex items-center justify-center rounded-2xl bg-card border border-border text-foreground hover:text-primary hover:border-primary/30 transition-all z-[120]"

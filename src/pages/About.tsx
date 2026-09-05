@@ -173,14 +173,19 @@ export default function About() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Helmet>
-        <title>About Siddhi Dynamics | Best Software Company in Nizamabad & Hyderabad</title>
-        <meta name="description" content="Siddhi Dynamics LLP is a premier software company and deep-tech AI firm in Nizamabad & Hyderabad. We build agentic AI, business automation, web development, SaaS, and ERP solutions." />
+        <title>About Siddhi Dynamics | Best Software Company in Nizamabad &amp; Hyderabad</title>
+        <meta name="description" content="Siddhi Dynamics LLP is a premier software company and deep-tech AI firm in Nizamabad &amp; Hyderabad. We build agentic AI, business automation, web development, SaaS, and ERP solutions." />
         <meta name="keywords" content="Siddhi Dynamics, best software company in Nizamabad, top IT company in Nizamabad, software development Nizamabad, AI company Hyderabad, deep tech startup India, ArchPlan AI, HIVE incubation" />
         <link rel="canonical" href="https://siddhidynamics.in/about" />
-        <meta property="og:title" content="About Siddhi Dynamics | Best Software Company in Nizamabad & Hyderabad" />
-        <meta property="og:description" content="Nizamabad & Hyderabad-based deep-tech AI firm building production-ready AI automation, SaaS, and ERP solutions." />
-        <meta property="og:url" content="https://siddhidynamics.in/about" />
         <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://siddhidynamics.in/about" />
+        <meta property="og:title" content="About Siddhi Dynamics | Best Software Company in Nizamabad &amp; Hyderabad" />
+        <meta property="og:description" content="Nizamabad &amp; Hyderabad-based deep-tech AI firm building production-ready AI automation, SaaS, and ERP solutions." />
+        <meta property="og:image" content="https://siddhidynamics.in/favicon.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="About Siddhi Dynamics | Software Company Nizamabad &amp; Hyderabad" />
+        <meta name="twitter:description" content="Deep-tech AI firm in Nizamabad &amp; Hyderabad building AI automation, SaaS, ERP &amp; web solutions for Indian businesses." />
+        <meta name="twitter:image" content="https://siddhidynamics.in/favicon.jpg" />
         <script type="application/ld+json">{JSON.stringify(orgSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(aboutPageSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(nizamabadSchema)}</script>

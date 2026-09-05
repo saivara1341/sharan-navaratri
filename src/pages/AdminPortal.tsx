@@ -46,7 +46,11 @@ import {
     Check,
     Eye,
     EyeOff,
-    Clock
+    Clock,
+    ExternalLink,
+    Globe,
+    MapPin,
+    Laptop
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -481,6 +485,9 @@ const AdminPortal = () => {
     const [editMsg, setEditMsg] = useState("");
     const [editDeadline, setEditDeadline] = useState("");
     const [editUrl, setEditUrl] = useState("");
+    const [editDemoUrl, setEditDemoUrl] = useState("");
+    const [editSeoReportUrl, setEditSeoReportUrl] = useState("");
+    const [editGbpUrl, setEditGbpUrl] = useState("");
     const [editAgreement, setEditAgreement] = useState("");
 
     // Lifecycle Quote & Service Order Modal states
@@ -654,6 +661,9 @@ const AdminPortal = () => {
         const meta = parseProjectMetadata(sub.bounty_reward);
         setEditDeadline(meta.deadline || "");
         setEditUrl(meta.website_url || "");
+        setEditDemoUrl(meta.demo_url || "");
+        setEditSeoReportUrl(meta.seo_report_url || "");
+        setEditGbpUrl(meta.gbp_url || "");
         setEditAgreement(meta.agreement || "");
     };
 
@@ -666,6 +676,9 @@ const AdminPortal = () => {
                 ...currentMeta,
                 deadline: editDeadline,
                 website_url: editUrl,
+                demo_url: editDemoUrl,
+                seo_report_url: editSeoReportUrl,
+                gbp_url: editGbpUrl,
                 agreement: editAgreement,
             });
             await supabaseService.updateSubmission(editOpen.id, {
@@ -1393,9 +1406,24 @@ const AdminPortal = () => {
                                                                             Budget: {parsedMsg.budgetPreference}
                                                                         </span>
                                                                     )}
+                                                                    {meta.demo_url && (
+                                                                        <span className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2.5 py-1 rounded-xl truncate max-w-xs flex items-center gap-1">
+                                                                            <Laptop className="w-3 h-3 text-cyan-400" /> Demo: <a href={meta.demo_url} target="_blank" rel="noopener noreferrer" className="hover:underline text-cyan-300 font-semibold">{meta.demo_url}</a>
+                                                                        </span>
+                                                                    )}
                                                                     {meta.website_url && (
-                                                                        <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-1 rounded-xl truncate max-w-xs">
-                                                                            URL: <a href={meta.website_url} target="_blank" rel="noopener noreferrer" className="hover:underline text-blue-400">{meta.website_url}</a>
+                                                                        <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-xl truncate max-w-xs flex items-center gap-1">
+                                                                            <Globe className="w-3 h-3 text-emerald-400" /> Live: <a href={meta.website_url} target="_blank" rel="noopener noreferrer" className="hover:underline text-emerald-300 font-semibold">{meta.website_url}</a>
+                                                                        </span>
+                                                                    )}
+                                                                    {meta.seo_report_url && (
+                                                                        <span className="bg-lime-500/10 text-lime-400 border border-lime-500/20 px-2.5 py-1 rounded-xl truncate max-w-xs flex items-center gap-1">
+                                                                            <TrendingUp className="w-3 h-3 text-lime-400" /> SEO Report: <a href={meta.seo_report_url} target="_blank" rel="noopener noreferrer" className="hover:underline text-lime-300 font-semibold">Open Report</a>
+                                                                        </span>
+                                                                    )}
+                                                                    {meta.gbp_url && (
+                                                                        <span className="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-xl truncate max-w-xs flex items-center gap-1">
+                                                                            <MapPin className="w-3 h-3 text-amber-400" /> GBP: <a href={meta.gbp_url} target="_blank" rel="noopener noreferrer" className="hover:underline text-amber-300 font-semibold">Google Maps</a>
                                                                         </span>
                                                                     )}
                                                                 </div>
@@ -2217,6 +2245,131 @@ const AdminPortal = () => {
                                         </div>
                                     </div>
 
+                                    {/* 4b. Deliverables, Live Demos & SEO Progress Reports */}
+                                    <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary flex items-center gap-2">
+                                                <Globe className="w-4 h-4" /> Deliverables, Live Previews & Progress Reports
+                                            </h4>
+                                            <button
+                                                onClick={() => {
+                                                    const subToEdit = viewDetailsSub;
+                                                    setViewDetailsSub(null);
+                                                    openEdit(subToEdit);
+                                                }}
+                                                className="px-3 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 text-xs font-bold transition-colors flex items-center gap-1"
+                                            >
+                                                <Edit className="w-3.5 h-3.5" /> Edit Deliverables / URLs
+                                            </button>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                            {/* Website Demo / Staging */}
+                                            <div className="p-3 rounded-xl bg-card border border-border space-y-1.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="font-bold text-foreground flex items-center gap-1.5">
+                                                        <Laptop className="w-3.5 h-3.5 text-cyan-400" /> Website Demo / Staging Preview
+                                                    </span>
+                                                    {meta.demo_url ? (
+                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400">Available</span>
+                                                    ) : (
+                                                        <span className="text-[10px] text-muted-foreground">Not set</span>
+                                                    )}
+                                                </div>
+                                                {meta.demo_url ? (
+                                                    <a
+                                                        href={meta.demo_url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 text-xs text-cyan-400 hover:underline font-semibold break-all"
+                                                    >
+                                                        {meta.demo_url} <ExternalLink className="w-3 h-3 shrink-0" />
+                                                    </a>
+                                                ) : (
+                                                    <p className="text-[11px] text-muted-foreground">Demo preview URL not assigned yet.</p>
+                                                )}
+                                            </div>
+
+                                            {/* Live Production Website */}
+                                            <div className="p-3 rounded-xl bg-card border border-border space-y-1.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="font-bold text-foreground flex items-center gap-1.5">
+                                                        <Globe className="w-3.5 h-3.5 text-emerald-400" /> Live Production Website
+                                                    </span>
+                                                    {meta.website_url ? (
+                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">Live</span>
+                                                    ) : (
+                                                        <span className="text-[10px] text-muted-foreground">Not set</span>
+                                                    )}
+                                                </div>
+                                                {meta.website_url ? (
+                                                    <a
+                                                        href={meta.website_url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 text-xs text-emerald-400 hover:underline font-semibold break-all"
+                                                    >
+                                                        {meta.website_url} <ExternalLink className="w-3 h-3 shrink-0" />
+                                                    </a>
+                                                ) : (
+                                                    <p className="text-[11px] text-muted-foreground">Production domain not assigned yet.</p>
+                                                )}
+                                            </div>
+
+                                            {/* SEO & AEO Progress Report */}
+                                            <div className="p-3 rounded-xl bg-card border border-border space-y-1.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="font-bold text-foreground flex items-center gap-1.5">
+                                                        <TrendingUp className="w-3.5 h-3.5 text-lime-400" /> SEO & Growth Report
+                                                    </span>
+                                                    {meta.seo_report_url ? (
+                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-lime-500/20 text-lime-400">Linked</span>
+                                                    ) : (
+                                                        <span className="text-[10px] text-muted-foreground">Not set</span>
+                                                    )}
+                                                </div>
+                                                {meta.seo_report_url ? (
+                                                    <a
+                                                        href={meta.seo_report_url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 text-xs text-lime-400 hover:underline font-semibold break-all"
+                                                    >
+                                                        {meta.seo_report_url} <ExternalLink className="w-3 h-3 shrink-0" />
+                                                    </a>
+                                                ) : (
+                                                    <p className="text-[11px] text-muted-foreground">Looker Studio / audit report URL not linked yet.</p>
+                                                )}
+                                            </div>
+
+                                            {/* Google Business Profile / Maps */}
+                                            <div className="p-3 rounded-xl bg-card border border-border space-y-1.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="font-bold text-foreground flex items-center gap-1.5">
+                                                        <MapPin className="w-3.5 h-3.5 text-amber-400" /> Google Business Profile
+                                                    </span>
+                                                    {meta.gbp_url ? (
+                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400">Linked</span>
+                                                    ) : (
+                                                        <span className="text-[10px] text-muted-foreground">Not set</span>
+                                                    )}
+                                                </div>
+                                                {meta.gbp_url ? (
+                                                    <a
+                                                        href={meta.gbp_url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 text-xs text-amber-400 hover:underline font-semibold break-all"
+                                                    >
+                                                        {meta.gbp_url} <ExternalLink className="w-3 h-3 shrink-0" />
+                                                    </a>
+                                                ) : (
+                                                    <p className="text-[11px] text-muted-foreground">Google Maps profile URL not linked yet.</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     {/* 5. Invoices & Cashfree Billing Ledger */}
                                     <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-3">
                                         <div className="flex items-center justify-between">
@@ -2441,25 +2594,85 @@ const AdminPortal = () => {
                                                 className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                                             />
                                         </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="space-y-1">
-                                                <label className="text-[10px] uppercase font-bold text-muted-foreground">Project Deadline Date</label>
-                                                <input
-                                                    type="date"
-                                                    value={editDeadline}
-                                                    onChange={e => setEditDeadline(e.target.value)}
-                                                    className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                                                />
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] uppercase font-bold text-muted-foreground">Project Deadline Date</label>
+                                            <input
+                                                type="date"
+                                                value={editDeadline}
+                                                onChange={e => setEditDeadline(e.target.value)}
+                                                className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                            />
+                                        </div>
+
+                                        {/* Deliverables, Live Previews & Progress Reports */}
+                                        <div className="p-4 rounded-2xl bg-muted/40 border border-border space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                                                    <Globe className="w-3.5 h-3.5" /> Deliverables, Live Previews & Progress Reports
+                                                </span>
+                                                <span className="text-[10px] text-muted-foreground">Visible to client in their dashboard</span>
                                             </div>
-                                            <div className="space-y-1">
-                                                <label className="text-[10px] uppercase font-bold text-muted-foreground">Live Website / SaaS App URL</label>
-                                                <input
-                                                    type="url"
-                                                    placeholder="https://client-app.siddhidynamics.in"
-                                                    value={editUrl}
-                                                    onChange={e => setEditUrl(e.target.value)}
-                                                    className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                                                />
+
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                {/* Demo Preview */}
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+                                                        <Laptop className="w-3 h-3 text-cyan-400" /> Website Demo / Staging Preview URL
+                                                    </label>
+                                                    <input
+                                                        type="url"
+                                                        placeholder="https://staging.clientdomain.com"
+                                                        value={editDemoUrl}
+                                                        onChange={e => setEditDemoUrl(e.target.value)}
+                                                        className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                                                    />
+                                                    <p className="text-[9px] text-muted-foreground">Clients click this to test & review their demo website</p>
+                                                </div>
+
+                                                {/* Live Production Website */}
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+                                                        <Globe className="w-3 h-3 text-emerald-400" /> Live Website / Production URL
+                                                    </label>
+                                                    <input
+                                                        type="url"
+                                                        placeholder="https://clientdomain.com"
+                                                        value={editUrl}
+                                                        onChange={e => setEditUrl(e.target.value)}
+                                                        className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                                                    />
+                                                    <p className="text-[9px] text-muted-foreground">Original production domain once live</p>
+                                                </div>
+
+                                                {/* SEO & AEO Progress Report */}
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+                                                        <TrendingUp className="w-3 h-3 text-lime-400" /> SEO & Growth Report URL
+                                                    </label>
+                                                    <input
+                                                        type="url"
+                                                        placeholder="https://lookerstudio.google.com/... or Google Drive link"
+                                                        value={editSeoReportUrl}
+                                                        onChange={e => setEditSeoReportUrl(e.target.value)}
+                                                        className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                                                    />
+                                                    <p className="text-[9px] text-muted-foreground">Live report dashboard, ranking audit, or analytics link</p>
+                                                </div>
+
+                                                {/* Google Business Profile / Maps */}
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+                                                        <MapPin className="w-3 h-3 text-amber-400" /> Google Business Profile (GBP) URL
+                                                    </label>
+                                                    <input
+                                                        type="url"
+                                                        placeholder="https://maps.app.goo.gl/..."
+                                                        value={editGbpUrl}
+                                                        onChange={e => setEditGbpUrl(e.target.value)}
+                                                        className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                                                    />
+                                                    <p className="text-[9px] text-muted-foreground">Google Maps / GBP business page link</p>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="space-y-1">

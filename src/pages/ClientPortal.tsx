@@ -10,6 +10,7 @@ import {
   BriefcaseBusiness,
   CheckCircle2,
   CreditCard,
+  Eye,
   FileSignature,
   LayoutDashboard,
   Loader2,
@@ -24,7 +25,11 @@ import {
   TrendingUp,
   FileCheck,
   Lock,
-  Settings
+  Settings,
+  ExternalLink,
+  Globe,
+  MapPin,
+  Laptop
 } from "lucide-react";
 import { parseProjectMeta, serializeProjectMeta } from "@/lib/projectLifecycleHelper";
 import { parseSubmissionMessage } from "@/lib/parseSubmissionMessage";
@@ -37,6 +42,8 @@ import {
 import { ServiceRequestModal } from "@/components/client/ServiceRequestModal";
 import { ServiceAgreementModal } from "@/components/client/ServiceAgreementModal";
 import { ServiceDetailsModal } from "@/components/client/ServiceDetailsModal";
+import { PaymentSuccessModal } from "@/components/client/PaymentSuccessModal";
+import { OnboardingSuccessModal } from "@/components/client/OnboardingSuccessModal";
 
 type Tab = "overview" | "services" | "agreements" | "billing";
 type Invoice = { id?: string; title?: string; amount?: string; due_date?: string; status?: string; description?: string };
@@ -66,6 +73,7 @@ export default function ClientPortal() {
   const [saving, setSaving] = useState(false);
   const [setupSaving, setSetupSaving] = useState(false);
   const [profileComplete, setProfileComplete] = useState(false);
+  const [phone, setPhone] = useState("");
   const [paymentStatuses, setPaymentStatuses] = useState<Record<string, string>>({});
 
   // Lifecycle Modals
@@ -73,14 +81,41 @@ export default function ClientPortal() {
   const [requestModalProject, setRequestModalProject] = useState<Project | null>(null);
   const [agreementModalProject, setAgreementModalProject] = useState<Project | null>(null);
   const [submittingRequest, setSubmittingRequest] = useState(false);
+  const [successModalData, setSuccessModalData] = useState<{
+    isOpen: boolean;
+    amount?: string;
+    invoiceTitle?: string;
+    projectName?: string;
+    project?: Project;
+  }>({ isOpen: false });
+  const [onboardingSuccessData, setOnboardingSuccessData] = useState<{
+    isOpen: boolean;
+    projectName?: string;
+    advanceAmount?: string;
+    onProceed?: () => void;
+  }>({ isOpen: false });
 
   const [searchParams] = useSearchParams();
 
-  // Listen for query params or custom event to open profile settings
+  // Listen for query params or custom event to open profile settings or payment success
   useEffect(() => {
     if (searchParams.get("action") === "profile") {
       setSetup(true);
     }
+    const paymentParam = searchParams.get("payment");
+    const orderId = searchParams.get("order_id");
+    const linkId = searchParams.get("link_id");
+    const txStatus = searchParams.get("txStatus");
+
+    if (paymentParam === "success" || orderId || linkId || txStatus === "SUCCESS") {
+      setSuccessModalData({
+        isOpen: true,
+        invoiceTitle: "Service Advance / Milestone Invoice",
+        projectName: "Siddhi Dynamics Engagement"
+      });
+      toast.success("Payment confirmed! Your service agreement and bank details are now unlocked.");
+    }
+
     const handleOpenProfile = () => setSetup(true);
     window.addEventListener("open-client-profile-settings", handleOpenProfile);
     return () => window.removeEventListener("open-client-profile-settings", handleOpenProfile);
@@ -154,7 +189,11 @@ export default function ClientPortal() {
       } else {
         setName(session.user.email.split("@")[0]);
       }
-      setProfileComplete(Boolean(metadata.organization?.trim() && metadata.designation?.trim()));
+      // Load saved phone
+      if (metadata.phone) setPhone(metadata.phone);
+      setProfileComplete(
+        Boolean(metaName?.trim() && metadata.organization?.trim() && (metadata.phone || metadata.designation)?.toString().trim())
+      );
       try {
         await load(session.user.email, metaName);
       } catch {
@@ -180,9 +219,9 @@ export default function ClientPortal() {
     });
   }, [projects, paymentStatuses]);
 
-  // Aggregate services the client is actively taking across projects
+  // Aggregate services the client is actively taking across projects — ONE card per project
   const clientServices = useMemo(() => {
-    return projects.flatMap(project => {
+    return projects.map(project => {
       const m = parseProjectMeta(project.bounty_reward);
       const parsedMsg = parseSubmissionMessage(project.message);
       const serviceList = parsedMsg.selectedServices.length > 0
@@ -194,9 +233,20 @@ export default function ClientPortal() {
         Boolean(advInv && (advInv.status === "paid" || paymentStatuses[`${project.id}:${advInv.id}`] === "PAID")) ||
         Boolean(m.service_start_date);
 
-      return serviceList.map((serviceTitle, idx) => ({
-        id: `${project.id}-${idx}`,
-        title: serviceTitle,
+      // Build a clean scope summary: strip emoji rockets from service names for the summary line
+      const cleanServiceNames = serviceList.map(s => s.replace(/^[\u{1F300}-\u{1FAFF}\u2600-\u27BF\s]+/u, "").trim());
+      const scopeSummary = m.scope_summary ||
+        (serviceList.length > 0 ? `Services: ${serviceList.join(", ")}` : parsedMsg.cleanMessage);
+
+      // Card title: if single service use it, if multiple list them comma-separated (clean)
+      const cardTitle = serviceList.length === 1
+        ? serviceList[0]
+        : cleanServiceNames.join(" + ");
+
+      return {
+        id: project.id,
+        title: cardTitle,
+        serviceList,
         project,
         meta: m,
         status: project.status || "Discovery & Scope Review",
@@ -204,9 +254,9 @@ export default function ClientPortal() {
         startDate: m.service_start_date,
         deadline: m.deadline,
         agreement: m.agreement,
-        scopeSummary: m.scope_summary || (serviceList.length > 0 ? `Services: ${serviceList.join(", ")}` : parsedMsg.cleanMessage),
+        scopeSummary,
         isAdvPaid
-      }));
+      };
     });
   }, [projects, paymentStatuses]);
 
@@ -346,12 +396,20 @@ export default function ClientPortal() {
         })
         .eq("id", requestModalProject.id);
 
-      toast.success("Service onboarding form submitted successfully! Opening payment...");
+      toast.success("Service onboarding completed successfully!");
       const targetProject = requestModalProject;
       setRequestModalProject(null);
 
-      // Trigger payment dialog for the advance invoice
-      setPayment({ project: targetProject, invoice: advInvoice });
+      // Trigger Onboarding Completed Celebration Modal
+      setOnboardingSuccessData({
+        isOpen: true,
+        projectName: targetProject.organization || targetProject.name,
+        advanceAmount: advanceAmount || advInvoice.amount,
+        onProceed: () => {
+          setOnboardingSuccessData({ isOpen: false });
+          setPayment({ project: targetProject, invoice: advInvoice });
+        }
+      });
 
       await load(email);
     } catch (err: any) {
@@ -361,7 +419,7 @@ export default function ClientPortal() {
     }
   };
 
-  const completeSetup = async (updatedName: string, organization: string, designation: string) => {
+  const completeSetup = async (updatedName: string, organization: string, mobileNumber: string) => {
     setSetupSaving(true);
     const { error } = await supabase.auth.updateUser({
       data: {
@@ -369,12 +427,14 @@ export default function ClientPortal() {
         name: updatedName,
         profile_name: updatedName,
         organization,
-        designation
+        designation: mobileNumber, // stored in designation for backward compat
+        phone: mobileNumber
       }
     });
     setSetupSaving(false);
     if (error) return toast.error(error.message);
     if (updatedName) setName(updatedName);
+    if (mobileNumber) setPhone(mobileNumber);
     setProfileComplete(true);
     toast.success("Profile saved successfully.");
     setSetup(false);
@@ -388,7 +448,7 @@ export default function ClientPortal() {
     );
   }
 
-  const hasSetup = profileComplete || projects.some(project => Boolean(project.organization?.trim() && project.designation?.trim()));
+  const hasSetup = profileComplete || projects.some(project => Boolean(project.name?.trim() && project.organization?.trim()));
   const tabs: [Tab, string, typeof LayoutDashboard][] = [
     ["overview", "Overview", LayoutDashboard],
     ["services", "Services", PanelsTopLeft],
@@ -452,12 +512,18 @@ export default function ClientPortal() {
           <div className="mt-7 space-y-6">
             {!hasSetup && (
               <div className="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-5 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="font-bold">Finish your client profile</p>
-                  <p className="mt-1 text-sm text-stone-600">Add your organisation and billing contact before an agreement or invoice is issued.</p>
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl mt-0.5">👤</span>
+                  <div>
+                    <p className="font-bold text-stone-900">Complete your profile to continue</p>
+                    <p className="mt-1 text-sm text-stone-600">Add your name, business name and mobile number below. These details are needed before we can schedule your service.</p>
+                  </div>
                 </div>
-                <button onClick={() => setSetup(true)} className="rounded-lg bg-stone-900 px-4 py-2 text-sm font-bold text-white">
-                  Complete setup
+                <button
+                  onClick={() => setSetup(true)}
+                  className="shrink-0 rounded-xl bg-stone-900 px-5 py-2.5 text-sm font-bold text-white hover:bg-stone-700 transition-colors cursor-pointer"
+                >
+                  Complete Profile →
                 </button>
               </div>
             )}
@@ -620,6 +686,92 @@ export default function ClientPortal() {
                           </div>
                         )}
 
+                        {/* Live Deliverables, Demos & Progress Tracking */}
+                        {(m.demo_url || m.website_url || m.seo_report_url || m.gbp_url) && (
+                          <div className="p-4 rounded-2xl bg-gradient-to-r from-stone-50 via-lime-50/20 to-emerald-50/30 border border-stone-200 space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
+                                <Globe className="w-3.5 h-3.5 text-primary" /> Live Deliverables & Progress Tracking
+                              </span>
+                              <span className="text-[10px] font-semibold text-stone-500">Live Links from Siddhi Dynamics</span>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
+                              {/* Demo Preview */}
+                              {m.demo_url && (
+                                <a
+                                  href={m.demo_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200 hover:border-cyan-500 hover:shadow-sm transition-all group cursor-pointer"
+                                >
+                                  <div className="min-w-0 pr-2">
+                                    <span className="text-[10px] font-bold text-cyan-700 uppercase tracking-wider block">Website Staging</span>
+                                    <span className="text-xs font-bold text-stone-900 truncate block group-hover:text-cyan-700">Preview Demo Site</span>
+                                  </div>
+                                  <div className="w-7 h-7 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center shrink-0 group-hover:bg-cyan-600 group-hover:text-white transition-colors">
+                                    <Laptop className="w-4 h-4" />
+                                  </div>
+                                </a>
+                              )}
+
+                              {/* Live Website */}
+                              {m.website_url && (
+                                <a
+                                  href={m.website_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200 hover:border-emerald-500 hover:shadow-sm transition-all group cursor-pointer"
+                                >
+                                  <div className="min-w-0 pr-2">
+                                    <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider block">Live Production</span>
+                                    <span className="text-xs font-bold text-stone-900 truncate block group-hover:text-emerald-700">Visit Live Website</span>
+                                  </div>
+                                  <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                                    <Globe className="w-4 h-4" />
+                                  </div>
+                                </a>
+                              )}
+
+                              {/* SEO & AEO Report */}
+                              {m.seo_report_url && (
+                                <a
+                                  href={m.seo_report_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200 hover:border-lime-500 hover:shadow-sm transition-all group cursor-pointer"
+                                >
+                                  <div className="min-w-0 pr-2">
+                                    <span className="text-[10px] font-bold text-lime-800 uppercase tracking-wider block">Rankings & Growth</span>
+                                    <span className="text-xs font-bold text-stone-900 truncate block group-hover:text-lime-800">SEO Progress Report</span>
+                                  </div>
+                                  <div className="w-7 h-7 rounded-lg bg-lime-100 text-lime-900 flex items-center justify-center shrink-0 group-hover:bg-stone-900 group-hover:text-lime-300 transition-colors">
+                                    <TrendingUp className="w-4 h-4" />
+                                  </div>
+                                </a>
+                              )}
+
+                              {/* Google Business Profile */}
+                              {m.gbp_url && (
+                                <a
+                                  href={m.gbp_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200 hover:border-amber-500 hover:shadow-sm transition-all group cursor-pointer"
+                                >
+                                  <div className="min-w-0 pr-2">
+                                    <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block">Google Maps & GBP</span>
+                                    <span className="text-xs font-bold text-stone-900 truncate block group-hover:text-amber-800">Business Profile</span>
+                                  </div>
+                                  <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                                    <MapPin className="w-4 h-4" />
+                                  </div>
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
                         {/* 3. Project Updates Timeline Feed */}
                         {m.updates && m.updates.filter(u => u.visible_to_client).length > 0 && (
                           <div className="pt-2">
@@ -681,15 +833,20 @@ export default function ClientPortal() {
                   <article key={srv.id} className="rounded-2xl border border-stone-200 bg-white p-6 space-y-4 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
                     <div className="space-y-3">
                       <div className="flex items-start justify-between gap-3">
-                        <div>
+                        <div className="flex-1 min-w-0">
                           <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                             srv.isAdvPaid ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-amber-50 text-amber-700 border border-amber-200"
                           }`}>
                             {srv.isAdvPaid ? "● Active Service" : "○ Pending Onboarding / Advance"}
                           </span>
-                          <h3 className="mt-2 text-lg font-bold text-stone-900">
-                            {srv.title}
-                          </h3>
+                          {/* Service tags — one pill per service */}
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {srv.serviceList.map((s, i) => (
+                              <span key={i} className="inline-flex items-center rounded-lg bg-stone-900 text-white px-2.5 py-1 text-xs font-bold">
+                                {s}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                         <span className="text-xs font-semibold px-2.5 py-1 rounded-xl bg-stone-100 text-stone-600 shrink-0">
                           {srv.status}
@@ -698,8 +855,8 @@ export default function ClientPortal() {
 
                       <div className="space-y-1">
                         <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400 block">Scope / Deliverables Summary</span>
-                        <p className="text-xs font-bold text-stone-800 line-clamp-2">
-                          {srv.scopeSummary || `Services: ${srv.title}`}
+                        <p className="text-xs text-stone-700 leading-relaxed">
+                          {srv.scopeSummary}
                         </p>
                       </div>
 
@@ -727,6 +884,57 @@ export default function ClientPortal() {
                       <div className="h-2 w-full overflow-hidden rounded-full bg-stone-100">
                         <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${srv.progress}%` }} />
                       </div>
+
+                      {/* Deliverables / Live Tracking Quick Badges */}
+                      {(srv.meta.demo_url || srv.meta.website_url || srv.meta.seo_report_url || srv.meta.gbp_url) && (
+                        <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200/80 space-y-1.5">
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400 block">
+                            Deliverables & Live Progress
+                          </span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {srv.meta.demo_url && (
+                              <a
+                                href={srv.meta.demo_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-cyan-50 border border-cyan-200 text-cyan-800 text-[11px] font-bold hover:bg-cyan-100 transition-colors"
+                              >
+                                <Laptop className="w-3 h-3 text-cyan-600" /> Website Demo <ExternalLink className="w-2.5 h-2.5 ml-0.5 text-cyan-500" />
+                              </a>
+                            )}
+                            {srv.meta.website_url && (
+                              <a
+                                href={srv.meta.website_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold hover:bg-emerald-100 transition-colors"
+                              >
+                                <Globe className="w-3 h-3 text-emerald-600" /> Live Website <ExternalLink className="w-2.5 h-2.5 ml-0.5 text-emerald-500" />
+                              </a>
+                            )}
+                            {srv.meta.seo_report_url && (
+                              <a
+                                href={srv.meta.seo_report_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-lime-50 border border-lime-200 text-lime-900 text-[11px] font-bold hover:bg-lime-100 transition-colors"
+                              >
+                                <TrendingUp className="w-3 h-3 text-lime-700" /> SEO Report <ExternalLink className="w-2.5 h-2.5 ml-0.5 text-lime-600" />
+                              </a>
+                            )}
+                            {srv.meta.gbp_url && (
+                              <a
+                                href={srv.meta.gbp_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-[11px] font-bold hover:bg-amber-100 transition-colors"
+                              >
+                                <MapPin className="w-3 h-3 text-amber-600" /> Google Maps <ExternalLink className="w-2.5 h-2.5 ml-0.5 text-amber-500" />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      )}
 
                       <div className="pt-1 flex flex-wrap gap-2 justify-end">
                         <button
@@ -952,7 +1160,22 @@ export default function ClientPortal() {
                       >
                         {paid ? "PAID via Cashfree" : "Pending Payment"}
                       </span>
-                      {!paid && (
+                      {paid ? (
+                        <button
+                          onClick={() => {
+                            setSuccessModalData({
+                              isOpen: true,
+                              amount: invoice.amount,
+                              invoiceTitle: invoice.title || invoice.id,
+                              projectName: project.organization || project.name,
+                              project
+                            });
+                          }}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Receipt & Status
+                        </button>
+                      ) : (
                         <button
                           onClick={() => setPayment({ project, invoice })}
                           className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-bold text-white hover:bg-stone-800 transition-colors cursor-pointer"
@@ -984,6 +1207,7 @@ export default function ClientPortal() {
         <Setup
           name={name}
           email={email}
+          phone={phone}
           onClose={() => setSetup(false)}
           onComplete={completeSetup}
           saving={setupSaving}
@@ -1035,6 +1259,40 @@ export default function ClientPortal() {
           setPayment({ project: p as any, invoice: inv });
         }}
         paymentStatuses={paymentStatuses}
+      />
+
+      {/* Payment Success Celebration Modal */}
+      <PaymentSuccessModal
+        isOpen={successModalData.isOpen}
+        amount={successModalData.amount}
+        invoiceTitle={successModalData.invoiceTitle}
+        projectName={successModalData.projectName}
+        onClose={() => setSuccessModalData({ isOpen: false })}
+        onViewAgreement={() => {
+          setSuccessModalData({ isOpen: false });
+          const targetProj = successModalData.project || projects.find(p => {
+            const m = parseProjectMeta(p.bounty_reward);
+            return Boolean(m.service_start_date || m.agreement);
+          }) || projects[0];
+          if (targetProj) setAgreementModalProject(targetProj);
+        }}
+        onGoToActiveWork={() => {
+          setSuccessModalData({ isOpen: false });
+          setTab("overview");
+        }}
+      />
+
+      {/* Client Onboarding Completed Celebration Modal */}
+      <OnboardingSuccessModal
+        isOpen={onboardingSuccessData.isOpen}
+        projectName={onboardingSuccessData.projectName}
+        advanceAmount={onboardingSuccessData.advanceAmount}
+        onClose={() => setOnboardingSuccessData({ isOpen: false })}
+        onProceedToPayment={onboardingSuccessData.onProceed}
+        onGoToPortal={() => {
+          setOnboardingSuccessData({ isOpen: false });
+          setTab("overview");
+        }}
       />
 
       <FooterSection />
@@ -1112,67 +1370,70 @@ function Empty({
 function Setup({
   name,
   email,
+  phone: initialPhone,
   onClose,
   onComplete,
   saving
 }: {
   name: string;
   email: string;
+  phone?: string;
   onClose: () => void;
-  onComplete: (updatedName: string, organization: string, designation: string) => void;
+  onComplete: (updatedName: string, businessName: string, mobile: string) => void;
   saving: boolean;
 }) {
   const [profileName, setProfileName] = useState(name || "");
-  const [organization, setOrganization] = useState("");
-  const [designation, setDesignation] = useState("");
+  const [businessName, setBusinessName] = useState("");
+  const [mobile, setMobile] = useState(initialPhone || "");
 
   return (
     <div className="fixed inset-0 z-[250] grid place-items-center bg-stone-950/70 p-4 pt-20 pb-8 backdrop-blur-sm">
       <form
         onSubmit={e => {
           e.preventDefault();
-          onComplete(profileName, organization, designation);
+          onComplete(profileName, businessName, mobile);
         }}
         className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl"
       >
         <div className="flex justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[.16em] text-primary">Client Profile</p>
-            <h2 className="mt-1 text-xl font-semibold">Profile Settings</h2>
+            <h2 className="mt-1 text-xl font-semibold">Complete your profile to continue</h2>
           </div>
           <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-stone-100">
             <X className="h-5 w-5" />
           </button>
         </div>
-        <p className="mt-3 text-sm text-stone-600">Update your profile display name, organisation, and role used across your workspace and agreements.</p>
+        <p className="mt-3 text-sm text-stone-600">Add your name, business name and mobile number below. These details are needed before we can schedule your service.</p>
         <div className="mt-5 grid gap-4">
           <label className="text-sm font-bold">
-            Profile / Display Name
+            Your Full Name
             <input
               required
               value={profileName}
               onChange={e => setProfileName(e.target.value)}
-              placeholder="e.g. lie_detection or your full name"
+              placeholder="e.g. Ravi Kumar"
               className="mt-2 w-full rounded-xl border border-stone-200 px-3 py-3 font-normal outline-none focus:border-primary"
             />
           </label>
           <label className="text-sm font-bold">
-            Organisation
+            Business / Company Name
             <input
               required
-              value={organization}
-              onChange={e => setOrganization(e.target.value)}
-              placeholder="Company or business name"
+              value={businessName}
+              onChange={e => setBusinessName(e.target.value)}
+              placeholder="e.g. Acme Technologies Pvt Ltd"
               className="mt-2 w-full rounded-xl border border-stone-200 px-3 py-3 font-normal outline-none focus:border-primary"
             />
           </label>
           <label className="text-sm font-bold">
-            Your role
+            Mobile Number
             <input
               required
-              value={designation}
-              onChange={e => setDesignation(e.target.value)}
-              placeholder="e.g. Founder, Operations Manager"
+              type="tel"
+              value={mobile}
+              onChange={e => setMobile(e.target.value)}
+              placeholder="e.g. +91 9876543210"
               className="mt-2 w-full rounded-xl border border-stone-200 px-3 py-3 font-normal outline-none focus:border-primary"
             />
           </label>
@@ -1182,7 +1443,7 @@ function Setup({
           disabled={saving}
           className="mt-5 w-full rounded-xl bg-stone-900 py-3 text-sm font-bold text-white disabled:opacity-60 cursor-pointer hover:bg-stone-800 transition-colors"
         >
-          {saving ? "Saving…" : "Save profile settings"}
+          {saving ? "Saving…" : "Save & Continue"}
         </button>
       </form>
     </div>

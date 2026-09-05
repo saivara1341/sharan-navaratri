@@ -239,13 +239,19 @@ export default function Blog() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Helmet>
-        <title>Blog | AI Automation & Business Insights for India — Siddhi Dynamics</title>
+        <title>Blog | AI Automation &amp; Business Insights for India — Siddhi Dynamics</title>
         <meta name="description" content="Practical guides on AI business automation, agentic AI, ERP, SaaS and workflow digitization for Indian businesses and SMBs. By Siddhi Dynamics, Hyderabad." />
         <meta name="keywords" content="AI automation blog India, business automation guide India, agentic AI India, ERP guide India, SaaS India, how to automate business India" />
         <link rel="canonical" href="https://siddhidynamics.in/blog" />
-        <meta property="og:title" content="Blog | AI & Automation Insights — Siddhi Dynamics" />
-        <meta property="og:description" content="Practical guides on AI automation, ERP, SaaS, and business digitization for Indian businesses." />
+        <meta property="og:type" content="website" />
         <meta property="og:url" content="https://siddhidynamics.in/blog" />
+        <meta property="og:title" content="Blog | AI &amp; Automation Insights — Siddhi Dynamics" />
+        <meta property="og:description" content="Practical guides on AI automation, ERP, SaaS, and business digitization for Indian businesses." />
+        <meta property="og:image" content="https://siddhidynamics.in/favicon.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Blog | AI &amp; Automation Insights — Siddhi Dynamics" />
+        <meta name="twitter:description" content="Practical guides on AI automation, ERP, SaaS, and business digitization for Indian businesses." />
+        <meta name="twitter:image" content="https://siddhidynamics.in/favicon.jpg" />
         <script type="application/ld+json">{JSON.stringify(blogSchema)}</script>
       </Helmet>
 

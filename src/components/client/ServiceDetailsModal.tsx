@@ -11,7 +11,12 @@ import {
   MessageSquare,
   ShieldCheck,
   ArrowRight,
-  ReceiptText
+  ReceiptText,
+  Globe,
+  Laptop,
+  MapPin,
+  TrendingUp,
+  ExternalLink
 } from "lucide-react";
 import { parseSubmissionMessage } from "@/lib/parseSubmissionMessage";
 import { parseProjectMeta } from "@/lib/projectLifecycleHelper";
@@ -202,6 +207,116 @@ export const ServiceDetailsModal: React.FC<ServiceDetailsModalProps> = ({
                 >
                   <FileSignature className="w-4 h-4" /> View Service Agreement & Bank Details
                 </button>
+              </div>
+            )}
+          </div>
+
+          {/* Deliverables, Demos & Live Progress Reports Section */}
+          <div className="rounded-2xl border border-stone-200 bg-white p-5 space-y-3 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-stone-700 flex items-center gap-1.5">
+                <Globe className="w-4 h-4 text-primary" /> Deliverables, Demos & Live Reports
+              </span>
+              <span className="text-[11px] text-stone-500 font-medium">Project Progress</span>
+            </div>
+
+            {(m.demo_url || m.website_url || m.seo_report_url || m.gbp_url) ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Website Demo / Staging */}
+                {m.demo_url && (
+                  <div className="p-3.5 rounded-xl border border-cyan-200 bg-cyan-50/50 flex flex-col justify-between space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-0.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-700 block">Website Development</span>
+                        <h4 className="text-xs font-bold text-stone-900">Demo / Staging Preview</h4>
+                      </div>
+                      <div className="p-1.5 rounded-lg bg-cyan-100 text-cyan-700">
+                        <Laptop className="w-4 h-4" />
+                      </div>
+                    </div>
+                    <a
+                      href={m.demo_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-stone-900 text-white text-xs font-bold hover:bg-stone-800 transition-colors shadow-sm"
+                    >
+                      Preview Demo Website <ExternalLink className="w-3 h-3 text-cyan-300" />
+                    </a>
+                  </div>
+                )}
+
+                {/* Live Production Website */}
+                {m.website_url && (
+                  <div className="p-3.5 rounded-xl border border-emerald-200 bg-emerald-50/50 flex flex-col justify-between space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-0.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">Production Website</span>
+                        <h4 className="text-xs font-bold text-stone-900">Official Live Domain</h4>
+                      </div>
+                      <div className="p-1.5 rounded-lg bg-emerald-100 text-emerald-700">
+                        <Globe className="w-4 h-4" />
+                      </div>
+                    </div>
+                    <a
+                      href={m.website_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-800 text-white text-xs font-bold hover:bg-emerald-900 transition-colors shadow-sm"
+                    >
+                      Visit Live Website <ExternalLink className="w-3 h-3 text-emerald-200" />
+                    </a>
+                  </div>
+                )}
+
+                {/* SEO & AEO Progress Report */}
+                {m.seo_report_url && (
+                  <div className="p-3.5 rounded-xl border border-lime-200 bg-lime-50/50 flex flex-col justify-between space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-0.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-lime-800 block">SEO & Rankings</span>
+                        <h4 className="text-xs font-bold text-stone-900">Live Progress Report</h4>
+                      </div>
+                      <div className="p-1.5 rounded-lg bg-lime-100 text-lime-900">
+                        <TrendingUp className="w-4 h-4" />
+                      </div>
+                    </div>
+                    <a
+                      href={m.seo_report_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-stone-900 text-white text-xs font-bold hover:bg-stone-800 transition-colors shadow-sm"
+                    >
+                      View SEO & Analytics Report <ExternalLink className="w-3 h-3 text-lime-300" />
+                    </a>
+                  </div>
+                )}
+
+                {/* Google Business Profile */}
+                {m.gbp_url && (
+                  <div className="p-3.5 rounded-xl border border-amber-200 bg-amber-50/50 flex flex-col justify-between space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-0.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 block">Google Business Profile</span>
+                        <h4 className="text-xs font-bold text-stone-900">Local Maps Listing</h4>
+                      </div>
+                      <div className="p-1.5 rounded-lg bg-amber-100 text-amber-700">
+                        <MapPin className="w-4 h-4" />
+                      </div>
+                    </div>
+                    <a
+                      href={m.gbp_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-amber-600 text-white text-xs font-bold hover:bg-amber-700 transition-colors shadow-sm"
+                    >
+                      View on Google Maps <ExternalLink className="w-3 h-3 text-amber-200" />
+                    </a>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/80 text-xs text-stone-500 leading-relaxed">
+                🚀 Deliverables, website demo preview links, and SEO/GBP performance tracking reports will be linked here by our admin team as soon as milestones commence.
               </div>
             )}
           </div>

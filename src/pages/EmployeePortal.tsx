@@ -22,13 +22,19 @@ import {
   Activity, 
   Check, 
   SlidersHorizontal,
-  X
+  X,
+  Laptop,
+  Globe,
+  MapPin,
+  TrendingUp,
+  ExternalLink
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { GoogleReviewCard } from "@/components/GoogleReviewCard";
 import { RequirementsPanel } from "@/components/requirements/RequirementsPanel";
+import { parseProjectMeta, serializeProjectMeta } from "@/lib/projectLifecycleHelper";
 
 interface Submission {
   id: string;
@@ -65,6 +71,9 @@ export default function EmployeePortal() {
   const [editProgress, setEditProgress] = useState(0);
   const [editDeadline, setEditDeadline] = useState("");
   const [editUrl, setEditUrl] = useState("");
+  const [editDemoUrl, setEditDemoUrl] = useState("");
+  const [editSeoReportUrl, setEditSeoReportUrl] = useState("");
+  const [editGbpUrl, setEditGbpUrl] = useState("");
   const [editAgreement, setEditAgreement] = useState("");
   const [editBudgetTotal, setEditBudgetTotal] = useState("");
   const [editBudgetPaid, setEditBudgetPaid] = useState("");
@@ -144,12 +153,19 @@ export default function EmployeePortal() {
     if (!selectedSub) return;
     setSavingRoadmap(true);
     try {
-      const metaStr = JSON.stringify({
+      const currentMeta = parseProjectMeta(selectedSub.bounty_reward);
+      const metaStr = serializeProjectMeta({
+        ...currentMeta,
         deadline: editDeadline.trim(),
         website_url: editUrl.trim(),
+        demo_url: editDemoUrl.trim(),
+        seo_report_url: editSeoReportUrl.trim(),
+        gbp_url: editGbpUrl.trim(),
         agreement: editAgreement.trim(),
-        budget_total: editBudgetTotal.trim(),
-        budget_paid: editBudgetPaid.trim()
+        ...((editBudgetTotal || editBudgetPaid) ? {
+          budget_total: editBudgetTotal.trim(),
+          budget_paid: editBudgetPaid.trim()
+        } as any : {})
       });
       await supabaseService.updateSubmission(selectedSub.id, {
         status: editStatus,
@@ -280,12 +296,15 @@ export default function EmployeePortal() {
     setSelectedSub(sub);
     setEditStatus(sub.status || "Analyzing");
     setEditProgress(sub.progress || 0);
-    const meta = parseProjectMetadata(sub.bounty_reward);
+    const meta = parseProjectMeta(sub.bounty_reward);
     setEditDeadline(meta.deadline || "");
     setEditUrl(meta.website_url || "");
+    setEditDemoUrl(meta.demo_url || "");
+    setEditSeoReportUrl(meta.seo_report_url || "");
+    setEditGbpUrl(meta.gbp_url || "");
     setEditAgreement(meta.agreement || "");
-    setEditBudgetTotal(meta.budget_total || "$12,500");
-    setEditBudgetPaid(meta.budget_paid || "$4,500");
+    setEditBudgetTotal((meta as any).budget_total || "");
+    setEditBudgetPaid((meta as any).budget_paid || "");
   };
 
   const selectChat = (sub: Submission) => {
@@ -770,16 +789,67 @@ export default function EmployeePortal() {
                     />
                   </div>
 
-                  {/* Demo / Live Website URL */}
-                  <div className="space-y-2 text-xs">
-                    <label className="font-bold text-slate-300 uppercase tracking-wider">Demo / Live Website URL</label>
-                    <input
-                      type="text"
-                      value={editUrl}
-                      onChange={(e) => setEditUrl(e.target.value)}
-                      placeholder="e.g. https://clientapp.siddhidynamics.in"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 focus:outline-none focus:border-primary text-white"
-                    />
+                  {/* Deliverables, Demos & Live Reports */}
+                  <div className="p-3.5 rounded-xl bg-white/5 border border-white/10 space-y-3">
+                    <span className="text-[11px] font-bold text-primary uppercase tracking-wider block">
+                      Deliverables & Live Progress Reports
+                    </span>
+
+                    {/* Website Demo / Staging Preview */}
+                    <div className="space-y-1.5 text-xs">
+                      <label className="font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                        <Laptop className="w-3.5 h-3.5 text-cyan-400" /> Website Demo / Staging Preview URL
+                      </label>
+                      <input
+                        type="url"
+                        value={editDemoUrl}
+                        onChange={(e) => setEditDemoUrl(e.target.value)}
+                        placeholder="e.g. https://staging.clientdomain.com"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-3 focus:outline-none focus:border-primary text-white text-xs"
+                      />
+                    </div>
+
+                    {/* Live Production Website */}
+                    <div className="space-y-1.5 text-xs">
+                      <label className="font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                        <Globe className="w-3.5 h-3.5 text-emerald-400" /> Live Production Website URL
+                      </label>
+                      <input
+                        type="url"
+                        value={editUrl}
+                        onChange={(e) => setEditUrl(e.target.value)}
+                        placeholder="e.g. https://clientdomain.com"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-3 focus:outline-none focus:border-primary text-white text-xs"
+                      />
+                    </div>
+
+                    {/* SEO & AEO Progress Report */}
+                    <div className="space-y-1.5 text-xs">
+                      <label className="font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                        <TrendingUp className="w-3.5 h-3.5 text-lime-400" /> SEO & Growth Report URL
+                      </label>
+                      <input
+                        type="url"
+                        value={editSeoReportUrl}
+                        onChange={(e) => setEditSeoReportUrl(e.target.value)}
+                        placeholder="e.g. https://lookerstudio.google.com/... or report link"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-3 focus:outline-none focus:border-primary text-white text-xs"
+                      />
+                    </div>
+
+                    {/* Google Business Profile */}
+                    <div className="space-y-1.5 text-xs">
+                      <label className="font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                        <MapPin className="w-3.5 h-3.5 text-amber-400" /> Google Business Profile (GBP) URL
+                      </label>
+                      <input
+                        type="url"
+                        value={editGbpUrl}
+                        onChange={(e) => setEditGbpUrl(e.target.value)}
+                        placeholder="e.g. https://maps.app.goo.gl/..."
+                        className="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-3 focus:outline-none focus:border-primary text-white text-xs"
+                      />
+                    </div>
                   </div>
 
                   {/* SLA & Agreement Summary */}

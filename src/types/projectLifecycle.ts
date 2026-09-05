@@ -108,7 +108,13 @@ export interface ProjectLifecycleMeta {
   // Dates
   service_start_date?: string; // Set when advance is paid or manually set by admin
   deadline?: string; // Estimated completion date
-  website_url?: string;
+  
+  // Deliverables, Demos & Live Progress Reports
+  website_url?: string; // Original Live Production Website / Portal URL
+  demo_url?: string; // Demo / Staging / Preview URL
+  seo_report_url?: string; // SEO & AEO Progress / Looker Studio / Audit Report URL
+  gbp_url?: string; // Google Business Profile / Google Maps URL
+  analytics_url?: string; // Search Console / GA4 / Live Performance Dashboard URL
 
   // Banking Details shared by admin (locked until advance payment)
   banking_details?: BankingDetails;

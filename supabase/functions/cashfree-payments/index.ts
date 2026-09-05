@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
   const clientSecret = Deno.env.get('CASHFREE_CLIENT_SECRET');
   const environment = Deno.env.get('CASHFREE_ENVIRONMENT') === 'production' ? 'https://api.cashfree.com' : 'https://sandbox.cashfree.com';
   const webhookUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/cashfree-payments`;
-  const returnUrl = Deno.env.get('CASHFREE_RETURN_URL') || 'https://siddhidynamics.in/portal/client';
+  const returnUrl = Deno.env.get('CASHFREE_RETURN_URL') || 'https://siddhidynamics.in/portal/client?payment=success&link_id={link_id}';
   if (!clientId || !clientSecret) return json({ error: 'Cashfree is not configured yet.' }, 503);
   const localId = `sd_${crypto.randomUUID().replaceAll('-', '')}`;
   const cashfree = await fetch(`${environment}/pg/links`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-version': '2025-01-01', 'x-client-id': clientId, 'x-client-secret': clientSecret }, body: JSON.stringify({ customer_details: { customer_name: submission.name, customer_email: submission.email, customer_phone: phone }, link_id: localId, link_amount: amount, link_currency: 'INR', link_purpose: invoice.description || `Invoice ${invoiceId}`, link_partial_payments: false, link_auto_reminders: true, link_notify: { send_email: true, send_sms: true, send_whatsapp: false }, link_meta: { notify_url: webhookUrl, return_url: returnUrl }, link_notes: { submission_id: submission.id, invoice_id: invoiceId }, enable_invoice: true }) });

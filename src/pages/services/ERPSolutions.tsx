@@ -72,10 +72,19 @@ export default function ERPSolutions() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Helmet>
-        <title>ERP Solutions & Software in Nizamabad & Hyderabad | Siddhi Dynamics</title>
-        <meta name="description" content="Intelligent ERP solutions for Indian small businesses. Inventory, HR, sales, finance and compliance — unified and AI-powered. Siddhi Dynamics, Hyderabad & Nizamabad." />
+        <title>ERP Solutions &amp; Software in Nizamabad &amp; Hyderabad | Siddhi Dynamics</title>
+        <meta name="description" content="Intelligent ERP solutions for Indian small businesses. Inventory, HR, sales, finance and compliance — unified and AI-powered. Siddhi Dynamics, Hyderabad &amp; Nizamabad." />
         <meta name="keywords" content="ERP solutions India, ERP for small business India, AI ERP India, enterprise resource planning India, ERP implementation Hyderabad, ERP implementation Nizamabad, ERP software Nizamabad, Tally integration ERP India" />
         <link rel="canonical" href="https://siddhidynamics.in/services/erp" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://siddhidynamics.in/services/erp" />
+        <meta property="og:title" content="AI ERP Solutions for Indian Businesses | Siddhi Dynamics" />
+        <meta property="og:description" content="Intelligent ERP for Indian SMBs — inventory, HR, sales, finance &amp; GST compliance, unified and AI-powered. By Siddhi Dynamics, Hyderabad." />
+        <meta property="og:image" content="https://siddhidynamics.in/favicon.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="AI ERP Solutions for Indian Businesses | Siddhi Dynamics" />
+        <meta name="twitter:description" content="Intelligent ERP for Indian SMBs — inventory, HR, sales, finance &amp; GST compliance, AI-powered. By Siddhi Dynamics." />
+        <meta name="twitter:image" content="https://siddhidynamics.in/favicon.jpg" />
         <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>

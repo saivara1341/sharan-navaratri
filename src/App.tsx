@@ -113,14 +113,13 @@ const AuthRedirectHandler = () => {
 };
 
 const PageLoadingFallback = () => (
-  <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4" aria-busy="true" aria-label="Loading page">
-    <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center animate-pulse">
-      <span className="text-primary font-extrabold text-xl">S</span>
-    </div>
-    <div className="flex items-center gap-2">
-      <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
-      <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Siddhi Dynamics Loading…</span>
-    </div>
+  <div className="min-h-screen bg-background flex flex-col items-center justify-center" aria-busy="true" aria-label="Loading page">
+    <iframe
+      src="https://lottie.host/embed/a3ca6751-cf8f-4bfb-bb01-c6eeb11dbbac/qIAedhc4s1.lottie"
+      title="Siddhi Dynamics Loading"
+      style={{ border: 'none', width: 240, height: 240 }}
+      allowFullScreen
+    />
   </div>
 );
 
