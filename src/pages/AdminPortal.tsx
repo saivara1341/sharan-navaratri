@@ -311,11 +311,21 @@ const AdminPortal = () => {
     const fetchAllUsers = async () => {
         setUsersLoading(true);
         try {
-            // Fetch all contact submissions
-            const { data: submissions, error: submissionsError } = await supabase
+            // Fetch all contact submissions (gracefully fallback if status column is not yet migrated in DB)
+            let { data: submissions, error: submissionsError } = await supabase
                 .from('contact_submissions')
                 .select('id, name, email, organization, designation, inquiry_type, status, created_at')
                 .order('created_at', { ascending: false });
+
+            if (submissionsError && (submissionsError.code === '42703' || submissionsError.message?.toLowerCase().includes('status'))) {
+                console.warn('[AdminPortal] contact_submissions.status column missing, falling back to base columns:', submissionsError.message);
+                const fallback = await supabase
+                    .from('contact_submissions')
+                    .select('id, name, email, organization, designation, inquiry_type, created_at')
+                    .order('created_at', { ascending: false });
+                submissions = fallback.data;
+                submissionsError = fallback.error;
+            }
             if (submissionsError) throw submissionsError;
 
             // Fetch waitlist entries
@@ -1112,49 +1122,7 @@ const AdminPortal = () => {
                     </div>
                 </div>
 
-                {/* ── Admin Multi-Portal Inspection & Direct Launch Bar ────── */}
-                <div className="mb-8 p-5 glass-card rounded-2xl border border-primary/20 bg-primary/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-left">
-                    <div>
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-primary/20 text-primary border border-primary/30">
-                                👑 Super Admin Inspector
-                            </span>
-                            <span className="text-xs text-muted-foreground font-semibold">Live Omnipresent Access</span>
-                        </div>
-                        <h3 className="text-sm font-extrabold text-foreground">Inspect & Oversee All Ecosystem Portals</h3>
-                        <p className="text-xs text-muted-foreground">Directly launch into partner portals, client workspaces, investor desks, or employee builder hubs.</p>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-                        <button
-                            onClick={() => navigate('/portal/agency')}
-                            className="px-3.5 py-2 rounded-xl bg-card border border-primary/30 hover:border-primary text-xs font-bold text-foreground flex items-center gap-1.5 shadow-sm transition-all"
-                            title="Inspect Agency Partner Portal"
-                        >
-                            <span>🏬</span> Agency Partner
-                        </button>
-                        <button
-                            onClick={() => navigate('/portal/client')}
-                            className="px-3.5 py-2 rounded-xl bg-card border border-blue-500/30 hover:border-blue-500 text-xs font-bold text-foreground flex items-center gap-1.5 shadow-sm transition-all"
-                            title="Inspect Client Portal"
-                        >
-                            <span>🏢</span> Client Workspace
-                        </button>
-                        <button
-                            onClick={() => navigate('/portal/employee')}
-                            className="px-3.5 py-2 rounded-xl bg-card border border-emerald-500/30 hover:border-emerald-500 text-xs font-bold text-foreground flex items-center gap-1.5 shadow-sm transition-all"
-                            title="Inspect Internal Builder Portal"
-                        >
-                            <span>💻</span> Employee Hub
-                        </button>
-                        <button
-                            onClick={() => navigate('/portal/investor')}
-                            className="px-3.5 py-2 rounded-xl bg-card border border-purple-500/30 hover:border-purple-500 text-xs font-bold text-foreground flex items-center gap-1.5 shadow-sm transition-all"
-                            title="Inspect Investor Desk"
-                        >
-                            <span>📈</span> Investor Desk
-                        </button>
-                    </div>
-                </div>
+
 
                 {/* Error Banner */}
                 {fetchError && (
@@ -2870,17 +2838,17 @@ const AdminPortal = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                    className="fixed inset-0 z-[250] bg-black/80 backdrop-blur-md flex items-start justify-center p-4 pt-20 sm:pt-24 overflow-y-auto"
                     onClick={e => e.target === e.currentTarget && setEditAgencyClient(null)}
                 >
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-card border border-border rounded-3xl shadow-2xl"
+                        className="w-full max-w-2xl max-h-[90vh] flex flex-col bg-card border border-border rounded-3xl shadow-2xl overflow-hidden my-auto"
                     >
                         {/* Modal Header */}
-                        <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card z-10">
+                        <div className="flex items-center justify-between px-6 py-5 border-b border-border bg-card shrink-0 z-10">
                             <div>
                                 <h3 className="text-lg font-extrabold text-foreground">{editAgencyClient.business_name}</h3>
                                 <p className="text-xs text-muted-foreground">{editAgencyClient.agency_email} · {editAgencyClient.category}</p>
@@ -2890,7 +2858,7 @@ const AdminPortal = () => {
                             </button>
                         </div>
 
-                        <div className="p-6 space-y-8">
+                        <div className="p-6 space-y-8 overflow-y-auto flex-1 overscroll-contain">
                             {/* ── Service Category, SLA & Fee ─── */}
                             <div className="space-y-4">
                                 <h4 className="text-xs font-extrabold uppercase tracking-widest text-primary border-b border-border pb-2 flex items-center gap-2">
@@ -3085,7 +3053,7 @@ const AdminPortal = () => {
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="flex gap-3 p-6 border-t border-border bg-muted/30 sticky bottom-0">
+                        <div className="flex gap-3 px-6 py-4 border-t border-border bg-card shrink-0 shadow-lg z-10">
                             <button
                                 onClick={() => setEditAgencyClient(null)}
                                 className="flex-1 py-3 rounded-xl bg-muted text-foreground font-semibold hover:bg-muted/80 transition-colors border border-border text-sm"

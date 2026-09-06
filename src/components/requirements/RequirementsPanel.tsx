@@ -65,7 +65,7 @@ export const RequirementsPanel = ({
       {loading ? (
         <div className="py-16 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
       ) : visible.length === 0 ? (
-        <div className="glass-card p-10 rounded-3xl bg-white/5 border border-white/10 text-center">
+        <div className="glass-card p-10 rounded-3xl bg-muted/30 border border-border text-center">
           <p className="text-muted-foreground text-sm">
             {role === "employee" ? "No work has been assigned to you yet." : "No requirements yet — submit your first one above."}
           </p>

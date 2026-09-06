@@ -94,46 +94,103 @@ export const priorityTone: Record<string, string> = {
 
 const db = supabase as any;
 
+export const isSchemaCacheError = (err: any): boolean =>
+  Boolean(
+    err &&
+      (err.code === "PGRST205" ||
+        err.code === "42P01" ||
+        String(err.message || "").toLowerCase().includes("schema cache") ||
+        String(err.message || "").toLowerCase().includes("could not find the table"))
+  );
+
 export const requirementsApi = {
   async listClients(filter?: { agencyEmail?: string }) {
-    let query = db.from("clients").select("*").order("created_at", { ascending: false });
-    if (filter?.agencyEmail) query = query.ilike("agency_email", filter.agencyEmail);
-    const { data, error } = await query;
-    if (error) throw error;
-    return (data || []) as ClientRecord[];
+    try {
+      let query = db.from("clients").select("*").order("created_at", { ascending: false });
+      if (filter?.agencyEmail) query = query.ilike("agency_email", filter.agencyEmail);
+      const { data, error } = await query;
+      if (error) {
+        if (isSchemaCacheError(error)) {
+          console.warn("[requirementsApi] 'clients' table not found in schema cache. Run supabase/fix_schema.sql to create it.");
+          return [] as ClientRecord[];
+        }
+        throw error;
+      }
+      return (data || []) as ClientRecord[];
+    } catch (err: any) {
+      if (isSchemaCacheError(err)) {
+        console.warn("[requirementsApi] 'clients' table not found in schema cache:", err.message);
+        return [] as ClientRecord[];
+      }
+      throw err;
+    }
   },
 
   async upsertClient(payload: Partial<ClientRecord>) {
     const { data, error } = payload.id
       ? await db.from("clients").update(payload).eq("id", payload.id).select().maybeSingle()
       : await db.from("clients").insert(payload).select().maybeSingle();
-    if (error) throw error;
+    if (error) {
+      if (isSchemaCacheError(error)) {
+        throw new Error("The 'clients' table does not exist yet in Supabase. Please run 'supabase/fix_schema.sql' in your Supabase SQL Editor.");
+      }
+      throw error;
+    }
     return data as ClientRecord;
   },
 
   async deleteClient(id: string) {
     const { error } = await db.from("clients").delete().eq("id", id);
-    if (error) throw error;
+    if (error) {
+      if (isSchemaCacheError(error)) {
+        throw new Error("The 'clients' table does not exist yet in Supabase. Please run 'supabase/fix_schema.sql' in your Supabase SQL Editor.");
+      }
+      throw error;
+    }
   },
 
   async listRequirements() {
-    const { data, error } = await db
-      .from("requirements")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (error) throw error;
-    return (data || []) as RequirementRecord[];
+    try {
+      const { data, error } = await db
+        .from("requirements")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) {
+        if (isSchemaCacheError(error)) {
+          console.warn("[requirementsApi] 'requirements' table not found in schema cache. Run supabase/fix_schema.sql to create it.");
+          return [] as RequirementRecord[];
+        }
+        throw error;
+      }
+      return (data || []) as RequirementRecord[];
+    } catch (err: any) {
+      if (isSchemaCacheError(err)) {
+        console.warn("[requirementsApi] 'requirements' table not found in schema cache:", err.message);
+        return [] as RequirementRecord[];
+      }
+      throw err;
+    }
   },
 
   async createRequirement(payload: Partial<RequirementRecord>) {
     const { data, error } = await db.from("requirements").insert(payload).select().maybeSingle();
-    if (error) throw error;
+    if (error) {
+      if (isSchemaCacheError(error)) {
+        throw new Error("The 'requirements' table does not exist yet in Supabase. Please run 'supabase/fix_schema.sql' in your Supabase SQL Editor.");
+      }
+      throw error;
+    }
     return data as RequirementRecord;
   },
 
   async updateRequirement(id: string, payload: Partial<RequirementRecord>) {
     const { data, error } = await db.from("requirements").update(payload).eq("id", id).select().maybeSingle();
-    if (error) throw error;
+    if (error) {
+      if (isSchemaCacheError(error)) {
+        throw new Error("The 'requirements' table does not exist yet in Supabase. Please run 'supabase/fix_schema.sql' in your Supabase SQL Editor.");
+      }
+      throw error;
+    }
     return data as RequirementRecord;
   },
 
@@ -175,8 +232,20 @@ export const requirementsApi = {
   },
 
   async pipelineSummary() {
-    const { data, error } = await db.rpc("requirement_pipeline_summary");
-    if (error) throw error;
-    return (data || []) as { status: string; requirement_count: number; total_value: number; avg_progress: number }[];
+    try {
+      const { data, error } = await db.rpc("requirement_pipeline_summary");
+      if (error) {
+        if (isSchemaCacheError(error) || error.code === "42883") {
+          return [];
+        }
+        throw error;
+      }
+      return (data || []) as { status: string; requirement_count: number; total_value: number; avg_progress: number }[];
+    } catch (err: any) {
+      if (isSchemaCacheError(err) || err?.code === "42883") {
+        return [];
+      }
+      throw err;
+    }
   },
 };
