@@ -28,7 +28,8 @@ import {
   Award,
   ShieldCheck,
   Mail,
-  Calendar
+  Calendar,
+  Radio
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { internshipService } from '@/services/internshipService';
@@ -56,7 +57,9 @@ interface RoleJD {
   requirements: string[];
 }
 
-// ─── Honest, Transparent & Authentic Role Data (No Scam / Crystal Clear) ──────
+// ─── Master Jobs & Internship Matrix ─────────────────────────────────────────
+// Complete transparency: Unpaid internship, Official Certificate on completion,
+// LOR provided strictly upon 2 years of active service, platform-based task allocation with CEO approvals.
 const ROLES: RoleJD[] = [
   {
     id: 'bd-intern',
@@ -66,27 +69,27 @@ const ROLES: RoleJD[] = [
     compensation: 'Unpaid Internship (Skill-Building & Academic Practical Track)',
     certificatePolicy: 'Official Certificate of Internship Completion awarded upon successful tenure and task completion.',
     lorPolicy: 'Letter of Recommendation (LOR) is provided strictly upon completing 2 years of continuous active working with Siddhi Dynamics.',
-    workflowDetails: 'Tasks assigned via internal platform with stipulated deadlines. Additional time extensions and client data requests can be submitted by interns and approved by CEO.',
+    workflowDetails: 'Tasks assigned via internal platform with stipulated deadlines. Client lead approvals and timeline extensions require direct CEO portal approval.',
     targetAudience: 'MBA & BBA Students / Business Graduates',
     tagline: 'Drive client acquisition, identify market opportunities, and convert real-world enterprise pipeline across regional hubs.',
     durations: ['3 Months', '6 Months', '9 Months', '12 Months'],
-    overview: 'As a Business Development Intern at Siddhi Dynamics, you will bridge the gap between classroom MBA/BBA theory and high-growth AI technology sales. You will engage enterprise SMBs, factory owners, and regional distributors to pitch custom business automation, SaaS, and ERP pipelines (such as PrintFlow and Nexus ERP). This is an unpaid educational internship where you execute real-world tasks on our internal platform under stipulated timelines to build a verifiable career portfolio.',
+    overview: 'As a Business Development Intern at Siddhi Dynamics, you operate at the frontier of technology commercialization. You will research regional enterprises, introduce cutting-edge business automation, ERP solutions (like PrintFlow & Nexus ERP), and customized digital transformation pipelines to business owners. This role provides practical boardroom sales and B2B consultative experience. It is an unpaid learning track where deliverables build your verifiable Point of Proof portfolio.',
     keyResponsibilities: [
       'Research and identify target client segments across regional hubs (Hyderabad, Nizamabad, Bangalore, Mumbai) needing business automation & ERP solutions.',
       'Conduct exploratory client discovery calls and demonstrate product capabilities including PrintFlow, Nexus ERP, and Custom Automations.',
       'Execute structured business development tasks assigned through the internal platform within stipulated timelines.',
-      'Submit formal deadline extension requests or client data requests via portal when needed for founder/CEO review and sign-off.',
-      'Maintain verifiable "Point of Proof" records for every client reached, proposal submitted, and contract closed.'
+      'Log verified outreach milestones, client requirements, and stage transitions directly in the internal portal for audit and review.',
+      'Coordinate with the Digital Marketing team to align client outreach campaigns with tailored content assets.'
     ],
     learningOutcomes: [
-      'Master the B2B consultative tech sales cycle from cold lead to contract execution in the Indian SMB & industrial market.',
-      'Apply Porter\'s Five Forces, SWOT, and Sales Funnel metrics to live Indian software and automation workflows.',
-      'Executive mentorship directly under founders with an official Certificate of Internship Completion upon tenure conclusion.',
+      'Mastery of B2B SaaS sales cycles, enterprise product demonstrations, and CRM pipeline governance.',
+      'Direct real-world experience negotiating and structuring software solution proposals for regional MSMEs.',
+      'Official Certificate of Internship Completion with a verifiable online record on our ledger upon concluding tenure.',
       'Clear eligibility for a formal institutional Letter of Recommendation (LOR) upon completing 2 years of active service.'
     ],
-    interlinkingFeature: 'Cross-Team Collaboration: Work closely with the Digital Marketing team to surface client pain points, inform high-converting content campaigns, and maintain unified lead attribution.',
+    interlinkingFeature: 'Cross-functional synergy: Every BD lead feeds real-time market data to our Digital Marketing interns for contextual collateral generation.',
     requirements: [
-      'Currently pursuing or recent graduate of MBA, BBA, B.Com, or allied business/management degree.',
+      'Currently enrolled in or graduate of MBA, BBA, B.Com, or related business and management programs.',
       'Strong communication and interpersonal skills in English and Hindi or Telugu.',
       'High ownership mindset, dedication to meeting stipulated deadlines, and eagerness to build genuine career credentials.',
       'Understanding and acceptance that this is an unpaid internship granting an official completion certificate (with LOR upon 2 years of working).'
@@ -144,83 +147,102 @@ function empIcon(t: EmploymentType) {
 }
 
 function empColor(t: EmploymentType) {
-  if (t === 'Full Time') return 'bg-blue-500/15 text-blue-400 border-blue-500/30';
-  if (t === 'Remote') return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30';
-  return 'bg-amber-500/15 text-amber-400 border-amber-500/30';
+  if (t === 'Full Time') return 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30';
+  if (t === 'Remote') return 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/30';
+  return 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/30';
 }
 
-// ─── Stay Tuned Illustration Component ───────────────────────────────────────
+// ─── Stay Tuned Dynamic Animated Illustration Component ─────────────────────
 function StayTunedIllustration() {
   return (
-    <div className="relative w-full max-w-sm mx-auto mb-6 flex items-center justify-center">
-      {/* Ambient glow */}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-purple-500/20 to-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="relative w-72 h-72 mx-auto mb-6 flex items-center justify-center select-none">
+      {/* Ambient Pulsing Glow */}
+      <motion.div
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.25, 0.45, 0.25]
+        }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute inset-0 bg-primary/25 rounded-full blur-3xl pointer-events-none"
+      />
 
-      <svg
-        className="w-56 h-48 relative z-10 drop-shadow-[0_10px_30px_rgba(0,0,0,0.6)]"
-        viewBox="0 0 240 200"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+      {/* Outer Radar Rings (Harmonious with theme card and border) */}
+      <div className="absolute inset-2 rounded-full border border-border/80 bg-card/60 backdrop-blur-sm shadow-inner" />
+      <div className="absolute inset-10 rounded-full border border-primary/20 dark:border-primary/30 border-dashed" />
+      <div className="absolute inset-20 rounded-full border border-primary/30 dark:border-primary/40" />
+      <div className="absolute inset-28 rounded-full border border-primary/40 dark:border-primary/60" />
+
+      {/* Crosshair coordinate axes */}
+      <div className="absolute inset-x-4 top-1/2 h-[1px] bg-primary/20 dark:bg-primary/30 -translate-y-1/2" />
+      <div className="absolute inset-y-4 left-1/2 w-[1px] bg-primary/20 dark:bg-primary/30 -translate-x-1/2" />
+
+      {/* Cardinal calibration ticks */}
+      <span className="absolute top-4 left-1/2 -translate-x-1/2 text-[9px] font-mono font-bold tracking-widest text-primary/70">N·360°</span>
+      <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[9px] font-mono font-bold tracking-widest text-primary/70">S·180°</span>
+      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[9px] font-mono font-bold tracking-widest text-primary/70">W·270°</span>
+      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-mono font-bold tracking-widest text-primary/70">E·090°</span>
+
+      {/* Expanding Pulse Waves */}
+      {[0, 1.2, 2.4].map((delay, idx) => (
+        <motion.div
+          key={idx}
+          className="absolute rounded-full border border-primary/50 pointer-events-none"
+          initial={{ width: 44, height: 44, opacity: 0.8 }}
+          animate={{
+            width: [44, 250],
+            height: [44, 250],
+            opacity: [0.8, 0]
+          }}
+          transition={{
+            duration: 3.6,
+            repeat: Infinity,
+            delay,
+            ease: 'easeOut'
+          }}
+        />
+      ))}
+
+      {/* Smooth Rotating Radar Sweep Cone */}
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ repeat: Infinity, duration: 5, ease: 'linear' }}
+        className="absolute inset-2 rounded-full pointer-events-none overflow-hidden"
       >
-        <defs>
-          <linearGradient id="beam" x1="120" y1="110" x2="120" y2="15" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#a855f7" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id="dishGrad" x1="80" y1="90" x2="160" y2="130" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#9333ea" />
-            <stop offset="100%" stopColor="#6366f1" />
-          </linearGradient>
-          <linearGradient id="badgeGrad" x1="0" y1="0" x2="60" y2="24" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.12)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0.02)" />
-          </linearGradient>
-        </defs>
+        <div
+          className="w-full h-full"
+          style={{
+            background: 'conic-gradient(from 0deg at 50% 50%, hsl(var(--primary) / 0.4) 0deg, hsl(var(--primary) / 0.08) 50deg, transparent 70deg, transparent 360deg)'
+          }}
+        />
+      </motion.div>
 
-        {/* Orbit Rings */}
-        <ellipse cx="120" cy="110" rx="95" ry="48" stroke="#8b5cf6" strokeOpacity="0.3" strokeWidth="1.5" strokeDasharray="4 4" />
-        <ellipse cx="120" cy="110" rx="65" ry="32" stroke="#a855f7" strokeOpacity="0.4" strokeWidth="1" />
+      {/* Floating Target Nodes (Upcoming Roles in Pipeline) */}
+      <motion.div
+        animate={{ y: [-5, 5, -5] }}
+        transition={{ repeat: Infinity, duration: 3.2, ease: 'easeInOut' }}
+        className="absolute top-14 right-10 flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-primary/40 shadow-lg text-[10px] font-bold text-foreground"
+      >
+        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+        <span>Full-Time Eng</span>
+      </motion.div>
 
-        {/* Search Beam */}
-        <polygon points="120,105 65,20 175,20" fill="url(#beam)" />
+      <motion.div
+        animate={{ y: [5, -5, 5] }}
+        transition={{ repeat: Infinity, duration: 3.8, ease: 'easeInOut', delay: 0.6 }}
+        className="absolute bottom-14 left-10 flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-amber-500/40 shadow-lg text-[10px] font-bold text-foreground"
+      >
+        <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+        <span>Ops & Strategy</span>
+      </motion.div>
 
-        {/* Floating Satellite / Node Left */}
-        <g>
-          <circle cx="45" cy="85" r="10" fill="url(#dishGrad)" />
-          <circle cx="45" cy="85" r="5" fill="#ffffff" opacity="0.8" />
-          <rect x="25" y="78" width="10" height="14" rx="2" fill="#3b82f6" opacity="0.75" />
-          <rect x="55" y="78" width="10" height="14" rx="2" fill="#3b82f6" opacity="0.75" />
-        </g>
-
-        {/* Upcoming Tag Right */}
-        <g>
-          <rect x="160" y="65" width="68" height="24" rx="6" fill="url(#badgeGrad)" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-          <circle cx="172" cy="77" r="3" fill="#34d399" />
-          <text x="180" y="81" fill="#ffffff" fontSize="8" fontWeight="bold" fontFamily="system-ui, sans-serif">Upcoming</text>
-        </g>
-
-        {/* Platform Base */}
-        <ellipse cx="120" cy="160" rx="55" ry="15" fill="#141424" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
-        <ellipse cx="120" cy="158" rx="40" ry="10" fill="#1e1e36" stroke="#8b5cf6" strokeOpacity="0.5" strokeWidth="1" />
-
-        {/* Dish Mount & Body */}
-        <path d="M117 138 L117 158 M123 138 L123 158" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
-        <path d="M85 125 C85 98, 155 98, 155 125 Z" fill="url(#dishGrad)" stroke="#c084fc" strokeWidth="1.5" />
-        <circle cx="120" cy="112" r="4" fill="#f59e0b" />
-        <line x1="120" y1="112" x2="120" y2="82" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" />
-        <circle cx="120" cy="80" r="3" fill="#ffffff" />
-
-        {/* Wave Rings */}
-        <path d="M106 68 A 16 16 0 0 1 134 68" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
-        <path d="M96 58 A 28 28 0 0 1 144 58" stroke="#c084fc" strokeWidth="1.5" strokeLinecap="round" opacity="0.55" />
-        <path d="M86 48 A 40 40 0 0 1 154 48" stroke="#60a5fa" strokeWidth="1.5" strokeLinecap="round" opacity="0.35" />
-
-        {/* Sparkle Stars */}
-        <circle cx="60" cy="35" r="1.5" fill="#ffffff" opacity="0.6" />
-        <circle cx="185" cy="40" r="1.5" fill="#ffffff" opacity="0.5" />
-        <circle cx="195" cy="140" r="2" fill="#c084fc" opacity="0.7" />
-        <circle cx="50" cy="135" r="1.5" fill="#34d399" opacity="0.6" />
-      </svg>
+      {/* Center Beacon Hub with Live Broadcast Icon */}
+      <div className="relative z-10 w-16 h-16 rounded-2xl bg-gradient-to-br from-primary via-primary to-primary/90 border border-primary/60 flex items-center justify-center shadow-xl text-primary-foreground">
+        <Radio className="w-7 h-7 animate-pulse" />
+        <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+          <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500" />
+        </span>
+      </div>
     </div>
   );
 }
@@ -535,7 +557,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    className="group relative rounded-3xl border border-white/10 bg-card/60 backdrop-blur-md p-8 hover:border-primary/40 transition-all duration-300 flex flex-col justify-between shadow-xl overflow-hidden"
+                    className="group relative rounded-3xl border border-border/80 bg-card text-card-foreground shadow-xl hover:border-primary/50 transition-all duration-300 flex flex-col justify-between overflow-hidden p-8"
                   >
                     {/* Subtle glow accent */}
                     <div className="absolute -right-20 -top-20 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/20 transition-all" />
@@ -544,70 +566,70 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                       {/* Top Badges */}
                       <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+                          <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/25">
                             {role.category}
                           </span>
                           <span className={`text-xs font-bold px-2.5 py-1 rounded-full border flex items-center gap-1 ${empColor(role.employmentType)}`}>
                             <EmpI className="w-3 h-3" /> {role.employmentType}
                           </span>
                         </div>
-                        <span className="text-xs text-muted-foreground font-medium flex items-center gap-1">
-                          <GraduationCap className="w-3.5 h-3.5 text-primary" /> {role.targetAudience}
+                        <span className="text-xs text-foreground/80 dark:text-muted-foreground font-semibold flex items-center gap-1.5">
+                          <GraduationCap className="w-3.5 h-3.5 text-primary shrink-0" /> {role.targetAudience}
                         </span>
                       </div>
 
-                      <h3 className="text-2xl md:text-3xl font-black text-foreground mb-3 group-hover:text-primary transition-colors">
+                      <h3 className="text-2xl md:text-3xl font-black text-foreground mb-3 group-hover:text-primary transition-colors tracking-tight">
                         {role.title}
                       </h3>
-                      <p className="text-sm font-medium text-white/70 mb-4 leading-relaxed">
+                      <p className="text-sm font-medium text-foreground/80 dark:text-muted-foreground mb-5 leading-relaxed">
                         {role.tagline}
                       </p>
 
                       {/* Transparent Policy Pill Badges */}
-                      <div className="flex flex-wrap gap-2 mb-6">
-                        <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-300 border border-amber-500/20 flex items-center gap-1">
-                          <AlertCircle className="w-3 h-3" /> Unpaid Internship
+                      <div className="flex flex-wrap gap-2.5 mb-6">
+                        <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-amber-500/15 text-amber-900 dark:text-amber-200 border border-amber-500/30 flex items-center gap-1.5 shadow-sm">
+                          <AlertCircle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" /> Unpaid Internship
                         </span>
-                        <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 flex items-center gap-1">
-                          <Award className="w-3 h-3" /> Certificate on Completion
+                        <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 border border-emerald-500/30 flex items-center gap-1.5 shadow-sm">
+                          <Award className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" /> Certificate on Completion
                         </span>
-                        <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-purple-500/10 text-purple-300 border border-purple-500/20 flex items-center gap-1">
-                          <ShieldCheck className="w-3 h-3" /> LOR upon 2 Yrs Working
+                        <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-purple-500/15 text-purple-900 dark:text-purple-200 border border-purple-500/30 flex items-center gap-1.5 shadow-sm">
+                          <ShieldCheck className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0" /> LOR upon 2 Yrs Working
                         </span>
                       </div>
 
                       {/* Responsibilities preview */}
-                      <div className="space-y-2.5 mb-6 pt-4 border-t border-white/10">
-                        <div className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                      <div className="space-y-2.5 mb-6 pt-4 border-t border-border/70">
+                        <div className="text-xs font-black text-foreground uppercase tracking-wider flex items-center gap-1.5">
                           <Target className="w-3.5 h-3.5 text-primary" /> Key Responsibilities & Workflow
                         </div>
                         {role.keyResponsibilities.slice(0, 3).map((resp, i) => (
-                          <div key={i} className="flex items-start gap-2 text-xs text-white/60">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                          <div key={i} className="flex items-start gap-2.5 text-xs text-foreground/85 dark:text-muted-foreground font-medium leading-relaxed">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                             <span>{resp}</span>
                           </div>
                         ))}
                       </div>
 
                       {/* Platform Workflow summary */}
-                      <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 text-[11px] text-white/50 space-y-1 mb-6">
-                        <span className="text-white/70 font-semibold block">Platform Task Protocol:</span>
+                      <div className="p-4 rounded-2xl bg-muted/60 dark:bg-muted/30 border border-border/80 text-xs text-foreground/85 dark:text-muted-foreground space-y-1 mb-6 leading-relaxed">
+                        <span className="text-foreground font-bold block">Platform Task Protocol:</span>
                         Tasks assigned with stipulated timelines. Extensions and client data requests submitted via portal and approved by CEO.
                       </div>
                     </div>
 
                     {/* Card Actions */}
-                    <div className="pt-6 border-t border-white/10 flex flex-wrap items-center gap-3">
+                    <div className="pt-6 border-t border-border/70 flex flex-wrap items-center gap-3">
                       <button
                         onClick={() => handleOpenApply(role)}
-                        className="flex-1 py-3 px-5 rounded-2xl bg-primary text-primary-foreground font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform shadow-lg cursor-pointer"
+                        className="flex-1 py-3 px-5 rounded-2xl bg-primary text-primary-foreground font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 hover:opacity-95 hover:shadow-lg transition-all cursor-pointer"
                       >
                         Apply for Role <ArrowRight className="w-4 h-4" />
                       </button>
 
                       <button
                         onClick={() => setSelectedJdModal(role)}
-                        className="py-3 px-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-foreground transition-colors flex items-center gap-2 cursor-pointer"
+                        className="py-3 px-4 rounded-2xl bg-secondary hover:bg-secondary/80 border border-border text-xs font-bold text-foreground transition-all flex items-center gap-2 cursor-pointer shadow-sm"
                       >
                         <FileText className="w-4 h-4 text-primary" /> View Full JD
                       </button>
@@ -615,9 +637,9 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                       <button
                         onClick={() => handleDownloadJd(role)}
                         title="Download official JD as text file"
-                        className="py-3 px-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-300 hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
+                        className="py-3 px-3.5 rounded-2xl bg-secondary hover:bg-secondary/80 border border-border text-xs font-bold text-foreground/80 hover:text-foreground transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
                       >
-                        <Download className="w-4 h-4 text-emerald-400" />
+                        <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                       </button>
                     </div>
                   </motion.div>
@@ -625,35 +647,35 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
               })}
             </div>
           ) : (
-            /* ─── Stay Tuned State with Custom Graphic Illustration ─── */
+            /* ─── Stay Tuned State with Custom Animated Radar Illustration ─── */
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-col items-center justify-center text-center py-16 max-w-lg mx-auto"
             >
               <StayTunedIllustration />
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold uppercase tracking-wider mb-3">
-                <Clock className="w-3.5 h-3.5" /> Pipeline In Preparation
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs font-bold uppercase tracking-wider mb-3">
+                <Clock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" /> Pipeline In Preparation
               </div>
-              <h3 className="text-2xl sm:text-3xl font-black text-foreground mb-2">
+              <h3 className="text-3xl sm:text-4xl font-black text-foreground mb-3 tracking-tight">
                 Stay Tuned!
               </h3>
-              <p className="text-sm text-white/70 leading-relaxed mb-6">
-                We currently do not have active openings under <strong className="text-white">{activeFilterName()}</strong>.
+              <p className="text-sm text-foreground/80 dark:text-muted-foreground leading-relaxed mb-6 max-w-md">
+                We currently do not have active openings under <strong className="text-foreground font-bold">{activeFilterName()}</strong>.
                 We are actively architecting upcoming Full-Time, Engineering, and Operations positions as Siddhi Dynamics expands.
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <button
                   onClick={() => { setEmpFilter('all'); setRoleFilter('all'); }}
-                  className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold cursor-pointer hover:scale-105 transition-all shadow-md"
+                  className="px-6 py-3 rounded-2xl bg-primary text-primary-foreground text-xs font-extrabold tracking-wide uppercase cursor-pointer hover:opacity-95 hover:shadow-lg transition-all"
                 >
                   View Active Internships
                 </button>
                 <a
                   href="mailto:careers@siddhidynamics.in?subject=General Application / Future Openings"
-                  className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 text-xs font-bold transition-colors flex items-center gap-2"
+                  className="px-6 py-3 rounded-2xl bg-secondary hover:bg-secondary/80 border border-border text-foreground text-xs font-extrabold tracking-wide uppercase transition-all flex items-center gap-2 cursor-pointer shadow-sm"
                 >
-                  <Mail className="w-3.5 h-3.5 text-emerald-400" /> Send Open Resume
+                  <Mail className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> Send Open Resume
                 </a>
               </div>
             </motion.div>
@@ -675,8 +697,8 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              <div className="p-6 rounded-3xl bg-card/50 border border-white/10 space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-black">
+              <div className="p-6 rounded-3xl bg-card border border-border/70 space-y-3 shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black">
                   <Lightbulb className="w-5 h-5" />
                 </div>
                 <h3 className="font-extrabold text-foreground text-base">Identify Opportunities</h3>
@@ -685,8 +707,8 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                 </p>
               </div>
 
-              <div className="p-6 rounded-3xl bg-card/50 border border-white/10 space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-black">
+              <div className="p-6 rounded-3xl bg-card border border-border/70 space-y-3 shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center font-black">
                   <Layers className="w-5 h-5" />
                 </div>
                 <h3 className="font-extrabold text-foreground text-base">Execute Sprint Campaigns</h3>
@@ -695,8 +717,8 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                 </p>
               </div>
 
-              <div className="p-6 rounded-3xl bg-card/50 border border-white/10 space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black">
+              <div className="p-6 rounded-3xl bg-card border border-border/70 space-y-3 shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-black">
                   <Users className="w-5 h-5" />
                 </div>
                 <h3 className="font-extrabold text-foreground text-base">Shared Attribution & Growth</h3>
@@ -717,23 +739,23 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-card border border-white/15 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 shadow-2xl relative my-8"
+              className="bg-card text-card-foreground border border-border rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 shadow-2xl relative my-8"
             >
               <button
                 onClick={() => setSelectedJdModal(null)}
-                className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 text-muted-foreground hover:text-white transition-colors cursor-pointer"
+                className="absolute top-5 right-5 p-2 rounded-xl bg-muted/50 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-widest mb-2">
+              <div className="flex items-center gap-2 text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-2">
                 <FileText className="w-4 h-4" /> Official Job Description
               </div>
               <h2 className="text-2xl md:text-3xl font-black text-foreground mb-1">{selectedJdModal.title}</h2>
               <div className="flex items-center gap-2 flex-wrap mb-6">
                 <span className="text-xs text-muted-foreground">Department: {selectedJdModal.category}</span>
                 <span className="text-xs text-muted-foreground">•</span>
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${empColor(selectedJdModal.employmentType)}`}>
+                <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${empColor(selectedJdModal.employmentType)}`}>
                   {selectedJdModal.employmentType}
                 </span>
                 <span className="text-xs text-muted-foreground">•</span>
@@ -741,42 +763,42 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
               </div>
 
               {/* Crucial Transparency Policy Box */}
-              <div className="mb-6 p-5 rounded-2xl bg-amber-500/10 border border-amber-500/25 space-y-2.5">
-                <div className="text-xs font-black text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <AlertCircle className="w-4 h-4 text-amber-400" /> Mandatory Credential & Terms Disclosure
+              <div className="mb-6 p-5 rounded-2xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 space-y-2.5">
+                <div className="text-xs font-black text-amber-800 dark:text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400" /> Mandatory Credential & Terms Disclosure
                 </div>
-                <div className="grid grid-cols-1 gap-2 text-xs text-white/80">
+                <div className="grid grid-cols-1 gap-2.5 text-xs text-foreground/85 dark:text-muted-foreground">
                   <div className="flex items-start gap-2">
-                    <span className="font-bold text-white shrink-0">• Compensation:</span>
+                    <span className="font-bold text-foreground shrink-0">• Compensation:</span>
                     <span><strong>Unpaid Internship</strong> (Skill-learning & academic practical experience for MBA/BBA students).</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="font-bold text-white shrink-0">• Certification:</span>
+                    <span className="font-bold text-foreground shrink-0">• Certification:</span>
                     <span>Interns receive an <strong>Official Certificate of Internship Completion</strong> upon successfully completing their chosen tenure and deliverables.</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="font-bold text-white shrink-0">• Letter of Recommendation:</span>
+                    <span className="font-bold text-foreground shrink-0">• Letter of Recommendation:</span>
                     <span>A formal <strong>Letter of Recommendation (LOR) is provided strictly upon 2 years of active working / association</strong> with Siddhi Dynamics.</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="font-bold text-white shrink-0">• Workflow:</span>
+                    <span className="font-bold text-foreground shrink-0">• Workflow:</span>
                     <span>Tasks are assigned with stipulated deadlines. Deadline extensions and proprietary data requests can be submitted via portal and approved by CEO.</span>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-6 text-xs text-slate-300">
+              <div className="space-y-6 text-xs text-foreground/80 dark:text-muted-foreground">
                 <div>
-                  <h4 className="font-bold text-white text-sm mb-1.5">Overview</h4>
-                  <p className="leading-relaxed text-white/60">{selectedJdModal.overview}</p>
+                  <h4 className="font-bold text-foreground text-sm mb-1.5">Overview</h4>
+                  <p className="leading-relaxed text-foreground/80 dark:text-muted-foreground">{selectedJdModal.overview}</p>
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-white text-sm mb-1.5">Key Responsibilities</h4>
-                  <ul className="space-y-1.5 text-white/60">
+                  <h4 className="font-bold text-foreground text-sm mb-1.5">Key Responsibilities</h4>
+                  <ul className="space-y-1.5 text-foreground/80 dark:text-muted-foreground">
                     {selectedJdModal.keyResponsibilities.map((resp, i) => (
                       <li key={i} className="flex items-start gap-2">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                         <span>{resp}</span>
                       </li>
                     ))}
@@ -784,13 +806,13 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-white text-sm mb-1.5">Cross-Functional Collaboration</h4>
-                  <p className="leading-relaxed text-white/60">{selectedJdModal.interlinkingFeature}</p>
+                  <h4 className="font-bold text-foreground text-sm mb-1.5">Cross-Functional Collaboration</h4>
+                  <p className="leading-relaxed text-foreground/80 dark:text-muted-foreground">{selectedJdModal.interlinkingFeature}</p>
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-white text-sm mb-1.5">Learning Outcomes & Credentials</h4>
-                  <ul className="space-y-1.5 text-white/60">
+                  <h4 className="font-bold text-foreground text-sm mb-1.5">Learning Outcomes & Credentials</h4>
+                  <ul className="space-y-1.5 text-foreground/80 dark:text-muted-foreground">
                     {selectedJdModal.learningOutcomes.map((item, i) => (
                       <li key={i} className="flex items-start gap-2">
                         <TrendingUp className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
@@ -801,11 +823,11 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-white text-sm mb-1.5">Eligibility & Requirements</h4>
-                  <ul className="space-y-1.5 text-white/60">
+                  <h4 className="font-bold text-foreground text-sm mb-1.5">Eligibility & Requirements</h4>
+                  <ul className="space-y-1.5 text-foreground/80 dark:text-muted-foreground">
                     {selectedJdModal.requirements.map((req, i) => (
                       <li key={i} className="flex items-start gap-2">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                         <span>{req}</span>
                       </li>
                     ))}
@@ -813,8 +835,8 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-white text-sm mb-1.5">Selection & Evaluation Workflow</h4>
-                  <ol className="space-y-1 text-white/60 list-decimal list-inside">
+                  <h4 className="font-bold text-foreground text-sm mb-1.5">Selection & Evaluation Workflow</h4>
+                  <ol className="space-y-1 text-foreground/80 dark:text-muted-foreground list-decimal list-inside">
                     <li>Submit online application with Statement of Purpose</li>
                     <li>Profile screening and CEO interview invitation</li>
                     <li>Digital Offer Letter issued and signed in internal portal</li>
@@ -824,19 +846,19 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-white/10 flex items-center justify-end gap-3 flex-wrap">
+              <div className="mt-8 pt-6 border-t border-border flex items-center justify-end gap-3 flex-wrap">
                 <button
                   onClick={() => handleDownloadJd(selectedJdModal)}
-                  className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold flex items-center gap-2 cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border text-xs font-bold flex items-center gap-2 cursor-pointer transition-colors"
                 >
-                  <Download className="w-4 h-4 text-emerald-400" /> Download JD (.txt)
+                  <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Download JD (.txt)
                 </button>
                 <button
                   onClick={() => {
                     handleOpenApply(selectedJdModal);
                     setSelectedJdModal(null);
                   }}
-                  className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-extrabold tracking-wider uppercase flex items-center gap-2 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-extrabold tracking-wider uppercase flex items-center gap-2 cursor-pointer hover:opacity-95 transition-all shadow-md"
                 >
                   Apply Now <ArrowRight className="w-4 h-4" />
                 </button>
