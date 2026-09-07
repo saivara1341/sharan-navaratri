@@ -1,4 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
+import {
+  Document, Packer, Paragraph, TextRun, HeadingLevel,
+  AlignmentType, BorderStyle, ShadingType,
+  convertInchesToTwip,
+  Footer as DocFooter,
+} from 'docx';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar } from '@/components/layout/Navbar';
@@ -233,7 +239,7 @@ export default function Careers() {
   };
 
   // ─── Download Official JD File (.txt) ───────────────────────────────────────
-  const handleDownloadJd = (role: RoleJD) => {
+  const handleDownloadJd = async (role: RoleJD) => {
     const jdText = `
 ================================================================================
 SIDDHI DYNAMICS LLP — OFFICIAL JOB DESCRIPTION & INTERNSHIP TERMS
@@ -313,89 +319,211 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
 ================================================================================
     `.trim();
 
-    // Build a Word-compatible HTML document
-    const wordHtml = `
-<html xmlns:o='urn:schemas-microsoft-com:office:office'
-      xmlns:w='urn:schemas-microsoft-com:office:word'
-      xmlns='http://www.w3.org/TR/REC-html40'>
-<head>
-  <meta charset='utf-8'/>
-  <title>${role.title} — Siddhi Dynamics LLP</title>
-  <!--[if gte mso 9]>
-  <xml><w:WordDocument><w:View>Print</w:View><w:Zoom>90</w:Zoom></w:WordDocument></xml>
-  <![endif]-->
-  <style>
-    body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #111; margin: 2cm; }
-    h1 { font-size: 16pt; color: #1a1a2e; margin-bottom: 4pt; }
-    h2 { font-size: 13pt; color: #2563eb; border-bottom: 1px solid #2563eb; padding-bottom: 3pt; margin-top: 18pt; }
-    h3 { font-size: 11pt; color: #374151; margin-bottom: 2pt; }
-    p, li { font-size: 11pt; line-height: 1.6; color: #374151; }
-    .header-block { background: #f0f4ff; border: 1px solid #c7d2fe; padding: 12pt; border-radius: 4pt; margin-bottom: 16pt; }
-    .notice { background: #fffbeb; border: 1px solid #fbbf24; padding: 10pt; border-radius: 4pt; margin-bottom: 14pt; }
-    .notice-title { font-weight: bold; color: #92400e; font-size: 11pt; }
-    ul { margin: 6pt 0 10pt 18pt; }
-    ol { margin: 6pt 0 10pt 18pt; }
-    .footer { margin-top: 24pt; border-top: 1px solid #d1d5db; padding-top: 10pt; font-size: 9pt; color: #6b7280; }
-  </style>
-</head>
-<body>
-  <div class='header-block'>
-    <h1>${role.title}</h1>
-    <p><strong>Company:</strong> Siddhi Dynamics LLP &nbsp;|&nbsp; <strong>Department:</strong> ${role.category} &nbsp;|&nbsp; <strong>Type:</strong> ${role.employmentType}</p>
-    <p><strong>Candidates:</strong> ${role.targetAudience} &nbsp;|&nbsp; <strong>Durations:</strong> ${role.durations.join(', ')}</p>
-    <p><strong>Location:</strong> Remote / Virtual (Offices: Hyderabad &amp; Nizamabad)</p>
-    <p><strong>Careers:</strong> careers@siddhidynamics.in &nbsp;|&nbsp; <strong>Website:</strong> https://siddhidynamics.in</p>
-  </div>
+    // ── Helper builders ──────────────────────────────────────────────────────
+    const BRAND_BLUE = '2563EB';
+    const BRAND_DARK = '0F172A';
+    const MUTED      = '64748B';
+    const AMBER_BG   = 'FFFBEB';
+    const AMBER_BD   = 'FCD34D';
+    const INFO_BG    = 'EFF6FF';
+    const INFO_BD    = 'BFDBFE';
 
-  <div class='notice'>
-    <p class='notice-title'>&#9888; Mandatory Disclosure &amp; Terms</p>
-    <ul>
-      <li><strong>Compensation:</strong> UNPAID INTERNSHIP — Skill-learning &amp; academic practical track. No stipend or salary.</li>
-      <li><strong>Certificate:</strong> Official Certificate of Internship Completion awarded upon successful tenure and task completion.</li>
-      <li><strong>LOR Policy:</strong> Letter of Recommendation provided <strong>strictly upon 2 years of continuous active working</strong> with Siddhi Dynamics LLP.</li>
-      <li><strong>Workflow:</strong> Tasks assigned via internal platform with stipulated deadlines. Extensions require CEO portal approval.</li>
-      <li><strong>Zero Scam:</strong> No registration fees, no hidden costs. All deliverables logged in Point of Proof ledger.</li>
-    </ul>
-  </div>
+    const gap = (pts = 6) => new Paragraph({ spacing: { before: pts * 20 } });
 
-  <h2>1. Role Overview</h2>
-  <p>${role.overview}</p>
+    const sectionHeading = (text: string) => new Paragraph({
+      text,
+      heading: HeadingLevel.HEADING_2,
+      spacing: { before: 280, after: 80 },
+      border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: BRAND_BLUE, space: 4 } },
+      run: { color: BRAND_BLUE, bold: true, size: 26 },
+    });
 
-  <h2>2. Key Responsibilities &amp; Daily Impact</h2>
-  <ol>${role.keyResponsibilities.map(r => `<li>${r}</li>`).join('')}</ol>
+    const bodyPara = (text: string, opts: { bold?: boolean; color?: string; size?: number } = {}) =>
+      new Paragraph({
+        spacing: { before: 60, after: 60, line: 320 },
+        children: [new TextRun({ text, font: 'Calibri', size: opts.size ?? 22, bold: opts.bold, color: opts.color ?? BRAND_DARK })],
+      });
 
-  <h2>3. Cross-Functional Collaboration</h2>
-  <p>${role.interlinkingFeature}</p>
+    const labelValue = (label: string, value: string) =>
+      new Paragraph({
+        spacing: { before: 60, after: 60 },
+        children: [
+          new TextRun({ text: `${label}: `, font: 'Calibri', size: 22, bold: true, color: BRAND_DARK }),
+          new TextRun({ text: value, font: 'Calibri', size: 22, color: MUTED }),
+        ],
+      });
 
-  <h2>4. Learning Outcomes &amp; Career Advancement</h2>
-  <ul>${role.learningOutcomes.map(l => `<li>${l}</li>`).join('')}</ul>
+    const bulletItem = (text: string, color = BRAND_DARK) =>
+      new Paragraph({
+        bullet: { level: 0 },
+        spacing: { before: 60, after: 60, line: 300 },
+        children: [new TextRun({ text, font: 'Calibri', size: 22, color })],
+      });
 
-  <h2>5. Eligibility &amp; Requirements</h2>
-  <ul>${role.requirements.map(r => `<li>${r}</li>`).join('')}</ul>
+    const numberedItem = (text: string, num: number) =>
+      new Paragraph({
+        spacing: { before: 60, after: 60, line: 300 },
+        children: [
+          new TextRun({ text: `${num}.  `, font: 'Calibri', size: 22, bold: true, color: BRAND_BLUE }),
+          new TextRun({ text, font: 'Calibri', size: 22, color: BRAND_DARK }),
+        ],
+      });
 
-  <h2>6. Selection &amp; Onboarding Workflow</h2>
-  <ol>
-    <li>Online Application via https://siddhidynamics.in/careers</li>
-    <li>Profile Screening &amp; Interview Scheduling by Careers Team</li>
-    <li>Virtual Interview with Founder &amp; CEO (Google Meet)</li>
-    <li>Digital Offer Letter Issuance (Signed securely inside portal)</li>
-    <li>Portal Onboarding, Rules &amp; Code of Conduct Acceptance</li>
-    <li>Stipulated Timeline Task Execution &amp; Point of Proof Documentation</li>
-    <li>Official Certificate of Internship Completion Generation</li>
-  </ol>
+    const shadedBox = (children: Paragraph[], bgHex: string, borderHex: string) =>
+      children.map(p => {
+        (p as any).properties = { ...(p as any).properties };
+        return new Paragraph({
+          ...p,
+          shading: { type: ShadingType.SOLID, color: bgHex, fill: bgHex },
+          border: {
+            top:    { style: BorderStyle.SINGLE, size: 4, color: borderHex, space: 4 },
+            bottom: { style: BorderStyle.SINGLE, size: 4, color: borderHex, space: 4 },
+            left:   { style: BorderStyle.SINGLE, size: 12, color: borderHex, space: 6 },
+            right:  { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+          },
+        });
+      });
 
-  <div class='footer'>
-    <p>Official Contact: careers@siddhidynamics.in &nbsp;|&nbsp; hello@siddhidynamics.in</p>
-    <p>Authorized by: Founder &amp; Designated Partner, Siddhi Dynamics LLP</p>
-  </div>
-</body>
-</html>`.trim();
+    // ── Document sections ────────────────────────────────────────────────────
+    const doc = new Document({
+      styles: {
+        default: {
+          document: { run: { font: 'Calibri', size: 22, color: BRAND_DARK } },
+        },
+      },
+      sections: [{
+        properties: {
+          page: {
+            margin: {
+              top:    convertInchesToTwip(1),
+              bottom: convertInchesToTwip(1),
+              left:   convertInchesToTwip(1.25),
+              right:  convertInchesToTwip(1.25),
+            },
+          },
+        },
+        footers: {
+          default: new DocFooter({
+            children: [
+              new Paragraph({
+                alignment: AlignmentType.CENTER,
+                children: [
+                  new TextRun({ text: 'Siddhi Dynamics LLP  •  careers@siddhidynamics.in  •  https://siddhidynamics.in', font: 'Calibri', size: 18, color: MUTED }),
+                ],
+              }),
+            ],
+          }),
+        },
+        children: [
+          // ── Cover / Title block ───────────────────────────────────────────
+          new Paragraph({
+            alignment: AlignmentType.LEFT,
+            spacing: { after: 40 },
+            children: [
+              new TextRun({ text: 'SIDDHI DYNAMICS LLP', font: 'Calibri', size: 20, bold: true, color: MUTED, allCaps: true }),
+            ],
+          }),
+          new Paragraph({
+            heading: HeadingLevel.HEADING_1,
+            spacing: { before: 40, after: 120 },
+            children: [
+              new TextRun({ text: role.title, font: 'Calibri', size: 52, bold: true, color: BRAND_DARK }),
+            ],
+          }),
 
-    const blob = new Blob([wordHtml], { type: 'application/msword;charset=utf-8' });
+          // Info box (shaded blue)
+          ...shadedBox([
+            labelValue('Department', role.category),
+            labelValue('Employment Type', `${role.employmentType} — Remote / Platform-Based`),
+            labelValue('Target Candidates', role.targetAudience),
+            labelValue('Available Durations', role.durations.join(', ')),
+            labelValue('Location', 'Remote · Offices: Hyderabad & Nizamabad, Telangana'),
+            labelValue('Careers Email', 'careers@siddhidynamics.in'),
+            labelValue('Website', 'https://siddhidynamics.in'),
+          ], INFO_BG, INFO_BD),
+
+          gap(12),
+
+          // ── Disclosure Notice (amber) ─────────────────────────────────────
+          ...shadedBox([
+            new Paragraph({
+              spacing: { before: 80, after: 80 },
+              children: [
+                new TextRun({ text: '⚠  Mandatory Disclosure & Terms', font: 'Calibri', size: 24, bold: true, color: '92400E' }),
+              ],
+            }),
+            bulletItem('Compensation: UNPAID INTERNSHIP — Skill-learning & academic practical track. No stipend or salary.', '92400E'),
+            bulletItem('Certificate: Official Certificate of Internship Completion awarded upon successful tenure and task completion.', '92400E'),
+            bulletItem('LOR Policy: Letter of Recommendation provided strictly upon 2 years of continuous active working with Siddhi Dynamics LLP.', '92400E'),
+            bulletItem('Workflow: Tasks assigned via internal platform with stipulated deadlines. Extensions require CEO portal approval.', '92400E'),
+            bulletItem('Zero Scam: No registration fees, no hidden costs. All deliverables logged in Point of Proof ledger.', '92400E'),
+            gap(4),
+          ], AMBER_BG, AMBER_BD),
+
+          gap(12),
+
+          // ── 1. Overview ───────────────────────────────────────────────────
+          sectionHeading('1.  Role Overview'),
+          bodyPara(role.overview),
+
+          gap(8),
+
+          // ── 2. Responsibilities ───────────────────────────────────────────
+          sectionHeading('2.  Key Responsibilities & Daily Impact'),
+          ...role.keyResponsibilities.map((r, i) => numberedItem(r, i + 1)),
+
+          gap(8),
+
+          // ── 3. Collaboration ──────────────────────────────────────────────
+          sectionHeading('3.  Cross-Functional Collaboration'),
+          bodyPara(role.interlinkingFeature),
+
+          gap(8),
+
+          // ── 4. Outcomes ───────────────────────────────────────────────────
+          sectionHeading('4.  Learning Outcomes & Career Advancement'),
+          ...role.learningOutcomes.map(l => bulletItem(l)),
+
+          gap(8),
+
+          // ── 5. Requirements ───────────────────────────────────────────────
+          sectionHeading('5.  Eligibility & Requirements'),
+          ...role.requirements.map(r => bulletItem(r)),
+
+          gap(8),
+
+          // ── 6. Selection Process ──────────────────────────────────────────
+          sectionHeading('6.  Selection & Onboarding Workflow'),
+          ...[
+            'Online Application via https://siddhidynamics.in/careers',
+            'Profile Screening & Interview Scheduling by Careers Team',
+            'Virtual Interview with Founder & CEO (Google Meet)',
+            'Digital Offer Letter Issuance (Signed securely inside portal)',
+            'Portal Onboarding, Rules & Code of Conduct Acceptance',
+            'Stipulated Timeline Task Execution & Point of Proof Documentation',
+            'Official Certificate of Internship Completion Generation',
+          ].map((s, i) => numberedItem(s, i + 1)),
+
+          gap(16),
+
+          // ── Closing line ──────────────────────────────────────────────────
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            border: { top: { style: BorderStyle.SINGLE, size: 4, color: 'E2E8F0', space: 8 } },
+            spacing: { before: 200 },
+            children: [
+              new TextRun({ text: 'Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP', font: 'Calibri', size: 18, color: MUTED, italics: true }),
+            ],
+          }),
+        ],
+      }],
+    });
+
+    const blob = await Packer.toBlob(doc);
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `Siddhi_Dynamics_JD_${role.title.replace(/\s+/g, '_')}.doc`;
+    link.download = `Siddhi_Dynamics_JD_${role.title.replace(/\s+/g, '_')}.docx`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
