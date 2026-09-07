@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar } from '@/components/layout/Navbar';
@@ -256,6 +256,18 @@ export default function Careers() {
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Lock body scroll when either modal is open to ensure clean scrolling inside modal
+  useEffect(() => {
+    if (applicationModal || selectedJdModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [applicationModal, selectedJdModal]);
+
   // Application Form States
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -433,9 +445,9 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
     }
   };
 
-  // Clay style helpers
-  const clayInput = "w-full px-4 py-3 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-foreground text-sm focus:outline-none focus:border-primary/60 focus:bg-white/[0.06] transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.2),0_1px_0_rgba(255,255,255,0.04)]";
-  const claySelect = "w-full px-3 py-3 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-foreground text-sm focus:outline-none focus:border-primary/60 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.2),0_1px_0_rgba(255,255,255,0.04)]";
+  // Dashboard UI input & select styling
+  const dashboardInput = "w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground text-xs placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm";
+  const dashboardSelect = "w-full px-3 py-3 rounded-xl bg-background border border-border text-foreground text-xs focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm";
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30">
@@ -734,16 +746,16 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
       {/* ─── Full JD Modal (Crystal Clear & Honest Disclosure) ─── */}
       <AnimatePresence>
         {selectedJdModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="fixed inset-0 z-[120] flex items-start justify-center p-4 sm:p-6 pt-24 sm:pt-28 pb-16 bg-black/80 backdrop-blur-md overflow-y-auto">
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-card text-card-foreground border border-border rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 shadow-2xl relative my-8"
+              initial={{ scale: 0.95, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 15 }}
+              className="bg-card text-card-foreground border border-border rounded-3xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6 md:p-8 shadow-2xl relative my-auto"
             >
               <button
                 onClick={() => setSelectedJdModal(null)}
-                className="absolute top-5 right-5 p-2 rounded-xl bg-muted/50 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                className="absolute top-5 right-5 p-2 rounded-xl bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -868,40 +880,32 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
         )}
       </AnimatePresence>
 
-      {/* ─── Application Modal (Claymorphism Form) ─── */}
+      {/* ─── Application Modal (Dashboard UI Design) ─── */}
       <AnimatePresence>
         {applicationModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
+          <div className="fixed inset-0 z-[120] flex items-start justify-center p-4 sm:p-6 pt-24 sm:pt-28 pb-16 bg-black/80 backdrop-blur-md overflow-y-auto">
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-2xl my-8"
+              initial={{ scale: 0.95, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 15 }}
+              className="w-full max-w-2xl my-auto"
             >
-              {/* Claymorphism card */}
-              <div
-                className="relative rounded-[32px] p-8 md:p-10 overflow-hidden"
-                style={{
-                  background: 'linear-gradient(145deg, rgba(30,30,50,0.95), rgba(20,20,35,0.98))',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.05)',
-                }}
-              >
-                {/* Soft glow behind card */}
-                <div className="absolute -top-32 -right-32 w-64 h-64 bg-primary/12 rounded-full blur-[100px] pointer-events-none" />
-                <div className="absolute -bottom-32 -left-32 w-56 h-56 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none" />
+              {/* Dashboard styled modal card */}
+              <div className="relative rounded-3xl p-6 sm:p-8 md:p-10 bg-card text-card-foreground border border-border shadow-2xl overflow-hidden">
+                {/* Subtle brand glow accent */}
+                <div className="absolute -top-32 -right-32 w-64 h-64 bg-primary/10 rounded-full blur-[90px] pointer-events-none" />
 
-                {/* Close */}
+                {/* Close Button */}
                 <button
                   onClick={() => { setApplicationModal(null); resetForm(); }}
-                  className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-white transition-colors cursor-pointer z-10"
+                  className="absolute top-5 right-5 p-2 rounded-xl bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer z-10"
                 >
                   <X className="w-5 h-5" />
                 </button>
 
                 {/* Header */}
                 <div className="relative z-10 mb-6">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold tracking-widest uppercase mb-3">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-3">
                     <Send className="w-3 h-3" /> Apply Now
                   </div>
                   <h3 className="text-xl md:text-2xl font-black text-foreground mb-1">
@@ -911,40 +915,40 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     {applicationModal.category} • {applicationModal.employmentType} • Applications reviewed directly by Founder & CEO.
                   </p>
 
-                  {/* Notice of unpaid & certification */}
-                  <div className="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-200 leading-relaxed">
-                    <strong>Notice:</strong> This is an unpaid internship for practical skill growth. Interns receive an official Certificate of Completion upon finishing tenure. (Letter of Recommendation is provided upon 2 years of active service).
+                  {/* Notice of unpaid & certification in dashboard theme style */}
+                  <div className="mt-3.5 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
+                    <strong className="font-bold">Notice:</strong> This is an unpaid internship for practical skill growth. Interns receive an official Certificate of Completion upon finishing tenure. (Letter of Recommendation is provided strictly upon 2 years of active service).
                   </div>
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleFormSubmit} className="relative z-10 space-y-5">
+                <form onSubmit={handleFormSubmit} className="relative z-10 space-y-4 sm:space-y-5">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-bold text-white/80 block mb-1.5">Full Name *</label>
-                      <input type="text" required value={fullName} onChange={e => setFullName(e.target.value)} className={clayInput} />
+                      <label className="text-xs font-bold text-foreground block mb-1.5">Full Name *</label>
+                      <input type="text" required value={fullName} onChange={e => setFullName(e.target.value)} className={dashboardInput} placeholder="Enter your full name" />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-white/80 block mb-1.5">Email Address *</label>
-                      <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className={clayInput} />
+                      <label className="text-xs font-bold text-foreground block mb-1.5">Email Address *</label>
+                      <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className={dashboardInput} placeholder="your.email@example.com" />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-bold text-white/80 block mb-1.5">WhatsApp / Phone *</label>
-                      <input type="tel" required value={phone} onChange={e => setPhone(e.target.value)} className={clayInput} />
+                      <label className="text-xs font-bold text-foreground block mb-1.5">WhatsApp / Phone *</label>
+                      <input type="tel" required value={phone} onChange={e => setPhone(e.target.value)} className={dashboardInput} placeholder="+91 98765 43210" />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-white/80 block mb-1.5">College / University *</label>
-                      <input type="text" required value={college} onChange={e => setCollege(e.target.value)} className={clayInput} />
+                      <label className="text-xs font-bold text-foreground block mb-1.5">College / University *</label>
+                      <input type="text" required value={college} onChange={e => setCollege(e.target.value)} className={dashboardInput} placeholder="Institute / University name" />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-bold text-white/80 block mb-1.5">Current Degree *</label>
-                      <select value={degree} onChange={(e: any) => setDegree(e.target.value)} className={claySelect}>
+                      <label className="text-xs font-bold text-foreground block mb-1.5">Current Degree *</label>
+                      <select value={degree} onChange={(e: any) => setDegree(e.target.value)} className={dashboardSelect}>
                         <option value="MBA">MBA</option>
                         <option value="BBA">BBA</option>
                         <option value="B.Tech">B.Tech / Engineering</option>
@@ -953,8 +957,8 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                       </select>
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-white/80 block mb-1.5">Preferred Duration *</label>
-                      <select value={duration} onChange={(e: any) => setDuration(e.target.value)} className={claySelect}>
+                      <label className="text-xs font-bold text-foreground block mb-1.5">Preferred Duration *</label>
+                      <select value={duration} onChange={(e: any) => setDuration(e.target.value)} className={dashboardSelect}>
                         <option value="3 Months">3 Months</option>
                         <option value="6 Months">6 Months</option>
                         <option value="9 Months">9 Months</option>
@@ -965,41 +969,44 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-bold text-white/80 block mb-1.5">LinkedIn Profile</label>
-                      <input type="url" value={linkedin} onChange={e => setLinkedin(e.target.value)} className={clayInput} />
+                      <label className="text-xs font-bold text-foreground block mb-1.5">LinkedIn Profile</label>
+                      <input type="url" value={linkedin} onChange={e => setLinkedin(e.target.value)} className={dashboardInput} placeholder="https://linkedin.com/in/username" />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-white/80 block mb-1.5">Instagram / Portfolio</label>
-                      <input type="text" value={portfolioOrSocial} onChange={e => setPortfolioOrSocial(e.target.value)} className={clayInput} />
+                      <label className="text-xs font-bold text-foreground block mb-1.5">Instagram / Portfolio</label>
+                      <input type="text" value={portfolioOrSocial} onChange={e => setPortfolioOrSocial(e.target.value)} className={dashboardInput} placeholder="@handle or portfolio URL" />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-white/80 block mb-1.5">
+                    <label className="text-xs font-bold text-foreground block mb-1.5">
                       Statement of Purpose & Career Objectives *
                     </label>
                     <textarea
-                      required rows={4} value={statementOfPurpose}
+                      required
+                      rows={4}
+                      value={statementOfPurpose}
                       onChange={e => setStatementOfPurpose(e.target.value)}
-                      className={`${clayInput} leading-relaxed`}
+                      placeholder="Why do you want to join Siddhi Dynamics? Share your goals and what you hope to achieve during this internship."
+                      className={`${dashboardInput} leading-relaxed resize-y`}
                     />
                   </div>
 
                   {/* File Upload */}
                   <div>
-                    <label className="text-xs font-bold text-white/80 block mb-1.5">
+                    <label className="text-xs font-bold text-foreground block mb-1.5">
                       Resume & Supporting Documents
                     </label>
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className="rounded-2xl border-2 border-dashed border-white/10 hover:border-primary/40 bg-white/[0.02] p-6 text-center cursor-pointer transition-all group"
+                      className="rounded-2xl border-2 border-dashed border-border hover:border-primary/50 bg-muted/25 hover:bg-muted/40 p-6 text-center cursor-pointer transition-all group"
                     >
-                      <Upload className="w-8 h-8 mx-auto text-muted-foreground group-hover:text-primary transition-colors mb-2" />
-                      <p className="text-xs text-muted-foreground">
+                      <Upload className="w-7 h-7 mx-auto text-primary transition-transform group-hover:-translate-y-0.5 mb-2" />
+                      <p className="text-xs text-foreground/80 font-medium">
                         <span className="text-primary font-bold">Click to upload</span>{' '}
                         or drag & drop — Resume, Cover Letter, Portfolio (multiple files allowed)
                       </p>
-                      <p className="text-[11px] text-white/30 mt-1">PDF, DOC, DOCX, PNG, JPG — up to 10 MB each</p>
+                      <p className="text-[11px] text-muted-foreground mt-1">PDF, DOC, DOCX, PNG, JPG — up to 10 MB each</p>
                     </div>
                     <input
                       ref={fileInputRef}
@@ -1013,10 +1020,10 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     {uploadedFiles.length > 0 && (
                       <div className="mt-3 space-y-2">
                         {uploadedFiles.map((f, i) => (
-                          <div key={i} className="flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.06] text-xs">
+                          <div key={i} className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-muted/40 border border-border text-xs">
                             <span className="text-foreground font-medium truncate flex-1 mr-2">{f.name}</span>
                             <span className="text-muted-foreground text-[11px] mr-3">{(f.size / 1024).toFixed(0)} KB</span>
-                            <button type="button" onClick={() => removeFile(i)} className="text-rose-400 hover:text-rose-300 cursor-pointer">
+                            <button type="button" onClick={() => removeFile(i)} className="text-rose-500 hover:text-rose-600 p-1 cursor-pointer">
                               <X className="w-3.5 h-3.5" />
                             </button>
                           </div>
@@ -1026,21 +1033,16 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
 
                     {/* Or paste link */}
                     <div className="mt-3">
-                      <label className="text-[11px] text-muted-foreground block mb-1">Or paste a Google Drive / portfolio link</label>
-                      <input type="url" value={resumeUrl} onChange={e => setResumeUrl(e.target.value)} className={clayInput} />
+                      <label className="text-[11px] font-semibold text-muted-foreground block mb-1">Or paste a Google Drive / portfolio link</label>
+                      <input type="url" value={resumeUrl} onChange={e => setResumeUrl(e.target.value)} className={dashboardInput} placeholder="https://drive.google.com/... or https://yourportfolio.com" />
                     </div>
                   </div>
 
-                  <div className="pt-2">
+                  <div className="pt-3">
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="w-full py-4 rounded-2xl font-black text-sm tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 transition-all shadow-xl hover:scale-[1.01]"
-                      style={{
-                        background: 'linear-gradient(135deg, hsl(262, 83%, 58%), hsl(280, 80%, 50%))',
-                        color: '#ffffff',
-                        boxShadow: '0 8px 32px rgba(139,92,246,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
-                      }}
+                      className="w-full py-4 rounded-xl bg-primary text-primary-foreground font-black text-sm tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 hover:opacity-95 transition-all shadow-lg hover:shadow-xl"
                     >
                       {submitting ? (
                         <span>Submitting Application...</span>
@@ -1050,7 +1052,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                         </>
                       )}
                     </button>
-                    <p className="text-[11px] text-muted-foreground text-center mt-3">
+                    <p className="text-[11px] text-muted-foreground text-center mt-3 leading-relaxed">
                       By submitting, you acknowledge that this is an unpaid internship granting an official completion certificate (and LOR upon 2 years). Applications are delivered to{' '}
                       <strong className="text-foreground">careers@siddhidynamics.in</strong>.
                     </p>
