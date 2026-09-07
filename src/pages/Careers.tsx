@@ -395,16 +395,94 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
 ================================================================================
     `.trim();
 
-    const blob = new Blob([jdText], { type: 'text/plain;charset=utf-8' });
+    // Build a Word-compatible HTML document
+    const wordHtml = `
+<html xmlns:o='urn:schemas-microsoft-com:office:office'
+      xmlns:w='urn:schemas-microsoft-com:office:word'
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+  <meta charset='utf-8'/>
+  <title>${role.title} — Siddhi Dynamics LLP</title>
+  <!--[if gte mso 9]>
+  <xml><w:WordDocument><w:View>Print</w:View><w:Zoom>90</w:Zoom></w:WordDocument></xml>
+  <![endif]-->
+  <style>
+    body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #111; margin: 2cm; }
+    h1 { font-size: 16pt; color: #1a1a2e; margin-bottom: 4pt; }
+    h2 { font-size: 13pt; color: #2563eb; border-bottom: 1px solid #2563eb; padding-bottom: 3pt; margin-top: 18pt; }
+    h3 { font-size: 11pt; color: #374151; margin-bottom: 2pt; }
+    p, li { font-size: 11pt; line-height: 1.6; color: #374151; }
+    .header-block { background: #f0f4ff; border: 1px solid #c7d2fe; padding: 12pt; border-radius: 4pt; margin-bottom: 16pt; }
+    .notice { background: #fffbeb; border: 1px solid #fbbf24; padding: 10pt; border-radius: 4pt; margin-bottom: 14pt; }
+    .notice-title { font-weight: bold; color: #92400e; font-size: 11pt; }
+    ul { margin: 6pt 0 10pt 18pt; }
+    ol { margin: 6pt 0 10pt 18pt; }
+    .footer { margin-top: 24pt; border-top: 1px solid #d1d5db; padding-top: 10pt; font-size: 9pt; color: #6b7280; }
+  </style>
+</head>
+<body>
+  <div class='header-block'>
+    <h1>${role.title}</h1>
+    <p><strong>Company:</strong> Siddhi Dynamics LLP &nbsp;|&nbsp; <strong>Department:</strong> ${role.category} &nbsp;|&nbsp; <strong>Type:</strong> ${role.employmentType}</p>
+    <p><strong>Candidates:</strong> ${role.targetAudience} &nbsp;|&nbsp; <strong>Durations:</strong> ${role.durations.join(', ')}</p>
+    <p><strong>Location:</strong> Remote / Virtual (Offices: Hyderabad &amp; Nizamabad)</p>
+    <p><strong>Careers:</strong> careers@siddhidynamics.in &nbsp;|&nbsp; <strong>Website:</strong> https://siddhidynamics.in</p>
+  </div>
+
+  <div class='notice'>
+    <p class='notice-title'>&#9888; Mandatory Disclosure &amp; Terms</p>
+    <ul>
+      <li><strong>Compensation:</strong> UNPAID INTERNSHIP — Skill-learning &amp; academic practical track. No stipend or salary.</li>
+      <li><strong>Certificate:</strong> Official Certificate of Internship Completion awarded upon successful tenure and task completion.</li>
+      <li><strong>LOR Policy:</strong> Letter of Recommendation provided <strong>strictly upon 2 years of continuous active working</strong> with Siddhi Dynamics LLP.</li>
+      <li><strong>Workflow:</strong> Tasks assigned via internal platform with stipulated deadlines. Extensions require CEO portal approval.</li>
+      <li><strong>Zero Scam:</strong> No registration fees, no hidden costs. All deliverables logged in Point of Proof ledger.</li>
+    </ul>
+  </div>
+
+  <h2>1. Role Overview</h2>
+  <p>${role.overview}</p>
+
+  <h2>2. Key Responsibilities &amp; Daily Impact</h2>
+  <ol>${role.keyResponsibilities.map(r => `<li>${r}</li>`).join('')}</ol>
+
+  <h2>3. Cross-Functional Collaboration</h2>
+  <p>${role.interlinkingFeature}</p>
+
+  <h2>4. Learning Outcomes &amp; Career Advancement</h2>
+  <ul>${role.learningOutcomes.map(l => `<li>${l}</li>`).join('')}</ul>
+
+  <h2>5. Eligibility &amp; Requirements</h2>
+  <ul>${role.requirements.map(r => `<li>${r}</li>`).join('')}</ul>
+
+  <h2>6. Selection &amp; Onboarding Workflow</h2>
+  <ol>
+    <li>Online Application via https://siddhidynamics.in/careers</li>
+    <li>Profile Screening &amp; Interview Scheduling by Careers Team</li>
+    <li>Virtual Interview with Founder &amp; CEO (Google Meet)</li>
+    <li>Digital Offer Letter Issuance (Signed securely inside portal)</li>
+    <li>Portal Onboarding, Rules &amp; Code of Conduct Acceptance</li>
+    <li>Stipulated Timeline Task Execution &amp; Point of Proof Documentation</li>
+    <li>Official Certificate of Internship Completion Generation</li>
+  </ol>
+
+  <div class='footer'>
+    <p>Official Contact: careers@siddhidynamics.in &nbsp;|&nbsp; hello@siddhidynamics.in</p>
+    <p>Authorized by: Founder &amp; Designated Partner, Siddhi Dynamics LLP</p>
+  </div>
+</body>
+</html>`.trim();
+
+    const blob = new Blob([wordHtml], { type: 'application/msword;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `Siddhi_Dynamics_JD_${role.title.replace(/\s+/g, '_')}.txt`;
+    link.download = `Siddhi_Dynamics_JD_${role.title.replace(/\s+/g, '_')}.doc`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    toast.success(`Job Description for ${role.title} downloaded!`);
+    toast.success(`Job Description for ${role.title} downloaded as Word document!`);
   };
 
   const resetForm = () => {
@@ -863,7 +941,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                   onClick={() => handleDownloadJd(selectedJdModal)}
                   className="px-4 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border text-xs font-bold flex items-center gap-2 cursor-pointer transition-colors"
                 >
-                  <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Download JD (.txt)
+                  <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Download JD (.doc)
                 </button>
                 <button
                   onClick={() => {
