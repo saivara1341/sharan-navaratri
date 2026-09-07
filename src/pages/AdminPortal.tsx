@@ -340,17 +340,24 @@ const AdminPortal = () => {
                 .from('portal_users').select('*').order('created_at', { ascending: false });
 
             const userMap = new Map<string, any>();
-            const { data: authResponse, error: authError } = await supabase.functions.invoke('admin-user-management', { body: { action: 'list' } });
-            if (authError) throw authError;
-            (authResponse?.users || []).forEach((u: any) => {
-                if (!u.email) return;
-                userMap.set(u.email.toLowerCase().trim(), {
-                    ...u,
-                    name: u.name || u.email.split('@')[0],
-                    inquiry_type: 'Auth Sign-In',
-                    status: 'Active',
+            // Auth users are an enrichment source. If the Edge Function is
+            // unavailable (for example during a deployment), keep showing
+            // users from the tables above instead of failing the whole view.
+            try {
+                const { data: authResponse, error: authError } = await supabase.functions.invoke('admin-user-management', { body: { action: 'list' } });
+                if (authError) throw authError;
+                (authResponse?.users || []).forEach((u: any) => {
+                    if (!u.email) return;
+                    userMap.set(u.email.toLowerCase().trim(), {
+                        ...u,
+                        name: u.name || u.email.split('@')[0],
+                        inquiry_type: 'Auth Sign-In',
+                        status: 'Active',
+                    });
                 });
-            });
+            } catch (authError) {
+                console.warn('[AdminPortal] Auth users unavailable; continuing with database users.', authError);
+            }
 
             // 1. Add persisted portal users (not the browser-only cache).
             (portalProfiles || []).forEach((u: any) => {
