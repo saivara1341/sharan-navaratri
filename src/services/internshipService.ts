@@ -363,10 +363,27 @@ const STORAGE_KEYS = {
   REVIEWS: 'sd_intern_reviews'
 };
 
+// These records are created by admins and must never be populated with sample
+// people, certificates, tasks, or reviews in a fresh browser session.
+const ADMIN_DATA_KEYS_WITHOUT_SEEDS = new Set([
+  STORAGE_KEYS.APPLICATIONS,
+  STORAGE_KEYS.WHITELIST,
+  STORAGE_KEYS.AGREEMENTS,
+  STORAGE_KEYS.TASKS,
+  STORAGE_KEYS.EXTENSIONS,
+  STORAGE_KEYS.DATA_REQUESTS,
+  STORAGE_KEYS.PROOFS,
+  STORAGE_KEYS.INTERLINKS,
+  STORAGE_KEYS.INCENTIVES,
+  STORAGE_KEYS.SCRATCHED,
+  STORAGE_KEYS.CERTIFICATES,
+  STORAGE_KEYS.REVIEWS,
+]);
+
 function getLocal<T>(key: string, defaultVal: T): T {
   try {
     const raw = localStorage.getItem(key);
-    if (!raw) return defaultVal;
+    if (!raw) return ADMIN_DATA_KEYS_WITHOUT_SEEDS.has(key) ? ([] as T) : defaultVal;
     return JSON.parse(raw);
   } catch {
     return defaultVal;
