@@ -270,7 +270,7 @@ export const SubmitSection = () => {
             <button
               type="button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-full p-3 sm:p-4 rounded-xl border-2 border-primary/50 bg-background/50 hover:border-primary/80 transition-all duration-300 text-left flex items-center justify-between shadow-lg shadow-primary/5 focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="w-full p-3 sm:p-4 rounded-xl border-2 border-primary/50 bg-background/50 hover:border-primary/80 transition-all duration-300 text-left flex items-center justify-between shadow-lg shadow-primary/5 focus:outline-none focus:ring-2 focus:ring-primary/50 min-h-12"
             >
               <div className="flex items-center gap-2.5 sm:gap-3">
                 <span className="text-xl sm:text-2xl block shrink-0">
@@ -360,7 +360,7 @@ export const SubmitSection = () => {
                 onFocus={() => setFocusedField('name')}
                 onBlur={() => setFocusedField(null)}
                 placeholder={t('submit.fields.namePlaceholder')}
-                className="input-premium py-2.5 sm:py-3.5 px-3.5 sm:px-4 text-xs sm:text-sm"
+                className="input-premium py-3 sm:py-3.5 px-3.5 sm:px-4 text-base sm:text-sm"
                 required
               />
             </motion.div>
@@ -391,7 +391,7 @@ export const SubmitSection = () => {
                 onFocus={() => setFocusedField('email')}
                 onBlur={() => setFocusedField(null)}
                 placeholder={t('submit.fields.emailPlaceholder')}
-                className="input-premium py-2.5 sm:py-3.5 px-3.5 sm:px-4 text-xs sm:text-sm"
+                className="input-premium py-3 sm:py-3.5 px-3.5 sm:px-4 text-base sm:text-sm"
                 required
               />
             </motion.div>
@@ -399,7 +399,7 @@ export const SubmitSection = () => {
         </div>
 
         {/* Designation & Organization - 2 Columns on all screens */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div className="space-y-1.5">
             <label
               htmlFor="designation"
@@ -425,7 +425,7 @@ export const SubmitSection = () => {
                 onFocus={() => setFocusedField('designation')}
                 onBlur={() => setFocusedField(null)}
                 placeholder={t('submit.fields.designationPlaceholder')}
-                className="input-premium py-2.5 sm:py-3.5 px-3 sm:px-4 text-xs sm:text-sm"
+                className="input-premium py-3 sm:py-3.5 px-3 sm:px-4 text-base sm:text-sm"
               />
             </motion.div>
           </div>
@@ -455,7 +455,7 @@ export const SubmitSection = () => {
                 onFocus={() => setFocusedField('organization')}
                 onBlur={() => setFocusedField(null)}
                 placeholder={t('submit.fields.organizationPlaceholder')}
-                className="input-premium py-2.5 sm:py-3.5 px-3 sm:px-4 text-xs sm:text-sm"
+                className="input-premium py-3 sm:py-3.5 px-3 sm:px-4 text-base sm:text-sm"
               />
             </motion.div>
           </div>
@@ -502,7 +502,7 @@ export const SubmitSection = () => {
                       value={otherSector}
                       onChange={(e) => setOtherSector(e.target.value)}
                       placeholder="Specify sector (e.g. AgriTech)"
-                      className="input-premium py-2.5 sm:py-3.5 px-3 sm:px-4 text-xs sm:text-sm"
+                      className="input-premium py-3 sm:py-3.5 px-3 sm:px-4 text-base sm:text-sm"
                       required
                     />
                   </motion.div>
@@ -566,7 +566,7 @@ export const SubmitSection = () => {
                     onBlur={() => setFocusedField(null)}
                     placeholder="Describe timeline, features, workflows, and business goals..."
                     rows={3}
-                    className="input-premium resize-none pr-12 text-xs sm:text-sm py-2.5 sm:py-3.5 px-3 sm:px-4"
+                    className="input-premium resize-none pr-12 text-base sm:text-sm py-3 sm:py-3.5 px-3 sm:px-4"
                     required
                   />
                   <motion.button
@@ -615,7 +615,7 @@ export const SubmitSection = () => {
                   onBlur={() => setFocusedField(null)}
                   placeholder={t(`submit.fields.message.${formData.inquiryType}Placeholder`)}
                   rows={4}
-                  className="input-premium resize-none pr-12 text-xs sm:text-sm py-2.5 sm:py-3.5 px-3 sm:px-4"
+                  className="input-premium resize-none pr-12 text-base sm:text-sm py-3 sm:py-3.5 px-3 sm:px-4"
                   required
                 />
                 <motion.button
@@ -862,7 +862,7 @@ export const SubmitSection = () => {
             <form
               ref={formRef}
               onSubmit={handleSubmit}
-              className="glass-card electric-border p-4 sm:p-8 md:p-12 rounded-2xl sm:rounded-3xl relative overflow-hidden"
+              className="glass-card electric-border p-3 sm:p-8 md:p-12 rounded-2xl sm:rounded-3xl relative overflow-hidden"
             >
               {/* Dynamic glow following mouse */}
               <motion.div
