@@ -186,4 +186,65 @@ export const emailService = {
       data: { recipientName, message, portalUrl: window.location.origin },
     });
   },
+
+  /** Send Internship Interview Invitation */
+  async internInterviewInvite(
+    to: string,
+    applicantName: string,
+    roleTitle: string,
+    interviewDate: string,
+    interviewTime: string,
+    meetingLink: string
+  ) {
+    const inviteMessage = `Dear ${applicantName},
+
+Thank you for applying for the ${roleTitle} position at Siddhi Dynamics LLP.
+We were impressed by your profile and would like to invite you for a virtual interview round.
+
+Interview Details:
+- Role: ${roleTitle}
+- Date: ${interviewDate}
+- Time: ${interviewTime} IST
+- Video Meeting: ${meetingLink}
+- Reporting Authority: CEO / Founder Office
+
+Please be prepared with your portfolio, past business/marketing campaign work, and questions regarding Siddhi Dynamics.
+
+Warm regards,
+Talent Acquisition Team
+careers@siddhidynamics.in
+Siddhi Dynamics LLP`;
+
+    return send({
+      template: 'admin_message',
+      to,
+      data: {
+        recipientName: applicantName,
+        message: inviteMessage,
+        portalUrl: window.location.origin + '/careers',
+      },
+    });
+  },
+
+  /** Send Internship Offer Letter Notification */
+  async internOfferLetter(
+    to: string,
+    internName: string,
+    roleTitle: string,
+    duration: string,
+    startDate: string
+  ) {
+    return send({
+      template: 'offer',
+      to,
+      data: {
+        recipientName: internName,
+        offerTitle: `Official Internship Offer: ${roleTitle} (${duration})`,
+        offerSummary: `Congratulations ${internName}! We are pleased to offer you an internship at Siddhi Dynamics LLP starting on ${startDate}. Please log into the portal to review and digitally sign your offer letter.`,
+        validUntil: '3 days from now',
+        portalUrl: window.location.origin + '/portal',
+      },
+    });
+  },
 };
+

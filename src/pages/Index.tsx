@@ -260,7 +260,7 @@ const Index = () => {
           "contactPoint": {
             "@type": "ContactPoint",
             "telephone": "+91-6303602743",
-            "email": "saivaraprasad@siddhidynamics.in",
+            "email": "hello@siddhidynamics.in",
             "contactType": "customer service",
             "areaServed": "IN",
             "availableLanguage": ["English", "Telugu", "Hindi"]
@@ -417,7 +417,7 @@ const Index = () => {
               "name": "How can I contact Siddhi Dynamics or start a project?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "You can reach Siddhi Dynamics at saivaraprasad@siddhidynamics.in or by phone at +91-6303602743. Use the contact form on siddhidynamics.in to submit your project requirement or business challenge."
+                "text": "You can reach Siddhi Dynamics at hello@siddhidynamics.in (or careers@siddhidynamics.in for recruitment) or by phone at +91-6303602743. Use the contact form on siddhidynamics.in to submit your project requirement or business challenge."
               }
             }
           ]

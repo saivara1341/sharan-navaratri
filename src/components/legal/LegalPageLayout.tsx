@@ -57,7 +57,7 @@ export const LegalContact = () => (
     <p className="text-muted-foreground leading-relaxed">
       Siddhi Dynamics LLP<br />
       3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001, India<br />
-      Email: <a className="text-primary hover:underline" href="mailto:saivaraprasad@siddhidynamics.in">saivaraprasad@siddhidynamics.in</a><br />
+      Email: <a className="text-primary hover:underline" href="mailto:hello@siddhidynamics.in">hello@siddhidynamics.in</a><br />
       Phone: <a className="text-primary hover:underline" href="tel:+916303602743">+91 63036 02743</a>
     </p>
   </section>

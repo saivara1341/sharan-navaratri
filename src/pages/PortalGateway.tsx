@@ -26,6 +26,7 @@ import {
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
+import { internshipService } from "@/services/internshipService";
 
 export default function PortalGateway() {
   const navigate = useNavigate();
@@ -176,6 +177,18 @@ export default function PortalGateway() {
   const handleRoleSelect = async (role: string) => {
     setAuthLoading(true);
     try {
+      const emailToCheck = session?.user?.email;
+
+      // Whitelist check for employee and intern roles
+      if (role === 'employee' || role === 'intern') {
+        const check = internshipService.isEmailApproved(emailToCheck);
+        if (!check.approved) {
+          toast.error(`Access Restricted: ${emailToCheck} is not on the admin-approved whitelist for ${role === 'intern' ? 'Intern' : 'Employee'} access. Please apply via Careers.`);
+          setAuthLoading(false);
+          return;
+        }
+      }
+
       const { data, error } = await supabase.auth.updateUser({
         data: { role }
       });
@@ -187,6 +200,8 @@ export default function PortalGateway() {
       // Redirect to correct portal
       if (role === 'partner') {
         navigate('/portal/agency');
+      } else if (role === 'intern') {
+        navigate('/portal/intern');
       } else {
         navigate(`/portal/${role}`);
       }
@@ -210,6 +225,7 @@ export default function PortalGateway() {
     if (session?.user?.email?.trim().toLowerCase() === '23eg510a07@anurag.edu.in') return "/portal/agency";
     if (isAdmin) return "/admin-hq-nexus";
     if (userRole === 'partner') return "/portal/agency";
+    if (userRole === 'intern') return "/portal/intern";
     if (userRole === 'employee') return "/portal/employee";
     if (userRole === 'client') return "/portal/client";
     if (userRole === 'investor') return "/portal/investor";
@@ -220,6 +236,7 @@ export default function PortalGateway() {
     if (session?.user?.email?.trim().toLowerCase() === '23eg510a07@anurag.edu.in') return "The Magnetic Minds (M²) Partner";
     if (isAdmin) return "God-Mode Admin";
     if (userRole === 'partner') return "Agency Partner";
+    if (userRole === 'intern') return "Intern / Growth Fellow";
     if (userRole === 'employee') return "Employee / Builder";
     if (userRole === 'client') return "Client";
     if (userRole === 'investor') return "Venture / Investor";
@@ -390,22 +407,19 @@ export default function PortalGateway() {
                   </div>
                 </motion.button>
 
-                {/* 💻 Employee / Builder Card */}
-                <motion.button
-                  whileHover={{ scale: 1.02, y: -4 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleRoleSelect('employee')}
-                  className="relative overflow-hidden p-6 rounded-3xl border border-blue-500/30 bg-gradient-to-b from-blue-500/10 via-card/80 to-card hover:border-blue-500 flex flex-col justify-between h-full min-h-[300px] text-left transition-all group cursor-pointer shadow-lg hover:shadow-blue-500/10"
+                {/* 💻 Employee / Team & Intern Builder Card */}
+                <div
+                  className="relative overflow-hidden p-6 rounded-3xl border border-blue-500/30 bg-gradient-to-b from-blue-500/10 via-card/80 to-card hover:border-blue-500 flex flex-col justify-between h-full min-h-[340px] text-left transition-all shadow-lg hover:shadow-blue-500/10"
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className="w-12 h-12 rounded-2xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
+                      <div className="w-12 h-12 rounded-2xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center shadow-md">
                         <Users className="w-6 h-6 text-blue-400" />
                       </div>
                       <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">Team Builder</span>
                     </div>
                     <div>
-                      <h3 className="text-lg font-extrabold text-foreground group-hover:text-blue-400 transition-colors">
+                      <h3 className="text-lg font-extrabold text-foreground">
                         Employee / Team
                       </h3>
                       <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
@@ -419,12 +433,28 @@ export default function PortalGateway() {
                       <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">Task Board</span>
                       <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">GitHub</span>
                       <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">Tickets</span>
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-primary/20 text-primary border border-primary/30">Intern Onboarding</span>
                     </div>
-                    <div className="w-full py-2.5 rounded-xl bg-blue-500/10 group-hover:bg-blue-500 group-hover:text-white text-blue-400 font-extrabold text-xs transition-all flex items-center justify-center gap-2 border border-blue-500/20">
-                      Enter Employee Hub <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+
+                    <div className="flex flex-col gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => handleRoleSelect('employee')}
+                        className="w-full py-2.5 rounded-xl bg-blue-500/10 hover:bg-blue-500 hover:text-white text-blue-400 font-extrabold text-xs transition-all flex items-center justify-center gap-2 border border-blue-500/20 cursor-pointer"
+                      >
+                        Enter Employee Hub <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleRoleSelect('intern')}
+                        className="w-full py-2.5 rounded-xl bg-primary/10 hover:bg-primary hover:text-primary-foreground text-primary font-extrabold text-xs transition-all flex items-center justify-center gap-2 border border-primary/30 cursor-pointer"
+                      >
+                        Enter Intern Hub & Onboarding <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
-                </motion.button>
+                </div>
 
                 {/* 📈 Investor Card */}
                 <motion.button

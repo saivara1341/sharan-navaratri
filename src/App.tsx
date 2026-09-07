@@ -44,6 +44,9 @@ const ERPSolutions = lazy(() => import("@/pages/services/ERPSolutions"));
 const SoftwareCompanyNizamabad = lazy(() => import("@/pages/SoftwareCompanyNizamabad"));
 const ProjectSubmitForm = lazy(() => import("./pages/ProjectSubmitForm"));
 const AgencyClientIntake = lazy(() => import("./pages/AgencyClientIntake"));
+const Careers = lazy(() => import("@/pages/Careers"));
+const InternPortal = lazy(() => import("@/pages/InternPortal"));
+const CertificateVerification = lazy(() => import("@/pages/CertificateVerification"));
 
 const AuthRedirectHandler = () => {
   const navigate = useNavigate();
@@ -72,7 +75,10 @@ const AuthRedirectHandler = () => {
       }
 
       const role = session.user.user_metadata?.role;
-      if (role === 'employee') {
+      if (role === 'intern') {
+        navigate("/portal/intern");
+        return;
+      } else if (role === 'employee') {
         navigate("/portal/employee");
         return;
       } else if (role === 'client') {
@@ -148,11 +154,14 @@ const App = () => {
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/portal" element={<PortalGateway />} />
               <Route path="/portal/client" element={<ClientPortal />} />
+              <Route path="/portal/intern" element={<InternPortal />} />
               <Route path="/portal/agency" element={<VMagneticMindsPortal />} />
               <Route path="/agency-intake/:token" element={<AgencyClientIntake />} />
               <Route path="/portal/v-magnetic-minds" element={<VMagneticMindsPortal />} />
               <Route path="/portal/investor" element={<InvestorPortal />} />
               <Route path="/portal/employee" element={<EmployeePortal />} />
+              <Route path="/careers" element={<Careers />} />
+              <Route path="/verify-certificate" element={<CertificateVerification />} />
               <Route path="/project/nexus" element={<NexusLanding />} />
               <Route path="/project/nilayam" element={<NilayamLanding />} />
               <Route path="/project/archplan" element={<ArchPlanLanding />} />

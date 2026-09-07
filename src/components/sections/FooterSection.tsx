@@ -126,6 +126,7 @@ export const FooterSection = () => {
                 { name: t('nav.projects', 'Projects'), href: '/#projects' },
                 { name: t('nav.blog', 'Blog'), href: '/blog' },
                 { name: t('nav.services', 'Services'), href: '/#services' },
+                { name: t('nav.careers', 'Careers'), href: '/careers' },
                 { name: t('nav.submit', 'Submit Problem'), href: '/submit?type=problem' },
                 { name: t('nav.contactUs', 'Contact Us'), href: '/contact' },
               ].map((link, index) => (
@@ -238,7 +239,9 @@ export const FooterSection = () => {
               <Users className="w-5 h-5" />
             </motion.a>
             <motion.a
-              href="mailto:saivaraprasad@siddhidynamics.in"
+              href="mailto:hello@siddhidynamics.in"
+              title="Email Siddhi Dynamics (hello@siddhidynamics.in)"
+              aria-label="Email Siddhi Dynamics"
               className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl glass-card flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/30 transition-all duration-300 shrink-0"
               style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}
               whileHover={{ scale: 1.1, y: -2 }}

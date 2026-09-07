@@ -1,4 +1,5 @@
 import { AdminClientsConsole } from "@/components/requirements/AdminClientsConsole";
+import { AdminInternshipsConsole } from "@/components/admin/AdminInternshipsConsole";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseService } from "@/services/supabaseService";
@@ -10,6 +11,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { GoogleReviewCard } from "@/components/GoogleReviewCard";
 import {
     Users,
+    GraduationCap,
     MessageSquare,
     Target,
     ClipboardList,
@@ -94,7 +96,7 @@ const AdminPortal = () => {
     const [chatInput, setChatInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
     const [sendingMsg, setSendingMsg] = useState(false);
-    const [viewMode, setViewMode] = useState<'submissions' | 'users' | 'agency' | 'knowledge' | 'seo-geo' | 'clients'>('submissions');
+    const [viewMode, setViewMode] = useState<'submissions' | 'users' | 'agency' | 'knowledge' | 'seo-geo' | 'clients' | 'internships'>('submissions');
 
     // ── Agency Clients Management ────────────────────────────────────────────
     const [agencyClients, setAgencyClients] = useState<any[]>([]);
@@ -1109,6 +1111,16 @@ const AdminPortal = () => {
                         >
                             <Building2 className="w-4 h-4" /> Agency Clients
                         </button>
+                        <button
+                            onClick={() => setViewMode('internships')}
+                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
+                                viewMode === 'internships'
+                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
+                            }`}
+                        >
+                            <GraduationCap className="w-4 h-4 text-primary" /> Internships & Whitelist
+                        </button>
 
                         {(viewMode === 'submissions' || viewMode === 'agency') && (
                             <button
@@ -1733,7 +1745,10 @@ const AdminPortal = () => {
                             </div>
                         )}
                     </motion.div>
-
+                ) : viewMode === 'internships' ? (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 text-left">
+                        <AdminInternshipsConsole />
+                    </motion.div>
                 ) : null}
                 <div className="pt-8">
                     <GoogleReviewCard audience="visitor" name="Sai Vara Prasad" compact />

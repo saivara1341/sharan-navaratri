@@ -98,10 +98,19 @@ const ContactInformation = () => (
             <div className="flex items-center gap-2 text-primary font-bold text-sm">
               <Mail className="w-4 h-4" /> Email Enquiries
             </div>
-            <a href="mailto:saivaraprasad@siddhidynamics.in" className="text-xs font-extrabold text-white hover:text-primary transition-colors block truncate">
-              saivaraprasad@siddhidynamics.in
-            </a>
-            <p className="text-xs text-muted-foreground">Responses within 24 business hours</p>
+            <div>
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider block">Company & Business</span>
+              <a href="mailto:hello@siddhidynamics.in" className="text-xs font-extrabold text-white hover:text-primary transition-colors block truncate">
+                hello@siddhidynamics.in
+              </a>
+            </div>
+            <div className="pt-1 border-t border-white/5">
+              <span className="text-[10px] text-primary uppercase font-bold tracking-wider block">Careers & Internships</span>
+              <a href="mailto:careers@siddhidynamics.in" className="text-xs font-extrabold text-white hover:text-primary transition-colors block truncate">
+                careers@siddhidynamics.in
+              </a>
+            </div>
+            <p className="text-[11px] text-muted-foreground">Responses within 24 business hours</p>
           </div>
 
           {/* WhatsApp */}
