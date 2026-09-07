@@ -109,12 +109,12 @@ export const FooterSection = () => {
 
       <GoogleReviewNotificationBanner />
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="flex flex-col gap-6">
           {/* Desktop Line 1: Logo + Siddhi Dynamics LLP on left, Nav links on right */}
           {/* Desktop Line 2: Next-Generation AI Solutions */}
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <div className="flex flex-col items-start text-left w-full md:w-auto">
               <motion.a
                 href="/"
                 onClick={handleHomeClick}
@@ -146,7 +146,7 @@ export const FooterSection = () => {
               </motion.a>
 
               {/* Line 2: Next-Generation AI Solutions */}
-              <span className="text-xs md:text-sm text-primary font-semibold tracking-wider mt-1 md:ml-[60px] block">
+              <span className="text-xs md:text-sm text-primary font-semibold tracking-wider mt-1 ml-[60px] block">
                 {t('hero.badge', 'Next-Generation AI Solutions')}
               </span>
             </div>
