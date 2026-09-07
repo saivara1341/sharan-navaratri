@@ -29,7 +29,6 @@ import {
   ShieldCheck,
   Mail,
   Calendar,
-  Radio
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { internshipService } from '@/services/internshipService';
@@ -155,94 +154,13 @@ function empColor(t: EmploymentType) {
 // ─── Stay Tuned Dynamic Animated Illustration Component ─────────────────────
 function StayTunedIllustration() {
   return (
-    <div className="relative w-72 h-72 mx-auto mb-6 flex items-center justify-center select-none">
-      {/* Ambient Pulsing Glow */}
-      <motion.div
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.25, 0.45, 0.25]
-        }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute inset-0 bg-primary/25 rounded-full blur-3xl pointer-events-none"
+    <div className="w-64 h-64 mx-auto mb-2">
+      <iframe
+        src="https://lottie.host/embed/3fdf63fb-1c60-4c33-8a09-a90a02838991/qrbmYjKuFH.lottie"
+        className="w-full h-full border-0"
+        title="Stay Tuned animation"
+        allow="autoplay"
       />
-
-      {/* Outer Radar Rings (Harmonious with theme card and border) */}
-      <div className="absolute inset-2 rounded-full border border-border/80 bg-card/60 backdrop-blur-sm shadow-inner" />
-      <div className="absolute inset-10 rounded-full border border-primary/20 dark:border-primary/30 border-dashed" />
-      <div className="absolute inset-20 rounded-full border border-primary/30 dark:border-primary/40" />
-      <div className="absolute inset-28 rounded-full border border-primary/40 dark:border-primary/60" />
-
-      {/* Crosshair coordinate axes */}
-      <div className="absolute inset-x-4 top-1/2 h-[1px] bg-primary/20 dark:bg-primary/30 -translate-y-1/2" />
-      <div className="absolute inset-y-4 left-1/2 w-[1px] bg-primary/20 dark:bg-primary/30 -translate-x-1/2" />
-
-      {/* Cardinal calibration ticks */}
-      <span className="absolute top-4 left-1/2 -translate-x-1/2 text-[9px] font-mono font-bold tracking-widest text-primary/70">N·360°</span>
-      <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[9px] font-mono font-bold tracking-widest text-primary/70">S·180°</span>
-      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[9px] font-mono font-bold tracking-widest text-primary/70">W·270°</span>
-      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-mono font-bold tracking-widest text-primary/70">E·090°</span>
-
-      {/* Expanding Pulse Waves */}
-      {[0, 1.2, 2.4].map((delay, idx) => (
-        <motion.div
-          key={idx}
-          className="absolute rounded-full border border-primary/50 pointer-events-none"
-          initial={{ width: 44, height: 44, opacity: 0.8 }}
-          animate={{
-            width: [44, 250],
-            height: [44, 250],
-            opacity: [0.8, 0]
-          }}
-          transition={{
-            duration: 3.6,
-            repeat: Infinity,
-            delay,
-            ease: 'easeOut'
-          }}
-        />
-      ))}
-
-      {/* Smooth Rotating Radar Sweep Cone */}
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ repeat: Infinity, duration: 5, ease: 'linear' }}
-        className="absolute inset-2 rounded-full pointer-events-none overflow-hidden"
-      >
-        <div
-          className="w-full h-full"
-          style={{
-            background: 'conic-gradient(from 0deg at 50% 50%, hsl(var(--primary) / 0.4) 0deg, hsl(var(--primary) / 0.08) 50deg, transparent 70deg, transparent 360deg)'
-          }}
-        />
-      </motion.div>
-
-      {/* Floating Target Nodes (Upcoming Roles in Pipeline) */}
-      <motion.div
-        animate={{ y: [-5, 5, -5] }}
-        transition={{ repeat: Infinity, duration: 3.2, ease: 'easeInOut' }}
-        className="absolute top-14 right-10 flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-primary/40 shadow-lg text-[10px] font-bold text-foreground"
-      >
-        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-        <span>Full-Time Eng</span>
-      </motion.div>
-
-      <motion.div
-        animate={{ y: [5, -5, 5] }}
-        transition={{ repeat: Infinity, duration: 3.8, ease: 'easeInOut', delay: 0.6 }}
-        className="absolute bottom-14 left-10 flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-amber-500/40 shadow-lg text-[10px] font-bold text-foreground"
-      >
-        <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-        <span>Ops & Strategy</span>
-      </motion.div>
-
-      {/* Center Beacon Hub with Live Broadcast Icon */}
-      <div className="relative z-10 w-16 h-16 rounded-2xl bg-gradient-to-br from-primary via-primary to-primary/90 border border-primary/60 flex items-center justify-center shadow-xl text-primary-foreground">
-        <Radio className="w-7 h-7 animate-pulse" />
-        <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-          <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500" />
-        </span>
-      </div>
     </div>
   );
 }
