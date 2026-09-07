@@ -5,7 +5,7 @@ import { FooterSection } from '@/components/sections/FooterSection';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Building2, Users, Rocket, Award, Brain, Zap, Globe, Heart, Mail, Phone } from 'lucide-react';
 import founderSai from '@/assets/founder-sarugu-sai-vara-prasad.jpeg';
-import cofounderDevi from '@/assets/cofounder-sarugu-devi-vara-prasad.png';
+import cofounderDevi from '@/assets/cofounder-sarugu-devi-vara-prasad.jpeg';
 
 const MILESTONES = [
   { year: '2024', event: 'Siddhi Dynamics LLP founded in Hyderabad, India' },
