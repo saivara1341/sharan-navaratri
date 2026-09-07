@@ -198,6 +198,7 @@ export default function Careers() {
   const [phone, setPhone] = useState('');
   const [college, setCollege] = useState('');
   const [degree, setDegree] = useState<'MBA' | 'BBA' | 'B.Tech' | 'B.Com' | 'Other'>('MBA');
+  const [otherDegree, setOtherDegree] = useState('');
   const [duration, setDuration] = useState<'3 Months' | '6 Months' | '9 Months' | '12 Months'>('6 Months');
   const [linkedin, setLinkedin] = useState('');
   const [portfolioOrSocial, setPortfolioOrSocial] = useState('');
@@ -533,6 +534,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
 
   const resetForm = () => {
     setFullName(''); setEmail(''); setPhone(''); setCollege('');
+    setDegree('MBA'); setOtherDegree('');
     setStatementOfPurpose(''); setResumeUrl(''); setLinkedin('');
     setPortfolioOrSocial(''); setUploadedFiles([]);
   };
@@ -543,6 +545,11 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
       toast.error('Please fill all mandatory fields.');
       return;
     }
+    const selectedDegree = degree === 'Other' ? otherDegree.trim() : degree;
+    if (!selectedDegree) {
+      toast.error('Please enter your degree.');
+      return;
+    }
     setSubmitting(true);
     try {
       await internshipService.submitApplication({
@@ -550,7 +557,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
         email,
         phone,
         college,
-        degree,
+        degree: selectedDegree,
         graduation_year: '2026',
         role: (applicationModal?.title || 'Business Development Intern') as any,
         duration,
@@ -570,8 +577,8 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
   };
 
   // Dashboard UI input & select styling
-  const dashboardInput = "w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground text-xs placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm";
-  const dashboardSelect = "w-full px-3 py-3 rounded-xl bg-background border border-border text-foreground text-xs focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm";
+  const dashboardInput = "w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground text-base sm:text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm";
+  const dashboardSelect = "w-full px-3 py-3 rounded-xl bg-background border border-border text-foreground text-base sm:text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm";
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30">
@@ -583,14 +590,14 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
 
       <Navbar />
 
-      <main className="pt-24 pb-20">
+      <main className="pt-20 sm:pt-24 pb-12 sm:pb-20">
         {/* ─── Hero Section ─── */}
-        <section className="py-20 relative overflow-hidden border-b border-border/30">
+        <section className="py-8 sm:py-16 lg:py-20 relative overflow-hidden border-b border-border/30">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-background to-purple-500/8 pointer-events-none" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-primary/8 rounded-full blur-[140px] pointer-events-none" />
 
-          <div className="container mx-auto px-6 relative z-10">
-            <nav aria-label="breadcrumb" className="mb-8">
+          <div className="container mx-auto px-4 sm:px-6 relative z-10">
+            <nav aria-label="breadcrumb" className="mb-5 sm:mb-8">
               <ol className="flex items-center gap-2 text-sm text-muted-foreground">
                 <li><Link to="/" className="hover:text-primary transition-colors">Home</Link></li>
                 <li>/</li>
@@ -607,7 +614,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-4">
                 <Rocket className="w-3.5 h-3.5" /> Careers at Siddhi Dynamics
               </div>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black mb-6 leading-tight">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-black mb-4 sm:mb-6 leading-tight">
                 Build Your Career at the{' '}
                 <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                   Intersection of Business & AI
@@ -624,8 +631,8 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
         </section>
 
         {/* ─── Open Positions ─── */}
-        <section className="py-16 container mx-auto px-6">
-          <div className="flex flex-col gap-4 mb-10">
+        <section className="py-10 sm:py-16 container mx-auto px-4 sm:px-6">
+          <div className="flex flex-col gap-4 mb-6 sm:mb-10">
             <div>
               <h2 className="text-3xl font-black text-foreground">Open Positions</h2>
               <p className="text-sm text-muted-foreground mt-1">
@@ -634,14 +641,14 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
             </div>
 
             {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col xl:flex-row gap-3 min-w-0">
               {/* Employment Type Filter */}
-              <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-card border border-border/50 overflow-x-auto">
+              <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl bg-card border border-border/50 min-w-0">
                 {(['all', 'Full Time', 'Remote', 'Part Time'] as const).map(t => (
                   <button
                     key={t}
                     onClick={() => setEmpFilter(t)}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+                    className={`px-3 py-3 sm:px-3.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
                       empFilter === t
                         ? 'bg-primary text-primary-foreground shadow-md'
                         : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
@@ -654,10 +661,10 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
               </div>
 
               {/* Role Category Filter */}
-              <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-card border border-border/50 overflow-x-auto">
+              <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl bg-card border border-border/50 min-w-0">
                 <button
                   onClick={() => setRoleFilter('all')}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
+                  className={`px-3 py-3 sm:px-3.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
                     roleFilter === 'all'
                       ? 'bg-primary text-primary-foreground shadow-md'
                       : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
@@ -669,7 +676,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                   <button
                     key={cat.id}
                     onClick={() => setRoleFilter(cat.id)}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
+                    className={`px-3 py-3 sm:px-3.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
                       roleFilter === cat.id
                         ? 'bg-primary text-primary-foreground shadow-md'
                         : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
@@ -684,7 +691,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
 
           {/* Role Cards Grid or Stay Tuned State */}
           {filteredRoles.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-8">
               {filteredRoles.map((role, idx) => {
                 const EmpI = empIcon(role.employmentType);
                 return (
@@ -693,7 +700,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    className="group relative rounded-3xl border border-border/80 bg-card text-card-foreground shadow-xl hover:border-primary/50 transition-all duration-300 flex flex-col justify-between overflow-hidden p-8"
+                    className="group relative rounded-3xl border border-border/80 bg-card text-card-foreground shadow-xl hover:border-primary/50 transition-all duration-300 flex flex-col justify-between min-w-0 overflow-hidden p-5 sm:p-8"
                   >
                     {/* Subtle glow accent */}
                     <div className="absolute -right-20 -top-20 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/20 transition-all" />
@@ -701,7 +708,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     <div>
                       {/* Top Badges */}
                       <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/25">
                             {role.category}
                           </span>
@@ -755,10 +762,10 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     </div>
 
                     {/* Card Actions */}
-                    <div className="pt-6 border-t border-border/70 flex flex-wrap items-center gap-3">
+                    <div className="pt-5 sm:pt-6 border-t border-border/70 grid grid-cols-[1fr_auto] sm:flex sm:flex-wrap items-center gap-3">
                       <button
                         onClick={() => handleOpenApply(role)}
-                        className="flex-1 py-3 px-5 rounded-2xl bg-primary text-primary-foreground font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 hover:opacity-95 hover:shadow-lg transition-all cursor-pointer"
+                        className="col-span-2 sm:flex-1 py-3 px-5 rounded-2xl bg-primary text-primary-foreground font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 hover:opacity-95 hover:shadow-lg transition-all cursor-pointer"
                       >
                         Apply for Role <ArrowRight className="w-4 h-4" />
                       </button>
@@ -772,7 +779,8 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
 
                       <button
                         onClick={() => handleDownloadJd(role)}
-                        title="Download official JD as text file"
+                        title="Download job description"
+                        aria-label="Download job description"
                         className="py-3 px-3.5 rounded-2xl bg-secondary hover:bg-secondary/80 border border-border text-xs font-bold text-foreground/80 hover:text-foreground transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
                       >
                         <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
@@ -819,8 +827,8 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
         </section>
 
         {/* ─── Cross-Functional Collaboration Architecture ─── */}
-        <section className="py-16 border-t border-border/30 bg-card/20">
-          <div className="container mx-auto px-6">
+        <section className="py-10 sm:py-16 border-t border-border/30 bg-card/20">
+          <div className="container mx-auto px-4 sm:px-6">
             <div className="max-w-4xl mx-auto text-center mb-12">
               <span className="text-xs font-bold uppercase tracking-widest text-primary px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
                 How We Work
@@ -870,24 +878,25 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
       {/* ─── Full JD Modal (Crystal Clear & Honest Disclosure) ─── */}
       <AnimatePresence>
         {selectedJdModal && (
-          <div className="fixed inset-0 z-[120] flex items-start justify-center p-4 sm:p-6 pt-24 sm:pt-28 pb-16 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="fixed inset-0 z-[120] flex items-start justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto overscroll-contain">
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 15 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 15 }}
-              className="bg-card text-card-foreground border border-border rounded-3xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6 md:p-8 shadow-2xl relative my-auto"
+              className="bg-card text-card-foreground border border-border rounded-3xl max-w-2xl w-full p-5 sm:p-6 md:p-8 shadow-2xl relative my-auto"
             >
               <button
+                aria-label="Close job description"
                 onClick={() => setSelectedJdModal(null)}
-                className="absolute top-5 right-5 p-2 rounded-xl bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                className="absolute z-20 top-3 right-3 sm:top-5 sm:right-5 p-3 rounded-xl bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="flex items-center gap-2 text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-2">
+              <div className="flex items-center gap-2 pr-12 text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-2">
                 <FileText className="w-4 h-4" /> Official Job Description
               </div>
-              <h2 className="text-2xl md:text-3xl font-black text-foreground mb-1">{selectedJdModal.title}</h2>
+              <h2 className="text-2xl md:text-3xl font-black text-foreground mb-1 pr-10">{selectedJdModal.title}</h2>
               <div className="flex items-center gap-2 flex-wrap mb-6">
                 <span className="text-xs text-muted-foreground">Department: {selectedJdModal.category}</span>
                 <span className="text-xs text-muted-foreground">•</span>
@@ -904,19 +913,19 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                   <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400" /> Mandatory Credential & Terms Disclosure
                 </div>
                 <div className="grid grid-cols-1 gap-2.5 text-xs text-foreground/85 dark:text-muted-foreground">
-                  <div className="flex items-start gap-2">
+                  <div className="flex flex-col sm:flex-row items-start gap-1 sm:gap-2">
                     <span className="font-bold text-foreground shrink-0">• Compensation:</span>
                     <span><strong>Unpaid Internship</strong> (Skill-learning & academic practical experience for MBA/BBA students).</span>
                   </div>
-                  <div className="flex items-start gap-2">
+                  <div className="flex flex-col sm:flex-row items-start gap-1 sm:gap-2">
                     <span className="font-bold text-foreground shrink-0">• Certification:</span>
                     <span>Interns receive an <strong>Official Certificate of Internship Completion</strong> upon successfully completing their chosen tenure and deliverables.</span>
                   </div>
-                  <div className="flex items-start gap-2">
+                  <div className="flex flex-col sm:flex-row items-start gap-1 sm:gap-2">
                     <span className="font-bold text-foreground shrink-0">• Letter of Recommendation:</span>
                     <span>A formal <strong>Letter of Recommendation (LOR) is provided strictly upon 2 years of active working / association</strong> with Siddhi Dynamics.</span>
                   </div>
-                  <div className="flex items-start gap-2">
+                  <div className="flex flex-col sm:flex-row items-start gap-1 sm:gap-2">
                     <span className="font-bold text-foreground shrink-0">• Workflow:</span>
                     <span>Tasks are assigned with stipulated deadlines. Deadline extensions and proprietary data requests can be submitted via portal and approved by CEO.</span>
                   </div>
@@ -1007,7 +1016,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
       {/* ─── Application Modal (Dashboard UI Design) ─── */}
       <AnimatePresence>
         {applicationModal && (
-          <div className="fixed inset-0 z-[120] flex items-start justify-center p-4 sm:p-6 pt-24 sm:pt-28 pb-16 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="fixed inset-0 z-[120] flex items-start justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto overscroll-contain">
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 15 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -1015,14 +1024,15 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
               className="w-full max-w-2xl my-auto"
             >
               {/* Dashboard styled modal card */}
-              <div className="relative rounded-3xl p-6 sm:p-8 md:p-10 bg-card text-card-foreground border border-border shadow-2xl overflow-hidden">
+              <div className="relative rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 bg-card text-card-foreground border border-border shadow-2xl overflow-hidden">
                 {/* Subtle brand glow accent */}
                 <div className="absolute -top-32 -right-32 w-64 h-64 bg-primary/10 rounded-full blur-[90px] pointer-events-none" />
 
                 {/* Close Button */}
                 <button
+                  aria-label="Close application form"
                   onClick={() => { setApplicationModal(null); resetForm(); }}
-                  className="absolute top-5 right-5 p-2 rounded-xl bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer z-10"
+                  className="absolute z-20 top-3 right-3 sm:top-5 sm:right-5 p-3 rounded-xl bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1032,7 +1042,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-3">
                     <Send className="w-3 h-3" /> Apply Now
                   </div>
-                  <h3 className="text-xl md:text-2xl font-black text-foreground mb-1">
+                  <h3 className="text-xl md:text-2xl font-black text-foreground mb-1 pr-10">
                     {applicationModal.title}
                   </h3>
                   <p className="text-xs text-muted-foreground">
@@ -1061,11 +1071,11 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-xs font-bold text-foreground block mb-1.5">WhatsApp / Phone *</label>
-                      <input type="tel" required value={phone} onChange={e => setPhone(e.target.value)} className={dashboardInput} placeholder="+91 98765 43210" />
+                      <input type="tel" required value={phone} onChange={e => setPhone(e.target.value)} className={dashboardInput} placeholder="Enter your WhatsApp / phone number" />
                     </div>
                     <div>
                       <label className="text-xs font-bold text-foreground block mb-1.5">College / University *</label>
-                      <input type="text" required value={college} onChange={e => setCollege(e.target.value)} className={dashboardInput} placeholder="Institute / University name" />
+                      <input type="text" required value={college} onChange={e => setCollege(e.target.value)} className={dashboardInput} placeholder="Enter your college / university name" />
                     </div>
                   </div>
 
@@ -1079,6 +1089,12 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                         <option value="B.Com">B.Com</option>
                         <option value="Other">Other</option>
                       </select>
+                      {degree === 'Other' && (
+                        <div className="mt-3">
+                          <label htmlFor="other-degree" className="text-xs font-bold text-foreground block mb-1.5">Please specify your degree *</label>
+                          <input id="other-degree" type="text" required value={otherDegree} onChange={e => setOtherDegree(e.target.value)} className={dashboardInput} placeholder="Enter your degree" />
+                        </div>
+                      )}
                     </div>
                     <div>
                       <label className="text-xs font-bold text-foreground block mb-1.5">Preferred Duration *</label>

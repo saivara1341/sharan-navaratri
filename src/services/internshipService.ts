@@ -7,7 +7,7 @@ export interface InternshipApplication {
   email: string;
   phone: string;
   college: string;
-  degree: 'MBA' | 'BBA' | 'B.Tech' | 'Other';
+  degree: string;
   graduation_year: string;
   role: 'Business Development Intern' | 'Digital Marketing Intern';
   duration: '3 Months' | '6 Months' | '9 Months' | '12 Months';
