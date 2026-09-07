@@ -193,13 +193,13 @@ export default function About() {
 
       <Navbar />
 
-      <main className="pt-24">
+      <main className="pt-20 sm:pt-24">
         {/* Hero */}
-        <section className="py-20 relative overflow-hidden">
+        <section className="py-10 sm:py-20 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
-          <div className="container mx-auto px-6 relative z-10">
+          <div className="container mx-auto px-4 sm:px-6 relative z-10">
             {/* Breadcrumb */}
-            <nav aria-label="breadcrumb" className="mb-8">
+            <nav aria-label="breadcrumb" className="mb-5 sm:mb-8">
               <ol className="flex items-center gap-2 text-sm text-muted-foreground">
                 <li><Link to="/" className="hover:text-primary transition-colors">Home</Link></li>
                 <li>/</li>
@@ -216,13 +216,13 @@ export default function About() {
               <span className="inline-block text-primary text-sm font-bold tracking-widest uppercase mb-4">
                 Our Story
               </span>
-              <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-black mb-4 sm:mb-6 leading-tight">
                 We Turn Complex Problems Into{' '}
                 <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                   Intelligent Systems
                 </span>
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl">
+              <p className="text-base sm:text-xl text-muted-foreground leading-relaxed max-w-3xl">
                 Siddhi Dynamics is a deep-tech AI innovation firm based in Hyderabad, India.
                 We build agentic AI, generative AI, and automation systems that transform how
                 Indian businesses operate. Our construction platform, ArchPlan AI, was incubated
@@ -233,8 +233,8 @@ export default function About() {
         </section>
 
         {/* Origin Story */}
-        <section className="py-20 border-t border-border/30">
-          <div className="container mx-auto px-6">
+        <section className="py-10 sm:py-20 border-t border-border/30">
+          <div className="container mx-auto px-4 sm:px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
@@ -245,10 +245,10 @@ export default function About() {
                 <span className="text-accent text-sm font-bold tracking-widest uppercase mb-4 block">
                   The Origin
                 </span>
-                <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-5 sm:mb-6 leading-tight">
                   Built From a Simple Observation
                 </h2>
-                <div className="space-y-4 text-muted-foreground leading-relaxed text-lg">
+                <div className="space-y-4 text-muted-foreground leading-relaxed text-base sm:text-lg">
                   <p>
                     India's businesses — from family-run enterprises to fast-growing startups —
                     are drowning in manual work. Invoices typed by hand. Bookkeeping done in
@@ -298,8 +298,8 @@ export default function About() {
         </section>
 
         {/* Founders */}
-        <section className="py-20 border-t border-border/30 bg-card/20">
-          <div className="container mx-auto px-6">
+        <section className="py-10 sm:py-20 border-t border-border/30 bg-card/20">
+          <div className="container mx-auto px-4 sm:px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -309,7 +309,7 @@ export default function About() {
               <span className="text-primary text-sm font-bold tracking-widest uppercase mb-4 block">
                 Leadership
               </span>
-              <h2 className="text-4xl md:text-5xl font-black mb-4">Meet Our Founders</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4">Meet Our Founders</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 The people building Siddhi Dynamics and shaping its long-term vision.
               </p>
@@ -368,7 +368,7 @@ export default function About() {
 
         {/* What We Do */}
         <section className="py-20 border-t border-border/30 bg-card/20">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-4 sm:px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -421,7 +421,7 @@ export default function About() {
 
         {/* Values */}
         <section className="py-20 border-t border-border/30">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-4 sm:px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -458,7 +458,7 @@ export default function About() {
 
         {/* Timeline */}
         <section className="py-20 border-t border-border/30 bg-card/20">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-4 sm:px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -495,7 +495,7 @@ export default function About() {
 
         {/* CTA */}
         <section className="py-20 border-t border-border/30">
-          <div className="container mx-auto px-6 text-center">
+          <div className="container mx-auto px-4 sm:px-6 text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}

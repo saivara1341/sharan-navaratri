@@ -661,7 +661,18 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
               </div>
 
               {/* Role Category Filter */}
-              <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl bg-card border border-border/50 min-w-0">
+              <select
+                aria-label="Filter by role"
+                value={roleFilter}
+                onChange={e => setRoleFilter(e.target.value as 'all' | RoleCategory)}
+                className={`${dashboardSelect} sm:hidden`}
+              >
+                <option value="all">All Roles</option>
+                {ALL_CATEGORIES.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.label}</option>
+                ))}
+              </select>
+              <div className="hidden sm:flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl bg-card border border-border/50 min-w-0">
                 <button
                   onClick={() => setRoleFilter('all')}
                   className={`px-3 py-3 sm:px-3.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
@@ -724,7 +735,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                       <h3 className="text-2xl md:text-3xl font-black text-foreground mb-3 group-hover:text-primary transition-colors tracking-tight">
                         {role.title}
                       </h3>
-                      <p className="text-sm font-medium text-foreground/80 dark:text-muted-foreground mb-5 leading-relaxed">
+                      <p className="text-xs sm:text-sm font-medium text-foreground/80 dark:text-muted-foreground mb-4 sm:mb-5 leading-relaxed">
                         {role.tagline}
                       </p>
 
@@ -742,7 +753,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                       </div>
 
                       {/* Responsibilities preview */}
-                      <div className="space-y-2.5 mb-6 pt-4 border-t border-border/70">
+                      <div className="space-y-2 sm:space-y-2.5 mb-5 sm:mb-6 pt-4 border-t border-border/70">
                         <div className="text-xs font-black text-foreground uppercase tracking-wider flex items-center gap-1.5">
                           <Target className="w-3.5 h-3.5 text-primary" /> Key Responsibilities & Workflow
                         </div>
@@ -755,7 +766,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                       </div>
 
                       {/* Platform Workflow summary */}
-                      <div className="p-4 rounded-2xl bg-muted/60 dark:bg-muted/30 border border-border/80 text-xs text-foreground/85 dark:text-muted-foreground space-y-1 mb-6 leading-relaxed">
+                      <div className="p-3 sm:p-4 rounded-2xl bg-muted/60 dark:bg-muted/30 border border-border/80 text-[11px] sm:text-xs text-foreground/85 dark:text-muted-foreground space-y-1 mb-5 sm:mb-6 leading-relaxed">
                         <span className="text-foreground font-bold block">Platform Task Protocol:</span>
                         Tasks assigned with stipulated timelines. Extensions and client data requests submitted via portal and approved by CEO.
                       </div>
@@ -886,9 +897,10 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
               className="bg-card text-card-foreground border border-border rounded-3xl max-w-2xl w-full p-5 sm:p-6 md:p-8 shadow-2xl relative my-auto"
             >
               <button
+                type="button"
                 aria-label="Close job description"
                 onClick={() => setSelectedJdModal(null)}
-                className="absolute z-20 top-3 right-3 sm:top-5 sm:right-5 p-3 rounded-xl bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                className="absolute z-30 top-3 right-3 sm:top-5 sm:right-5 p-3 rounded-xl bg-muted/60 text-muted-foreground hover:text-white hover:bg-red-600 active:text-white active:bg-red-600 focus-visible:text-white focus-visible:bg-red-600 transition-colors cursor-pointer pointer-events-auto"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1030,16 +1042,17 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
 
                 {/* Close Button */}
                 <button
+                  type="button"
                   aria-label="Close application form"
                   onClick={() => { setApplicationModal(null); resetForm(); }}
-                  className="absolute z-20 top-3 right-3 sm:top-5 sm:right-5 p-3 rounded-xl bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                  className="absolute z-30 top-3 right-3 sm:top-5 sm:right-5 p-3 rounded-xl bg-muted/60 text-muted-foreground hover:text-white hover:bg-red-600 active:text-white active:bg-red-600 focus-visible:text-white focus-visible:bg-red-600 transition-colors cursor-pointer pointer-events-auto"
                 >
                   <X className="w-5 h-5" />
                 </button>
 
                 {/* Header */}
                 <div className="relative z-10 mb-6">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-3">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-3 mr-14 min-h-8">
                     <Send className="w-3 h-3" /> Apply Now
                   </div>
                   <h3 className="text-xl md:text-2xl font-black text-foreground mb-1 pr-10">
