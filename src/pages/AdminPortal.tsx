@@ -97,6 +97,7 @@ const AdminPortal = () => {
     const [chatLoading, setChatLoading] = useState(false);
     const [sendingMsg, setSendingMsg] = useState(false);
     const [viewMode, setViewMode] = useState<'submissions' | 'users' | 'agency' | 'knowledge' | 'seo-geo' | 'clients' | 'internships'>('submissions');
+    const [adminEmail, setAdminEmail] = useState('');
 
     // ── Agency Clients Management ────────────────────────────────────────────
     const [agencyClients, setAgencyClients] = useState<any[]>([]);
@@ -331,13 +332,17 @@ const AdminPortal = () => {
             if (submissionsError) throw submissionsError;
 
             // Fetch waitlist entries
-            const { data: waitlist } = await supabase
+            const { data: waitlist, error: waitlistError } = await supabase
                 .from('project_waitlist')
                 .select('id, name, email, project_name, created_at')
                 .order('created_at', { ascending: false });
 
-            const { data: portalProfiles } = await (supabase as any)
+            const { data: portalProfiles, error: portalProfilesError } = await (supabase as any)
                 .from('portal_users').select('*').order('created_at', { ascending: false });
+            if (waitlistError || portalProfilesError) {
+                console.warn('[AdminPortal] Some user sources could not be loaded.', { waitlistError, portalProfilesError });
+                toast.warning('Some user sources could not be loaded. Refresh and try again.');
+            }
 
             const userMap = new Map<string, any>();
             // Auth users are an enrichment source. If the Edge Function is
@@ -561,13 +566,17 @@ const AdminPortal = () => {
                 return;
             }
 
-            const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com").split(",");
-            if (!user.email || !adminEmails.includes(user.email)) {
+            const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com")
+                .split(",").map(email => email.trim().toLowerCase()).filter(Boolean);
+            const normalizedUserEmail = user.email?.trim().toLowerCase();
+            const hasAdminRole = user.app_metadata?.role === 'admin';
+            if (!normalizedUserEmail || (!adminEmails.includes(normalizedUserEmail) && !hasAdminRole)) {
                 toast.error("Access Refused: You do not have administrative privileges.");
                 navigate("/");
                 return;
             }
 
+            setAdminEmail(normalizedUserEmail);
             fetchSubmissions();
         };
 
@@ -594,11 +603,12 @@ const AdminPortal = () => {
 
     const filteredSubmissions = submissions
         .filter(s => {
+            if ((s.status || '').toLowerCase() === 'archived') return false;
             const matchesFilter = filter === "all" || s.inquiry_type === filter;
             const matchesSearch =
-                s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                s.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                s.message.toLowerCase().includes(searchTerm.toLowerCase());
+                (s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (s.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (s.message || '').toLowerCase().includes(searchTerm.toLowerCase());
             return matchesFilter && matchesSearch;
         })
         .sort((a, b) => {
@@ -653,7 +663,7 @@ const AdminPortal = () => {
                 .from('chat_messages')
                 .insert([{
                     submission_id: chatOpen.id,
-                    sender_email: (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com").split(",")[0],
+                    sender_email: adminEmail,
                     message: chatInput.trim(),
                     is_admin: true
                 }])
@@ -1034,14 +1044,14 @@ const AdminPortal = () => {
     };
 
     const handleDeleteSubmission = async (id: string) => {
-        if (!window.confirm("Are you sure you want to delete this project/submission? This cannot be undone.")) return;
+        if (!window.confirm("Archive this project/submission? It will be hidden from active Admin Portal views and can be restored from the database.")) return;
         try {
             const { error } = await supabase
                 .from('contact_submissions')
-                .delete()
+                .update({ status: 'Archived', is_public: false })
                 .eq('id', id);
             if (error) throw error;
-            toast.success("Project deleted successfully");
+            toast.success("Project archived successfully");
             fetchSubmissions();
         } catch (error: any) {
             toast.error(`Delete failed: ${error.message}`);

@@ -41,15 +41,19 @@ export const supabaseService = {
     },
 
     async getSubmissions(email?: string, seed?: string) {
-        let query = supabase.from('contact_submissions').select('*');
-        if (email) query = query.eq('email', email);
-
-        // Sorting by newest first
-        query = query.order('created_at', { ascending: false });
-
-        const { data, error } = await query;
-        if (error) throw new Error(`Fetch Error: ${error.message}`);
-        return data;
+        const pageSize = 500;
+        const allRows: any[] = [];
+        for (let page = 0; ; page += 1) {
+            let query = supabase.from('contact_submissions').select('*');
+            if (email) query = query.eq('email', email);
+            const { data, error } = await query
+                .order('created_at', { ascending: false })
+                .range(page * pageSize, (page + 1) * pageSize - 1);
+            if (error) throw new Error(`Fetch Error: ${error.message}`);
+            allRows.push(...(data || []));
+            if (!data || data.length < pageSize) break;
+        }
+        return allRows;
     },
 
     // --- WAITLIST ---

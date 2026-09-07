@@ -6,6 +6,8 @@ const corsHeaders = {
 };
 const response = (body: Record<string, unknown>, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+const adminEmails = (Deno.env.get('ADMIN_EMAILS') || 'ssaivaraprasad51@gmail.com')
+  .split(',').map((email) => email.trim().toLowerCase()).filter(Boolean);
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
@@ -15,13 +17,19 @@ Deno.serve(async (req) => {
   try {
     const token = req.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
     const { data: { user: caller }, error: callerError } = token ? await db.auth.getUser(token) : { data: { user: null }, error: null };
-    if (callerError || caller?.email?.toLowerCase() !== 'ssaivaraprasad51@gmail.com') return response({ error: 'Administrator access is required.' }, 403);
+    const hasAdminRole = caller?.app_metadata?.role === 'admin';
+    if (callerError || !caller?.email || (!adminEmails.includes(caller.email.trim().toLowerCase()) && !hasAdminRole)) return response({ error: 'Administrator access is required.' }, 403);
 
     const body = await req.json();
     if (body.action === 'list') {
-      const { data, error } = await db.auth.admin.listUsers({ page: 1, perPage: 1000 });
-      if (error) throw error;
-      return response({ users: (data.users || []).map((user) => ({
+      const users = [];
+      for (let page = 1; ; page += 1) {
+        const { data, error } = await db.auth.admin.listUsers({ page, perPage: 1000 });
+        if (error) throw error;
+        users.push(...(data.users || []));
+        if (!data.users || data.users.length < 1000) break;
+      }
+      return response({ users: users.map((user) => ({
         id: user.id,
         email: user.email,
         name: user.user_metadata?.full_name || user.user_metadata?.name || null,
