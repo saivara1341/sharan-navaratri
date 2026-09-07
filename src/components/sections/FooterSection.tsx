@@ -35,26 +35,64 @@ export const FooterSection = () => {
 
   const handleHomeClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    navigate('/');
-    window.scrollTo(0, 0);
+    if (window.location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      navigate('/');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const handleNavClick = (e: React.MouseEvent, href: string) => {
     e.preventDefault();
+    if (href === '/' || href === '#/') {
+      if (window.location.pathname === '/') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        navigate('/');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      return;
+    }
+
     if (href.startsWith('/#')) {
       const anchorId = href.replace('/#', '');
       if (window.location.pathname === '/') {
         const el = document.getElementById(anchorId);
         if (el) {
-          el.scrollIntoView({ behavior: 'smooth' });
+          const offset = 80;
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = el.getBoundingClientRect().top;
+          const offsetPosition = Math.max(0, elementRect - bodyRect - offset);
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
           return;
         }
       }
       navigate(href);
       return;
     }
+
+    // If already on homepage and clicking Submit Problem, smooth scroll to #submit section
+    if (href.startsWith('/submit') && window.location.pathname === '/') {
+      const el = document.getElementById('submit');
+      if (el) {
+        const offset = 80;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = el.getBoundingClientRect().top;
+        const offsetPosition = Math.max(0, elementRect - bodyRect - offset);
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+        return;
+      }
+    }
+
     navigate(href);
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (

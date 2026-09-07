@@ -36,7 +36,8 @@ const msUntilNextIndiaMidnight = (timestamp: number) => {
 };
 
 const Index = () => {
-  const { pathname } = useLocation();
+  const location = useLocation();
+  const { pathname } = location;
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [indiaClock, setIndiaClock] = useState(Date.now);
   const isIndependenceDay =
@@ -71,9 +72,29 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    // Scroll to top by default
-    if (pathname === '/') {
-      window.scrollTo(0, 0);
+    const hash = location.hash || window.location.hash;
+    if (hash) {
+      const sectionId = hash.replace('#', '');
+      const timer = setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          const offset = 80; // Navbar height offset
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = element.getBoundingClientRect().top;
+          const elementPosition = elementRect - bodyRect;
+          const offsetPosition = Math.max(0, elementPosition - offset);
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    } else if (pathname === '/' || pathname === '') {
+      if (window.scrollY > 50) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     } else {
       // Scroll to specific section if path matches
       const sectionId = pathname.replace('/', '');
@@ -83,7 +104,7 @@ const Index = () => {
         const bodyRect = document.body.getBoundingClientRect().top;
         const elementRect = element.getBoundingClientRect().top;
         const elementPosition = elementRect - bodyRect;
-        const offsetPosition = elementPosition - offset;
+        const offsetPosition = Math.max(0, elementPosition - offset);
 
         window.scrollTo({
           top: offsetPosition,
@@ -91,8 +112,10 @@ const Index = () => {
         });
       }
     }
+  }, [pathname, location.hash]);
 
-    // Autoscroll logic for landing page
+  // Autoscroll logic for landing page
+  useEffect(() => {
     if (pathname === '/') {
       let scrollTimer: ReturnType<typeof setTimeout>;
       let autoscrollActive = false;

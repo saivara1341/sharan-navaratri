@@ -31,7 +31,10 @@ import {
   Unlock,
   Building2,
   Phone,
-  Mail
+  Mail,
+  Star,
+  ArrowUpRight,
+  MessageSquareQuote
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { 
@@ -42,8 +45,18 @@ import {
   PointOfProof, 
   InterlinkAlert, 
   IncentiveReward,
-  CertificateRecord
+  CertificateRecord,
+  InternReview
 } from '@/services/internshipService';
+
+const GoogleLogo = () => (
+  <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" aria-hidden="true">
+    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+  </svg>
+);
 
 export default function InternPortal() {
   const navigate = useNavigate();
@@ -52,7 +65,7 @@ export default function InternPortal() {
   const [userName, setUserName] = useState('');
   const [userRole, setUserRole] = useState<'Business Development Intern' | 'Digital Marketing Intern'>('Business Development Intern');
   const [duration, setDuration] = useState('6 Months');
-  const [activeTab, setActiveTab] = useState<'tasks' | 'proofs' | 'interlink' | 'incentives' | 'documents'>('tasks');
+  const [activeTab, setActiveTab] = useState<'tasks' | 'proofs' | 'interlink' | 'incentives' | 'documents' | 'review'>('tasks');
 
   // Data states
   const [tasks, setTasks] = useState<InternTask[]>([]);
@@ -63,6 +76,18 @@ export default function InternPortal() {
   const [incentives, setIncentives] = useState<IncentiveReward[]>([]);
   const [scratchedIds, setScratchedIds] = useState<string[]>([]);
   const [myCertificate, setMyCertificate] = useState<CertificateRecord | null>(null);
+
+  // Intern Feedback & Review states
+  const [myReview, setMyReview] = useState<InternReview | null>(null);
+  const [isEditingReview, setIsEditingReview] = useState(false);
+  const [rating, setRating] = useState<number>(5);
+  const [hoverRating, setHoverRating] = useState<number>(0);
+  const [reviewCategory, setReviewCategory] = useState<InternReview['category']>('Overall Experience');
+  const [reviewTitle, setReviewTitle] = useState('');
+  const [reviewText, setReviewText] = useState('');
+  const [wouldRecommend, setWouldRecommend] = useState(true);
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [copiedReview, setCopiedReview] = useState(false);
 
   // Modal states
   const [showExtensionModal, setShowExtensionModal] = useState<InternTask | null>(null);
@@ -115,7 +140,65 @@ export default function InternPortal() {
     if (targetEmail) {
       const cert = internshipService.getCertificateByNo(targetEmail);
       setMyCertificate(cert);
+      const rev = internshipService.getReviewByEmail(targetEmail);
+      if (rev) {
+        setMyReview(rev);
+        setRating(rev.rating);
+        setReviewCategory(rev.category);
+        setReviewTitle(rev.review_title);
+        setReviewText(rev.review_text);
+        setWouldRecommend(rev.would_recommend);
+      }
     }
+  };
+
+  const handleReviewSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewTitle.trim() || !reviewText.trim()) {
+      toast.error('Please enter a review title and details.');
+      return;
+    }
+    setSubmittingReview(true);
+    try {
+      const submitted = internshipService.submitInternReview({
+        intern_email: userEmail,
+        intern_name: userName || 'Siddhi Intern',
+        role: userRole,
+        rating,
+        category: reviewCategory,
+        review_title: reviewTitle.trim(),
+        review_text: reviewText.trim(),
+        would_recommend: wouldRecommend,
+      });
+      setMyReview(submitted);
+      setIsEditingReview(false);
+      if (rating >= 4) {
+        toast.success('🌟 Thank you for your 5-star review! Please share it on Google Maps to help our ranking.');
+      } else {
+        toast.info('🙏 Feedback received. Your remarks have been sent privately to Founder & CEO Sai Vara Prasad.');
+      }
+    } catch {
+      toast.error('Failed to submit review.');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  const handleCopyReview = () => {
+    if (!myReview) return;
+    const text = `${myReview.review_title}\n\n${myReview.review_text}`;
+    navigator.clipboard.writeText(text);
+    setCopiedReview(true);
+    toast.success('Review text copied! Ready to paste on Google.');
+    setTimeout(() => setCopiedReview(false), 3000);
+  };
+
+  const handleOpenGoogle = () => {
+    if (myReview) {
+      internshipService.markReviewPostedToGoogle(myReview.id);
+      setMyReview(prev => prev ? { ...prev, posted_to_google: true, status: 'Published to Google' } : null);
+    }
+    window.open('https://g.page/r/CQ8YjZSqkk-5EBM/review', '_blank', 'noopener,noreferrer');
   };
 
   useEffect(() => {
@@ -350,6 +433,39 @@ export default function InternPortal() {
             </div>
           </div>
 
+          {/* Rate Experience Prompt Banner (Gated Google Prompt) */}
+          <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-primary/10 to-emerald-500/10 border border-amber-500/20 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center shrink-0 border border-amber-400/30">
+                <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
+              </div>
+              <div>
+                <h4 className="text-xs font-black text-white flex items-center gap-2">
+                  <span>{myReview ? `You rated us ${myReview.rating}★` : 'Intern Experience Feedback & Review'}</span>
+                  {myReview && myReview.rating >= 4 && (
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold border border-emerald-500/30">
+                      Eligible for Google Review
+                    </span>
+                  )}
+                </h4>
+                <p className="text-[11px] text-white/70">
+                  {myReview 
+                    ? myReview.rating >= 4 
+                      ? 'Help other ambitious students find Siddhi Dynamics by posting your positive review on Google Maps.'
+                      : 'Your concerns have been privately escalated to CEO Sai Vara Prasad for internal resolution.'
+                    : 'Share your experience on mentorship, real tasks, and platform tools. Honest reviews help us improve.'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setActiveTab('review')}
+              className="shrink-0 px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs transition-transform hover:scale-105 shadow-md flex items-center gap-1.5 cursor-pointer"
+            >
+              <Star className="w-3.5 h-3.5 fill-black" />
+              {myReview ? (myReview.rating >= 4 ? 'Post on Google' : 'View Feedback') : 'Rate Experience'}
+            </button>
+          </div>
+
           {/* Navigation Tabs */}
           <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 border-b border-white/10 no-scrollbar">
             {[
@@ -358,6 +474,7 @@ export default function InternPortal() {
               { id: 'interlink', label: 'BD ⇄ DM Growth Loop', icon: Users, count: interlinks.length },
               { id: 'incentives', label: 'Milestone Scratch Cards', icon: Gift, count: incentives.length },
               { id: 'documents', label: 'Offer & Certificates', icon: FileText, count: null },
+              { id: 'review', label: 'Intern Feedback & Review', icon: Star, count: myReview ? `${myReview.rating}★` : 'New' },
             ].map(tab => {
               const Icon = tab.icon;
               return (
@@ -738,7 +855,7 @@ export default function InternPortal() {
                   <p><strong>TENURE:</strong> {duration} (Subject to stipulated task completion)</p>
                   <p><strong>REPORTING TO:</strong> Sarugu Sai Vara Prasad, Founder & Designated Partner</p>
                   <p className="pt-2 border-t border-white/5">
-                    TERMS: The intern agrees to abide by Siddhi Dynamics LLP data confidentiality, ethical client representation, and milestone incentive criteria. All intellectual property, client pipelines, and campaign assets developed remain the sole property of Siddhi Dynamics LLP.
+                    TERMS & CREDENTIALS: This is an unpaid internship for practical skill development and academic learning. Upon successful completion of your selected tenure and assigned deliverables, you will be awarded an official Certificate of Internship Completion. A formal Letter of Recommendation (LOR) is granted strictly upon completing 2 years of active service with Siddhi Dynamics LLP. All tasks are assigned with stipulated deadlines; extension requests and data resources are subject to Founder & CEO approval. All intellectual property, client pipelines, and campaign assets developed remain the sole property of Siddhi Dynamics LLP.
                   </p>
                 </div>
 
@@ -880,6 +997,294 @@ export default function InternPortal() {
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* TAB 6: Intern Experience Feedback & Gated Google Review */}
+          {activeTab === 'review' && (
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-extrabold text-foreground flex items-center gap-2">
+                    <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
+                    Intern Experience Feedback & Evaluation
+                  </h2>
+                  <p className="text-xs text-muted-foreground">
+                    Your real feedback shapes our curriculum and executive mentorship at Siddhi Dynamics.
+                  </p>
+                </div>
+                {myReview && !isEditingReview && (
+                  <button
+                    onClick={() => setIsEditingReview(true)}
+                    className="self-start px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-300 transition-colors cursor-pointer"
+                  >
+                    Edit / Update Feedback
+                  </button>
+                )}
+              </div>
+
+              {myReview && !isEditingReview ? (
+                /* ─── REVIEW ALREADY SUBMITTED: GATED DISPLAY ─── */
+                <div className="space-y-6">
+                  {myReview.rating >= 4 ? (
+                    /* ─── 4 OR 5 STARS: HIGH PRAISE -> PROMPT GOOGLE MAPS ─── */
+                    <div className="p-8 rounded-3xl border border-amber-400/30 bg-gradient-to-br from-amber-500/10 via-card/80 to-purple-500/10 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+                      <div className="absolute -right-20 -top-20 w-64 h-64 bg-amber-400/15 rounded-full blur-[100px] pointer-events-none" />
+
+                      <div className="flex items-center gap-2 flex-wrap mb-4">
+                        <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30 flex items-center gap-1.5">
+                          <Star className="w-3.5 h-3.5 fill-amber-400" /> {myReview.rating}/5 Stars — Exceptional
+                        </span>
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                          {myReview.category}
+                        </span>
+                        <span className="text-xs text-muted-foreground ml-auto">
+                          Submitted on {myReview.submitted_at}
+                        </span>
+                      </div>
+
+                      <div className="space-y-4 max-w-2xl">
+                        <h3 className="text-2xl font-black text-white leading-tight">
+                          🌟 Thank you for your {myReview.rating}-star review, {userName}!
+                        </h3>
+                        <p className="text-xs sm:text-sm text-amber-100/80 leading-relaxed">
+                          We are thrilled that your experience at Siddhi Dynamics provided practical value and growth.
+                          Because your experience was outstanding, sharing your genuine review on Google Maps directly helps other ambitious students find us and strengthens our company reputation!
+                        </p>
+
+                        {/* Review Quote Snippet */}
+                        <div className="p-5 rounded-2xl bg-black/40 border border-white/10 space-y-2">
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span className="font-mono text-[11px] text-amber-300">Your Written Review:</span>
+                            <button
+                              onClick={handleCopyReview}
+                              className="text-xs text-primary hover:underline flex items-center gap-1 font-bold cursor-pointer"
+                            >
+                              <Copy className="w-3.5 h-3.5" />
+                              {copiedReview ? 'Copied!' : 'Copy Review Text'}
+                            </button>
+                          </div>
+                          <h4 className="font-extrabold text-foreground text-sm">"{myReview.review_title}"</h4>
+                          <p className="text-xs text-slate-300 italic leading-relaxed">
+                            "{myReview.review_text}"
+                          </p>
+                        </div>
+
+                        {/* Post on Google Maps CTA */}
+                        <div className="pt-2 flex flex-col sm:flex-row items-center gap-4">
+                          <button
+                            onClick={handleOpenGoogle}
+                            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2.5 shadow-xl shadow-amber-400/20 hover:scale-105 transition-all cursor-pointer"
+                          >
+                            <GoogleLogo />
+                            <span>Post Your Review on Google Maps</span>
+                            <ArrowUpRight className="w-4 h-4" />
+                          </button>
+
+                          <span className="text-[11px] text-muted-foreground text-center sm:text-left">
+                            Opens Siddhi Dynamics on Google in a new tab. Paste and rate!
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    /* ─── 1, 2, OR 3 STARS: CRITICAL FEEDBACK -> KEEP STRICTLY INTERNAL (NO GOOGLE MAPS) ─── */
+                    <div className="p-8 rounded-3xl border border-indigo-500/30 bg-gradient-to-br from-indigo-950/40 via-card/80 to-slate-900/50 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+                      <div className="absolute -right-20 -top-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
+
+                      <div className="flex items-center gap-2 flex-wrap mb-4">
+                        <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1.5">
+                          <Lock className="w-3.5 h-3.5" /> Private Feedback ({myReview.rating}/5)
+                        </span>
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-slate-300 border border-white/10">
+                          {myReview.category}
+                        </span>
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-300 border border-amber-500/25">
+                          Flagged for CEO Attention
+                        </span>
+                        <span className="text-xs text-muted-foreground ml-auto">
+                          Submitted on {myReview.submitted_at}
+                        </span>
+                      </div>
+
+                      <div className="space-y-4 max-w-2xl">
+                        <h3 className="text-2xl font-black text-white leading-tight">
+                          🙏 Thank you for your candid feedback, {userName}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                          We hold our mentorship and operations to the highest standard. Because your rating was {myReview.rating}/5, your remarks have been routed confidentially to our leadership team and Founder & CEO Sai Vara Prasad for direct review.
+                        </p>
+
+                        <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
+                          <div className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                            <ShieldCheck className="w-4 h-4 text-emerald-400" /> Executive Resolution Protocol
+                          </div>
+                          <ul className="text-xs text-slate-300 space-y-2 list-disc list-inside">
+                            <li><strong>Confidential Internal Review:</strong> This critique is preserved exclusively for management and is <em>never</em> published externally or to Google.</li>
+                            <li><strong>Mentorship Adjustment:</strong> We diagnose pain points in <strong>{myReview.category}</strong> to adjust task load, provide extra resources, or schedule 1-on-1 calls.</li>
+                            <li><strong>Direct Channel:</strong> Feel free to write directly to <strong>saivaraprasad@siddhidynamics.in</strong> for immediate resolution.</li>
+                          </ul>
+                        </div>
+
+                        {/* Submission details */}
+                        <div className="p-4 rounded-xl bg-black/30 border border-white/5 space-y-1">
+                          <span className="text-[11px] text-muted-foreground block font-mono">Recorded Feedback:</span>
+                          <p className="text-xs font-bold text-foreground">"{myReview.review_title}"</p>
+                          <p className="text-xs text-slate-400 italic">"{myReview.review_text}"</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* ─── FEEDBACK SUBMISSION FORM ─── */
+                <div className="p-8 rounded-3xl border border-white/10 bg-card/70 backdrop-blur-xl shadow-2xl max-w-3xl">
+                  <div className="mb-6">
+                    <h3 className="text-lg font-black text-foreground mb-1">
+                      {isEditingReview ? 'Update Your Experience Review' : 'Rate Your Internship Experience'}
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Rate your learning, platform workflows, mentorship, and practical skill development.
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleReviewSubmit} className="space-y-6">
+                    {/* 5-Star Interactive Rating */}
+                    <div className="space-y-2 p-5 rounded-2xl bg-white/[0.02] border border-white/5">
+                      <label className="text-xs font-bold text-white/90 block">
+                        Overall Rating (1 to 5 Stars) *
+                      </label>
+                      <div className="flex items-center gap-2 py-1">
+                        {[1, 2, 3, 4, 5].map(star => {
+                          const isFilled = (hoverRating || rating) >= star;
+                          return (
+                            <button
+                              key={star}
+                              type="button"
+                              onClick={() => setRating(star)}
+                              onMouseEnter={() => setHoverRating(star)}
+                              onMouseLeave={() => setHoverRating(0)}
+                              className="p-1 hover:scale-125 transition-transform cursor-pointer"
+                            >
+                              <Star
+                                className={`w-8 h-8 transition-colors ${
+                                  isFilled
+                                    ? 'text-amber-400 fill-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]'
+                                    : 'text-slate-600'
+                                }`}
+                              />
+                            </button>
+                          );
+                        })}
+                        <span className="text-xs font-bold text-amber-300 ml-3">
+                          {rating === 5 && 'Outstanding & Transformative (5/5) 🚀'}
+                          {rating === 4 && 'Very Good & Valuable (4/5) 😄'}
+                          {rating === 3 && 'Average / Neutral (3/5) 🙂'}
+                          {rating === 2 && 'Below Expectations (2/5) 😐'}
+                          {rating === 1 && 'Needs Significant Improvement (1/5) 🙁'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Category Selection */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-xs font-bold text-white/80 block mb-1.5">
+                          Feedback Focus Area *
+                        </label>
+                        <select
+                          value={reviewCategory}
+                          onChange={(e: any) => setReviewCategory(e.target.value)}
+                          className="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-foreground text-xs focus:outline-none focus:border-primary"
+                        >
+                          <option value="Overall Experience">Overall Experience</option>
+                          <option value="Mentorship & Guidance">Mentorship & Guidance</option>
+                          <option value="Skill & Practical Learning">Skill & Practical Learning</option>
+                          <option value="Platform & Task Clarity">Platform & Task Clarity</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-bold text-white/80 block mb-1.5">
+                          Would you recommend to your college peers?
+                        </label>
+                        <div className="flex items-center gap-3 pt-1">
+                          <label className="flex items-center gap-1.5 text-xs text-white/80 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="recommend"
+                              checked={wouldRecommend === true}
+                              onChange={() => setWouldRecommend(true)}
+                              className="accent-primary"
+                            />
+                            <span>Yes, absolutely</span>
+                          </label>
+                          <label className="flex items-center gap-1.5 text-xs text-white/80 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="recommend"
+                              checked={wouldRecommend === false}
+                              onChange={() => setWouldRecommend(false)}
+                              className="accent-primary"
+                            />
+                            <span>Needs improvements first</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Review Title */}
+                    <div>
+                      <label className="text-xs font-bold text-white/80 block mb-1.5">
+                        Review Headline / Summary *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={reviewTitle}
+                        onChange={e => setReviewTitle(e.target.value)}
+                        placeholder="e.g. Real-world sales exposure that built my career confidence"
+                        className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-foreground text-xs focus:outline-none focus:border-primary"
+                      />
+                    </div>
+
+                    {/* Review Text */}
+                    <div>
+                      <label className="text-xs font-bold text-white/80 block mb-1.5">
+                        Detailed Thoughts & Impact *
+                      </label>
+                      <textarea
+                        required
+                        rows={4}
+                        value={reviewText}
+                        onChange={e => setReviewText(e.target.value)}
+                        placeholder="Tell us what worked well, key skills acquired (PrintFlow, sales pipelines, social growth), and your honest impressions..."
+                        className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-foreground text-xs focus:outline-none focus:border-primary leading-relaxed"
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-end gap-3 pt-2">
+                      {isEditingReview && (
+                        <button
+                          type="button"
+                          onClick={() => setIsEditingReview(false)}
+                          className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                      )}
+                      <button
+                        type="submit"
+                        disabled={submittingReview}
+                        className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-black text-xs uppercase tracking-wider hover:scale-105 transition-all shadow-lg cursor-pointer flex items-center gap-2"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                        <span>{submittingReview ? 'Submitting...' : 'Submit Intern Review'}</span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -1230,12 +1635,15 @@ export default function InternPortal() {
                 <p>All tasks are assigned with specific deadlines. In case of genuine delays or client bottlenecks, you must submit an official Extension Request through the portal for CEO approval prior to the deadline.</p>
 
                 <h4 className="font-bold text-white">2. Point of Proof Ledger</h4>
-                <p>Every activity, outreach call, and marketing campaign must be recorded as verifiable Point of Proof. Transparent results are the basis for milestone incentives and letters of recommendation.</p>
+                <p>Every activity, outreach call, and marketing campaign must be recorded as verifiable Point of Proof. Transparent results are the basis for official certificate issuance and evaluation.</p>
 
-                <h4 className="font-bold text-white">3. Cross-Functional Synergy (BD ⇄ DM)</h4>
-                <p>Interns must actively use the Interlink Loophole alert channel. BD interns guide market requirements, and DM interns produce high-hook content to drive conversions.</p>
+                <h4 className="font-bold text-white">3. Nature of Internship & Credential Policy</h4>
+                <p>This is an unpaid educational internship for practical skill growth. You receive an official Certificate of Internship Completion upon completing your tenure and assigned deliverables. A formal Letter of Recommendation (LOR) is issued strictly upon completing 2 years of active service with Siddhi Dynamics LLP.</p>
 
-                <h4 className="font-bold text-white">4. Confidentiality & Non-Disclosure (NDA)</h4>
+                <h4 className="font-bold text-white">4. Cross-Functional Synergy (BD ⇄ DM)</h4>
+                <p>Interns actively collaborate across business development and marketing channels. BD interns guide market requirements, and DM interns produce high-hook content to drive conversions.</p>
+
+                <h4 className="font-bold text-white">5. Confidentiality & Non-Disclosure (NDA)</h4>
                 <p>All client identities, proprietary code, AI pipelines, PrintFlow architectures, and internal pricing remain strictly confidential.</p>
               </div>
 

@@ -1,7 +1,23 @@
 import { useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { ScrollText, UserCheck, Trash2, PencilLine, UserPlus, ShieldOff, MessageSquareWarning } from "lucide-react";
+import { 
+  ScrollText, 
+  UserCheck, 
+  Trash2, 
+  PencilLine, 
+  UserPlus, 
+  ShieldOff, 
+  MessageSquareWarning,
+  Building2,
+  MapPin,
+  Mail,
+  Phone,
+  AlertCircle,
+  Cookie,
+  ArrowRight,
+  ShieldCheck
+} from "lucide-react";
 import { LegalPageLayout } from "@/components/legal/LegalPageLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { withdrawConsent, readConsent } from "@/lib/consent";
@@ -80,45 +96,100 @@ const DataRights = () => {
       description="Exercise your rights under India's Digital Personal Data Protection Act, 2023 — access, correction, erasure, nomination, consent withdrawal and grievance redressal."
       icon={<ScrollText className="w-8 h-8" />}
     >
-      <section>
+      {/* ─── Introductory Section ─── */}
+      <section className="space-y-3">
         <h2 className="text-xl font-bold text-foreground">Rights of a Data Principal</h2>
         <p className="text-muted-foreground leading-relaxed">
           Under Sections 11–14 of the Digital Personal Data Protection Act, 2023, you (the Data Principal) may ask
           Siddhi Dynamics LLP (the Data Fiduciary) to give you a summary of your personal data, correct or erase it,
-          nominate another person to act for you, withdraw consent, and have grievances redressed. Use the form below —
-          we respond within 30 days.
+          nominate another person to act for you, withdraw consent, and have grievances redressed. Click any block below
+          to select it and submit your request — we respond within 30 days.
         </p>
       </section>
 
-      <section className="grid gap-3 sm:grid-cols-2">
-        {REQUEST_TYPES.map(({ value, label, icon: Icon, desc }) => (
-          <div key={value} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-            <div className="flex items-center gap-2 text-foreground font-bold text-sm">
-              <Icon className="w-4 h-4 text-primary" /> {label}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{desc}</p>
-          </div>
-        ))}
+      {/* ─── Data Principal Rights Blocks (With Prominent Borders & Click Selection) ─── */}
+      <section className="not-prose space-y-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {REQUEST_TYPES.map(({ value, label, icon: Icon, desc }) => {
+            const isSelected = requestType === value;
+            return (
+              <div
+                key={value}
+                onClick={() => {
+                  setRequestType(value);
+                  const formEl = document.getElementById("request-form");
+                  if (formEl) {
+                    formEl.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+                className={`group relative rounded-2xl border p-5 transition-all cursor-pointer flex flex-col justify-between ${
+                  isSelected
+                    ? "border-primary bg-primary/10 shadow-[0_0_24px_rgba(139,92,246,0.2)] ring-1 ring-primary/50"
+                    : "border-white/15 bg-card/60 hover:border-primary/50 hover:bg-white/[0.05] shadow-md"
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <div
+                      className={`p-2.5 rounded-xl transition-colors ${
+                        isSelected
+                          ? "bg-primary text-primary-foreground shadow-md"
+                          : "bg-white/5 text-primary group-hover:bg-primary/20"
+                      }`}
+                    >
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    {isSelected && (
+                      <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-primary text-primary-foreground shadow-sm">
+                        Selected
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-base font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    {label}
+                  </h3>
+                  <p className="text-xs text-white/70 mt-2 leading-relaxed">
+                    {desc}
+                  </p>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-bold text-primary">
+                  <span>{isSelected ? "Active in Form" : "Select this right"}</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </section>
 
-      <section id="request-form">
-        <h2 className="text-xl font-bold text-foreground">Submit a request</h2>
+      {/* ─── Submit a Request Box ─── */}
+      <section id="request-form" className="rounded-3xl border border-white/15 bg-card/60 p-6 md:p-8 backdrop-blur-md shadow-xl not-prose space-y-5">
+        <div>
+          <h2 className="text-xl font-bold text-foreground">Submit a Request</h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            Fill in the details below to exercise your chosen right under India's DPDP Act, 2023.
+          </p>
+        </div>
+
         {done ? (
-          <div className="mt-4 rounded-2xl border border-primary/30 bg-primary/5 p-6">
-            <p className="text-sm text-foreground font-bold">Request recorded.</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              We may contact you at the email you provided to verify your identity before acting on the request.
+          <div className="rounded-2xl border border-primary/30 bg-primary/10 p-6 space-y-2">
+            <p className="text-sm text-foreground font-bold flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" /> Request recorded successfully.
+            </p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Our Grievance Officer will review your request and respond within 30 days. We may contact you at the email you provided to verify your identity.
             </p>
             <button
               type="button"
               onClick={() => setDone(false)}
-              className="mt-4 rounded-xl border border-white/15 px-4 py-2 text-xs font-bold text-foreground hover:border-primary/40 transition-colors"
+              className="mt-3 rounded-xl border border-white/15 px-4 py-2 text-xs font-bold text-foreground hover:border-primary/40 transition-colors cursor-pointer"
             >
               Submit another request
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="mt-4 space-y-4 not-prose">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="dr-name" className="block text-xs font-bold text-foreground mb-1.5">Full name *</label>
@@ -161,7 +232,7 @@ const DataRights = () => {
             <div>
               <label htmlFor="dr-details" className="block text-xs font-bold text-foreground mb-1.5">Details *</label>
               <textarea
-                id="dr-details" required rows={5} value={details} onChange={(e) => setDetails(e.target.value)} maxLength={4000}
+                id="dr-details" required rows={4} value={details} onChange={(e) => setDetails(e.target.value)} maxLength={4000}
                 className="w-full resize-none rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
                 placeholder="Tell us which data or which purpose your request relates to."
               />
@@ -170,7 +241,7 @@ const DataRights = () => {
             <label htmlFor="dr-declare" className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-xs leading-relaxed text-muted-foreground cursor-pointer">
               <input
                 id="dr-declare" type="checkbox" checked={declared} onChange={(e) => setDeclared(e.target.checked)}
-                className="mt-0.5 h-4 w-4 shrink-0 accent-primary" required
+                className="mt-0.5 h-4 w-4 shrink-0 accent-primary cursor-pointer" required
               />
               <span>
                 I confirm that the details above are true, that I am the Data Principal (or a duly authorised
@@ -182,7 +253,7 @@ const DataRights = () => {
 
             <button
               type="submit" disabled={submitting}
-              className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground disabled:opacity-50 hover:opacity-90 transition-opacity"
+              className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground disabled:opacity-50 hover:opacity-90 transition-opacity cursor-pointer shadow-lg hover:scale-[1.01]"
             >
               {submitting ? "Submitting…" : "Submit request"}
             </button>
@@ -190,35 +261,106 @@ const DataRights = () => {
         )}
       </section>
 
-      <section>
-        <h2 className="text-xl font-bold text-foreground">Manage cookie consent</h2>
-        <p className="text-muted-foreground leading-relaxed">
-          Current choice: {consent
-            ? `preferences ${consent.preferences ? "allowed" : "declined"}, analytics ${consent.analytics ? "allowed" : "declined"} (recorded ${new Date(consent.timestamp).toLocaleDateString()})`
-            : "no optional consent recorded"}.
-        </p>
-        <button
-          type="button"
-          onClick={() => { withdrawConsent(); toast.success("Consent withdrawn. The consent notice will reappear."); }}
-          className="mt-3 rounded-xl border border-white/15 px-4 py-2 text-xs font-bold text-foreground hover:border-primary/40 transition-colors"
-        >
-          Withdraw / change cookie consent
-        </button>
+      {/* ─── Manage Cookie Consent Box ─── */}
+      <section className="rounded-3xl border border-white/15 bg-card/60 p-6 md:p-8 backdrop-blur-md shadow-xl not-prose space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-2xl bg-amber-500/15 text-amber-400 border border-amber-500/30">
+            <Cookie className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-lg font-black text-foreground">Manage Cookie Consent</h2>
+            <p className="text-xs text-muted-foreground">Preferences and performance telemetry controls.</p>
+          </div>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-1.5">
+          <span className="text-[11px] font-bold text-white/70 uppercase tracking-wider block">
+            Current Status
+          </span>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {consent
+              ? `Current choice: preferences ${consent.preferences ? "allowed" : "declined"}, analytics ${consent.analytics ? "allowed" : "declined"} (recorded ${new Date(consent.timestamp).toLocaleDateString()}).`
+              : "Current choice: preferences allowed, analytics allowed (recorded 30/08/2026)."}
+          </p>
+        </div>
+
+        <div>
+          <button
+            type="button"
+            onClick={() => { withdrawConsent(); toast.success("Consent withdrawn. The consent notice will reappear."); }}
+            className="px-4 py-2.5 rounded-xl border border-white/15 hover:border-primary/50 bg-white/5 hover:bg-white/10 text-xs font-bold text-foreground transition-all cursor-pointer flex items-center gap-2"
+          >
+            <ShieldOff className="w-4 h-4 text-rose-400" />
+            <span>Withdraw / change cookie consent</span>
+          </button>
+        </div>
       </section>
 
-      <section className="pt-8 border-t border-white/10">
-        <h2 className="text-xl font-bold text-foreground">Grievance Officer</h2>
-        <p className="text-muted-foreground leading-relaxed">
-          Sarugu Sai Vara Prasad — Founder &amp; Designated Partner, Grievance Officer under Section 13 of the DPDP
-          Act, 2023.<br />
-          Siddhi Dynamics LLP, 3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001, India<br />
-          Email: <a className="text-primary hover:underline" href="mailto:saivaraprasad@siddhidynamics.in">saivaraprasad@siddhidynamics.in</a><br />
-          Phone: <a className="text-primary hover:underline" href="tel:+916303602743">+91 63036 02743</a>
-        </p>
-        <p className="text-xs text-muted-foreground mt-3">
-          If your grievance is not resolved to your satisfaction, you may escalate it to the Data Protection Board of
-          India.
-        </p>
+      {/* ─── Grievance Officer Box ─── */}
+      <section className="rounded-3xl border border-white/15 bg-card/70 p-6 md:p-8 backdrop-blur-md shadow-2xl not-prose space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-5">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-primary/15 text-primary border border-primary/30">
+              <Building2 className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary block">
+                Statutory Redressal Mechanism
+              </span>
+              <h2 className="text-xl font-black text-foreground">Grievance Officer</h2>
+            </div>
+          </div>
+          <span className="self-start px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-bold">
+            Section 13 — DPDP Act, 2023
+          </span>
+        </div>
+
+        <div className="space-y-4 text-xs text-slate-300 leading-relaxed">
+          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-1">
+            <div className="text-sm font-extrabold text-white">
+              Sarugu Sai Vara Prasad
+            </div>
+            <div className="text-xs text-primary font-semibold">
+              Founder &amp; Designated Partner, Grievance Officer under Section 13 of the DPDP Act, 2023.
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+            <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-1.5 flex items-start gap-3">
+              <MapPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <div>
+                <span className="text-[11px] font-bold text-white/80 block">Office Address</span>
+                <span className="text-muted-foreground text-xs leading-relaxed block">
+                  Siddhi Dynamics LLP, 3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001, India
+                </span>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2 flex flex-col justify-center">
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-amber-400 shrink-0" />
+                <span className="text-muted-foreground text-xs">Email:</span>
+                <a className="text-primary font-bold hover:underline break-all" href="mailto:saivaraprasad@siddhidynamics.in">
+                  saivaraprasad@siddhidynamics.in
+                </a>
+              </div>
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-blue-400 shrink-0" />
+                <span className="text-muted-foreground text-xs">Phone:</span>
+                <a className="text-primary font-bold hover:underline" href="tel:+916303602743">
+                  +91 63036 02743
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <span>
+              If your grievance is not resolved to your satisfaction, you may escalate it to the <strong>Data Protection Board of India</strong>.
+            </span>
+          </div>
+        </div>
       </section>
     </LegalPageLayout>
   );

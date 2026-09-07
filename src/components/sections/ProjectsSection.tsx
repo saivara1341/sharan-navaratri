@@ -997,7 +997,7 @@ export const ProjectsSection = () => {
 
   return (
     <>
-      <section id="projects" className="py-10 md:py-32 relative overflow-hidden">
+      <section id="projects" className="py-10 md:py-32 relative overflow-hidden scroll-mt-24 sm:scroll-mt-28">
         {/* Enhanced animated background */}
         <div className="absolute inset-0 pointer-events-none">
           <motion.div

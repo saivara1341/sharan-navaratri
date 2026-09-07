@@ -150,7 +150,54 @@ export interface IncentiveReward {
   is_active: boolean;
 }
 
+export interface InternReview {
+  id: string;
+  intern_email: string;
+  intern_name: string;
+  role: string;
+  rating: number; // 1 to 5
+  category: 'Overall Experience' | 'Mentorship & Guidance' | 'Skill & Practical Learning' | 'Platform & Task Clarity';
+  review_title: string;
+  review_text: string;
+  would_recommend: boolean;
+  posted_to_google: boolean;
+  submitted_at: string;
+  admin_notes?: string;
+  status: 'Published to Google' | 'Internal Attention Needed' | 'Resolved Internally';
+}
+
 // ── Default Mock Seeds ────────────────────────────────────────────────────────
+const DEFAULT_REVIEWS: InternReview[] = [
+  {
+    id: 'rev-1',
+    intern_email: 'intern.bd@siddhidynamics.in',
+    intern_name: 'Rohan Sharma',
+    role: 'Business Development Intern',
+    rating: 5,
+    category: 'Skill & Practical Learning',
+    review_title: 'Unmatched practical sales exposure directly with founder!',
+    review_text: 'The Business Development internship at Siddhi Dynamics gave me real hands-on experience pitching AI tools to SMB owners. The Point of Proof system helped me document every client interaction, and the mentorship by Sai Vara Prasad sir was phenomenal.',
+    would_recommend: true,
+    posted_to_google: true,
+    submitted_at: '2026-07-15',
+    status: 'Published to Google'
+  },
+  {
+    id: 'rev-2',
+    intern_email: 'intern.dm@siddhidynamics.in',
+    intern_name: 'Ananya Verma',
+    role: 'Digital Marketing Intern',
+    rating: 5,
+    category: 'Overall Experience',
+    review_title: 'Gained real algorithmic growth skills for PrintFlow & Instagram',
+    review_text: 'Unlike regular theoretical internships, here I actually created Reels and campaigns for @siddhidynamics that reached over 50,000 people. Seeing conversions happen in real-time was super rewarding.',
+    would_recommend: true,
+    posted_to_google: true,
+    submitted_at: '2026-08-01',
+    status: 'Published to Google'
+  }
+];
+
 const DEFAULT_WHITELIST: WhitelistedUser[] = [
   { id: 'w-1', email: 'ssaivaraprasad51@gmail.com', name: 'Sai Vara Prasad (CEO)', role: 'employee', added_at: '2026-01-01' },
   { id: 'w-2', email: 'saivaraprasad@siddhidynamics.in', name: 'Sai Vara Prasad', role: 'employee', added_at: '2026-01-01' },
@@ -312,7 +359,8 @@ const STORAGE_KEYS = {
   INTERLINKS: 'sd_interlink_alerts',
   INCENTIVES: 'sd_incentive_rewards',
   SCRATCHED: 'sd_scratched_rewards',
-  CERTIFICATES: 'sd_issued_certificates'
+  CERTIFICATES: 'sd_issued_certificates',
+  REVIEWS: 'sd_intern_reviews'
 };
 
 function getLocal<T>(key: string, defaultVal: T): T {
@@ -797,5 +845,44 @@ export const internshipService = {
     const updated = current.map(c => c.id === id ? { ...c, status: 'Revoked' as const } : c);
     setLocal(STORAGE_KEYS.CERTIFICATES, updated);
     return updated;
+  },
+
+  // ── 11. Intern Reviews & Gated Google Review Flow ─────────────────────────
+  getInternReviews(): InternReview[] {
+    return getLocal<InternReview[]>(STORAGE_KEYS.REVIEWS, DEFAULT_REVIEWS);
+  },
+
+  getReviewByEmail(email: string): InternReview | undefined {
+    if (!email) return undefined;
+    const all = this.getInternReviews();
+    return all.find(r => r.intern_email.toLowerCase() === email.toLowerCase());
+  },
+
+  submitInternReview(review: Omit<InternReview, 'id' | 'submitted_at' | 'status' | 'posted_to_google'>): InternReview {
+    const isGood = review.rating >= 4;
+    const newRev: InternReview = {
+      ...review,
+      id: `rev-${Date.now()}`,
+      submitted_at: new Date().toISOString().split('T')[0],
+      posted_to_google: false,
+      status: isGood ? 'Published to Google' : 'Internal Attention Needed',
+    };
+
+    const current = this.getInternReviews();
+    const updated = [newRev, ...current.filter(r => r.intern_email.toLowerCase() !== review.intern_email.toLowerCase())];
+    setLocal(STORAGE_KEYS.REVIEWS, updated);
+    return newRev;
+  },
+
+  markReviewPostedToGoogle(id: string): void {
+    const current = this.getInternReviews();
+    const updated = current.map(r => r.id === id ? { ...r, posted_to_google: true, status: 'Published to Google' as const } : r);
+    setLocal(STORAGE_KEYS.REVIEWS, updated);
+  },
+
+  updateReviewStatus(id: string, status: InternReview['status'], admin_notes?: string): void {
+    const current = this.getInternReviews();
+    const updated = current.map(r => r.id === id ? { ...r, status, admin_notes: admin_notes ?? r.admin_notes } : r);
+    setLocal(STORAGE_KEYS.REVIEWS, updated);
   }
 };

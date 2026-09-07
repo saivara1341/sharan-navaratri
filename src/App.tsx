@@ -134,6 +134,34 @@ const PageLoadingFallback = () => (
   </div>
 );
 
+const ScrollToTop = () => {
+  const { pathname, hash } = useLocation();
+
+  useEffect(() => {
+    if (hash) {
+      const id = hash.replace('#', '');
+      const timer = setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) {
+          const offset = 80;
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = el.getBoundingClientRect().top;
+          const offsetPosition = Math.max(0, elementRect - bodyRect - offset);
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 120);
+      return () => clearTimeout(timer);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [pathname, hash]);
+
+  return null;
+};
+
 const App = () => {
   return (
     <HelmetProvider>
@@ -142,6 +170,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <ScrollToTop />
             <AuthRedirectHandler />
             <SiteIntro />
             <CookieConsentBanner />
@@ -149,6 +178,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/vision" element={<Index />} />
+              <Route path="/services" element={<Index />} />
               <Route path="/projects" element={<Index />} />
               <Route path="/submit" element={<ProjectSubmitForm />} />
               <Route path="/auth" element={<AuthPage />} />

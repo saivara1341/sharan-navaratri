@@ -243,7 +243,7 @@ export function ServicesSection() {
   });
 
   return (
-    <section id="services" className="relative overflow-visible border-t border-border/30 bg-background py-24 md:py-32">
+    <section id="services" className="relative overflow-visible border-t border-border/30 bg-background py-24 md:py-32 scroll-mt-24 sm:scroll-mt-28">
       <div className="pointer-events-none absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-primary/[0.045] blur-[110px]" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">

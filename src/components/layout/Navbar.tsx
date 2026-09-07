@@ -100,20 +100,36 @@ export const Navbar = () => {
   const handleHomeClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setMobileMenuOpen(false);
-    navigate("/");
-    window.scrollTo(0, 0);
+    document.body.style.overflow = 'unset';
+    if (location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      navigate("/");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const handleAnchorClick = (anchorId: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     setMobileMenuOpen(false);
+    document.body.style.overflow = 'unset';
     if (location.pathname === '/') {
-      const el = document.getElementById(anchorId);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      // Delay slightly (100ms) to ensure mobile drawer closing doesn't interrupt scroll
+      setTimeout(() => {
+        const el = document.getElementById(anchorId);
+        if (el) {
+          const offset = 80;
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = el.getBoundingClientRect().top;
+          const offsetPosition = Math.max(0, elementRect - bodyRect - offset);
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 100);
     } else {
       navigate(`/#${anchorId}`);
     }
@@ -167,13 +183,63 @@ export const Navbar = () => {
               />
             </motion.a>
 
-            <nav className="hidden items-center gap-1.5 lg:gap-2.5 whitespace-nowrap">
+            <nav className="hidden md:flex items-center gap-1 sm:gap-1.5 lg:gap-2.5 whitespace-nowrap">
+              <a
+                href="#/"
+                onClick={handleHomeClick}
+                className={`px-3 py-1.5 rounded-xl text-xs lg:text-sm font-semibold transition-colors cursor-pointer ${
+                  location.pathname === '/' ? 'text-primary font-bold bg-primary/10' : 'text-foreground/80 hover:text-primary hover:bg-white/5'
+                }`}
+              >
+                {t('nav.home', 'Home')}
+              </a>
+
+              <a
+                href="/#services"
+                onClick={handleAnchorClick('services')}
+                className="px-3 py-1.5 rounded-xl text-xs lg:text-sm font-semibold text-foreground/80 hover:text-primary hover:bg-white/5 transition-colors cursor-pointer"
+              >
+                {t('nav.services', 'Services')}
+              </a>
+
+              <a
+                href="/about"
+                onClick={(e) => { e.preventDefault(); navigate('/about'); }}
+                className={`px-3 py-1.5 rounded-xl text-xs lg:text-sm font-semibold transition-colors cursor-pointer ${
+                  location.pathname === '/about' ? 'text-primary font-bold bg-primary/10' : 'text-foreground/80 hover:text-primary hover:bg-white/5'
+                }`}
+              >
+                {t('nav.aboutUs', 'About Us')}
+              </a>
+
+              <a
+                href="/careers"
+                onClick={(e) => { e.preventDefault(); navigate('/careers'); }}
+                className={`px-3 py-1.5 rounded-xl text-xs lg:text-sm font-semibold transition-colors cursor-pointer ${
+                  location.pathname === '/careers' ? 'text-primary font-bold bg-primary/10' : 'text-foreground/80 hover:text-primary hover:bg-white/5'
+                }`}
+              >
+                {t('nav.careers', 'Careers')}
+              </a>
+
+              <a
+                href="/blog"
+                onClick={(e) => { e.preventDefault(); navigate('/blog'); }}
+                className={`px-3 py-1.5 rounded-xl text-xs lg:text-sm font-semibold transition-colors cursor-pointer ${
+                  location.pathname === '/blog' ? 'text-primary font-bold bg-primary/10' : 'text-foreground/80 hover:text-primary hover:bg-white/5'
+                }`}
+              >
+                {t('nav.blogs', 'Blogs')}
+              </a>
+
+              <div className="h-4 w-[1px] bg-white/10 mx-1" />
+
               <LanguageSwitcher />
 
               {!isLoggedIn ? (
                 <motion.button
                   onClick={() => navigate('/portal')}
-                  className="relative ml-2 px-5 py-2 rounded-xl font-semibold text-xs lg:text-sm overflow-hidden group"
+                  className="relative ml-2 px-5 py-2 rounded-xl font-semibold text-xs lg:text-sm overflow-hidden group cursor-pointer"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.4, duration: 0.5 }}
@@ -182,8 +248,8 @@ export const Navbar = () => {
                 >
                   <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-90 group-hover:opacity-100 transition-opacity" />
                   <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent blur-xl opacity-50 group-hover:opacity-70 transition-opacity" />
-                  <span className="relative text-primary-foreground">
-                    {t('nav.getStarted')}
+                  <span className="relative text-primary-foreground font-bold">
+                    {t('nav.getStarted', 'Dashboard')}
                   </span>
                 </motion.button>
               ) : isOnLandingPage ? (
@@ -191,7 +257,7 @@ export const Navbar = () => {
                   <motion.a
                     href={isAdmin ? "/admin-hq-nexus" : `/portal/${userRole || ''}`}
                     onClick={handleDashboardClick}
-                    className="relative px-5 py-2 rounded-xl font-semibold text-xs lg:text-sm overflow-hidden group shadow-sm"
+                    className="relative px-5 py-2 rounded-xl font-semibold text-xs lg:text-sm overflow-hidden group shadow-sm cursor-pointer"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.4, duration: 0.5 }}
@@ -224,7 +290,7 @@ export const Navbar = () => {
                   )}
                   <motion.button
                     onClick={handleLogout}
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20 cursor-pointer"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.5, duration: 0.5 }}
@@ -240,7 +306,7 @@ export const Navbar = () => {
                   <motion.a
                     href={isAdmin ? "/admin-hq-nexus" : `/portal/${userRole || ''}`}
                     onClick={handleDashboardClick}
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-primary/10 hover:bg-primary/20 text-primary transition-colors border border-primary/20"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-primary/10 hover:bg-primary/20 text-primary transition-colors border border-primary/20 cursor-pointer"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
@@ -269,7 +335,7 @@ export const Navbar = () => {
                   )}
                   <motion.button
                     onClick={handleLogout}
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs lg:text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors border border-red-500/20 cursor-pointer"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
@@ -283,8 +349,8 @@ export const Navbar = () => {
               )}
             </nav>
 
-            {/* Mobile Actions: Hamburger Toggle */}
-            <div className="flex items-center gap-2 z-[110]">
+            {/* Mobile Actions: Hamburger Toggle (shown on mobile, hidden on md+) */}
+            <div className="flex md:hidden items-center gap-2 z-[110]">
               <motion.button
                 className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-muted/60 border border-border cursor-pointer"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -358,7 +424,13 @@ export const Navbar = () => {
                   <div className="flex flex-col items-center gap-4 md:hidden">
                     <motion.a
                       href="/about"
-                      onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/about'); }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setMobileMenuOpen(false);
+                        document.body.style.overflow = 'unset';
+                        navigate('/about');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
                       className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -388,7 +460,13 @@ export const Navbar = () => {
                     </motion.a>
                     <motion.a
                       href="/blog"
-                      onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate('/blog'); }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setMobileMenuOpen(false);
+                        document.body.style.overflow = 'unset';
+                        navigate('/blog');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
                       className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -407,11 +485,29 @@ export const Navbar = () => {
                       {t('nav.services', 'Services')}
                     </motion.a>
                     <motion.a
+                      href="/careers"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setMobileMenuOpen(false);
+                        document.body.style.overflow = 'unset';
+                        navigate('/careers');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.165 }}
+                    >
+                      {t('nav.careers', 'Careers')}
+                    </motion.a>
+                    <motion.a
                       href="/contact"
                       onClick={(e) => {
                         e.preventDefault();
                         setMobileMenuOpen(false);
+                        document.body.style.overflow = 'unset';
                         navigate('/contact');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                       className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120]"
                       initial={{ opacity: 0, y: 20 }}
@@ -425,7 +521,25 @@ export const Navbar = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         setMobileMenuOpen(false);
-                        navigate('/submit?type=problem');
+                        document.body.style.overflow = 'unset';
+                        if (location.pathname === '/') {
+                          setTimeout(() => {
+                            const el = document.getElementById('submit');
+                            if (el) {
+                              const offset = 80;
+                              const bodyRect = document.body.getBoundingClientRect().top;
+                              const elementRect = el.getBoundingClientRect().top;
+                              const offsetPosition = Math.max(0, elementRect - bodyRect - offset);
+                              window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+                              return;
+                            }
+                            navigate('/submit?type=problem');
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }, 100);
+                        } else {
+                          navigate('/submit?type=problem');
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
                       }}
                       className="text-xl font-extrabold text-primary hover:text-primary/80 transition-colors relative z-[120]"
                       initial={{ opacity: 0, y: 20 }}
