@@ -481,7 +481,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
               </div>
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-black mb-6 leading-tight">
                 Build Your Career at the{' '}
-                <span className="bg-gradient-to-r from-primary via-purple-400 to-accent bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                   Intersection of Business & AI
                 </span>
               </h1>
