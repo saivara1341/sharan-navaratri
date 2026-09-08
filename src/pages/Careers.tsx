@@ -153,7 +153,7 @@ function empIcon(t: EmploymentType) {
 
 function empColor(t: EmploymentType) {
   if (t === 'Full Time') return 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30';
-  if (t === 'Remote') return 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/30';
+  if (t === 'Remote') return 'bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/30';
   return 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/30';
 }
 
@@ -545,6 +545,12 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
       toast.error('Please fill all mandatory fields.');
       return;
     }
+    // Phone validation — digits only, exactly 10 digits
+    const digitsOnly = phone.replace(/\D/g, '');
+    if (digitsOnly.length !== 10) {
+      toast.error('Phone number must be exactly 10 digits.');
+      return;
+    }
     const selectedDegree = degree === 'Other' ? otherDegree.trim() : degree;
     if (!selectedDegree) {
       toast.error('Please enter your degree.');
@@ -552,10 +558,21 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
     }
     setSubmitting(true);
     try {
+      // Duplicate guard — check email and phone before submitting
+      const dup = await internshipService.checkDuplicate(email, phone);
+      if (dup.isDuplicate) {
+        toast.error(
+          dup.field === 'email'
+            ? 'An application with this email already exists. We will get back to you.'
+            : 'An application with this phone number already exists. We will get back to you.'
+        );
+        setSubmitting(false);
+        return;
+      }
       await internshipService.submitApplication({
         full_name: fullName,
         email,
-        phone,
+        phone: digitsOnly,
         college,
         degree: selectedDegree,
         graduation_year: '2026',
@@ -566,7 +583,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
         statement_of_purpose: statementOfPurpose,
         resume_url: resumeUrl
       });
-      toast.success('Application submitted! Check your email for interview scheduling.');
+      toast.success('Application submitted! We will get back to you shortly through email once shortlisted.');
       setApplicationModal(null);
       resetForm();
     } catch {
@@ -1084,11 +1101,23 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-xs font-bold text-foreground block mb-1.5">WhatsApp / Phone *</label>
-                      <input type="tel" required value={phone} onChange={e => setPhone(e.target.value)} className={dashboardInput} placeholder="Enter your WhatsApp / phone number" />
+                      <input
+                        type="tel"
+                        required
+                        value={phone}
+                        onChange={e => {
+                          const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                          setPhone(digits);
+                        }}
+                        className={dashboardInput}
+                        placeholder="10-digit mobile number"
+                        maxLength={10}
+                        inputMode="numeric"
+                      />
                     </div>
                     <div>
                       <label className="text-xs font-bold text-foreground block mb-1.5">College / University *</label>
-                      <input type="text" required value={college} onChange={e => setCollege(e.target.value)} className={dashboardInput} placeholder="Enter your college / university name" />
+                      <input type="text" required value={college} onChange={e => setCollege(e.target.value)} className={dashboardInput} placeholder="Enter your college or university" />
                     </div>
                   </div>
 

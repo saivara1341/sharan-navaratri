@@ -400,6 +400,41 @@ function setLocal<T>(key: string, val: T): void {
 
 export const internshipService = {
   // ── 1. Applications ────────────────────────────────────────────────────────
+
+  /** Returns true if an application with this email OR phone already exists */
+  async checkDuplicate(email: string, phone: string): Promise<{ isDuplicate: boolean; field?: 'email' | 'phone' }> {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPhone = phone.replace(/\D/g, '').slice(-10);
+
+    // Check local storage first (fast)
+    const local = getLocal<InternshipApplication[]>(STORAGE_KEYS.APPLICATIONS, []);
+    if (local.some(a => a.email.toLowerCase() === cleanEmail)) return { isDuplicate: true, field: 'email' };
+    if (local.some(a => a.phone.replace(/\D/g, '').slice(-10) === cleanPhone)) return { isDuplicate: true, field: 'phone' };
+
+    // Cross-check Supabase
+    try {
+      const { data } = await supabase
+        .from('contact_submissions')
+        .select('email, message')
+        .eq('inquiry_type', 'internship_application');
+
+      if (data) {
+        for (const row of data) {
+          if ((row.email || '').toLowerCase() === cleanEmail) return { isDuplicate: true, field: 'email' };
+          const phoneInMsg = (row.message || '').match(/Phone:\s*([^\n]+)/);
+          if (phoneInMsg) {
+            const storedPhone = phoneInMsg[1].replace(/\D/g, '').slice(-10);
+            if (storedPhone === cleanPhone) return { isDuplicate: true, field: 'phone' };
+          }
+        }
+      }
+    } catch {
+      // Supabase unavailable — rely on local check above
+    }
+
+    return { isDuplicate: false };
+  },
+
   async submitApplication(appData: Omit<InternshipApplication, 'id' | 'created_at' | 'status'>): Promise<InternshipApplication> {
     const newApp: InternshipApplication = {
       ...appData,
