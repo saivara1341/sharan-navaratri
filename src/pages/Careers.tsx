@@ -6,7 +6,7 @@ import {
   Footer as DocFooter,
 } from 'docx';
 import { Helmet } from 'react-helmet-async';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { Navbar } from '@/components/layout/Navbar';
 import { FooterSection } from '@/components/sections/FooterSection';
 import { Link } from 'react-router-dom';
@@ -143,6 +143,64 @@ const ALL_CATEGORIES: { id: RoleCategory; label: string }[] = [
   { id: 'Software Engineering', label: 'Software Engineering' },
   { id: 'Operations & Strategy', label: 'Operations & Strategy' },
 ];
+
+// ─── Collaboration Cards with Scroll-Triggered Slide Animation ────────────────
+function CollabCards() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { once: true, margin: '-80px' });
+
+  return (
+    <div ref={containerRef} className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      {/* Left card — slides in from right (toward left) */}
+      <motion.div
+        initial={{ opacity: 0, x: 120 }}
+        animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 120 }}
+        transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="p-6 rounded-3xl bg-card border border-border/70 space-y-3 shadow-sm"
+      >
+        <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black">
+          <Lightbulb className="w-5 h-5" />
+        </div>
+        <h3 className="font-extrabold text-foreground text-base">Identify Opportunities</h3>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Team members surface insights from their domain — whether it's a market gap spotted by BD, a trending content format flagged by marketing, or a technical improvement proposed by engineering. Signals flow instantly across teams.
+        </p>
+      </motion.div>
+
+      {/* Middle card — fades up */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+        transition={{ duration: 0.65, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="p-6 rounded-3xl bg-card border border-border/70 space-y-3 shadow-sm"
+      >
+        <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center font-black">
+          <Layers className="w-5 h-5" />
+        </div>
+        <h3 className="font-extrabold text-foreground text-base">Execute Sprint Campaigns</h3>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Cross-functional squads rapidly deploy solutions — targeted outreach, content campaigns, product fixes, or client demos — within our sprint-based task board with real-time tracking and CEO approvals.
+        </p>
+      </motion.div>
+
+      {/* Right card — slides in from left (toward right) */}
+      <motion.div
+        initial={{ opacity: 0, x: -120 }}
+        animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -120 }}
+        transition={{ duration: 0.65, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="p-6 rounded-3xl bg-card border border-border/70 space-y-3 shadow-sm"
+      >
+        <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-black">
+          <Users className="w-5 h-5" />
+        </div>
+        <h3 className="font-extrabold text-foreground text-base">Shared Attribution & Growth</h3>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Every successful outcome is attributed to all contributing team members. Our Point of Proof system ensures transparent, verifiable credit — building genuine career portfolios for everyone involved.
+        </p>
+      </motion.div>
+    </div>
+  );
+}
 
 // ─── Employment type icon & styling helpers ──────────────────────────────────
 function empIcon(t: EmploymentType) {
@@ -868,37 +926,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              <div className="p-6 rounded-3xl bg-card border border-border/70 space-y-3 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black">
-                  <Lightbulb className="w-5 h-5" />
-                </div>
-                <h3 className="font-extrabold text-foreground text-base">Identify Opportunities</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Team members surface insights from their domain — whether it's a market gap spotted by BD, a trending content format flagged by marketing, or a technical improvement proposed by engineering. Signals flow instantly across teams.
-                </p>
-              </div>
-
-              <div className="p-6 rounded-3xl bg-card border border-border/70 space-y-3 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center font-black">
-                  <Layers className="w-5 h-5" />
-                </div>
-                <h3 className="font-extrabold text-foreground text-base">Execute Sprint Campaigns</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Cross-functional squads rapidly deploy solutions — targeted outreach, content campaigns, product fixes, or client demos — within our sprint-based task board with real-time tracking and CEO approvals.
-                </p>
-              </div>
-
-              <div className="p-6 rounded-3xl bg-card border border-border/70 space-y-3 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-black">
-                  <Users className="w-5 h-5" />
-                </div>
-                <h3 className="font-extrabold text-foreground text-base">Shared Attribution & Growth</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Every successful outcome is attributed to all contributing team members. Our Point of Proof system ensures transparent, verifiable credit — building genuine career portfolios for everyone involved.
-                </p>
-              </div>
-            </div>
+            <CollabCards />
           </div>
         </section>
       </main>
