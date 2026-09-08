@@ -1080,8 +1080,9 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                   </p>
 
                   {/* Notice of unpaid & certification in dashboard theme style */}
-                  <div className="mt-3.5 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
-                    <strong className="font-bold">Notice:</strong> This is an unpaid internship for practical skill growth. Interns receive an official Certificate of Completion upon finishing tenure. (Letter of Recommendation is provided strictly upon 2 years of active service).
+                  <div className="mt-3.5 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-xs text-amber-800 dark:text-amber-300 leading-relaxed space-y-1">
+                    <div><strong className="font-bold">Notice:</strong> This is an unpaid internship for practical skill growth. Interns receive an official Certificate of Completion upon finishing tenure.</div>
+                    <div>(Letter of Recommendation is provided strictly upon 2 years of active service).</div>
                   </div>
                 </div>
 
