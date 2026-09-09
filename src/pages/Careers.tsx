@@ -804,13 +804,10 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
                     onClick={() => setSelectedJdModal(role)}
-                    className="group relative rounded-2xl sm:rounded-3xl border border-border/80 bg-gradient-to-b from-card via-card to-card/95 text-card-foreground shadow-xl hover:border-primary/50 transition-all duration-300 flex flex-col justify-between min-w-0 overflow-hidden p-3.5 sm:p-6 lg:p-8 cursor-pointer sm:cursor-default min-h-[320px] sm:min-h-0"
+                    className="group relative rounded-2xl sm:rounded-3xl border border-border/80 bg-card text-card-foreground shadow-xl hover:border-primary/50 transition-all duration-300 flex flex-col justify-between min-w-0 overflow-hidden p-3.5 sm:p-6 lg:p-8 cursor-pointer sm:cursor-default min-h-[320px] sm:min-h-0"
                   >
-                    {/* Top Accent Gradient Bar */}
-                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary via-purple-500 to-rose-500 pointer-events-none" />
-
                     {/* Subtle glow accent */}
-                    <div className="absolute -right-16 -top-16 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/20 transition-all" />
+                    <div className="absolute -right-20 -top-20 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/20 transition-all" />
 
                     {/* ────── Mobile View (Role, Remote, 3 Policy Badges, Apply button) ────── */}
                     <div className="sm:hidden flex flex-col justify-between h-full pt-1">
