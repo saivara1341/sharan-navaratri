@@ -786,16 +786,17 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    className="group relative rounded-2xl sm:rounded-3xl border border-border/80 bg-card text-card-foreground shadow-xl hover:border-primary/50 transition-all duration-300 flex flex-col justify-between min-w-0 overflow-hidden p-3 sm:p-6 lg:p-8"
+                    onClick={() => setSelectedJdModal(role)}
+                    className="group relative rounded-2xl sm:rounded-3xl border border-border/80 bg-card text-card-foreground shadow-xl hover:border-primary/50 transition-all duration-300 flex flex-col justify-between min-w-0 overflow-hidden p-3 sm:p-6 lg:p-8 cursor-pointer sm:cursor-default"
                   >
                     {/* Subtle glow accent */}
                     <div className="absolute -right-20 -top-20 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/20 transition-all" />
 
                     <div>
                       {/* Top Badges */}
-                      <div className="flex items-center justify-between gap-1.5 sm:gap-3 mb-2.5 sm:mb-4 flex-wrap">
+                      <div className="flex items-center justify-between gap-1.5 sm:gap-3 mb-2 sm:mb-4 flex-wrap">
                         <div className="flex flex-wrap items-center gap-1 sm:gap-2">
-                          <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wider px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-primary/10 text-primary border border-primary/25">
+                          <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wider px-1.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-primary/10 text-primary border border-primary/25">
                             {role.category}
                           </span>
                           <span className={`text-[9px] sm:text-xs font-bold px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full border flex items-center gap-0.5 sm:gap-1 ${empColor(role.employmentType)}`}>
@@ -803,33 +804,45 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                           </span>
                         </div>
                         <span className="text-[9px] sm:text-xs text-foreground/80 dark:text-muted-foreground font-semibold flex items-center gap-1">
-                          <GraduationCap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary shrink-0" />
+                          <GraduationCap className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-primary shrink-0" />
                           <span className="line-clamp-1">{role.targetAudience}</span>
                         </span>
                       </div>
 
-                      <h3 className="text-base sm:text-2xl md:text-3xl font-black text-foreground mb-1.5 sm:mb-3 group-hover:text-primary transition-colors tracking-tight leading-snug">
+                      <h3 className="text-sm sm:text-2xl md:text-3xl font-black text-foreground mb-1 sm:mb-3 group-hover:text-primary transition-colors tracking-tight leading-snug">
                         {role.title}
                       </h3>
-                      <p className="text-[11px] sm:text-sm font-medium text-foreground/80 dark:text-muted-foreground mb-3 sm:mb-5 leading-snug sm:leading-relaxed line-clamp-3 sm:line-clamp-none">
+                      <p className="text-[10px] sm:text-sm font-medium text-foreground/80 dark:text-muted-foreground mb-2 sm:mb-5 leading-snug sm:leading-relaxed line-clamp-2 sm:line-clamp-none">
                         {role.tagline}
                       </p>
 
                       {/* Transparent Policy Pill Badges */}
-                      <div className="flex flex-wrap gap-1.5 sm:gap-2.5 mb-3 sm:mb-6">
-                        <span className="text-[9px] sm:text-xs font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-amber-500/15 text-amber-900 dark:text-amber-200 border border-amber-500/30 flex items-center gap-1 shadow-sm">
-                          <AlertCircle className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-amber-600 dark:text-amber-400 shrink-0" /> Unpaid Internship
+                      <div className="flex flex-wrap gap-1 sm:gap-2.5 mb-2 sm:mb-6">
+                        <span className="text-[8.5px] sm:text-xs font-bold px-1.5 sm:px-3 py-0.5 sm:py-1.5 rounded-md sm:rounded-xl bg-amber-500/15 text-amber-900 dark:text-amber-200 border border-amber-500/30 flex items-center gap-1 shadow-sm">
+                          <AlertCircle className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                          <span className="hidden sm:inline">Unpaid Internship</span>
+                          <span className="sm:hidden">Unpaid</span>
                         </span>
-                        <span className="text-[9px] sm:text-xs font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 border border-emerald-500/30 flex items-center gap-1 shadow-sm">
-                          <Award className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" /> Certificate on Completion
+                        <span className="text-[8.5px] sm:text-xs font-bold px-1.5 sm:px-3 py-0.5 sm:py-1.5 rounded-md sm:rounded-xl bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 border border-emerald-500/30 flex items-center gap-1 shadow-sm">
+                          <Award className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                          <span className="hidden sm:inline">Certificate on Completion</span>
+                          <span className="sm:hidden">Certificate</span>
                         </span>
-                        <span className="text-[9px] sm:text-xs font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-purple-500/15 text-purple-900 dark:text-purple-200 border border-purple-500/30 flex items-center gap-1 shadow-sm">
-                          <ShieldCheck className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-purple-600 dark:text-purple-400 shrink-0" /> LOR upon 2 Yrs Working
+                        <span className="text-[8.5px] sm:text-xs font-bold px-1.5 sm:px-3 py-0.5 sm:py-1.5 rounded-md sm:rounded-xl bg-purple-500/15 text-purple-900 dark:text-purple-200 border border-purple-500/30 flex items-center gap-1 shadow-sm">
+                          <ShieldCheck className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
+                          <span className="hidden sm:inline">LOR upon 2 Yrs Working</span>
+                          <span className="sm:hidden">LOR (2 Yrs)</span>
                         </span>
                       </div>
 
-                      {/* Responsibilities preview */}
-                      <div className="space-y-1.5 sm:space-y-2.5 mb-3 sm:mb-6 pt-2.5 sm:pt-4 border-t border-border/70">
+                      {/* Mobile hint to elaborate */}
+                      <div className="sm:hidden flex items-center gap-1 text-[9px] font-semibold text-primary mb-2">
+                        <span>Tap to elaborate details & protocol</span>
+                        <ArrowRight className="w-2.5 h-2.5" />
+                      </div>
+
+                      {/* Responsibilities preview (hidden on mobile, elaborated in modal on open) */}
+                      <div className="hidden sm:block space-y-1.5 sm:space-y-2.5 mb-3 sm:mb-6 pt-2.5 sm:pt-4 border-t border-border/70">
                         <div className="text-[10px] sm:text-xs font-black text-foreground uppercase tracking-wider flex items-center gap-1">
                           <Target className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" /> Key Responsibilities & Workflow
                         </div>
@@ -841,37 +854,46 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                         ))}
                       </div>
 
-                      {/* Platform Workflow summary */}
-                      <div className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/60 dark:bg-muted/30 border border-border/80 text-[10px] sm:text-xs text-foreground/85 dark:text-muted-foreground space-y-1 mb-3 sm:mb-6 leading-snug sm:leading-relaxed">
+                      {/* Platform Workflow summary (hidden on mobile, elaborated in modal on open) */}
+                      <div className="hidden sm:block p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/60 dark:bg-muted/30 border border-border/80 text-[10px] sm:text-xs text-foreground/85 dark:text-muted-foreground space-y-1 mb-3 sm:mb-6 leading-snug sm:leading-relaxed">
                         <span className="text-foreground font-bold block">Platform Task Protocol:</span>
                         Tasks assigned with stipulated timelines. Extensions and client data requests submitted via portal and approved by CEO.
                       </div>
                     </div>
 
                     {/* Card Actions */}
-                    <div className="pt-3 sm:pt-6 border-t border-border/70 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 sm:gap-3">
+                    <div className="pt-2 sm:pt-6 border-t border-border/70 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-1.5 sm:gap-3">
                       <button
-                        onClick={() => handleOpenApply(role)}
-                        className="w-full sm:flex-1 py-2 sm:py-3 px-2 sm:px-5 rounded-xl sm:rounded-2xl bg-primary text-primary-foreground font-extrabold text-[10px] sm:text-xs tracking-wider uppercase flex items-center justify-center gap-1.5 sm:gap-2 hover:opacity-95 hover:shadow-lg transition-all cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenApply(role);
+                        }}
+                        className="w-full sm:flex-1 py-1.5 sm:py-3 px-2 sm:px-5 rounded-xl sm:rounded-2xl bg-primary text-primary-foreground font-extrabold text-[10px] sm:text-xs tracking-wider uppercase flex items-center justify-center gap-1 sm:gap-2 hover:opacity-95 hover:shadow-lg transition-all cursor-pointer"
                       >
-                        Apply for Role <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        Apply <span className="hidden sm:inline">for Role</span> <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
                       </button>
 
                       <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
                         <button
-                          onClick={() => setSelectedJdModal(role)}
-                          className="flex-1 sm:flex-initial py-2 sm:py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl bg-secondary hover:bg-secondary/80 border border-border text-[10px] sm:text-xs font-bold text-foreground transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedJdModal(role);
+                          }}
+                          className="flex-1 sm:flex-initial py-1.5 sm:py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl bg-secondary hover:bg-secondary/80 border border-border text-[9px] sm:text-xs font-bold text-foreground transition-all flex items-center justify-center gap-1 cursor-pointer shadow-sm"
                         >
-                          <FileText className="w-3.5 h-3.5 text-primary" /> <span>View Full JD</span>
+                          <FileText className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" /> <span>View Full JD</span>
                         </button>
 
                         <button
-                          onClick={() => handleDownloadJd(role)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownloadJd(role);
+                          }}
                           title="Download job description"
                           aria-label="Download job description"
-                          className="py-2 sm:py-3 px-2.5 sm:px-3.5 rounded-xl sm:rounded-2xl bg-secondary hover:bg-secondary/80 border border-border text-[10px] sm:text-xs font-bold text-foreground/80 hover:text-foreground transition-all flex items-center justify-center gap-1 cursor-pointer shadow-sm shrink-0"
+                          className="py-1.5 sm:py-3 px-2 sm:px-3.5 rounded-xl sm:rounded-2xl bg-secondary hover:bg-secondary/80 border border-border text-[9px] sm:text-xs font-bold text-foreground/80 hover:text-foreground transition-all flex items-center justify-center gap-1 cursor-pointer shadow-sm shrink-0"
                         >
-                          <Download className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                          <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 dark:text-emerald-400" />
                         </button>
                       </div>
                     </div>
