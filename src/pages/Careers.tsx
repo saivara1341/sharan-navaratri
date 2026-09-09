@@ -792,65 +792,59 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     {/* Subtle glow accent */}
                     <div className="absolute -right-20 -top-20 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/20 transition-all" />
 
-                    {/* ────── Mobile View (Minimal, Informative, Clean) ────── */}
+                    {/* ────── Mobile View (Remote, Role, 3 Badges, Know More & Apply Now) ────── */}
                     <div className="sm:hidden flex flex-col justify-between h-full space-y-3">
-                      <div className="space-y-2">
-                        {/* Top Row: Category & Static Remote Badge */}
-                        <div className="flex items-center justify-between gap-1.5">
-                          <span className="text-[10px] font-bold text-primary tracking-wide uppercase truncate">
-                            {role.category}
-                          </span>
-                          <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border shrink-0">
+                      <div>
+                        {/* Remote Badge (Static, clean, no glowing animation) */}
+                        <div className="mb-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-muted border border-border text-foreground/80 inline-block">
                             Remote
                           </span>
                         </div>
 
                         {/* Role Title */}
-                        <h3 className="text-sm font-bold text-foreground leading-snug tracking-tight">
+                        <h3 className="text-sm font-bold text-foreground leading-snug tracking-tight mb-2.5">
                           {role.title}
                         </h3>
 
-                        {/* Target Audience / Eligibility */}
-                        <div className="flex items-center gap-1.5 text-[10.5px] text-muted-foreground">
-                          <GraduationCap className="w-3 h-3 text-muted-foreground shrink-0" />
-                          <span className="line-clamp-1">{role.targetAudience}</span>
-                        </div>
-
-                        {/* Duration */}
-                        <div className="flex items-center gap-1.5 text-[10.5px] text-muted-foreground">
-                          <Clock className="w-3 h-3 text-muted-foreground shrink-0" />
-                          <span>3 – 12 Months</span>
-                        </div>
-
-                        {/* 3 Specific Terms - Minimal & Clean */}
-                        <div className="space-y-1 pt-2 border-t border-border/60 text-[10px] text-muted-foreground">
-                          <div className="flex items-center gap-1.5">
-                            <AlertCircle className="w-3 h-3 shrink-0 text-muted-foreground" />
-                            <span>Unpaid Internship</span>
+                        {/* The 3 Policy Badges */}
+                        <div className="flex flex-col gap-1.5">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-500/25 text-[10.5px] font-semibold">
+                            <AlertCircle className="w-3 h-3 text-amber-600 dark:text-amber-400 shrink-0" />
+                            <span>Unpaid</span>
                           </div>
-                          <div className="flex items-center gap-1.5">
-                            <Award className="w-3 h-3 shrink-0 text-muted-foreground" />
-                            <span>Certificate on Completion</span>
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border border-emerald-500/25 text-[10.5px] font-semibold">
+                            <Award className="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                            <span>Certificate</span>
                           </div>
-                          <div className="flex items-center gap-1.5">
-                            <ShieldCheck className="w-3 h-3 shrink-0 text-muted-foreground" />
-                            <span>LOR (2 Yrs Active Service)</span>
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-500/10 text-purple-800 dark:text-purple-300 border border-purple-500/25 text-[10.5px] font-semibold">
+                            <ShieldCheck className="w-3 h-3 text-purple-600 dark:text-purple-400 shrink-0" />
+                            <span>LOR (2 Yrs)</span>
                           </div>
                         </div>
                       </div>
 
-                      {/* Apply Button */}
-                      <div className="pt-2 border-t border-border/60">
+                      {/* 2 Buttons: Know More & Apply Now */}
+                      <div className="grid grid-cols-2 gap-1.5 pt-2.5 border-t border-border/60 mt-auto">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedJdModal(role);
+                          }}
+                          className="w-full py-2 px-1 rounded-xl bg-secondary hover:bg-secondary/80 border border-border text-foreground font-bold text-[11px] text-center transition-colors cursor-pointer"
+                        >
+                          Know More
+                        </button>
                         <button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleOpenApply(role);
                           }}
-                          className="w-full py-2.5 px-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs flex items-center justify-center gap-1.5 hover:opacity-90 active:scale-[0.99] transition-all cursor-pointer shadow-sm"
+                          className="w-full py-2 px-1 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-[11px] text-center transition-colors cursor-pointer shadow-xs"
                         >
-                          <span>Apply for Role</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
+                          Apply Now
                         </button>
                       </div>
                     </div>
