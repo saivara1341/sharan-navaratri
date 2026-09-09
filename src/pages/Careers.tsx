@@ -801,7 +801,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     {/* Subtle glow accent */}
                     <div className="absolute -right-20 -top-20 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/20 transition-all" />
 
-                    {/* ────── Mobile View (Only Role, Remote, Apply button) ────── */}
+                    {/* ────── Mobile View (Role, Remote, 3 Policy Badges, Apply button) ────── */}
                     <div className="sm:hidden flex flex-col justify-between h-full space-y-3">
                       <div>
                         {/* Remote Badge */}
@@ -812,9 +812,22 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                         </div>
 
                         {/* Role Title */}
-                        <h3 className="text-sm font-black text-foreground tracking-tight leading-snug">
+                        <h3 className="text-sm font-black text-foreground tracking-tight leading-snug mb-2">
                           {role.title}
                         </h3>
+
+                        {/* The 3 Policy Badges */}
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          <span className="text-[8.5px] font-bold px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-900 dark:text-amber-300 border border-amber-500/30 flex items-center gap-0.5 shadow-xs">
+                            <AlertCircle className="w-2.5 h-2.5 text-amber-600 dark:text-amber-400 shrink-0" /> Unpaid
+                          </span>
+                          <span className="text-[8.5px] font-bold px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-900 dark:text-emerald-300 border border-emerald-500/30 flex items-center gap-0.5 shadow-xs">
+                            <Award className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400 shrink-0" /> Certificate
+                          </span>
+                          <span className="text-[8.5px] font-bold px-1.5 py-0.5 rounded-md bg-purple-500/15 text-purple-900 dark:text-purple-300 border border-purple-500/30 flex items-center gap-0.5 shadow-xs">
+                            <ShieldCheck className="w-2.5 h-2.5 text-purple-600 dark:text-purple-400 shrink-0" /> LOR (2 Yrs)
+                          </span>
+                        </div>
                       </div>
 
                       {/* Apply Button */}
