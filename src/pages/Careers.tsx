@@ -215,13 +215,6 @@ function empColor(t: EmploymentType) {
   return 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/30';
 }
 
-function getCategoryIcon(cat: RoleCategory) {
-  if (cat === 'Business Development') return TrendingUp;
-  if (cat === 'Digital Marketing') return Rocket;
-  if (cat === 'Software Engineering') return Layers;
-  return Building2;
-}
-
 // ─── Stay Tuned Dynamic Animated Illustration Component ─────────────────────
 function StayTunedIllustration() {
   return (
@@ -787,7 +780,6 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
             <div className="grid grid-cols-2 gap-2.5 sm:gap-6 lg:gap-8">
               {filteredRoles.map((role, idx) => {
                 const EmpI = empIcon(role.employmentType);
-                const CatIcon = getCategoryIcon(role.category);
                 return (
                   <motion.div
                     key={role.id}
@@ -795,67 +787,71 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
                     onClick={() => setSelectedJdModal(role)}
-                    className="group relative rounded-2xl sm:rounded-3xl border border-border/80 bg-card text-card-foreground shadow-xl hover:border-primary/50 transition-all duration-300 flex flex-col justify-between min-w-0 overflow-hidden p-3.5 sm:p-6 lg:p-8 cursor-pointer sm:cursor-default min-h-[320px] sm:min-h-0"
+                    className="group relative rounded-2xl sm:rounded-3xl border border-border/80 bg-card text-card-foreground shadow-sm hover:border-primary/50 transition-all duration-300 flex flex-col justify-between min-w-0 overflow-hidden p-3.5 sm:p-6 lg:p-8 cursor-pointer sm:cursor-default"
                   >
                     {/* Subtle glow accent */}
                     <div className="absolute -right-20 -top-20 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/20 transition-all" />
 
-                    {/* ────── Mobile View (Role, Remote, 3 Policy Badges, Apply button) ────── */}
-                    <div className="sm:hidden flex flex-col justify-between h-full pt-1">
-                      <div>
-                        {/* Top Row: Remote Badge + Category Icon */}
-                        <div className="flex items-center justify-between gap-2 mb-2.5">
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30 shadow-xs">
-                            <span className="relative flex h-2 w-2">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                            </span>
+                    {/* ────── Mobile View (Minimal, Informative, Clean) ────── */}
+                    <div className="sm:hidden flex flex-col justify-between h-full space-y-3">
+                      <div className="space-y-2">
+                        {/* Top Row: Category & Static Remote Badge */}
+                        <div className="flex items-center justify-between gap-1.5">
+                          <span className="text-[10px] font-bold text-primary tracking-wide uppercase truncate">
+                            {role.category}
+                          </span>
+                          <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border shrink-0">
                             Remote
                           </span>
-
-                          <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0 shadow-xs">
-                            <CatIcon className="w-3.5 h-3.5" />
-                          </div>
                         </div>
 
                         {/* Role Title */}
-                        <h3 className="text-[15px] font-black text-foreground tracking-tight leading-snug group-hover:text-primary transition-colors line-clamp-2 mb-3">
+                        <h3 className="text-sm font-bold text-foreground leading-snug tracking-tight">
                           {role.title}
                         </h3>
 
-                        {/* The 3 Policy Badges */}
-                        <div className="flex flex-col gap-1.5 mb-3">
-                          <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-amber-500/15 text-amber-900 dark:text-amber-300 border border-amber-500/30 text-[10px] font-bold shadow-xs">
-                            <AlertCircle className="w-3 h-3 text-amber-600 dark:text-amber-400 shrink-0" />
-                            <span>Unpaid</span>
+                        {/* Target Audience / Eligibility */}
+                        <div className="flex items-center gap-1.5 text-[10.5px] text-muted-foreground">
+                          <GraduationCap className="w-3 h-3 text-muted-foreground shrink-0" />
+                          <span className="line-clamp-1">{role.targetAudience}</span>
+                        </div>
+
+                        {/* Duration */}
+                        <div className="flex items-center gap-1.5 text-[10.5px] text-muted-foreground">
+                          <Clock className="w-3 h-3 text-muted-foreground shrink-0" />
+                          <span>3 – 12 Months</span>
+                        </div>
+
+                        {/* 3 Specific Terms - Minimal & Clean */}
+                        <div className="space-y-1 pt-2 border-t border-border/60 text-[10px] text-muted-foreground">
+                          <div className="flex items-center gap-1.5">
+                            <AlertCircle className="w-3 h-3 shrink-0 text-muted-foreground" />
+                            <span>Unpaid Internship</span>
                           </div>
-                          <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-500/15 text-emerald-900 dark:text-emerald-300 border border-emerald-500/30 text-[10px] font-bold shadow-xs">
-                            <Award className="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                            <span>Certificate</span>
+                          <div className="flex items-center gap-1.5">
+                            <Award className="w-3 h-3 shrink-0 text-muted-foreground" />
+                            <span>Certificate on Completion</span>
                           </div>
-                          <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-purple-500/15 text-purple-900 dark:text-purple-300 border border-purple-500/30 text-[10px] font-bold shadow-xs">
-                            <ShieldCheck className="w-3 h-3 text-purple-600 dark:text-purple-400 shrink-0" />
-                            <span>LOR (2 Yrs)</span>
+                          <div className="flex items-center gap-1.5">
+                            <ShieldCheck className="w-3 h-3 shrink-0 text-muted-foreground" />
+                            <span>LOR (2 Yrs Active Service)</span>
                           </div>
                         </div>
                       </div>
 
-                      {/* Apply Button & Tap Hint */}
-                      <div className="pt-2.5 border-t border-border/60 mt-auto">
+                      {/* Apply Button */}
+                      <div className="pt-2 border-t border-border/60">
                         <button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleOpenApply(role);
                           }}
-                          className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-primary via-primary/95 to-purple-600 hover:from-primary/90 hover:to-purple-700 text-white font-black text-xs tracking-wider uppercase flex items-center justify-center gap-1.5 shadow-md shadow-primary/20 active:scale-[0.98] transition-all cursor-pointer"
+                          className="w-full py-2.5 px-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs flex items-center justify-center gap-1.5 hover:opacity-90 active:scale-[0.99] transition-all cursor-pointer shadow-sm"
                         >
-                          <span>Apply</span>
+                          <span>Apply for Role</span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </button>
-                        <div className="text-center text-[9px] text-muted-foreground/75 font-medium mt-1.5 flex items-center justify-center gap-1">
-                          <span>Tap card to view details</span>
-                        </div>
                       </div>
                     </div>
 
