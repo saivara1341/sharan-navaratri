@@ -225,7 +225,11 @@ export default function InternPortal() {
       // Check if user has accepted onboarding
       const hasAccepted = internshipService.hasAcceptedOnboarding(email);
       if (!hasAccepted) {
-        setShowOnboarding(true);
+        internshipService.checkOnboardingStatus(email).then(acceptedInDb => {
+          if (!acceptedInDb) {
+            setShowOnboarding(true);
+          }
+        });
       }
 
       // Check role based on metadata or email

@@ -689,6 +689,44 @@ export const internshipService = {
     return agreements.some(a => a.email.toLowerCase() === clean && a.rules_agreed && a.terms_agreed);
   },
 
+  async checkOnboardingStatus(email: string): Promise<boolean> {
+    if (!email) return false;
+    const clean = email.trim().toLowerCase();
+    if (this.hasAcceptedOnboarding(clean)) return true;
+
+    try {
+      const { data } = await supabase
+        .from('intern_onboarding_agreements')
+        .select('email, rules_agreed, terms_agreed')
+        .ilike('email', clean)
+        .limit(1);
+
+      if (data && data.length > 0 && data[0].rules_agreed && data[0].terms_agreed) {
+        const current = getLocal<OnboardingAgreement[]>(STORAGE_KEYS.AGREEMENTS, []);
+        if (!current.some(a => a.email.toLowerCase() === clean)) {
+          setLocal(STORAGE_KEYS.AGREEMENTS, [{
+            email: clean,
+            full_name: '',
+            role: '',
+            accepted_at: new Date().toISOString(),
+            rules_agreed: true,
+            terms_agreed: true,
+            nda_agreed: true,
+            signature_text: '',
+            govt_id_type: 'Aadhaar Card',
+            govt_id_number: '',
+            college_id_number: '',
+            college_name: ''
+          }, ...current]);
+        }
+        return true;
+      }
+    } catch (err) {
+      console.warn('Error checking onboarding agreement in Supabase:', err);
+    }
+    return false;
+  },
+
   recordOnboardingAcceptance(
     email: string, 
     full_name: string, 
@@ -717,6 +755,29 @@ export const internshipService = {
     };
     const filtered = agreements.filter(a => a.email.toLowerCase() !== clean);
     setLocal(STORAGE_KEYS.AGREEMENTS, [newAgreement, ...filtered]);
+
+    // Persist to Supabase intern_onboarding_agreements table
+    try {
+      supabase.from('intern_onboarding_agreements').insert([{
+        email: clean,
+        full_name,
+        role,
+        signature_text,
+        govt_id_type,
+        govt_id_number,
+        college_id_number,
+        college_name,
+        rules_agreed: true,
+        terms_agreed: true,
+        nda_agreed: true,
+        accepted_at: newAgreement.accepted_at
+      }]).then(({ error }) => {
+        if (error) console.warn('Could not sync onboarding agreement to Supabase:', error);
+      });
+    } catch (err) {
+      console.warn('intern_onboarding_agreements insert error:', err);
+    }
+
     return newAgreement;
   },
 
@@ -954,11 +1015,101 @@ export const internshipService = {
     return getLocal<CertificateRecord[]>(STORAGE_KEYS.CERTIFICATES, DEFAULT_CERTIFICATES);
   },
 
+  async fetchCertificates(): Promise<CertificateRecord[]> {
+    try {
+      const { data, error } = await supabase
+        .from('issued_certificates')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        const mapped: CertificateRecord[] = data.map((row: any) => ({
+          id: row.id,
+          certificate_no: row.certificate_no,
+          recipient_name: row.recipient_name,
+          recipient_email: row.recipient_email,
+          role: row.role,
+          college_name: row.college_name,
+          college_id_number: row.college_id_number,
+          govt_id_type: row.govt_id_type,
+          govt_id_masked: row.govt_id_masked,
+          duration: row.duration,
+          start_date: row.start_date,
+          completion_date: row.completion_date,
+          issue_date: row.issue_date,
+          grade: row.grade as any,
+          issued_by: row.issued_by,
+          verification_checksum: row.verification_checksum,
+          key_achievements: Array.isArray(row.key_achievements) ? row.key_achievements : [],
+          points_of_proof_count: row.points_of_proof_count || 0,
+          status: (row.status || 'Valid') as any
+        }));
+
+        const local = getLocal<CertificateRecord[]>(STORAGE_KEYS.CERTIFICATES, DEFAULT_CERTIFICATES);
+        const combined = [...mapped];
+        for (const loc of local) {
+          if (!combined.some(c => c.certificate_no.toUpperCase() === loc.certificate_no.toUpperCase())) {
+            combined.push(loc);
+          }
+        }
+        setLocal(STORAGE_KEYS.CERTIFICATES, combined);
+        return combined;
+      }
+    } catch (err) {
+      console.warn('Error fetching certificates from Supabase:', err);
+    }
+    return this.getCertificates();
+  },
+
   getCertificateByNo(query: string): CertificateRecord | null {
     if (!query) return null;
     const clean = query.trim().toUpperCase();
     const certs = this.getCertificates();
     return certs.find(c => c.certificate_no.toUpperCase() === clean || c.id.toUpperCase() === clean || c.recipient_email.toLowerCase() === query.trim().toLowerCase()) || null;
+  },
+
+  async fetchCertificateByNo(query: string): Promise<CertificateRecord | null> {
+    if (!query) return null;
+    const clean = query.trim().toUpperCase();
+
+    // 1. Try Supabase
+    try {
+      const { data, error } = await supabase
+        .from('issued_certificates')
+        .select('*')
+        .or(`certificate_no.ilike.${clean},recipient_email.ilike.${query.trim()}`)
+        .limit(1);
+
+      if (!error && data && data.length > 0) {
+        const row = data[0];
+        return {
+          id: row.id,
+          certificate_no: row.certificate_no,
+          recipient_name: row.recipient_name,
+          recipient_email: row.recipient_email,
+          role: row.role,
+          college_name: row.college_name,
+          college_id_number: row.college_id_number,
+          govt_id_type: row.govt_id_type,
+          govt_id_masked: row.govt_id_masked,
+          duration: row.duration,
+          start_date: row.start_date,
+          completion_date: row.completion_date,
+          issue_date: row.issue_date,
+          grade: row.grade as any,
+          issued_by: row.issued_by,
+          verification_checksum: row.verification_checksum,
+          key_achievements: Array.isArray(row.key_achievements) ? row.key_achievements : [],
+          points_of_proof_count: row.points_of_proof_count || 0,
+          status: (row.status || 'Valid') as any
+        };
+      }
+    } catch (err) {
+      console.warn('Error fetching certificate from Supabase:', err);
+    }
+
+    // 2. Fallback to local
+    return this.getCertificateByNo(query);
   },
 
   issueCertificate(certData: Omit<CertificateRecord, 'id' | 'certificate_no' | 'verification_checksum' | 'status' | 'issue_date'>): CertificateRecord {
@@ -980,6 +1131,35 @@ export const internshipService = {
     const current = this.getCertificates();
     const updated = [newCert, ...current];
     setLocal(STORAGE_KEYS.CERTIFICATES, updated);
+
+    // Persist to Supabase
+    try {
+      supabase.from('issued_certificates').insert([{
+        certificate_no: newCert.certificate_no,
+        recipient_name: newCert.recipient_name,
+        recipient_email: newCert.recipient_email.toLowerCase(),
+        role: newCert.role,
+        college_name: newCert.college_name,
+        college_id_number: newCert.college_id_number,
+        govt_id_type: newCert.govt_id_type,
+        govt_id_masked: newCert.govt_id_masked,
+        duration: newCert.duration,
+        start_date: newCert.start_date,
+        completion_date: newCert.completion_date,
+        issue_date: newCert.issue_date,
+        grade: newCert.grade,
+        issued_by: newCert.issued_by,
+        verification_checksum: newCert.verification_checksum,
+        key_achievements: newCert.key_achievements,
+        points_of_proof_count: newCert.points_of_proof_count,
+        status: newCert.status
+      }]).then(({ error }) => {
+        if (error) console.warn('Could not sync certificate to Supabase:', error);
+      });
+    } catch (err) {
+      console.warn('issued_certificates insert error:', err);
+    }
+
     return newCert;
   },
 
@@ -987,6 +1167,15 @@ export const internshipService = {
     const current = this.getCertificates();
     const updated = current.map(c => c.id === id ? { ...c, status: 'Revoked' as const } : c);
     setLocal(STORAGE_KEYS.CERTIFICATES, updated);
+
+    try {
+      supabase.from('issued_certificates').update({ status: 'Revoked' }).eq('id', id).then(({ error }) => {
+        if (error) console.warn('Could not sync certificate revocation to Supabase:', error);
+      });
+    } catch (err) {
+      console.warn('issued_certificates revoke error:', err);
+    }
+
     return updated;
   },
 

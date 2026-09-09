@@ -505,9 +505,10 @@ export default function CertificateVerification() {
     }
   }, [queryNo]);
 
-  const performSearch = (query: string) => {
+  const performSearch = async (query: string) => {
     if (!query.trim()) { setCertificate(null); setHasSearched(false); return; }
-    setCertificate(internshipService.getCertificateByNo(query.trim()));
+    const found = await internshipService.fetchCertificateByNo(query.trim());
+    setCertificate(found);
     setHasSearched(true);
   };
 
