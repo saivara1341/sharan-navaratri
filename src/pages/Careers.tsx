@@ -652,8 +652,8 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
   };
 
   // Dashboard UI input & select styling
-  const dashboardInput = "w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground text-base sm:text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm";
-  const dashboardSelect = "w-full px-3 py-3 rounded-xl bg-background border border-border text-foreground text-base sm:text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm";
+  const dashboardInput = "w-full px-3.5 py-2 sm:py-2.5 rounded-xl bg-background border border-border/80 text-foreground text-xs sm:text-[13px] placeholder:text-xs placeholder:text-muted-foreground/60 font-normal focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-xs";
+  const dashboardSelect = "w-full px-3 py-2 sm:py-2.5 rounded-xl bg-background border border-border/80 text-foreground text-xs sm:text-[13px] font-normal focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-xs cursor-pointer";
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30">
@@ -1205,28 +1205,28 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                   </p>
 
                   {/* Notice of unpaid & certification in dashboard theme style */}
-                  <div className="mt-3.5 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-xs text-amber-800 dark:text-amber-300 leading-relaxed space-y-1">
-                    <div><strong className="font-bold">Notice:</strong> This is an unpaid internship for practical skill growth. Interns receive an official Certificate of Completion upon finishing tenure.</div>
-                    <div>(Letter of Recommendation is provided strictly upon 2 years of active service).</div>
+                  <div className="mt-3.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-[11px] sm:text-xs text-amber-800 dark:text-amber-300 leading-relaxed space-y-0.5">
+                    <div><strong className="font-semibold text-amber-900 dark:text-amber-200">Notice:</strong> This is an unpaid internship for practical skill growth. Interns receive an official Certificate of Completion upon finishing tenure.</div>
+                    <div className="text-[10.5px] sm:text-[11px] text-amber-700 dark:text-amber-400 font-medium">(Letter of Recommendation is provided strictly upon 2 years of active service).</div>
                   </div>
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleFormSubmit} className="relative z-10 space-y-4 sm:space-y-5">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form onSubmit={handleFormSubmit} className="relative z-10 space-y-3.5 sm:space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                     <div>
-                      <label className="text-xs font-bold text-foreground block mb-1.5">Full Name *</label>
+                      <label className="text-[11.5px] font-semibold text-foreground/90 block mb-1">Full Name <span className="text-primary">*</span></label>
                       <input type="text" required value={fullName} onChange={e => setFullName(e.target.value)} className={dashboardInput} placeholder="Enter your full name" />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-foreground block mb-1.5">Email Address *</label>
+                      <label className="text-[11.5px] font-semibold text-foreground/90 block mb-1">Email Address <span className="text-primary">*</span></label>
                       <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className={dashboardInput} placeholder="your.email@example.com" />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                     <div>
-                      <label className="text-xs font-bold text-foreground block mb-1.5">WhatsApp / Phone *</label>
+                      <label className="text-[11.5px] font-semibold text-foreground/90 block mb-1">WhatsApp / Phone <span className="text-primary">*</span></label>
                       <input
                         type="tel"
                         required
@@ -1242,14 +1242,14 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-foreground block mb-1.5">College / University *</label>
+                      <label className="text-[11.5px] font-semibold text-foreground/90 block mb-1">College / University <span className="text-primary">*</span></label>
                       <input type="text" required value={college} onChange={e => setCollege(e.target.value)} className={dashboardInput} placeholder="Enter your college or university" />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                     <div>
-                      <label className="text-xs font-bold text-foreground block mb-1.5">Current Degree *</label>
+                      <label className="text-[11.5px] font-semibold text-foreground/90 block mb-1">Current Degree <span className="text-primary">*</span></label>
                       <select value={degree} onChange={(e: any) => setDegree(e.target.value)} className={dashboardSelect}>
                         <option value="MBA">MBA</option>
                         <option value="BBA">BBA</option>
@@ -1258,14 +1258,14 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                         <option value="Other">Other</option>
                       </select>
                       {degree === 'Other' && (
-                        <div className="mt-3">
-                          <label htmlFor="other-degree" className="text-xs font-bold text-foreground block mb-1.5">Please specify your degree *</label>
+                        <div className="mt-2.5">
+                          <label htmlFor="other-degree" className="text-[11.5px] font-semibold text-foreground/90 block mb-1">Please specify your degree <span className="text-primary">*</span></label>
                           <input id="other-degree" type="text" required value={otherDegree} onChange={e => setOtherDegree(e.target.value)} className={dashboardInput} placeholder="Enter your degree" />
                         </div>
                       )}
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-foreground block mb-1.5">Preferred Duration *</label>
+                      <label className="text-[11.5px] font-semibold text-foreground/90 block mb-1">Preferred Duration <span className="text-primary">*</span></label>
                       <select value={duration} onChange={(e: any) => setDuration(e.target.value)} className={dashboardSelect}>
                         <option value="3 Months">3 Months</option>
                         <option value="6 Months">6 Months</option>
@@ -1275,24 +1275,24 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                     <div>
-                      <label className="text-xs font-bold text-foreground block mb-1.5">LinkedIn Profile</label>
+                      <label className="text-[11.5px] font-semibold text-foreground/90 block mb-1">LinkedIn Profile</label>
                       <input type="url" value={linkedin} onChange={e => setLinkedin(e.target.value)} className={dashboardInput} placeholder="https://linkedin.com/in/username" />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-foreground block mb-1.5">Instagram / Portfolio</label>
+                      <label className="text-[11.5px] font-semibold text-foreground/90 block mb-1">Instagram / Portfolio</label>
                       <input type="text" value={portfolioOrSocial} onChange={e => setPortfolioOrSocial(e.target.value)} className={dashboardInput} placeholder="@handle or portfolio URL" />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-foreground block mb-1.5">
-                      Statement of Purpose & Career Objectives *
+                    <label className="text-[11.5px] font-semibold text-foreground/90 block mb-1">
+                      Statement of Purpose & Career Objectives <span className="text-primary">*</span>
                     </label>
                     <textarea
                       required
-                      rows={4}
+                      rows={3}
                       value={statementOfPurpose}
                       onChange={e => setStatementOfPurpose(e.target.value)}
                       placeholder="Why do you want to join Siddhi Dynamics? Share your goals and what you hope to achieve during this internship."
@@ -1302,19 +1302,19 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
 
                   {/* File Upload */}
                   <div>
-                    <label className="text-xs font-bold text-foreground block mb-1.5">
+                    <label className="text-[11.5px] font-semibold text-foreground/90 block mb-1">
                       Resume & Supporting Documents
                     </label>
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className="rounded-2xl border-2 border-dashed border-border hover:border-primary/50 bg-muted/25 hover:bg-muted/40 p-6 text-center cursor-pointer transition-all group"
+                      className="rounded-2xl border-2 border-dashed border-border hover:border-primary/50 bg-muted/25 hover:bg-muted/40 p-5 text-center cursor-pointer transition-all group"
                     >
-                      <Upload className="w-7 h-7 mx-auto text-primary transition-transform group-hover:-translate-y-0.5 mb-2" />
+                      <Upload className="w-6 h-6 mx-auto text-primary transition-transform group-hover:-translate-y-0.5 mb-1.5" />
                       <p className="text-xs text-foreground/80 font-medium">
                         <span className="text-primary font-bold">Click to upload</span>{' '}
                         or drag & drop — Resume, Cover Letter, Portfolio (multiple files allowed)
                       </p>
-                      <p className="text-[11px] text-muted-foreground mt-1">PDF, DOC, DOCX, PNG, JPG — up to 10 MB each</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">PDF, DOC, DOCX, PNG, JPG — up to 10 MB each</p>
                     </div>
                     <input
                       ref={fileInputRef}
@@ -1326,9 +1326,9 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     />
 
                     {uploadedFiles.length > 0 && (
-                      <div className="mt-3 space-y-2">
+                      <div className="mt-2.5 space-y-2">
                         {uploadedFiles.map((f, i) => (
-                          <div key={i} className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-muted/40 border border-border text-xs">
+                          <div key={i} className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-muted/40 border border-border text-xs">
                             <span className="text-foreground font-medium truncate flex-1 mr-2">{f.name}</span>
                             <span className="text-muted-foreground text-[11px] mr-3">{(f.size / 1024).toFixed(0)} KB</span>
                             <button type="button" onClick={() => removeFile(i)} className="text-rose-500 hover:text-rose-600 p-1 cursor-pointer">
@@ -1340,7 +1340,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     )}
 
                     {/* Or paste link */}
-                    <div className="mt-3">
+                    <div className="mt-2.5">
                       <label className="text-[11px] font-semibold text-muted-foreground block mb-1">Or paste a Google Drive / portfolio link</label>
                       <input type="url" value={resumeUrl} onChange={e => setResumeUrl(e.target.value)} className={dashboardInput} placeholder="https://drive.google.com/... or https://yourportfolio.com" />
                     </div>
@@ -1350,7 +1350,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="w-full py-4 rounded-xl bg-primary text-primary-foreground font-black text-sm tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-95 transition-all shadow-lg hover:shadow-xl"
+                      className="w-full py-3 sm:py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs sm:text-sm tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-95 transition-all shadow-md hover:shadow-lg"
                     >
                       {submitting ? (
                         <span>Submitting Application...</span>
@@ -1360,7 +1360,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                         </>
                       )}
                     </button>
-                    <p className="text-[11px] text-muted-foreground text-center mt-3 leading-relaxed">
+                    <p className="text-[11px] text-muted-foreground text-center mt-2.5 leading-relaxed">
                       By submitting, you acknowledge that this is an unpaid internship granting an official completion certificate (and LOR upon 2 years). Applications are delivered to{' '}
                       <strong className="text-foreground">careers@siddhidynamics.in</strong>.
                     </p>
