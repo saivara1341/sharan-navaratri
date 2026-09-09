@@ -38,7 +38,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { internshipService } from '@/services/internshipService';
-import { CloudflareTurnstile } from '@/components/common/CloudflareTurnstile';
 
 // ─── Filter Types & Categories ───────────────────────────────────────────────
 type EmploymentType = 'Full Time' | 'Remote' | 'Part Time';
@@ -271,7 +270,6 @@ export default function Careers() {
   const [statementOfPurpose, setStatementOfPurpose] = useState('');
   const [resumeUrl, setResumeUrl] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   // ─── Filtering ─────────────────────────────────────────────────────────────
   const filteredRoles = ROLES.filter(r => {
@@ -292,7 +290,6 @@ export default function Careers() {
 
   // ─── Handlers ──────────────────────────────────────────────────────────────
   const handleOpenApply = (role: RoleJD) => {
-    setTurnstileToken(null);
     setApplicationModal(role);
   };
 
@@ -605,7 +602,6 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
     setDegree('MBA'); setOtherDegree('');
     setStatementOfPurpose(''); setResumeUrl(''); setLinkedin('');
     setPortfolioOrSocial(''); setUploadedFiles([]);
-    setTurnstileToken(null);
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -623,11 +619,6 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
     const selectedDegree = degree === 'Other' ? otherDegree.trim() : degree;
     if (!selectedDegree) {
       toast.error('Please enter your degree.');
-      return;
-    }
-    // Cloudflare Turnstile verification check
-    if (!turnstileToken) {
-      toast.error('Please complete the Cloudflare security verification to confirm you are human.');
       return;
     }
     setSubmitting(true);
@@ -1342,28 +1333,14 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     </div>
                   </div>
 
-                  {/* Cloudflare Turnstile Bot Verification */}
-                  <div className="pt-2">
-                    <CloudflareTurnstile
-                      action="career_application"
-                      onVerify={(token) => setTurnstileToken(token)}
-                      onExpire={() => setTurnstileToken(null)}
-                      onError={() => setTurnstileToken(null)}
-                    />
-                  </div>
-
                   <div className="pt-2">
                     <button
                       type="submit"
-                      disabled={submitting || !turnstileToken}
+                      disabled={submitting}
                       className="w-full py-4 rounded-xl bg-primary text-primary-foreground font-black text-sm tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-95 transition-all shadow-lg hover:shadow-xl"
                     >
                       {submitting ? (
                         <span>Submitting Application...</span>
-                      ) : !turnstileToken ? (
-                        <>
-                          <ShieldCheck className="w-4 h-4 text-primary-foreground/80" /> Verify Security to Submit
-                        </>
                       ) : (
                         <>
                           <Send className="w-4 h-4" /> Submit Application
