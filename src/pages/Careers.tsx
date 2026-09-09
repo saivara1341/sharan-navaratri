@@ -1043,22 +1043,45 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                 <div className="text-xs font-black text-amber-800 dark:text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
                   <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400" /> Mandatory Credential & Terms Disclosure
                 </div>
-                <div className="grid grid-cols-1 gap-2.5 text-xs text-foreground/85 dark:text-muted-foreground">
-                  <div className="flex flex-col sm:flex-row items-start gap-1 sm:gap-2">
-                    <span className="font-bold text-foreground shrink-0">• Compensation:</span>
-                    <span><strong>Unpaid Internship</strong> (Skill-learning & academic practical experience for MBA/BBA students).</span>
+                <div className="grid grid-cols-1 gap-3 text-xs text-foreground/85 dark:text-muted-foreground">
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-5 h-5 rounded-md bg-amber-500/15 border border-amber-500/30 flex items-center justify-center shrink-0 mt-0.5">
+                      <AlertCircle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                    </div>
+                    <div>
+                      <span className="font-bold text-foreground mr-1.5">Compensation:</span>
+                      <span><strong>Unpaid Internship</strong> (Skill-learning & academic practical experience for MBA/BBA students).</span>
+                    </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row items-start gap-1 sm:gap-2">
-                    <span className="font-bold text-foreground shrink-0">• Certification:</span>
-                    <span>Interns receive an <strong>Official Certificate of Internship Completion</strong> upon successfully completing their chosen tenure and deliverables.</span>
+
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-5 h-5 rounded-md bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0 mt-0.5">
+                      <Award className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <div>
+                      <span className="font-bold text-foreground mr-1.5">Certification:</span>
+                      <span>Interns receive an <strong>Official Certificate of Internship Completion</strong> upon successfully completing their chosen tenure and deliverables.</span>
+                    </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row items-start gap-1 sm:gap-2">
-                    <span className="font-bold text-foreground shrink-0">• Letter of Recommendation:</span>
-                    <span>A formal <strong>Letter of Recommendation (LOR) is provided strictly upon 2 years of active working / association</strong> with Siddhi Dynamics.</span>
+
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-5 h-5 rounded-md bg-purple-500/15 border border-purple-500/30 flex items-center justify-center shrink-0 mt-0.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <div>
+                      <span className="font-bold text-foreground mr-1.5">Letter of Recommendation:</span>
+                      <span>A formal <strong>Letter of Recommendation (LOR) is provided strictly upon 2 years of active working / association</strong> with Siddhi Dynamics.</span>
+                    </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row items-start gap-1 sm:gap-2">
-                    <span className="font-bold text-foreground shrink-0">• Workflow:</span>
-                    <span>Tasks are assigned with stipulated deadlines. Deadline extensions and proprietary data requests can be submitted via portal and approved by CEO.</span>
+
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-5 h-5 rounded-md bg-blue-500/15 border border-blue-500/30 flex items-center justify-center shrink-0 mt-0.5">
+                      <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <span className="font-bold text-foreground mr-1.5">Workflow:</span>
+                      <span>Tasks are assigned with stipulated deadlines. Deadline extensions and proprietary data requests can be submitted via portal and approved by CEO.</span>
+                    </div>
                   </div>
                 </div>
               </div>
