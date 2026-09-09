@@ -801,108 +801,162 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     {/* Subtle glow accent */}
                     <div className="absolute -right-20 -top-20 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/20 transition-all" />
 
-                    <div>
-                      {/* Top Badges */}
-                      <div className="flex items-center justify-between gap-1.5 sm:gap-3 mb-2 sm:mb-4 flex-wrap">
-                        <div className="flex flex-wrap items-center gap-1 sm:gap-2">
-                          <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wider px-1.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-primary/10 text-primary border border-primary/25">
-                            {role.category}
+                    {/* ────── Mobile View (Clean, Modern, 2-in-a-Row) ────── */}
+                    <div className="sm:hidden flex flex-col justify-between h-full">
+                      <div>
+                        {/* Top Row: Category & Remote Pill */}
+                        <div className="flex items-center justify-between gap-1 mb-2">
+                          <span className="text-[10px] font-black uppercase tracking-wider text-primary truncate max-w-[85px]">
+                            {role.category === 'Business Development' ? 'Business Dev' : role.category === 'Digital Marketing' ? 'Digital Mktg' : role.category}
                           </span>
-                          <span className={`text-[9px] sm:text-xs font-bold px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full border flex items-center gap-0.5 sm:gap-1 ${empColor(role.employmentType)}`}>
-                            <EmpI className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> {role.employmentType}
+                          <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30 shrink-0">
+                            Remote
                           </span>
                         </div>
-                        <span className="text-[9px] sm:text-xs text-foreground/80 dark:text-muted-foreground font-semibold flex items-center gap-1">
-                          <GraduationCap className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-primary shrink-0" />
-                          <span className="line-clamp-1">{role.targetAudience}</span>
-                        </span>
-                      </div>
 
-                      <h3 className="text-sm sm:text-2xl md:text-3xl font-black text-foreground mb-1 sm:mb-3 group-hover:text-primary transition-colors tracking-tight leading-snug">
-                        {role.title}
-                      </h3>
-                      <p className="text-[10px] sm:text-sm font-medium text-foreground/80 dark:text-muted-foreground mb-2 sm:mb-5 leading-snug sm:leading-relaxed line-clamp-2 sm:line-clamp-none">
-                        {role.tagline}
-                      </p>
+                        {/* Title */}
+                        <h3 className="text-[13px] font-black text-foreground tracking-tight leading-snug line-clamp-2 min-h-[34px] group-hover:text-primary transition-colors">
+                          {role.title}
+                        </h3>
 
-                      {/* Transparent Policy Pill Badges */}
-                      <div className="flex flex-wrap gap-1 sm:gap-2.5 mb-2 sm:mb-6">
-                        <span className="text-[8.5px] sm:text-xs font-bold px-1.5 sm:px-3 py-0.5 sm:py-1.5 rounded-md sm:rounded-xl bg-amber-500/15 text-amber-900 dark:text-amber-200 border border-amber-500/30 flex items-center gap-1 shadow-sm">
-                          <AlertCircle className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
-                          <span className="hidden sm:inline">Unpaid Internship</span>
-                          <span className="sm:hidden">Unpaid</span>
-                        </span>
-                        <span className="text-[8.5px] sm:text-xs font-bold px-1.5 sm:px-3 py-0.5 sm:py-1.5 rounded-md sm:rounded-xl bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 border border-emerald-500/30 flex items-center gap-1 shadow-sm">
-                          <Award className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                          <span className="hidden sm:inline">Certificate on Completion</span>
-                          <span className="sm:hidden">Certificate</span>
-                        </span>
-                        <span className="text-[8.5px] sm:text-xs font-bold px-1.5 sm:px-3 py-0.5 sm:py-1.5 rounded-md sm:rounded-xl bg-purple-500/15 text-purple-900 dark:text-purple-200 border border-purple-500/30 flex items-center gap-1 shadow-sm">
-                          <ShieldCheck className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
-                          <span className="hidden sm:inline">LOR upon 2 Yrs Working</span>
-                          <span className="sm:hidden">LOR (2 Yrs)</span>
-                        </span>
-                      </div>
-
-                      {/* Mobile hint to elaborate */}
-                      <div className="sm:hidden flex items-center gap-1 text-[9px] font-semibold text-primary mb-2">
-                        <span>Tap to elaborate details & protocol</span>
-                        <ArrowRight className="w-2.5 h-2.5" />
-                      </div>
-
-                      {/* Responsibilities preview (hidden on mobile, elaborated in modal on open) */}
-                      <div className="hidden sm:block space-y-1.5 sm:space-y-2.5 mb-3 sm:mb-6 pt-2.5 sm:pt-4 border-t border-border/70">
-                        <div className="text-[10px] sm:text-xs font-black text-foreground uppercase tracking-wider flex items-center gap-1">
-                          <Target className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" /> Key Responsibilities & Workflow
+                        {/* Target Audience */}
+                        <div className="text-[10px] text-muted-foreground font-semibold truncate mt-1 flex items-center gap-1">
+                          <GraduationCap className="w-3 h-3 text-primary shrink-0" />
+                          <span className="truncate">{role.targetAudience.split('/')[0].trim()}</span>
                         </div>
-                        {role.keyResponsibilities.slice(0, 3).map((resp, i) => (
-                          <div key={i} className="flex items-start gap-1.5 sm:gap-2.5 text-[10px] sm:text-xs text-foreground/85 dark:text-muted-foreground font-medium leading-snug sm:leading-relaxed">
-                            <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                            <span>{resp}</span>
+
+                        {/* Highlights Spec Box */}
+                        <div className="my-2.5 p-2 rounded-xl bg-muted/40 dark:bg-muted/20 border border-border/70 space-y-1 text-[9.5px]">
+                          <div className="flex items-center gap-1 font-bold text-amber-600 dark:text-amber-400">
+                            <AlertCircle className="w-3 h-3 shrink-0" />
+                            <span>Unpaid Internship</span>
                           </div>
-                        ))}
+                          <div className="flex items-center gap-1 font-bold text-emerald-600 dark:text-emerald-400">
+                            <Award className="w-3 h-3 shrink-0" />
+                            <span>Certificate on Completion</span>
+                          </div>
+                        </div>
                       </div>
 
-                      {/* Platform Workflow summary (hidden on mobile, elaborated in modal on open) */}
-                      <div className="hidden sm:block p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/60 dark:bg-muted/30 border border-border/80 text-[10px] sm:text-xs text-foreground/85 dark:text-muted-foreground space-y-1 mb-3 sm:mb-6 leading-snug sm:leading-relaxed">
-                        <span className="text-foreground font-bold block">Platform Task Protocol:</span>
-                        Tasks assigned with stipulated timelines. Extensions and client data requests submitted via portal and approved by CEO.
-                      </div>
-                    </div>
-
-                    {/* Card Actions */}
-                    <div className="pt-2 sm:pt-6 border-t border-border/70 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-1.5 sm:gap-3">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenApply(role);
-                        }}
-                        className="w-full sm:flex-1 py-1.5 sm:py-3 px-2 sm:px-5 rounded-xl sm:rounded-2xl bg-primary text-primary-foreground font-extrabold text-[10px] sm:text-xs tracking-wider uppercase flex items-center justify-center gap-1 sm:gap-2 hover:opacity-95 hover:shadow-lg transition-all cursor-pointer"
-                      >
-                        Apply <span className="hidden sm:inline">for Role</span> <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
-                      </button>
-
-                      <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+                      {/* Mobile Actions */}
+                      <div className="pt-2 border-t border-border/70 space-y-1.5">
                         <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenApply(role);
+                          }}
+                          className="w-full py-2 px-2 rounded-xl bg-primary text-primary-foreground font-extrabold text-[10px] tracking-wider uppercase flex items-center justify-center gap-1 shadow-md hover:opacity-95 cursor-pointer"
+                        >
+                          Apply <ArrowRight className="w-3 h-3" />
+                        </button>
+                        <button
+                          type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedJdModal(role);
                           }}
-                          className="flex-1 sm:flex-initial py-1.5 sm:py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl bg-secondary hover:bg-secondary/80 border border-border text-[9px] sm:text-xs font-bold text-foreground transition-all flex items-center justify-center gap-1 cursor-pointer shadow-sm"
+                          className="w-full py-1.5 px-2 rounded-lg bg-secondary/80 hover:bg-secondary border border-border text-[9.5px] font-bold text-foreground flex items-center justify-center gap-1 cursor-pointer transition-colors"
                         >
-                          <FileText className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" /> <span>View Full JD</span>
+                          <FileText className="w-3 h-3 text-primary" /> View Full JD
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* ────── Desktop View (Spacious, Comprehensive) ────── */}
+                    <div className="hidden sm:flex flex-col justify-between h-full">
+                      <div>
+                        {/* Top Badges */}
+                        <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/25">
+                              {role.category}
+                            </span>
+                            <span className={`text-xs font-bold px-2.5 py-1 rounded-full border flex items-center gap-1 ${empColor(role.employmentType)}`}>
+                              <EmpI className="w-3 h-3" /> {role.employmentType}
+                            </span>
+                          </div>
+                          <span className="text-xs text-foreground/80 dark:text-muted-foreground font-semibold flex items-center gap-1">
+                            <GraduationCap className="w-3.5 h-3.5 text-primary shrink-0" />
+                            <span className="line-clamp-1">{role.targetAudience}</span>
+                          </span>
+                        </div>
+
+                        <h3 className="text-2xl md:text-3xl font-black text-foreground mb-3 group-hover:text-primary transition-colors tracking-tight leading-snug">
+                          {role.title}
+                        </h3>
+                        <p className="text-sm font-medium text-foreground/80 dark:text-muted-foreground mb-5 leading-relaxed">
+                          {role.tagline}
+                        </p>
+
+                        {/* Transparent Policy Pill Badges */}
+                        <div className="flex flex-wrap gap-2.5 mb-6">
+                          <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-amber-500/15 text-amber-900 dark:text-amber-200 border border-amber-500/30 flex items-center gap-1.5 shadow-sm">
+                            <AlertCircle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" /> Unpaid Internship
+                          </span>
+                          <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 border border-emerald-500/30 flex items-center gap-1.5 shadow-sm">
+                            <Award className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" /> Certificate on Completion
+                          </span>
+                          <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-purple-500/15 text-purple-900 dark:text-purple-200 border border-purple-500/30 flex items-center gap-1.5 shadow-sm">
+                            <ShieldCheck className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0" /> LOR upon 2 Yrs Working
+                          </span>
+                        </div>
+
+                        {/* Responsibilities preview */}
+                        <div className="space-y-2.5 mb-6 pt-4 border-t border-border/70">
+                          <div className="text-xs font-black text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                            <Target className="w-3.5 h-3.5 text-primary" /> Key Responsibilities & Workflow
+                          </div>
+                          {role.keyResponsibilities.slice(0, 3).map((resp, i) => (
+                            <div key={i} className="flex items-start gap-2.5 text-xs text-foreground/85 dark:text-muted-foreground font-medium leading-relaxed">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                              <span>{resp}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Platform Workflow summary */}
+                        <div className="p-4 rounded-2xl bg-muted/60 dark:bg-muted/30 border border-border/80 text-xs text-foreground/85 dark:text-muted-foreground space-y-1 mb-6 leading-relaxed">
+                          <span className="text-foreground font-bold block">Platform Task Protocol:</span>
+                          Tasks assigned with stipulated timelines. Extensions and client data requests submitted via portal and approved by CEO.
+                        </div>
+                      </div>
+
+                      {/* Desktop Card Actions */}
+                      <div className="pt-6 border-t border-border/70 flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenApply(role);
+                          }}
+                          className="flex-1 py-3 px-5 rounded-2xl bg-primary text-primary-foreground font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 hover:opacity-95 hover:shadow-lg transition-all cursor-pointer"
+                        >
+                          Apply for Role <ArrowRight className="w-4 h-4" />
                         </button>
 
                         <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedJdModal(role);
+                          }}
+                          className="py-3 px-4 rounded-2xl bg-secondary hover:bg-secondary/80 border border-border text-xs font-bold text-foreground transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+                        >
+                          <FileText className="w-4 h-4 text-primary" /> View Full JD
+                        </button>
+
+                        <button
+                          type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDownloadJd(role);
                           }}
                           title="Download job description"
                           aria-label="Download job description"
-                          className="py-1.5 sm:py-3 px-2 sm:px-3.5 rounded-xl sm:rounded-2xl bg-secondary hover:bg-secondary/80 border border-border text-[9px] sm:text-xs font-bold text-foreground/80 hover:text-foreground transition-all flex items-center justify-center gap-1 cursor-pointer shadow-sm shrink-0"
+                          className="py-3 px-3.5 rounded-2xl bg-secondary hover:bg-secondary/80 border border-border text-xs font-bold text-foreground/80 hover:text-foreground transition-all flex items-center gap-1.5 cursor-pointer shadow-sm shrink-0"
                         >
-                          <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 dark:text-emerald-400" />
+                          <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                         </button>
                       </div>
                     </div>
