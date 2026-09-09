@@ -391,6 +391,55 @@ export function AdminInternshipsConsole() {
               <p className="text-xs text-muted-foreground">Review incoming MBA & BBA submissions, inspect SOPs, and send 1-click Google Meet interview invites.</p>
             </div>
 
+          {/* Quick Stats Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+            <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-card border border-border/60 shadow-sm flex items-center justify-between">
+              <div>
+                <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wider">Total Registered</p>
+                <h4 className="text-xl sm:text-2xl font-black text-foreground mt-0.5">{applications.length}</h4>
+              </div>
+              <div className="p-2 sm:p-2.5 rounded-xl bg-primary/10 text-primary">
+                <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5" />
+              </div>
+            </div>
+
+            <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-card border border-border/60 shadow-sm flex items-center justify-between">
+              <div>
+                <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wider">Business Dev</p>
+                <h4 className="text-xl sm:text-2xl font-black text-blue-500 mt-0.5">
+                  {applications.filter(a => a.role.includes('Business')).length}
+                </h4>
+              </div>
+              <div className="p-2 sm:p-2.5 rounded-xl bg-blue-500/10 text-blue-500">
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
+              </div>
+            </div>
+
+            <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-card border border-border/60 shadow-sm flex items-center justify-between">
+              <div>
+                <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wider">Digital Mktg</p>
+                <h4 className="text-xl sm:text-2xl font-black text-purple-500 mt-0.5">
+                  {applications.filter(a => a.role.includes('Digital')).length}
+                </h4>
+              </div>
+              <div className="p-2 sm:p-2.5 rounded-xl bg-purple-500/10 text-purple-500">
+                <Layers className="w-4 h-4 sm:w-5 sm:h-5" />
+              </div>
+            </div>
+
+            <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-card border border-border/60 shadow-sm flex items-center justify-between">
+              <div>
+                <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wider">Interviews / Offers</p>
+                <h4 className="text-xl sm:text-2xl font-black text-emerald-500 mt-0.5">
+                  {applications.filter(a => a.status === 'Interview Scheduled' || a.status === 'Offered').length}
+                </h4>
+              </div>
+              <div className="p-2 sm:p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500">
+                <BadgeCheck className="w-4 h-4 sm:w-5 sm:h-5" />
+              </div>
+            </div>
+          </div>
+
             <div className="flex items-center gap-2">
               <div className="relative">
                 <Search className="w-3.5 h-3.5 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseService } from "@/services/supabaseService";
 import { emailService } from "@/services/emailService";
+import { internshipService } from "@/services/internshipService";
 import { KnowledgeHubManager } from "@/components/admin/KnowledgeHubManager";
 import SeoGeoCommandCenter from "@/components/admin/SeoGeoCommandCenter";
 import { motion, AnimatePresence } from "framer-motion";
@@ -98,6 +99,7 @@ const AdminPortal = () => {
     const [sendingMsg, setSendingMsg] = useState(false);
     const [viewMode, setViewMode] = useState<'submissions' | 'users' | 'agency' | 'knowledge' | 'seo-geo' | 'clients' | 'internships'>('submissions');
     const [adminEmail, setAdminEmail] = useState('');
+    const [registeredInternsCount, setRegisteredInternsCount] = useState<number>(0);
 
     // ── Agency Clients Management ────────────────────────────────────────────
     const [agencyClients, setAgencyClients] = useState<any[]>([]);
@@ -437,6 +439,33 @@ const AdminPortal = () => {
                 }
             });
 
+            // 4. Add Career Applications (Intern Registrations)
+            try {
+                const careerApps = await internshipService.getApplications();
+                setRegisteredInternsCount(careerApps.length);
+                (careerApps || []).forEach((c: any) => {
+                    if (!c.email) return;
+                    const emailKey = c.email.toLowerCase().trim();
+                    if (!userMap.has(emailKey)) {
+                        userMap.set(emailKey, {
+                            id: c.id,
+                            name: c.full_name || c.email.split('@')[0],
+                            email: c.email,
+                            organization: c.college || null,
+                            designation: c.role || 'Intern Applicant',
+                            inquiry_type: 'Career Registration',
+                            status: c.status || 'Applied',
+                            role: 'intern',
+                            lastLogin: null,
+                            confirmed: true,
+                            created_at: c.created_at
+                        });
+                    }
+                });
+            } catch (careerErr) {
+                console.warn('[AdminPortal] Career applications could not be merged into users list:', careerErr);
+            }
+
             const merged = Array.from(userMap.values())
                 .filter(u => u.role !== 'admin' && u.email?.toLowerCase() !== 'ssaivaraprasad51@gmail.com')
                 .sort(
@@ -578,12 +607,23 @@ const AdminPortal = () => {
 
             setAdminEmail(normalizedUserEmail);
             fetchSubmissions();
+            fetchAllUsers();
+            fetchCareerApplicationsCount();
         };
 
         checkAdmin();
     }, [navigate]);
 
     const [fetchError, setFetchError] = useState<string | null>(null);
+
+    const fetchCareerApplicationsCount = async () => {
+        try {
+            const apps = await internshipService.getApplications();
+            setRegisteredInternsCount(apps.length);
+        } catch (e) {
+            console.warn('[AdminPortal] Could not fetch career applications count', e);
+        }
+    };
 
     const fetchSubmissions = async () => {
         setLoading(true);
@@ -1087,16 +1127,22 @@ const AdminPortal = () => {
                         <p className="text-muted-foreground">Monitoring deep-tech innovations and inquiries.</p>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 flex-wrap">
                         <button
                             onClick={() => setViewMode('submissions')}
-                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
+                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
                                 viewMode === 'submissions'
                                     ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
                                     : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
                             }`}
                         >
-                            Submissions
+                            <FileText className="w-4 h-4" />
+                            <span>Submissions</span>
+                            {submissions.length > 0 && (
+                                <span className="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-white/20 text-inherit">
+                                    {submissions.length}
+                                </span>
+                            )}
                         </button>
                         <button
                             onClick={() => setViewMode('clients')}
@@ -1116,7 +1162,13 @@ const AdminPortal = () => {
                                     : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
                             }`}
                         >
-                            <Users className="w-4 h-4" /> All Users
+                            <Users className="w-4 h-4" />
+                            <span>All Users</span>
+                            {allUsers.length > 0 && (
+                                <span className="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400">
+                                    {allUsers.length}
+                                </span>
+                            )}
                         </button>
                         <button
                             onClick={() => { setViewMode('agency'); fetchAgencyClients(); }}
@@ -1126,7 +1178,13 @@ const AdminPortal = () => {
                                     : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
                             }`}
                         >
-                            <Building2 className="w-4 h-4" /> Agency Clients
+                            <Building2 className="w-4 h-4" />
+                            <span>Agency Clients</span>
+                            {agencyClients.length > 0 && (
+                                <span className="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300">
+                                    {agencyClients.length}
+                                </span>
+                            )}
                         </button>
                         <button
                             onClick={() => setViewMode('internships')}
@@ -1136,7 +1194,13 @@ const AdminPortal = () => {
                                     : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
                             }`}
                         >
-                            <GraduationCap className="w-4 h-4 text-primary" /> Internships & Whitelist
+                            <GraduationCap className="w-4 h-4 text-primary" />
+                            <span>Internships & Whitelist</span>
+                            {registeredInternsCount > 0 && (
+                                <span className="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400">
+                                    {registeredInternsCount}
+                                </span>
+                            )}
                         </button>
 
                         {(viewMode === 'submissions' || viewMode === 'agency') && (
@@ -1171,25 +1235,28 @@ const AdminPortal = () => {
                 {viewMode === 'submissions' ? (
                     <>
                         {/* Stats Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-12">
                     {[
-                        { label: "Total Submissions", value: submissions.length, icon: <Users className="w-6 h-6 text-primary" /> },
-                        { label: "Problems", value: submissions.filter(s => s.inquiry_type === "problem").length, icon: <Target className="w-6 h-6 text-red-400" /> },
-                        { label: "Client Projects", value: submissions.filter(s => s.inquiry_type === "requirement").length, icon: <ClipboardList className="w-6 h-6 text-blue-400" /> },
-                        { label: "Investors", value: submissions.filter(s => s.inquiry_type === "investor").length, icon: <Handshake className="w-6 h-6 text-green-400" /> },
+                        { label: "Total Submissions", value: submissions.length, icon: <FileText className="w-6 h-6 text-primary" />, desc: "Inquiries & Leads" },
+                        { label: "Registered Users", value: allUsers.length, icon: <Users className="w-6 h-6 text-emerald-400" />, desc: "Active Accounts" },
+                        { label: "Intern Registered", value: registeredInternsCount, icon: <GraduationCap className="w-6 h-6 text-rose-400" />, desc: "Career Applicants" },
+                        { label: "Client Projects", value: submissions.filter(s => s.inquiry_type === "requirement").length, icon: <ClipboardList className="w-6 h-6 text-blue-400" />, desc: "Scoped Work" },
+                        { label: "Problems", value: submissions.filter(s => s.inquiry_type === "problem").length, icon: <Target className="w-6 h-6 text-amber-400" />, desc: "Troubleshoot" },
+                        { label: "Investors", value: submissions.filter(s => s.inquiry_type === "investor").length, icon: <Handshake className="w-6 h-6 text-purple-400" />, desc: "Capital Partners" },
                     ].map((stat, i) => (
                         <motion.div
                             key={i}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.1 }}
-                            className="glass-card p-6 electric-border flex items-center justify-between"
+                            transition={{ delay: i * 0.05 }}
+                            className="glass-card p-5 electric-border flex items-center justify-between"
                         >
                             <div className="text-left">
-                                <p className="text-sm text-muted-foreground mb-1 uppercase tracking-wider">{stat.label}</p>
-                                <h3 className="text-3xl font-bold">{stat.value}</h3>
+                                <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wider font-semibold">{stat.label}</p>
+                                <h3 className="text-2xl lg:text-3xl font-bold text-foreground">{stat.value}</h3>
+                                {stat.desc && <span className="text-[10px] text-muted-foreground/70">{stat.desc}</span>}
                             </div>
-                            <div className="p-3 rounded-xl bg-muted">
+                            <div className="p-2.5 rounded-xl bg-muted/80 shrink-0">
                                 {stat.icon}
                             </div>
                         </motion.div>
@@ -1515,6 +1582,7 @@ const AdminPortal = () => {
                                 { id: 'client', label: 'Clients', count: allUsers.filter(u => u.role === 'client').length, color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
                                 { id: 'partner', label: 'Partners', count: allUsers.filter(u => u.role === 'partner').length, color: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
                                 { id: 'investor', label: 'Investors', count: allUsers.filter(u => u.role === 'investor').length, color: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
+                                { id: 'intern', label: 'Interns / Applicants', count: allUsers.filter(u => u.role === 'intern').length, color: 'bg-rose-500/10 text-rose-400 border-rose-500/20' },
                                 { id: 'employee', label: 'Employees / Team', count: allUsers.filter(u => u.role === 'employee').length, color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
                             ].map(pill => (
                                 <button
