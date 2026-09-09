@@ -7,6 +7,7 @@ import { Eye, EyeOff, ArrowLeft, Mail, Lock, User, Loader2, Briefcase, TrendingU
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
 import { emailService } from "@/services/emailService";
+import { CloudflareTurnstile } from "@/components/common/CloudflareTurnstile";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -15,6 +16,7 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [needsRoleSelection, setNeedsRoleSelection] = useState(false);
 
   const navigate = useNavigate();
@@ -75,8 +77,8 @@ const Auth = () => {
       toast.error("Please enter your email address first.");
       return;
     }
-    setLoading(true);
     try {
+      setLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: window.location.origin + "/auth?reset=true",
       });
@@ -91,6 +93,12 @@ const Auth = () => {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!turnstileToken) {
+      toast.error("Please complete the Cloudflare security verification to continue.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -380,10 +388,18 @@ const Auth = () => {
               )}
             </div>
 
+            {/* Cloudflare Turnstile Bot Protection */}
+            <CloudflareTurnstile
+              action={isLogin ? "user_login" : "user_signup"}
+              onVerify={setTurnstileToken}
+              onExpire={() => setTurnstileToken(null)}
+              onError={() => setTurnstileToken(null)}
+            />
+
             <button
               type="submit"
-              disabled={loading}
-              className="w-full btn-premium py-3.5 mt-4 flex items-center justify-center gap-2"
+              disabled={loading || !turnstileToken}
+              className="w-full btn-premium py-3.5 mt-2 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />

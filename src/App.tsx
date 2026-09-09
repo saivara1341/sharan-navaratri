@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SiteIntro } from "@/components/SiteIntro";
 import { CookieConsentBanner } from "@/components/legal/CookieConsentBanner";
+import { SiteWideTurnstileProtection } from "@/components/common/SiteWideTurnstileProtection";
 
 const queryClient = new QueryClient();
 const Index = lazy(() => import("./pages/Index"));
@@ -167,67 +168,69 @@ const App = () => {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <ScrollToTop />
-            <AuthRedirectHandler />
-            <SiteIntro />
-            <CookieConsentBanner />
-            <Suspense fallback={<PageLoadingFallback />}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/vision" element={<Index />} />
-              <Route path="/services" element={<Index />} />
-              <Route path="/projects" element={<Index />} />
-              <Route path="/submit" element={<ProjectSubmitForm />} />
-              <Route path="/auth" element={<AuthPage />} />
-              <Route path="/portal" element={<PortalGateway />} />
-              <Route path="/portal/client" element={<ClientPortal />} />
-              <Route path="/portal/intern" element={<InternPortal />} />
-              <Route path="/portal/agency" element={<VMagneticMindsPortal />} />
-              <Route path="/agency-intake/:token" element={<AgencyClientIntake />} />
-              <Route path="/portal/v-magnetic-minds" element={<VMagneticMindsPortal />} />
-              <Route path="/portal/investor" element={<InvestorPortal />} />
-              <Route path="/portal/employee" element={<EmployeePortal />} />
-              <Route path="/careers" element={<Careers />} />
-              <Route path="/verify-certificate" element={<CertificateVerification />} />
-              <Route path="/project/nexus" element={<NexusLanding />} />
-              <Route path="/project/nilayam" element={<NilayamLanding />} />
-              <Route path="/project/archplan" element={<ArchPlanLanding />} />
-              <Route path="/project/letusknow" element={<LetUsKnowLanding />} />
-              <Route path="/project/wish-o" element={<WishOLanding />} />
-              <Route path="/admin-hq-nexus" element={<AdminPortal />} />
-              <Route path="/nexus/resource-hub" element={<ResourceHub />} />
-              <Route path="/nexus/market-research" element={<ResourceHub />} />
-              <Route path="/nexus/resume-builder" element={<ResumeBuilder />} />
-              <Route path="/nexus/startup-blueprint" element={<StartupBlueprint />} />
-              <Route path="/nexus/skills-analysis" element={<ResourceHub />} />
-              <Route path="/nexus/jobs" element={<ResourceHub />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/terms-and-conditions" element={<TermsOfService />} />
-              <Route path="/refund-cancellation-policy" element={<RefundCancellationPolicy />} />
-              <Route path="/shipping-delivery-policy" element={<ShippingDeliveryPolicy />} />
-              <Route path="/cookie-policy" element={<CookiePolicy />} />
-              <Route path="/data-rights" element={<DataRights />} />
-              <Route path="/grievance-redressal" element={<DataRights />} />
-              <Route path="/contact-information" element={<ContactInformation />} />
-              <Route path="/contact" element={<ContactInformation />} />
-              <Route path="/contact-us" element={<ContactInformation />} />
-              {/* SEO Pages */}
-              <Route path="/about" element={<About />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/services/business-automation" element={<BusinessAutomation />} />
-              <Route path="/services/website-development" element={<WebsiteDevelopment />} />
-              <Route path="/services/saas" element={<SaaSPlatforms />} />
-              <Route path="/services/erp" element={<ERPSolutions />} />
-              <Route path="/software-company-nizamabad" element={<SoftwareCompanyNizamabad />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            </Suspense>
-          </BrowserRouter>
+          <SiteWideTurnstileProtection>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <ScrollToTop />
+              <AuthRedirectHandler />
+              <SiteIntro />
+              <CookieConsentBanner />
+              <Suspense fallback={<PageLoadingFallback />}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/vision" element={<Index />} />
+                <Route path="/services" element={<Index />} />
+                <Route path="/projects" element={<Index />} />
+                <Route path="/submit" element={<ProjectSubmitForm />} />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="/portal" element={<PortalGateway />} />
+                <Route path="/portal/client" element={<ClientPortal />} />
+                <Route path="/portal/intern" element={<InternPortal />} />
+                <Route path="/portal/agency" element={<VMagneticMindsPortal />} />
+                <Route path="/agency-intake/:token" element={<AgencyClientIntake />} />
+                <Route path="/portal/v-magnetic-minds" element={<VMagneticMindsPortal />} />
+                <Route path="/portal/investor" element={<InvestorPortal />} />
+                <Route path="/portal/employee" element={<EmployeePortal />} />
+                <Route path="/careers" element={<Careers />} />
+                <Route path="/verify-certificate" element={<CertificateVerification />} />
+                <Route path="/project/nexus" element={<NexusLanding />} />
+                <Route path="/project/nilayam" element={<NilayamLanding />} />
+                <Route path="/project/archplan" element={<ArchPlanLanding />} />
+                <Route path="/project/letusknow" element={<LetUsKnowLanding />} />
+                <Route path="/project/wish-o" element={<WishOLanding />} />
+                <Route path="/admin-hq-nexus" element={<AdminPortal />} />
+                <Route path="/nexus/resource-hub" element={<ResourceHub />} />
+                <Route path="/nexus/market-research" element={<ResourceHub />} />
+                <Route path="/nexus/resume-builder" element={<ResumeBuilder />} />
+                <Route path="/nexus/startup-blueprint" element={<StartupBlueprint />} />
+                <Route path="/nexus/skills-analysis" element={<ResourceHub />} />
+                <Route path="/nexus/jobs" element={<ResourceHub />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="/terms-and-conditions" element={<TermsOfService />} />
+                <Route path="/refund-cancellation-policy" element={<RefundCancellationPolicy />} />
+                <Route path="/shipping-delivery-policy" element={<ShippingDeliveryPolicy />} />
+                <Route path="/cookie-policy" element={<CookiePolicy />} />
+                <Route path="/data-rights" element={<DataRights />} />
+                <Route path="/grievance-redressal" element={<DataRights />} />
+                <Route path="/contact-information" element={<ContactInformation />} />
+                <Route path="/contact" element={<ContactInformation />} />
+                <Route path="/contact-us" element={<ContactInformation />} />
+                {/* SEO Pages */}
+                <Route path="/about" element={<About />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/services/business-automation" element={<BusinessAutomation />} />
+                <Route path="/services/website-development" element={<WebsiteDevelopment />} />
+                <Route path="/services/saas" element={<SaaSPlatforms />} />
+                <Route path="/services/erp" element={<ERPSolutions />} />
+                <Route path="/software-company-nizamabad" element={<SoftwareCompanyNizamabad />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              </Suspense>
+            </BrowserRouter>
+          </SiteWideTurnstileProtection>
         </TooltipProvider>
       </QueryClientProvider>
     </HelmetProvider>
