@@ -467,16 +467,28 @@ const LetUsKnowLanding = () => {
                     <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-25 pointer-events-none" />
 
                     <div className="container mx-auto px-4 sm:px-6 relative z-10">
-                        {/* Top Back Navigation */}
-                        <motion.button
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            onClick={() => navigate('/')}
-                            className="inline-flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition-colors group mb-8 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/30"
-                        >
-                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                            <span>{t('letusknow_landing.hero.back', 'Back to Home')}</span>
-                        </motion.button>
+                        {/* Top Navigation */}
+                        <div className="flex items-center justify-between gap-4 mb-8">
+                            <motion.button
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                onClick={() => navigate('/')}
+                                className="inline-flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition-colors group px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/30"
+                            >
+                                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                                <span>{t('letusknow_landing.hero.back', 'Back to Home')}</span>
+                            </motion.button>
+
+                            <a
+                                href="https://letusknow.siddhidynamics.in/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 text-cyan-300 hover:text-white transition-colors group px-4 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 text-xs sm:text-sm font-semibold"
+                            >
+                                <span>letusknow.siddhidynamics.in</span>
+                                <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                        </div>
 
                         <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
                             {/* Left Column: Hero Copy & Value Proposition */}
@@ -515,17 +527,27 @@ const LetUsKnowLanding = () => {
 
                                 {/* Action Buttons */}
                                 <div className="flex flex-wrap gap-4 mb-10">
-                                    <button
-                                        onClick={() => setIsWaitlistOpen(true)}
+                                    <a
+                                        href="https://letusknow.siddhidynamics.in/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                         className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-bold text-base sm:text-lg rounded-xl shadow-[0_0_25px_rgba(6,182,212,0.4)] hover:shadow-[0_0_40px_rgba(6,182,212,0.6)] hover:from-cyan-400 hover:to-teal-400 transition-all flex items-center justify-center gap-2 transform active:scale-95"
                                     >
-                                        <MapPin className="w-5 h-5" />
+                                        <ExternalLink className="w-5 h-5" />
+                                        Launch Let Us Know
+                                    </a>
+
+                                    <button
+                                        onClick={() => setIsWaitlistOpen(true)}
+                                        className="px-7 py-4 bg-slate-900/80 hover:bg-slate-800 text-white font-semibold text-base sm:text-lg rounded-xl border border-slate-700 hover:border-cyan-500/50 transition-all flex items-center justify-center gap-2"
+                                    >
+                                        <MapPin className="w-5 h-5 text-cyan-400" />
                                         {t('letusknow_landing.hero.cta', 'Join Early Access Waitlist')}
                                     </button>
 
                                     <a
                                         href="#live-demo"
-                                        className="px-7 py-4 bg-slate-900/80 hover:bg-slate-800 text-white font-semibold text-base sm:text-lg rounded-xl border border-slate-700 hover:border-cyan-500/50 transition-all flex items-center justify-center gap-2"
+                                        className="px-6 py-4 bg-white/5 hover:bg-white/10 text-slate-200 font-semibold text-base sm:text-lg rounded-xl border border-white/10 hover:border-cyan-500/50 transition-all flex items-center justify-center gap-2"
                                     >
                                         <Bot className="w-5 h-5 text-cyan-400" />
                                         Test Live Simulator
@@ -1181,16 +1203,27 @@ const LetUsKnowLanding = () => {
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                            <a
+                                href="https://letusknow.siddhidynamics.in/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-cyan-500 via-teal-400 to-emerald-500 text-slate-950 font-extrabold text-lg sm:text-xl rounded-2xl shadow-[0_0_40px_rgba(6,182,212,0.4)] hover:shadow-[0_0_60px_rgba(6,182,212,0.6)] hover:scale-105 transition-all transform active:scale-95 flex items-center justify-center gap-2"
+                            >
+                                <ExternalLink className="w-5 h-5" />
+                                Launch Official Portal
+                            </a>
+
                             <button
                                 onClick={() => setIsWaitlistOpen(true)}
-                                className="w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-cyan-500 via-teal-400 to-emerald-500 text-slate-950 font-extrabold text-lg sm:text-xl rounded-2xl shadow-[0_0_40px_rgba(6,182,212,0.4)] hover:shadow-[0_0_60px_rgba(6,182,212,0.6)] hover:scale-105 transition-all transform active:scale-95"
+                                className="w-full sm:w-auto px-8 py-5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-lg rounded-2xl border border-slate-700 hover:border-cyan-500/50 transition-all flex items-center justify-center gap-2"
                             >
-                                Get Early Access Now
+                                <MapPin className="w-5 h-5 text-cyan-400" />
+                                Join Early Access Waitlist
                             </button>
 
                             <button
                                 onClick={() => navigate('/submit-problem')}
-                                className="w-full sm:w-auto px-8 py-5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-lg rounded-2xl border border-slate-700 hover:border-cyan-500/50 transition-all flex items-center justify-center gap-2"
+                                className="w-full sm:w-auto px-8 py-5 bg-white/5 hover:bg-white/10 text-slate-200 font-bold text-lg rounded-2xl border border-white/10 hover:border-cyan-500/50 transition-all flex items-center justify-center gap-2"
                             >
                                 <AlertTriangle className="w-5 h-5 text-amber-400" />
                                 Submit Civic Problem

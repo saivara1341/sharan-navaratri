@@ -41,6 +41,7 @@ Canonical website: https://siddhidynamics.in/
 - Nilayam Landing: https://siddhidynamics.in/projects/nilayam
 - ArchPlan Landing: https://siddhidynamics.in/projects/archplan
 - Nexus Careers Landing: https://siddhidynamics.in/projects/nexus
+- LetUsKnow Portal: https://letusknow.siddhidynamics.in/
 - LetUsKnow Landing: https://siddhidynamics.in/projects/letusknow
 - Submit a requirement: https://siddhidynamics.in/submit
 

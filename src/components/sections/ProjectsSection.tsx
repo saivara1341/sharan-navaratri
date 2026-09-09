@@ -548,7 +548,7 @@ const ProjectDetailsModal = ({
     indhur_farms: { url: 'https://saivara1341.github.io/indhur-farms/', displayUrl: 'indhurfarms.com', isExternal: true },
     print_flow: { url: 'https://printflows.in/', displayUrl: 'printflows.in', isExternal: true },
     wish0: { url: '/project/wish-o', displayUrl: 'wish0.siddhidynamics.in', isExternal: false },
-    letusknow: { url: '/project/letusknow', displayUrl: 'letusknow.siddhidynamics.in', isExternal: false },
+    letusknow: { url: 'https://letusknow.siddhidynamics.in/', displayUrl: 'letusknow.siddhidynamics.in', isExternal: true },
     dogin: { url: 'https://dogin-chi.vercel.app/', displayUrl: 'dogin-chi.vercel.app', isExternal: true },
   };
 
@@ -956,9 +956,10 @@ export const ProjectsSection = () => {
         : ["GPS-Based Location", "Political Representatives Info", "Government Services Guide", "Department Directory", "Development Projects", "Tourism Promotion"],
       gradient: 'from-cyan-500 to-blue-600',
       accentColor: 'accent',
-      stageKey: 'phase2',
-      statusKey: 'lab',
-      phase: 2,
+      url: 'https://letusknow.siddhidynamics.in/',
+      stageKey: 'phase5',
+      statusKey: 'production',
+      phase: 5,
     },
     {
       id: 'dogin',

@@ -411,7 +411,24 @@ export const internshipService = {
     if (local.some(a => a.email.toLowerCase() === cleanEmail)) return { isDuplicate: true, field: 'email' };
     if (local.some(a => a.phone.replace(/\D/g, '').slice(-10) === cleanPhone)) return { isDuplicate: true, field: 'phone' };
 
-    // Cross-check Supabase
+    // 1. Check Supabase career_applications table
+    try {
+      const { data: directData } = await supabase
+        .from('career_applications')
+        .select('email, phone');
+
+      if (directData && directData.length > 0) {
+        for (const row of directData) {
+          if ((row.email || '').toLowerCase() === cleanEmail) return { isDuplicate: true, field: 'email' };
+          const storedPhone = (row.phone || '').replace(/\D/g, '').slice(-10);
+          if (storedPhone && storedPhone === cleanPhone) return { isDuplicate: true, field: 'phone' };
+        }
+      }
+    } catch {
+      // Table may still be syncing
+    }
+
+    // 2. Cross-check legacy contact_submissions
     try {
       const { data } = await supabase
         .from('contact_submissions')
@@ -447,7 +464,31 @@ export const internshipService = {
     const current = getLocal<InternshipApplication[]>(STORAGE_KEYS.APPLICATIONS, []);
     setLocal(STORAGE_KEYS.APPLICATIONS, [newApp, ...current]);
 
-    // Persist into Supabase contact_submissions table with inquiry_type: 'internship_application'
+    // 1. Primary: Persist into dedicated career_applications table in Supabase
+    try {
+      const { error: directErr } = await supabase.from('career_applications').insert([{
+        full_name: newApp.full_name,
+        email: newApp.email.toLowerCase().trim(),
+        phone: newApp.phone,
+        college: newApp.college,
+        degree: newApp.degree,
+        graduation_year: newApp.graduation_year || '2026',
+        role: newApp.role,
+        duration: newApp.duration,
+        linkedin: newApp.linkedin || null,
+        portfolio_or_social: newApp.portfolio_or_social || null,
+        statement_of_purpose: newApp.statement_of_purpose,
+        resume_url: newApp.resume_url || null,
+        status: 'Received',
+      }]);
+      if (directErr) {
+        console.warn('Could not insert to career_applications (table may be pending migration):', directErr);
+      }
+    } catch (err) {
+      console.warn('career_applications insert error:', err);
+    }
+
+    // 2. Secondary fallback: Also mirror into contact_submissions table
     try {
       await supabase.from('contact_submissions').insert([{
         name: newApp.full_name,
@@ -470,7 +511,47 @@ export const internshipService = {
   },
 
   async getApplications(): Promise<InternshipApplication[]> {
-    // Try to load from Supabase contact_submissions where inquiry_type='internship_application'
+    // 1. First attempt to load from dedicated career_applications table
+    try {
+      const { data: directData, error: directErr } = await supabase
+        .from('career_applications')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!directErr && directData && directData.length > 0) {
+        const directMapped: InternshipApplication[] = directData.map((row: any) => ({
+          id: row.id,
+          created_at: row.created_at || new Date().toISOString(),
+          full_name: row.full_name,
+          email: row.email,
+          phone: row.phone || '',
+          college: row.college || '',
+          degree: row.degree || 'Other',
+          graduation_year: row.graduation_year || '2026',
+          role: row.role as any,
+          duration: row.duration as any,
+          linkedin: row.linkedin || '',
+          portfolio_or_social: row.portfolio_or_social || '',
+          statement_of_purpose: row.statement_of_purpose || '',
+          resume_url: row.resume_url || '',
+          status: (row.status || 'Received') as any,
+          interview_details: row.interview_details || undefined,
+        }));
+
+        const local = getLocal<InternshipApplication[]>(STORAGE_KEYS.APPLICATIONS, []);
+        const combined = [...directMapped];
+        for (const loc of local) {
+          if (!combined.some(c => c.email.toLowerCase() === loc.email.toLowerCase() && c.role === loc.role)) {
+            combined.push(loc);
+          }
+        }
+        return combined;
+      }
+    } catch (e) {
+      console.warn('Direct career_applications load failed, falling back:', e);
+    }
+
+    // 2. Fallback to contact_submissions where inquiry_type='internship_application'
     try {
       const { data, error } = await supabase
         .from('contact_submissions')
@@ -525,11 +606,21 @@ export const internshipService = {
     const updated = list.map(item => item.id === id ? { ...item, status, interview_details: interviewDetails || item.interview_details } : item);
     setLocal(STORAGE_KEYS.APPLICATIONS, updated);
 
-    // If scheduled, also optionally update supabase
+    // Update career_applications
+    try {
+      await supabase.from('career_applications').update({
+        status,
+        ...(interviewDetails ? { interview_details: interviewDetails } : {})
+      }).eq('id', id);
+    } catch (err) {
+      console.warn('Error updating status in career_applications:', err);
+    }
+
+    // Also update legacy contact_submissions
     try {
       await supabase.from('contact_submissions').update({ status }).eq('id', id);
     } catch (err) {
-      console.warn('Error updating status in DB:', err);
+      console.warn('Error updating status in contact_submissions:', err);
     }
     return updated;
   },
