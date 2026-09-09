@@ -801,64 +801,33 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     {/* Subtle glow accent */}
                     <div className="absolute -right-20 -top-20 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/20 transition-all" />
 
-                    {/* ────── Mobile View (Clean, Modern, 2-in-a-Row) ────── */}
-                    <div className="sm:hidden flex flex-col justify-between h-full">
+                    {/* ────── Mobile View (Only Role, Remote, Apply button) ────── */}
+                    <div className="sm:hidden flex flex-col justify-between h-full space-y-3">
                       <div>
-                        {/* Top Row: Category & Remote Pill */}
-                        <div className="flex items-center justify-between gap-1 mb-2">
-                          <span className="text-[10px] font-black uppercase tracking-wider text-primary truncate max-w-[85px]">
-                            {role.category === 'Business Development' ? 'Business Dev' : role.category === 'Digital Marketing' ? 'Digital Mktg' : role.category}
-                          </span>
-                          <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30 shrink-0">
+                        {/* Remote Badge */}
+                        <div className="mb-2">
+                          <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30 inline-flex items-center">
                             Remote
                           </span>
                         </div>
 
-                        {/* Title */}
-                        <h3 className="text-[13px] font-black text-foreground tracking-tight leading-snug line-clamp-2 min-h-[34px] group-hover:text-primary transition-colors">
+                        {/* Role Title */}
+                        <h3 className="text-sm font-black text-foreground tracking-tight leading-snug">
                           {role.title}
                         </h3>
-
-                        {/* Target Audience */}
-                        <div className="text-[10px] text-muted-foreground font-semibold truncate mt-1 flex items-center gap-1">
-                          <GraduationCap className="w-3 h-3 text-primary shrink-0" />
-                          <span className="truncate">{role.targetAudience.split('/')[0].trim()}</span>
-                        </div>
-
-                        {/* Highlights Spec Box */}
-                        <div className="my-2.5 p-2 rounded-xl bg-muted/40 dark:bg-muted/20 border border-border/70 space-y-1 text-[9.5px]">
-                          <div className="flex items-center gap-1 font-bold text-amber-600 dark:text-amber-400">
-                            <AlertCircle className="w-3 h-3 shrink-0" />
-                            <span>Unpaid Internship</span>
-                          </div>
-                          <div className="flex items-center gap-1 font-bold text-emerald-600 dark:text-emerald-400">
-                            <Award className="w-3 h-3 shrink-0" />
-                            <span>Certificate on Completion</span>
-                          </div>
-                        </div>
                       </div>
 
-                      {/* Mobile Actions */}
-                      <div className="pt-2 border-t border-border/70 space-y-1.5">
+                      {/* Apply Button */}
+                      <div className="pt-2 border-t border-border/60">
                         <button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleOpenApply(role);
                           }}
-                          className="w-full py-2 px-2 rounded-xl bg-primary text-primary-foreground font-extrabold text-[10px] tracking-wider uppercase flex items-center justify-center gap-1 shadow-md hover:opacity-95 cursor-pointer"
+                          className="w-full py-2.5 px-3 rounded-xl bg-primary text-primary-foreground font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-1.5 shadow-md hover:opacity-95 cursor-pointer"
                         >
-                          Apply <ArrowRight className="w-3 h-3" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedJdModal(role);
-                          }}
-                          className="w-full py-1.5 px-2 rounded-lg bg-secondary/80 hover:bg-secondary border border-border text-[9.5px] font-bold text-foreground flex items-center justify-center gap-1 cursor-pointer transition-colors"
-                        >
-                          <FileText className="w-3 h-3 text-primary" /> View Full JD
+                          Apply <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>

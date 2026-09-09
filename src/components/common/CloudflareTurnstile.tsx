@@ -167,56 +167,32 @@ export const CloudflareTurnstile: React.FC<CloudflareTurnstileProps> = ({
   };
 
   return (
-    <div className={`cloudflare-turnstile-wrapper rounded-xl border border-border/80 bg-muted/20 p-3 sm:p-4 text-xs ${className}`}>
-      <div className="flex items-center justify-between gap-2 mb-2">
-        <div className="flex items-center gap-1.5 font-bold text-foreground">
-          {status === 'verified' ? (
-            <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
-          ) : status === 'error' || status === 'expired' ? (
-            <ShieldAlert className="w-4 h-4 text-rose-500 shrink-0" />
-          ) : (
-            <Loader2 className="w-4 h-4 text-primary animate-spin shrink-0" />
-          )}
-          <span>Bot Protection & Verification</span>
-        </div>
-
-        <span className="text-[10px] text-muted-foreground font-semibold flex items-center gap-1">
-          Powered by <strong className="text-foreground">Cloudflare Turnstile</strong>
-        </span>
-      </div>
-
-      {/* Cloudflare Turnstile container */}
-      <div className="flex justify-center min-h-[65px] items-center my-1">
+    <div className={`cloudflare-turnstile-wrapper flex flex-col items-center justify-center my-1 ${className}`}>
+      {/* Cloudflare Turnstile native container */}
+      <div className="flex justify-center min-h-[65px] items-center">
         <div ref={containerRef} className="w-full flex justify-center" />
       </div>
 
-      {/* Status banner */}
-      {status === 'verified' && (
-        <div className="mt-2 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center justify-center gap-1">
-          <ShieldCheck className="w-3.5 h-3.5" /> Human verification verified successfully
-        </div>
-      )}
-
       {status === 'expired' && (
-        <div className="mt-2 text-[11px] font-semibold text-amber-600 dark:text-amber-400 flex items-center justify-between">
+        <div className="mt-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-2">
           <span>Security token expired.</span>
           <button
             type="button"
             onClick={handleRetry}
             className="text-primary hover:underline font-bold cursor-pointer"
           >
-            Refresh challenge
+            Retry
           </button>
         </div>
       )}
 
       {status === 'error' && (
-        <div className="mt-2 text-[11px] font-semibold text-rose-600 dark:text-rose-400 flex items-center justify-between">
+        <div className="mt-1 text-[11px] font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-2">
           <span>{errorMessage || 'Verification error.'}</span>
           <button
             type="button"
             onClick={handleRetry}
-            className="text-primary hover:underline font-bold cursor-pointer ml-2"
+            className="text-primary hover:underline font-bold cursor-pointer"
           >
             Retry
           </button>
