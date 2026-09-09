@@ -777,7 +777,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
 
           {/* Role Cards Grid or Stay Tuned State */}
           {filteredRoles.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-8">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-6 lg:gap-8">
               {filteredRoles.map((role, idx) => {
                 const EmpI = empIcon(role.employmentType);
                 return (
@@ -786,91 +786,94 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    className="group relative rounded-3xl border border-border/80 bg-card text-card-foreground shadow-xl hover:border-primary/50 transition-all duration-300 flex flex-col justify-between min-w-0 overflow-hidden p-5 sm:p-8"
+                    className="group relative rounded-2xl sm:rounded-3xl border border-border/80 bg-card text-card-foreground shadow-xl hover:border-primary/50 transition-all duration-300 flex flex-col justify-between min-w-0 overflow-hidden p-3 sm:p-6 lg:p-8"
                   >
                     {/* Subtle glow accent */}
                     <div className="absolute -right-20 -top-20 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/20 transition-all" />
 
                     <div>
                       {/* Top Badges */}
-                      <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/25">
+                      <div className="flex items-center justify-between gap-1.5 sm:gap-3 mb-2.5 sm:mb-4 flex-wrap">
+                        <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+                          <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wider px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-primary/10 text-primary border border-primary/25">
                             {role.category}
                           </span>
-                          <span className={`text-xs font-bold px-2.5 py-1 rounded-full border flex items-center gap-1 ${empColor(role.employmentType)}`}>
-                            <EmpI className="w-3 h-3" /> {role.employmentType}
+                          <span className={`text-[9px] sm:text-xs font-bold px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full border flex items-center gap-0.5 sm:gap-1 ${empColor(role.employmentType)}`}>
+                            <EmpI className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> {role.employmentType}
                           </span>
                         </div>
-                        <span className="text-xs text-foreground/80 dark:text-muted-foreground font-semibold flex items-center gap-1.5">
-                          <GraduationCap className="w-3.5 h-3.5 text-primary shrink-0" /> {role.targetAudience}
+                        <span className="text-[9px] sm:text-xs text-foreground/80 dark:text-muted-foreground font-semibold flex items-center gap-1">
+                          <GraduationCap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary shrink-0" />
+                          <span className="line-clamp-1">{role.targetAudience}</span>
                         </span>
                       </div>
 
-                      <h3 className="text-2xl md:text-3xl font-black text-foreground mb-3 group-hover:text-primary transition-colors tracking-tight">
+                      <h3 className="text-base sm:text-2xl md:text-3xl font-black text-foreground mb-1.5 sm:mb-3 group-hover:text-primary transition-colors tracking-tight leading-snug">
                         {role.title}
                       </h3>
-                      <p className="text-xs sm:text-sm font-medium text-foreground/80 dark:text-muted-foreground mb-4 sm:mb-5 leading-relaxed">
+                      <p className="text-[11px] sm:text-sm font-medium text-foreground/80 dark:text-muted-foreground mb-3 sm:mb-5 leading-snug sm:leading-relaxed line-clamp-3 sm:line-clamp-none">
                         {role.tagline}
                       </p>
 
                       {/* Transparent Policy Pill Badges */}
-                      <div className="flex flex-wrap gap-2.5 mb-6">
-                        <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-amber-500/15 text-amber-900 dark:text-amber-200 border border-amber-500/30 flex items-center gap-1.5 shadow-sm">
-                          <AlertCircle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" /> Unpaid Internship
+                      <div className="flex flex-wrap gap-1.5 sm:gap-2.5 mb-3 sm:mb-6">
+                        <span className="text-[9px] sm:text-xs font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-amber-500/15 text-amber-900 dark:text-amber-200 border border-amber-500/30 flex items-center gap-1 shadow-sm">
+                          <AlertCircle className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-amber-600 dark:text-amber-400 shrink-0" /> Unpaid Internship
                         </span>
-                        <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 border border-emerald-500/30 flex items-center gap-1.5 shadow-sm">
-                          <Award className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" /> Certificate on Completion
+                        <span className="text-[9px] sm:text-xs font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 border border-emerald-500/30 flex items-center gap-1 shadow-sm">
+                          <Award className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" /> Certificate on Completion
                         </span>
-                        <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-purple-500/15 text-purple-900 dark:text-purple-200 border border-purple-500/30 flex items-center gap-1.5 shadow-sm">
-                          <ShieldCheck className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0" /> LOR upon 2 Yrs Working
+                        <span className="text-[9px] sm:text-xs font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-purple-500/15 text-purple-900 dark:text-purple-200 border border-purple-500/30 flex items-center gap-1 shadow-sm">
+                          <ShieldCheck className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-purple-600 dark:text-purple-400 shrink-0" /> LOR upon 2 Yrs Working
                         </span>
                       </div>
 
                       {/* Responsibilities preview */}
-                      <div className="space-y-2 sm:space-y-2.5 mb-5 sm:mb-6 pt-4 border-t border-border/70">
-                        <div className="text-xs font-black text-foreground uppercase tracking-wider flex items-center gap-1.5">
-                          <Target className="w-3.5 h-3.5 text-primary" /> Key Responsibilities & Workflow
+                      <div className="space-y-1.5 sm:space-y-2.5 mb-3 sm:mb-6 pt-2.5 sm:pt-4 border-t border-border/70">
+                        <div className="text-[10px] sm:text-xs font-black text-foreground uppercase tracking-wider flex items-center gap-1">
+                          <Target className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" /> Key Responsibilities & Workflow
                         </div>
                         {role.keyResponsibilities.slice(0, 3).map((resp, i) => (
-                          <div key={i} className="flex items-start gap-2.5 text-xs text-foreground/85 dark:text-muted-foreground font-medium leading-relaxed">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                          <div key={i} className="flex items-start gap-1.5 sm:gap-2.5 text-[10px] sm:text-xs text-foreground/85 dark:text-muted-foreground font-medium leading-snug sm:leading-relaxed">
+                            <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                             <span>{resp}</span>
                           </div>
                         ))}
                       </div>
 
                       {/* Platform Workflow summary */}
-                      <div className="p-3 sm:p-4 rounded-2xl bg-muted/60 dark:bg-muted/30 border border-border/80 text-[11px] sm:text-xs text-foreground/85 dark:text-muted-foreground space-y-1 mb-5 sm:mb-6 leading-relaxed">
+                      <div className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/60 dark:bg-muted/30 border border-border/80 text-[10px] sm:text-xs text-foreground/85 dark:text-muted-foreground space-y-1 mb-3 sm:mb-6 leading-snug sm:leading-relaxed">
                         <span className="text-foreground font-bold block">Platform Task Protocol:</span>
                         Tasks assigned with stipulated timelines. Extensions and client data requests submitted via portal and approved by CEO.
                       </div>
                     </div>
 
                     {/* Card Actions */}
-                    <div className="pt-5 sm:pt-6 border-t border-border/70 grid grid-cols-[1fr_auto] sm:flex sm:flex-wrap items-center gap-3">
+                    <div className="pt-3 sm:pt-6 border-t border-border/70 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 sm:gap-3">
                       <button
                         onClick={() => handleOpenApply(role)}
-                        className="col-span-2 sm:flex-1 py-3 px-5 rounded-2xl bg-primary text-primary-foreground font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 hover:opacity-95 hover:shadow-lg transition-all cursor-pointer"
+                        className="w-full sm:flex-1 py-2 sm:py-3 px-2 sm:px-5 rounded-xl sm:rounded-2xl bg-primary text-primary-foreground font-extrabold text-[10px] sm:text-xs tracking-wider uppercase flex items-center justify-center gap-1.5 sm:gap-2 hover:opacity-95 hover:shadow-lg transition-all cursor-pointer"
                       >
-                        Apply for Role <ArrowRight className="w-4 h-4" />
+                        Apply for Role <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
 
-                      <button
-                        onClick={() => setSelectedJdModal(role)}
-                        className="py-3 px-4 rounded-2xl bg-secondary hover:bg-secondary/80 border border-border text-xs font-bold text-foreground transition-all flex items-center gap-2 cursor-pointer shadow-sm"
-                      >
-                        <FileText className="w-4 h-4 text-primary" /> View Full JD
-                      </button>
+                      <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+                        <button
+                          onClick={() => setSelectedJdModal(role)}
+                          className="flex-1 sm:flex-initial py-2 sm:py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl bg-secondary hover:bg-secondary/80 border border-border text-[10px] sm:text-xs font-bold text-foreground transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                        >
+                          <FileText className="w-3.5 h-3.5 text-primary" /> <span>View Full JD</span>
+                        </button>
 
-                      <button
-                        onClick={() => handleDownloadJd(role)}
-                        title="Download job description"
-                        aria-label="Download job description"
-                        className="py-3 px-3.5 rounded-2xl bg-secondary hover:bg-secondary/80 border border-border text-xs font-bold text-foreground/80 hover:text-foreground transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
-                      >
-                        <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                      </button>
+                        <button
+                          onClick={() => handleDownloadJd(role)}
+                          title="Download job description"
+                          aria-label="Download job description"
+                          className="py-2 sm:py-3 px-2.5 sm:px-3.5 rounded-xl sm:rounded-2xl bg-secondary hover:bg-secondary/80 border border-border text-[10px] sm:text-xs font-bold text-foreground/80 hover:text-foreground transition-all flex items-center justify-center gap-1 cursor-pointer shadow-sm shrink-0"
+                        >
+                          <Download className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 );
