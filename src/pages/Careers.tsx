@@ -216,6 +216,13 @@ function empColor(t: EmploymentType) {
   return 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/30';
 }
 
+function getCategoryIcon(cat: RoleCategory) {
+  if (cat === 'Business Development') return TrendingUp;
+  if (cat === 'Digital Marketing') return Rocket;
+  if (cat === 'Software Engineering') return Layers;
+  return Building2;
+}
+
 // ─── Stay Tuned Dynamic Animated Illustration Component ─────────────────────
 function StayTunedIllustration() {
   return (
@@ -789,6 +796,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
             <div className="grid grid-cols-2 gap-2.5 sm:gap-6 lg:gap-8">
               {filteredRoles.map((role, idx) => {
                 const EmpI = empIcon(role.employmentType);
+                const CatIcon = getCategoryIcon(role.category);
                 return (
                   <motion.div
                     key={role.id}
@@ -796,52 +804,70 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
                     onClick={() => setSelectedJdModal(role)}
-                    className="group relative rounded-2xl sm:rounded-3xl border border-border/80 bg-card text-card-foreground shadow-xl hover:border-primary/50 transition-all duration-300 flex flex-col justify-between min-w-0 overflow-hidden p-3 sm:p-6 lg:p-8 cursor-pointer sm:cursor-default"
+                    className="group relative rounded-2xl sm:rounded-3xl border border-border/80 bg-gradient-to-b from-card via-card to-card/95 text-card-foreground shadow-xl hover:border-primary/50 transition-all duration-300 flex flex-col justify-between min-w-0 overflow-hidden p-3.5 sm:p-6 lg:p-8 cursor-pointer sm:cursor-default min-h-[320px] sm:min-h-0"
                   >
+                    {/* Top Accent Gradient Bar */}
+                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary via-purple-500 to-rose-500 pointer-events-none" />
+
                     {/* Subtle glow accent */}
-                    <div className="absolute -right-20 -top-20 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/20 transition-all" />
+                    <div className="absolute -right-16 -top-16 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/20 transition-all" />
 
                     {/* ────── Mobile View (Role, Remote, 3 Policy Badges, Apply button) ────── */}
-                    <div className="sm:hidden flex flex-col justify-between h-full space-y-3">
+                    <div className="sm:hidden flex flex-col justify-between h-full pt-1">
                       <div>
-                        {/* Remote Badge */}
-                        <div className="mb-2">
-                          <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30 inline-flex items-center">
+                        {/* Top Row: Remote Badge + Category Icon */}
+                        <div className="flex items-center justify-between gap-2 mb-2.5">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30 shadow-xs">
+                            <span className="relative flex h-2 w-2">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                            </span>
                             Remote
                           </span>
+
+                          <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0 shadow-xs">
+                            <CatIcon className="w-3.5 h-3.5" />
+                          </div>
                         </div>
 
                         {/* Role Title */}
-                        <h3 className="text-sm font-black text-foreground tracking-tight leading-snug mb-2">
+                        <h3 className="text-[15px] font-black text-foreground tracking-tight leading-snug group-hover:text-primary transition-colors line-clamp-2 mb-3">
                           {role.title}
                         </h3>
 
                         {/* The 3 Policy Badges */}
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          <span className="text-[8.5px] font-bold px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-900 dark:text-amber-300 border border-amber-500/30 flex items-center gap-0.5 shadow-xs">
-                            <AlertCircle className="w-2.5 h-2.5 text-amber-600 dark:text-amber-400 shrink-0" /> Unpaid
-                          </span>
-                          <span className="text-[8.5px] font-bold px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-900 dark:text-emerald-300 border border-emerald-500/30 flex items-center gap-0.5 shadow-xs">
-                            <Award className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400 shrink-0" /> Certificate
-                          </span>
-                          <span className="text-[8.5px] font-bold px-1.5 py-0.5 rounded-md bg-purple-500/15 text-purple-900 dark:text-purple-300 border border-purple-500/30 flex items-center gap-0.5 shadow-xs">
-                            <ShieldCheck className="w-2.5 h-2.5 text-purple-600 dark:text-purple-400 shrink-0" /> LOR (2 Yrs)
-                          </span>
+                        <div className="flex flex-col gap-1.5 mb-3">
+                          <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-amber-500/15 text-amber-900 dark:text-amber-300 border border-amber-500/30 text-[10px] font-bold shadow-xs">
+                            <AlertCircle className="w-3 h-3 text-amber-600 dark:text-amber-400 shrink-0" />
+                            <span>Unpaid</span>
+                          </div>
+                          <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-500/15 text-emerald-900 dark:text-emerald-300 border border-emerald-500/30 text-[10px] font-bold shadow-xs">
+                            <Award className="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                            <span>Certificate</span>
+                          </div>
+                          <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-purple-500/15 text-purple-900 dark:text-purple-300 border border-purple-500/30 text-[10px] font-bold shadow-xs">
+                            <ShieldCheck className="w-3 h-3 text-purple-600 dark:text-purple-400 shrink-0" />
+                            <span>LOR (2 Yrs)</span>
+                          </div>
                         </div>
                       </div>
 
-                      {/* Apply Button */}
-                      <div className="pt-2 border-t border-border/60">
+                      {/* Apply Button & Tap Hint */}
+                      <div className="pt-2.5 border-t border-border/60 mt-auto">
                         <button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleOpenApply(role);
                           }}
-                          className="w-full py-2.5 px-3 rounded-xl bg-primary text-primary-foreground font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-1.5 shadow-md hover:opacity-95 cursor-pointer"
+                          className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-primary via-primary/95 to-purple-600 hover:from-primary/90 hover:to-purple-700 text-white font-black text-xs tracking-wider uppercase flex items-center justify-center gap-1.5 shadow-md shadow-primary/20 active:scale-[0.98] transition-all cursor-pointer"
                         >
-                          Apply <ArrowRight className="w-3.5 h-3.5" />
+                          <span>Apply</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
                         </button>
+                        <div className="text-center text-[9px] text-muted-foreground/75 font-medium mt-1.5 flex items-center justify-center gap-1">
+                          <span>Tap card to view details</span>
+                        </div>
                       </div>
                     </div>
 
