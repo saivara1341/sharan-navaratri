@@ -263,7 +263,7 @@ export const SubmitSection = () => {
       <div className="relative z-10 space-y-4 sm:space-y-6">
         {/* Inquiry Type Selector (Dropdown) */}
         <div className="space-y-1.5 sm:space-y-2 mt-2 sm:mt-4">
-          <label className="block text-xs sm:text-sm font-medium text-foreground">
+          <label className="block text-xs sm:text-sm font-semibold tracking-wide text-foreground">
             {t('submit.discussLabel')}
           </label>
           <div className="relative">
@@ -338,7 +338,7 @@ export const SubmitSection = () => {
           <div className="space-y-1.5">
             <label
               htmlFor="name"
-              className={`block text-xs sm:text-sm font-medium transition-colors duration-300 ${focusedField === 'name' ? 'text-primary' : 'text-foreground'
+              className={`block text-xs sm:text-sm font-semibold tracking-wide transition-colors duration-300 ${focusedField === 'name' ? 'text-primary' : 'text-foreground'
                 }`}
             >
               {t('submit.fields.name')} <span className="text-primary">*</span>
@@ -360,7 +360,7 @@ export const SubmitSection = () => {
                 onFocus={() => setFocusedField('name')}
                 onBlur={() => setFocusedField(null)}
                 placeholder={t('submit.fields.namePlaceholder')}
-                className="input-premium py-3 sm:py-3.5 px-3.5 sm:px-4 text-base sm:text-sm"
+                className="input-premium py-2.5 sm:py-3.5 px-3.5 sm:px-4 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm"
                 required
               />
             </motion.div>
@@ -369,7 +369,7 @@ export const SubmitSection = () => {
           <div className="space-y-1.5">
             <label
               htmlFor="email"
-              className={`block text-xs sm:text-sm font-medium transition-colors duration-300 ${focusedField === 'email' ? 'text-primary' : 'text-foreground'
+              className={`block text-xs sm:text-sm font-semibold tracking-wide transition-colors duration-300 ${focusedField === 'email' ? 'text-primary' : 'text-foreground'
                 }`}
             >
               {t('submit.fields.email')} <span className="text-primary">*</span>
@@ -391,7 +391,7 @@ export const SubmitSection = () => {
                 onFocus={() => setFocusedField('email')}
                 onBlur={() => setFocusedField(null)}
                 placeholder={t('submit.fields.emailPlaceholder')}
-                className="input-premium py-3 sm:py-3.5 px-3.5 sm:px-4 text-base sm:text-sm"
+                className="input-premium py-2.5 sm:py-3.5 px-3.5 sm:px-4 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm"
                 required
               />
             </motion.div>
@@ -403,7 +403,7 @@ export const SubmitSection = () => {
           <div className="space-y-1.5">
             <label
               htmlFor="designation"
-              className={`block text-xs sm:text-sm font-medium transition-colors duration-300 truncate ${focusedField === 'designation' ? 'text-primary' : 'text-foreground'
+              className={`block text-xs sm:text-sm font-semibold tracking-wide transition-colors duration-300 truncate ${focusedField === 'designation' ? 'text-primary' : 'text-foreground'
                 }`}
             >
               {t('submit.fields.designation')} <span className="text-muted-foreground hidden sm:inline">{t('waitlistModal.commentOptional')}</span>
@@ -425,7 +425,7 @@ export const SubmitSection = () => {
                 onFocus={() => setFocusedField('designation')}
                 onBlur={() => setFocusedField(null)}
                 placeholder={t('submit.fields.designationPlaceholder')}
-                className="input-premium py-3 sm:py-3.5 px-3 sm:px-4 text-base sm:text-sm"
+                className="input-premium py-2.5 sm:py-3.5 px-3.5 sm:px-4 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm"
               />
             </motion.div>
           </div>
@@ -433,7 +433,7 @@ export const SubmitSection = () => {
           <div className="space-y-1.5">
             <label
               htmlFor="organization"
-              className={`block text-xs sm:text-sm font-medium transition-colors duration-300 truncate ${focusedField === 'organization' ? 'text-accent' : 'text-foreground'
+              className={`block text-xs sm:text-sm font-semibold tracking-wide transition-colors duration-300 truncate ${focusedField === 'organization' ? 'text-accent' : 'text-foreground'
                 }`}
             >
               {t('submit.fields.organization')} <span className="text-muted-foreground hidden sm:inline">{t('waitlistModal.commentOptional')}</span>
@@ -455,7 +455,7 @@ export const SubmitSection = () => {
                 onFocus={() => setFocusedField('organization')}
                 onBlur={() => setFocusedField(null)}
                 placeholder={t('submit.fields.organizationPlaceholder')}
-                className="input-premium py-3 sm:py-3.5 px-3 sm:px-4 text-base sm:text-sm"
+                className="input-premium py-2.5 sm:py-3.5 px-3.5 sm:px-4 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm"
               />
             </motion.div>
           </div>
@@ -466,7 +466,7 @@ export const SubmitSection = () => {
             {/* Business Sector Dropdown */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
               <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-medium text-foreground">
+                <label className="block text-xs sm:text-sm font-semibold tracking-wide text-foreground">
                   {t('submit.fields.businessSector', 'Business Sector')} <span className="text-primary">*</span>
                 </label>
                 <select
@@ -494,7 +494,7 @@ export const SubmitSection = () => {
                     exit={{ opacity: 0, x: -10 }}
                     className="space-y-1.5"
                   >
-                    <label className="block text-xs sm:text-sm font-medium text-foreground">
+                    <label className="block text-xs sm:text-sm font-semibold tracking-wide text-foreground">
                       {t('submit.fields.customSector', 'Custom Sector Name')} <span className="text-primary">*</span>
                     </label>
                     <input
@@ -502,7 +502,7 @@ export const SubmitSection = () => {
                       value={otherSector}
                       onChange={(e) => setOtherSector(e.target.value)}
                       placeholder="Specify sector (e.g. AgriTech)"
-                      className="input-premium py-3 sm:py-3.5 px-3 sm:px-4 text-base sm:text-sm"
+                      className="input-premium py-2.5 sm:py-3.5 px-3 sm:px-4 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm"
                       required
                     />
                   </motion.div>
@@ -512,7 +512,7 @@ export const SubmitSection = () => {
 
             {/* Project Type Grid */}
             <div className="space-y-2">
-              <label className="block text-xs sm:text-sm font-medium text-foreground">
+              <label className="block text-xs sm:text-sm font-semibold tracking-wide text-foreground">
                 {t('submit.fields.projectType', 'Project Type')} <span className="text-primary">*</span>
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
@@ -546,7 +546,7 @@ export const SubmitSection = () => {
 
             {/* Description Textarea */}
             <div className="space-y-1.5">
-              <label className="block text-xs sm:text-sm font-medium text-foreground">
+              <label className="block text-xs sm:text-sm font-semibold tracking-wide text-foreground">
                 Description of Requirements <span className="text-primary">*</span>
               </label>
               <motion.div
@@ -566,7 +566,7 @@ export const SubmitSection = () => {
                     onBlur={() => setFocusedField(null)}
                     placeholder="Describe timeline, features, workflows, and business goals..."
                     rows={3}
-                    className="input-premium resize-none pr-12 text-base sm:text-sm py-3 sm:py-3.5 px-3 sm:px-4"
+                    className="input-premium resize-none pr-12 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm py-2.5 sm:py-3.5 px-3 sm:px-4"
                     required
                   />
                   <motion.button
@@ -591,7 +591,7 @@ export const SubmitSection = () => {
           <div className="space-y-1.5">
             <label
               htmlFor="message"
-              className={`block text-xs sm:text-sm font-medium transition-colors duration-300 ${focusedField === 'message' ? 'text-primary' : 'text-foreground'
+              className={`block text-xs sm:text-sm font-semibold tracking-wide transition-colors duration-300 ${focusedField === 'message' ? 'text-primary' : 'text-foreground'
                 }`}
             >
               {t(`submit.fields.message.${formData.inquiryType}`)}
@@ -615,7 +615,7 @@ export const SubmitSection = () => {
                   onBlur={() => setFocusedField(null)}
                   placeholder={t(`submit.fields.message.${formData.inquiryType}Placeholder`)}
                   rows={4}
-                  className="input-premium resize-none pr-12 text-base sm:text-sm py-3 sm:py-3.5 px-3 sm:px-4"
+                  className="input-premium resize-none pr-12 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm py-2.5 sm:py-3.5 px-3 sm:px-4"
                   required
                 />
                 <motion.button

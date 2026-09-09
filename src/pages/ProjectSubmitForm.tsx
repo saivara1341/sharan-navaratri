@@ -568,7 +568,7 @@ export default function ProjectSubmitForm() {
 
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
-                                                <label className="block text-xs font-bold text-foreground mb-1.5">
+                                                <label className="block text-xs sm:text-sm font-bold text-foreground mb-1.5">
                                                     {t('submitForm.profile.fullName', 'Full Name')} <span className="text-destructive">*</span>
                                                 </label>
                                                 <input
@@ -577,11 +577,11 @@ export default function ProjectSubmitForm() {
                                                     value={name}
                                                     onChange={(e) => setName(e.target.value)}
                                                     placeholder="e.g. Ravi Kumar"
-                                                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
+                                                    className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-border bg-card text-foreground text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-xs font-bold text-foreground mb-1.5">
+                                                <label className="block text-xs sm:text-sm font-bold text-foreground mb-1.5">
                                                     {t('submitForm.profile.mobileNumber', 'Mobile Number')} <span className="text-destructive">*</span>
                                                 </label>
                                                 <input
@@ -591,14 +591,14 @@ export default function ProjectSubmitForm() {
                                                     onChange={(e) => setPhone(e.target.value)}
                                                     placeholder={t('submitForm.profile.mobilePlaceholder', 'Enter 10-digit mobile number')}
                                                     inputMode="numeric"
-                                                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
+                                                    className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-border bg-card text-foreground text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                                 />
                                             </div>
                                         </div>
 
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
-                                                <label className="block text-xs font-bold text-foreground mb-1.5">
+                                                <label className="block text-xs sm:text-sm font-bold text-foreground mb-1.5">
                                                     {t('submitForm.profile.brandName', 'Business / Brand Name')} <span className="text-destructive">*</span>
                                                 </label>
                                                 <input
@@ -607,11 +607,11 @@ export default function ProjectSubmitForm() {
                                                     required
                                                     onChange={(e) => setOrganization(e.target.value)}
                                                     placeholder={t('submitForm.profile.brandPlaceholder', 'e.g. Indhur Farms, PrintFlow')}
-                                                    className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
+                                                    className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-border bg-card text-foreground text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-xs font-bold text-foreground mb-1.5">
+                                                <label className="block text-xs sm:text-sm font-bold text-foreground mb-1.5">
                                                     {t('submitForm.profile.email', 'Email Address')} <span className="text-destructive">*</span>
                                                 </label>
                                                 <input
@@ -621,7 +621,7 @@ export default function ProjectSubmitForm() {
                                                     onChange={(e) => setEmail(e.target.value)}
                                                     placeholder="e.g. name@company.com"
                                                     readOnly={!!sessionEmail}
-                                                    className={`w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all ${sessionEmail ? "opacity-70 cursor-not-allowed" : ""}`}
+                                                    className={`w-full px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-border bg-card text-foreground text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all ${sessionEmail ? "opacity-70 cursor-not-allowed" : ""}`}
                                                 />
                                                 {sessionEmail && (
                                                     <p className="text-[10px] text-muted-foreground mt-1">{t('submitForm.profile.emailHint', 'Auto-filled from your signed-in session')}</p>
@@ -630,7 +630,7 @@ export default function ProjectSubmitForm() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-xs font-bold text-muted-foreground mb-1.5">
+                                            <label className="block text-xs sm:text-sm font-bold text-muted-foreground mb-1.5">
                                                 {t('submitForm.profile.designation', 'Designation / Role (Optional)')}
                                             </label>
                                             <input
@@ -638,7 +638,7 @@ export default function ProjectSubmitForm() {
                                                 value={designation}
                                                 onChange={(e) => setDesignation(e.target.value)}
                                                 placeholder={t('submitForm.profile.designationPlaceholder', 'e.g. Founder, CEO, CTO, Operations Head')}
-                                                className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
+                                                className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-border bg-card text-foreground text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                             />
                                         </div>
                                     </div>
@@ -775,7 +775,7 @@ export default function ProjectSubmitForm() {
                                 >
                                     {/* Requested Service Start Date */}
                                     <div className="p-4 rounded-2xl bg-muted/20 border border-border">
-                                        <label className="block text-xs font-bold text-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                                        <label className="block text-xs sm:text-sm font-bold text-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                                             <Calendar className="w-3.5 h-3.5 text-primary" />
                                             Requested Service Start Date <span className="text-destructive">*</span>
                                         </label>
@@ -785,7 +785,7 @@ export default function ProjectSubmitForm() {
                                             value={requestedStartDate}
                                             onChange={(e) => setRequestedStartDate(e.target.value)}
                                             min={new Date().toISOString().slice(0, 10)}
-                                            className="w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
+                                            className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-border bg-card text-foreground text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                         />
                                         <p className="mt-1 text-[11px] text-muted-foreground">
                                             We review and confirm the exact milestone timeline once requirements are discussed.
@@ -794,7 +794,7 @@ export default function ProjectSubmitForm() {
 
                                     {/* Message / Requirement Description */}
                                     <div>
-                                        <label className="block text-xs font-bold text-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                                        <label className="block text-xs sm:text-sm font-bold text-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                                             <MessageSquare className="w-3.5 h-3.5 text-primary" />
                                             Describe Your Requirement <span className="text-destructive">*</span>
                                         </label>
@@ -805,7 +805,7 @@ export default function ProjectSubmitForm() {
                                                 value={message}
                                                 onChange={(e) => setMessage(e.target.value)}
                                                 placeholder="Tell us about your project goals, features needed, target audience, preferred integrations, and desired outcomes..."
-                                                className="w-full resize-none rounded-2xl border border-border bg-card px-4 py-3 pr-14 text-sm text-foreground placeholder:text-muted-foreground transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
+                                                className="w-full resize-none rounded-2xl border border-border bg-card px-3.5 sm:px-4 py-2.5 sm:py-3 pr-14 text-xs sm:text-sm text-foreground placeholder:text-xs sm:placeholder:text-sm placeholder:text-muted-foreground transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                                             />
                                             <button
                                                 type="button"

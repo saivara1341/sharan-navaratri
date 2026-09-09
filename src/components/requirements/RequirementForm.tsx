@@ -72,7 +72,7 @@ export const RequirementForm = ({ submitterEmail, agencyEmail, clients, fixedCli
   };
 
   const field =
-    "w-full px-3.5 py-2.5 rounded-xl bg-muted border border-border text-foreground text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground transition-all";
+    "w-full px-3.5 py-2 sm:py-2.5 rounded-xl bg-muted border border-border text-foreground text-xs sm:text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-xs sm:placeholder:text-sm placeholder:text-muted-foreground transition-all";
 
   return (
     <>
@@ -117,7 +117,7 @@ export const RequirementForm = ({ submitterEmail, agencyEmail, clients, fixedCli
               {/* Body */}
               <div className="p-6 space-y-4 overflow-y-auto flex-1">
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">
+                  <label className="block text-xs sm:text-sm font-semibold tracking-wide text-foreground mb-1.5">
                     Requirement Title *
                   </label>
                   <input
@@ -128,7 +128,7 @@ export const RequirementForm = ({ submitterEmail, agencyEmail, clients, fixedCli
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">
+                  <label className="block text-xs sm:text-sm font-semibold tracking-wide text-foreground mb-1.5">
                     Description * (min 20 chars)
                   </label>
                   <textarea
@@ -140,7 +140,7 @@ export const RequirementForm = ({ submitterEmail, agencyEmail, clients, fixedCli
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Type</label>
+                    <label className="block text-xs sm:text-sm font-semibold tracking-wide text-foreground mb-1.5">Type</label>
                     <select className={field} value={reqType} onChange={(e) => setReqType(e.target.value)}>
                       {REQUIREMENT_TYPES.map((t) => (
                         <option key={t} value={t} className="bg-card text-foreground">{t}</option>
@@ -148,7 +148,7 @@ export const RequirementForm = ({ submitterEmail, agencyEmail, clients, fixedCli
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Priority</label>
+                    <label className="block text-xs sm:text-sm font-semibold tracking-wide text-foreground mb-1.5">Priority</label>
                     <select className={field} value={priority} onChange={(e) => setPriority(e.target.value)}>
                       {REQUIREMENT_PRIORITIES.map((p) => (
                         <option key={p} value={p} className="bg-card text-foreground">{p} priority</option>
@@ -156,7 +156,7 @@ export const RequirementForm = ({ submitterEmail, agencyEmail, clients, fixedCli
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Budget Range</label>
+                    <label className="block text-xs sm:text-sm font-semibold tracking-wide text-foreground mb-1.5">Budget Range</label>
                     <input
                       className={field}
                       placeholder="Budget range (optional)"
@@ -165,7 +165,7 @@ export const RequirementForm = ({ submitterEmail, agencyEmail, clients, fixedCli
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Estimated Value (₹)</label>
+                    <label className="block text-xs sm:text-sm font-semibold tracking-wide text-foreground mb-1.5">Estimated Value (₹)</label>
                     <input
                       className={field}
                       type="number"
@@ -175,7 +175,7 @@ export const RequirementForm = ({ submitterEmail, agencyEmail, clients, fixedCli
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Target Date</label>
+                    <label className="block text-xs sm:text-sm font-semibold tracking-wide text-foreground mb-1.5">Target Date</label>
                     <input
                       className={field}
                       type="date"
@@ -185,7 +185,7 @@ export const RequirementForm = ({ submitterEmail, agencyEmail, clients, fixedCli
                   </div>
                   {!fixedClientId && clients && clients.length > 0 && (
                     <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Link to Client</label>
+                      <label className="block text-xs sm:text-sm font-semibold tracking-wide text-foreground mb-1.5">Link to Client</label>
                       <select className={field} value={clientId} onChange={(e) => setClientId(e.target.value)}>
                         <option value="" className="bg-card text-foreground">No client linked</option>
                         {clients.map((c) => (
