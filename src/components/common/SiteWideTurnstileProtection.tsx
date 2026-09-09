@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { ShieldCheck, ShieldAlert, Loader2, X, ChevronUp, Lock } from 'lucide-react';
 
 interface TurnstileContextValue {
   isVerified: boolean;
@@ -51,8 +50,6 @@ export const SiteWideTurnstileProtection: React.FC<{ children: React.ReactNode }
   });
 
   const [status, setStatus] = useState<'verifying' | 'verified' | 'failed' | 'idle'>('idle');
-  const [badgeExpanded, setBadgeExpanded] = useState<boolean>(false);
-  const [badgeDismissed, setBadgeDismissed] = useState<boolean>(false);
 
   const siteKey =
     import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY ||
@@ -180,95 +177,13 @@ export const SiteWideTurnstileProtection: React.FC<{ children: React.ReactNode }
     >
       {children}
 
-      {/* Offscreen background Turnstile challenge container */}
+      {/* Invisible background Turnstile challenge container */}
       <div
         aria-hidden="true"
         className="fixed -left-[9999px] -top-[9999px] opacity-0 pointer-events-none"
       >
         <div ref={containerRef} />
       </div>
-
-      {/* Floating Cloudflare Security Badge (Bottom-Left) */}
-      {!badgeDismissed && (
-        <aside
-          aria-label="Cloudflare Turnstile Bot Protection"
-          className="fixed bottom-4 left-4 z-40 select-none print:hidden"
-        >
-          {badgeExpanded ? (
-            <div className="rounded-2xl border border-border/80 bg-background/95 backdrop-blur-md shadow-2xl p-3.5 max-w-[280px] sm:max-w-xs animate-in fade-in slide-in-from-bottom-2 duration-200">
-              <div className="flex items-center justify-between gap-2 pb-2 border-b border-border/60">
-                <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
-                  <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span>Cloudflare Security</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => setBadgeExpanded(false)}
-                    className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
-                    title="Minimize badge"
-                    aria-label="Minimize badge"
-                  >
-                    <ChevronUp className="w-3.5 h-3.5 rotate-180" />
-                  </button>
-                  <button
-                    onClick={() => setBadgeDismissed(true)}
-                    className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
-                    title="Dismiss badge"
-                    aria-label="Dismiss badge"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="pt-2 text-[11px] text-muted-foreground space-y-2">
-                <div className="flex items-center gap-1.5 font-medium text-foreground">
-                  {status === 'verified' || isVerified ? (
-                    <>
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                      <span>Verified Human Session (Bot Guard Active)</span>
-                    </>
-                  ) : status === 'verifying' ? (
-                    <>
-                      <Loader2 className="w-3 h-3 text-primary animate-spin shrink-0" />
-                      <span>Verifying browser authenticity...</span>
-                    </>
-                  ) : (
-                    <>
-                      <ShieldAlert className="w-3 h-3 text-amber-500 shrink-0" />
-                      <span>Securing connection with Cloudflare</span>
-                    </>
-                  )}
-                </div>
-                <p className="leading-relaxed">
-                  This entire website is protected by <strong className="text-foreground">Cloudflare Turnstile</strong> to prevent automated scrapers, bot attacks, and spam without intrusive puzzles.
-                </p>
-                <div className="text-[10px] text-muted-foreground pt-1 flex items-center justify-between border-t border-border/50">
-                  <span>Privacy-first protection</span>
-                  <span className="text-primary font-semibold">Turnstile Active</span>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <button
-              onClick={() => setBadgeExpanded(true)}
-              className="group flex items-center gap-2 px-2.5 py-1.5 rounded-full border border-border/70 bg-background/90 hover:bg-background/95 backdrop-blur-md shadow-lg text-[10px] font-bold text-foreground/85 hover:text-foreground transition-all cursor-pointer hover:border-primary/50"
-              title="Protected by Cloudflare Turnstile (Click to view)"
-              aria-label="Protected by Cloudflare Turnstile"
-            >
-              <div className="relative flex items-center justify-center">
-                <Lock className="w-3 h-3 text-primary" />
-                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              </div>
-              <span className="hidden sm:inline">Protected by Cloudflare</span>
-              <span className="sm:hidden">Protected</span>
-              <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
-                Human
-              </span>
-            </button>
-          )}
-        </aside>
-      )}
     </TurnstileContext.Provider>
   );
 };
