@@ -549,7 +549,10 @@ export const internshipService = {
   },
 
   async getApplications(): Promise<InternshipApplication[]> {
-    // 1. First attempt to load from dedicated career_applications table
+    let directMapped: InternshipApplication[] = [];
+    let contactMapped: InternshipApplication[] = [];
+
+    // 1. Load from dedicated career_applications table
     try {
       const { data: directData, error: directErr } = await supabase
         .from('career_applications')
@@ -557,7 +560,7 @@ export const internshipService = {
         .order('created_at', { ascending: false });
 
       if (!directErr && directData && directData.length > 0) {
-        const directMapped: InternshipApplication[] = directData.map((row: any) => ({
+        directMapped = directData.map((row: any) => ({
           id: row.id,
           created_at: row.created_at || new Date().toISOString(),
           full_name: row.full_name,
@@ -575,21 +578,12 @@ export const internshipService = {
           status: (row.status || 'Received') as any,
           interview_details: row.interview_details || undefined,
         }));
-
-        const local = getLocal<InternshipApplication[]>(STORAGE_KEYS.APPLICATIONS, []);
-        const combined = [...directMapped];
-        for (const loc of local) {
-          if (!combined.some(c => c.email.toLowerCase() === loc.email.toLowerCase() && c.role === loc.role)) {
-            combined.push(loc);
-          }
-        }
-        return combined;
       }
     } catch (e) {
-      console.warn('Direct career_applications load failed, falling back:', e);
+      console.warn('Direct career_applications load error:', e);
     }
 
-    // 2. Fallback to contact_submissions where inquiry_type='internship_application'
+    // 2. Also load from contact_submissions where inquiry_type='internship_application'
     try {
       const { data, error } = await supabase
         .from('contact_submissions')
@@ -598,12 +592,19 @@ export const internshipService = {
         .order('created_at', { ascending: false });
 
       if (!error && data && data.length > 0) {
-        const mapped: InternshipApplication[] = data.map((sub: any) => {
+        contactMapped = data.map((sub: any) => {
           const msg = sub.message || '';
           const roleMatch = msg.match(/Role Applied:\s*([^\n]+)/);
           const durationMatch = msg.match(/Duration:\s*([^\n]+)/);
           const phoneMatch = msg.match(/Phone:\s*([^\n]+)/);
           const linkedinMatch = msg.match(/LinkedIn\/Social:\s*([^\n]+)/);
+          const resumeMatch = msg.match(/Resume\/Portfolio Link:\s*([^\n]+)/);
+          const parsedResume = resumeMatch && resumeMatch[1].trim() !== 'N/A' ? resumeMatch[1].trim() : '';
+          const attachmentUrl = Array.isArray(sub.attachment_urls) && sub.attachment_urls.length > 0
+            ? sub.attachment_urls.join(' | ')
+            : '';
+          const resumeUrl = sub.resume_url || parsedResume || attachmentUrl || '';
+          const sopMatch = msg.match(/Statement of Purpose:\s*([\s\S]*?)(?=\n\nResume\/Portfolio Link:|$)/);
 
           return {
             id: sub.id,
@@ -617,26 +618,56 @@ export const internshipService = {
             role: (roleMatch ? roleMatch[1].trim() : 'Business Development Intern') as any,
             duration: (durationMatch ? durationMatch[1].trim() : '6 Months') as any,
             linkedin: linkedinMatch ? linkedinMatch[1].trim() : '',
-            statement_of_purpose: msg,
+            resume_url: resumeUrl,
+            statement_of_purpose: sopMatch ? sopMatch[1].trim() : msg,
             status: (sub.status === 'Interview Scheduled' ? 'Interview Scheduled' : sub.status === 'Offered' ? 'Offered' : 'Received') as any
           };
         });
-
-        // Merge with local ones for offline stability
-        const local = getLocal<InternshipApplication[]>(STORAGE_KEYS.APPLICATIONS, []);
-        const combined = [...mapped];
-        for (const loc of local) {
-          if (!combined.some(c => c.email === loc.email && c.role === loc.role)) {
-            combined.push(loc);
-          }
-        }
-        return combined;
       }
     } catch (e) {
-      console.warn('Supabase fetch failed, falling back to storage:', e);
+      console.warn('contact_submissions load error:', e);
     }
 
-    return getLocal<InternshipApplication[]>(STORAGE_KEYS.APPLICATIONS, []);
+    // Merge sources intelligently
+    const mergedMap = new Map<string, InternshipApplication>();
+
+    // Seed with contact submissions
+    for (const app of contactMapped) {
+      const key = `${app.email.toLowerCase()}_${app.role}`;
+      mergedMap.set(key, app);
+    }
+
+    // Overlay with directMapped (authoritative)
+    for (const app of directMapped) {
+      const key = `${app.email.toLowerCase()}_${app.role}`;
+      const existing = mergedMap.get(key);
+      if (existing) {
+        mergedMap.set(key, {
+          ...existing,
+          ...app,
+          resume_url: app.resume_url || existing.resume_url || '',
+          statement_of_purpose: app.statement_of_purpose || existing.statement_of_purpose || '',
+        });
+      } else {
+        mergedMap.set(key, app);
+      }
+    }
+
+    // Merge with local storage fallback
+    const local = getLocal<InternshipApplication[]>(STORAGE_KEYS.APPLICATIONS, []);
+    for (const loc of local) {
+      const key = `${loc.email.toLowerCase()}_${loc.role}`;
+      const existing = mergedMap.get(key);
+      if (!existing) {
+        mergedMap.set(key, loc);
+      } else if (!existing.resume_url && loc.resume_url) {
+        existing.resume_url = loc.resume_url;
+      }
+    }
+
+    const result = Array.from(mergedMap.values());
+    result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return result;
   },
 
   async updateApplicationStatus(id: string, status: InternshipApplication['status'], interviewDetails?: InternshipApplication['interview_details']) {

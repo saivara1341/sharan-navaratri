@@ -85,6 +85,9 @@ export function AdminInternshipsConsole() {
   const [appSearch, setAppSearch] = useState('');
   const [appRoleFilter, setAppRoleFilter] = useState('all');
 
+  // Modal: View Candidate Application Details
+  const [selectedViewApp, setSelectedViewApp] = useState<InternshipApplication | null>(null);
+
   // Modal: Schedule Interview
   const [scheduleModalApp, setScheduleModalApp] = useState<InternshipApplication | null>(null);
   const [interviewDate, setInterviewDate] = useState('');
@@ -341,7 +344,7 @@ export function AdminInternshipsConsole() {
   return (
     <div className="space-y-8">
       {/* Sub Tab Navigation */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
         <div className="flex flex-wrap items-center gap-2">
           {[
             { id: 'applications', label: 'Intern Applications', icon: GraduationCap, count: applications.length },
@@ -363,7 +366,7 @@ export function AdminInternshipsConsole() {
                 <Icon className="w-4 h-4" />
                 <span>{tab.label}</span>
                 {tab.count !== undefined && (
-                  <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${activeSubTab === tab.id ? 'bg-white/20 text-white' : 'bg-white/10 text-muted-foreground'}`}>
+                  <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${activeSubTab === tab.id ? 'bg-white/20 text-white' : 'bg-muted text-foreground/80 border border-border'}`}>
                     {tab.count}
                   </span>
                 )}
@@ -375,7 +378,7 @@ export function AdminInternshipsConsole() {
         <button
           onClick={refreshData}
           disabled={loading}
-          className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-muted-foreground hover:text-white transition-colors cursor-pointer"
+          className="p-2 rounded-xl bg-muted/60 hover:bg-muted border border-border text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           title="Refresh All Data"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -464,80 +467,118 @@ export function AdminInternshipsConsole() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border/50 bg-card overflow-hidden shadow-md">
+          <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-md">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-muted/50 border-b border-border text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                <thead className="bg-muted/60 border-b border-border text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                   <tr>
-                    <th className="py-3 px-4">Candidate</th>
-                    <th className="py-3 px-4">Role & Duration</th>
-                    <th className="py-3 px-4">College & Degree</th>
-                    <th className="py-3 px-4">Contact</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
+                    <th className="py-3.5 px-4">Candidate</th>
+                    <th className="py-3.5 px-4">Role & Duration</th>
+                    <th className="py-3.5 px-4">College & Degree</th>
+                    <th className="py-3.5 px-4">Contact</th>
+                    <th className="py-3.5 px-4">Resume / CV</th>
+                    <th className="py-3.5 px-4">Status</th>
+                    <th className="py-3.5 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/40">
+                <tbody className="divide-y divide-border/50">
                   {filteredApps.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="py-8 text-center text-muted-foreground">
+                      <td colSpan={7} className="py-10 text-center text-muted-foreground">
                         No internship applications found matching filters.
                       </td>
                     </tr>
                   ) : (
                     filteredApps.map(app => (
-                      <tr key={app.id} className="hover:bg-muted/20 transition-colors">
+                      <tr key={app.id} className="hover:bg-muted/30 transition-colors">
                         <td className="py-3.5 px-4 font-bold text-foreground">
-                          <div className="font-extrabold">{app.full_name}</div>
-                          <div className="text-[10px] text-muted-foreground">{app.created_at.split('T')[0]}</div>
+                          <div className="font-extrabold text-foreground text-xs sm:text-sm">{app.full_name}</div>
+                          <div className="text-[10.5px] text-muted-foreground font-medium">{app.created_at.split('T')[0]}</div>
                         </td>
                         <td className="py-3.5 px-4">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold block w-fit mb-1 ${app.role.includes('Business') ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-purple-500/10 text-purple-400 border border-purple-500/20'}`}>
+                          <span className={`px-2 py-0.5 rounded text-[10.5px] font-bold block w-fit mb-1 ${
+                            app.role.includes('Business')
+                              ? 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30'
+                              : 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30'
+                          }`}>
                             {app.role}
                           </span>
-                          <span className="text-[11px] text-slate-300 font-semibold">{app.duration}</span>
+                          <span className="text-[11px] text-muted-foreground font-semibold">{app.duration}</span>
                         </td>
                         <td className="py-3.5 px-4">
-                          <div className="font-semibold text-foreground">{app.college}</div>
-                          <div className="text-[10px] text-primary font-bold">{app.degree} ({app.graduation_year})</div>
+                          <div className="font-bold text-foreground">{app.college}</div>
+                          <div className="text-[11px] text-primary font-bold">{app.degree} ({app.graduation_year})</div>
                         </td>
-                        <td className="py-3.5 px-4 text-slate-300">
-                          <div>{app.email}</div>
-                          <div className="text-[10px] text-muted-foreground">{app.phone}</div>
-                          <div className="flex flex-wrap items-center gap-2 mt-1">
-                            {app.linkedin && (
-                              <a href={app.linkedin} target="_blank" rel="noreferrer" className="text-[10px] text-primary hover:underline inline-flex items-center gap-0.5">
+                        <td className="py-3.5 px-4 text-foreground/90">
+                          <div className="font-medium text-foreground">{app.email}</div>
+                          <div className="text-[11px] text-muted-foreground font-mono">{app.phone}</div>
+                          {app.linkedin && (
+                            <div className="mt-0.5">
+                              <a href={app.linkedin} target="_blank" rel="noreferrer" className="text-[10.5px] text-primary hover:underline inline-flex items-center gap-0.5 font-semibold">
                                 LinkedIn <ExternalLink className="w-2.5 h-2.5" />
                               </a>
-                            )}
-                            {app.resume_url && (
-                              <a href={app.resume_url} target="_blank" rel="noreferrer" className="text-[10px] text-amber-400 hover:underline inline-flex items-center gap-0.5 font-bold">
-                                Resume <ExternalLink className="w-2.5 h-2.5" />
-                              </a>
-                            )}
-                          </div>
+                            </div>
+                          )}
                         </td>
                         <td className="py-3.5 px-4">
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${app.status === 'Interview Scheduled' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : app.status === 'Offered' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-white/10 text-slate-300'}`}>
+                          {app.resume_url ? (
+                            <div className="flex flex-col gap-1">
+                              {app.resume_url.split(/\s*\|\s*|\s*,\s*/).filter(Boolean).map((url, idx) => (
+                                <a
+                                  key={idx}
+                                  href={url.startsWith('http') ? url : `https://${url}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 font-bold text-xs border border-emerald-500/30 transition-all w-fit shadow-xs group cursor-pointer"
+                                  title="Open candidate resume"
+                                >
+                                  <FileText className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 group-hover:scale-110 transition-transform" />
+                                  <span>View Resume ↗</span>
+                                </a>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="inline-flex items-center text-[11px] text-muted-foreground italic px-2.5 py-1 rounded-md bg-muted/40 border border-border/50">
+                              Not attached
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider inline-block ${
+                            app.status === 'Interview Scheduled'
+                              ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30'
+                              : app.status === 'Offered'
+                              ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30'
+                              : 'bg-muted text-foreground/80 border border-border'
+                          }`}>
                             {app.status}
                           </span>
                         </td>
-                        <td className="py-3.5 px-4 text-right space-x-2">
-                          <button
-                            onClick={() => {
-                              setScheduleModalApp(app);
-                              setInterviewDate(new Date(Date.now() + 86400000).toISOString().split('T')[0]);
-                            }}
-                            className="px-2.5 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-[11px] font-bold transition-colors cursor-pointer"
-                          >
-                            Schedule Interview
-                          </button>
-                          <button
-                            onClick={() => handleIssueOffer(app)}
-                            className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-[11px] font-bold transition-colors cursor-pointer"
-                          >
-                            Issue Offer
-                          </button>
+                        <td className="py-3.5 px-4 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => setSelectedViewApp(app)}
+                              className="px-2.5 py-1.5 rounded-lg bg-muted hover:bg-muted/80 text-foreground text-[11px] font-bold transition-colors cursor-pointer border border-border flex items-center gap-1"
+                              title="View full candidate application & SOP"
+                            >
+                              <Eye className="w-3 h-3 text-muted-foreground" /> Details
+                            </button>
+                            <button
+                              onClick={() => {
+                                setScheduleModalApp(app);
+                                setInterviewDate(new Date(Date.now() + 86400000).toISOString().split('T')[0]);
+                              }}
+                              className="px-2.5 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-[11px] font-bold transition-colors cursor-pointer border border-primary/25"
+                            >
+                              Schedule Interview
+                            </button>
+                            <button
+                              onClick={() => handleIssueOffer(app)}
+                              className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[11px] font-bold transition-colors cursor-pointer border border-emerald-500/25"
+                            >
+                              Issue Offer
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -582,20 +623,20 @@ export function AdminInternshipsConsole() {
               </thead>
               <tbody className="divide-y divide-border/40">
                 {whitelist.map(wl => (
-                  <tr key={wl.id} className="hover:bg-muted/20 transition-colors">
+                  <tr key={wl.id} className="hover:bg-muted/30 transition-colors">
                     <td className="py-3.5 px-4 font-bold text-foreground">{wl.name}</td>
-                    <td className="py-3.5 px-4 font-mono text-slate-300">{wl.email}</td>
+                    <td className="py-3.5 px-4 font-mono text-foreground">{wl.email}</td>
                     <td className="py-3.5 px-4">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${wl.role === 'employee' ? 'bg-blue-500/20 text-blue-400' : 'bg-primary/20 text-primary'}`}>
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${wl.role === 'employee' ? 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30' : 'bg-primary/15 text-primary border border-primary/30'}`}>
                         {wl.role}
                       </span>
                     </td>
                     <td className="py-3.5 px-4 text-muted-foreground">{wl.added_at}</td>
-                    <td className="py-3.5 px-4 text-slate-400">{wl.notes || '—'}</td>
+                    <td className="py-3.5 px-4 text-muted-foreground">{wl.notes || '—'}</td>
                     <td className="py-3.5 px-4 text-right">
                       <button
                         onClick={() => handleRemoveWhitelist(wl.id, wl.email)}
-                        className="p-1.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
                         title="Revoke access"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -628,7 +669,7 @@ export function AdminInternshipsConsole() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {tasks.map(task => (
-              <div key={task.id} className="p-5 rounded-2xl border border-white/10 bg-card flex flex-col justify-between space-y-3">
+              <div key={task.id} className="p-5 rounded-2xl border border-border bg-card flex flex-col justify-between space-y-3 shadow-sm">
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-primary px-2 py-0.5 rounded bg-primary/10">
@@ -639,9 +680,9 @@ export function AdminInternshipsConsole() {
                   <h4 className="font-extrabold text-foreground text-sm mb-1">{task.title}</h4>
                   <p className="text-xs text-muted-foreground leading-relaxed">{task.description}</p>
                 </div>
-                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Priority: <strong>{task.priority}</strong></span>
-                  <span className="text-emerald-400 font-bold">{task.status}</span>
+                <div className="pt-2 border-t border-border/50 flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Priority: <strong className="text-foreground">{task.priority}</strong></span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">{task.status}</span>
                 </div>
               </div>
             ))}
@@ -659,23 +700,23 @@ export function AdminInternshipsConsole() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Extensions */}
-            <div className="p-6 rounded-3xl border border-white/10 bg-card space-y-4">
+            <div className="p-6 rounded-3xl border border-border bg-card space-y-4">
               <h4 className="text-sm font-extrabold text-foreground flex items-center gap-2">
-                <Clock className="w-4 h-4 text-amber-400" /> Deadline Extension Requests ({extensions.filter(e => e.status === 'Pending').length} Pending)
+                <Clock className="w-4 h-4 text-amber-500 dark:text-amber-400" /> Deadline Extension Requests ({extensions.filter(e => e.status === 'Pending').length} Pending)
               </h4>
               {extensions.length === 0 ? (
                 <p className="text-xs text-muted-foreground">No pending extension requests.</p>
               ) : (
                 <div className="space-y-3">
                   {extensions.map(ext => (
-                    <div key={ext.id} className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2 text-xs">
+                    <div key={ext.id} className="p-4 rounded-2xl bg-muted/30 border border-border/60 space-y-2 text-xs">
                       <div className="flex items-center justify-between">
                         <strong className="text-foreground">{ext.intern_name}</strong>
-                        <span className="text-amber-400">{ext.status}</span>
+                        <span className="text-amber-600 dark:text-amber-400 font-bold">{ext.status}</span>
                       </div>
-                      <p className="text-slate-300">Task: {ext.task_title}</p>
+                      <p className="text-foreground/90 font-medium">Task: {ext.task_title}</p>
                       <p className="text-muted-foreground">Reason: {ext.reason}</p>
-                      <p className="text-[11px] text-primary">Requested Date: {ext.requested_deadline}</p>
+                      <p className="text-[11px] text-primary font-bold">Requested Date: {ext.requested_deadline}</p>
                       {ext.status === 'Pending' && (
                         <div className="pt-2 flex items-center gap-2">
                           <button
@@ -684,7 +725,7 @@ export function AdminInternshipsConsole() {
                               toast.success('Deadline extension approved!');
                               refreshData();
                             }}
-                            className="px-3 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 font-bold cursor-pointer"
+                            className="px-3 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-400 font-bold cursor-pointer transition-colors"
                           >
                             Approve
                           </button>
@@ -694,7 +735,7 @@ export function AdminInternshipsConsole() {
                               toast.error('Extension rejected.');
                               refreshData();
                             }}
-                            className="px-3 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold cursor-pointer"
+                            className="px-3 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-600 dark:text-rose-400 font-bold cursor-pointer transition-colors"
                           >
                             Reject
                           </button>
@@ -707,7 +748,7 @@ export function AdminInternshipsConsole() {
             </div>
 
             {/* Data Requests */}
-            <div className="p-6 rounded-3xl border border-white/10 bg-card space-y-4">
+            <div className="p-6 rounded-3xl border border-border bg-card space-y-4">
               <h4 className="text-sm font-extrabold text-foreground flex items-center gap-2">
                 <Layers className="w-4 h-4 text-primary" /> Data & Asset Requests ({dataRequests.filter(d => d.status === 'Pending').length} Pending)
               </h4>
@@ -716,12 +757,12 @@ export function AdminInternshipsConsole() {
               ) : (
                 <div className="space-y-3">
                   {dataRequests.map(d => (
-                    <div key={d.id} className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2 text-xs">
+                    <div key={d.id} className="p-4 rounded-2xl bg-muted/30 border border-border/60 space-y-2 text-xs">
                       <div className="flex items-center justify-between">
                         <strong className="text-foreground">{d.intern_name}</strong>
-                        <span className="text-primary">{d.category}</span>
+                        <span className="text-primary font-bold">{d.category}</span>
                       </div>
-                      <p className="text-slate-300 font-semibold">{d.title}</p>
+                      <p className="text-foreground font-semibold">{d.title}</p>
                       <p className="text-muted-foreground">{d.description}</p>
                       {d.status === 'Pending' && (
                         <div className="pt-2 flex items-center gap-2">
@@ -768,14 +809,14 @@ export function AdminInternshipsConsole() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {incentives.map(inc => (
-              <div key={inc.id} className="p-6 rounded-3xl border border-white/10 bg-card flex flex-col justify-between space-y-4 shadow-xl">
+              <div key={inc.id} className="p-6 rounded-3xl border border-border bg-card flex flex-col justify-between space-y-4 shadow-md">
                 <div>
                   <div className="w-full h-32 rounded-2xl bg-muted overflow-hidden mb-3">
                     <img src={inc.image_url} alt={inc.title} className="w-full h-full object-cover" />
                   </div>
                   <h4 className="font-extrabold text-foreground text-base mb-1">{inc.title}</h4>
                   <p className="text-xs text-muted-foreground mb-3">{inc.description}</p>
-                  <div className="space-y-1 text-xs text-slate-300">
+                  <div className="space-y-1 text-xs text-foreground/90">
                     {inc.items_included.map((item, idx) => (
                       <div key={idx} className="flex items-center gap-1.5">
                         <Gift className="w-3.5 h-3.5 text-primary" /> {item}
@@ -784,17 +825,17 @@ export function AdminInternshipsConsole() {
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-white/10 space-y-2">
-                  <div className="text-[11px] text-slate-400">
-                    <strong>Milestone:</strong> {inc.required_milestone}
+                <div className="pt-3 border-t border-border/50 space-y-2">
+                  <div className="text-[11px] text-muted-foreground">
+                    <strong className="text-foreground">Milestone:</strong> {inc.required_milestone}
                   </div>
                   <div className="flex items-center justify-between pt-1">
-                    <code className="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                    <code className="text-xs font-mono font-bold text-amber-500 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
                       {inc.scratch_code || 'SD-REWARD'}
                     </code>
                     <button
                       onClick={() => handleDeleteIncentive(inc.id)}
-                      className="p-1.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+                      className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
                       title="Delete Reward"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -817,23 +858,23 @@ export function AdminInternshipsConsole() {
 
           <div className="space-y-4">
             {proofs.map(p => (
-              <div key={p.id} className="p-5 rounded-2xl border border-white/10 bg-card space-y-3">
+              <div key={p.id} className="p-5 rounded-2xl border border-border bg-card space-y-3 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div>
                     <strong className="text-foreground text-sm">{p.intern_name}</strong>
                     <span className="text-xs text-muted-foreground ml-2">({p.role})</span>
                   </div>
-                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${p.status === 'Verified by CEO' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${p.status === 'Verified by CEO' ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30'}`}>
                     {p.status}
                   </span>
                 </div>
                 <h4 className="font-extrabold text-foreground text-xs">{p.title}</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                  <div className="p-2.5 rounded-xl bg-red-500/5 border border-red-500/15 text-slate-300">
-                    <strong className="text-red-400 block text-[10px]">BEFORE:</strong> {p.before_state}
+                  <div className="p-2.5 rounded-xl bg-rose-500/5 border border-rose-500/20 text-foreground/90">
+                    <strong className="text-rose-500 block text-[10px]">BEFORE:</strong> {p.before_state}
                   </div>
-                  <div className="p-2.5 rounded-xl bg-emerald-500/5 border border-emerald-500/15 text-slate-300">
-                    <strong className="text-emerald-400 block text-[10px]">AFTER:</strong> {p.after_state}
+                  <div className="p-2.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-foreground/90">
+                    <strong className="text-emerald-600 dark:text-emerald-400 block text-[10px]">AFTER:</strong> {p.after_state}
                   </div>
                 </div>
                 <div className="text-xs text-primary font-bold">Metric: {p.metric_summary}</div>
@@ -844,7 +885,7 @@ export function AdminInternshipsConsole() {
                       toast.success('Point of Proof verified!');
                       refreshData();
                     }}
-                    className="px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-xs font-bold cursor-pointer"
+                    className="px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-400 text-xs font-bold cursor-pointer transition-colors border border-emerald-500/25"
                   >
                     Verify Proof as CEO
                   </button>
@@ -986,75 +1027,75 @@ export function AdminInternshipsConsole() {
 
           {/* Quick Metrics */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-5 rounded-2xl bg-card border border-white/10 space-y-1">
+            <div className="p-5 rounded-2xl bg-card border border-border space-y-1 shadow-sm">
               <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">Total Reviews</span>
               <div className="text-2xl font-black text-foreground">{reviews.length}</div>
-              <p className="text-[10px] text-slate-400">All submitted intern ratings</p>
+              <p className="text-[10.5px] text-muted-foreground">All submitted intern ratings</p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-card border border-white/10 space-y-1">
-              <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider block">Average Intern Score</span>
-              <div className="text-2xl font-black text-amber-300 flex items-center gap-1">
+            <div className="p-5 rounded-2xl bg-card border border-border space-y-1 shadow-sm">
+              <span className="text-[11px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-wider block">Average Intern Score</span>
+              <div className="text-2xl font-black text-amber-500 dark:text-amber-300 flex items-center gap-1">
                 <span>{(reviews.reduce((acc, r) => acc + r.rating, 0) / (reviews.length || 1)).toFixed(1)}</span>
                 <span className="text-sm font-normal text-muted-foreground">/ 5.0</span>
               </div>
-              <p className="text-[10px] text-slate-400">Overall platform satisfaction</p>
+              <p className="text-[10.5px] text-muted-foreground">Overall platform satisfaction</p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-card border border-emerald-500/20 bg-emerald-500/5 space-y-1">
-              <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider block">Google Maps Candidates</span>
-              <div className="text-2xl font-black text-emerald-400">
+            <div className="p-5 rounded-2xl bg-card border border-emerald-500/20 bg-emerald-500/5 space-y-1 shadow-sm">
+              <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">Google Maps Candidates</span>
+              <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
                 {reviews.filter(r => r.rating >= 4).length}
               </div>
-              <p className="text-[10px] text-emerald-300/70">4★ & 5★ reviews prompted for Google</p>
+              <p className="text-[10.5px] text-emerald-600/80 dark:text-emerald-300/70">4★ & 5★ reviews prompted for Google</p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-card border border-indigo-500/20 bg-indigo-500/5 space-y-1">
-              <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider block">Private CEO Escalations</span>
-              <div className="text-2xl font-black text-indigo-300">
+            <div className="p-5 rounded-2xl bg-card border border-indigo-500/20 bg-indigo-500/5 space-y-1 shadow-sm">
+              <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block">Private CEO Escalations</span>
+              <div className="text-2xl font-black text-indigo-600 dark:text-indigo-300">
                 {reviews.filter(r => r.rating <= 3).length}
               </div>
-              <p className="text-[10px] text-indigo-300/70">≤3★ blocked from Google (Private)</p>
+              <p className="text-[10.5px] text-indigo-600/80 dark:text-indigo-300/70">≤3★ blocked from Google (Private)</p>
             </div>
           </div>
 
           {/* Reviews List */}
-          <div className="rounded-2xl border border-white/10 bg-card/60 overflow-hidden shadow-xl">
-            <div className="p-4 border-b border-white/10 flex items-center justify-between">
+          <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-md">
+            <div className="p-4 border-b border-border flex items-center justify-between bg-muted/40">
               <h4 className="text-xs font-black text-foreground uppercase tracking-wider">
                 Intern Feedback Ledger & Gating Status
               </h4>
-              <span className="text-xs text-muted-foreground">{reviews.length} entries</span>
+              <span className="text-xs text-muted-foreground font-semibold">{reviews.length} entries</span>
             </div>
 
-            <div className="divide-y divide-white/5">
+            <div className="divide-y divide-border/40">
               {reviews.map(rev => (
-                <div key={rev.id} className="p-5 space-y-3 hover:bg-white/[0.02] transition-colors">
+                <div key={rev.id} className="p-5 space-y-3 hover:bg-muted/20 transition-colors">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center gap-2.5">
                       <div className="flex items-center">
                         {[1, 2, 3, 4, 5].map(star => (
                           <Star
                             key={star}
-                            className={`w-4 h-4 ${star <= rev.rating ? 'text-amber-400 fill-amber-400' : 'text-slate-600'}`}
+                            className={`w-4 h-4 ${star <= rev.rating ? 'text-amber-400 fill-amber-400' : 'text-muted-foreground/30'}`}
                           />
                         ))}
                       </div>
                       <span className="font-extrabold text-foreground text-sm">{rev.intern_name}</span>
                       <span className="text-xs text-muted-foreground">({rev.intern_email})</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-slate-300 border border-white/10">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">
                         {rev.role}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-2">
                       {rev.rating >= 4 ? (
-                        <span className="px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold flex items-center gap-1">
+                        <span className="px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-[11px] font-bold flex items-center gap-1">
                           <span>🟢 Google Maps Candidate</span>
-                          {rev.posted_to_google && <span className="text-[10px] text-emerald-300 font-extrabold">• Shared ✓</span>}
+                          {rev.posted_to_google && <span className="text-[10px] text-emerald-600 dark:text-emerald-300 font-extrabold">• Shared ✓</span>}
                         </span>
                       ) : (
-                        <span className="px-2.5 py-1 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 text-[11px] font-bold flex items-center gap-1">
+                        <span className="px-2.5 py-1 rounded-full bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 text-[11px] font-bold flex items-center gap-1">
                           <Lock className="w-3 h-3" />
                           <span>🔒 Blocked from Google (Private Escalation)</span>
                         </span>
@@ -1064,20 +1105,20 @@ export function AdminInternshipsConsole() {
                   </div>
 
                   {/* Review Text */}
-                  <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 space-y-1">
+                  <div className="p-3.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-extrabold text-foreground">"{rev.review_title}"</span>
                       <span className="text-[11px] text-primary font-bold">{rev.category}</span>
                     </div>
-                    <p className="text-xs text-slate-300 leading-relaxed italic">
+                    <p className="text-xs text-foreground/90 leading-relaxed italic">
                       "{rev.review_text}"
                     </p>
                   </div>
 
                   {/* Recommendation badge & Admin Action */}
                   <div className="flex items-center justify-between pt-1 text-xs">
-                    <span className="text-slate-400 text-[11px]">
-                      Peer Recommendation: <strong className={rev.would_recommend ? 'text-emerald-400' : 'text-amber-400'}>{rev.would_recommend ? 'Yes, Recommended' : 'Suggested Improvements'}</strong>
+                    <span className="text-muted-foreground text-[11px]">
+                      Peer Recommendation: <strong className={rev.would_recommend ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}>{rev.would_recommend ? 'Yes, Recommended' : 'Suggested Improvements'}</strong>
                     </span>
 
                     <div className="flex items-center gap-2">
@@ -1088,13 +1129,13 @@ export function AdminInternshipsConsole() {
                             setReviews(internshipService.getInternReviews());
                             toast.success(`Marked feedback from ${rev.intern_name} as Resolved Internally.`);
                           }}
-                          className="px-3 py-1 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30 text-[11px] font-bold cursor-pointer transition-colors"
+                          className="px-3 py-1 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 text-[11px] font-bold cursor-pointer transition-colors"
                         >
                           Mark Resolved Internally
                         </button>
                       )}
                       {rev.status === 'Resolved Internally' && (
-                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
+                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
                           ✓ Resolved Internally
                         </span>
                       )}
@@ -1105,14 +1146,183 @@ export function AdminInternshipsConsole() {
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 text-xs text-slate-300 leading-relaxed">
-            <p className="font-bold text-white mb-1">Reputation Engine Guarantee</p>
-            <p className="text-white/70">
-              Only interns who rate <strong>4 or 5 stars</strong> see the Google Maps review button and copy-paste prompt. Any intern rating <strong>1, 2, or 3 stars</strong> is automatically blocked from the Google Maps prompt and routed strictly to this private leadership dashboard, completely insulating your Google Maps rating and local SEO rankings.
+          <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 text-xs text-muted-foreground leading-relaxed">
+            <p className="font-bold text-foreground mb-1">Reputation Engine Guarantee</p>
+            <p>
+              Only interns who rate <strong className="text-foreground">4 or 5 stars</strong> see the Google Maps review button and copy-paste prompt. Any intern rating <strong className="text-foreground">1, 2, or 3 stars</strong> is automatically blocked from the Google Maps prompt and routed strictly to this private leadership dashboard, completely insulating your Google Maps rating and local SEO rankings.
             </p>
           </div>
         </div>
       )}
+
+      {/* Modal: View Candidate Application Details & Resume */}
+      <AnimatePresence>
+        {selectedViewApp && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-card border border-border rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto text-left"
+            >
+              <div className="flex items-start justify-between border-b border-border/60 pb-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-black text-foreground text-lg sm:text-xl">{selectedViewApp.full_name}</h3>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                      selectedViewApp.status === 'Interview Scheduled'
+                        ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30'
+                        : selectedViewApp.status === 'Offered'
+                        ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30'
+                        : 'bg-muted text-foreground/80 border border-border'
+                    }`}>
+                      {selectedViewApp.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Applied on {selectedViewApp.created_at.split('T')[0]} • ID: <span className="font-mono text-[11px]">{selectedViewApp.id.slice(0, 8)}</span>
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedViewApp(null)}
+                  className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Grid of Key Candidate Info */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+                <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/60">
+                  <p className="text-[10.5px] font-bold uppercase text-muted-foreground tracking-wider mb-1">Role & Tenure</p>
+                  <p className="font-extrabold text-foreground">{selectedViewApp.role}</p>
+                  <p className="text-muted-foreground mt-0.5 font-medium">Duration: <strong className="text-foreground">{selectedViewApp.duration}</strong></p>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/60">
+                  <p className="text-[10.5px] font-bold uppercase text-muted-foreground tracking-wider mb-1">Academic Credentials</p>
+                  <p className="font-extrabold text-foreground">{selectedViewApp.college}</p>
+                  <p className="text-primary font-bold mt-0.5">{selectedViewApp.degree} (Class of {selectedViewApp.graduation_year})</p>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/60">
+                  <p className="text-[10.5px] font-bold uppercase text-muted-foreground tracking-wider mb-1">Contact Details</p>
+                  <p className="font-medium text-foreground">
+                    <a href={`mailto:${selectedViewApp.email}`} className="hover:text-primary hover:underline">{selectedViewApp.email}</a>
+                  </p>
+                  <p className="font-mono text-muted-foreground mt-0.5">
+                    <a href={`tel:${selectedViewApp.phone}`} className="hover:text-primary">{selectedViewApp.phone}</a>
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/60">
+                  <p className="text-[10.5px] font-bold uppercase text-muted-foreground tracking-wider mb-1">Profiles & Links</p>
+                  <div className="space-y-1">
+                    {selectedViewApp.linkedin ? (
+                      <a href={selectedViewApp.linkedin} target="_blank" rel="noreferrer" className="text-primary hover:underline inline-flex items-center gap-1 font-semibold">
+                        LinkedIn Profile <ExternalLink className="w-3 h-3" />
+                      </a>
+                    ) : (
+                      <span className="text-muted-foreground italic">No LinkedIn provided</span>
+                    )}
+                    {selectedViewApp.portfolio_or_social && (
+                      <p className="text-muted-foreground text-[11px] truncate">
+                        Other: {selectedViewApp.portfolio_or_social}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Resume Document Card */}
+              <div className="p-4 rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/5 space-y-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2.5 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-foreground text-xs sm:text-sm">Candidate Resume / CV</h4>
+                      <p className="text-[11px] text-muted-foreground">Uploaded document stored in Supabase Storage</p>
+                    </div>
+                  </div>
+                  {selectedViewApp.resume_url ? (
+                    <div className="flex flex-wrap gap-2">
+                      {selectedViewApp.resume_url.split(/\s*\|\s*|\s*,\s*/).filter(Boolean).map((url, idx) => (
+                        <a
+                          key={idx}
+                          href={url.startsWith('http') ? url : `https://${url}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md inline-flex items-center gap-1.5 transition-all cursor-pointer"
+                        >
+                          <span>Open Resume Document</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-xs text-muted-foreground italic font-medium px-3 py-1.5 rounded-lg bg-muted/60 border border-border">
+                      No resume uploaded
+                    </span>
+                  )}
+                </div>
+                {selectedViewApp.resume_url && (
+                  <p className="text-[11px] text-muted-foreground break-all font-mono">
+                    URL: {selectedViewApp.resume_url}
+                  </p>
+                )}
+              </div>
+
+              {/* Statement of Purpose */}
+              <div>
+                <label className="text-xs font-bold text-foreground block mb-1.5 uppercase tracking-wider">
+                  Statement of Purpose & Career Objectives
+                </label>
+                <div className="p-4 rounded-2xl bg-muted/30 border border-border text-xs text-foreground/90 leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto font-sans">
+                  {selectedViewApp.statement_of_purpose || 'No statement of purpose provided.'}
+                </div>
+              </div>
+
+              {/* Modal Actions */}
+              <div className="flex items-center justify-between pt-2 border-t border-border/60">
+                <button
+                  type="button"
+                  onClick={() => setSelectedViewApp(null)}
+                  className="px-4 py-2 rounded-xl bg-muted hover:bg-muted/80 text-xs font-bold text-foreground border border-border transition-colors cursor-pointer"
+                >
+                  Close
+                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const app = selectedViewApp;
+                      setSelectedViewApp(null);
+                      setScheduleModalApp(app);
+                      setInterviewDate(new Date(Date.now() + 86400000).toISOString().split('T')[0]);
+                    }}
+                    className="px-3.5 py-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold transition-colors cursor-pointer border border-primary/20"
+                  >
+                    Schedule Interview
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const app = selectedViewApp;
+                      setSelectedViewApp(null);
+                      handleIssueOffer(app);
+                    }}
+                    className="px-3.5 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-bold transition-colors cursor-pointer border border-emerald-500/20"
+                  >
+                    Issue Offer
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Modal: Schedule Interview */}
       <AnimatePresence>
@@ -1122,11 +1332,11 @@ export function AdminInternshipsConsole() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-card border border-white/15 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4"
+              className="bg-card border border-border rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-left"
             >
               <div className="flex items-center justify-between">
                 <h3 className="font-extrabold text-foreground text-base">Schedule Interview & Send Invite</h3>
-                <button onClick={() => setScheduleModalApp(null)} className="text-muted-foreground hover:text-white">
+                <button onClick={() => setScheduleModalApp(null)} className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted transition-colors cursor-pointer">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -1174,7 +1384,7 @@ export function AdminInternshipsConsole() {
                   <button
                     type="button"
                     onClick={() => setScheduleModalApp(null)}
-                    className="px-4 py-2 rounded-xl bg-white/5 text-xs font-bold text-slate-300"
+                    className="px-4 py-2 rounded-xl bg-muted hover:bg-muted/80 text-xs font-bold text-foreground border border-border cursor-pointer transition-colors"
                   >
                     Cancel
                   </button>
@@ -1200,11 +1410,11 @@ export function AdminInternshipsConsole() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-card border border-white/15 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4"
+              className="bg-card border border-border rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-left"
             >
               <div className="flex items-center justify-between">
                 <h3 className="font-extrabold text-foreground text-base">Add Email to Whitelist</h3>
-                <button onClick={() => setShowAddWhitelist(false)} className="text-muted-foreground hover:text-white">
+                <button onClick={() => setShowAddWhitelist(false)} className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted transition-colors cursor-pointer">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -1261,7 +1471,7 @@ export function AdminInternshipsConsole() {
                   <button
                     type="button"
                     onClick={() => setShowAddWhitelist(false)}
-                    className="px-4 py-2 rounded-xl bg-white/5 text-xs font-bold text-slate-300"
+                    className="px-4 py-2 rounded-xl bg-muted hover:bg-muted/80 text-xs font-bold text-foreground border border-border cursor-pointer transition-colors"
                   >
                     Cancel
                   </button>
@@ -1286,11 +1496,11 @@ export function AdminInternshipsConsole() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-card border border-white/15 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4"
+              className="bg-card border border-border rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-left"
             >
               <div className="flex items-center justify-between">
                 <h3 className="font-extrabold text-foreground text-base">Assign Stipulated Task</h3>
-                <button onClick={() => setShowCreateTask(false)} className="text-muted-foreground hover:text-white">
+                <button onClick={() => setShowCreateTask(false)} className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted transition-colors cursor-pointer">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -1362,7 +1572,7 @@ export function AdminInternshipsConsole() {
                   <button
                     type="button"
                     onClick={() => setShowCreateTask(false)}
-                    className="px-4 py-2 rounded-xl bg-white/5 text-xs font-bold text-slate-300"
+                    className="px-4 py-2 rounded-xl bg-muted hover:bg-muted/80 text-xs font-bold text-foreground border border-border cursor-pointer transition-colors"
                   >
                     Cancel
                   </button>
@@ -1387,11 +1597,11 @@ export function AdminInternshipsConsole() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-card border border-white/15 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4"
+              className="bg-card border border-border rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-left"
             >
               <div className="flex items-center justify-between">
                 <h3 className="font-extrabold text-foreground text-base">Add Milestone Incentive Reward</h3>
-                <button onClick={() => setShowAddIncentive(false)} className="text-muted-foreground hover:text-white">
+                <button onClick={() => setShowAddIncentive(false)} className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted transition-colors cursor-pointer">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -1460,7 +1670,7 @@ export function AdminInternshipsConsole() {
                   <button
                     type="button"
                     onClick={() => setShowAddIncentive(false)}
-                    className="px-4 py-2 rounded-xl bg-white/5 text-xs font-bold text-slate-300"
+                    className="px-4 py-2 rounded-xl bg-muted hover:bg-muted/80 text-xs font-bold text-foreground border border-border cursor-pointer transition-colors"
                   >
                     Cancel
                   </button>
@@ -1485,7 +1695,7 @@ export function AdminInternshipsConsole() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-card border border-white/15 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-4 my-8"
+              className="bg-card border border-border rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-4 my-8 text-left"
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -1495,7 +1705,7 @@ export function AdminInternshipsConsole() {
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">A unique Certificate No and cryptographic checksum are auto-generated on submission.</p>
                 </div>
-                <button onClick={() => setShowIssueCert(false)} className="text-muted-foreground hover:text-white cursor-pointer">
+                <button onClick={() => setShowIssueCert(false)} className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted transition-colors cursor-pointer">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -1667,22 +1877,22 @@ export function AdminInternshipsConsole() {
                   />
                 </div>
 
-                <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200">
-                  <p className="font-semibold mb-0.5">Auto-generated on Issue:</p>
-                  <p className="text-white/70">• Unique Certificate No (e.g. <span className="font-mono">SD-CERT-2026-BD-F7A3</span>) • Cryptographic Verification Checksum • Issue Date (today) • Permanent Registry Entry</p>
+                <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-foreground/90">
+                  <p className="font-bold text-amber-600 dark:text-amber-400 mb-0.5">Auto-generated on Issue:</p>
+                  <p className="text-muted-foreground">• Unique Certificate No (e.g. <span className="font-mono text-foreground font-semibold">SD-CERT-2026-BD-F7A3</span>) • Cryptographic Verification Checksum • Issue Date (today) • Permanent Registry Entry</p>
                 </div>
 
                 <div className="flex items-center justify-end gap-2 pt-2">
                   <button
                     type="button"
                     onClick={() => setShowIssueCert(false)}
-                    className="px-4 py-2 rounded-xl bg-white/5 text-xs font-bold text-slate-300 cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-muted hover:bg-muted/80 text-xs font-bold text-foreground border border-border cursor-pointer transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-black uppercase tracking-wider flex items-center gap-2 cursor-pointer transition-colors"
+                    className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-black uppercase tracking-wider flex items-center gap-2 cursor-pointer transition-colors shadow-md"
                   >
                     <BadgeCheck className="w-4 h-4" />
                     Issue Official Certificate
