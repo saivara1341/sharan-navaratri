@@ -504,11 +504,18 @@ export function AdminInternshipsConsole() {
                         <td className="py-3.5 px-4 text-slate-300">
                           <div>{app.email}</div>
                           <div className="text-[10px] text-muted-foreground">{app.phone}</div>
-                          {app.linkedin && (
-                            <a href={app.linkedin} target="_blank" rel="noreferrer" className="text-[10px] text-primary hover:underline inline-flex items-center gap-0.5 mt-0.5">
-                              LinkedIn <ExternalLink className="w-2.5 h-2.5" />
-                            </a>
-                          )}
+                          <div className="flex flex-wrap items-center gap-2 mt-1">
+                            {app.linkedin && (
+                              <a href={app.linkedin} target="_blank" rel="noreferrer" className="text-[10px] text-primary hover:underline inline-flex items-center gap-0.5">
+                                LinkedIn <ExternalLink className="w-2.5 h-2.5" />
+                              </a>
+                            )}
+                            {app.resume_url && (
+                              <a href={app.resume_url} target="_blank" rel="noreferrer" className="text-[10px] text-amber-400 hover:underline inline-flex items-center gap-0.5 font-bold">
+                                Resume <ExternalLink className="w-2.5 h-2.5" />
+                              </a>
+                            )}
+                          </div>
                         </td>
                         <td className="py-3.5 px-4">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${app.status === 'Interview Scheduled' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : app.status === 'Offered' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-white/10 text-slate-300'}`}>

@@ -627,6 +627,22 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
         setSubmitting(false);
         return;
       }
+
+      // Handle file uploads if candidate uploaded files
+      let finalResumeUrl = resumeUrl.trim();
+      if (uploadedFiles.length > 0) {
+        const uploadedUrls: string[] = [];
+        for (const file of uploadedFiles) {
+          const url = await internshipService.uploadResumeFile(file);
+          if (url) uploadedUrls.push(url);
+        }
+        if (uploadedUrls.length > 0) {
+          finalResumeUrl = finalResumeUrl
+            ? `${finalResumeUrl} | ${uploadedUrls.join(', ')}`
+            : uploadedUrls.join(', ');
+        }
+      }
+
       await internshipService.submitApplication({
         full_name: fullName,
         email,
@@ -639,7 +655,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
         linkedin,
         portfolio_or_social: portfolioOrSocial,
         statement_of_purpose: statementOfPurpose,
-        resume_url: resumeUrl
+        resume_url: finalResumeUrl
       });
       toast.success('Application submitted! We will get back to you shortly through email once shortlisted.');
       setApplicationModal(null);

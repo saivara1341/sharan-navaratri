@@ -88,3 +88,37 @@ CREATE INDEX IF NOT EXISTS idx_career_applications_phone ON public.career_applic
 CREATE INDEX IF NOT EXISTS idx_career_applications_role ON public.career_applications(role);
 CREATE INDEX IF NOT EXISTS idx_career_applications_status ON public.career_applications(status);
 CREATE INDEX IF NOT EXISTS idx_career_applications_created_at ON public.career_applications(created_at DESC);
+
+-- 7. Storage Bucket for Candidate Resumes & Supporting Documents
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'career-resumes',
+  'career-resumes',
+  true,
+  10485760, -- 10MB per file
+  ARRAY[
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'image/jpeg', 'image/png', 'image/webp'
+  ]
+)
+ON CONFLICT (id) DO UPDATE
+SET public = EXCLUDED.public,
+    file_size_limit = EXCLUDED.file_size_limit,
+    allowed_mime_types = EXCLUDED.allowed_mime_types;
+
+-- Allow candidate file uploads (PDF, DOC, DOCX, Images)
+DROP POLICY IF EXISTS "Public candidate resume uploads" ON storage.objects;
+CREATE POLICY "Public candidate resume uploads"
+ON storage.objects FOR INSERT TO anon, authenticated
+WITH CHECK (
+  bucket_id = 'career-resumes'
+);
+
+-- Allow reading of candidate resumes by applicants and administrators
+DROP POLICY IF EXISTS "Allow reading candidate resumes" ON storage.objects;
+CREATE POLICY "Allow reading candidate resumes"
+ON storage.objects FOR SELECT TO anon, authenticated
+USING (bucket_id = 'career-resumes');
+

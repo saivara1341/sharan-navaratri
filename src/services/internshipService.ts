@@ -510,6 +510,44 @@ export const internshipService = {
     return newApp;
   },
 
+  /**
+   * Uploads candidate resume or supporting files to Supabase Storage.
+   * Uploads to 'career-resumes' bucket, falling back to 'project-attachments'.
+   */
+  async uploadResumeFile(file: File): Promise<string | null> {
+    try {
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = `${Date.now()}-${safeName}`;
+
+      // 1. Try 'career-resumes' bucket
+      const { error: uploadErr } = await supabase.storage
+        .from('career-resumes')
+        .upload(path, file, { contentType: file.type || 'application/octet-stream', upsert: false });
+
+      if (!uploadErr) {
+        const { data } = supabase.storage.from('career-resumes').getPublicUrl(path);
+        return data.publicUrl;
+      }
+
+      // 2. Fallback to existing 'project-attachments' bucket if 'career-resumes' is pending migration
+      const fallbackPath = `${crypto.randomUUID()}/${crypto.randomUUID()}-${safeName}`;
+      const { error: fallbackErr } = await supabase.storage
+        .from('project-attachments')
+        .upload(fallbackPath, file, { contentType: file.type || 'application/octet-stream', upsert: false });
+
+      if (!fallbackErr) {
+        const { data } = supabase.storage.from('project-attachments').getPublicUrl(fallbackPath);
+        return data.publicUrl;
+      }
+
+      console.warn('Resume file upload failed on both buckets:', uploadErr, fallbackErr);
+      return null;
+    } catch (err) {
+      console.warn('uploadResumeFile exception:', err);
+      return null;
+    }
+  },
+
   async getApplications(): Promise<InternshipApplication[]> {
     // 1. First attempt to load from dedicated career_applications table
     try {
