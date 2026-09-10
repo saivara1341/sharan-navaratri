@@ -550,16 +550,17 @@ export const internshipService = {
 
   async getApplications(): Promise<InternshipApplication[]> {
     let directMapped: InternshipApplication[] = [];
-    let contactMapped: InternshipApplication[] = [];
+    let directQueried = false;
 
-    // 1. Load from dedicated career_applications table
+    // 1. Primary: Load from dedicated career_applications table
     try {
       const { data: directData, error: directErr } = await supabase
         .from('career_applications')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!directErr && directData && directData.length > 0) {
+      if (!directErr && directData !== null) {
+        directQueried = true;
         directMapped = directData.map((row: any) => ({
           id: row.id,
           created_at: row.created_at || new Date().toISOString(),
@@ -583,7 +584,15 @@ export const internshipService = {
       console.warn('Direct career_applications load error:', e);
     }
 
-    // 2. Also load from contact_submissions where inquiry_type='internship_application'
+    // If career_applications succeeded, it is the authoritative source!
+    // Overwrite local storage cache so deleted records are permanently removed locally too.
+    if (directQueried) {
+      setLocal(STORAGE_KEYS.APPLICATIONS, directMapped);
+      return directMapped;
+    }
+
+    // 2. Fallback: Only if career_applications failed (e.g. table not created yet), load from contact_submissions
+    let contactMapped: InternshipApplication[] = [];
     try {
       const { data, error } = await supabase
         .from('contact_submissions')
@@ -591,7 +600,7 @@ export const internshipService = {
         .eq('inquiry_type', 'internship_application')
         .order('created_at', { ascending: false });
 
-      if (!error && data && data.length > 0) {
+      if (!error && data !== null) {
         contactMapped = data.map((sub: any) => {
           const msg = sub.message || '';
           const roleMatch = msg.match(/Role Applied:\s*([^\n]+)/);
@@ -623,51 +632,46 @@ export const internshipService = {
             status: (sub.status === 'Interview Scheduled' ? 'Interview Scheduled' : sub.status === 'Offered' ? 'Offered' : 'Received') as any
           };
         });
+
+        setLocal(STORAGE_KEYS.APPLICATIONS, contactMapped);
+        return contactMapped;
       }
     } catch (e) {
       console.warn('contact_submissions load error:', e);
     }
 
-    // Merge sources intelligently
-    const mergedMap = new Map<string, InternshipApplication>();
+    // 3. Fallback to local storage ONLY if offline / all network queries failed
+    return getLocal<InternshipApplication[]>(STORAGE_KEYS.APPLICATIONS, []);
+  },
 
-    // Seed with contact submissions
-    for (const app of contactMapped) {
-      const key = `${app.email.toLowerCase()}_${app.role}`;
-      mergedMap.set(key, app);
-    }
-
-    // Overlay with directMapped (authoritative)
-    for (const app of directMapped) {
-      const key = `${app.email.toLowerCase()}_${app.role}`;
-      const existing = mergedMap.get(key);
-      if (existing) {
-        mergedMap.set(key, {
-          ...existing,
-          ...app,
-          resume_url: app.resume_url || existing.resume_url || '',
-          statement_of_purpose: app.statement_of_purpose || existing.statement_of_purpose || '',
-        });
-      } else {
-        mergedMap.set(key, app);
+  async deleteApplication(id: string, email?: string): Promise<boolean> {
+    try {
+      // 1. Delete from career_applications
+      if (id && !id.startsWith('app-')) {
+        await supabase.from('career_applications').delete().eq('id', id);
       }
-    }
-
-    // Merge with local storage fallback
-    const local = getLocal<InternshipApplication[]>(STORAGE_KEYS.APPLICATIONS, []);
-    for (const loc of local) {
-      const key = `${loc.email.toLowerCase()}_${loc.role}`;
-      const existing = mergedMap.get(key);
-      if (!existing) {
-        mergedMap.set(key, loc);
-      } else if (!existing.resume_url && loc.resume_url) {
-        existing.resume_url = loc.resume_url;
+      if (email) {
+        await supabase.from('career_applications').delete().ilike('email', email.trim());
       }
-    }
 
-    const result = Array.from(mergedMap.values());
-    result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    return result;
+      // 2. Delete from contact_submissions
+      if (email) {
+        await supabase.from('contact_submissions').delete().eq('inquiry_type', 'internship_application').ilike('email', email.trim());
+      }
+      if (id && !id.startsWith('app-')) {
+        await supabase.from('contact_submissions').delete().eq('id', id);
+      }
+
+      // 3. Purge from local storage cache
+      const current = getLocal<InternshipApplication[]>(STORAGE_KEYS.APPLICATIONS, []);
+      const updated = current.filter(a => a.id !== id && (email ? a.email.toLowerCase() !== email.toLowerCase() : true));
+      setLocal(STORAGE_KEYS.APPLICATIONS, updated);
+
+      return true;
+    } catch (err) {
+      console.warn('deleteApplication error:', err);
+      return false;
+    }
   },
 
   async updateApplicationStatus(id: string, status: InternshipApplication['status'], interviewDetails?: InternshipApplication['interview_details']) {

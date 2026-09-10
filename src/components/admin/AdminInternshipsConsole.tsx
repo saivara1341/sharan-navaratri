@@ -210,6 +210,22 @@ export function AdminInternshipsConsole() {
     }
   };
 
+  const handleDeleteApp = async (app: InternshipApplication) => {
+    if (!window.confirm(`Permanently delete application for "${app.full_name}" (${app.email}) from Supabase and local cache?`)) {
+      return;
+    }
+    const ok = await internshipService.deleteApplication(app.id, app.email);
+    if (ok) {
+      setApplications(prev => prev.filter(a => a.id !== app.id && a.email.toLowerCase() !== app.email.toLowerCase()));
+      toast.success(`Application for ${app.full_name} permanently deleted.`);
+      if (selectedViewApp?.id === app.id) {
+        setSelectedViewApp(null);
+      }
+    } else {
+      toast.error('Failed to delete application from database.');
+    }
+  };
+
   const handleAddWhitelist = (e: React.FormEvent) => {
     e.preventDefault();
     if (!wlEmail || !wlName) return;
@@ -577,6 +593,13 @@ export function AdminInternshipsConsole() {
                               className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[11px] font-bold transition-colors cursor-pointer border border-emerald-500/25"
                             >
                               Issue Offer
+                            </button>
+                            <button
+                              onClick={() => handleDeleteApp(app)}
+                              className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-500/15 hover:text-rose-600 transition-colors cursor-pointer border border-rose-500/25"
+                              title="Permanently delete application from database"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </td>
@@ -1305,6 +1328,16 @@ export function AdminInternshipsConsole() {
                     className="px-3.5 py-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold transition-colors cursor-pointer border border-primary/20"
                   >
                     Schedule Interview
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const app = selectedViewApp;
+                      handleDeleteApp(app);
+                    }}
+                    className="px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold transition-colors cursor-pointer border border-rose-500/20 flex items-center gap-1.5"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Delete Application
                   </button>
                   <button
                     type="button"
