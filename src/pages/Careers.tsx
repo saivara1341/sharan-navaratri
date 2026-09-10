@@ -261,8 +261,12 @@ export default function Careers() {
   const [linkedin, setLinkedin] = useState('');
   const [portfolioOrSocial, setPortfolioOrSocial] = useState('');
   const [statementOfPurpose, setStatementOfPurpose] = useState('');
-  const [resumeUrl, setResumeUrl] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+
+  // Strict limits for resume upload
+  const MAX_RESUME_SIZE_MB = 5;
+  const MAX_RESUME_SIZE_BYTES = MAX_RESUME_SIZE_MB * 1024 * 1024;
+  const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx'];
 
   // ─── Filtering ─────────────────────────────────────────────────────────────
   const filteredRoles = ROLES.filter(r => {
@@ -287,10 +291,28 @@ export default function Careers() {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      setUploadedFiles(prev => [...prev, ...newFiles]);
+    if (!e.target.files || e.target.files.length === 0) return;
+    const incomingFiles = Array.from(e.target.files);
+    const validFiles: File[] = [];
+
+    for (const file of incomingFiles) {
+      const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+      if (!ALLOWED_EXTENSIONS.includes(ext)) {
+        toast.error(`"${file.name}" is not supported. Please upload a PDF, DOC, or DOCX document.`);
+        continue;
+      }
+      if (file.size > MAX_RESUME_SIZE_BYTES) {
+        toast.error(`"${file.name}" exceeds the ${MAX_RESUME_SIZE_MB} MB limit (${(file.size / (1024 * 1024)).toFixed(1)} MB).`);
+        continue;
+      }
+      validFiles.push(file);
     }
+
+    if (validFiles.length > 0) {
+      setUploadedFiles(prev => [...prev, ...validFiles]);
+    }
+    // Clear input value so selecting the same file triggers change if re-uploaded
+    e.target.value = '';
   };
 
   const removeFile = (idx: number) => {
@@ -593,7 +615,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
   const resetForm = () => {
     setFullName(''); setEmail(''); setPhone(''); setCollege('');
     setDegree('MBA'); setOtherDegree('');
-    setStatementOfPurpose(''); setResumeUrl(''); setLinkedin('');
+    setStatementOfPurpose(''); setLinkedin('');
     setPortfolioOrSocial(''); setUploadedFiles([]);
   };
 
@@ -614,6 +636,12 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
       toast.error('Please enter your degree.');
       return;
     }
+    // Resume file upload is strictly required
+    if (uploadedFiles.length === 0) {
+      toast.error('Please upload your resume file (PDF, DOC, or DOCX up to 5 MB).');
+      return;
+    }
+
     setSubmitting(true);
     try {
       // Duplicate guard — check email and phone before submitting
@@ -628,19 +656,17 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
         return;
       }
 
-      // Handle file uploads if candidate uploaded files
-      let finalResumeUrl = resumeUrl.trim();
-      if (uploadedFiles.length > 0) {
-        const uploadedUrls: string[] = [];
-        for (const file of uploadedFiles) {
-          const url = await internshipService.uploadResumeFile(file);
-          if (url) uploadedUrls.push(url);
-        }
-        if (uploadedUrls.length > 0) {
-          finalResumeUrl = finalResumeUrl
-            ? `${finalResumeUrl} | ${uploadedUrls.join(', ')}`
-            : uploadedUrls.join(', ');
-        }
+      // Upload resume files directly to Supabase Storage
+      const uploadedUrls: string[] = [];
+      for (const file of uploadedFiles) {
+        const url = await internshipService.uploadResumeFile(file);
+        if (url) uploadedUrls.push(url);
+      }
+
+      if (uploadedUrls.length === 0) {
+        toast.error('Could not upload your resume to storage. Please check your file and internet connection.');
+        setSubmitting(false);
+        return;
       }
 
       await internshipService.submitApplication({
@@ -655,7 +681,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
         linkedin,
         portfolio_or_social: portfolioOrSocial,
         statement_of_purpose: statementOfPurpose,
-        resume_url: finalResumeUrl
+        resume_url: uploadedUrls.join(', ')
       });
       toast.success('Application submitted! We will get back to you shortly through email once shortlisted.');
       setApplicationModal(null);
@@ -1316,50 +1342,73 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                     />
                   </div>
 
-                  {/* File Upload */}
+                  {/* File Upload (Required - No URL) */}
                   <div>
-                    <label className="text-[11.5px] font-semibold text-foreground/90 block mb-1">
-                      Resume & Supporting Documents
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-[11.5px] font-semibold text-foreground/90 flex items-center gap-1">
+                        Resume / CV <span className="text-rose-500">*</span>
+                      </label>
+                      <span className="text-[10.5px] text-muted-foreground font-medium">Max 5 MB (PDF, DOC, DOCX)</span>
+                    </div>
+
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className="rounded-2xl border-2 border-dashed border-border hover:border-primary/50 bg-muted/25 hover:bg-muted/40 p-5 text-center cursor-pointer transition-all group"
+                      className={`rounded-2xl border-2 border-dashed p-4 sm:p-5 text-center cursor-pointer transition-all group ${
+                        uploadedFiles.length > 0
+                          ? 'border-emerald-500/50 bg-emerald-500/5 hover:bg-emerald-500/10'
+                          : 'border-border hover:border-primary/50 bg-muted/25 hover:bg-muted/40'
+                      }`}
                     >
-                      <Upload className="w-6 h-6 mx-auto text-primary transition-transform group-hover:-translate-y-0.5 mb-1.5" />
-                      <p className="text-xs text-foreground/80 font-medium">
-                        <span className="text-primary font-bold">Click to upload</span>{' '}
-                        or drag & drop — Resume, Cover Letter, Portfolio (multiple files allowed)
+                      <Upload className={`w-6 h-6 mx-auto mb-1.5 transition-transform group-hover:-translate-y-0.5 ${
+                        uploadedFiles.length > 0 ? 'text-emerald-500' : 'text-primary'
+                      }`} />
+                      <p className="text-xs text-foreground/85 font-medium">
+                        <span className="text-primary font-bold">Click to upload your resume</span> or drag & drop
                       </p>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">PDF, DOC, DOCX, PNG, JPG — up to 10 MB each</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">
+                        PDF, DOC, or DOCX up to 5 MB • File upload only
+                      </p>
                     </div>
                     <input
                       ref={fileInputRef}
                       type="file"
                       multiple
-                      accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                      accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                       onChange={handleFileChange}
                       className="hidden"
                     />
 
-                    {uploadedFiles.length > 0 && (
-                      <div className="mt-2.5 space-y-2">
+                    {uploadedFiles.length > 0 ? (
+                      <div className="mt-2.5 space-y-1.5">
                         {uploadedFiles.map((f, i) => (
-                          <div key={i} className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-muted/40 border border-border text-xs">
-                            <span className="text-foreground font-medium truncate flex-1 mr-2">{f.name}</span>
-                            <span className="text-muted-foreground text-[11px] mr-3">{(f.size / 1024).toFixed(0)} KB</span>
-                            <button type="button" onClick={() => removeFile(i)} className="text-rose-500 hover:text-rose-600 p-1 cursor-pointer">
-                              <X className="w-3.5 h-3.5" />
-                            </button>
+                          <div key={i} className="flex items-center justify-between px-3 py-2 rounded-xl bg-muted/40 border border-emerald-500/30 text-xs">
+                            <div className="flex items-center gap-2 truncate mr-2">
+                              <FileText className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                              <span className="text-foreground font-medium truncate">{f.name}</span>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span className="text-muted-foreground text-[11px]">
+                                {f.size >= 1024 * 1024
+                                  ? `${(f.size / (1024 * 1024)).toFixed(1)} MB`
+                                  : `${(f.size / 1024).toFixed(0)} KB`}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => removeFile(i)}
+                                className="text-rose-500 hover:text-rose-600 p-1 cursor-pointer"
+                                title="Remove file"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </div>
                         ))}
                       </div>
+                    ) : (
+                      <p className="text-[10.5px] text-amber-500/90 dark:text-amber-400 mt-1.5 flex items-center gap-1">
+                        * Resume file upload is mandatory. Links/URLs are not accepted.
+                      </p>
                     )}
-
-                    {/* Or paste link */}
-                    <div className="mt-2.5">
-                      <label className="text-[11px] font-semibold text-muted-foreground block mb-1">Or paste a Google Drive / portfolio link</label>
-                      <input type="url" value={resumeUrl} onChange={e => setResumeUrl(e.target.value)} className={dashboardInput} placeholder="https://drive.google.com/... or https://yourportfolio.com" />
-                    </div>
                   </div>
 
                   <div className="pt-2">
@@ -1369,7 +1418,7 @@ Authorized by: Founder & Designated Partner, Siddhi Dynamics LLP
                       className="w-full py-3 sm:py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs sm:text-sm tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-95 transition-all shadow-md hover:shadow-lg"
                     >
                       {submitting ? (
-                        <span>Submitting Application...</span>
+                        <span>Uploading Resume & Submitting...</span>
                       ) : (
                         <>
                           <Send className="w-4 h-4" /> Submit Application
