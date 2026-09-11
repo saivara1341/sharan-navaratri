@@ -4,8 +4,8 @@ import { useLocation } from 'react-router-dom';
 import siddhiLogo from '@/assets/siddhi-logo.png';
 
 const INTRO_STORAGE_KEY = 'siddhi-intro-seen';
-const INTRO_DURATION = 5000;
-const INTRO_EXIT_DURATION = 800;
+const INTRO_DURATION = 1500;
+const INTRO_EXIT_DURATION = 350;
 
 export const SiteIntro = () => {
   const location = useLocation();
@@ -26,7 +26,7 @@ export const SiteIntro = () => {
 
     const timer = window.setTimeout(
       () => setVisible(false),
-      reduceMotion ? 900 : INTRO_DURATION - INTRO_EXIT_DURATION
+      reduceMotion ? 600 : INTRO_DURATION - INTRO_EXIT_DURATION
     );
 
     return () => {
@@ -39,10 +39,11 @@ export const SiteIntro = () => {
     <AnimatePresence>
       {visible && (
         <motion.div
-          className="site-intro"
+          className="site-intro cursor-pointer"
+          onClick={() => setVisible(false)}
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.025, filter: 'blur(10px)' }}
+          exit={{ opacity: 0, scale: 1.02, filter: 'blur(6px)' }}
           transition={{ duration: INTRO_EXIT_DURATION / 1000, ease: [0.22, 1, 0.36, 1] }}
           role="status"
           aria-label="Welcome to Siddhi Dynamics"
