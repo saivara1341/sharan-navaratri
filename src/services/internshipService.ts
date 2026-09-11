@@ -511,6 +511,216 @@ export const internshipService = {
   },
 
   /**
+   * Parses Supabase storage bucket name and object path from a URL or raw storage path.
+   */
+  parseStorageUrl(rawUrl: string): { bucket: string; path: string } | null {
+    if (!rawUrl || typeof rawUrl !== 'string') return null;
+    const cleanUrl = rawUrl.trim();
+
+    // Match standard Supabase storage endpoints:
+    // .../storage/v1/object/(public|sign|authenticated)/<bucket>/<path>
+    const objMatch = cleanUrl.match(/\/storage\/v1\/object\/(?:public|sign|authenticated)\/([^/?#]+)\/([^?#]+)/);
+    if (objMatch) {
+      return {
+        bucket: decodeURIComponent(objMatch[1]),
+        path: decodeURIComponent(objMatch[2])
+      };
+    }
+
+    // Match relative or direct paths: "career-resumes/<path>" or "project-attachments/<path>"
+    const directMatch = cleanUrl.match(/^(career-resumes|project-attachments|resumes)\/(.+)$/);
+    if (directMatch) {
+      return {
+        bucket: directMatch[1],
+        path: decodeURIComponent(directMatch[2])
+      };
+    }
+
+    return null;
+  },
+
+  /**
+   * Resolves a fully accessible URL for a candidate resume, creating a signed URL if private
+   * or falling back to alternate buckets if needed.
+   */
+  async getAccessibleResumeUrl(rawUrl: string): Promise<string> {
+    if (!rawUrl || typeof rawUrl !== 'string') return '';
+    const clean = rawUrl.trim();
+
+    const parsed = this.parseStorageUrl(clean);
+    if (!parsed) {
+      return clean.startsWith('http') ? clean : `https://${clean}`;
+    }
+
+    const { bucket, path } = parsed;
+
+    // 1. Try creating a signed URL on the primary bucket (works for both public and private buckets)
+    try {
+      const { data: signed, error: signErr } = await supabase.storage
+        .from(bucket)
+        .createSignedUrl(path, 7200); // 2 hours
+      if (!signErr && signed?.signedUrl) {
+        return signed.signedUrl;
+      }
+    } catch {
+      // Continue to fallback
+    }
+
+    // 2. If bucket is 'career-resumes' but failed (maybe uploaded under project-attachments or vice versa)
+    const alternateBucket = bucket === 'career-resumes' ? 'project-attachments' : 'career-resumes';
+    try {
+      const { data: altSigned, error: altErr } = await supabase.storage
+        .from(alternateBucket)
+        .createSignedUrl(path, 7200);
+      if (!altErr && altSigned?.signedUrl) {
+        return altSigned.signedUrl;
+      }
+    } catch {
+      // Continue to fallback
+    }
+
+    // 3. Fallback to public URL of the bucket
+    const { data: pub } = supabase.storage.from(bucket).getPublicUrl(path);
+    return pub?.publicUrl || clean;
+  },
+
+  /**
+   * Opens a candidate resume in a new tab safely.
+   * Handles signed URLs, blob downloads, and alternate buckets to prevent 'NoSuchBucket' and 'Bucket not found' 404s.
+   */
+  async openResumeDocument(rawUrl: string, candidateName?: string): Promise<{ success: boolean; error?: string; code?: string }> {
+    if (!rawUrl || !rawUrl.trim()) {
+      return { success: false, error: 'No resume document URL provided.' };
+    }
+
+    const cleanUrl = rawUrl.trim();
+    const parsed = this.parseStorageUrl(cleanUrl);
+
+    // If it's an external URL (Google Drive, LinkedIn, etc.), open directly
+    if (!parsed) {
+      const targetUrl = cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`;
+      window.open(targetUrl, '_blank', 'noopener,noreferrer');
+      return { success: true };
+    }
+
+    const { bucket, path } = parsed;
+
+    // Helper to safely open URL
+    const openUrl = (targetUrl: string) => {
+      const win = window.open(targetUrl, '_blank', 'noopener,noreferrer');
+      if (!win) {
+        const a = document.createElement('a');
+        a.href = targetUrl;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    };
+
+    // Helper to trigger blob download or view
+    const openBlob = (blob: Blob) => {
+      const blobUrl = URL.createObjectURL(blob);
+      const win = window.open(blobUrl, '_blank');
+      if (!win) {
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = `${(candidateName || 'Candidate_Resume').replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    };
+
+    // 1. Try to create a signed URL on primary bucket
+    try {
+      const { data: signed, error: signErr } = await supabase.storage
+        .from(bucket)
+        .createSignedUrl(path, 7200);
+
+      if (!signErr && signed?.signedUrl) {
+        openUrl(signed.signedUrl);
+        return { success: true };
+      }
+    } catch {
+      // Fall through
+    }
+
+    // 2. Try alternate bucket signed URL (e.g. project-attachments if career-resumes failed or vice-versa)
+    const alternateBucket = bucket === 'career-resumes' ? 'project-attachments' : 'career-resumes';
+    try {
+      const { data: altSigned, error: altErr } = await supabase.storage
+        .from(alternateBucket)
+        .createSignedUrl(path, 7200);
+
+      if (!altErr && altSigned?.signedUrl) {
+        openUrl(altSigned.signedUrl);
+        return { success: true };
+      }
+    } catch {
+      // Fall through
+    }
+
+    // 3. Try direct blob download on primary bucket (uses active admin session)
+    try {
+      const { data: blob, error: dlErr } = await supabase.storage
+        .from(bucket)
+        .download(path);
+
+      if (!dlErr && blob) {
+        openBlob(blob);
+        return { success: true };
+      }
+    } catch {
+      // Fall through
+    }
+
+    // 4. Try direct blob download on alternate bucket
+    try {
+      const { data: altBlob, error: altDlErr } = await supabase.storage
+        .from(alternateBucket)
+        .download(path);
+
+      if (!altDlErr && altBlob) {
+        openBlob(altBlob);
+        return { success: true };
+      }
+    } catch {
+      // Fall through
+    }
+
+    // 5. Test if public URL responds or returns NoSuchBucket / 404
+    try {
+      const pubUrl = cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`;
+      const res = await fetch(pubUrl, { method: 'GET' });
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        if (errText.includes('NoSuchBucket') || errText.includes('Bucket not found') || res.status === 404) {
+          return {
+            success: false,
+            code: 'NoSuchBucket',
+            error: `Storage bucket '${bucket}' is not configured in Supabase. Please run the SQL fix script in your Supabase SQL Editor.`
+          };
+        }
+      } else {
+        openUrl(pubUrl);
+        return { success: true };
+      }
+    } catch {
+      // Final fallback: open cleanUrl directly
+      openUrl(cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`);
+      return { success: true };
+    }
+
+    return {
+      success: false,
+      code: 'NoSuchBucket',
+      error: `Could not open resume. Storage bucket '${bucket}' was not found. Please apply the SQL fix script in Supabase.`
+    };
+  },
+
+  /**
    * Uploads candidate resume or supporting files to Supabase Storage.
    * Uploads to 'career-resumes' bucket, falling back to 'project-attachments'.
    */
@@ -536,6 +746,13 @@ export const internshipService = {
         .upload(fallbackPath, file, { contentType: file.type || 'application/octet-stream', upsert: false });
 
       if (!fallbackErr) {
+        // Try creating long-lived signed URL if bucket is private, otherwise use public URL
+        const { data: signed } = await supabase.storage
+          .from('project-attachments')
+          .createSignedUrl(fallbackPath, 60 * 60 * 24 * 365); // 1 year
+
+        if (signed?.signedUrl) return signed.signedUrl;
+
         const { data } = supabase.storage.from('project-attachments').getPublicUrl(fallbackPath);
         return data.publicUrl;
       }

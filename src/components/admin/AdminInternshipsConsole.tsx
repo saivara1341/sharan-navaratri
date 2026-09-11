@@ -31,7 +31,10 @@ import {
   Eye,
   Star,
   ArrowUpRight,
-  Lock
+  Lock,
+  Loader2,
+  Copy,
+  Database
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { 
@@ -87,6 +90,31 @@ export function AdminInternshipsConsole() {
 
   // Modal: View Candidate Application Details
   const [selectedViewApp, setSelectedViewApp] = useState<InternshipApplication | null>(null);
+  const [openingResumeUrl, setOpeningResumeUrl] = useState<string | null>(null);
+  const [storageBucketErrorModal, setStorageBucketErrorModal] = useState<boolean>(false);
+
+  const handleOpenResume = async (url: string, candidateName?: string) => {
+    if (!url) {
+      toast.error('No resume document attached.');
+      return;
+    }
+    setOpeningResumeUrl(url);
+    try {
+      const result = await internshipService.openResumeDocument(url, candidateName);
+      if (!result.success) {
+        if (result.code === 'NoSuchBucket' || result.error?.includes('NoSuchBucket') || result.error?.includes('Bucket not found')) {
+          setStorageBucketErrorModal(true);
+          toast.error('Supabase storage bucket not found. Please apply the SQL setup script.');
+        } else {
+          toast.error(result.error || 'Failed to open resume document.');
+        }
+      }
+    } catch (err: any) {
+      toast.error('Could not open candidate resume: ' + (err?.message || 'Error'));
+    } finally {
+      setOpeningResumeUrl(null);
+    }
+  };
 
   // Modal: Schedule Interview
   const [scheduleModalApp, setScheduleModalApp] = useState<InternshipApplication | null>(null);
@@ -540,17 +568,21 @@ export function AdminInternshipsConsole() {
                           {app.resume_url ? (
                             <div className="flex flex-col gap-1">
                               {app.resume_url.split(/\s*\|\s*|\s*,\s*/).filter(Boolean).map((url, idx) => (
-                                <a
+                                <button
                                   key={idx}
-                                  href={url.startsWith('http') ? url : `https://${url}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 font-bold text-xs border border-emerald-500/30 transition-all w-fit shadow-xs group cursor-pointer"
+                                  type="button"
+                                  onClick={() => handleOpenResume(url, app.full_name)}
+                                  disabled={openingResumeUrl === url}
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 font-bold text-xs border border-emerald-500/30 transition-all w-fit shadow-xs group cursor-pointer disabled:opacity-60"
                                   title="Open candidate resume"
                                 >
-                                  <FileText className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 group-hover:scale-110 transition-transform" />
-                                  <span>View Resume ↗</span>
-                                </a>
+                                  {openingResumeUrl === url ? (
+                                    <Loader2 className="w-3.5 h-3.5 text-emerald-600 animate-spin shrink-0" />
+                                  ) : (
+                                    <FileText className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 group-hover:scale-110 transition-transform" />
+                                  )}
+                                  <span>{openingResumeUrl === url ? 'Opening...' : 'View Resume ↗'}</span>
+                                </button>
                               ))}
                             </div>
                           ) : (
@@ -1272,16 +1304,26 @@ export function AdminInternshipsConsole() {
                   {selectedViewApp.resume_url ? (
                     <div className="flex flex-wrap gap-2">
                       {selectedViewApp.resume_url.split(/\s*\|\s*|\s*,\s*/).filter(Boolean).map((url, idx) => (
-                        <a
+                        <button
                           key={idx}
-                          href={url.startsWith('http') ? url : `https://${url}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md inline-flex items-center gap-1.5 transition-all cursor-pointer"
+                          type="button"
+                          onClick={() => handleOpenResume(url, selectedViewApp.full_name)}
+                          disabled={openingResumeUrl === url}
+                          className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md inline-flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-60"
+                          title="Open candidate resume document"
                         >
-                          <span>Open Resume Document</span>
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
+                          {openingResumeUrl === url ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              <span>Opening Resume...</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>Open Resume Document</span>
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </>
+                          )}
+                        </button>
                       ))}
                     </div>
                   ) : (
@@ -1351,6 +1393,97 @@ export function AdminInternshipsConsole() {
                     Issue Offer
                   </button>
                 </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal: Storage Bucket Setup & Fix Instructions */}
+      <AnimatePresence>
+        {storageBucketErrorModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-card border-2 border-amber-500/40 w-full max-w-xl rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-border">
+                <div className="flex items-center gap-2 text-amber-500">
+                  <Database className="w-5 h-5" />
+                  <h3 className="font-black text-lg text-foreground">Storage Bucket Setup Required</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setStorageBucketErrorModal(false)}
+                  className="p-1 rounded-lg text-muted-foreground hover:bg-muted"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-600 dark:text-amber-400 leading-relaxed font-medium">
+                The storage bucket <code className="font-mono font-bold bg-amber-500/20 px-1.5 py-0.5 rounded">career-resumes</code> has not yet been registered in your Supabase project, causing Supabase to return <span className="font-mono font-bold">404 (NoSuchBucket)</span> when opening resumes.
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-xs text-foreground font-bold">How to fix in 30 seconds:</p>
+                <ol className="text-xs text-muted-foreground space-y-1.5 list-decimal list-inside leading-relaxed">
+                  <li>Open your <strong>Supabase Dashboard</strong> (<a href="https://supabase.com/dashboard/project/xoqpxckowwubeqdtazks/sql" target="_blank" rel="noreferrer" className="text-primary underline font-medium">project/xoqpxckowwubeqdtazks/sql</a>).</li>
+                  <li>Click <strong>SQL Editor</strong> in the left sidebar.</li>
+                  <li>Click <strong>New Query</strong>, paste the script below, and click <strong>Run</strong>.</li>
+                  <li>Done! All candidate resumes will open instantly.</li>
+                </ol>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">SQL Fix Script</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const sql = `-- 1. Create 'career-resumes' public storage bucket
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES ('career-resumes', 'career-resumes', true, 10485760, ARRAY['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png', 'image/webp'])
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- 2. Make 'project-attachments' bucket public for existing uploaded resumes
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES ('project-attachments', 'project-attachments', true, 10485760, ARRAY['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- 3. Allow uploads and reading
+DROP POLICY IF EXISTS "Public candidate resume uploads" ON storage.objects;
+CREATE POLICY "Public candidate resume uploads" ON storage.objects FOR INSERT TO anon, authenticated WITH CHECK (bucket_id = 'career-resumes');
+
+DROP POLICY IF EXISTS "Allow reading candidate resumes" ON storage.objects;
+CREATE POLICY "Allow reading candidate resumes" ON storage.objects FOR SELECT TO anon, authenticated USING (bucket_id = 'career-resumes');
+
+DROP POLICY IF EXISTS "Allow reading project attachments" ON storage.objects;
+CREATE POLICY "Allow reading project attachments" ON storage.objects FOR SELECT TO anon, authenticated USING (bucket_id = 'project-attachments');`;
+                      navigator.clipboard.writeText(sql);
+                      toast.success('SQL fix script copied to clipboard!');
+                    }}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline cursor-pointer"
+                  >
+                    <Copy className="w-3.5 h-3.5" /> Copy SQL Script
+                  </button>
+                </div>
+                <div className="p-3 bg-muted/60 border border-border rounded-xl font-mono text-[11px] text-foreground/80 max-h-36 overflow-y-auto whitespace-pre">
+{`INSERT INTO storage.buckets (id, name, public) VALUES ('career-resumes', 'career-resumes', true) ON CONFLICT (id) DO UPDATE SET public = true;
+INSERT INTO storage.buckets (id, name, public) VALUES ('project-attachments', 'project-attachments', true) ON CONFLICT (id) DO UPDATE SET public = true;`}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-border">
+                <button
+                  type="button"
+                  onClick={() => setStorageBucketErrorModal(false)}
+                  className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:bg-primary/90 transition-colors cursor-pointer"
+                >
+                  I Understand / Close
+                </button>
               </div>
             </motion.div>
           </div>
