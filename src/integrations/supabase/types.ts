@@ -14,324 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      career_applications: {
-        Row: {
-          college: string
-          created_at: string
-          degree: string
-          duration: string
-          email: string
-          full_name: string
-          graduation_year: string
-          id: string
-          interview_details: Json | null
-          linkedin: string | null
-          phone: string
-          portfolio_or_social: string | null
-          resume_url: string | null
-          role: string
-          statement_of_purpose: string
-          status: string
-          updated_at: string
-        }
-        Insert: {
-          college: string
-          created_at?: string
-          degree: string
-          duration?: string
-          email: string
-          full_name: string
-          graduation_year?: string
-          id?: string
-          interview_details?: Json | null
-          linkedin?: string | null
-          phone: string
-          portfolio_or_social?: string | null
-          resume_url?: string | null
-          role: string
-          statement_of_purpose: string
-          status?: string
-          updated_at?: string
-        }
-        Update: {
-          college?: string
-          created_at?: string
-          degree?: string
-          duration?: string
-          email?: string
-          full_name?: string
-          graduation_year?: string
-          id?: string
-          interview_details?: Json | null
-          linkedin?: string | null
-          phone?: string
-          portfolio_or_social?: string | null
-          resume_url?: string | null
-          role?: string
-          statement_of_purpose?: string
-          status?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      intern_onboarding_agreements: {
-        Row: {
-          accepted_at: string
-          college_id_number: string
-          college_name: string
-          created_at: string
-          email: string
-          full_name: string
-          govt_id_number: string
-          govt_id_type: string
-          id: string
-          nda_agreed: boolean
-          role: string
-          rules_agreed: boolean
-          signature_text: string
-          terms_agreed: boolean
-          updated_at: string
-        }
-        Insert: {
-          accepted_at?: string
-          college_id_number: string
-          college_name: string
-          created_at?: string
-          email: string
-          full_name: string
-          govt_id_number: string
-          govt_id_type: string
-          id?: string
-          nda_agreed?: boolean
-          role: string
-          rules_agreed?: boolean
-          signature_text: string
-          terms_agreed?: boolean
-          updated_at?: string
-        }
-        Update: {
-          accepted_at?: string
-          college_id_number?: string
-          college_name?: string
-          created_at?: string
-          email?: string
-          full_name?: string
-          govt_id_number?: string
-          govt_id_type?: string
-          id?: string
-          nda_agreed?: boolean
-          role?: string
-          rules_agreed?: boolean
-          signature_text?: string
-          terms_agreed?: boolean
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      issued_certificates: {
-        Row: {
-          certificate_no: string
-          college_id_number: string
-          college_name: string
-          completion_date: string
-          created_at: string
-          duration: string
-          govt_id_masked: string
-          govt_id_type: string
-          grade: string
-          id: string
-          issue_date: string
-          issued_by: string
-          key_achievements: Json
-          points_of_proof_count: number
-          recipient_email: string
-          recipient_name: string
-          role: string
-          start_date: string
-          status: string
-          updated_at: string
-          verification_checksum: string
-        }
-        Insert: {
-          certificate_no: string
-          college_id_number: string
-          college_name: string
-          completion_date: string
-          created_at?: string
-          duration: string
-          govt_id_masked: string
-          govt_id_type: string
-          grade?: string
-          id?: string
-          issue_date?: string
-          issued_by?: string
-          key_achievements?: Json
-          points_of_proof_count?: number
-          recipient_email: string
-          recipient_name: string
-          role: string
-          start_date: string
-          status?: string
-          updated_at?: string
-          verification_checksum: string
-        }
-        Update: {
-          certificate_no?: string
-          college_id_number?: string
-          college_name?: string
-          completion_date?: string
-          created_at?: string
-          duration?: string
-          govt_id_masked?: string
-          govt_id_type?: string
-          grade?: string
-          id?: string
-          issue_date?: string
-          issued_by?: string
-          key_achievements?: Json
-          points_of_proof_count?: number
-          recipient_email?: string
-          recipient_name?: string
-          role?: string
-          start_date?: string
-          status?: string
-          updated_at?: string
-          verification_checksum?: string
-        }
-        Relationships: []
-      }
-      intern_tasks: {
-        Row: {
-          assigned_to_email: string | null
-          assigned_to_role: string
-          created_at: string
-          created_by: string
-          description: string
-          id: string
-          priority: string
-          status: string
-          stipulated_deadline: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          assigned_to_email?: string | null
-          assigned_to_role?: string
-          created_at?: string
-          created_by?: string
-          description: string
-          id?: string
-          priority?: string
-          status?: string
-          stipulated_deadline: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          assigned_to_email?: string | null
-          assigned_to_role?: string
-          created_at?: string
-          created_by?: string
-          description?: string
-          id?: string
-          priority?: string
-          status?: string
-          stipulated_deadline?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      intern_deadline_extensions: {
-        Row: {
-          admin_remarks: string | null
-          created_at: string
-          id: string
-          intern_email: string
-          intern_name: string
-          original_deadline: string
-          reason: string
-          requested_deadline: string
-          reviewed_at: string | null
-          status: string
-          task_id: string
-          task_title: string
-          updated_at: string
-        }
-        Insert: {
-          admin_remarks?: string | null
-          created_at?: string
-          id?: string
-          intern_email: string
-          intern_name: string
-          original_deadline: string
-          reason: string
-          requested_deadline: string
-          reviewed_at?: string | null
-          status?: string
-          task_id: string
-          task_title: string
-          updated_at?: string
-        }
-        Update: {
-          admin_remarks?: string | null
-          created_at?: string
-          id?: string
-          intern_email?: string
-          intern_name?: string
-          original_deadline?: string
-          reason?: string
-          requested_deadline?: string
-          reviewed_at?: string | null
-          status?: string
-          task_id?: string
-          task_title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      intern_data_requests: {
-        Row: {
-          admin_response: string | null
-          category: string
-          created_at: string
-          description: string
-          id: string
-          intern_email: string
-          intern_name: string
-          reviewed_at: string | null
-          status: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          admin_response?: string | null
-          category?: string
-          created_at?: string
-          description: string
-          id?: string
-          intern_email: string
-          intern_name: string
-          reviewed_at?: string | null
-          status?: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          admin_response?: string | null
-          category?: string
-          created_at?: string
-          description?: string
-          id?: string
-          intern_email?: string
-          intern_name?: string
-          reviewed_at?: string | null
-          status?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       agency_client_intake_links: {
         Row: {
           agency_email: string
@@ -665,7 +347,6 @@ export type Database = {
       contact_submissions: {
         Row: {
           assigned_to: string | null
-          attachments: Json
           bounty_reward: string | null
           consent_at: string | null
           consent_given: boolean
@@ -683,7 +364,6 @@ export type Database = {
         }
         Insert: {
           assigned_to?: string | null
-          attachments?: Json
           bounty_reward?: string | null
           consent_at?: string | null
           consent_given?: boolean
@@ -701,7 +381,6 @@ export type Database = {
         }
         Update: {
           assigned_to?: string | null
-          attachments?: Json
           bounty_reward?: string | null
           consent_at?: string | null
           consent_given?: boolean
@@ -1090,12 +769,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1119,11 +798,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1144,11 +823,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1169,11 +848,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1186,11 +865,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
