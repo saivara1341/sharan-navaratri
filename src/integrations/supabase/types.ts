@@ -258,6 +258,66 @@ export type Database = {
         }
         Relationships: []
       }
+      career_applications: {
+        Row: {
+          college: string
+          created_at: string
+          degree: string
+          duration: string
+          email: string
+          full_name: string
+          graduation_year: string
+          id: string
+          interview_details: Json | null
+          linkedin: string | null
+          phone: string
+          portfolio_or_social: string | null
+          resume_url: string | null
+          role: string
+          statement_of_purpose: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          college: string
+          created_at?: string
+          degree: string
+          duration?: string
+          email: string
+          full_name: string
+          graduation_year?: string
+          id?: string
+          interview_details?: Json | null
+          linkedin?: string | null
+          phone: string
+          portfolio_or_social?: string | null
+          resume_url?: string | null
+          role: string
+          statement_of_purpose: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          college?: string
+          created_at?: string
+          degree?: string
+          duration?: string
+          email?: string
+          full_name?: string
+          graduation_year?: string
+          id?: string
+          interview_details?: Json | null
+          linkedin?: string | null
+          phone?: string
+          portfolio_or_social?: string | null
+          resume_url?: string | null
+          role?: string
+          statement_of_purpose?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           created_at: string
