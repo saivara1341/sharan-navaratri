@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -255,6 +255,66 @@ export type Database = {
           user_email?: string
           website?: string | null
           youtube?: string | null
+        }
+        Relationships: []
+      }
+      career_applications: {
+        Row: {
+          college: string
+          created_at: string
+          degree: string
+          duration: string
+          email: string
+          full_name: string
+          graduation_year: string
+          id: string
+          interview_details: Json | null
+          linkedin: string | null
+          phone: string
+          portfolio_or_social: string | null
+          resume_url: string | null
+          role: string
+          statement_of_purpose: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          college: string
+          created_at?: string
+          degree: string
+          duration?: string
+          email: string
+          full_name: string
+          graduation_year?: string
+          id?: string
+          interview_details?: Json | null
+          linkedin?: string | null
+          phone: string
+          portfolio_or_social?: string | null
+          resume_url?: string | null
+          role: string
+          statement_of_purpose: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          college?: string
+          created_at?: string
+          degree?: string
+          duration?: string
+          email?: string
+          full_name?: string
+          graduation_year?: string
+          id?: string
+          interview_details?: Json | null
+          linkedin?: string | null
+          phone?: string
+          portfolio_or_social?: string | null
+          resume_url?: string | null
+          role?: string
+          statement_of_purpose?: string
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
