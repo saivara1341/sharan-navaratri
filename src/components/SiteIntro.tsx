@@ -1,7 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import siddhiLogo from '@/assets/siddhi-logo.png';
+import siddhiLogo from '@/assets/siddhi-logo-transparent.png';
 
 const INTRO_STORAGE_KEY = 'siddhi-intro-seen';
 const INTRO_DURATION = 1500;
