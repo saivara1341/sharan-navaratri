@@ -287,7 +287,7 @@ export default function Careers() {
         continue;
       }
       if (file.size > MAX_RESUME_SIZE_BYTES) {
-        toast.error(\`"\${file.name}" exceeds the \${MAX_RESUME_SIZE_MB} MB limit (\${(file.size / (1024 * 1024)).toFixed(1)} MB).\`);
+        toast.error(`"${file.name}" exceeds the ${MAX_RESUME_SIZE_MB} MB limit (${(file.size / (1024 * 1024)).toFixed(1)} MB).`);
         continue;
       }
       validFiles.push(file);
