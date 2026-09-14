@@ -283,7 +283,7 @@ export default function Careers() {
     for (const file of incomingFiles) {
       const ext = '.' + file.name.split('.').pop()?.toLowerCase();
       if (!ALLOWED_EXTENSIONS.includes(ext)) {
-        toast.error(\`"\${file.name}" is not supported. Please upload a PDF, DOC, or DOCX document.\`);
+        toast.error(`"${file.name}" is not supported. Please upload a PDF, DOC, or DOCX document.`);
         continue;
       }
       if (file.size > MAX_RESUME_SIZE_BYTES) {
