@@ -264,10 +264,10 @@ export default function Careers() {
 
   const activeFilterName = () => {
     if (empFilter !== 'all' && roleFilter !== 'all') {
-      return \`"\${empFilter}" + "\${roleFilter}"\`;
+      return `"${empFilter}" + "${roleFilter}"`;
     }
-    if (empFilter !== 'all') return \`"\${empFilter}"\`;
-    if (roleFilter !== 'all') return \`"\${roleFilter}"\`;
+    if (empFilter !== 'all') return `"${empFilter}"`;
+    if (roleFilter !== 'all') return `"${roleFilter}"`;
     return 'this category';
   };
 
@@ -283,11 +283,11 @@ export default function Careers() {
     for (const file of incomingFiles) {
       const ext = '.' + file.name.split('.').pop()?.toLowerCase();
       if (!ALLOWED_EXTENSIONS.includes(ext)) {
-        toast.error(\`"\${file.name}" is not supported. Please upload a PDF, DOC, or DOCX document.\`);
+        toast.error(`"${file.name}" is not supported. Please upload a PDF, DOC, or DOCX document.`);
         continue;
       }
       if (file.size > MAX_RESUME_SIZE_BYTES) {
-        toast.error(\`"\${file.name}" exceeds the \${MAX_RESUME_SIZE_MB} MB limit (\${(file.size / (1024 * 1024)).toFixed(1)} MB).\`);
+        toast.error(`"${file.name}" exceeds the ${MAX_RESUME_SIZE_MB} MB limit (${(file.size / (1024 * 1024)).toFixed(1)} MB).`);
         continue;
       }
       validFiles.push(file);
@@ -304,7 +304,7 @@ export default function Careers() {
   };
 
   const handleDownloadJd = async (role: RoleJD) => {
-    const jdText = \`
+    const jdText = `
 ================================================================================
 SIDDHI DYNAMICS LLP — OFFICIAL JOB DESCRIPTION & INTERNSHIP TERMS
 Position: \${role.title}
@@ -341,12 +341,12 @@ Website: https://siddhidynamics.in
 • TASK WORKFLOW & TIMELINES: All tasks are assigned through the internal platform 
   with stipulated deadlines. If an intern requires additional time to conclude a 
   client engagement or needs portal approval, timeline extensions can be requested via the portal.
-\`;
+`;
     const blob = new Blob([jdText], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = \`\${role.title.replace(/ /g, '_')}_JD.txt\`;
+    a.download = `\${role.title.replace(/ /g, '_')}_JD.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -500,7 +500,7 @@ Website: https://siddhidynamics.in
                     <button
                       key={t}
                       onClick={() => setEmpFilter(t as any)}
-                      className={\`px-3 py-1.5 rounded-lg text-xs font-bold transition-all \${empFilter === t ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}\`}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all \${empFilter === t ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                       \${t === 'all' ? 'All Types' : t}
                     </button>
@@ -511,14 +511,14 @@ Website: https://siddhidynamics.in
                     <button
                       key={c.id}
                       onClick={() => setRoleFilter(c.id)}
-                      className={\`px-3 py-1.5 rounded-lg text-xs font-bold transition-all \${roleFilter === c.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}\`}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all \${roleFilter === c.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                       \${c.label}
                     </button>
                   ))}
                   <button
                     onClick={() => setRoleFilter('all')}
-                    className={\`px-3 py-1.5 rounded-lg text-xs font-bold transition-all \${roleFilter === 'all' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}\`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all \${roleFilter === 'all' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                   >
                     All Categories
                   </button>
@@ -539,7 +539,7 @@ Website: https://siddhidynamics.in
                     <div className="flex items-start justify-between">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className={\`px-2 py-0.5 rounded-full text-[10px] font-bold border \${empColor(role.employmentType)}\`}>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border \${empColor(role.employmentType)}`}>
                             \${role.employmentType}
                           </span>
                           <span className="px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold">
@@ -882,7 +882,7 @@ Website: https://siddhidynamics.in
                       value={statementOfPurpose}
                       onChange={e => setStatementOfPurpose(e.target.value)}
                       placeholder="Why do you want to join Siddhi Dynamics? Share your goals and what you hope to achieve during this internship."
-                      className={\`\${dashboardInput} leading-relaxed resize-y\`}
+                      className={`\${dashboardInput} leading-relaxed resize-y`}
                     />
                   </div>
 
@@ -896,15 +896,15 @@ Website: https://siddhidynamics.in
 
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className={\`rounded-2xl border-2 border-dashed p-4 sm:p-5 text-center cursor-pointer transition-all group \${
+                      className={`rounded-2xl border-2 border-dashed p-4 sm:p-5 text-center cursor-pointer transition-all group \${
                         uploadedFiles.length > 0
                           ? 'border-emerald-500/50 bg-emerald-500/5 hover:bg-emerald-500/10'
                           : 'border-border hover:border-primary/50 bg-muted/25 hover:bg-muted/40'
-                      }\`}
+                      }`}
                     >
-                      <Upload className={\`w-6 h-6 mx-auto mb-1.5 transition-transform group-hover:-translate-y-0.5 \${
+                      <Upload className={`w-6 h-6 mx-auto mb-1.5 transition-transform group-hover:-translate-y-0.5 \${
                         uploadedFiles.length > 0 ? 'text-emerald-500' : 'text-primary'
-                      }\`} />
+                      }`} />
                       <p className="text-xs text-foreground/85 font-medium">
                         <span className="text-primary font-bold">Click to upload your resume</span> or drag & drop
                       </p>
@@ -932,8 +932,8 @@ Website: https://siddhidynamics.in
                             <div className="flex items-center gap-2 shrink-0">
                               <span className="text-muted-foreground text-[11px]">
                                 {f.size >= 1024 * 1024
-                                  ? \`\${(f.size / (1024 * 1024)).toFixed(1)} MB\`
-                                  : \`\${(f.size / 1024).toFixed(0)} KB\`}
+                                  ? `\${(f.size / (1024 * 1024)).toFixed(1)} MB`
+                                  : `\${(f.size / 1024).toFixed(0)} KB`}
                               </span>
                               <button
                                 type="button"

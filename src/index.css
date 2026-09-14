@@ -1072,8 +1072,8 @@ body:has(.site-intro) {
 }
 
 .site-intro-logo {
-  width: clamp(4rem, 8vw, 6.5rem);
-  height: clamp(4rem, 8vw, 6.5rem);
+  width: clamp(5.5rem, 13vw, 9.5rem);
+  height: clamp(5.5rem, 13vw, 9.5rem);
   flex: 0 0 auto;
   object-fit: contain;
   filter: drop-shadow(0 0 28px rgb(249 115 22 / 0.28));
@@ -1158,8 +1158,8 @@ body:has(.site-intro) {
   }
 
   .site-intro-logo {
-    width: clamp(3.2rem, 15vw, 4.2rem);
-    height: clamp(3.2rem, 15vw, 4.2rem);
+    width: clamp(4.2rem, 22vw, 6rem);
+    height: clamp(4.2rem, 22vw, 6rem);
   }
 
   .site-intro-brand {
