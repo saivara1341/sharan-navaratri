@@ -264,10 +264,10 @@ export default function Careers() {
 
   const activeFilterName = () => {
     if (empFilter !== 'all' && roleFilter !== 'all') {
-      return \`"\${empFilter}" + "\${roleFilter}"\`;
+      return `"${empFilter}" + "${roleFilter}"`;
     }
-    if (empFilter !== 'all') return \`"\${empFilter}"\`;
-    if (roleFilter !== 'all') return \`"\${roleFilter}"\`;
+    if (empFilter !== 'all') return `"${empFilter}"`;
+    if (roleFilter !== 'all') return `"${roleFilter}"`;
     return 'this category';
   };
 
