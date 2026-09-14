@@ -1158,8 +1158,8 @@ body:has(.site-intro) {
   }
 
   .site-intro-logo {
-    width: clamp(3.2rem, 15vw, 4.2rem);
-    height: clamp(3.2rem, 15vw, 4.2rem);
+    width: clamp(4.2rem, 22vw, 6rem);
+    height: clamp(4.2rem, 22vw, 6rem);
   }
 
   .site-intro-brand {
