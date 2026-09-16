@@ -729,10 +729,22 @@ export const internshipService = {
       const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
       const path = `${Date.now()}-${safeName}`;
 
+      let mime = file.type;
+      if (!mime || mime === 'application/octet-stream') {
+        const ext = file.name.split('.').pop()?.toLowerCase();
+        if (ext === 'pdf') mime = 'application/pdf';
+        else if (ext === 'doc') mime = 'application/msword';
+        else if (ext === 'docx') mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+        else if (ext === 'png') mime = 'image/png';
+        else if (ext === 'jpg' || ext === 'jpeg') mime = 'image/jpeg';
+        else if (ext === 'webp') mime = 'image/webp';
+        else mime = 'application/pdf';
+      }
+
       // 1. Try 'career-resumes' bucket
       const { error: uploadErr } = await supabase.storage
         .from('career-resumes')
-        .upload(path, file, { contentType: file.type || 'application/octet-stream', upsert: false });
+        .upload(path, file, { contentType: mime, upsert: false });
 
       if (!uploadErr) {
         const { data } = supabase.storage.from('career-resumes').getPublicUrl(path);

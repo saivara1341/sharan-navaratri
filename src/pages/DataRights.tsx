@@ -125,7 +125,7 @@ const DataRights = () => {
                 className={`group relative rounded-2xl border p-5 transition-all cursor-pointer flex flex-col justify-between ${
                   isSelected
                     ? "border-primary bg-primary/10 shadow-[0_0_24px_rgba(139,92,246,0.2)] ring-1 ring-primary/50"
-                    : "border-white/15 bg-card/60 hover:border-primary/50 hover:bg-white/[0.05] shadow-md"
+                    : "border-border bg-card hover:border-primary/50 shadow-sm"
                 }`}
               >
                 <div>
@@ -134,7 +134,7 @@ const DataRights = () => {
                       className={`p-2.5 rounded-xl transition-colors ${
                         isSelected
                           ? "bg-primary text-primary-foreground shadow-md"
-                          : "bg-white/5 text-primary group-hover:bg-primary/20"
+                          : "bg-primary/10 text-primary group-hover:bg-primary/20"
                       }`}
                     >
                       <Icon className="w-5 h-5" />
@@ -148,12 +148,12 @@ const DataRights = () => {
                   <h3 className="text-base font-extrabold text-foreground group-hover:text-primary transition-colors">
                     {label}
                   </h3>
-                  <p className="text-xs text-white/70 mt-2 leading-relaxed">
+                  <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                     {desc}
                   </p>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-bold text-primary">
+                <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-[11px] font-bold text-primary">
                   <span>{isSelected ? "Active in Form" : "Select this right"}</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -315,9 +315,9 @@ const DataRights = () => {
           </span>
         </div>
 
-        <div className="space-y-4 text-xs text-slate-300 leading-relaxed">
-          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-1">
-            <div className="text-sm font-extrabold text-white">
+        <div className="space-y-4 text-xs text-foreground/85 leading-relaxed">
+          <div className="p-4 rounded-2xl bg-card border border-border space-y-1 shadow-sm">
+            <div className="text-sm font-extrabold text-foreground">
               Sarugu Sai Vara Prasad
             </div>
             <div className="text-xs text-primary font-semibold">
@@ -326,27 +326,27 @@ const DataRights = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-            <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-1.5 flex items-start gap-3">
-              <MapPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+            <div className="p-4 rounded-2xl bg-card border border-border space-y-1.5 flex items-start gap-3 shadow-sm">
+              <MapPin className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
               <div>
-                <span className="text-[11px] font-bold text-white/80 block">Office Address</span>
+                <span className="text-[11px] font-bold text-foreground block">Office Address</span>
                 <span className="text-muted-foreground text-xs leading-relaxed block">
                   Siddhi Dynamics LLP, 3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001, India
                 </span>
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2 flex flex-col justify-center">
+            <div className="p-4 rounded-2xl bg-card border border-border space-y-2 flex flex-col justify-center shadow-sm">
               <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-amber-400 shrink-0" />
-                <span className="text-muted-foreground text-xs">Email:</span>
+                <Mail className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                <span className="text-muted-foreground text-xs font-semibold">Email:</span>
                 <a className="text-primary font-bold hover:underline break-all" href="mailto:saivaraprasad@siddhidynamics.in">
                   saivaraprasad@siddhidynamics.in
                 </a>
               </div>
               <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-blue-400 shrink-0" />
-                <span className="text-muted-foreground text-xs">Phone:</span>
+                <Phone className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                <span className="text-muted-foreground text-xs font-semibold">Phone:</span>
                 <a className="text-primary font-bold hover:underline" href="tel:+916303602743">
                   +91 63036 02743
                 </a>
@@ -354,8 +354,8 @@ const DataRights = () => {
             </div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 flex items-start gap-2.5">
-            <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+          <div className="p-4 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
             <span>
               If your grievance is not resolved to your satisfaction, you may escalate it to the <strong>Data Protection Board of India</strong>.
             </span>
