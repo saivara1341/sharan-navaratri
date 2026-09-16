@@ -985,7 +985,7 @@ export const internshipService = {
     if (this.hasAcceptedOnboarding(clean)) return true;
 
     try {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from('intern_onboarding_agreements')
         .select('email, rules_agreed, terms_agreed')
         .ilike('email', clean)
@@ -1048,7 +1048,7 @@ export const internshipService = {
 
     // Persist to Supabase intern_onboarding_agreements table
     try {
-      supabase.from('intern_onboarding_agreements').insert([{
+      (supabase as any).from('intern_onboarding_agreements').insert([{
         email: clean,
         full_name,
         role,
@@ -1061,7 +1061,7 @@ export const internshipService = {
         terms_agreed: true,
         nda_agreed: true,
         accepted_at: newAgreement.accepted_at
-      }]).then(({ error }) => {
+      }]).then(({ error }: { error: any }) => {
         if (error) console.warn('Could not sync onboarding agreement to Supabase:', error);
       });
     } catch (err) {
@@ -1307,7 +1307,7 @@ export const internshipService = {
 
   async fetchCertificates(): Promise<CertificateRecord[]> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('issued_certificates')
         .select('*')
         .order('created_at', { ascending: false });
@@ -1364,7 +1364,7 @@ export const internshipService = {
 
     // 1. Try Supabase
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('issued_certificates')
         .select('*')
         .or(`certificate_no.ilike.${clean},recipient_email.ilike.${query.trim()}`)
