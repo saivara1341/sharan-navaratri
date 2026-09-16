@@ -6,7 +6,6 @@ import {
   FileSignature,
   ArrowRight,
   Sparkles,
-  ReceiptCheck,
   Briefcase
 } from "lucide-react";
 

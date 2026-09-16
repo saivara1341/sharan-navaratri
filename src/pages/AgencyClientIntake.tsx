@@ -39,6 +39,12 @@ export default function AgencyClientIntake() {
     setState("success");
   };
 
+  const message = state === "used"
+    ? "This onboarding link has already been completed."
+    : state === "invalid"
+    ? "This onboarding link is invalid or has expired."
+    : "Please wait while we load your onboarding link.";
+
   if (state !== "ready") return (
     <main className="min-h-screen bg-muted flex items-center justify-center p-5">
       <section className="max-w-lg w-full bg-card border border-border rounded-3xl p-8 text-center shadow-xl">

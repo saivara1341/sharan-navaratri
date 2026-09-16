@@ -53,7 +53,8 @@ import {
     ExternalLink,
     Globe,
     MapPin,
-    Laptop
+    Laptop,
+    PanelsTopLeft
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -328,7 +329,7 @@ const AdminPortal = () => {
                     .from('contact_submissions')
                     .select('id, name, email, organization, designation, inquiry_type, created_at')
                     .order('created_at', { ascending: false });
-                submissions = fallback.data;
+                submissions = (fallback.data as any[] | null)?.map((s: any) => ({ ...s, status: 'new' })) ?? null;
                 submissionsError = fallback.error;
             }
             if (submissionsError) throw submissionsError;
