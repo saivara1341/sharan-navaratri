@@ -500,6 +500,264 @@ export type Database = {
         }
         Relationships: []
       }
+      intern_data_requests: {
+        Row: {
+          admin_response: string | null
+          category: string
+          created_at: string
+          description: string
+          id: string
+          intern_email: string
+          intern_name: string
+          reviewed_at: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          admin_response?: string | null
+          category?: string
+          created_at?: string
+          description: string
+          id?: string
+          intern_email: string
+          intern_name: string
+          reviewed_at?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          admin_response?: string | null
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          intern_email?: string
+          intern_name?: string
+          reviewed_at?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      intern_deadline_extensions: {
+        Row: {
+          admin_remarks: string | null
+          created_at: string
+          id: string
+          intern_email: string
+          intern_name: string
+          original_deadline: string
+          reason: string
+          requested_deadline: string
+          reviewed_at: string | null
+          status: string
+          task_id: string
+          task_title: string
+          updated_at: string
+        }
+        Insert: {
+          admin_remarks?: string | null
+          created_at?: string
+          id?: string
+          intern_email: string
+          intern_name: string
+          original_deadline: string
+          reason: string
+          requested_deadline: string
+          reviewed_at?: string | null
+          status?: string
+          task_id: string
+          task_title: string
+          updated_at?: string
+        }
+        Update: {
+          admin_remarks?: string | null
+          created_at?: string
+          id?: string
+          intern_email?: string
+          intern_name?: string
+          original_deadline?: string
+          reason?: string
+          requested_deadline?: string
+          reviewed_at?: string | null
+          status?: string
+          task_id?: string
+          task_title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      intern_onboarding_agreements: {
+        Row: {
+          accepted_at: string
+          college_id_number: string
+          college_name: string
+          created_at: string
+          email: string
+          full_name: string
+          govt_id_number: string
+          govt_id_type: string
+          id: string
+          nda_agreed: boolean
+          role: string
+          rules_agreed: boolean
+          signature_text: string
+          terms_agreed: boolean
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string
+          college_id_number: string
+          college_name: string
+          created_at?: string
+          email: string
+          full_name: string
+          govt_id_number: string
+          govt_id_type: string
+          id?: string
+          nda_agreed?: boolean
+          role: string
+          rules_agreed?: boolean
+          signature_text: string
+          terms_agreed?: boolean
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string
+          college_id_number?: string
+          college_name?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          govt_id_number?: string
+          govt_id_type?: string
+          id?: string
+          nda_agreed?: boolean
+          role?: string
+          rules_agreed?: boolean
+          signature_text?: string
+          terms_agreed?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      intern_tasks: {
+        Row: {
+          assigned_to_email: string | null
+          assigned_to_role: string
+          created_at: string
+          created_by: string
+          description: string
+          id: string
+          priority: string
+          status: string
+          stipulated_deadline: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to_email?: string | null
+          assigned_to_role?: string
+          created_at?: string
+          created_by?: string
+          description: string
+          id?: string
+          priority?: string
+          status?: string
+          stipulated_deadline: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to_email?: string | null
+          assigned_to_role?: string
+          created_at?: string
+          created_by?: string
+          description?: string
+          id?: string
+          priority?: string
+          status?: string
+          stipulated_deadline?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      issued_certificates: {
+        Row: {
+          certificate_no: string
+          college_id_number: string
+          college_name: string
+          completion_date: string
+          created_at: string
+          duration: string
+          govt_id_masked: string
+          govt_id_type: string
+          grade: string
+          id: string
+          issue_date: string
+          issued_by: string
+          key_achievements: Json
+          points_of_proof_count: number
+          recipient_email: string
+          recipient_name: string
+          role: string
+          start_date: string
+          status: string
+          updated_at: string
+          verification_checksum: string
+        }
+        Insert: {
+          certificate_no: string
+          college_id_number: string
+          college_name: string
+          completion_date: string
+          created_at?: string
+          duration: string
+          govt_id_masked: string
+          govt_id_type: string
+          grade?: string
+          id?: string
+          issue_date?: string
+          issued_by?: string
+          key_achievements?: Json
+          points_of_proof_count?: number
+          recipient_email: string
+          recipient_name: string
+          role: string
+          start_date: string
+          status?: string
+          updated_at?: string
+          verification_checksum: string
+        }
+        Update: {
+          certificate_no?: string
+          college_id_number?: string
+          college_name?: string
+          completion_date?: string
+          created_at?: string
+          duration?: string
+          govt_id_masked?: string
+          govt_id_type?: string
+          grade?: string
+          id?: string
+          issue_date?: string
+          issued_by?: string
+          key_achievements?: Json
+          points_of_proof_count?: number
+          recipient_email?: string
+          recipient_name?: string
+          role?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+          verification_checksum?: string
+        }
+        Relationships: []
+      }
       knowledge_base: {
         Row: {
           content: string

@@ -34,7 +34,8 @@ import {
   Mail,
   Star,
   ArrowUpRight,
-  MessageSquareQuote
+  MessageSquareQuote,
+  Award
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { 
