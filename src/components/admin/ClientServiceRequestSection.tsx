@@ -5,7 +5,6 @@ import {
   Phone,
   Layers,
   Send,
-  Sparkles,
   DollarSign,
   Calendar,
   CheckCircle2,
@@ -300,15 +299,15 @@ ${fileListFormatted || "No direct files uploaded"}
   return (
     <div className="space-y-8 text-left">
       {/* Header Banner */}
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-primary/15 via-primary/5 to-transparent border border-primary/25 relative overflow-hidden">
+      <div className="p-6 rounded-2xl bg-[#11130d] border border-[#6b7c3d]/50 relative overflow-hidden shadow-xl">
         <div className="relative z-10">
-          <span className="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5 mb-3">
-            <Sparkles className="w-3.5 h-3.5" /> Service Request & Project Intake
+          <span className="px-3.5 py-1.5 rounded-full bg-[#6b7c3d]/25 text-[#b5ce72] border border-[#6b7c3d]/40 text-xs font-black uppercase tracking-wider inline-flex items-center mb-3">
+            Service Request & Project Intake
           </span>
-          <h2 className="text-2xl lg:text-3xl font-black text-foreground">
+          <h2 className="text-2xl lg:text-3xl font-black text-white tracking-tight">
             Request Services & Commission New Projects
           </h2>
-          <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
+          <p className="text-sm text-neutral-200 mt-2 max-w-3xl leading-relaxed font-normal">
             Submit service requirements, define project deliverables, configure payment milestones, and immediately issue digitally-authenticated SBI invoices with Section 65B IT Act 2000 verification.
           </p>
         </div>

@@ -186,7 +186,7 @@ const AdminPortal = () => {
 
     // ── Digital Invoice Modal State ──────────────────────────────────────────
     const [selectedInvoiceForModal, setSelectedInvoiceForModal] = useState<InvoiceModalData | null>(null);
-    const [clientSubTab, setClientSubTab] = useState<'request' | 'invoices' | 'board'>('request');
+    const [clientSubTab, setClientSubTab] = useState<'invoices' | 'board' | 'request'>('invoices');
     const [payingInvoiceData, setPayingInvoiceData] = useState<{
         invoice: ProjectInvoice;
         projectName?: string;
@@ -2224,16 +2224,6 @@ const AdminPortal = () => {
                         {/* Sub-tab Navigation */}
                         <div className="flex items-center gap-2 border-b border-border pb-3 flex-wrap">
                             <button
-                                onClick={() => setClientSubTab('request')}
-                                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                                    clientSubTab === 'request'
-                                        ? 'bg-primary text-primary-foreground shadow-md'
-                                        : 'glass-card text-muted-foreground hover:text-foreground'
-                                }`}
-                            >
-                                <Send className="w-4 h-4" /> Request Services
-                            </button>
-                            <button
                                 onClick={() => setClientSubTab('invoices')}
                                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
                                     clientSubTab === 'invoices'
@@ -2256,14 +2246,19 @@ const AdminPortal = () => {
                             >
                                 <ClipboardList className="w-4 h-4" /> Requirements & Intake Board
                             </button>
+                            <button
+                                onClick={() => setClientSubTab('request')}
+                                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                                    clientSubTab === 'request'
+                                        ? 'bg-primary text-primary-foreground shadow-md'
+                                        : 'glass-card text-muted-foreground hover:text-foreground'
+                                }`}
+                            >
+                                <Plus className="w-4 h-4" /> Commission New Order
+                            </button>
                         </div>
 
-                        {clientSubTab === 'request' ? (
-                            <ClientServiceRequestSection
-                                adminEmail={adminEmail || 'ssaivaraprasad51@gmail.com'}
-                                onServiceOrderCreated={fetchSubmissions}
-                            />
-                        ) : clientSubTab === 'invoices' ? (
+                        {clientSubTab === 'invoices' ? (
                             <div className="space-y-6">
                                 {/* Header */}
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -2418,8 +2413,16 @@ const AdminPortal = () => {
                                     </div>
                                 )}
                             </div>
-                        ) : (
+                        ) : clientSubTab === 'board' ? (
                             <AdminClientsConsole adminEmail="ssaivaraprasad51@gmail.com" />
+                        ) : (
+                            <ClientServiceRequestSection
+                                adminEmail={adminEmail || 'ssaivaraprasad51@gmail.com'}
+                                onServiceOrderCreated={() => {
+                                    fetchSubmissions();
+                                    setClientSubTab('invoices');
+                                }}
+                            />
                         )}
                     </motion.div>
                 ) : viewMode === 'knowledge' ? (
