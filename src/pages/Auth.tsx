@@ -7,7 +7,6 @@ import { Eye, EyeOff, ArrowLeft, Mail, Lock, User, Loader2, Briefcase, TrendingU
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
 import { emailService } from "@/services/emailService";
-import { CloudflareTurnstile } from "@/components/common/CloudflareTurnstile";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,7 +15,7 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
   const [needsRoleSelection, setNeedsRoleSelection] = useState(false);
 
   const navigate = useNavigate();
@@ -94,10 +93,6 @@ const Auth = () => {
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!turnstileToken) {
-      toast.error("Please complete the Cloudflare security verification to continue.");
-      return;
-    }
 
     setLoading(true);
 
@@ -125,6 +120,18 @@ const Auth = () => {
         if (error) throw error;
 
         toast.success("Account created!");
+        if (data.user?.email) {
+          try {
+            await (supabase as any).from('portal_users').upsert({
+              auth_user_id: data.user.id,
+              email: data.user.email.toLowerCase().trim(),
+              name: fullName.trim() || data.user.email.split('@')[0],
+              role: 'client',
+              confirmed: Boolean(data.user.email_confirmed_at),
+              created_at: new Date().toISOString()
+            }, { onConflict: 'email' });
+          } catch (_) {}
+        }
         // Send welcome email
         emailService.welcome(email.trim(), fullName.trim() || email.split('@')[0]);
         setIsLogin(true);
@@ -164,6 +171,16 @@ const Auth = () => {
       if (error) throw error;
       
       toast.success(`Role set to ${role}`);
+      if (data.user?.email) {
+        try {
+          await (supabase as any).from('portal_users').upsert({
+            auth_user_id: data.user.id,
+            email: data.user.email.toLowerCase().trim(),
+            role,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'email' });
+        } catch (_) {}
+      }
       checkRoleAndRedirect(data.user);
     } catch (err: any) {
       console.error("ROLE_UPDATE_ERROR:", err);
@@ -388,17 +405,11 @@ const Auth = () => {
               )}
             </div>
 
-            {/* Cloudflare Turnstile Bot Protection */}
-            <CloudflareTurnstile
-              action={isLogin ? "user_login" : "user_signup"}
-              onVerify={setTurnstileToken}
-              onExpire={() => setTurnstileToken(null)}
-              onError={() => setTurnstileToken(null)}
-            />
+
 
             <button
               type="submit"
-              disabled={loading || !turnstileToken}
+              disabled={loading}
               className="w-full btn-premium py-3.5 mt-2 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (

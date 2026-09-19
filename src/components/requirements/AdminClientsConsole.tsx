@@ -196,7 +196,10 @@ export const AdminClientsConsole = ({ adminEmail }: { adminEmail: string }) => {
           aria-modal="true"
           onClick={(e) => e.target === e.currentTarget && setEditing(null)}
         >
-          <div className="w-full max-w-xl flex flex-col bg-card border border-border rounded-3xl shadow-2xl max-h-[90vh] overflow-hidden my-auto text-left">
+          <div className="w-full max-w-xl flex flex-col bg-card border border-border rounded-3xl shadow-2xl max-h-[90vh] overflow-hidden my-auto text-left"
+            role="dialog"
+            aria-modal="true"
+          >
             <div className="flex items-center justify-between px-6 py-5 border-b border-border bg-card shrink-0">
               <h3 className="text-lg font-extrabold text-foreground flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-primary" />
@@ -212,26 +215,26 @@ export const AdminClientsConsole = ({ adminEmail }: { adminEmail: string }) => {
             <div className="p-6 space-y-4 overflow-y-auto flex-1">
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Company Name *</label>
-                <input className={modalField} placeholder="e.g. Acme Corp" value={editing.company_name || ""} onChange={(e) => setEditing({ ...editing, company_name: e.target.value })} />
+                <input autoComplete="off" className={modalField} placeholder="e.g. Acme Corp" value={editing.company_name || ""} onChange={(e) => setEditing({ ...editing, company_name: e.target.value })} />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Contact Name *</label>
-                  <input className={modalField} placeholder="e.g. Jane Doe" value={editing.contact_name || ""} onChange={(e) => setEditing({ ...editing, contact_name: e.target.value })} />
+                  <input autoComplete="off" className={modalField} placeholder="e.g. Jane Doe" value={editing.contact_name || ""} onChange={(e) => setEditing({ ...editing, contact_name: e.target.value })} />
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Contact Email *</label>
-                  <input className={modalField} placeholder="e.g. jane@acme.com" value={editing.contact_email || ""} onChange={(e) => setEditing({ ...editing, contact_email: e.target.value })} />
+                  <input autoComplete="new-password" className={modalField} placeholder="e.g. jane@acme.com" value={editing.contact_email || ""} onChange={(e) => setEditing({ ...editing, contact_email: e.target.value })} />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Phone</label>
-                  <input className={modalField} placeholder="+91 98765 43210" value={editing.phone || ""} onChange={(e) => setEditing({ ...editing, phone: e.target.value })} />
+                  <input autoComplete="off" className={modalField} placeholder="+91 98765 43210" value={editing.phone || ""} onChange={(e) => setEditing({ ...editing, phone: e.target.value })} />
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Industry</label>
-                  <input className={modalField} placeholder="e.g. Healthcare, Retail" value={editing.industry || ""} onChange={(e) => setEditing({ ...editing, industry: e.target.value })} />
+                  <input autoComplete="off" className={modalField} placeholder="e.g. Healthcare, Retail" value={editing.industry || ""} onChange={(e) => setEditing({ ...editing, industry: e.target.value })} />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

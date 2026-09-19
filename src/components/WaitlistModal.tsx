@@ -6,7 +6,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { supabaseService } from '@/services/supabaseService';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
-import { CloudflareTurnstile } from '@/components/common/CloudflareTurnstile';
+
 
 const emailSchema = z.string().email();
 
@@ -27,7 +27,7 @@ export const WaitlistModal = ({ isOpen, onClose, projectId, projectName, accentC
   const [hoveredRating, setHoveredRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [consentGiven, setConsentGiven] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
   const [isSuccess, setIsSuccess] = useState(false);
   const { toast } = useToast();
 
@@ -64,14 +64,6 @@ export const WaitlistModal = ({ isOpen, onClose, projectId, projectName, accentC
       return;
     }
 
-    if (!turnstileToken) {
-      toast({
-        title: "Security Verification Required",
-        description: "Please complete the Cloudflare security verification to join the waitlist.",
-        variant: "destructive",
-      });
-      return;
-    }
 
     setIsSubmitting(true);
 
@@ -250,17 +242,11 @@ export const WaitlistModal = ({ isOpen, onClose, projectId, projectName, accentC
                     id="waitlist-consent"
                   />
 
-                  {/* Cloudflare Turnstile Bot Protection */}
-                  <CloudflareTurnstile
-                    action="waitlist_submission"
-                    onVerify={setTurnstileToken}
-                    onExpire={() => setTurnstileToken(null)}
-                    onError={() => setTurnstileToken(null)}
-                  />
+
 
                   <button
                     type="submit"
-                    disabled={isSubmitting || !turnstileToken}
+                    disabled={isSubmitting}
                     className={`w-full py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${isPrimary
                         ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-primary/30'
                         : 'bg-accent text-accent-foreground shadow-lg shadow-accent/20 hover:shadow-accent/30'

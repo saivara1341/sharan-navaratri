@@ -49,6 +49,7 @@ import {
   CertificateRecord,
   InternReview
 } from '@/services/internshipService';
+import { PendingCeoApprovalScreen } from '@/components/portal/PendingCeoApprovalScreen';
 
 const GoogleLogo = () => (
   <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" aria-hidden="true">
@@ -64,6 +65,7 @@ export default function InternPortal() {
   const [session, setSession] = useState<any>(null);
   const [userEmail, setUserEmail] = useState('');
   const [userName, setUserName] = useState('');
+  const [isPendingApproval, setIsPendingApproval] = useState(false);
   const [userRole, setUserRole] = useState<'Business Development Intern' | 'Digital Marketing Intern'>('Business Development Intern');
   const [duration, setDuration] = useState('6 Months');
   const [activeTab, setActiveTab] = useState<'tasks' | 'proofs' | 'interlink' | 'incentives' | 'documents' | 'review'>('tasks');
@@ -216,12 +218,18 @@ export default function InternPortal() {
       setUserName(name);
 
       // Check authorization whitelist
-      const approval = internshipService.isEmailApproved(email);
+      const approval = internshipService.isEmailApproved(email, 'intern');
       if (!approval.approved) {
-        toast.error("Access Restricted: Your email is not in the approved team whitelist. Contact admin.");
-        navigate('/portal');
+        internshipService.submitRoleRequest(
+          email,
+          name,
+          'intern',
+          'Intern portal sign-in awaiting CEO approval'
+        );
+        setIsPendingApproval(true);
         return;
       }
+      setIsPendingApproval(false);
 
       // Check if user has accepted onboarding
       const hasAccepted = internshipService.hasAcceptedOnboarding(email);
@@ -377,6 +385,28 @@ export default function InternPortal() {
     navigator.clipboard.writeText(code);
     toast.success(`Referral tracking code (${code}) copied to clipboard!`);
   };
+
+  if (isPendingApproval) {
+    return (
+      <PendingCeoApprovalScreen
+        userEmail={userEmail}
+        userName={userName}
+        role="intern"
+        onRefresh={() => {
+          const check = internshipService.isEmailApproved(userEmail, 'intern');
+          if (check.approved) {
+            setIsPendingApproval(false);
+            loadData(userEmail);
+            toast.success("Congratulations! Your account has been approved by the CEO.");
+          }
+        }}
+        onLogout={async () => {
+          await supabase.auth.signOut();
+          navigate('/portal');
+        }}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans flex flex-col">

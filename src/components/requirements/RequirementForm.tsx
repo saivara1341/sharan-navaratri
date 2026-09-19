@@ -97,6 +97,7 @@ export const RequirementForm = ({ submitterEmail, agencyEmail, clients, fixedCli
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               onSubmit={submit}
+              autoComplete="off"
               className="w-full max-w-2xl bg-card border border-border rounded-3xl shadow-2xl flex flex-col overflow-hidden mb-6"
               onClick={(e) => e.stopPropagation()}
             >
@@ -121,6 +122,7 @@ export const RequirementForm = ({ submitterEmail, agencyEmail, clients, fixedCli
                     Requirement Title *
                   </label>
                   <input
+                    autoComplete="off"
                     className={field}
                     placeholder="Requirement title"
                     value={title}
@@ -158,6 +160,7 @@ export const RequirementForm = ({ submitterEmail, agencyEmail, clients, fixedCli
                   <div>
                     <label className="block text-xs sm:text-sm font-semibold tracking-wide text-foreground mb-1.5">Budget Range</label>
                     <input
+                      autoComplete="off"
                       className={field}
                       placeholder="Budget range (optional)"
                       value={budget}
@@ -167,6 +170,7 @@ export const RequirementForm = ({ submitterEmail, agencyEmail, clients, fixedCli
                   <div>
                     <label className="block text-xs sm:text-sm font-semibold tracking-wide text-foreground mb-1.5">Estimated Value (₹)</label>
                     <input
+                      autoComplete="off"
                       className={field}
                       type="number"
                       placeholder="Estimated value (optional)"

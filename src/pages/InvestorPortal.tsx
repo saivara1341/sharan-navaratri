@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { generateContent } from "@/lib/geminiClient";
 import { Navbar } from "@/components/layout/Navbar";
+import { FooterSection } from "@/components/sections/FooterSection";
 import { 
   TrendingUp, 
   LogOut, 
@@ -39,7 +40,6 @@ import {
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
-import { GoogleReviewCard } from "@/components/GoogleReviewCard";
 import { InvestorPipelineRollup } from "@/components/requirements/InvestorPipelineRollup";
 
 export interface StartupProject {
@@ -621,8 +621,6 @@ Always respond with crisp, authoritative, high-contrast financial clarity. If th
             </button>
           </div>
         </div>
-
-        <GoogleReviewCard audience="investor" name={investorName} compact />
 
         {/* ── High-Impact Strategic KPI Banner (Crystal Clear White & Accents) ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1257,7 +1255,7 @@ Always respond with crisp, authoritative, high-contrast financial clarity. If th
         )}
 
         <div className="pt-8">
-          <GoogleReviewCard audience="investor" name="Investor Representative" compact />
+          <FooterSection />
         </div>
       </main>
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FooterSection } from "@/components/sections/FooterSection";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/layout/Navbar";
@@ -32,9 +33,10 @@ import {
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
-import { GoogleReviewCard } from "@/components/GoogleReviewCard";
 import { RequirementsPanel } from "@/components/requirements/RequirementsPanel";
 import { parseProjectMeta, serializeProjectMeta } from "@/lib/projectLifecycleHelper";
+import { PendingCeoApprovalScreen } from "@/components/portal/PendingCeoApprovalScreen";
+import { internshipService } from "@/services/internshipService";
 
 interface Submission {
   id: string;
@@ -55,6 +57,7 @@ export default function EmployeePortal() {
   const [loading, setLoading] = useState(true);
   const [employeeEmail, setEmployeeEmail] = useState("");
   const [employeeName, setEmployeeName] = useState("");
+  const [isPendingApproval, setIsPendingApproval] = useState(false);
   
   // Tab states: 'workloads' or 'support'
   const [activeTab, setActiveTab] = useState<'workloads' | 'support'>('workloads');
@@ -128,7 +131,25 @@ export default function EmployeePortal() {
       }
 
       setEmployeeEmail(email);
-      setEmployeeName(session.user.user_metadata?.full_name || "Employee Representative");
+      const nameVal = session.user.user_metadata?.full_name || email.split('@')[0];
+      setEmployeeName(nameVal);
+
+      // Check CEO / Admin approval whitelist
+      const isAdminUser = checkAdmin(email);
+      const approval = internshipService.isEmailApproved(email, 'employee');
+
+      if (!isAdminUser && !approval.approved) {
+        internshipService.submitRoleRequest(
+          email,
+          nameVal,
+          'employee',
+          'Employee workspace login awaiting CEO approval'
+        );
+        setIsPendingApproval(true);
+        setLoading(false);
+        return;
+      }
+      setIsPendingApproval(false);
 
       fetchSubmissionsData().finally(() => {
         setLoading(false);
@@ -337,6 +358,28 @@ export default function EmployeePortal() {
     );
   }
 
+  if (isPendingApproval) {
+    return (
+      <PendingCeoApprovalScreen
+        userEmail={employeeEmail}
+        userName={employeeName}
+        role="employee"
+        onRefresh={() => {
+          const check = internshipService.isEmailApproved(employeeEmail, 'employee');
+          if (check.approved || checkAdmin(employeeEmail)) {
+            setIsPendingApproval(false);
+            fetchSubmissionsData();
+            toast.success("Congratulations! Your account has been approved by the CEO.");
+          }
+        }}
+        onLogout={async () => {
+          await supabase.auth.signOut();
+          navigate('/portal');
+        }}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-x-hidden font-sans">
       <Navbar />
@@ -380,9 +423,6 @@ export default function EmployeePortal() {
             </button>
           </div>
         </div>
-
-        {/* Google Review CTA */}
-        <GoogleReviewCard audience="client" name={employeeName} compact />
 
         {/* Workspace Management Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -705,7 +745,7 @@ export default function EmployeePortal() {
             </div>
           )}
           <div className="pt-8">
-            <GoogleReviewCard audience="visitor" name="Team" compact />
+            <FooterSection />
           </div>
         </div>
       </main>

@@ -40,6 +40,28 @@ Deno.serve(async (req) => {
         created_at: user.created_at,
         lastLogin: user.last_sign_in_at,
       })) });
+    if (body.action === 'delete') {
+      const email = String(body.email || '').trim().toLowerCase();
+      const userId = String(body.id || body.userId || '').trim();
+      if (userId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId)) {
+        try { await db.auth.admin.deleteUser(userId); } catch (e) { console.warn('deleteUser by id error', e); }
+      }
+      if (email) {
+        try {
+          const { data } = await db.auth.admin.listUsers();
+          const found = (data?.users || []).find((u: any) => u.email?.toLowerCase() === email);
+          if (found) {
+            await db.auth.admin.deleteUser(found.id);
+          }
+        } catch (e) {
+          console.warn('deleteUser by email error', e);
+        }
+        await db.from('portal_users').delete().ilike('email', email);
+        await db.from('contact_submissions').delete().ilike('email', email);
+        await db.from('project_waitlist').delete().ilike('email', email);
+        await db.from('internship_applications').delete().ilike('email', email);
+      }
+      return response({ success: true });
     }
     const userId = String(body.id || '').trim();
     const previousEmail = String(body.previousEmail || '').trim().toLowerCase();

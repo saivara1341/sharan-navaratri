@@ -739,7 +739,7 @@ export default function ClientPortal() {
                           {hasQuote && (
                             <div>
                               <span className="text-stone-500 font-medium">Agreed Quote:</span>{" "}
-                              <strong className="text-emerald-700">{m.agreement}</strong>
+                              <strong className="text-stone-900 font-bold">{m.agreement}</strong>
                             </div>
                           )}
                         </div>
@@ -1379,7 +1379,7 @@ export default function ClientPortal() {
                   </button>
                 </div>
 
-                <form onSubmit={handleTransformToAgency} className="mt-4 space-y-4">
+                <form autoComplete="off" onSubmit={handleTransformToAgency} className="mt-4 space-y-4">
                   <div className="p-3.5 rounded-xl bg-purple-50 border border-purple-200 text-xs text-purple-900 leading-relaxed">
                     <strong>Agency Partnership Benefits:</strong>
                     <ul className="list-disc pl-4 mt-1 space-y-0.5 text-[11px] text-purple-800">
@@ -1604,6 +1604,7 @@ function Setup({
   return (
     <div className="fixed inset-0 z-[250] grid place-items-center bg-stone-950/70 p-4 pt-20 pb-8 backdrop-blur-sm">
       <form
+        autoComplete="off"
         onSubmit={e => {
           e.preventDefault();
           onComplete(profileName, businessName, mobile);

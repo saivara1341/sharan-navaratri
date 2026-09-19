@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/layout/Navbar";
+import { FooterSection } from "@/components/sections/FooterSection";
 import { 
   Briefcase, 
   TrendingUp, 
@@ -647,6 +648,7 @@ export default function PortalGateway() {
 
         </AnimatePresence>
       </main>
+      <FooterSection />
     </div>
   );
 }

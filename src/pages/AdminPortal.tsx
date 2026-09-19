@@ -1,5 +1,8 @@
 import { AdminClientsConsole } from "@/components/requirements/AdminClientsConsole";
+import { FooterSection } from "@/components/sections/FooterSection";
 import { AdminInternshipsConsole } from "@/components/admin/AdminInternshipsConsole";
+import { ClientServiceRequestSection } from "@/components/admin/ClientServiceRequestSection";
+import { DirectPaymentModal } from "@/components/payments/DirectPaymentModal";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseService } from "@/services/supabaseService";
@@ -12,7 +15,6 @@ import { KnowledgeHubManager } from "@/components/admin/KnowledgeHubManager";
 import SeoGeoCommandCenter from "@/components/admin/SeoGeoCommandCenter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
-import { GoogleReviewCard } from "@/components/GoogleReviewCard";
 import {
     Users,
     GraduationCap,
@@ -65,7 +67,8 @@ import {
     Printer,
     BadgeCheck,
     QrCode,
-    Copy
+    Copy,
+    Trash2
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -108,8 +111,7 @@ const AdminPortal = () => {
     const [chatMessages, setChatMessages] = useState<any[]>([]);
     const [chatInput, setChatInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
-    const [sendingMsg, setSendingMsg] = useState(false);
-    const [viewMode, setViewMode] = useState<'submissions' | 'verifications' | 'users' | 'agency' | 'knowledge' | 'seo-geo' | 'clients' | 'internships'>('submissions');
+    const [viewMode, setViewMode] = useState<'submissions' | 'verifications' | 'users' | 'agency' | 'knowledge' | 'seo-geo' | 'clients' | 'internships'>('clients');
     const [adminEmail, setAdminEmail] = useState('');
     const [registeredInternsCount, setRegisteredInternsCount] = useState<number>(0);
 
@@ -174,7 +176,15 @@ const AdminPortal = () => {
 
     // ── Digital Invoice Modal State ──────────────────────────────────────────
     const [selectedInvoiceForModal, setSelectedInvoiceForModal] = useState<InvoiceModalData | null>(null);
-    const [clientSubTab, setClientSubTab] = useState<'invoices' | 'board'>('invoices');
+    const [clientSubTab, setClientSubTab] = useState<'request' | 'invoices' | 'board'>('request');
+    const [payingInvoiceData, setPayingInvoiceData] = useState<{
+        invoice: ProjectInvoice;
+        projectName?: string;
+        clientName?: string;
+        clientEmail?: string;
+        submissionId?: string;
+    } | null>(null);
+    const [submittingPaymentProof, setSubmittingPaymentProof] = useState(false);
     const [internshipTab, setInternshipTab] = useState<'payroll' | 'console'>('payroll');
 
     // ── Intern & Employee Compensation / Payroll Ledger ───────────────────────
@@ -700,6 +710,36 @@ const AdminPortal = () => {
         }
     };
 
+    // ── Delete user from ALL source tables and authentication ───────────────────
+    const handleDeleteUser = async (user: any) => {
+        if (!window.confirm(`Remove "${user.name || user.email}" from all records? This will delete them from portal_users, contact_submissions, project_waitlist, internship_applications, and authentication.`)) return;
+        const email = user.email?.toLowerCase().trim();
+        if (!email) return;
+        try {
+            // 1. portal_users
+            await (supabase as any).from('portal_users').delete().ilike('email', email);
+            // 2. contact_submissions
+            await (supabase as any).from('contact_submissions').delete().ilike('email', email);
+            // 3. project_waitlist
+            await (supabase as any).from('project_waitlist').delete().ilike('email', email);
+            // 4. internship_applications
+            try { await (supabase as any).from('internship_applications').delete().ilike('email', email); } catch (_) {}
+            // 5. Delete from Supabase Auth via Edge Function
+            try {
+                await supabase.functions.invoke('admin-user-management', {
+                    body: { action: 'delete', id: user.id, email }
+                });
+            } catch (authDelErr) {
+                console.warn('[AdminPortal] Auth deletion note:', authDelErr);
+            }
+            // Remove from local state immediately — no page reload needed
+            setAllUsers(prev => prev.filter(u => u.email?.toLowerCase().trim() !== email));
+            toast.success(`${user.name || email} removed from all records.`);
+        } catch (err: any) {
+            toast.error('Could not fully delete user: ' + (err.message || 'Unknown error'));
+        }
+    };
+
     const fetchAllUsers = async () => {
         setUsersLoading(true);
         try {
@@ -760,51 +800,50 @@ const AdminPortal = () => {
             }
 
             const userMap = new Map<string, any>();
-            // Auth users are an enrichment source. If the Edge Function is
-            // unavailable (for example during a deployment), keep showing
-            // users from the tables above instead of failing the whole view.
+            // Auth users are an enrichment source to supply metadata like lastLogin.
+            // If someone was deleted from the database tables, they are NOT populated here.
+            const authUsersByEmail = new Map<string, any>();
             try {
                 const { data: authResponse, error: authError } = await supabase.functions.invoke('admin-user-management', { body: { action: 'list' } });
-                if (authError) throw authError;
-                (authResponse?.users || []).forEach((u: any) => {
-                    if (!u.email) return;
-                    userMap.set(u.email.toLowerCase().trim(), {
-                        ...u,
-                        name: u.name || u.email.split('@')[0],
-                        inquiry_type: 'Auth Sign-In',
-                        status: 'Active',
+                if (!authError && Array.isArray(authResponse?.users)) {
+                    authResponse.users.forEach((u: any) => {
+                        if (u.email) {
+                            authUsersByEmail.set(u.email.toLowerCase().trim(), u);
+                        }
                     });
-                });
+                }
             } catch (authError) {
                 console.warn('[AdminPortal] Auth users unavailable; continuing with database users.', authError);
             }
 
-            // 1. Add persisted portal users (not the browser-only cache).
+            // 1. Add persisted portal users from database table
             (portalProfiles || []).forEach((u: any) => {
                 if (!u.email) return;
                 const emailKey = u.email.toLowerCase().trim();
+                const authInfo = authUsersByEmail.get(emailKey);
                 userMap.set(emailKey, {
-                    id: u.auth_user_id || u.id,
-                    name: u.name || u.email.split('@')[0],
+                    id: authInfo?.id || u.auth_user_id || u.id,
+                    name: u.name || authInfo?.name || u.email.split('@')[0],
                     email: u.email,
-                    organization: u.organization || null,
-                    designation: u.designation || null,
+                    organization: u.organization || authInfo?.organization || null,
+                    designation: u.designation || authInfo?.designation || null,
                     inquiry_type: 'Auth Sign-In',
                     status: 'Active',
-                    role: u.role || (u.email === '23eg510a07@anurag.edu.in' ? 'partner' : 'client'),
+                    role: u.role || authInfo?.role || (u.email === '23eg510a07@anurag.edu.in' ? 'partner' : 'client'),
                     quote: u.quote,
                     notes: u.notes,
-                    lastLogin: null,
-                    confirmed: u.confirmed,
-                    created_at: u.created_at
+                    lastLogin: authInfo?.lastLogin || null,
+                    confirmed: u.confirmed ?? authInfo?.confirmed ?? false,
+                    created_at: u.created_at || authInfo?.created_at
                 });
             });
 
-            // 2. Add Contact Submissions
+            // 2. Add Contact Submissions from database table
             (submissions || []).forEach((sub: any) => {
                 if (!sub.email) return;
                 const emailKey = sub.email.toLowerCase().trim();
                 const existing = userMap.get(emailKey);
+                const authInfo = authUsersByEmail.get(emailKey);
                 if (existing) {
                     userMap.set(emailKey, {
                         ...existing,
@@ -817,42 +856,43 @@ const AdminPortal = () => {
                 } else {
                     userMap.set(emailKey, {
                         id: sub.id,
-                        name: sub.name || sub.email.split('@')[0],
+                        name: sub.name || authInfo?.name || sub.email.split('@')[0],
                         email: sub.email,
-                        organization: sub.organization || null,
-                        designation: sub.designation || null,
+                        organization: sub.organization || authInfo?.organization || null,
+                        designation: sub.designation || authInfo?.designation || null,
                         inquiry_type: sub.inquiry_type || 'Inquiry',
                         status: sub.status || 'Active',
-                        role: sub.email === '23eg510a07@anurag.edu.in' ? 'partner' : 'client',
-                        lastLogin: null,
-                        confirmed: true,
+                        role: sub.email === '23eg510a07@anurag.edu.in' ? 'partner' : (authInfo?.role || 'client'),
+                        lastLogin: authInfo?.lastLogin || null,
+                        confirmed: authInfo?.confirmed ?? true,
                         created_at: sub.created_at
                     });
                 }
             });
 
-            // 3. Add Waitlist users
+            // 3. Add Waitlist users from database table
             (waitlist || []).forEach((w: any) => {
                 if (!w.email) return;
                 const emailKey = w.email.toLowerCase().trim();
                 if (!userMap.has(emailKey)) {
+                    const authInfo = authUsersByEmail.get(emailKey);
                     userMap.set(emailKey, {
                         id: w.id,
-                        name: w.name || w.email.split('@')[0],
+                        name: w.name || authInfo?.name || w.email.split('@')[0],
                         email: w.email,
-                        organization: w.project_name || null,
+                        organization: w.project_name || authInfo?.organization || null,
                         designation: 'Waitlist',
                         inquiry_type: 'Waitlist',
                         status: 'Active',
-                        role: 'client',
-                        lastLogin: null,
+                        role: authInfo?.role || 'client',
+                        lastLogin: authInfo?.lastLogin || null,
                         confirmed: true,
                         created_at: w.created_at
                     });
                 }
             });
 
-            // 4. Add Career Applications (Intern Registrations)
+            // 4. Add Career Applications (Intern Registrations) from database table
             try {
                 const careerApps = await internshipService.getApplications();
                 setRegisteredInternsCount(careerApps.length);
@@ -860,16 +900,17 @@ const AdminPortal = () => {
                     if (!c.email) return;
                     const emailKey = c.email.toLowerCase().trim();
                     if (!userMap.has(emailKey)) {
+                        const authInfo = authUsersByEmail.get(emailKey);
                         userMap.set(emailKey, {
                             id: c.id,
-                            name: c.full_name || c.email.split('@')[0],
+                            name: c.full_name || authInfo?.name || c.email.split('@')[0],
                             email: c.email,
-                            organization: c.college || null,
+                            organization: c.college || authInfo?.organization || null,
                             designation: c.role || 'Intern Applicant',
                             inquiry_type: 'Career Registration',
                             status: c.status || 'Applied',
                             role: 'intern',
-                            lastLogin: null,
+                            lastLogin: authInfo?.lastLogin || null,
                             confirmed: true,
                             created_at: c.created_at
                         });
@@ -1520,13 +1561,6 @@ const AdminPortal = () => {
             </Helmet>
 
             <main className="container mx-auto px-6 pt-32 pb-20 relative z-10">
-                <button
-                    onClick={() => navigate('/portal')}
-                    className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-6 group cursor-pointer text-left"
-                >
-                    <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <span className="text-sm font-semibold">Back</span>
-                </button>
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                     <div className="text-left">
@@ -1540,48 +1574,16 @@ const AdminPortal = () => {
                         <p className="text-muted-foreground">Monitoring deep-tech innovations and inquiries.</p>
                     </div>
 
-                    <div className="flex items-center gap-4 flex-wrap">
+                    <div className="flex items-center gap-3 flex-wrap">
                         <button
-                            onClick={() => setViewMode('submissions')}
-                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
-                                viewMode === 'submissions'
-                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
-                            }`}
-                        >
-                            <FileText className="w-4 h-4" />
-                            <span>Submissions</span>
-                            {submissions.length > 0 && (
-                                <span className="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-white/20 text-inherit">
-                                    {submissions.length}
-                                </span>
-                            )}
-                        </button>
-                        <button
-                            onClick={() => setViewMode('verifications')}
-                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
-                                viewMode === 'verifications'
-                                    ? 'bg-emerald-500 text-stone-950 font-bold shadow-lg shadow-emerald-500/20'
-                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
-                            }`}
-                        >
-                            <CreditCard className="w-4 h-4 text-emerald-400" />
-                            <span>Payment Verifications</span>
-                            {pendingVerifications.length > 0 && (
-                                <span className="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-amber-400 text-stone-950 animate-pulse">
-                                    {pendingVerifications.length} Pending
-                                </span>
-                            )}
-                        </button>
-                        <button
-                            onClick={() => setViewMode('clients')}
+                            onClick={() => { setViewMode('clients'); }}
                             className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
                                 viewMode === 'clients'
                                     ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
                                     : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
                             }`}
                         >
-                            <Building2 className="w-4 h-4" /> Clients & Requirements
+                            <Building2 className="w-4 h-4" /> Client
                         </button>
                         <button
                             onClick={() => { setViewMode('agency'); fetchAgencyClients(); refreshAgencyData(); }}
@@ -1592,7 +1594,7 @@ const AdminPortal = () => {
                             }`}
                         >
                             <Handshake className="w-4 h-4" />
-                            <span>Agency & Commissions</span>
+                            <span>Agency</span>
                         </button>
                         <button
                             onClick={() => { setViewMode('users'); fetchAllUsers(); refreshRoleRequests(); }}
@@ -1602,11 +1604,11 @@ const AdminPortal = () => {
                                     : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
                             }`}
                         >
-                            <Users className="w-4 h-4" />
-                            <span>Users & Role Approvals</span>
-                            {roleRequests.filter(r => r.status === 'pending').length > 0 && (
+                            <Briefcase className="w-4 h-4" />
+                            <span>Employee</span>
+                            {roleRequests.filter(r => r.status === 'pending' && r.role === 'employee').length > 0 && (
                                 <span className="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-amber-400 text-stone-950 animate-pulse">
-                                    {roleRequests.filter(r => r.status === 'pending').length} Action
+                                    {roleRequests.filter(r => r.status === 'pending' && r.role === 'employee').length}
                                 </span>
                             )}
                         </button>
@@ -1618,24 +1620,32 @@ const AdminPortal = () => {
                                     : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
                             }`}
                         >
-                            <GraduationCap className="w-4 h-4 text-primary" />
-                            <span>Internships & Whitelist</span>
+                            <GraduationCap className="w-4 h-4" />
+                            <span>Intern</span>
                             {registeredInternsCount > 0 && (
                                 <span className="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400">
                                     {registeredInternsCount}
                                 </span>
                             )}
                         </button>
-
-                        {(viewMode === 'submissions' || viewMode === 'agency') && (
-                            <button
-                                onClick={viewMode === 'agency' ? fetchAgencyClients : fetchSubmissions}
-                                className="p-3 rounded-xl glass-card hover:bg-muted/50 transition-colors group"
-                                title="Refresh Data"
-                            >
-                                <RefreshCw className={`w-5 h-5 ${(loading || agencyClientsLoading) ? 'animate-spin' : ''}`} />
-                            </button>
-                        )}
+                        <button
+                            onClick={() => { setViewMode('verifications'); }}
+                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
+                                viewMode === 'verifications'
+                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
+                            }`}
+                        >
+                            <TrendingUp className="w-4 h-4" />
+                            <span>Investor</span>
+                        </button>
+                        <button
+                            onClick={fetchSubmissions}
+                            className="p-3 rounded-xl glass-card hover:bg-muted/50 transition-colors group"
+                            title="Refresh Data"
+                        >
+                            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                        </button>
                     </div>
                 </div>
 
@@ -1866,8 +1876,10 @@ const AdminPortal = () => {
                                                             <div className="space-y-4">
                                                                 <div className="flex flex-wrap gap-2 text-xs font-semibold mb-2 border-b border-border pb-3 items-center">
                                                                     {meta.agreement && (
-                                                                        <span className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-xl flex items-center gap-1.5 font-bold">
-                                                                            <Landmark className="w-3.5 h-3.5" /> Quote: {meta.agreement}
+                                                                        <span className="bg-primary/10 text-foreground border border-primary/25 px-3 py-1 rounded-xl flex items-center gap-1.5 font-semibold">
+                                                                            <Landmark className="w-3.5 h-3.5 text-primary" />
+                                                                            <span className="text-muted-foreground font-medium">Quote:</span>
+                                                                            <span className="text-foreground font-extrabold">{meta.agreement}</span>
                                                                         </span>
                                                                     )}
                                                                     {meta.deadline && (
@@ -2145,7 +2157,17 @@ const AdminPortal = () => {
                 ) : viewMode === 'clients' ? (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 text-left">
                         {/* Sub-tab Navigation */}
-                        <div className="flex items-center gap-2 border-b border-border pb-3">
+                        <div className="flex items-center gap-2 border-b border-border pb-3 flex-wrap">
+                            <button
+                                onClick={() => setClientSubTab('request')}
+                                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                                    clientSubTab === 'request'
+                                        ? 'bg-primary text-primary-foreground shadow-md'
+                                        : 'glass-card text-muted-foreground hover:text-foreground'
+                                }`}
+                            >
+                                <Send className="w-4 h-4" /> Request Services
+                            </button>
                             <button
                                 onClick={() => setClientSubTab('invoices')}
                                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
@@ -2171,7 +2193,12 @@ const AdminPortal = () => {
                             </button>
                         </div>
 
-                        {clientSubTab === 'invoices' ? (
+                        {clientSubTab === 'request' ? (
+                            <ClientServiceRequestSection
+                                adminEmail={adminEmail || 'ssaivaraprasad51@gmail.com'}
+                                onServiceOrderCreated={fetchSubmissions}
+                            />
+                        ) : clientSubTab === 'invoices' ? (
                             <div className="space-y-6">
                                 {/* Header */}
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -2418,8 +2445,17 @@ const AdminPortal = () => {
                             )}
                         </div>
 
-                        {/* Role Summary Pills (Interactive Filters) */}
-                        <div className="flex flex-wrap gap-2.5">
+                        {/* Role Summary Pills + Refresh */}
+                        <div className="flex flex-wrap gap-2.5 items-center">
+                            <button
+                                onClick={fetchAllUsers}
+                                disabled={usersLoading}
+                                title="Refresh user list from database"
+                                className="px-3.5 py-1.5 rounded-xl text-xs font-bold border border-border bg-card hover:bg-muted transition-all flex items-center gap-1.5 disabled:opacity-50"
+                            >
+                                <RefreshCw className={`w-3.5 h-3.5 ${usersLoading ? 'animate-spin' : ''}`} />
+                                Refresh
+                            </button>
                             {[
                                 { id: 'all', label: 'All Users', count: allUsers.length },
                                 { id: 'client', label: 'Clients', count: allUsers.filter(u => u.role === 'client').length },
@@ -2524,6 +2560,13 @@ const AdminPortal = () => {
                                             >
                                                 <ChevronRight className="w-3.5 h-3.5" /> Portal
                                             </button>
+                                            <button
+                                                onClick={() => handleDeleteUser(user)}
+                                                className="px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 text-xs font-bold flex items-center gap-1.5 transition-all"
+                                                title="Delete user from all records"
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                            </button>
                                         </div>
                                     </motion.div>
                                 ))}
@@ -2564,6 +2607,7 @@ const AdminPortal = () => {
                                         </div>
                                     </div>
                                     <form
+                                        autoComplete="off"
                                         onSubmit={(e) => {
                                             e.preventDefault();
                                             if (!userChatInput.trim()) return;
@@ -3262,9 +3306,6 @@ const AdminPortal = () => {
                         )}
                     </motion.div>
                 ) : null}
-                <div className="pt-8">
-                    <GoogleReviewCard audience="visitor" name="Sai Vara Prasad" compact />
-                </div>
             </main>
 
             {/* Background elements */}
@@ -3598,7 +3639,7 @@ const AdminPortal = () => {
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                                             <div>
                                                 <span className="text-muted-foreground font-semibold">Agreed / Quoted Price:</span>
-                                                <strong className="text-foreground ml-1 text-sm text-emerald-400">{meta.agreement || "Not assigned yet"}</strong>
+                                                <strong className="text-foreground ml-1 text-sm font-extrabold">{meta.agreement || "Not assigned yet"}</strong>
                                             </div>
                                             <div>
                                                 <span className="text-muted-foreground font-semibold">Payment Structure:</span>
@@ -5115,7 +5156,7 @@ const AdminPortal = () => {
                                 </button>
                             </div>
 
-                            <form onSubmit={handleCreatePayrollRecord} className="p-5 space-y-4 text-xs">
+                            <form autoComplete="off" onSubmit={handleCreatePayrollRecord} className="p-5 space-y-4 text-xs">
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1">
                                         <label className="font-bold text-foreground">Recipient Name *</label>
@@ -5260,7 +5301,7 @@ const AdminPortal = () => {
                                 </button>
                             </div>
 
-                            <form onSubmit={handleSaveFullAgency} className="p-5 space-y-4 text-xs">
+                            <form autoComplete="off" onSubmit={handleSaveFullAgency} className="p-5 space-y-4 text-xs">
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1">
                                         <label className="font-bold text-foreground">Agency Business Name *</label>
@@ -5410,6 +5451,7 @@ const AdminPortal = () => {
                 onClose={() => setSelectedInvoiceForModal(null)}
                 data={selectedInvoiceForModal}
             />
+            <FooterSection />
         </div>
     );
 };

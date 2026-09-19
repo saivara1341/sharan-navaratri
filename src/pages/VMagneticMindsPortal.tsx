@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/layout/Navbar";
-import { GoogleReviewCard } from "@/components/GoogleReviewCard";
 import {
   Search, Globe, Bot, MapPin, TrendingUp, CheckCircle, Clock, Calendar,
   ShieldCheck, RefreshCw, MessageCircle, Send, Zap, CreditCard, QrCode,
@@ -2050,11 +2049,6 @@ export default function VMagneticMindsPortal() {
             </motion.div>
           )}
         </AnimatePresence>
-        )}
-        {/* ── Review Us Banner ──────── */}
-        <div className="pt-6">
-          <GoogleReviewCard audience="client" name={agencyName} compact />
-        </div>
       </main>
 
       {/* ════ PAY MODAL ════════════════════════════════════════════════════════ */}

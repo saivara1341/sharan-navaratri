@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Users, Star } from 'lucide-react';
 import siddhiLogo from '@/assets/siddhi-logo.png';
-import { GoogleReviewNotificationBanner } from '@/components/GoogleReviewNotificationBanner';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 
 const nizamabadAddress = '3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001, India';
@@ -107,7 +106,6 @@ export const FooterSection = () => {
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      <GoogleReviewNotificationBanner />
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="flex flex-col gap-6">
@@ -326,16 +324,17 @@ export const FooterSection = () => {
             </motion.p>
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 max-w-full pb-1 px-1">
               {[
-                { label: t('footer.legal.privacy', 'Privacy Policy'), href: '/privacy' },
-                { label: t('footer.legal.terms', 'Terms & Conditions'), href: '/terms-and-conditions' },
-                { label: t('footer.legal.cookies', 'Cookie Policy'), href: '/cookie-policy' },
-                { label: t('footer.legal.dataRights', 'Your Data Rights'), href: '/data-rights' },
-                { label: t('footer.legal.contactInfo', 'Contact Information'), href: '/contact-information' },
+                { label: t('footer.legal.privacy', 'Privacy Policy'), href: 'https://siddhidynamics.in/privacy' },
+                { label: t('footer.legal.terms', 'Terms & Conditions'), href: 'https://siddhidynamics.in/terms-and-conditions' },
+                { label: t('footer.legal.cookies', 'Cookie Policy'), href: 'https://siddhidynamics.in/cookie-policy' },
+                { label: t('footer.legal.dataRights', 'Your Data Rights'), href: 'https://siddhidynamics.in/data-rights' },
+                { label: t('footer.legal.contactInfo', 'Contact Information'), href: 'https://siddhidynamics.in/contact-information' },
               ].map((link, index) => (
                 <motion.a
                   key={link.href}
                   href={link.href}
-                  onClick={(e) => handleNavClick(e, link.href)}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   initial={{ opacity: 0 }}
                   animate={isInView ? { opacity: 1 } : {}}
                   transition={{ delay: 0.8 + index * 0.05 }}
