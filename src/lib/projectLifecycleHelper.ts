@@ -2,9 +2,12 @@ import {
   ProjectLifecycleMeta,
   BankingDetails,
   DEFAULT_BANKING_DETAILS,
+  DEFAULT_BANK_ACCOUNTS,
   ProjectInvoice,
   ProjectUpdate
 } from "@/types/projectLifecycle";
+
+export { DEFAULT_BANKING_DETAILS, DEFAULT_BANK_ACCOUNTS };
 
 export function parseProjectMeta(raw: string | null | undefined): ProjectLifecycleMeta {
   if (!raw) {

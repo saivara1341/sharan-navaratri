@@ -17,8 +17,8 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { requirementsApi, REQUIREMENT_TYPES } from "@/lib/requirements";
-import { generateInvoiceId, serializeProjectMeta, DEFAULT_BANK_ACCOUNTS, DEFAULT_BANKING_DETAILS } from "@/lib/projectLifecycleHelper";
-import { ProjectInvoice } from "@/types/projectLifecycle";
+import { generateInvoiceId, serializeProjectMeta } from "@/lib/projectLifecycleHelper";
+import { ProjectInvoice, DEFAULT_BANK_ACCOUNTS, DEFAULT_BANKING_DETAILS } from "@/types/projectLifecycle";
 
 interface ClientServiceRequestSectionProps {
   adminEmail: string;

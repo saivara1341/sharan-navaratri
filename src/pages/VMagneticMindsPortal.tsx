@@ -1978,7 +1978,7 @@ export default function VMagneticMindsPortal() {
                           <p className="text-[10px] text-emerald-400 font-semibold mt-1">
                             Estimated Commission ({commissionConfig.commission_rate}%): ₹
                             {Math.round(
-                              ((parseInt(newProjValue.replace(/\D/g, "") || "0", 10) * commissionConfig.commission_rate) / 100)
+                              ((Number(newProjValue.replace(/[^0-9]/g, '') || '0') * commissionConfig.commission_rate) / 100)
                             ).toLocaleString("en-IN")}
                           </p>
                         )}
@@ -2049,6 +2049,7 @@ export default function VMagneticMindsPortal() {
             </motion.div>
           )}
         </AnimatePresence>
+        )}
       </main>
 
       {/* ════ PAY MODAL ════════════════════════════════════════════════════════ */}
