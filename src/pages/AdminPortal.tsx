@@ -2419,27 +2419,37 @@ const AdminPortal = () => {
                         </div>
 
                         {/* Role Summary Pills (Interactive Filters) */}
-                        <div className="flex flex-wrap gap-3">
+                        <div className="flex flex-wrap gap-2.5">
                             {[
-                                { id: 'all', label: 'All Users', count: allUsers.length, color: 'bg-muted text-foreground border-border' },
-                                { id: 'client', label: 'Clients', count: allUsers.filter(u => u.role === 'client').length, color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
-                                { id: 'partner', label: 'Partners', count: allUsers.filter(u => u.role === 'partner').length, color: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
-                                { id: 'investor', label: 'Investors', count: allUsers.filter(u => u.role === 'investor').length, color: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
-                                { id: 'intern', label: 'Interns / Applicants', count: allUsers.filter(u => u.role === 'intern').length, color: 'bg-rose-500/10 text-rose-400 border-rose-500/20' },
-                                { id: 'employee', label: 'Employees / Team', count: allUsers.filter(u => u.role === 'employee').length, color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
-                            ].map(pill => (
-                                <button
-                                    key={pill.id}
-                                    onClick={() => setUserRoleFilter(pill.id as any)}
-                                    className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
-                                        userRoleFilter === pill.id
-                                            ? 'ring-2 ring-primary ring-offset-2 ring-offset-background font-extrabold shadow-md ' + pill.color
-                                            : 'opacity-70 hover:opacity-100 ' + pill.color
-                                    }`}
-                                >
-                                    {pill.label} <span className="opacity-70">({pill.count})</span>
-                                </button>
-                            ))}
+                                { id: 'all', label: 'All Users', count: allUsers.length },
+                                { id: 'client', label: 'Clients', count: allUsers.filter(u => u.role === 'client').length },
+                                { id: 'partner', label: 'Partners', count: allUsers.filter(u => u.role === 'partner').length },
+                                { id: 'investor', label: 'Investors', count: allUsers.filter(u => u.role === 'investor').length },
+                                { id: 'intern', label: 'Interns / Applicants', count: allUsers.filter(u => u.role === 'intern').length },
+                                { id: 'employee', label: 'Employees / Team', count: allUsers.filter(u => u.role === 'employee').length },
+                            ].map(pill => {
+                                const isActive = userRoleFilter === pill.id;
+                                return (
+                                    <button
+                                        key={pill.id}
+                                        onClick={() => setUserRoleFilter(pill.id as any)}
+                                        className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer flex items-center gap-2 ${
+                                            isActive
+                                                ? 'bg-primary text-primary-foreground border-primary shadow-sm font-bold'
+                                                : 'bg-card text-foreground/80 hover:text-foreground hover:bg-muted/80 border-border/80'
+                                        }`}
+                                    >
+                                        <span>{pill.label}</span>
+                                        <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold ${
+                                            isActive
+                                                ? 'bg-primary-foreground/20 text-primary-foreground'
+                                                : 'bg-muted text-muted-foreground'
+                                        }`}>
+                                            {pill.count}
+                                        </span>
+                                    </button>
+                                );
+                            })}
                         </div>
 
                         {/* Users Table */}
@@ -2479,7 +2489,7 @@ const AdminPortal = () => {
                                                         user.role === 'employee' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
                                                         'bg-blue-500/10 text-blue-400 border-blue-500/20'
                                                     }`}>{user.role}</span>
-                                                    {user.confirmed && <span className="text-[10px] text-emerald-400">✓ Verified</span>}
+                                                    {user.confirmed && <span className="text-[10px] text-muted-foreground font-medium">✓ Verified</span>}
                                                 </div>
                                                 <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                                                 <p className="text-[11px] text-muted-foreground/60">
