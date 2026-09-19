@@ -30,7 +30,8 @@ import {
   ExternalLink,
   Globe,
   MapPin,
-  Laptop
+  Laptop,
+  Building2
 } from "lucide-react";
 import { parseProjectMeta, serializeProjectMeta } from "@/lib/projectLifecycleHelper";
 import { parseSubmissionMessage } from "@/lib/parseSubmissionMessage";
