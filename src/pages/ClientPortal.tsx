@@ -45,9 +45,21 @@ import { ServiceAgreementModal } from "@/components/client/ServiceAgreementModal
 import { ServiceDetailsModal } from "@/components/client/ServiceDetailsModal";
 import { PaymentSuccessModal } from "@/components/client/PaymentSuccessModal";
 import { OnboardingSuccessModal } from "@/components/client/OnboardingSuccessModal";
+import { DirectPaymentModal } from "@/components/payments/DirectPaymentModal";
 
 type Tab = "overview" | "services" | "agreements" | "billing";
-type Invoice = { id?: string; title?: string; amount?: string; due_date?: string; status?: string; description?: string };
+type Invoice = {
+  id?: string;
+  title?: string;
+  amount?: string;
+  numeric_amount?: number;
+  due_date?: string;
+  status?: string;
+  description?: string;
+  verification_status?: "none" | "pending_verification" | "verified" | "rejected";
+  transaction_id?: string;
+  payment_mode?: any;
+};
 type Project = {
   id: string;
   name: string;
@@ -77,6 +89,12 @@ export default function ClientPortal() {
   const [profileComplete, setProfileComplete] = useState(false);
   const [phone, setPhone] = useState("");
   const [paymentStatuses, setPaymentStatuses] = useState<Record<string, string>>({});
+
+  // Agency Partner Transformation
+  const [showAgencyTransformModal, setShowAgencyTransformModal] = useState(false);
+  const [agencyCompanyName, setAgencyCompanyName] = useState("");
+  const [agencyPhone, setAgencyPhone] = useState("");
+  const [transforming, setTransforming] = useState(false);
 
   // Lifecycle Modals
   const [detailsModalProject, setDetailsModalProject] = useState<Project | null>(null);
@@ -264,18 +282,95 @@ export default function ClientPortal() {
 
   const outstanding = invoices.filter(({ invoice }) => !["paid", "settled"].includes((invoice.status || "").toLowerCase()));
 
-  // Send payment via Cashfree
-  const sendPayment = async () => {
-    if (!payment?.invoice.id) return toast.error("This invoice is not ready for online payment.");
+  // Submit Direct Payment Proof (UTR / Txn ID) for Admin Verification
+  const handleDirectPaymentProofSubmit = async (proofData: {
+    transactionId: string;
+    paymentMode: "UPI" | "IMPS" | "NEFT" | "Net Banking" | "Bank Transfer";
+    payerName: string;
+    payerPhone: string;
+    proofNotes?: string;
+  }) => {
+    if (!payment?.invoice?.id || !payment?.project?.id) return;
     setSaving(true);
-    const { data, error } = await supabase.functions.invoke("cashfree-payments", {
-      body: { submissionId: payment.project.id, invoiceId: payment.invoice.id }
-    });
-    setSaving(false);
-    if (error || !data?.url) {
-      return toast.error(data?.error || error?.message || "Could not create a secure payment link.");
+    try {
+      const proj = payment.project;
+      const inv = payment.invoice;
+      const m = parseProjectMeta(proj.bounty_reward);
+      const existingInvoices: ProjectInvoice[] = m.invoices || [];
+
+      const updatedInvoices: ProjectInvoice[] = existingInvoices.map((i) => {
+        if (i.id === inv.id || i.title === inv.title) {
+          return {
+            ...i,
+            verification_status: "pending_verification" as const,
+            transaction_id: proofData.transactionId,
+            payment_mode: proofData.paymentMode,
+            paid_by_name: proofData.payerName,
+            paid_by_phone: proofData.payerPhone,
+            submitted_at: new Date().toISOString(),
+            admin_notes: proofData.proofNotes,
+          };
+        }
+        return i;
+      });
+
+      const updatedMeta: ProjectLifecycleMeta = {
+        ...m,
+        invoices: updatedInvoices,
+      };
+
+      const { error: updErr } = await supabase
+        .from("contact_submissions")
+        .update({
+          bounty_reward: serializeProjectMeta(updatedMeta),
+        })
+        .eq("id", proj.id);
+
+      if (updErr) throw updErr;
+
+      // Also record an audit chat message so admin sees it in real-time
+      await supabase.from("chat_messages").insert({
+        submission_id: proj.id,
+        sender_email: email,
+        message: `[PAYMENT PROOF SUBMITTED] Client submitted transfer for ${inv.title || inv.id} (${inv.amount}). UTR / Ref: ${proofData.transactionId}, Mode: ${proofData.paymentMode}, Payer: ${proofData.payerName}. Awaiting finance confirmation.`,
+        is_admin: false,
+      });
+
+      toast.success("Payment proof submitted! Finance admin will verify against bank ledger.");
+      setPayment(null);
+      await load(email);
+    } catch (err: any) {
+      toast.error("Failed to submit payment details: " + (err.message || "Unknown error"));
+    } finally {
+      setSaving(false);
     }
-    window.location.assign(data.url);
+  };
+
+  // Handle Client Transformation to Agency Partner
+  const handleTransformToAgency = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setTransforming(true);
+    try {
+      const agencyName = agencyCompanyName.trim() || name + " Partners";
+      const { error: authErr } = await supabase.auth.updateUser({
+        data: {
+          role: "partner",
+          agency_name: agencyName,
+          agency_phone: agencyPhone.trim(),
+          transformed_from_client: true,
+          transformed_at: new Date().toISOString(),
+        },
+      });
+      if (authErr) throw authErr;
+
+      toast.success("Account successfully upgraded to Agency Partner! Welcome to the Partner Workspace.");
+      setShowAgencyTransformModal(false);
+      navigate("/portal/agency");
+    } catch (err: any) {
+      toast.error("Failed to upgrade account: " + (err.message || "Unknown"));
+    } finally {
+      setTransforming(false);
+    }
   };
 
   // Submit Client Service Request Form & trigger Cashfree for advance
@@ -477,6 +572,13 @@ export default function ClientPortal() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => setShowAgencyTransformModal(true)}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-purple-400/40 bg-purple-500/20 px-4 py-3 text-sm font-bold text-purple-200 hover:bg-purple-500/30 transition-colors cursor-pointer"
+                title="Transform your account to an agency partner and earn project commissions"
+              >
+                <Building2 className="h-4 w-4 text-purple-300" /> Transform to Agency Partner
+              </button>
               <button
                 onClick={() => setSetup(true)}
                 className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-white hover:bg-white/20 transition-colors cursor-pointer"
@@ -1140,19 +1242,21 @@ export default function ClientPortal() {
             <Heading
               eyebrow={t('portal.billing.eyebrow', "Billing")}
               title={t('portal.billing.title', "Secure, traceable milestone payments.")}
-              body={t('portal.billing.body', "Pay advance and milestone invoices securely via Cashfree gateway (UPI, card, net banking). Tax receipts and paid histories are stored here.")}
+              body={t('portal.billing.body', "Pay advance and milestone invoices securely via direct UPI QR code or SBI bank transfer with zero gateway deductions. Tax receipts and verified payment histories are stored here.")}
             />
             <div className="space-y-3">
               {invoices.map(({ project, invoice }, i) => {
                 const paid = ["paid", "settled"].includes((invoice.status || "").toLowerCase());
+                const isVerifying = invoice.verification_status === "pending_verification";
+                const key = `${project.id}-${invoice.id || i}`;
                 return (
                   <div
-                    key={`${project.id}-${i}`}
+                    key={key}
                     className="flex flex-col gap-4 rounded-2xl border border-stone-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between"
                   >
-                    <div className="flex gap-3">
-                      <div className="grid h-11 w-11 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
-                        <ReceiptText className="h-5 w-5" />
+                    <div className="flex items-start gap-4">
+                      <div className="rounded-xl border border-stone-200 bg-stone-50 p-2.5">
+                        <ReceiptText className="h-5 w-5 text-stone-700" />
                       </div>
                       <div>
                         <p className="font-semibold text-stone-900">
@@ -1166,76 +1270,173 @@ export default function ClientPortal() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs font-bold ${
-                          paid ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-amber-50 text-amber-700 border border-amber-200"
-                        }`}
-                      >
-                        {paid ? "PAID via Cashfree" : "Pending Payment"}
-                      </span>
-                      {paid ? (
-                        <button
-                          onClick={() => {
-                            setSuccessModalData({
-                              isOpen: true,
-                              amount: invoice.amount,
-                              invoiceTitle: invoice.title || invoice.id,
-                              projectName: project.organization || project.name,
-                              project
-                            });
-                          }}
-                          className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
-                        >
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Receipt & Status
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => setPayment({ project, invoice })}
-                          className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-bold text-white hover:bg-stone-800 transition-colors cursor-pointer"
-                        >
-                          Pay now
-                        </button>
-                      )}
+                          <span
+                            className={`rounded-full px-3 py-1 text-xs font-bold ${
+                              paid
+                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                : isVerifying
+                                ? "bg-amber-50 text-amber-700 border border-amber-200"
+                                : "bg-stone-100 text-stone-700 border border-stone-200"
+                            }`}
+                          >
+                            {paid
+                              ? "Verified & Paid"
+                              : isVerifying
+                              ? `Verification Pending (UTR: ${invoice.transaction_id || "Submitted"})`
+                              : "Pending Payment"}
+                          </span>
+                          {paid ? (
+                            <button
+                              onClick={() => {
+                                setSuccessModalData({
+                                  isOpen: true,
+                                  amount: invoice.amount,
+                                  invoiceTitle: invoice.title || invoice.id,
+                                  projectName: project.organization || project.name,
+                                  project
+                                });
+                              }}
+                              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Receipt & Status
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => setPayment({ project, invoice })}
+                              className={`rounded-xl px-4 py-2 text-sm font-bold transition-colors cursor-pointer ${
+                                isVerifying
+                                  ? "bg-amber-600 hover:bg-amber-500 text-white"
+                                  : "bg-stone-900 hover:bg-stone-800 text-white"
+                              }`}
+                            >
+                              {isVerifying ? "Update UTR / Receipt" : "Pay via UPI / QR / Bank"}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {!invoices.length && (
+                  <Panel>
+                    <Empty
+                      icon={CreditCard}
+                      title={t('portal.billing.emptyTitle', "No bills issued")}
+                      description={t('portal.billing.emptyDesc', "When a quote is approved, your invoice and direct UPI / bank transfer schedule will appear here.")}
+                    />
+                  </Panel>
+                )}
+              </section>
+            )}
+          </main>
+
+          {/* Profile Setup Modal */}
+          {setup && (
+            <Setup
+              name={name}
+              email={email}
+              phone={phone}
+              onClose={() => setSetup(false)}
+              onComplete={completeSetup}
+              saving={setupSaving}
+            />
+          )}
+
+          {/* Direct UPI / QR / Bank Payment Modal */}
+          {payment && (
+            <DirectPaymentModal
+              isOpen={Boolean(payment)}
+              onClose={() => setPayment(null)}
+              invoice={payment.invoice as any}
+              projectName={payment.project.organization || payment.project.name}
+              clientName={name}
+              clientEmail={email}
+              onSubmitProof={handleDirectPaymentProofSubmit}
+              loading={saving}
+            />
+          )}
+
+          {/* Agency Partner Transformation Modal */}
+          {showAgencyTransformModal && (
+            <div className="fixed inset-0 z-[260] grid place-items-center bg-stone-950/70 p-4 pt-20 pb-8 backdrop-blur-sm">
+              <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl text-left">
+                <div className="flex items-center justify-between pb-4 border-b border-stone-200">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600">
+                      <Building2 className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg text-stone-900">Transform to Agency Partner</h3>
+                      <p className="text-xs text-stone-500">Upgrade your account to partner with Siddhi Dynamics</p>
                     </div>
                   </div>
-                );
-              })}
+                  <button
+                    onClick={() => setShowAgencyTransformModal(false)}
+                    className="p-1.5 rounded-lg hover:bg-stone-100 text-stone-400 hover:text-stone-600 cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <form onSubmit={handleTransformToAgency} className="mt-4 space-y-4">
+                  <div className="p-3.5 rounded-xl bg-purple-50 border border-purple-200 text-xs text-purple-900 leading-relaxed">
+                    <strong>Agency Partnership Benefits:</strong>
+                    <ul className="list-disc pl-4 mt-1 space-y-0.5 text-[11px] text-purple-800">
+                      <li>Refer client projects and earn <strong>15%-20% commission</strong> upon project closure.</li>
+                      <li>Access multi-brand client portfolio, live SEO/GEO scores, and white-label SLA delivery.</li>
+                      <li>Your existing client projects and history remain preserved.</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                      Agency / Firm Name
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Acme Growth Digital or your brand name"
+                      value={agencyCompanyName}
+                      onChange={(e) => setAgencyCompanyName(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs text-stone-900 outline-none focus:border-purple-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                      Partner Contact Phone
+                    </label>
+                    <input
+                      type="tel"
+                      placeholder="10-digit phone for executive coordination"
+                      value={agencyPhone}
+                      onChange={(e) => setAgencyPhone(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs text-stone-900 outline-none focus:border-purple-500"
+                    />
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowAgencyTransformModal(false)}
+                      className="px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={transforming}
+                      className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md transition-all disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                    >
+                      {transforming ? "Upgrading Account…" : "Confirm & Enter Agency Portal →"}
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
+          )}
 
-            {!invoices.length && (
-              <Panel>
-                <Empty
-                  icon={CreditCard}
-                  title={t('portal.billing.emptyTitle', "No bills issued")}
-                  description={t('portal.billing.emptyDesc', "When a quote is approved, your invoice and Cashfree payment schedule will appear here.")}
-                />
-              </Panel>
-            )}
-          </section>
-        )}
-      </main>
-
-      {/* Profile Setup Modal */}
-      {setup && (
-        <Setup
-          name={name}
-          email={email}
-          phone={phone}
-          onClose={() => setSetup(false)}
-          onComplete={completeSetup}
-          saving={setupSaving}
-        />
-      )}
-
-      {/* Cashfree Payment Gateway Modal */}
-      {payment && (
-        <Payment
-          invoice={payment.invoice}
-          onClose={() => setPayment(null)}
-          onSubmit={sendPayment}
-          saving={saving}
-        />
-      )}
 
       {/* Client Service Request & Onboarding Modal */}
       {requestModalProject && (
@@ -1460,46 +1661,6 @@ function Setup({
           {saving ? t('clientProfile.saving', 'Saving…') : t('clientProfile.saveAndContinue', 'Save & Continue')}
         </button>
       </form>
-    </div>
-  );
-}
-
-function Payment({
-  invoice,
-  onClose,
-  onSubmit,
-  saving
-}: {
-  invoice: Invoice;
-  onClose: () => void;
-  onSubmit: () => void;
-  saving: boolean;
-}) {
-  return (
-    <div className="fixed inset-0 z-[250] grid place-items-center bg-stone-950/70 p-4 pt-20 pb-8 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
-        <div className="flex justify-between">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[.16em] text-primary">Secure online payment</p>
-            <h2 className="mt-1 text-xl font-semibold">
-              {invoice.title || invoice.id || "Invoice"} · {invoice.amount || ""}
-            </h2>
-          </div>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-stone-100">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-        <p className="mt-5 rounded-xl bg-stone-50 p-4 text-sm leading-6 text-stone-600">
-          You will be taken to Cashfree to pay securely by UPI, card, wallet, or net banking. Your invoice is marked paid and official banking details are unlocked only after Cashfree confirms the payment.
-        </p>
-        <button
-          disabled={saving}
-          onClick={onSubmit}
-          className="mt-5 flex w-full justify-center rounded-xl bg-stone-900 py-3 text-sm font-bold text-white disabled:opacity-60 hover:bg-stone-800 transition-colors cursor-pointer"
-        >
-          {saving ? "Creating secure Cashfree link…" : "Continue to secure payment"}
-        </button>
-      </div>
     </div>
   );
 }

@@ -16,9 +16,11 @@ import { Helmet } from "react-helmet-async";
 import { emailService } from "@/services/emailService";
 import OccasionDesignsSection from "@/components/portal/OccasionDesignsSection";
 import { RequirementsPanel } from "@/components/requirements/RequirementsPanel";
+import { agencyCommissionService } from "@/services/agencyCommissionService";
+import { AgencyCommissionConfig, AgencyCommissionProject } from "@/types/projectLifecycle";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type Tab = 'overview' | 'seo-geo' | 'analytics' | 'clients' | 'billing' | 'chat' | 'occasions';
+type Tab = 'overview' | 'seo-geo' | 'analytics' | 'clients' | 'billing' | 'chat' | 'occasions' | 'commissions';
 
 interface ClientBrand {
   id: string;
@@ -67,6 +69,7 @@ const BASE_TABS: { id: Tab; baseLabel: string; icon: React.ReactNode; desc: stri
   { id: 'seo-geo',    baseLabel: 'Service Metrics & Scores',    icon: <Search className="w-5 h-5" />,        desc: 'Live KPI & deliverable scores' },
   { id: 'analytics',  baseLabel: 'Service Reports & Analytics',icon: <BarChart3 className="w-5 h-5" />,     desc: 'Traffic, uptime & delivery reports' },
   { id: 'billing',    baseLabel: 'Quotation, Payments & Billing',icon: <CreditCard className="w-5 h-5" />,    desc: 'Confirm quotes & setup payment mode' },
+  { id: 'commissions',baseLabel: 'Commission & Referral Revenue',icon: <TrendingUp className="w-5 h-5" />,   desc: 'Track project commissions & payouts' },
   { id: 'chat',       baseLabel: 'AI Support Coordinator',     icon: <Bot className="w-5 h-5" />,           desc: 'Siddhi AI assistant' },
   { id: 'occasions',  baseLabel: 'Occasion & Festive Designs', icon: <Image className="w-5 h-5" />,         desc: 'Wishes images per client', alwaysVisible: true },
 ];
@@ -316,6 +319,69 @@ export default function VMagneticMindsPortal() {
     setCopiedKey(label);
     toast.success(`${label} copied!`);
     setTimeout(() => setCopiedKey(null), 2000);
+  };
+
+  // ── Agency Commission Model State ───────────────────────────────────────────
+  const [commissionConfig, setCommissionConfig] = useState<AgencyCommissionConfig | null>(null);
+  const [commissionProjects, setCommissionProjects] = useState<AgencyCommissionProject[]>([]);
+  const [newProjectModal, setNewProjectModal] = useState(false);
+  const [newClientName, setNewClientName] = useState("");
+  const [newClientEmail, setNewClientEmail] = useState("");
+  const [newProjTitle, setNewProjTitle] = useState("");
+  const [newProjValue, setNewProjValue] = useState("");
+  const [submittingProj, setSubmittingProj] = useState(false);
+
+  const refreshCommissionData = (emailParam?: string) => {
+    const targetEmail = emailParam || userEmail;
+    const cfg = agencyCommissionService.getAgencyConfigByEmail(targetEmail) || {
+      id: 'agency-v-magnetic-minds',
+      agency_name: agencyName,
+      agency_email: targetEmail,
+      model: 'commission',
+      commission_rate: 15,
+      status: 'active',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    setCommissionConfig(cfg);
+    setCommissionProjects(agencyCommissionService.getAgencyProjects(targetEmail));
+  };
+
+  const handleRegisterClientProject = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newClientName.trim() || !newProjTitle.trim()) {
+      toast.error("Please enter client and project details.");
+      return;
+    }
+    const val = parseInt(newProjValue.replace(/\D/g, "") || "0", 10);
+    if (val <= 0) {
+      toast.error("Please enter a valid estimated project value.");
+      return;
+    }
+    setSubmittingProj(true);
+    try {
+      const rate = commissionConfig?.model === 'commission' ? (commissionConfig.commission_rate || 15) : 0;
+      agencyCommissionService.addAgencyProject({
+        agency_email: userEmail,
+        client_name: newClientName.trim(),
+        client_email: newClientEmail.trim() || `${newClientName.toLowerCase().replace(/\s+/g, '')}@client.com`,
+        project_name: newProjTitle.trim(),
+        project_value: val,
+        commission_rate: rate,
+        payout_status: 'unpaid'
+      });
+      toast.success("Client project registered under agency pipeline!");
+      setNewClientName("");
+      setNewClientEmail("");
+      setNewProjTitle("");
+      setNewProjValue("");
+      setNewProjectModal(false);
+      refreshCommissionData(userEmail);
+    } catch (err: any) {
+      toast.error("Failed to register project: " + err.message);
+    } finally {
+      setSubmittingProj(false);
+    }
   };
 
   // ── Partner Agency Profile & Branding Customization ─────────────────────────
@@ -856,6 +922,7 @@ export default function VMagneticMindsPortal() {
       if (session?.user) {
         const email = (session.user.email || "").toLowerCase();
         setUserEmail(email);
+        refreshCommissionData(email);
 
         let curAgencyName = session.user.user_metadata?.agency_name || session.user.user_metadata?.full_name || "Agency Partner";
         let curAgencyLogo = session.user.user_metadata?.agency_logo || "";
@@ -1698,6 +1765,246 @@ export default function VMagneticMindsPortal() {
                   </div>
                 </div>
               </div>
+            </motion.div>
+          )}
+
+          {/* ═══ COMMISSIONS & REFERRALS ══════════════════════════════════════ */}
+          {activeTab === 'commissions' && (
+            <motion.div key="commissions" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6 text-left">
+              {/* Status Header Banner */}
+              <div className="glass-card rounded-3xl border border-primary/30 p-6 md:p-8 bg-gradient-to-r from-primary/10 via-card to-emerald-500/5 space-y-4">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full border ${
+                        commissionConfig?.model === 'commission'
+                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                          : 'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                      }`}>
+                        {commissionConfig?.model === 'commission'
+                          ? `Active Commission Model · ${commissionConfig.commission_rate}% Tier`
+                          : 'Standard Retainer Tier (Non-Commission Model)'}
+                      </span>
+                      <span className="text-xs text-muted-foreground">Admin Decided & Managed</span>
+                    </div>
+                    <h2 className="text-2xl font-extrabold text-foreground mt-2 flex items-center gap-2">
+                      <TrendingUp className="w-6 h-6 text-primary" /> Agency Commission & Revenue Pipeline
+                    </h2>
+                    <p className="text-xs text-muted-foreground mt-1 max-w-2xl">
+                      {commissionConfig?.model === 'commission'
+                        ? `Your agency is on the official Siddhi Dynamics commission tier (${commissionConfig.commission_rate}%). You earn direct payouts for every client project brought into our development ecosystem.`
+                        : 'Your agency operates on fixed retainer and direct delivery agreements with Siddhi Dynamics. Commission tier is assigned by admin based on contract agreements.'}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setNewProjectModal(true)}
+                    className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold shadow-lg shadow-primary/20 flex items-center gap-2 transition-all cursor-pointer shrink-0"
+                  >
+                    <Plus className="w-4 h-4" /> Register Client Project
+                  </button>
+                </div>
+              </div>
+
+              {/* Commission Financial Metrics */}
+              {(() => {
+                const stats = agencyCommissionService.calculateAgencyEarnings(userEmail);
+                return (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="glass-card p-5 rounded-2xl border border-border bg-card/60 space-y-2">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Referred Projects</span>
+                      <p className="text-2xl font-black text-foreground">{stats.totalProjects}</p>
+                      <p className="text-[10px] text-muted-foreground">In active pipeline</p>
+                    </div>
+
+                    <div className="glass-card p-5 rounded-2xl border border-border bg-card/60 space-y-2">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Project Value</span>
+                      <p className="text-2xl font-black text-foreground">₹{stats.totalReferredValue.toLocaleString('en-IN')}</p>
+                      <p className="text-[10px] text-muted-foreground">Client billings generated</p>
+                    </div>
+
+                    <div className="glass-card p-5 rounded-2xl border border-border bg-card/60 space-y-2">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Commission Earned</span>
+                      <p className="text-2xl font-black text-emerald-400">₹{stats.totalCommissionEarned.toLocaleString('en-IN')}</p>
+                      <p className="text-[10px] text-emerald-500 font-medium">Cumulative earnings</p>
+                    </div>
+
+                    <div className="glass-card p-5 rounded-2xl border border-border bg-card/60 space-y-2">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Pending Payout</span>
+                      <p className="text-2xl font-black text-amber-400">₹{stats.pendingPayout.toLocaleString('en-IN')}</p>
+                      <p className="text-[10px] text-amber-500 font-medium">Processed via direct NEFT / UPI</p>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Projects & Payouts Ledger */}
+              <div className="glass-card rounded-2xl border border-border overflow-hidden">
+                <div className="p-5 border-b border-border bg-muted/40 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-bold text-foreground">Client Projects & Commission Ledger</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">Live tracking of client contracts brought by your agency</p>
+                  </div>
+                  <span className="text-xs font-semibold text-primary">{commissionProjects.length} Records</span>
+                </div>
+
+                {commissionProjects.length === 0 ? (
+                  <div className="p-12 text-center space-y-3">
+                    <Building2 className="w-10 h-10 text-muted-foreground mx-auto" />
+                    <p className="text-sm font-semibold text-foreground">No referred projects logged yet</p>
+                    <p className="text-xs text-muted-foreground">Click "Register Client Project" to record your first client referral.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs text-left">
+                      <thead className="bg-muted/60 text-muted-foreground font-bold uppercase text-[10px] border-b border-border">
+                        <tr>
+                          <th className="px-5 py-3">Client / Organization</th>
+                          <th className="px-5 py-3">Project Title</th>
+                          <th className="px-5 py-3">Project Value</th>
+                          <th className="px-5 py-3">Commission %</th>
+                          <th className="px-5 py-3">Commission Earned</th>
+                          <th className="px-5 py-3">Payout Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border">
+                        {commissionProjects.map((proj) => (
+                          <tr key={proj.id} className="hover:bg-muted/30 transition-colors">
+                            <td className="px-5 py-3.5">
+                              <p className="font-bold text-foreground">{proj.client_name}</p>
+                              <p className="text-[11px] text-muted-foreground">{proj.client_email}</p>
+                            </td>
+                            <td className="px-5 py-3.5 font-medium text-foreground">{proj.project_name}</td>
+                            <td className="px-5 py-3.5 font-bold text-foreground">₹{proj.project_value.toLocaleString('en-IN')}</td>
+                            <td className="px-5 py-3.5 font-semibold text-primary">{proj.commission_rate}%</td>
+                            <td className="px-5 py-3.5 font-bold text-emerald-400">₹{proj.commission_amount.toLocaleString('en-IN')}</td>
+                            <td className="px-5 py-3.5">
+                              {proj.payout_status === 'paid' ? (
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                  <Check className="w-3 h-3" /> Paid · {proj.payout_reference || proj.payout_date || 'Bank Transfer'}
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                  <Clock className="w-3 h-3" /> Payout Pending
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
+              {/* Modal: Register Client Project */}
+              {newProjectModal && (
+                <div className="fixed inset-0 z-[260] grid place-items-center bg-black/80 p-4 pt-20 pb-8 backdrop-blur-sm">
+                  <div className="w-full max-w-md rounded-3xl bg-card border border-border p-6 shadow-2xl space-y-4">
+                    <div className="flex items-center justify-between pb-3 border-b border-border">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                          <Plus className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-base text-foreground">Register Client Project</h3>
+                          <p className="text-xs text-muted-foreground">Add a project brought to Siddhi Dynamics</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setNewProjectModal(false)}
+                        className="p-1 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <form onSubmit={handleRegisterClientProject} className="space-y-3.5 text-xs">
+                      <div>
+                        <label className="block font-bold text-foreground mb-1 uppercase text-[10px] tracking-wider">
+                          Client / Business Name <span className="text-red-400">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Apex Industries Pvt Ltd"
+                          value={newClientName}
+                          onChange={(e) => setNewClientName(e.target.value)}
+                          className="w-full px-3 py-2 rounded-xl border border-border bg-background text-foreground outline-none focus:border-primary"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-foreground mb-1 uppercase text-[10px] tracking-wider">
+                          Client Email Address
+                        </label>
+                        <input
+                          type="email"
+                          placeholder="contact@client.com"
+                          value={newClientEmail}
+                          onChange={(e) => setNewClientEmail(e.target.value)}
+                          className="w-full px-3 py-2 rounded-xl border border-border bg-background text-foreground outline-none focus:border-primary"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-foreground mb-1 uppercase text-[10px] tracking-wider">
+                          Project Title / Scope <span className="text-red-400">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Multi-tenant Inventory SaaS Portal"
+                          value={newProjTitle}
+                          onChange={(e) => setNewProjTitle(e.target.value)}
+                          className="w-full px-3 py-2 rounded-xl border border-border bg-background text-foreground outline-none focus:border-primary"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-foreground mb-1 uppercase text-[10px] tracking-wider">
+                          Estimated Project Value (INR) <span className="text-red-400">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. 75000"
+                          value={newProjValue}
+                          onChange={(e) => setNewProjValue(e.target.value)}
+                          className="w-full px-3 py-2 rounded-xl border border-border bg-background text-foreground outline-none focus:border-primary font-mono"
+                        />
+                        {commissionConfig?.model === 'commission' && newProjValue && (
+                          <p className="text-[10px] text-emerald-400 font-semibold mt-1">
+                            Estimated Commission ({commissionConfig.commission_rate}%): ₹
+                            {Math.round(
+                              ((parseInt(newProjValue.replace(/\D/g, "") || "0", 10) * commissionConfig.commission_rate) / 100)
+                            ).toLocaleString("en-IN")}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="pt-2 flex items-center justify-end gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => setNewProjectModal(false)}
+                          className="px-4 py-2 rounded-xl bg-muted text-muted-foreground hover:text-foreground text-xs font-semibold cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={submittingProj}
+                          className="px-5 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-md cursor-pointer disabled:opacity-50"
+                        >
+                          {submittingProj ? "Registering…" : "Register Project"}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
             </motion.div>
           )}
 

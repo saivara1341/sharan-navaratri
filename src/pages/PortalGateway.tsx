@@ -178,17 +178,29 @@ export default function PortalGateway() {
     setAuthLoading(true);
     try {
       const emailToCheck = session?.user?.email;
+      const userName = session?.user?.user_metadata?.full_name || emailToCheck?.split('@')[0] || '';
 
-      // Whitelist check for employee and intern roles
+      // Whitelist check for employee and intern roles - Admin holds strict permission
       if (role === 'employee' || role === 'intern') {
-        const check = internshipService.isEmailApproved(emailToCheck);
+        const check = internshipService.isEmailApproved(emailToCheck, role as any);
         if (!check.approved) {
-          toast.error(`Access Restricted: ${emailToCheck} is not on the admin-approved whitelist for ${role === 'intern' ? 'Intern' : 'Employee'} access. Please apply via Careers.`);
+          // Log approval request for Admin Portal
+          internshipService.submitRoleRequest(
+            emailToCheck,
+            userName,
+            role as any,
+            `Requested ${role === 'intern' ? 'Intern' : 'Employee'} role via Portal Gateway`
+          );
+          toast.info(
+            `Admin Approval Required: ${emailToCheck} has been submitted to the Admin Approval Queue for ${role === 'intern' ? 'Intern' : 'Employee'} access. You will gain access as soon as Admin approves your account.`,
+            { duration: 8000 }
+          );
           setAuthLoading(false);
           return;
         }
       }
 
+      // Other roles (client, partner/agency, investor) are freely allowed!
       const { data, error } = await supabase.auth.updateUser({
         data: { role }
       });

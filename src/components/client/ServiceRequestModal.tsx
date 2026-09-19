@@ -1,5 +1,23 @@
 import React, { useState } from "react";
-import { X, Check, ClipboardCheck, Building, Phone, Mail, Calendar, Clock, ShieldCheck, AlertCircle, CreditCard, Target } from "lucide-react";
+import {
+  X,
+  Check,
+  ClipboardCheck,
+  Building,
+  Phone,
+  Mail,
+  Calendar,
+  Clock,
+  ShieldCheck,
+  AlertCircle,
+  CreditCard,
+  Target,
+  Palette,
+  Layers,
+  Sparkles,
+  QrCode,
+  FileCode2
+} from "lucide-react";
 import { ProjectLifecycleMeta, ClientServiceFormData } from "@/types/projectLifecycle";
 
 interface ServiceRequestModalProps {
@@ -18,13 +36,13 @@ interface ServiceRequestModalProps {
 }
 
 const MATERIAL_OPTIONS = [
-  "Logo & brand guidelines",
-  "Domain / DNS / hosting credentials",
-  "Content, images & product catalog",
-  "Social media & ad accounts access",
-  "Existing codebase / database details",
-  "Analytics / CRM / WhatsApp API access",
-  "Competitor & design references"
+  "Existing codebase / repository access",
+  "Domain & DNS credentials (or purchase needed)",
+  "Existing database / API documentation",
+  "High-resolution product images / illustrations",
+  "Social media handles & business profiles",
+  "Content copy & service catalog text",
+  "Competitor & design inspiration references"
 ];
 
 export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
@@ -41,6 +59,16 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
   const [contactEmail, setContactEmail] = useState(clientEmail);
   const [preferredTime, setPreferredTime] = useState("Morning (10:00 AM – 1:00 PM)");
   const [requestedStartDate, setRequestedStartDate] = useState(new Date().toISOString().split("T")[0]);
+
+  // Project Category & Complexity Tier
+  const [projectCategory, setProjectCategory] = useState<'Website' | 'SaaS Platform' | 'ERP Solution' | 'Business Automation' | 'Mobile App' | 'Other'>('Website');
+  const [complexityTier, setComplexityTier] = useState<'Simple' | 'Standard' | 'Premium'>('Standard');
+
+  // Brand & Logo assets
+  const [logoStatus, setLogoStatus] = useState<'have_logo' | 'need_design'>('have_logo');
+  const [brandColors, setBrandColors] = useState('');
+  const [competitorRefs, setCompetitorRefs] = useState('');
+
   const [businessGoal, setBusinessGoal] = useState("");
   const [targetAudience, setTargetAudience] = useState("");
   const [keyRequirements, setKeyRequirements] = useState("");
@@ -68,7 +96,7 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
     e.preventDefault();
     const cleanPhone = contactPhone.replace(/\D/g, "").slice(-10);
     if (cleanPhone.length !== 10) {
-      setErrorMsg("Please enter a valid 10-digit mobile number for Cashfree payment verification & WhatsApp updates.");
+      setErrorMsg("Please enter a valid 10-digit mobile number for WhatsApp updates & payment confirmation.");
       return;
     }
     if (!confirmed) {
@@ -87,7 +115,12 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
       key_requirements: keyRequirements.trim(),
       materials_provided: materials,
       pending_materials_date: pendingMaterialsDate || undefined,
-      confirmed_at: new Date().toISOString()
+      confirmed_at: new Date().toISOString(),
+      project_category: projectCategory,
+      complexity_tier: complexityTier,
+      logo_status: logoStatus,
+      brand_colors: brandColors.trim(),
+      competitor_references: competitorRefs.trim(),
     };
 
     await onSubmit(formData, cleanPhone, paymentStructure, currentAdvanceString);
@@ -99,10 +132,10 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
         {/* Header */}
         <div className="p-6 border-b border-stone-200 bg-stone-50 flex items-center justify-between">
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-[.18em] text-primary">Siddhi Dynamics LLP · Service Onboarding</span>
-            <h2 className="text-xl font-bold mt-0.5">Service Request & Onboarding Form</h2>
+            <span className="text-[11px] font-bold uppercase tracking-[.18em] text-primary">Siddhi Dynamics LLP · Client Requirements & Onboarding</span>
+            <h2 className="text-xl font-bold mt-0.5">Project Scope & Requirements Specification</h2>
             <p className="text-xs text-stone-500 mt-1">
-              Confirm your project scope & requirements. Service officially begins upon completing the agreed advance payment.
+              Submit your assets and specifications. Admin will evaluate your requirements, finalize the exact quote, and provide QR / bank transfer credentials.
             </p>
           </div>
           <button onClick={onClose} className="p-2 rounded-xl hover:bg-stone-200 text-stone-500 transition-colors">
@@ -111,16 +144,16 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
         </div>
 
         {/* Agreed Quote Summary Banner */}
-        <div className="px-6 py-3.5 bg-lime-50 border-b border-lime-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="px-6 py-3.5 bg-emerald-50 border-b border-emerald-100 flex flex-wrap items-center justify-between gap-3 text-xs">
           <div>
-            <span className="text-stone-500 font-medium">Assigned Quote:</span>{" "}
-            <strong className="text-stone-900 font-bold text-sm">{meta.agreement || "Quoted Price"}</strong>
-            <span className="ml-2 text-stone-600 font-semibold text-[11px] bg-white px-2 py-0.5 rounded-md border border-lime-200">
+            <span className="text-stone-500 font-medium">Estimated / Quoted Budget:</span>{" "}
+            <strong className="text-stone-900 font-bold text-sm">{meta.agreement || "Custom Quote on Review"}</strong>
+            <span className="ml-2 text-stone-600 font-semibold text-[11px] bg-white px-2 py-0.5 rounded-md border border-emerald-200">
               {paymentStructure}
             </span>
           </div>
-          <div className="bg-primary text-white px-3.5 py-1 rounded-full font-bold text-xs shadow-sm">
-            Advance Due: {currentAdvanceString}
+          <div className="bg-emerald-600 text-white px-3.5 py-1 rounded-full font-bold text-xs shadow-sm flex items-center gap-1.5">
+            <QrCode className="w-3.5 h-3.5" /> Advance via Direct UPI / Bank
           </div>
         </div>
 
@@ -133,85 +166,158 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
             </div>
           )}
 
-          {/* Payment Structure Selection (Client Choice) */}
-          <div className="p-4 rounded-2xl border border-lime-300 bg-lime-50/40 space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
-                <CreditCard className="w-3.5 h-3.5" /> Select Payment Structure
-              </h3>
-              <span className="text-[10px] uppercase font-bold text-stone-500 bg-white px-2 py-0.5 rounded border border-stone-200">
-                Client Preference
-              </span>
-            </div>
-            <p className="text-[11px] text-stone-600">
-              Choose how you would like to structure your project milestone payments:
-            </p>
+          {/* Section: Project Category & Complexity Tier */}
+          <div className="p-4 rounded-2xl border border-stone-200 bg-stone-50/70 space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5 text-primary" /> 1. Project Type & Complexity Tier
+            </h3>
 
-            <div className="grid grid-cols-1 gap-2.5 pt-1">
-              {[
-                {
-                  id: "50% Advance + 50% on Delivery",
-                  title: "50% Advance + 50% on Delivery",
-                  tag: "Standard & Recommended",
-                  desc: "Start with 50% advance to trigger engineering work; remaining 50% upon final testing & delivery."
-                },
-                {
-                  id: "100% Advance",
-                  title: "100% Advance",
-                  tag: "Fast Track",
-                  desc: "Complete the entire project cost in 1 single transaction for priority queue & expedited delivery."
-                },
-                {
-                  id: "50% Advance + 25% Midway + 25% on Delivery",
-                  title: "50% Advance + 25% Midway + 25% on Delivery",
-                  tag: "Milestone Phased",
-                  desc: "Start with 50% advance, 25% upon midway prototype demo review, and final 25% upon delivery."
-                }
-              ].map(opt => {
-                const isSelected = paymentStructure === opt.id;
-                return (
-                  <label
-                    key={opt.id}
-                    onClick={() => setPaymentStructure(opt.id)}
-                    className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                      isSelected
-                        ? "bg-white border-primary ring-2 ring-primary/20 shadow-sm"
-                        : "bg-white/70 border-stone-200 hover:border-stone-300"
+            <div>
+              <label className="block text-[11px] font-semibold text-stone-700 mb-1">Project Category</label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {[
+                  { id: 'Website', label: 'Website / Landing Page' },
+                  { id: 'SaaS Platform', label: 'SaaS Web Application' },
+                  { id: 'ERP Solution', label: 'Custom ERP & Inventory' },
+                  { id: 'Business Automation', label: 'Workflow Automation' },
+                  { id: 'Mobile App', label: 'Mobile Application' },
+                  { id: 'Other', label: 'Custom Software Solution' },
+                ].map((cat) => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setProjectCategory(cat.id as any)}
+                    className={`px-3 py-2 rounded-xl text-left border text-xs font-semibold transition-all ${
+                      projectCategory === cat.id
+                        ? 'bg-primary text-white border-primary shadow-sm'
+                        : 'bg-white text-stone-700 border-stone-200 hover:border-primary/40'
                     }`}
                   >
-                    <input
-                      type="radio"
-                      name="paymentStructure"
-                      value={opt.id}
-                      checked={isSelected}
-                      onChange={() => setPaymentStructure(opt.id)}
-                      className="mt-0.5 text-primary focus:ring-primary h-4 w-4 shrink-0"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-bold text-stone-900 text-xs">{opt.title}</span>
-                        <span
-                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${
-                            isSelected
-                              ? "bg-lime-100 text-stone-800"
-                              : "bg-stone-100 text-stone-600"
-                          }`}
-                        >
-                          {opt.tag}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-stone-500 mt-0.5">{opt.desc}</p>
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <label className="block text-[11px] font-semibold text-stone-700 mb-1">Development Complexity Tier</label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                {[
+                  {
+                    id: 'Simple',
+                    title: 'Simple / Starter',
+                    desc: 'Clean essential UI, high performance, rapid 7-14 days turnaround.'
+                  },
+                  {
+                    id: 'Standard',
+                    title: 'Standard / Growth',
+                    desc: 'Dynamic database, authentication, API integrations, custom UI/UX.'
+                  },
+                  {
+                    id: 'Premium',
+                    title: 'Premium / Enterprise',
+                    desc: 'High-scalability SaaS/ERP, micro-animations, multi-tenant, SLA.'
+                  }
+                ].map((tier) => (
+                  <div
+                    key={tier.id}
+                    onClick={() => setComplexityTier(tier.id as any)}
+                    className={`p-3 rounded-xl border cursor-pointer transition-all ${
+                      complexityTier === tier.id
+                        ? 'bg-emerald-50/70 border-emerald-500 ring-2 ring-emerald-500/20 shadow-sm'
+                        : 'bg-white border-stone-200 hover:border-stone-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-stone-900 text-xs">{tier.title}</span>
+                      {complexityTier === tier.id && <Check className="w-3.5 h-3.5 text-emerald-600" />}
                     </div>
-                  </label>
-                );
-              })}
+                    <p className="text-[10px] text-stone-500 mt-1 leading-relaxed">{tier.desc}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Section 1: Contact Details */}
+          {/* Section: Brand & Logo Assets */}
           <div className="p-4 rounded-2xl border border-stone-200 bg-stone-50/70 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center gap-1.5">
-              <Phone className="w-3.5 h-3.5 text-primary" /> 1. Primary Contact & Desired Start
+              <Palette className="w-3.5 h-3.5 text-primary" /> 2. Brand Identity & Logo Assets
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <label
+                onClick={() => setLogoStatus('have_logo')}
+                className={`flex items-start gap-2.5 p-3 rounded-xl border cursor-pointer transition-all ${
+                  logoStatus === 'have_logo'
+                    ? 'bg-white border-primary ring-2 ring-primary/20 shadow-sm'
+                    : 'bg-white/70 border-stone-200 hover:border-stone-300'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="logoStatus"
+                  checked={logoStatus === 'have_logo'}
+                  onChange={() => setLogoStatus('have_logo')}
+                  className="mt-0.5 text-primary focus:ring-primary h-4 w-4 shrink-0"
+                />
+                <div>
+                  <span className="font-bold text-stone-900 text-xs">We Have an Existing Logo</span>
+                  <p className="text-[10px] text-stone-500 mt-0.5">High-resolution PNG, SVG, or vector assets available.</p>
+                </div>
+              </label>
+
+              <label
+                onClick={() => setLogoStatus('need_design')}
+                className={`flex items-start gap-2.5 p-3 rounded-xl border cursor-pointer transition-all ${
+                  logoStatus === 'need_design'
+                    ? 'bg-white border-primary ring-2 ring-primary/20 shadow-sm'
+                    : 'bg-white/70 border-stone-200 hover:border-stone-300'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="logoStatus"
+                  checked={logoStatus === 'need_design'}
+                  onChange={() => setLogoStatus('need_design')}
+                  className="mt-0.5 text-primary focus:ring-primary h-4 w-4 shrink-0"
+                />
+                <div>
+                  <span className="font-bold text-stone-900 text-xs">Need Siddhi Dynamics to Design Logo</span>
+                  <p className="text-[10px] text-stone-500 mt-0.5">Custom branding & identity creation from scratch.</p>
+                </div>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <label className="space-y-1 block">
+                <span className="font-semibold text-stone-700">Preferred Color Palette / Theme</span>
+                <input
+                  type="text"
+                  value={brandColors}
+                  onChange={e => setBrandColors(e.target.value)}
+                  placeholder="e.g. Navy Blue & Emerald, Dark Mode, Minimalist Monochrome"
+                  className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-primary"
+                />
+              </label>
+
+              <label className="space-y-1 block">
+                <span className="font-semibold text-stone-700">Design & Competitor Inspiration</span>
+                <input
+                  type="text"
+                  value={competitorRefs}
+                  onChange={e => setCompetitorRefs(e.target.value)}
+                  placeholder="e.g. stripe.com, linear.app, competitors URL"
+                  className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-primary"
+                />
+              </label>
+            </div>
+          </div>
+
+          {/* Section: Contact Details */}
+          <div className="p-4 rounded-2xl border border-stone-200 bg-stone-50/70 space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center gap-1.5">
+              <Phone className="w-3.5 h-3.5 text-primary" /> 3. Contact & Service Window
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="space-y-1 block">
@@ -225,7 +331,7 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
                 />
               </label>
               <label className="space-y-1 block">
-                <span className="font-semibold text-stone-700">10-Digit Mobile Number (Cashfree verified)</span>
+                <span className="font-semibold text-stone-700">10-Digit Mobile Number (For UPI / WhatsApp)</span>
                 <input
                   type="tel"
                   required
@@ -236,7 +342,7 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
                 />
               </label>
               <label className="space-y-1 block">
-                <span className="font-semibold text-stone-700">Requested Service Start Date</span>
+                <span className="font-semibold text-stone-700">Requested Start Date</span>
                 <input
                   type="date"
                   required
@@ -261,40 +367,40 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
             </div>
           </div>
 
-          {/* Section 2: Project Requirements & Business Goal */}
+          {/* Section: Project Requirements & Business Goal */}
           <div className="p-4 rounded-2xl border border-stone-200 bg-stone-50/70 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center gap-1.5">
-              <Target className="w-3.5 h-3.5 text-primary" /> 2. Business Goal & Expected Outcome
+              <Target className="w-3.5 h-3.5 text-primary" /> 4. Business Goal & Specific Functional Needs
             </h3>
             <div className="space-y-3">
               <label className="space-y-1 block">
-                <span className="font-semibold text-stone-700">What specific result or growth do you need from this project?</span>
+                <span className="font-semibold text-stone-700">What specific business goal or problem does this project solve?</span>
                 <textarea
                   rows={2}
                   value={businessGoal}
                   onChange={e => setBusinessGoal(e.target.value)}
-                  placeholder="e.g. Launch a high-converting website to attract 50+ qualified inbound leads per month."
+                  placeholder="e.g. Build an automated SaaS platform for multi-vendor inventory with role-based access control."
                   className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-primary"
                 />
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <label className="space-y-1 block">
-                  <span className="font-semibold text-stone-700">Target Audience / Core Customers</span>
+                  <span className="font-semibold text-stone-700">Target Audience</span>
                   <input
                     type="text"
                     value={targetAudience}
                     onChange={e => setTargetAudience(e.target.value)}
-                    placeholder="e.g. B2B founders, Indian retail customers, etc."
+                    placeholder="e.g. B2B enterprise clients, retail customers"
                     className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-primary"
                   />
                 </label>
                 <label className="space-y-1 block">
-                  <span className="font-semibold text-stone-700">Key Features / Preferences</span>
+                  <span className="font-semibold text-stone-700">Key Features / Integrations Needed</span>
                   <input
                     type="text"
                     value={keyRequirements}
                     onChange={e => setKeyRequirements(e.target.value)}
-                    placeholder="e.g. Fast loading, WhatsApp chat widget, UPI checkout"
+                    placeholder="e.g. Auth, WhatsApp alerts, QR verification, export to Excel"
                     className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-primary"
                   />
                 </label>
@@ -302,14 +408,11 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
             </div>
           </div>
 
-          {/* Section 3: Materials & Access Checklist */}
+          {/* Section: Materials & Access Readiness */}
           <div className="p-4 rounded-2xl border border-stone-200 bg-stone-50/70 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center gap-1.5">
-              <ClipboardCheck className="w-3.5 h-3.5 text-primary" /> 3. Materials & Access Readiness
+              <ClipboardCheck className="w-3.5 h-3.5 text-primary" /> 5. Technical Assets & Access Readiness
             </h3>
-            <p className="text-[11px] text-stone-500">
-              Tick what you are ready to provide. Never write passwords directly here; access can be securely shared via invite or WhatsApp.
-            </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
               {MATERIAL_OPTIONS.map(item => (
                 <label key={item} className="flex items-center gap-2 cursor-pointer p-2 rounded-xl bg-white border border-stone-200 hover:border-primary transition-colors">
@@ -325,16 +428,16 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
             </div>
           </div>
 
-          {/* Section 4: Start Condition & Confirmation */}
-          <div className="p-4 rounded-2xl border border-lime-200 bg-lime-50/60 space-y-2.5">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5" /> 4. Service Start Condition & Security Policy
+          {/* Section: Payment Method Notice & Confirmation */}
+          <div className="p-4 rounded-2xl border border-emerald-300 bg-emerald-50/60 space-y-2.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5" /> 6. Direct Payment & Service Kickoff Terms
             </h3>
-            <p className="text-[11px] text-stone-600 leading-relaxed">
-              <strong>Service Start Condition:</strong> Siddhi Dynamics LLP will begin work immediately after scope confirmation and receipt of the agreed advance payment through the Cashfree payment gateway.
+            <p className="text-[11px] text-stone-700 leading-relaxed">
+              <strong>Direct QR & Bank Verification:</strong> Siddhi Dynamics LLP processes payments via direct official UPI QR code (<strong className="font-mono text-emerald-800">6303602743@sbi</strong>) and State Bank of India Current Account. Zero intermediate gateway delays.
             </p>
-            <p className="text-[11px] text-stone-600 leading-relaxed">
-              <strong>Banking Details Unlock:</strong> Upon successful Cashfree transaction, the signed Service Order Agreement and official Siddhi Dynamics LLP banking details (SBI A/C, IFSC, UPI, LLPIN, PAN) will be unlocked in your portal for accounting & tax records.
+            <p className="text-[11px] text-stone-700 leading-relaxed">
+              <strong>Admin Quote Review:</strong> Our tech lead and admin evaluate your specifications (Tier: <strong>{complexityTier}</strong>) and assign exact milestone pricing before advance is due.
             </p>
             <label className="flex items-start gap-2.5 cursor-pointer pt-2">
               <input
@@ -345,7 +448,7 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
                 className="rounded text-primary focus:ring-primary w-4 h-4 mt-0.5 shrink-0"
               />
               <span className="font-semibold text-stone-900 text-xs">
-                I confirm the information above is accurate and agree to proceed to Cashfree secure payment to start the service.
+                I confirm the specifications above are accurate and understand that service begins upon direct advance payment and admin verification.
               </span>
             </label>
           </div>
@@ -357,7 +460,7 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
               disabled={saving}
               className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-sm shadow-xl shadow-stone-900/10 transition-all disabled:opacity-50 cursor-pointer"
             >
-              {saving ? "Submitting & Preparing Cashfree Link…" : `Confirm & Pay Advance (${currentAdvanceString})`}
+              {saving ? "Submitting Specifications…" : "Submit Requirements & Confirm Scope"}
             </button>
           </div>
         </form>

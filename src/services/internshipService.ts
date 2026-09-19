@@ -32,6 +32,17 @@ export interface WhitelistedUser {
   notes?: string;
 }
 
+export interface RoleApprovalRequest {
+  id: string;
+  email: string;
+  name: string;
+  requested_role: 'intern' | 'employee';
+  status: 'pending' | 'approved' | 'rejected';
+  requested_at: string;
+  reviewed_at?: string;
+  notes?: string;
+}
+
 export interface OnboardingAgreement {
   email: string;
   full_name: string;
@@ -360,7 +371,8 @@ const STORAGE_KEYS = {
   INCENTIVES: 'sd_incentive_rewards',
   SCRATCHED: 'sd_scratched_rewards',
   CERTIFICATES: 'sd_issued_certificates',
-  REVIEWS: 'sd_intern_reviews'
+  REVIEWS: 'sd_intern_reviews',
+  ROLE_REQUESTS: 'sd_role_approval_requests'
 };
 
 // These records are created by admins and must never be populated with sample
@@ -981,6 +993,66 @@ export const internshipService = {
     }
 
     return { approved: true, role: match.role, user: match };
+  },
+
+  getRoleRequests(): RoleApprovalRequest[] {
+    return getLocal<RoleApprovalRequest[]>(STORAGE_KEYS.ROLE_REQUESTS, [
+      {
+        id: 'req-sample-1',
+        email: 'intern.candidate@gmail.com',
+        name: 'Vikas Reddy',
+        requested_role: 'intern',
+        status: 'pending',
+        requested_at: new Date().toISOString().split('T')[0],
+        notes: 'Applied for Business Development Intern role via Portal Gateway'
+      }
+    ]);
+  },
+
+  submitRoleRequest(email: string, name: string, role: 'intern' | 'employee', notes?: string): RoleApprovalRequest {
+    const clean = email.trim().toLowerCase();
+    const current = this.getRoleRequests();
+    const existing = current.find(r => r.email.toLowerCase() === clean && r.status === 'pending');
+    if (existing) return existing;
+
+    const newReq: RoleApprovalRequest = {
+      id: 'req-' + Math.random().toString(36).substring(2, 8),
+      email: clean,
+      name: name.trim() || clean.split('@')[0],
+      requested_role: role,
+      status: 'pending',
+      requested_at: new Date().toISOString().split('T')[0],
+      notes
+    };
+    const updated = [newReq, ...current];
+    setLocal(STORAGE_KEYS.ROLE_REQUESTS, updated);
+    return newReq;
+  },
+
+  approveRoleRequest(id: string, adminNotes?: string): boolean {
+    const current = this.getRoleRequests();
+    const target = current.find(r => r.id === id);
+    if (!target) return false;
+
+    target.status = 'approved';
+    target.reviewed_at = new Date().toISOString().split('T')[0];
+    if (adminNotes) target.notes = adminNotes;
+
+    setLocal(STORAGE_KEYS.ROLE_REQUESTS, current);
+    // Add to whitelist automatically
+    this.addWhitelistedEmail(target.email, target.name, target.requested_role, 'Approved via Admin Portal role request');
+    return true;
+  },
+
+  rejectRoleRequest(id: string): boolean {
+    const current = this.getRoleRequests();
+    const target = current.find(r => r.id === id);
+    if (!target) return false;
+
+    target.status = 'rejected';
+    target.reviewed_at = new Date().toISOString().split('T')[0];
+    setLocal(STORAGE_KEYS.ROLE_REQUESTS, current);
+    return true;
   },
 
   // ── 3. Onboarding & Terms Acceptance ────────────────────────────────────────

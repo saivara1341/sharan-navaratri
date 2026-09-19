@@ -74,6 +74,14 @@ export interface ClientServiceFormData {
   materials_provided: string[];
   pending_materials_date?: string;
   confirmed_at: string;
+  // Enhanced requirements intake assets
+  project_category?: 'Website' | 'SaaS Platform' | 'ERP Solution' | 'Business Automation' | 'Mobile App' | 'Other';
+  complexity_tier?: 'Simple' | 'Standard' | 'Premium';
+  logo_status?: 'have_logo' | 'need_design';
+  brand_colors?: string;
+  competitor_references?: string;
+  tech_preferences?: string;
+  custom_quote_notes?: string;
 }
 
 export interface ProjectInvoice {
@@ -86,6 +94,58 @@ export interface ProjectInvoice {
   description?: string;
   paid_at?: string;
   cashfree_link_id?: string;
+  // Direct Payment Verification fields
+  verification_status?: "none" | "pending_verification" | "verified" | "rejected";
+  transaction_id?: string;
+  payment_mode?: "UPI" | "IMPS" | "NEFT" | "Net Banking" | "Bank Transfer";
+  paid_by_name?: string;
+  paid_by_phone?: string;
+  submitted_at?: string;
+  admin_verified_at?: string;
+  admin_notes?: string;
+  proof_url?: string;
+}
+
+export interface AgencyCommissionConfig {
+  id: string;
+  agency_name: string;
+  agency_email: string;
+  model: 'commission' | 'non_commission';
+  commission_rate: number; // e.g. 15 for 15%
+  status: 'active' | 'paused';
+  // Agency Point of Contact & Corporate ID
+  agency_poc_name?: string;
+  agency_phone?: string;
+  agency_address?: string;
+  agency_id_type?: 'LLPIN' | 'CIN' | 'GSTIN' | 'Not Applicable';
+  agency_id_number?: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AgencyCommissionProject {
+  id: string;
+  agency_email: string;
+  // Service Providing To: End-Client Details
+  client_name: string;
+  client_email: string;
+  client_phone?: string;
+  client_address?: string;
+  project_name: string;
+  service_scope?: string;
+  // Financial Inflow & Outflow Tracking
+  project_value: number; // Inflow amount agreed with client (e.g. 85000)
+  inflow_status?: 'pending' | 'verified_paid';
+  inflow_utr?: string;
+  inflow_received_at?: string;
+  commission_rate: number; // e.g. 15%
+  commission_amount: number; // Outflow amount (e.g. 12750)
+  payout_status: 'unpaid' | 'paid';
+  payout_date?: string;
+  payout_reference?: string; // Outflow bank UTR
+  invoice_no?: string; // e.g. SD-AGY-INV-2026-001
+  created_at: string;
 }
 
 export interface ProjectUpdate {
@@ -104,9 +164,10 @@ export interface ProjectLifecycleMeta {
   advance_percentage?: number; // 50, 100, etc.
   advance_amount?: string;
   scope_summary?: string;
+  quote_assigned_at?: string;
 
   // Dates
-  service_start_date?: string; // Set when advance is paid or manually set by admin
+  service_start_date?: string; // Set when advance is verified or manually set by admin
   deadline?: string; // Estimated completion date
   
   // Deliverables, Demos & Live Progress Reports
@@ -116,7 +177,7 @@ export interface ProjectLifecycleMeta {
   gbp_url?: string; // Google Business Profile / Google Maps URL
   analytics_url?: string; // Search Console / GA4 / Live Performance Dashboard URL
 
-  // Banking Details shared by admin (locked until advance payment)
+  // Banking Details shared by admin (unlocked upon verification)
   banking_details?: BankingDetails;
 
   // Client-submitted Onboarding / Service Form
@@ -126,3 +187,4 @@ export interface ProjectLifecycleMeta {
   invoices?: ProjectInvoice[];
   updates?: ProjectUpdate[];
 }
+
