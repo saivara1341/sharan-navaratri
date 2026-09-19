@@ -77,8 +77,30 @@ export default function PortalGateway() {
         navigate('/portal/agency');
         return;
       }
-      
+
       let roleVal = activeSession.user.user_metadata?.role || null;
+
+      // ── Admin Preassigned Role: silent auto-assign on first sign-in ────────
+      // If the user has no role yet, check if admin pre-registered them
+      if (!roleVal) {
+        try {
+          const { data: preassignedRole, error: rpcErr } = await (supabase as any)
+            .rpc('get_my_preassigned_role');
+          if (!rpcErr && preassignedRole) {
+            // Apply the role to the Supabase Auth user metadata
+            await supabase.auth.updateUser({ data: { role: preassignedRole } });
+            // Mark as applied in the preassigned_roles table
+            await (supabase as any).rpc('mark_preassigned_role_applied');
+            roleVal = preassignedRole;
+            toast.success(`Welcome! Your account has been pre-configured as: ${preassignedRole.charAt(0).toUpperCase() + preassignedRole.slice(1)}`);
+          }
+        } catch (rpcCallErr) {
+          // Non-fatal: if RPC check fails, fall through to normal role selection
+          console.warn('[PortalGateway] Preassigned role lookup failed (non-fatal):', rpcCallErr);
+        }
+      }
+      // ──────────────────────────────────────────────────────────────────────
+
       setUserRole(roleVal);
 
       // Auto-redirect OAuth logins (URLs with #access_token= or ?code=) straight to role workspace
@@ -87,7 +109,9 @@ export default function PortalGateway() {
         if (roleVal === 'partner') navigate('/portal/agency');
         else if (roleVal === 'employee') navigate('/portal/employee');
         else if (roleVal === 'investor') navigate('/portal/investor');
-        else navigate('/portal/client');
+        else if (roleVal === 'intern') navigate('/portal/intern');
+        else if (roleVal) navigate(`/portal/${roleVal}`);
+        else navigate('/portal/client'); // default fallback
         return;
       }
     } else {

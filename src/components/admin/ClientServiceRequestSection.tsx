@@ -12,7 +12,11 @@ import {
   FileText,
   Link as LinkIcon,
   ShieldCheck,
-  Briefcase
+  Briefcase,
+  Upload,
+  File,
+  Trash2,
+  ExternalLink
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +36,34 @@ const SERVICE_TIERS = [
     desc: "Autonomous Agentic Workflows, Custom LLM fine-tuning, RAG pipelines, and high-performance inference.",
     badge: "Most Popular",
     suggestedBudget: 150000
+  },
+  {
+    id: "SEO",
+    title: "Search Engine Optimization (SEO)",
+    desc: "Technical SEO audits, semantic schema, Core Web Vitals optimization, programmatic keywords, and authority.",
+    badge: "Growth",
+    suggestedBudget: 45000
+  },
+  {
+    id: "GEO",
+    title: "Generative Engine Optimization (GEO)",
+    desc: "Optimization for Google AI Overviews, Gemini & AI search engines with structured entities & citations.",
+    badge: "Next-Gen",
+    suggestedBudget: 55000
+  },
+  {
+    id: "AEO",
+    title: "Answer Engine Optimization (AEO)",
+    desc: "Direct answer ranking for Perplexity AI, ChatGPT & conversational LLMs with canonical fact structures.",
+    badge: "AI-First",
+    suggestedBudget: 50000
+  },
+  {
+    id: "GBP",
+    title: "Google Business Profile Optimization",
+    desc: "Local search ranking dominance, GBP verification, automated review management, and local citations.",
+    badge: "High Conversion",
+    suggestedBudget: 35000
   },
   {
     id: "SaaS",
@@ -79,9 +111,43 @@ export const ClientServiceRequestSection: React.FC<ClientServiceRequestSectionPr
   const [targetDate, setTargetDate] = useState("");
   const [sharedSpecs, setSharedSpecs] = useState("");
   const [repositoryUrl, setRepositoryUrl] = useState("");
+  const [uploadedFiles, setUploadedFiles] = useState<Array<{ name: string; size: number; url: string }>>([]);
+  const [uploadingFiles, setUploadingFiles] = useState(false);
   const [generateInitialInvoice, setGenerateInitialInvoice] = useState(true);
   const [advancePercentage, setAdvancePercentage] = useState<number>(50);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploadingFiles(true);
+    try {
+      const newUploads: Array<{ name: string; size: number; url: string }> = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const path = `client_briefs/${Date.now()}_${cleanName}`;
+        const { error: upErr } = await supabase.storage
+          .from("client-documents")
+          .upload(path, file, { upsert: true });
+        if (upErr) throw upErr;
+        const { data: pub } = supabase.storage.from("client-documents").getPublicUrl(path);
+        newUploads.push({ name: file.name, size: file.size, url: pub.publicUrl });
+      }
+      setUploadedFiles((prev) => [...prev, ...newUploads]);
+      toast.success(`Successfully uploaded ${newUploads.length} client data file(s)!`);
+    } catch (err: any) {
+      console.error("Upload error:", err);
+      toast.error(err.message || "Failed to upload data file(s)");
+    } finally {
+      setUploadingFiles(false);
+    }
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -145,6 +211,10 @@ export const ClientServiceRequestSection: React.FC<ClientServiceRequestSectionPr
         });
       }
 
+      const fileListFormatted = uploadedFiles
+        .map((f) => `- [${f.name}](${f.url}) (${(f.size / 1024).toFixed(1)} KB)`)
+        .join("\n");
+
       // 4. Create metadata block
       const lifecycleMeta = {
         package_type: selectedService,
@@ -155,22 +225,27 @@ export const ClientServiceRequestSection: React.FC<ClientServiceRequestSectionPr
         bankAccounts: DEFAULT_BANK_ACCOUNTS,
         shared_materials: {
           specs: sharedSpecs.trim() || null,
-          repository: repositoryUrl.trim() || null
-        }
+          repository: repositoryUrl.trim() || null,
+          files: uploadedFiles,
+        },
       };
 
       // 5. Insert into contact_submissions for client portal visibility & invoice tracking
       const structuredMessage = `### Service Order: ${projectTitle.trim()}
 **Company:** ${companyName.trim()}
-**Contact:** ${contactName.trim()} (${contactPhone.trim() || 'N/A'})
+**Contact:** ${contactName.trim()} (${contactPhone.trim() || "N/A"})
 **Service Tier:** ${selectedService}
-**Agreed Budget:** ₹${budget.toLocaleString('en-IN')}
+**Agreed Budget:** ₹${budget.toLocaleString("en-IN")}
 **Scope & Deliverables:**
 ${projectDescription.trim()}
 
+**Uploaded Client Data & Assets:**
+${fileListFormatted || "No direct files uploaded"}
+
 **Shared Specifications & Repository:**
-- Repo: ${repositoryUrl.trim() || 'N/A'}
-- Specs / Docs: ${sharedSpecs.trim() || 'N/A'}`;
+- Repo: ${repositoryUrl.trim() || "N/A"}
+- Specs / Docs: ${sharedSpecs.trim() || "N/A"}`;
+
 
       const { error: subError } = await supabase.from('contact_submissions').insert({
         name: contactName.trim(),
@@ -457,38 +532,108 @@ ${projectDescription.trim()}
           </div>
         </div>
 
-        {/* Step 5: Shared Technical Assets & Data */}
+        {/* Step 5: Shared Technical Assets & Data Upload */}
         <div className="glass-card p-6 rounded-2xl border border-border space-y-4">
           <div className="flex items-center gap-2 border-b border-border pb-3">
-            <LinkIcon className="w-5 h-5 text-primary" />
-            <h3 className="text-base font-bold text-foreground">5. Data Which Client Wants to Share Regarding Availed Services</h3>
+            <Upload className="w-5 h-5 text-primary" />
+            <h3 className="text-base font-bold text-foreground">5. Upload Data, Briefs & Specifications</h3>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1">
-                Repository / Codebase Access URL
-              </label>
-              <input
-                type="url"
-                placeholder="https://github.com/organization/repo"
-                value={repositoryUrl}
-                onChange={(e) => setRepositoryUrl(e.target.value)}
-                autoComplete="off"
-                className="w-full bg-card border border-border text-foreground rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-              />
+
+          <div className="space-y-4">
+            {/* Direct Data Files Upload Box */}
+            <div className="p-4 rounded-xl border border-dashed border-border bg-card/40 text-center space-y-3">
+              <div className="flex flex-col items-center justify-center">
+                <Upload className="w-8 h-8 text-primary mb-2 opacity-80" />
+                <p className="text-sm font-semibold text-foreground">
+                  Upload Requirements Data, Briefs & Datasets
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Upload CSVs, PDFs, Excel sheets, images, or ZIP archives directly (up to 50MB)
+                </p>
+              </div>
+
+              <div>
+                <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold text-xs cursor-pointer hover:bg-primary/90 transition shadow-md shadow-primary/20">
+                  <Upload className="w-3.5 h-3.5" />
+                  {uploadingFiles ? "Uploading Files..." : "Select Files to Upload"}
+                  <input
+                    type="file"
+                    multiple
+                    className="hidden"
+                    onChange={handleFileUpload}
+                    disabled={uploadingFiles}
+                  />
+                </label>
+              </div>
+
+              {/* Uploaded Files Pills */}
+              {uploadedFiles.length > 0 && (
+                <div className="pt-2 border-t border-border/50 grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
+                  {uploadedFiles.map((file, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between p-2 rounded-lg bg-card border border-border text-xs"
+                    >
+                      <div className="flex items-center gap-2 truncate pr-2">
+                        <File className="w-4 h-4 text-primary shrink-0" />
+                        <span className="truncate font-medium text-foreground">{file.name}</span>
+                        <span className="text-[10px] text-muted-foreground shrink-0">
+                          ({(file.size / 1024).toFixed(0)} KB)
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <a
+                          href={file.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1 text-muted-foreground hover:text-foreground"
+                          title="Open uploaded file"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFile(idx)}
+                          className="p-1 text-muted-foreground hover:text-destructive"
+                          title="Remove file"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1">
-                Figma / API Docs / Cloud Storage Links
-              </label>
-              <input
-                type="text"
-                placeholder="https://figma.com/file/... or Drive URL"
-                value={sharedSpecs}
-                onChange={(e) => setSharedSpecs(e.target.value)}
-                autoComplete="off"
-                className="w-full bg-card border border-border text-foreground rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-              />
+
+            {/* Optional Links */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div>
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+                  Optional Codebase / Repo URL
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://github.com/organization/repo"
+                  value={repositoryUrl}
+                  onChange={(e) => setRepositoryUrl(e.target.value)}
+                  autoComplete="off"
+                  className="w-full bg-card border border-border text-foreground rounded-xl px-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+                  Optional Drive / Figma Link
+                </label>
+                <input
+                  type="text"
+                  placeholder="https://drive.google.com/... or Figma link"
+                  value={sharedSpecs}
+                  onChange={(e) => setSharedSpecs(e.target.value)}
+                  autoComplete="off"
+                  className="w-full bg-card border border-border text-foreground rounded-xl px-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
             </div>
           </div>
         </div>

@@ -3,6 +3,11 @@ import { FooterSection } from "@/components/sections/FooterSection";
 import { AdminInternshipsConsole } from "@/components/admin/AdminInternshipsConsole";
 import { ClientServiceRequestSection } from "@/components/admin/ClientServiceRequestSection";
 import { DirectPaymentModal } from "@/components/payments/DirectPaymentModal";
+import { AdminPaymentSettingsPanel } from "@/components/admin/AdminPaymentSettingsPanel";
+import { AdminUserInvitePanel } from "@/components/admin/AdminUserInvitePanel";
+import { AdminCustomInvoicePanel } from "@/components/admin/AdminCustomInvoicePanel";
+import { ServiceDeliverablePanel } from "@/components/admin/ServiceDeliverablePanel";
+import "@/styles/admin-portal.css";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseService } from "@/services/supabaseService";
@@ -15,6 +20,7 @@ import { KnowledgeHubManager } from "@/components/admin/KnowledgeHubManager";
 import SeoGeoCommandCenter from "@/components/admin/SeoGeoCommandCenter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
+
 import {
     Users,
     GraduationCap,
@@ -111,9 +117,13 @@ const AdminPortal = () => {
     const [chatMessages, setChatMessages] = useState<any[]>([]);
     const [chatInput, setChatInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
-    const [viewMode, setViewMode] = useState<'submissions' | 'verifications' | 'users' | 'agency' | 'knowledge' | 'seo-geo' | 'clients' | 'internships'>('clients');
+    const [viewMode, setViewMode] = useState<
+        'clients' | 'agency' | 'users' | 'internships' | 'verifications' | 'invoices' | 'payments' | 'invites' | 'submissions' | 'knowledge' | 'seo-geo'
+    >('clients');
     const [adminEmail, setAdminEmail] = useState('');
     const [registeredInternsCount, setRegisteredInternsCount] = useState<number>(0);
+    const [deliverableModalSub, setDeliverableModalSub] = useState<Submission | null>(null);
+
 
     // ── Payment Verifications (Direct QR & Bank Transfer) ────────────────────
     const pendingVerifications = useMemo(() => {
@@ -1553,101 +1563,148 @@ const AdminPortal = () => {
     };
 
     return (
-        <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+        <div className="admin-portal-root min-h-screen bg-[#080808] text-neutral-100 overflow-x-hidden">
             <Navbar />
             <Helmet>
                 <title>Nexus Admin HQ | Siddhi Dynamics</title>
                 <meta name="description" content="Administrative control center for Siddhi Dynamics. Monitor deep-tech innovations and manage project inquiries." />
             </Helmet>
 
-            <main className="container mx-auto px-6 pt-32 pb-20 relative z-10">
+            <main className="container mx-auto px-4 sm:px-6 pt-32 pb-20 relative z-10">
 
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8 border-b border-[#222] pb-6">
                     <div className="text-left">
                         <motion.h1
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="text-4xl font-bold gradient-text glow-text mb-2"
+                            className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-1.5 flex items-center gap-2"
                         >
-                            Nexus Admin HQ
+                            <span className="text-[#8fa44e]">Nexus</span> Admin HQ
                         </motion.h1>
-                        <p className="text-muted-foreground">Monitoring deep-tech innovations and inquiries.</p>
+                        <p className="text-xs sm:text-sm text-neutral-400">
+                            Enterprise Operations, Role Governance, Agency Commissions & Direct Settlement Engine
+                        </p>
                     </div>
 
-                    <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex items-center gap-2 flex-wrap">
                         <button
                             onClick={() => { setViewMode('clients'); }}
-                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
+                            className={`px-3.5 py-2 rounded-xl font-semibold text-xs transition-all flex items-center gap-1.5 ${
                                 viewMode === 'clients'
-                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
+                                    ? 'bg-[#6b7c3d] text-black shadow-lg shadow-[#6b7c3d]/25 font-bold'
+                                    : 'bg-[#141414] border border-[#262626] hover:border-[#6b7c3d]/50 text-neutral-300'
                             }`}
                         >
-                            <Building2 className="w-4 h-4" /> Client
+                            <Building2 className="w-3.5 h-3.5" /> Client
                         </button>
                         <button
                             onClick={() => { setViewMode('agency'); fetchAgencyClients(); refreshAgencyData(); }}
-                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
+                            className={`px-3.5 py-2 rounded-xl font-semibold text-xs transition-all flex items-center gap-1.5 ${
                                 viewMode === 'agency'
-                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
+                                    ? 'bg-[#6b7c3d] text-black shadow-lg shadow-[#6b7c3d]/25 font-bold'
+                                    : 'bg-[#141414] border border-[#262626] hover:border-[#6b7c3d]/50 text-neutral-300'
                             }`}
                         >
-                            <Handshake className="w-4 h-4" />
+                            <Handshake className="w-3.5 h-3.5" />
                             <span>Agency</span>
                         </button>
                         <button
                             onClick={() => { setViewMode('users'); fetchAllUsers(); refreshRoleRequests(); }}
-                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
+                            className={`px-3.5 py-2 rounded-xl font-semibold text-xs transition-all flex items-center gap-1.5 ${
                                 viewMode === 'users'
-                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
+                                    ? 'bg-[#6b7c3d] text-black shadow-lg shadow-[#6b7c3d]/25 font-bold'
+                                    : 'bg-[#141414] border border-[#262626] hover:border-[#6b7c3d]/50 text-neutral-300'
                             }`}
                         >
-                            <Briefcase className="w-4 h-4" />
+                            <Briefcase className="w-3.5 h-3.5" />
                             <span>Employee</span>
                             {roleRequests.filter(r => r.status === 'pending' && r.role === 'employee').length > 0 && (
-                                <span className="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-amber-400 text-stone-950 animate-pulse">
+                                <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-stone-950 animate-pulse">
                                     {roleRequests.filter(r => r.status === 'pending' && r.role === 'employee').length}
                                 </span>
                             )}
                         </button>
                         <button
                             onClick={() => setViewMode('internships')}
-                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
+                            className={`px-3.5 py-2 rounded-xl font-semibold text-xs transition-all flex items-center gap-1.5 ${
                                 viewMode === 'internships'
-                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
+                                    ? 'bg-[#6b7c3d] text-black shadow-lg shadow-[#6b7c3d]/25 font-bold'
+                                    : 'bg-[#141414] border border-[#262626] hover:border-[#6b7c3d]/50 text-neutral-300'
                             }`}
                         >
-                            <GraduationCap className="w-4 h-4" />
+                            <GraduationCap className="w-3.5 h-3.5" />
                             <span>Intern</span>
                             {registeredInternsCount > 0 && (
-                                <span className="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400">
+                                <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-400">
                                     {registeredInternsCount}
                                 </span>
                             )}
                         </button>
                         <button
                             onClick={() => { setViewMode('verifications'); }}
-                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
+                            className={`px-3.5 py-2 rounded-xl font-semibold text-xs transition-all flex items-center gap-1.5 ${
                                 viewMode === 'verifications'
-                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                                    : 'bg-muted border border-border hover:bg-muted/80 text-foreground'
+                                    ? 'bg-[#6b7c3d] text-black shadow-lg shadow-[#6b7c3d]/25 font-bold'
+                                    : 'bg-[#141414] border border-[#262626] hover:border-[#6b7c3d]/50 text-neutral-300'
                             }`}
                         >
-                            <TrendingUp className="w-4 h-4" />
+                            <TrendingUp className="w-3.5 h-3.5" />
                             <span>Investor</span>
                         </button>
                         <button
+                            onClick={() => setViewMode('invoices')}
+                            className={`px-3.5 py-2 rounded-xl font-semibold text-xs transition-all flex items-center gap-1.5 ${
+                                viewMode === 'invoices'
+                                    ? 'bg-[#6b7c3d] text-black shadow-lg shadow-[#6b7c3d]/25 font-bold'
+                                    : 'bg-[#141414] border border-[#262626] hover:border-[#6b7c3d]/50 text-neutral-300'
+                            }`}
+                        >
+                            <Receipt className="w-3.5 h-3.5" />
+                            <span>Invoices</span>
+                        </button>
+                        <button
+                            onClick={() => setViewMode('payments')}
+                            className={`px-3.5 py-2 rounded-xl font-semibold text-xs transition-all flex items-center gap-1.5 ${
+                                viewMode === 'payments'
+                                    ? 'bg-[#6b7c3d] text-black shadow-lg shadow-[#6b7c3d]/25 font-bold'
+                                    : 'bg-[#141414] border border-[#262626] hover:border-[#6b7c3d]/50 text-neutral-300'
+                            }`}
+                        >
+                            <QrCode className="w-3.5 h-3.5" />
+                            <span>Payment QR</span>
+                        </button>
+                        <button
+                            onClick={() => setViewMode('invites')}
+                            className={`px-3.5 py-2 rounded-xl font-semibold text-xs transition-all flex items-center gap-1.5 ${
+                                viewMode === 'invites'
+                                    ? 'bg-[#6b7c3d] text-black shadow-lg shadow-[#6b7c3d]/25 font-bold'
+                                    : 'bg-[#141414] border border-[#262626] hover:border-[#6b7c3d]/50 text-neutral-300'
+                            }`}
+                        >
+                            <Mail className="w-3.5 h-3.5" />
+                            <span>Preassigned Roles</span>
+                        </button>
+                        <button
+                            onClick={() => setViewMode('submissions')}
+                            className={`px-3.5 py-2 rounded-xl font-semibold text-xs transition-all flex items-center gap-1.5 ${
+                                viewMode === 'submissions'
+                                    ? 'bg-[#6b7c3d] text-black shadow-lg shadow-[#6b7c3d]/25 font-bold'
+                                    : 'bg-[#141414] border border-[#262626] hover:border-[#6b7c3d]/50 text-neutral-300'
+                            }`}
+                        >
+                            <FileText className="w-3.5 h-3.5" />
+                            <span>Submissions</span>
+                        </button>
+                        <button
                             onClick={fetchSubmissions}
-                            className="p-3 rounded-xl glass-card hover:bg-muted/50 transition-colors group"
+                            className="p-2 rounded-xl bg-[#141414] border border-[#262626] hover:border-[#6b7c3d]/50 text-neutral-300 hover:text-white transition-colors"
                             title="Refresh Data"
                         >
-                            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#8fa44e]' : ''}`} />
                         </button>
                     </div>
                 </div>
+
 
 
 
@@ -1946,6 +2003,14 @@ const AdminPortal = () => {
                                                  >
                                                      <ClipboardList className="w-3.5 h-3.5" />
                                                      View Details
+                                                 </button>
+                                                 <button
+                                                     onClick={() => setDeliverableModalSub(sub)}
+                                                     className="px-4 py-2 rounded-xl bg-[#6b7c3d]/20 text-[#8fa44e] border border-[#6b7c3d]/40 hover:bg-[#6b7c3d]/30 font-bold flex items-center gap-2 transition-all text-xs"
+                                                     title="Manage service progress %, agreement & deliverables"
+                                                 >
+                                                     <TrendingUp className="w-3.5 h-3.5" />
+                                                     Deliverables & Progress
                                                  </button>
                                                  <button
                                                      onClick={() => openQuoteModal(sub)}
@@ -3305,7 +3370,56 @@ const AdminPortal = () => {
                             <AdminInternshipsConsole />
                         )}
                     </motion.div>
+                ) : viewMode === 'invoices' ? (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 text-left">
+                        <AdminCustomInvoicePanel />
+                    </motion.div>
+                ) : viewMode === 'payments' ? (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 text-left">
+                        <AdminPaymentSettingsPanel />
+                    </motion.div>
+                ) : viewMode === 'invites' ? (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 text-left">
+                        <AdminUserInvitePanel />
+                    </motion.div>
                 ) : null}
+
+                {/* Deliverable & Service Progress Modal */}
+                {deliverableModalSub && (
+                    <div className="fixed inset-0 z-[260] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+                        <div className="bg-[#111111] border border-[#2e2e2e] rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative my-auto text-left">
+                            <div className="flex justify-between items-center mb-4 pb-3 border-b border-[#252525]">
+                                <div>
+                                    <h3 className="text-base font-bold text-white">
+                                        Service Progress & Deliverables
+                                    </h3>
+                                    <p className="text-xs text-neutral-400">
+                                        {deliverableModalSub.name} ({deliverableModalSub.organization || deliverableModalSub.email})
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => setDeliverableModalSub(null)}
+                                    className="p-1.5 rounded-lg text-neutral-400 hover:text-white bg-neutral-800 transition"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+                            <ServiceDeliverablePanel
+                                submissionId={deliverableModalSub.id}
+                                submissionName={deliverableModalSub.name}
+                                initialProgress={deliverableModalSub.progress || (deliverableModalSub as any).service_progress || 0}
+                                initialStatus={deliverableModalSub.status}
+                                initialDeliverables={(deliverableModalSub as any).deliverables || []}
+                                initialAgreementUrl={(deliverableModalSub as any).service_agreement_url || ''}
+                                initialAdminNotes={(deliverableModalSub as any).admin_notes || ''}
+                                onSave={() => {
+                                    fetchSubmissions();
+                                    toast.success("Updated deliverables & progress successfully");
+                                }}
+                            />
+                        </div>
+                    </div>
+                )}
             </main>
 
             {/* Background elements */}

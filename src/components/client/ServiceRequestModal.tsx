@@ -16,11 +16,18 @@ import {
   Layers,
   Sparkles,
   QrCode,
-  FileCode2
+  FileCode2,
+  Upload,
+  File,
+  Trash2,
+  ExternalLink
 } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { ProjectLifecycleMeta, ClientServiceFormData } from "@/types/projectLifecycle";
 
 interface ServiceRequestModalProps {
+
   projectName?: string;
   clientName: string;
   clientEmail: string;
@@ -61,7 +68,7 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
   const [requestedStartDate, setRequestedStartDate] = useState(new Date().toISOString().split("T")[0]);
 
   // Project Category & Complexity Tier
-  const [projectCategory, setProjectCategory] = useState<'Website' | 'SaaS Platform' | 'ERP Solution' | 'Business Automation' | 'Mobile App' | 'Other'>('Website');
+  const [projectCategory, setProjectCategory] = useState<string>('Website');
   const [complexityTier, setComplexityTier] = useState<'Simple' | 'Standard' | 'Premium'>('Standard');
 
   // Brand & Logo assets
@@ -74,6 +81,8 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
   const [keyRequirements, setKeyRequirements] = useState("");
   const [materials, setMaterials] = useState<string[]>([]);
   const [pendingMaterialsDate, setPendingMaterialsDate] = useState("");
+  const [uploadedFiles, setUploadedFiles] = useState<Array<{ name: string; size: number; url: string }>>([]);
+  const [uploadingFiles, setUploadingFiles] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -92,6 +101,36 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
     setMaterials(prev => prev.includes(item) ? prev.filter(m => m !== item) : [...prev, item]);
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploadingFiles(true);
+    try {
+      const newUploads: Array<{ name: string; size: number; url: string }> = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const path = `client_briefs/${Date.now()}_${cleanName}`;
+        const { error: upErr } = await supabase.storage
+          .from("client-documents")
+          .upload(path, file, { upsert: true });
+        if (upErr) throw upErr;
+        const { data: pub } = supabase.storage.from("client-documents").getPublicUrl(path);
+        newUploads.push({ name: file.name, size: file.size, url: pub.publicUrl });
+      }
+      setUploadedFiles(prev => [...prev, ...newUploads]);
+      toast.success(`Uploaded ${newUploads.length} client data file(s)!`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload file(s)");
+    } finally {
+      setUploadingFiles(false);
+    }
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanPhone = contactPhone.replace(/\D/g, "").slice(-10);
@@ -105,6 +144,11 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
     }
     setErrorMsg("");
 
+    const combinedMaterials = [
+      ...materials,
+      ...uploadedFiles.map(f => `Attached File: ${f.name} (${f.url})`)
+    ];
+
     const formData: ClientServiceFormData = {
       contact_name: contactName.trim() || clientName,
       contact_phone: cleanPhone,
@@ -113,15 +157,16 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
       business_goal: businessGoal.trim(),
       target_audience: targetAudience.trim(),
       key_requirements: keyRequirements.trim(),
-      materials_provided: materials,
+      materials_provided: combinedMaterials,
       pending_materials_date: pendingMaterialsDate || undefined,
       confirmed_at: new Date().toISOString(),
-      project_category: projectCategory,
+      project_category: projectCategory as any,
       complexity_tier: complexityTier,
       logo_status: logoStatus,
       brand_colors: brandColors.trim(),
       competitor_references: competitorRefs.trim(),
     };
+
 
     await onSubmit(formData, cleanPhone, paymentStructure, currentAdvanceString);
   };
@@ -177,11 +222,15 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {[
                   { id: 'Website', label: 'Website / Landing Page' },
+                  { id: 'SEO', label: 'SEO Optimization' },
+                  { id: 'GEO', label: 'GEO (AI Search Engines)' },
+                  { id: 'AEO', label: 'AEO (Answer Engines)' },
+                  { id: 'GBP', label: 'Google Business Profile' },
                   { id: 'SaaS Platform', label: 'SaaS Web Application' },
-                  { id: 'ERP Solution', label: 'Custom ERP & Inventory' },
+                  { id: 'ERP Solution', label: 'Custom ERP & Operations' },
                   { id: 'Business Automation', label: 'Workflow Automation' },
                   { id: 'Mobile App', label: 'Mobile Application' },
-                  { id: 'Other', label: 'Custom Software Solution' },
+                  { id: 'Other', label: 'Custom Deep-Tech Solution' },
                 ].map((cat) => (
                   <button
                     key={cat.id}
@@ -408,11 +457,52 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
             </div>
           </div>
 
-          {/* Section: Materials & Access Readiness */}
+          {/* Section: Materials, Data & Technical Assets */}
           <div className="p-4 rounded-2xl border border-stone-200 bg-stone-50/70 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center gap-1.5">
-              <ClipboardCheck className="w-3.5 h-3.5 text-primary" /> 5. Technical Assets & Access Readiness
+              <ClipboardCheck className="w-3.5 h-3.5 text-primary" /> 5. Upload Requirements Data & Technical Assets
             </h3>
+
+            {/* Direct Data Upload Box */}
+            <div className="p-3.5 rounded-xl border border-dashed border-stone-300 bg-white space-y-2.5 text-center">
+              <div className="text-[11px] text-stone-600 font-medium">
+                Upload your requirement documents, datasets, catalogs, CSVs, or design briefs directly:
+              </div>
+              <label className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs cursor-pointer transition">
+                <Upload className="w-3.5 h-3.5 text-primary" />
+                {uploadingFiles ? "Uploading Data Files..." : "Upload Requirements Files"}
+                <input
+                  type="file"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileUpload}
+                  disabled={uploadingFiles}
+                />
+              </label>
+
+              {uploadedFiles.length > 0 && (
+                <div className="pt-2 border-t border-stone-100 space-y-1.5 text-left">
+                  {uploadedFiles.map((f, i) => (
+                    <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-stone-50 border border-stone-200 text-xs">
+                      <div className="flex items-center gap-2 truncate pr-2">
+                        <File className="w-3.5 h-3.5 text-primary shrink-0" />
+                        <span className="truncate font-medium text-stone-800">{f.name}</span>
+                        <span className="text-[10px] text-stone-400 shrink-0">({(f.size / 1024).toFixed(0)} KB)</span>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <a href={f.url} target="_blank" rel="noopener noreferrer" className="p-1 text-stone-500 hover:text-stone-900">
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                        <button type="button" onClick={() => handleRemoveFile(i)} className="p-1 text-stone-500 hover:text-red-500">
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
               {MATERIAL_OPTIONS.map(item => (
                 <label key={item} className="flex items-center gap-2 cursor-pointer p-2 rounded-xl bg-white border border-stone-200 hover:border-primary transition-colors">

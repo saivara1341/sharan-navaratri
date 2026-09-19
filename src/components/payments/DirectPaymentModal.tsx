@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   X,
   QrCode,
@@ -12,10 +12,14 @@ import {
   FileCheck2,
   Sparkles,
   Building2,
-  CheckCircle2
+  CheckCircle2,
+  Upload,
+  Image as ImageIcon
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { ProjectInvoice, DEFAULT_BANKING_DETAILS, DEFAULT_BANK_ACCOUNTS } from "@/types/projectLifecycle";
+import { loadPaymentSettings, PaymentSettings } from "@/components/admin/AdminPaymentSettingsPanel";
 
 interface DirectPaymentModalProps {
   isOpen: boolean;
@@ -46,6 +50,13 @@ export const DirectPaymentModal: React.FC<DirectPaymentModalProps> = ({
 }) => {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"qr" | "bank">("qr");
+  const [adminSettings, setAdminSettings] = useState<PaymentSettings | null>(null);
+  const [uploadingReceipt, setUploadingReceipt] = useState(false);
+  const [receiptUrl, setReceiptUrl] = useState<string>("");
+
+  useEffect(() => {
+    loadPaymentSettings().then((s) => setAdminSettings(s));
+  }, []);
 
   // Form states for transaction verification
   const [transactionId, setTransactionId] = useState(invoice.transaction_id || "");
@@ -64,9 +75,38 @@ export const DirectPaymentModal: React.FC<DirectPaymentModalProps> = ({
   const numericAmount = invoice.numeric_amount || parseInt(invoice.amount.replace(/\D/g, "") || "0", 10);
   const formattedAmount = numericAmount > 0 ? `₹${numericAmount.toLocaleString("en-IN")}` : invoice.amount;
 
-  const upiId = DEFAULT_BANKING_DETAILS.upi_id || "6303602743@sbi";
+  const upiId = adminSettings?.upi_id || DEFAULT_BANKING_DETAILS.upi_id || "siddhidynamics@sbi";
   const upiPayUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent("Siddhi Dynamics LLP")}&am=${numericAmount}&cu=INR&tn=${encodeURIComponent(invoice.title || "Project Invoice")}`;
-  const qrCodeImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=8&data=${encodeURIComponent(upiPayUrl)}`;
+  const qrCodeImgUrl = adminSettings?.qr_public_url || `https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=8&data=${encodeURIComponent(upiPayUrl)}`;
+
+  const handleUploadReceipt = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingReceipt(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `payment_receipts/${(transactionId || "utr").replace(/[^a-zA-Z0-9_-]/g, "_")}_${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("admin-assets").upload(path, file, { upsert: true });
+      let publicUrl = "";
+      if (upErr) {
+        const { error: fallbackErr } = await supabase.storage.from("client-documents").upload(path, file, { upsert: true });
+        if (fallbackErr) throw fallbackErr;
+        const { data: pub } = supabase.storage.from("client-documents").getPublicUrl(path);
+        publicUrl = pub.publicUrl;
+      } else {
+        const { data: pub } = supabase.storage.from("admin-assets").getPublicUrl(path);
+        publicUrl = pub.publicUrl;
+      }
+      setReceiptUrl(publicUrl);
+      setProofNotes((prev) => (prev ? `${prev}\nReceipt: ${publicUrl}` : `Receipt: ${publicUrl}`));
+      toast.success("Payment screenshot uploaded successfully!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload payment receipt");
+    } finally {
+      setUploadingReceipt(false);
+    }
+  };
+
 
   const handleCopy = (text: string, key: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -358,13 +398,33 @@ export const DirectPaymentModal: React.FC<DirectPaymentModalProps> = ({
                 </div>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-bold text-stone-300 uppercase tracking-wider mb-1.5">
-                  Optional Note / Screenshot Link
+              {/* Upload Screenshot / Receipt */}
+              <div className="space-y-2">
+                <label className="block text-[11px] font-bold text-stone-300 uppercase tracking-wider">
+                  Payment Screenshot / Receipt Slip (Upload or Link)
                 </label>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                  <label className="px-3.5 py-2 rounded-xl bg-stone-900 border border-stone-700 hover:border-emerald-500/60 text-stone-200 text-xs font-semibold cursor-pointer transition-all flex items-center gap-2 hover:bg-stone-850">
+                    <Upload className="w-3.5 h-3.5 text-emerald-400" />
+                    {uploadingReceipt ? "Uploading screenshot..." : "Upload Screenshot (PNG, JPG, PDF)"}
+                    <input
+                      type="file"
+                      accept="image/*,application/pdf"
+                      className="hidden"
+                      onChange={handleUploadReceipt}
+                      disabled={uploadingReceipt}
+                    />
+                  </label>
+                  {receiptUrl && (
+                    <div className="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-2.5 py-1 rounded-lg">
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      <span>Receipt Attached ✓</span>
+                    </div>
+                  )}
+                </div>
                 <input
                   type="text"
-                  placeholder="Optional drive link, remarks or transaction notes"
+                  placeholder="Or paste screenshot URL / drive link / transaction remarks"
                   value={proofNotes}
                   onChange={(e) => setProofNotes(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-xl bg-stone-950 border border-stone-700 text-xs text-stone-300 focus:outline-none focus:border-emerald-500 transition-colors"
