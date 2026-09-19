@@ -1983,7 +1983,7 @@ const AdminPortal = () => {
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
                                 <h2 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
-                                    <QrCode className="w-6 h-6 text-emerald-400" /> Payment Verifications & Direct Bank Deposits
+                                    <QrCode className="w-6 h-6 text-primary" /> Payment Verifications & Direct Bank Deposits
                                 </h2>
                                 <p className="text-xs text-muted-foreground mt-1">
                                     Review and verify direct UPI QR payments (<span className="text-foreground font-semibold">6303602743@sbi</span>) and SBI bank wire deposits submitted by clients. Once verified, milestone deliverables unlock and invoices update to 'Paid'.
@@ -1996,27 +1996,31 @@ const AdminPortal = () => {
                         </div>
 
                         {/* Info Banner */}
-                        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+                        <div className="p-4 rounded-2xl bg-card border border-border/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-sm">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                                <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
                                     <CheckCircle2 className="w-4 h-4" />
                                 </div>
                                 <div>
-                                    <span className="font-bold text-emerald-300">Direct Payment Gateway Bypass:</span> Clients pay directly to Siddhi Dynamics SBI Current A/C (45170121323) or UPI QR code. No third-party gateway deductions.
+                                    <span className="font-bold text-foreground">Direct Banking & UPI Verification:</span>{' '}
+                                    <span className="text-muted-foreground">Clients deposit directly to Siddhi Dynamics SBI Current A/C (45170121323) or UPI QR code. Zero intermediary deductions.</span>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
-                                <span className="px-3 py-1 rounded-xl bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
-                                    {pendingVerifications.length} Awaiting Verification
+                                <span className="px-3 py-1.5 rounded-xl bg-muted text-foreground font-medium border border-border text-xs flex items-center gap-1.5">
+                                    <span className="font-bold text-foreground">{pendingVerifications.length}</span>
+                                    <span className="text-muted-foreground">Awaiting Verification</span>
                                 </span>
                             </div>
                         </div>
 
                         {/* Verification Cards */}
                         {pendingVerifications.length === 0 ? (
-                            <div className="glass-card rounded-2xl border border-dashed border-border p-16 text-center">
-                                <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
-                                <h3 className="text-lg font-extrabold text-foreground mb-2">No Pending Payment Verifications</h3>
+                            <div className="glass-card rounded-2xl border border-dashed border-border/80 p-12 text-center bg-card/40">
+                                <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4 border border-primary/20">
+                                    <CheckCircle2 className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-lg font-bold text-foreground mb-2">No Pending Payment Verifications</h3>
                                 <p className="text-sm text-muted-foreground max-w-md mx-auto">
                                     All client UPI deposits and bank transfers have been reviewed and verified. When a client submits a payment UTR, it will appear here instantly for admin approval.
                                 </p>
