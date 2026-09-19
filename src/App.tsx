@@ -10,6 +10,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { SiteIntro } from "@/components/SiteIntro";
 import { CookieConsentBanner } from "@/components/legal/CookieConsentBanner";
 import { SiteWideTurnstileProtection } from "@/components/common/SiteWideTurnstileProtection";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 
 const queryClient = new QueryClient();
 const Index = lazy(() => import("./pages/Index"));
@@ -125,13 +126,22 @@ const AuthRedirectHandler = () => {
 };
 
 const PageLoadingFallback = () => (
-  <div className="min-h-screen bg-background flex flex-col items-center justify-center" aria-busy="true" aria-label="Loading page">
-    <iframe
-      src="https://lottie.host/embed/a3ca6751-cf8f-4bfb-bb01-c6eeb11dbbac/qIAedhc4s1.lottie"
-      title="Siddhi Dynamics Loading"
-      style={{ border: 'none', width: 240, height: 240 }}
-      allowFullScreen
-    />
+  <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4" aria-busy="true" aria-label="Loading page">
+    <div className="relative flex flex-col items-center justify-center space-y-5">
+      <div className="relative w-16 h-16 flex items-center justify-center">
+        <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping" />
+        <div className="w-16 h-16 rounded-full border-2 border-transparent border-t-primary border-r-primary animate-spin" />
+        <div className="absolute inset-2 rounded-full border-2 border-transparent border-b-secondary border-l-secondary animate-spin [animation-duration:1.2s]" />
+      </div>
+      <div className="flex flex-col items-center space-y-1 text-center">
+        <span className="text-sm font-semibold tracking-wider uppercase bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-secondary">
+          Siddhi Dynamics
+        </span>
+        <span className="text-xs text-muted-foreground animate-pulse">
+          Loading interface...
+        </span>
+      </div>
+    </div>
   </div>
 );
 
@@ -176,59 +186,61 @@ const App = () => {
               <AuthRedirectHandler />
               <SiteIntro />
               <CookieConsentBanner />
-              <Suspense fallback={<PageLoadingFallback />}>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/vision" element={<Index />} />
-                <Route path="/services" element={<Index />} />
-                <Route path="/projects" element={<Index />} />
-                <Route path="/submit" element={<ProjectSubmitForm />} />
-                <Route path="/auth" element={<AuthPage />} />
-                <Route path="/portal" element={<PortalGateway />} />
-                <Route path="/portal/client" element={<ClientPortal />} />
-                <Route path="/portal/intern" element={<InternPortal />} />
-                <Route path="/portal/agency" element={<VMagneticMindsPortal />} />
-                <Route path="/agency-intake/:token" element={<AgencyClientIntake />} />
-                <Route path="/portal/v-magnetic-minds" element={<VMagneticMindsPortal />} />
-                <Route path="/portal/investor" element={<InvestorPortal />} />
-                <Route path="/portal/employee" element={<EmployeePortal />} />
-                <Route path="/careers" element={<Careers />} />
-                <Route path="/verify-certificate" element={<CertificateVerification />} />
-                <Route path="/project/nexus" element={<NexusLanding />} />
-                <Route path="/project/nilayam" element={<NilayamLanding />} />
-                <Route path="/project/archplan" element={<ArchPlanLanding />} />
-                <Route path="/project/letusknow" element={<LetUsKnowLanding />} />
-                <Route path="/project/wish-o" element={<WishOLanding />} />
-                <Route path="/admin-hq-nexus" element={<AdminPortal />} />
-                <Route path="/nexus/resource-hub" element={<ResourceHub />} />
-                <Route path="/nexus/market-research" element={<ResourceHub />} />
-                <Route path="/nexus/resume-builder" element={<ResumeBuilder />} />
-                <Route path="/nexus/startup-blueprint" element={<StartupBlueprint />} />
-                <Route path="/nexus/skills-analysis" element={<ResourceHub />} />
-                <Route path="/nexus/jobs" element={<ResourceHub />} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/terms-of-service" element={<TermsOfService />} />
-                <Route path="/terms-and-conditions" element={<TermsOfService />} />
-                <Route path="/refund-cancellation-policy" element={<RefundCancellationPolicy />} />
-                <Route path="/shipping-delivery-policy" element={<ShippingDeliveryPolicy />} />
-                <Route path="/cookie-policy" element={<CookiePolicy />} />
-                <Route path="/data-rights" element={<DataRights />} />
-                <Route path="/grievance-redressal" element={<DataRights />} />
-                <Route path="/contact-information" element={<ContactInformation />} />
-                <Route path="/contact" element={<ContactInformation />} />
-                <Route path="/contact-us" element={<ContactInformation />} />
-                {/* SEO Pages */}
-                <Route path="/about" element={<About />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/services/business-automation" element={<BusinessAutomation />} />
-                <Route path="/services/website-development" element={<WebsiteDevelopment />} />
-                <Route path="/services/saas" element={<SaaSPlatforms />} />
-                <Route path="/services/erp" element={<ERPSolutions />} />
-                <Route path="/software-company-nizamabad" element={<SoftwareCompanyNizamabad />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              </Suspense>
+              <ErrorBoundary>
+                <Suspense fallback={<PageLoadingFallback />}>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/vision" element={<Index />} />
+                    <Route path="/services" element={<Index />} />
+                    <Route path="/projects" element={<Index />} />
+                    <Route path="/submit" element={<ProjectSubmitForm />} />
+                    <Route path="/auth" element={<AuthPage />} />
+                    <Route path="/portal" element={<PortalGateway />} />
+                    <Route path="/portal/client" element={<ClientPortal />} />
+                    <Route path="/portal/intern" element={<InternPortal />} />
+                    <Route path="/portal/agency" element={<VMagneticMindsPortal />} />
+                    <Route path="/agency-intake/:token" element={<AgencyClientIntake />} />
+                    <Route path="/portal/v-magnetic-minds" element={<VMagneticMindsPortal />} />
+                    <Route path="/portal/investor" element={<InvestorPortal />} />
+                    <Route path="/portal/employee" element={<EmployeePortal />} />
+                    <Route path="/careers" element={<Careers />} />
+                    <Route path="/verify-certificate" element={<CertificateVerification />} />
+                    <Route path="/project/nexus" element={<NexusLanding />} />
+                    <Route path="/project/nilayam" element={<NilayamLanding />} />
+                    <Route path="/project/archplan" element={<ArchPlanLanding />} />
+                    <Route path="/project/letusknow" element={<LetUsKnowLanding />} />
+                    <Route path="/project/wish-o" element={<WishOLanding />} />
+                    <Route path="/admin-hq-nexus" element={<AdminPortal />} />
+                    <Route path="/nexus/resource-hub" element={<ResourceHub />} />
+                    <Route path="/nexus/market-research" element={<ResourceHub />} />
+                    <Route path="/nexus/resume-builder" element={<ResumeBuilder />} />
+                    <Route path="/nexus/startup-blueprint" element={<StartupBlueprint />} />
+                    <Route path="/nexus/skills-analysis" element={<ResourceHub />} />
+                    <Route path="/nexus/jobs" element={<ResourceHub />} />
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/terms-of-service" element={<TermsOfService />} />
+                    <Route path="/terms-and-conditions" element={<TermsOfService />} />
+                    <Route path="/refund-cancellation-policy" element={<RefundCancellationPolicy />} />
+                    <Route path="/shipping-delivery-policy" element={<ShippingDeliveryPolicy />} />
+                    <Route path="/cookie-policy" element={<CookiePolicy />} />
+                    <Route path="/data-rights" element={<DataRights />} />
+                    <Route path="/grievance-redressal" element={<DataRights />} />
+                    <Route path="/contact-information" element={<ContactInformation />} />
+                    <Route path="/contact" element={<ContactInformation />} />
+                    <Route path="/contact-us" element={<ContactInformation />} />
+                    {/* SEO Pages */}
+                    <Route path="/about" element={<About />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/services/business-automation" element={<BusinessAutomation />} />
+                    <Route path="/services/website-development" element={<WebsiteDevelopment />} />
+                    <Route path="/services/saas" element={<SaaSPlatforms />} />
+                    <Route path="/services/erp" element={<ERPSolutions />} />
+                    <Route path="/software-company-nizamabad" element={<SoftwareCompanyNizamabad />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
+              </ErrorBoundary>
             </BrowserRouter>
           </SiteWideTurnstileProtection>
         </TooltipProvider>

@@ -704,33 +704,59 @@ const AdminPortal = () => {
         setUsersLoading(true);
         try {
             // Fetch all contact submissions (gracefully fallback if status column is not yet migrated in DB)
-            let { data: submissions, error: submissionsError } = await supabase
-                .from('contact_submissions')
-                .select('id, name, email, organization, designation, inquiry_type, status, created_at')
-                .order('created_at', { ascending: false });
-
-            if (submissionsError && (submissionsError.code === '42703' || submissionsError.message?.toLowerCase().includes('status'))) {
-                console.warn('[AdminPortal] contact_submissions.status column missing, falling back to base columns:', submissionsError.message);
-                const fallback = await supabase
+            let submissions: any[] = [];
+            try {
+                let { data: subData, error: submissionsError } = await supabase
                     .from('contact_submissions')
-                    .select('id, name, email, organization, designation, inquiry_type, created_at')
+                    .select('id, name, email, organization, designation, inquiry_type, status, created_at')
                     .order('created_at', { ascending: false });
-                submissions = (fallback.data as any[] | null)?.map((s: any) => ({ ...s, status: 'new' })) ?? null;
-                submissionsError = fallback.error;
+
+                if (submissionsError && (submissionsError.code === '42703' || submissionsError.message?.toLowerCase().includes('status'))) {
+                    console.warn('[AdminPortal] contact_submissions.status column missing, falling back to base columns:', submissionsError.message);
+                    const fallback = await supabase
+                        .from('contact_submissions')
+                        .select('id, name, email, organization, designation, inquiry_type, created_at')
+                        .order('created_at', { ascending: false });
+                    subData = (fallback.data as any[] | null)?.map((s: any) => ({ ...s, status: 'new' })) ?? null;
+                    submissionsError = fallback.error;
+                }
+                if (!submissionsError && Array.isArray(subData)) {
+                    submissions = subData;
+                }
+            } catch (subErr) {
+                console.warn('[AdminPortal] contact_submissions fetch note:', subErr);
             }
-            if (submissionsError) throw submissionsError;
 
-            // Fetch waitlist entries
-            const { data: waitlist, error: waitlistError } = await supabase
-                .from('project_waitlist')
-                .select('id, name, email, project_name, created_at')
-                .order('created_at', { ascending: false });
+            // Fetch waitlist entries safely
+            let waitlist: any[] = [];
+            try {
+                const { data: waitlistData, error: waitlistError } = await supabase
+                    .from('project_waitlist')
+                    .select('id, name, email, project_name, created_at')
+                    .order('created_at', { ascending: false });
+                if (!waitlistError && Array.isArray(waitlistData)) {
+                    waitlist = waitlistData;
+                } else if (waitlistError) {
+                    console.warn('[AdminPortal] Waitlist entries note:', waitlistError.message);
+                }
+            } catch (wErr) {
+                console.warn('[AdminPortal] project_waitlist source error:', wErr);
+            }
 
-            const { data: portalProfiles, error: portalProfilesError } = await (supabase as any)
-                .from('portal_users').select('*').order('created_at', { ascending: false });
-            if (waitlistError || portalProfilesError) {
-                console.warn('[AdminPortal] Some user sources could not be loaded.', { waitlistError, portalProfilesError });
-                toast.warning('Some user sources could not be loaded. Refresh and try again.');
+            // Fetch portal profiles safely
+            let portalProfiles: any[] = [];
+            try {
+                const { data: portalData, error: portalProfilesError } = await (supabase as any)
+                    .from('portal_users')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                if (!portalProfilesError && Array.isArray(portalData)) {
+                    portalProfiles = portalData;
+                } else if (portalProfilesError) {
+                    console.warn('[AdminPortal] portal_users fetch note:', portalProfilesError.message);
+                }
+            } catch (pErr) {
+                console.warn('[AdminPortal] portal_users source error:', pErr);
             }
 
             const userMap = new Map<string, any>();
