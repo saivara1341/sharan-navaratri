@@ -181,8 +181,8 @@ const ResourceHub = () => {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-2 mb-6"
           >
-            <Link to="/portal" className="text-primary hover:text-primary/80 transition-colors flex items-center gap-2 text-sm font-bold uppercase tracking-widest">
-              Dashboard /
+            <Link to="/" className="text-primary hover:text-primary/80 transition-colors flex items-center gap-2 text-sm font-bold uppercase tracking-widest">
+              Home /
             </Link>
           </motion.div>
           

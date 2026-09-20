@@ -765,13 +765,11 @@ export const SubmitSection = () => {
                   <button
                     onClick={() => {
                       setShowSahayakModal(false);
-                      navigate('/auth');
                     }}
                     disabled={sahayakStep === 0}
-                    className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-2xl flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-primary/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed group"
+                    className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-2xl flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-primary/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed group cursor-pointer"
                   >
-                    <span>Proceed to Neural Hub & Login</span>
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    <span>Done</span>
                   </button>
                 </div>
               </div>

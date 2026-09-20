@@ -104,7 +104,7 @@ export default function ProjectSubmitForm() {
     const [submitting, setSubmitting] = useState(false);
     const [sessionEmail, setSessionEmail] = useState("");
     const [sessionName, setSessionName] = useState("");
-    const [portalPath, setPortalPath] = useState("/portal");
+    const [portalPath, setPortalPath] = useState("/");
 
     // Form fields
     const [name, setName] = useState("");
@@ -416,10 +416,10 @@ export default function ProjectSubmitForm() {
                         </p>
                         <div className="flex flex-col sm:flex-row gap-3 justify-center">
                             <button
-                                onClick={() => navigate(portalPath)}
+                                onClick={() => navigate(sessionEmail ? portalPath : "/")}
                                 className="px-6 py-2.5 bg-primary text-primary-foreground font-bold rounded-xl hover:scale-105 transition-all text-sm shadow-md cursor-pointer"
                             >
-                                {t('submitForm.success.backToPortal', 'Back to My Portal')}
+                                {sessionEmail ? t('submitForm.success.backToPortal', 'Back to My Portal') : t('nav.home', 'Return to Home')}
                             </button>
                             <button
                                 onClick={() => {

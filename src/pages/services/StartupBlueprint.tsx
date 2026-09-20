@@ -38,8 +38,8 @@ const StartupBlueprint = () => {
             <div className="container relative z-10 mx-auto px-6 mb-20">
                 <div className="max-w-4xl mx-auto mb-16 text-center">
                     <div className="flex items-center justify-center gap-2 mb-6">
-                        <Link to="/portal" className="text-primary hover:text-primary/80 transition-colors flex items-center gap-2 text-sm font-bold uppercase tracking-widest">
-                            Dashboard /
+                        <Link to="/" className="text-primary hover:text-primary/80 transition-colors flex items-center gap-2 text-sm font-bold uppercase tracking-widest">
+                            Home /
                         </Link>
                     </div>
                     <motion.h1 

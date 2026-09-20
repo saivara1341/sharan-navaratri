@@ -423,22 +423,8 @@ export const Navbar = () => {
                   <LanguageSwitcher />
                 </div>
 
-                {/* 7. Dashboard & 8. Logout */}
-                {!isLoggedIn ? (
-                  <motion.button
-                    onClick={() => { setMobileMenuOpen(false); navigate('/portal'); }}
-                    className="w-full max-w-xs text-center px-8 py-3.5 rounded-2xl font-bold text-base overflow-hidden relative group shadow-2xl shadow-primary/20 cursor-pointer"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.28 }}
-                  >
-                    <span className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-90" />
-                    <span className="relative text-primary-foreground font-bold flex items-center justify-center gap-2">
-                      <LayoutDashboard className="w-5 h-5" />
-                      {t('nav.dashboard', 'Dashboard')}
-                    </span>
-                  </motion.button>
-                ) : (
+                {/* Dashboard & Logout (shown only when user is authenticated) */}
+                {isLoggedIn && (
                   <div className="flex flex-col gap-3 w-full max-w-xs relative z-[120]">
                     <motion.a
                       href={isAdmin ? "/admin-hq-nexus" : `/portal/${userRole || ''}`}

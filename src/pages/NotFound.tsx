@@ -50,10 +50,10 @@ const NotFound = () => {
             <Home className="w-4 h-4" /> Return to Home
           </button>
           <button
-            onClick={() => navigate("/portal")}
+            onClick={() => navigate("/contact")}
             className="px-5 py-3 rounded-2xl bg-muted hover:bg-border text-foreground font-bold text-xs border border-border transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <LayoutDashboard className="w-4 h-4 text-primary" /> Open Portals
+            Contact Us
           </button>
         </div>
 

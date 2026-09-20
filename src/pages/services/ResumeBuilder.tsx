@@ -36,8 +36,8 @@ const ResumeBuilder = () => {
            className="max-w-4xl mx-auto mb-12"
         >
           <div className="flex items-center justify-center gap-2 mb-6">
-            <Link to="/portal" className="text-primary hover:text-primary/80 transition-colors flex items-center gap-2 text-sm font-bold uppercase tracking-widest">
-              Dashboard /
+            <Link to="/" className="text-primary hover:text-primary/80 transition-colors flex items-center gap-2 text-sm font-bold uppercase tracking-widest">
+              Home /
             </Link>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold gradient-text mb-6">AI Resume Builder</h1>
