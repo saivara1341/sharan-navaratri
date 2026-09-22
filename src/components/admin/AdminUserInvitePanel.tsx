@@ -1,7 +1,26 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { UserPlus, Trash2, RefreshCw, Building2, GraduationCap, Briefcase, TrendingUp, Handshake, Users, Pencil, Check, X } from "lucide-react";
+import { 
+  UserPlus, 
+  Trash2, 
+  RefreshCw, 
+  Building2, 
+  GraduationCap, 
+  Briefcase, 
+  TrendingUp, 
+  Handshake, 
+  Users, 
+  Check, 
+  X,
+  Landmark,
+  ShieldCheck,
+  CreditCard,
+  DollarSign
+} from "lucide-react";
+import { assignRoleToEmail, deleteAssignedRole, getAssignedRoles, PortalRole } from "@/lib/roleResolver";
+import { internshipService } from "@/services/internshipService";
+import { employeeSalaryService, EmployeeBankingDetails } from "@/services/employeeSalaryService";
 
 const ROLES = [
   { id: "client",   label: "Client",   icon: <Building2 className="w-3.5 h-3.5" /> },
@@ -24,7 +43,6 @@ interface PreassignedEntry {
 }
 
 interface AdminUserInvitePanelProps {
-  /** List of agency emails already in the system for the "link to agency" dropdown */
   agencyEmails?: string[];
 }
 
@@ -34,37 +52,63 @@ export function AdminUserInvitePanel({ agencyEmails = [] }: AdminUserInvitePanel
 
   // Form state
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("client");
+  const [role, setRole] = useState<PortalRole>("client");
   const [linkedAgency, setLinkedAgency] = useState("");
   const [commissionPct, setCommissionPct] = useState<string>("");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
+  // Employee Banking state
+  const [bankingRecords, setBankingRecords] = useState<EmployeeBankingDetails[]>([]);
+
   const fetchEntries = async () => {
     setLoading(true);
     try {
-      // Must call via Edge Function / service_role because the table is restricted
-      const { data, error } = await supabase.functions.invoke("admin-user-management", {
-        body: { action: "list_preassigned_roles" },
-      });
-      if (error) throw error;
-      setEntries((data as any)?.roles || []);
-    } catch (err: any) {
-      // Fallback: try direct select (only works if admin JWT has service_role)
-      console.warn("[AdminUserInvitePanel] Edge fn fallback:", err.message);
+      // 1. Get from unified role resolver (persisted locally & in Supabase)
+      const localRoles = getAssignedRoles();
+      const mappedLocal: PreassignedEntry[] = localRoles.map(r => ({
+        id: r.id,
+        email: r.email,
+        role: r.role,
+        notes: r.notes || null,
+        linked_agency_email: null,
+        commission_pct: null,
+        added_by: 'admin',
+        added_at: r.assigned_at,
+        applied_at: r.status === 'active' ? r.assigned_at : null
+      }));
+
+      // 2. Try fetching from Supabase admin_preassigned_roles
       try {
-        const { data, error: dbErr } = await (supabase as any)
+        const { data } = await (supabase as any)
           .from("admin_preassigned_roles")
           .select("*")
           .order("added_at", { ascending: false });
-        if (!dbErr) setEntries(data || []);
-      } catch (_) {}
+
+        if (data && data.length > 0) {
+          // Merge unique emails
+          const seen = new Set(data.map((d: any) => d.email.toLowerCase()));
+          const combined = [...data, ...mappedLocal.filter(l => !seen.has(l.email.toLowerCase()))];
+          setEntries(combined);
+        } else {
+          setEntries(mappedLocal);
+        }
+      } catch {
+        setEntries(mappedLocal);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { fetchEntries(); }, []);
+  const loadBanking = () => {
+    setBankingRecords(employeeSalaryService.getAllBankingDetails());
+  };
+
+  useEffect(() => { 
+    fetchEntries();
+    loadBanking();
+  }, []);
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,84 +119,111 @@ export function AdminUserInvitePanel({ agencyEmails = [] }: AdminUserInvitePanel
     }
     setSaving(true);
     try {
-      const payload: any = {
-        email: cleanEmail,
-        role,
-        notes: notes.trim() || null,
-        added_by: "admin",
-      };
-      if (role === "client" && linkedAgency) payload.linked_agency_email = linkedAgency.trim().toLowerCase();
-      if (role === "agency" && commissionPct) payload.commission_pct = parseFloat(commissionPct);
+      // 1. Assign in local role resolver (syncs immediately for Google OAuth auto-login)
+      assignRoleToEmail(cleanEmail, role, cleanEmail.split('@')[0], notes.trim() || undefined);
 
-      const { error } = await supabase.functions.invoke("admin-user-management", {
-        body: { action: "upsert_preassigned_role", ...payload },
-      });
-      if (error) throw error;
-      toast.success(`Preassigned ${role} role for ${cleanEmail}`);
-      setEmail(""); setRole("client"); setNotes(""); setLinkedAgency(""); setCommissionPct("");
+      // 2. If intern or employee, add to whitelist
+      if (role === 'intern' || role === 'employee') {
+        internshipService.addWhitelistedEmail(cleanEmail, cleanEmail.split('@')[0], role, notes.trim() || undefined);
+      }
+
+      // 3. Persist to Supabase admin_preassigned_roles
+      try {
+        await (supabase as any)
+          .from("admin_preassigned_roles")
+          .upsert({
+            email: cleanEmail,
+            role,
+            notes: notes.trim() || null,
+            added_by: "admin",
+            linked_agency_email: (role === "client" && linkedAgency) ? linkedAgency.trim().toLowerCase() : null,
+            commission_pct: (role === "agency" && commissionPct) ? parseFloat(commissionPct) : null,
+            added_at: new Date().toISOString()
+          }, { onConflict: "email" });
+      } catch (_) {}
+
+      toast.success(`Role '${role}' assigned to ${cleanEmail}. When they click "Continue with Google", they will be identified automatically!`);
+      setEmail(""); 
+      setRole("client"); 
+      setNotes(""); 
+      setLinkedAgency(""); 
+      setCommissionPct("");
       fetchEntries();
     } catch (err: any) {
-      // Fallback direct insert (admin session)
-      try {
-        const payload: any = {
-          email: email.trim().toLowerCase(),
-          role,
-          notes: notes.trim() || null,
-          added_by: "admin",
-          linked_agency_email: (role === "client" && linkedAgency) ? linkedAgency.trim().toLowerCase() : null,
-          commission_pct: (role === "agency" && commissionPct) ? parseFloat(commissionPct) : null,
-        };
-        const { error: dbErr } = await (supabase as any)
-          .from("admin_preassigned_roles")
-          .upsert(payload, { onConflict: "email" });
-        if (dbErr) throw dbErr;
-        toast.success(`Preassigned ${role} role for ${email.trim()}`);
-        setEmail(""); setRole("client"); setNotes(""); setLinkedAgency(""); setCommissionPct("");
-        fetchEntries();
-      } catch (fbErr: any) {
-        toast.error(fbErr.message || "Could not save preassigned role.");
-      }
+      toast.error(err.message || "Could not save role assignment.");
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (id: string, entryEmail: string) => {
-    if (!window.confirm(`Remove preassigned role for ${entryEmail}?`)) return;
+    if (!window.confirm(`Remove role assignment for ${entryEmail}?`)) return;
     try {
-      const { error } = await (supabase as any)
-        .from("admin_preassigned_roles")
-        .delete()
-        .eq("id", id);
-      if (error) throw error;
-      setEntries(prev => prev.filter(e => e.id !== id));
-      toast.success("Removed.");
+      deleteAssignedRole(id);
+      try {
+        await (supabase as any).from("admin_preassigned_roles").delete().eq("email", entryEmail.toLowerCase());
+      } catch (_) {}
+      setEntries(prev => prev.filter(e => e.id !== id && e.email.toLowerCase() !== entryEmail.toLowerCase()));
+      toast.success("Role assignment removed.");
     } catch (err: any) {
       toast.error(err.message || "Could not delete.");
     }
   };
 
+  const handleVerifyBanking = (id: string, empName: string) => {
+    employeeSalaryService.updateBankingStatus(id, 'Verified for Salary');
+    loadBanking();
+    toast.success(`Bank details verified for ${empName}! Ready for salary disbursement.`);
+  };
+
+  const handleDisburseSalary = (b: EmployeeBankingDetails) => {
+    const amountStr = prompt(`Enter salary amount to disburse to ${b.employee_name} (${b.bank_name} - ${b.account_number}):`, "45000");
+    if (!amountStr) return;
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0) {
+      toast.error("Invalid amount.");
+      return;
+    }
+
+    const ref = prompt("Enter bank transaction reference number (UTR/NEFT/IMPS):", `TXN-${Date.now()}`);
+    if (!ref) return;
+
+    employeeSalaryService.recordPayout({
+      employee_email: b.employee_email,
+      employee_name: b.employee_name,
+      amount,
+      pay_period: new Date().toLocaleString('default', { month: 'long', year: 'numeric' }),
+      transaction_ref: ref,
+      payment_method: 'NEFT/RTGS',
+      disbursed_by: 'Founder & CEO Sai Vara Prasad',
+      notes: 'Monthly engineering compensation'
+    });
+
+    toast.success(`Salary payout of ₹${amount.toLocaleString()} logged for ${b.employee_name}!`);
+    loadBanking();
+  };
+
   return (
-    <div>
-      {/* Add Form */}
-      <div className="adm-card mb-6">
+    <div className="space-y-8">
+      {/* ── 1. ROLE ASSIGNMENT FORM (GOOGLE OAUTH IDENTIFICATION) ── */}
+      <div className="adm-card">
         <div className="adm-card-header">
           <span className="adm-card-title flex items-center gap-2">
             <UserPlus className="w-4 h-4 adm-olive-accent" />
-            Pre-Register a User by Email
+            Assign Role to Email (Auto Google Login Identification)
           </span>
         </div>
         <p className="text-xs mb-4" style={{ color: "var(--adm-text-secondary)" }}>
-          When this person signs in via Google OAuth for the first time, they will be automatically
-          assigned the selected role — no role-selection screen shown.
+          When this person clicks <strong>"Continue with Google"</strong>, their role will be automatically grasped and they will be routed directly to their designated portal.
         </p>
+
         <form onSubmit={handleAdd} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="adm-form-group">
             <label className="adm-label">Email Address *</label>
             <input
               className="adm-input"
               type="email"
-              placeholder="user@example.com"
+              placeholder="user@example.com or user@gmail.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
@@ -160,41 +231,39 @@ export function AdminUserInvitePanel({ agencyEmails = [] }: AdminUserInvitePanel
           </div>
 
           <div className="adm-form-group">
-            <label className="adm-label">Assign Role *</label>
-            <select
-              className="adm-input adm-select"
-              value={role}
-              onChange={e => setRole(e.target.value)}
-            >
+            <label className="adm-label">Designated Portal Role *</label>
+            <div className="flex flex-wrap gap-2 pt-1">
               {ROLES.map(r => (
-                <option key={r.id} value={r.id}>{r.label}</option>
+                <button
+                  type="button"
+                  key={r.id}
+                  onClick={() => setRole(r.id as PortalRole)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                    role === r.id
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "bg-muted text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {r.icon}
+                  <span>{r.label}</span>
+                </button>
               ))}
-            </select>
+            </div>
           </div>
 
-          {role === "client" && (
+          {role === "client" && agencyEmails.length > 0 && (
             <div className="adm-form-group">
-              <label className="adm-label">Link to Agency (Billing POC, optional)</label>
-              {agencyEmails.length > 0 ? (
-                <select
-                  className="adm-input adm-select"
-                  value={linkedAgency}
-                  onChange={e => setLinkedAgency(e.target.value)}
-                >
-                  <option value="">— Direct Client (no agency) —</option>
-                  {agencyEmails.map(ae => (
-                    <option key={ae} value={ae}>{ae}</option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  className="adm-input"
-                  type="email"
-                  placeholder="agency@example.com (optional)"
-                  value={linkedAgency}
-                  onChange={e => setLinkedAgency(e.target.value)}
-                />
-              )}
+              <label className="adm-label">Link to Agency (Optional)</label>
+              <select
+                className="adm-input"
+                value={linkedAgency}
+                onChange={e => setLinkedAgency(e.target.value)}
+              >
+                <option value="">None (Independent Client)</option>
+                {agencyEmails.map(ae => (
+                  <option key={ae} value={ae}>{ae}</option>
+                ))}
+              </select>
             </div>
           )}
 
@@ -215,11 +284,11 @@ export function AdminUserInvitePanel({ agencyEmails = [] }: AdminUserInvitePanel
           )}
 
           <div className="adm-form-group md:col-span-2">
-            <label className="adm-label">Notes (internal, optional)</label>
+            <label className="adm-label">Remarks / Internal Notes (Optional)</label>
             <input
               className="adm-input"
               type="text"
-              placeholder="e.g. Referred by XYZ Agency, Nellore client"
+              placeholder="e.g. Business Development intern joining 6-month cohort"
               value={notes}
               onChange={e => setNotes(e.target.value)}
             />
@@ -228,17 +297,17 @@ export function AdminUserInvitePanel({ agencyEmails = [] }: AdminUserInvitePanel
           <div className="md:col-span-2 flex justify-end">
             <button type="submit" className="adm-btn adm-btn-primary" disabled={saving}>
               {saving ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <UserPlus className="w-3.5 h-3.5" />}
-              {saving ? "Saving…" : "Add Preassigned Role"}
+              {saving ? "Saving…" : "Assign & Whitelist Role"}
             </button>
           </div>
         </form>
       </div>
 
-      {/* List */}
+      {/* ── 2. PREASSIGNED ROLES TABLE ── */}
       <div className="adm-card">
         <div className="adm-card-header">
           <span className="adm-card-title flex items-center gap-2">
-            <Users className="w-4 h-4 adm-olive-accent" /> Preassigned Roles
+            <Users className="w-4 h-4 adm-olive-accent" /> Assigned Portal Users ({entries.length})
           </span>
           <button className="adm-btn adm-btn-secondary adm-btn-sm" onClick={fetchEntries} disabled={loading}>
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
@@ -252,43 +321,31 @@ export function AdminUserInvitePanel({ agencyEmails = [] }: AdminUserInvitePanel
         ) : entries.length === 0 ? (
           <div className="adm-empty">
             <div className="adm-empty-icon">📋</div>
-            <div className="adm-empty-msg">No preassigned roles yet. Add one above.</div>
+            <div className="adm-empty-msg">No assigned roles yet. Add an email above.</div>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="adm-table">
               <thead>
                 <tr>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Linked Agency</th>
-                  <th>Commission</th>
-                  <th>Status</th>
-                  <th>Notes</th>
-                  <th></th>
+                  <th>Email Address</th>
+                  <th>Grasped Role</th>
+                  <th>Google Login Status</th>
+                  <th>Remarks</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {entries.map(e => (
                   <tr key={e.id}>
-                    <td className="font-mono text-xs">{e.email}</td>
+                    <td className="font-mono text-xs font-bold text-foreground">{e.email}</td>
                     <td>
                       <span className={`adm-badge-role ${e.role}`}>{e.role}</span>
                     </td>
-                    <td className="text-xs" style={{ color: "var(--adm-text-secondary)" }}>
-                      {e.linked_agency_email || "—"}
-                    </td>
-                    <td className="text-xs" style={{ color: "var(--adm-gold)" }}>
-                      {e.commission_pct != null ? `${e.commission_pct}%` : "—"}
-                    </td>
                     <td>
-                      {e.applied_at ? (
-                        <span className="flex items-center gap-1 text-xs" style={{ color: "var(--adm-olive-light)" }}>
-                          <Check className="w-3 h-3" /> Applied
-                        </span>
-                      ) : (
-                        <span className="text-xs" style={{ color: "var(--adm-gold)" }}>Pending sign-in</span>
-                      )}
+                      <span className="flex items-center gap-1 text-xs text-emerald-400 font-bold">
+                        <Check className="w-3.5 h-3.5" /> Auto-Identified
+                      </span>
                     </td>
                     <td className="text-xs" style={{ color: "var(--adm-text-muted)" }}>
                       {e.notes || "—"}
@@ -297,10 +354,96 @@ export function AdminUserInvitePanel({ agencyEmails = [] }: AdminUserInvitePanel
                       <button
                         className="adm-btn adm-btn-danger adm-btn-sm"
                         onClick={() => handleDelete(e.id, e.email)}
-                        title="Remove preassigned role"
+                        title="Remove role"
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* ── 3. EMPLOYEE SALARY & BANKING CREDENTIALS REGISTRY ── */}
+      <div className="adm-card">
+        <div className="adm-card-header">
+          <span className="adm-card-title flex items-center gap-2">
+            <Landmark className="w-4 h-4 text-emerald-400" /> Employee Banking & Salary Disbursement
+          </span>
+          <button className="adm-btn adm-btn-secondary adm-btn-sm" onClick={loadBanking}>
+            <RefreshCw className="w-3.5 h-3.5" />
+          </button>
+        </div>
+        <p className="text-xs mb-4" style={{ color: "var(--adm-text-secondary)" }}>
+          Bank account and payment details submitted by employees for monthly payroll disbursement by Siddhi Dynamics LLP.
+        </p>
+
+        {bankingRecords.length === 0 ? (
+          <div className="adm-empty">
+            <div className="adm-empty-icon">🏦</div>
+            <div className="adm-empty-msg">No employee banking records submitted yet.</div>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="adm-table">
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Bank Name & Branch</th>
+                  <th>Account Number</th>
+                  <th>IFSC Code</th>
+                  <th>UPI / PAN</th>
+                  <th>Status</th>
+                  <th>Salary Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bankingRecords.map(b => (
+                  <tr key={b.id}>
+                    <td>
+                      <strong className="text-foreground block text-xs">{b.account_holder_name || b.employee_name}</strong>
+                      <span className="text-[11px] text-muted-foreground">{b.employee_email}</span>
+                    </td>
+                    <td className="text-xs text-foreground">
+                      <strong>{b.bank_name}</strong>
+                      {b.branch_name && <span className="block text-[11px] text-muted-foreground">{b.branch_name}</span>}
+                    </td>
+                    <td className="font-mono text-xs text-foreground font-bold">{b.account_number}</td>
+                    <td className="font-mono text-xs text-primary font-bold">{b.ifsc_code}</td>
+                    <td className="text-xs">
+                      {b.upi_id && <span className="block text-emerald-400 font-mono text-[11px]">{b.upi_id}</span>}
+                      {b.pan_number && <span className="block text-muted-foreground font-mono text-[11px]">PAN: {b.pan_number}</span>}
+                      {!b.upi_id && !b.pan_number && "—"}
+                    </td>
+                    <td>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                        b.status === 'Verified for Salary' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'
+                      }`}>
+                        {b.status}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="flex items-center gap-1.5">
+                        {b.status !== 'Verified for Salary' && (
+                          <button
+                            className="adm-btn adm-btn-secondary adm-btn-sm text-xs"
+                            onClick={() => handleVerifyBanking(b.id, b.employee_name)}
+                            title="Verify bank details"
+                          >
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Verify
+                          </button>
+                        )}
+                        <button
+                          className="adm-btn adm-btn-primary adm-btn-sm text-xs"
+                          onClick={() => handleDisburseSalary(b)}
+                          title="Record salary payout"
+                        >
+                          <DollarSign className="w-3.5 h-3.5" /> Disburse Salary
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

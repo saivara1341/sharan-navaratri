@@ -50,27 +50,27 @@ export const InvestorPipelineRollup = () => {
               { label: "Aggregate estimated value", value: `₹${totalValue.toLocaleString("en-IN")}` },
               { label: "Delivery health", value: `${health}%` },
             ].map((s) => (
-              <div key={s.label} className="glass-card p-5 rounded-3xl bg-white/5 border border-white/10">
-                <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{s.label}</p>
-                <p className="text-2xl font-extrabold mt-2">{s.value}</p>
+              <div key={s.label} className="p-5 rounded-2xl bg-white border border-stone-200 shadow-sm text-stone-900">
+                <p className="text-[10px] uppercase tracking-widest text-stone-500 font-bold">{s.label}</p>
+                <p className="text-2xl font-extrabold mt-2 text-stone-900">{s.value}</p>
               </div>
             ))}
           </div>
 
-          <div className="glass-card rounded-3xl bg-white/5 border border-white/10 p-5 space-y-3">
-            {rows.length === 0 && <p className="text-sm text-muted-foreground">No pipeline activity yet.</p>}
+          <div className="rounded-2xl bg-white border border-stone-200 p-5 space-y-3 shadow-sm text-stone-900">
+            {rows.length === 0 && <p className="text-sm text-stone-500">No pipeline activity yet.</p>}
             {rows.map((r) => (
               <div key={r.status} className="flex items-center gap-4">
                 <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg border w-52 shrink-0 ${statusTone[r.status] || statusTone.Closed}`}>
                   {r.status}
                 </span>
-                <div className="h-2 flex-1 rounded-full bg-white/10 overflow-hidden">
+                <div className="h-2 flex-1 rounded-full bg-stone-100 overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-accent"
+                    className="h-full rounded-full bg-stone-900"
                     style={{ width: `${totalCount ? (Number(r.requirement_count) / totalCount) * 100 : 0}%` }}
                   />
                 </div>
-                <span className="text-xs text-muted-foreground w-24 text-right">{r.requirement_count} · {Math.round(Number(r.avg_progress || 0))}%</span>
+                <span className="text-xs text-stone-500 w-24 text-right">{r.requirement_count} · {Math.round(Number(r.avg_progress || 0))}%</span>
               </div>
             ))}
           </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShieldCheck, 
   Search, 
@@ -11,7 +11,8 @@ import {
   ArrowLeft,
   BadgeCheck,
   Lock,
-  Star
+  Star,
+  Info
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'sonner';
@@ -165,7 +166,7 @@ function CertificateTemplate({ cert }: { cert: CertificateRecord }) {
                 SIDDHI DYNAMICS LLP
               </div>
               <div style={{ fontFamily: 'monospace', fontSize: '9px', color: 'rgba(255,255,255,0.45)', letterSpacing: '0.18em', textTransform: 'uppercase' }}>
-                LLPIN: ACJ-3766 &nbsp;•&nbsp; Ministry of Corporate Affairs, Govt. of India
+                LLPIN: ACX-6222 &nbsp;•&nbsp; Ministry of Corporate Affairs, Govt. of India
               </div>
             </div>
           </div>
@@ -435,7 +436,7 @@ function CertificateTemplate({ cert }: { cert: CertificateRecord }) {
                 OFFICIAL<br />SEAL
               </div>
               <div style={{ fontFamily: 'monospace', fontSize: '6px', color: 'rgba(245,158,11,0.6)', letterSpacing: '0.08em' }}>
-                ACJ-3766
+                ACX-6222
               </div>
             </div>
             <div style={{ fontFamily: 'monospace', fontSize: '8px', color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
@@ -497,6 +498,7 @@ export default function CertificateVerification() {
   const [searchInput, setSearchInput] = useState(queryNo);
   const [certificate, setCertificate] = useState<CertificateRecord | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
   useEffect(() => {
     if (queryNo) {
@@ -553,22 +555,64 @@ export default function CertificateVerification() {
             Back to Careers
           </Link>
           <span className="text-[11px] font-mono px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
-            LLPIN: ACJ-3766
+            LLPIN: ACX-6222
           </span>
         </div>
 
         {/* Hero */}
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-primary text-xs font-semibold mb-4">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            Anti-Tamper Cryptographic Credential Registry
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight">
+              Certificate <span className="bg-gradient-to-r from-amber-400 to-primary bg-clip-text text-transparent">Verification</span> Portal
+            </h1>
+            <div className="relative inline-flex items-center">
+              <button
+                type="button"
+                onClick={() => setShowInfo(!showInfo)}
+                className={`inline-flex items-center justify-center w-7 h-7 rounded-full transition-all duration-200 cursor-pointer shrink-0 focus:outline-none focus:ring-2 focus:ring-primary/40 ${
+                  showInfo 
+                    ? 'bg-primary/20 text-primary border border-primary/50 shadow-sm shadow-primary/20 scale-105' 
+                    : 'bg-white/5 border border-white/10 text-muted-foreground hover:text-primary hover:border-primary/40'
+                }`}
+                aria-label="Certificate Registry Information"
+                aria-expanded={showInfo}
+              >
+                <Info className="w-4 h-4" />
+              </button>
+
+              <AnimatePresence>
+                {showInfo && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-40" 
+                      onClick={() => setShowInfo(false)} 
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 6, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute top-full left-1/2 -translate-x-1/2 mt-2.5 z-50 w-72 sm:w-80 p-3.5 rounded-2xl bg-card border border-border/80 shadow-2xl backdrop-blur-xl text-left text-xs leading-relaxed text-foreground"
+                    >
+                      <div className="flex items-start gap-2.5">
+                        <div className="p-1 rounded-md bg-amber-500/10 text-amber-400 shrink-0 mt-0.5">
+                          <ShieldCheck className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="space-y-1">
+                          <p className="font-semibold text-foreground text-[11px] uppercase tracking-wider">
+                            Registry Verification
+                          </p>
+                          <p className="text-muted-foreground text-xs leading-relaxed">
+                            Every intern and employee issued a certificate has a unique <span className="font-mono text-amber-300 font-semibold">SD-CERT-YYYY-XX-XXXX</span> identifier and tamper-proof checksum permanently recorded in our registry.
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black tracking-tight mb-3">
-            Certificate <span className="bg-gradient-to-r from-amber-400 to-primary bg-clip-text text-transparent">Verification</span> Portal
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Every intern and employee issued a certificate has a unique <span className="font-mono text-foreground">SD-CERT-YYYY-XX-XXXX</span> identifier and tamper-proof checksum permanently recorded in our registry.
-          </p>
 
           {/* Search */}
           <form onSubmit={handleSearchSubmit} className="mt-6 flex gap-2 max-w-xl mx-auto">
@@ -578,7 +622,7 @@ export default function CertificateVerification() {
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Enter Certificate ID (SD-CERT-...) or recipient email"
+                placeholder="Enter Certificate ID"
                 className="w-full pl-10 pr-4 py-3 rounded-xl bg-card border border-border/80 text-foreground text-xs sm:text-sm font-mono focus:outline-none focus:border-primary shadow-sm"
               />
             </div>
@@ -590,20 +634,6 @@ export default function CertificateVerification() {
               Verify
             </button>
           </form>
-
-          {/* Sample chips */}
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[11px] text-muted-foreground">
-            <span>Sample IDs:</span>
-            {['SD-CERT-2026-BD-0108', 'SD-CERT-2026-DM-0214'].map(id => (
-              <button
-                key={id}
-                onClick={() => { setSearchInput(id); performSearch(id); }}
-                className="px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 text-amber-400 font-mono cursor-pointer border border-white/10 transition-colors"
-              >
-                {id}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* Result */}

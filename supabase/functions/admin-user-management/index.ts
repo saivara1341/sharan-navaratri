@@ -40,6 +40,7 @@ Deno.serve(async (req) => {
         created_at: user.created_at,
         lastLogin: user.last_sign_in_at,
       })) });
+    }
     if (body.action === 'delete') {
       const email = String(body.email || '').trim().toLowerCase();
       const userId = String(body.id || body.userId || '').trim();

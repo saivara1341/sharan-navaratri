@@ -5,7 +5,7 @@ import {
   convertInchesToTwip,
   Footer as DocFooter,
 } from 'docx';
-import { Helmet } from 'react-helmet-async';
+import { SeoHead, jobPostingSchema, orgSchema } from '@/components/seo/SeoHead';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { Navbar } from '@/components/layout/Navbar';
 import { FooterSection } from '@/components/sections/FooterSection';
@@ -37,104 +37,18 @@ import {
   Calendar,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { internshipService } from '@/services/internshipService';
+import { 
+  internshipService, 
+  RoleJD, 
+  RoleCategory, 
+  EmploymentType, 
+  DEFAULT_CAREER_ROLES 
+} from '@/services/internshipService';
 
-// ─── Filter Types & Categories ───────────────────────────────────────────────
-type EmploymentType = 'Full Time' | 'Remote' | 'Part Time';
-type RoleCategory = 'Business Development' | 'Digital Marketing' | 'Software Engineering' | 'Operations & Strategy';
-
-interface RoleJD {
-  id: string;
-  title: string;
-  category: RoleCategory;
-  employmentType: EmploymentType;
-  compensation: string;
-  certificatePolicy: string;
-  lorPolicy: string;
-  workflowDetails: string;
-  targetAudience: string;
-  tagline: string;
-  durations: string[];
-  overview: string;
-  keyResponsibilities: string[];
-  learningOutcomes: string[];
-  interlinkingFeature: string;
-  requirements: string[];
-}
-
-// ─── Master Jobs & Internship Matrix ─────────────────────────────────────────
-const ROLES: RoleJD[] = [
-  {
-    id: 'bd-intern',
-    title: 'Business Development Intern',
-    category: 'Business Development',
-    employmentType: 'Remote',
-    compensation: 'Unpaid Internship (Skill-Building & Academic Practical Track)',
-    certificatePolicy: 'Official Certificate of Internship Completion awarded upon successful tenure and task completion.',
-    lorPolicy: 'Letter of Recommendation (LOR) is provided strictly upon completing 2 years of continuous active working with Siddhi Dynamics.',
-    workflowDetails: 'Tasks assigned via internal platform with stipulated deadlines. Client lead approvals and timeline extensions require direct CEO portal approval.',
-    targetAudience: 'MBA & BBA Students / Business Graduates',
-    tagline: 'Drive client acquisition, identify market opportunities, and convert real-world enterprise pipeline across regional hubs.',
-    durations: ['3 Months', '6 Months', '9 Months', '12 Months'],
-    overview: 'As a Business Development Intern at Siddhi Dynamics, you operate at the frontier of technology commercialization. You will research regional enterprises, introduce cutting-edge business automation, ERP solutions (like PrintFlow & Nexus ERP), and customized digital transformation pipelines to business owners. This role provides practical boardroom sales and B2B consultative experience. It is an unpaid learning track where deliverables build your verifiable Point of Proof portfolio.',
-    keyResponsibilities: [
-      'Research and identify target client segments across regional hubs (Hyderabad, Nizamabad, Bangalore, Mumbai) needing business automation & ERP solutions.',
-      'Conduct exploratory client discovery calls and demonstrate product capabilities including PrintFlow, Nexus ERP, and Custom Automations.',
-      'Execute structured business development tasks assigned through the internal platform within stipulated timelines.',
-      'Log verified outreach milestones, client requirements, and stage transitions directly in the internal portal for audit and review.',
-      'Coordinate with the Digital Marketing team to align client outreach campaigns with tailored content assets.'
-    ],
-    learningOutcomes: [
-      'Mastery of B2B SaaS sales cycles, enterprise product demonstrations, and CRM pipeline governance.',
-      'Direct real-world experience negotiating and structuring software solution proposals for regional MSMEs.',
-      'Official Certificate of Internship Completion with a verifiable online record on our ledger upon concluding tenure.',
-      'Clear eligibility for a formal institutional Letter of Recommendation (LOR) upon completing 2 years of active service.'
-    ],
-    interlinkingFeature: 'Cross-functional synergy: Every BD lead feeds real-time market data to our Digital Marketing interns for contextual collateral generation.',
-    requirements: [
-      'Currently enrolled in or graduate of MBA, BBA, B.Com, or related business and management programs.',
-      'Strong communication and interpersonal skills in English and Hindi or Telugu.',
-      'High ownership mindset, dedication to meeting stipulated deadlines, and eagerness to build genuine career credentials.',
-      'Understanding and acceptance that this is an unpaid internship granting an official completion certificate (with LOR upon 2 years of working).'
-    ]
-  },
-  {
-    id: 'dm-intern',
-    title: 'Digital Marketing Intern',
-    category: 'Digital Marketing',
-    employmentType: 'Remote',
-    compensation: 'Unpaid Internship (Skill-Building & Academic Practical Track)',
-    certificatePolicy: 'Official Certificate of Internship Completion awarded upon successful tenure and task completion.',
-    lorPolicy: 'Letter of Recommendation (LOR) is provided strictly upon completing 2 years of continuous active working with Siddhi Dynamics.',
-    workflowDetails: 'Tasks assigned via internal platform with stipulated deadlines. Creative asset access and deadline extensions can be requested by interns and approved by CEO.',
-    targetAudience: 'BBA / MBA Marketing, Media & Creative Innovators',
-    tagline: 'Scale Instagram reach, craft viral content for PrintFlow & client brands, and engineer data-driven social conversion funnels.',
-    durations: ['3 Months', '6 Months', '9 Months', '12 Months'],
-    overview: 'Shape the visual and organic identity of Siddhi Dynamics and our flagship products (like PrintFlow and AI automation suites). You will oversee growth for @siddhidynamics, architect high-retention Instagram reels, create educational carousels, and respond to sales intelligence to drive inbound client pipeline. This is an unpaid educational internship with tasks assigned through our platform to build a verifiable public portfolio.',
-    keyResponsibilities: [
-      'Drive organic growth and audience engagement on the official Instagram page (@siddhidynamics) and partner accounts.',
-      'Create high-hook Reels, carousel infographics, and short-form video scripts highlighting PrintFlow and AI automation.',
-      'Collaborate in real-time with the Business Development team to deploy targeted content based on real market questions.',
-      'Execute content sprint tasks within stipulated platform deadlines, requesting asset access or timeline extensions via admin.',
-      'Track reach, hook retention rate, non-follower discovery, and profile conversion metrics as verifiable Points of Proof.'
-    ],
-    learningOutcomes: [
-      'Hands-on expertise in algorithm-driven organic social growth, A/B video hook testing, and SaaS product marketing.',
-      'Attribution tracking mastery: track customer journey from Instagram Reel view to demo booking.',
-      'Official Certificate of Internship Completion with a verifiable online record on our ledger upon concluding tenure.',
-      'Clear eligibility for a formal institutional Letter of Recommendation (LOR) upon completing 2 years of active service.'
-    ],
-    interlinkingFeature: 'Agile Content Sprints: You work hand-in-hand with the BD team using our unified referral and interlink tracker for mutual attribution.',
-    requirements: [
-      'Enrolled in or completed BBA, MBA (Marketing), Mass Communication, or passionate self-taught social media marketer.',
-      'Familiarity with Instagram Reels, CapCut/Premiere/Canva, and current B2B social media trends.',
-      'Creativity, prompt turnaround, and passion for AI and software automation.',
-      'Understanding and acceptance that this is an unpaid internship granting an official completion certificate (with LOR upon 2 years of working).'
-    ]
-  }
-];
+const ROLES: RoleJD[] = DEFAULT_CAREER_ROLES;
 
 const ALL_CATEGORIES: { id: RoleCategory; label: string }[] = [
+  { id: 'Product Management', label: 'Product Management' },
   { id: 'Business Development', label: 'Business Development' },
   { id: 'Digital Marketing', label: 'Digital Marketing' },
   { id: 'Software Engineering', label: 'Software Engineering' },
@@ -222,12 +136,27 @@ function StayTunedIllustration() {
 }
 
 export default function Careers() {
+  const [roles, setRoles] = useState<RoleJD[]>(DEFAULT_CAREER_ROLES);
   const [empFilter, setEmpFilter] = useState<'all' | EmploymentType>('all');
   const [roleFilter, setRoleFilter] = useState<'all' | RoleCategory>('all');
   const [selectedJdModal, setSelectedJdModal] = useState<RoleJD | null>(null);
   const [applicationModal, setApplicationModal] = useState<RoleJD | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    internshipService.getCareerRoles().then(liveRoles => {
+      if (isMounted && liveRoles && liveRoles.length > 0) {
+        setRoles(liveRoles);
+      }
+    }).catch(err => {
+      console.warn('Could not load live career roles from database:', err);
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (applicationModal || selectedJdModal) {
@@ -256,7 +185,7 @@ export default function Careers() {
   const MAX_RESUME_SIZE_BYTES = MAX_RESUME_SIZE_MB * 1024 * 1024;
   const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx'];
 
-  const filteredRoles = ROLES.filter(r => {
+  const filteredRoles = roles.filter(r => {
     if (empFilter !== 'all' && r.employmentType !== empFilter) return false;
     if (roleFilter !== 'all' && r.category !== roleFilter) return false;
     return true;
@@ -304,13 +233,12 @@ export default function Careers() {
   };
 
   const handleDownloadJd = async (role: RoleJD) => {
-    const jdText = `
-================================================================================
+    const jdText = `================================================================================
 SIDDHI DYNAMICS LLP — OFFICIAL JOB DESCRIPTION & INTERNSHIP TERMS
 Position: ${role.title}
 Department: ${role.category}
 Employment Type: ${role.employmentType} (Remote Task-Based Platform Workflow)
-Compensation: Unpaid Internship (Hands-on Academic & Skill Learning Track)
+Compensation: ${role.compensation}
 Target Candidates: ${role.targetAudience}
 Available Durations: ${role.durations.join(', ')}
 Location: Remote / Virtual (Offices in Hyderabad & Nizamabad)
@@ -319,28 +247,37 @@ General Enquiries: hello@siddhidynamics.in
 Website: https://siddhidynamics.in
 ================================================================================
 
-1. TRANSPARENT TERMS & CREDENTIALING POLICY (CRUCIAL INFORMATION)
+1. ROLE OVERVIEW
 --------------------------------------------------------------------------------
-• COMPENSATION: This is an UNPAID INTERNSHIP designed strictly for practical 
-  skill development, hands-on enterprise experience, and academic alignment 
-  for MBA, BBA, and business students. No monthly stipend or base salary is provided.
+${role.overview}
 
-• CERTIFICATE OF INTERNSHIP COMPLETION: Every intern who successfully completes 
-  their selected tenure (${role.durations.join(' / ')}) and fulfills their 
-  assigned task deliverables will be awarded an Official Certificate of Internship 
-  Completion. The certificate features a unique Certificate Number and tamper-proof 
-  cryptographic verification checksum, verifiable on:
+2. KEY RESPONSIBILITIES
+--------------------------------------------------------------------------------
+${role.keyResponsibilities.map((r, i) => `${i + 1}. ${r}`).join('\n')}
+
+3. LEARNING OUTCOMES & CREDENTIALS
+--------------------------------------------------------------------------------
+${role.learningOutcomes.map((o, i) => `${i + 1}. ${o}`).join('\n')}
+
+4. CROSS-FUNCTIONAL COLLABORATION
+--------------------------------------------------------------------------------
+${role.interlinkingFeature}
+
+5. ELIGIBILITY & REQUIREMENTS
+--------------------------------------------------------------------------------
+${role.requirements.map((req, i) => `• ${req}`).join('\n')}
+
+6. TRANSPARENT TERMS & CREDENTIALING POLICY (CRUCIAL INFORMATION)
+--------------------------------------------------------------------------------
+• COMPENSATION: ${role.compensation}
+
+• CERTIFICATE POLICY: ${role.certificatePolicy}
+  Tamper-proof cryptographic checksum verifiable on:
   https://siddhidynamics.in/verify-certificate
 
-• LETTER OF RECOMMENDATION (LOR) POLICY: A formal, signed institutional Letter 
-  of Recommendation (LOR) is provided STRICTLY upon completing a minimum of 
-  TWO (2) YEARS of continuous active working / association with Siddhi Dynamics LLP. 
-  Standard internship tenures (3, 6, 9, or 12 months) receive the Certificate 
-  of Completion only, and do not qualify for an LOR.
+• LETTER OF RECOMMENDATION (LOR) POLICY: ${role.lorPolicy}
 
-• TASK WORKFLOW & TIMELINES: All tasks are assigned through the internal platform 
-  with stipulated deadlines. If an intern requires additional time to conclude a 
-  client engagement or needs portal approval, timeline extensions can be requested via the portal.
+• TASK WORKFLOW & TIMELINES: ${role.workflowDetails}
 `;
     const blob = new Blob([jdText], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -439,11 +376,67 @@ Website: https://siddhidynamics.in
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30">
-      <Helmet>
-        <title>Careers — Jobs & Internships | Siddhi Dynamics LLP</title>
-        <meta name="description" content="Explore transparent careers and internships at Siddhi Dynamics. Remote business development and digital marketing roles with verifiable certification and CEO mentorship." />
-        <link rel="canonical" href="https://siddhidynamics.in/careers" />
-      </Helmet>
+      <SeoHead
+        title="Careers — Jobs & Internships at Siddhi Dynamics LLP"
+        description="Explore open jobs and internships at Siddhi Dynamics LLP. Remote Product Management, Business Development, and Digital Marketing internships with official completion certificates, CEO mentorship, and verifiable credentials. Apply now — siddhidynamics.in/careers"
+        canonical="/careers"
+        keywords="Siddhi Dynamics careers, product manager intern, APM internship India, internship Hyderabad, business development intern India, digital marketing intern Nizamabad, AI company internship India, remote internship 2026, MBA internship Telangana"
+        schema={[
+          orgSchema,
+          jobPostingSchema({
+            title: 'Product Manager Intern',
+            description: 'Bridge business strategy, user experience, and agile engineering at Siddhi Dynamics LLP. Architect PRDs, wireframes, and feature roadmaps for PrintFlow and AI SaaS automation tools. Unpaid internship with official completion certificate and CEO mentorship.',
+            responsibilities: [
+              'Collaborate with Business Development and Digital Marketing teams to gather real client pain points and workflow bottlenecks.',
+              'Draft detailed Product Requirement Documents (PRDs), user journeys, system flowcharts, and wireframes for PrintFlow and internal enterprise tools.',
+              'Break down strategic initiatives into actionable sprint tickets with clear acceptance criteria for engineering teams.',
+              'Conduct usability reviews, user acceptance testing (UAT), and telemetry analysis to validate feature releases.',
+              'Maintain product backlogs and sprint milestones within the internal task platform, adhering to stipulated deadlines.',
+            ],
+            skills: [
+              'Currently enrolled in or graduate of B.Tech / BE, MBA, MCA, BBA, or related technical/management disciplines.',
+              'Deep curiosity about SaaS architecture, user experience design, and AI automation tools.',
+              'Strong written and verbal communication skills with the ability to articulate complex technical ideas simply.',
+              'High ownership mindset and eagerness to build genuine career credentials.',
+            ],
+            employmentType: 'INTERN',
+          }),
+          jobPostingSchema({
+            title: 'Business Development Intern',
+            description: 'Drive client acquisition, identify market opportunities, and convert real-world enterprise pipeline across regional hubs at Siddhi Dynamics LLP. Unpaid internship with official completion certificate and CEO mentorship.',
+            responsibilities: [
+              'Research and identify target client segments across regional hubs (Hyderabad, Nizamabad, Bangalore, Mumbai) needing business automation & ERP solutions.',
+              'Conduct exploratory client discovery calls and demonstrate product capabilities including PrintFlow, Nexus ERP, and Custom Automations.',
+              'Execute structured business development tasks assigned through the internal platform within stipulated timelines.',
+              'Log verified outreach milestones, client requirements, and stage transitions directly in the internal portal.',
+              'Coordinate with the Digital Marketing team to align client outreach campaigns with tailored content assets.',
+            ],
+            skills: [
+              'Currently enrolled in or graduate of MBA, BBA, B.Com, or related business and management programs.',
+              'Strong communication and interpersonal skills in English and Hindi or Telugu.',
+              'High ownership mindset and eagerness to build genuine career credentials.',
+            ],
+            employmentType: 'INTERN',
+          }),
+          jobPostingSchema({
+            title: 'Digital Marketing Intern',
+            description: 'Scale Instagram reach, craft viral content for PrintFlow & client brands, and engineer data-driven social conversion funnels at Siddhi Dynamics LLP. Unpaid internship with official completion certificate.',
+            responsibilities: [
+              'Drive organic growth and audience engagement on the official Instagram page (@siddhidynamics) and partner accounts.',
+              'Create high-hook Reels, carousel infographics, and short-form video scripts highlighting PrintFlow and AI automation.',
+              'Collaborate in real-time with the Business Development team to deploy targeted content based on real market questions.',
+              'Execute content sprint tasks within stipulated platform deadlines.',
+              'Track reach, hook retention rate, non-follower discovery, and profile conversion metrics as verifiable Points of Proof.',
+            ],
+            skills: [
+              'Enrolled in or completed BBA, MBA (Marketing), Mass Communication, or passionate self-taught social media marketer.',
+              'Familiarity with Instagram Reels, CapCut/Premiere/Canva, and current B2B social media trends.',
+              'Creativity, prompt turnaround, and passion for AI and software automation.',
+            ],
+            employmentType: 'INTERN',
+          }),
+        ]}
+      />
 
       <Navbar />
 
@@ -478,9 +471,9 @@ Website: https://siddhidynamics.in
               </h1>
               <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-3xl">
                 We offer <strong className="text-foreground">full-time, remote, and part-time</strong> opportunities
-                across business development, digital marketing, software engineering, and operations.
-                Whether you're an <strong className="text-foreground">MBA/BBA student</strong> seeking an internship or an
-                experienced professional looking for your next challenge — explore our transparent roles below.
+                across product management, business development, digital marketing, software engineering, and operations.
+                Whether you're a <strong className="text-foreground">B.Tech/MBA/BBA student</strong> seeking an internship or an
+                aspiring product leader looking for high-ownership impact — explore our transparent roles below.
               </p>
             </motion.div>
           </div>
@@ -721,7 +714,7 @@ Website: https://siddhidynamics.in
                       {selectedJdModal.learningOutcomes.map((item, i) => (
                         <li key={i} className="flex items-start gap-2">
                           <TrendingUp className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
-                          <span className="text-foreground/80 dark:text-muted-foreground">{selectedJdModal.learningOutcomes[0]}</span>
+                          <span className="text-foreground/80 dark:text-muted-foreground">{item}</span>
                         </li>
                       ))}
                     </ul>

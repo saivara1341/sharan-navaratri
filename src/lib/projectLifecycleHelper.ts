@@ -35,14 +35,18 @@ export function parseProjectMeta(raw: string | null | undefined): ProjectLifecyc
       ...parsed,
       banking_details: parsed.banking_details || { ...DEFAULT_BANKING_DETAILS },
       invoices: Array.isArray(parsed.invoices) ? parsed.invoices : [],
-      updates: Array.isArray(parsed.updates) ? parsed.updates : []
+      updates: Array.isArray(parsed.updates) ? parsed.updates : [],
+      change_requests: Array.isArray(parsed.change_requests) ? parsed.change_requests : [],
+      meeting_requests: Array.isArray(parsed.meeting_requests) ? parsed.meeting_requests : []
     };
   } catch {
     return {
       agreement: trimmed,
       banking_details: { ...DEFAULT_BANKING_DETAILS },
       invoices: [],
-      updates: []
+      updates: [],
+      change_requests: [],
+      meeting_requests: []
     };
   }
 }

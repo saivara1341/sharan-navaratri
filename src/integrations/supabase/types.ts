@@ -318,6 +318,75 @@ export type Database = {
         }
         Relationships: []
       }
+      career_roles: {
+        Row: {
+          category: string
+          certificate_policy: string | null
+          compensation: string
+          created_at: string
+          display_order: number
+          durations: string[]
+          employment_type: string
+          id: string
+          interlinking_feature: string | null
+          is_active: boolean
+          key_responsibilities: string[]
+          learning_outcomes: string[]
+          lor_policy: string | null
+          overview: string
+          requirements: string[]
+          tagline: string | null
+          target_audience: string | null
+          title: string
+          updated_at: string
+          workflow_details: string | null
+        }
+        Insert: {
+          category: string
+          certificate_policy?: string | null
+          compensation: string
+          created_at?: string
+          display_order?: number
+          durations?: string[]
+          employment_type: string
+          id: string
+          interlinking_feature?: string | null
+          is_active?: boolean
+          key_responsibilities?: string[]
+          learning_outcomes?: string[]
+          lor_policy?: string | null
+          overview: string
+          requirements?: string[]
+          tagline?: string | null
+          target_audience?: string | null
+          title: string
+          updated_at?: string
+          workflow_details?: string | null
+        }
+        Update: {
+          category?: string
+          certificate_policy?: string | null
+          compensation?: string
+          created_at?: string
+          display_order?: number
+          durations?: string[]
+          employment_type?: string
+          id?: string
+          interlinking_feature?: string | null
+          is_active?: boolean
+          key_responsibilities?: string[]
+          learning_outcomes?: string[]
+          lor_policy?: string | null
+          overview?: string
+          requirements?: string[]
+          tagline?: string | null
+          target_audience?: string | null
+          title?: string
+          updated_at?: string
+          workflow_details?: string | null
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           created_at: string

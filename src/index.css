@@ -233,6 +233,33 @@ main > section:not(:first-child) {
     pointer-events: none;
   }
 
+  /* Unified Client Portal Theme Overrides for all portals */
+  .portal-unified-root,
+  .admin-portal-root,
+  .vmagnetic-portal-root {
+    background-color: #f7f5ef !important;
+    color: #29251d !important;
+  }
+
+  .portal-unified-root .glass-card,
+  .admin-portal-root .glass-card,
+  .vmagnetic-portal-root .glass-card {
+    background: #ffffff !important;
+    border: 1px solid #e7e5e4 !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+    color: #1c1917 !important;
+    backdrop-filter: none !important;
+  }
+
+  .portal-unified-root .glass-card::before,
+  .portal-unified-root .glass-card::after,
+  .admin-portal-root .glass-card::before,
+  .admin-portal-root .glass-card::after,
+  .vmagnetic-portal-root .glass-card::before,
+  .vmagnetic-portal-root .glass-card::after {
+    display: none !important;
+  }
+
   /* Electric glow effects */
   .glow-primary {
     box-shadow: none;
@@ -1225,3 +1252,14 @@ body:has(.site-intro) {
   height: 1rem;
   stroke-width: 2.5;
 }
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

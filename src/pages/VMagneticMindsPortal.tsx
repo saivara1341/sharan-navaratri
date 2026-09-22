@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/layout/Navbar";
 import {
@@ -14,9 +14,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { emailService } from "@/services/emailService";
 import OccasionDesignsSection from "@/components/portal/OccasionDesignsSection";
-import { RequirementsPanel } from "@/components/requirements/RequirementsPanel";
 import { agencyCommissionService } from "@/services/agencyCommissionService";
-import { AgencyCommissionConfig, AgencyCommissionProject } from "@/types/projectLifecycle";
+import { AgencyCommissionConfig, AgencyCommissionProject, DEFAULT_BANKING_DETAILS, DEFAULT_BANK_ACCOUNTS } from "@/types/projectLifecycle";
+import { ServiceAgreementModal } from "@/components/client/ServiceAgreementModal";
+import { DigitalInvoiceModal, InvoiceModalData } from "@/components/invoice/DigitalInvoiceModal";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Tab = 'overview' | 'seo-geo' | 'analytics' | 'clients' | 'billing' | 'chat' | 'occasions' | 'commissions';
@@ -63,14 +64,14 @@ const BUSINESS_GOALS = [
 ];
 
 const BASE_TABS: { id: Tab; baseLabel: string; icon: React.ReactNode; desc: string; alwaysVisible?: boolean }[] = [
-  { id: 'overview',   baseLabel: 'Executive SLA & Roadmap',      icon: <Calendar className="w-5 h-5" />,      desc: 'Contract & milestone progress' },
-  { id: 'clients',    baseLabel: 'Client Portfolio',           icon: <Users className="w-5 h-5" />,         desc: 'Select & manage agency client brands' },
-  { id: 'seo-geo',    baseLabel: 'Service Metrics & Scores',    icon: <Search className="w-5 h-5" />,        desc: 'Live KPI & deliverable scores' },
-  { id: 'analytics',  baseLabel: 'Service Reports & Analytics',icon: <BarChart3 className="w-5 h-5" />,     desc: 'Traffic, uptime & delivery reports' },
-  { id: 'billing',    baseLabel: 'Quotation, Payments & Billing',icon: <CreditCard className="w-5 h-5" />,    desc: 'Confirm quotes & setup payment mode' },
-  { id: 'commissions',baseLabel: 'Commission & Referral Revenue',icon: <TrendingUp className="w-5 h-5" />,   desc: 'Track project commissions & payouts' },
-  { id: 'chat',       baseLabel: 'AI Support Coordinator',     icon: <Bot className="w-5 h-5" />,           desc: 'Siddhi AI assistant' },
-  { id: 'occasions',  baseLabel: 'Occasion & Festive Designs', icon: <Image className="w-5 h-5" />,         desc: 'Wishes images per client', alwaysVisible: true },
+  { id: 'clients',    baseLabel: 'Client Portfolio',            icon: <Users className="w-4 h-4" />,         desc: 'Select & manage agency client brands' },
+  { id: 'overview',   baseLabel: 'Roadmap & Sprints',           icon: <Calendar className="w-4 h-4" />,      desc: 'Projects & milestone progress' },
+  { id: 'seo-geo',    baseLabel: 'Metrics & Scores',            icon: <Search className="w-4 h-4" />,        desc: 'Live KPI & deliverable scores' },
+  { id: 'analytics',  baseLabel: 'Reports & Analytics',         icon: <BarChart3 className="w-4 h-4" />,     desc: 'Traffic, uptime & delivery reports' },
+  { id: 'billing',    baseLabel: 'Billing & Invoices',          icon: <CreditCard className="w-4 h-4" />,    desc: 'Confirm quotes & setup payment mode' },
+  { id: 'commissions',baseLabel: 'Commissions',                 icon: <TrendingUp className="w-4 h-4" />,   desc: 'Track project commissions & payouts' },
+  { id: 'chat',       baseLabel: 'AI Coordinator',              icon: <Bot className="w-4 h-4" />,           desc: 'Siddhi AI assistant' },
+  { id: 'occasions',  baseLabel: 'Occasions & Festive',         icon: <Image className="w-4 h-4" />,         desc: 'Wishes images per client', alwaysVisible: true },
 ];
 
 const INITIAL_CLIENTS: ClientBrand[] = [];
@@ -103,10 +104,10 @@ function ClientList({
         return (
           <div
             key={c.id}
-            className={`glass-card rounded-2xl border transition-all ${
+            className={`rounded-2xl border transition-all ${
               isSelected
-                ? 'border-primary/50 bg-primary/5'
-                : 'border-border hover:border-primary/30'
+                ? 'border-stone-900 bg-stone-50/80 shadow-sm'
+                : 'border-stone-200 bg-white hover:border-stone-400 shadow-xs'
             }`}
           >
             {/* Row — tapping opens client dashboard directly */}
@@ -118,26 +119,26 @@ function ClientList({
                 <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${
                   c.status === 'Locked (Tenure Expired)' ? 'bg-red-500' : 'bg-emerald-500'
                 }`} />
-                <span className="font-bold text-sm text-foreground truncate group-hover:text-primary transition-colors">{c.businessName}</span>
+                <span className="font-bold text-sm text-stone-900 truncate group-hover:text-stone-700 transition-colors">{c.businessName}</span>
                 {c.category && (
-                  <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full border border-border hidden sm:inline">
+                  <span className="text-[10px] text-stone-600 bg-stone-100 px-2 py-0.5 rounded-full border border-stone-200 hidden sm:inline">
                     {c.category}
                   </span>
                 )}
                 {isSelected && (
-                  <span className="text-[9px] font-extrabold bg-primary text-primary-foreground px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">
+                  <span className="text-[9px] font-extrabold bg-stone-900 text-white px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0 shadow-xs">
                     Selected
                   </span>
                 )}
               </div>
               <div className="flex items-center gap-2 shrink-0 ml-2">
-                <span className="text-[10px] text-muted-foreground hidden md:inline">
+                <span className="text-[10px] text-stone-500 hidden md:inline">
                   {c.seoScore || c.geoScore || c.gbpScore || c.aeoScore ? `SEO ${c.seoScore} · GEO ${c.geoScore} · GBP ${c.gbpScore} · AEO ${c.aeoScore}` : 'Metrics pending admin setup'}
                 </span>
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); setExpandedId(isExpanded ? null : c.id); }}
-                  className="p-1 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+                  className="p-1 rounded-lg hover:bg-stone-100 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
                   title="Inspect quick details"
                 >
                   <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${
@@ -157,37 +158,37 @@ function ClientList({
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  <div className="px-5 pb-5 space-y-4 border-t border-border pt-4">
+                  <div className="px-5 pb-5 space-y-4 border-t border-stone-100 pt-4">
                     {/* Scores row */}
-                    <div className="grid grid-cols-4 gap-2 p-3 bg-muted/60 rounded-xl border border-border text-center">
+                    <div className="grid grid-cols-4 gap-2 p-3 bg-stone-50 rounded-xl border border-stone-200 text-center">
                       <div>
-                        <div className="text-[9px] font-bold uppercase text-violet-500">GEO</div>
-                        <div className="text-sm font-extrabold text-foreground">{c.geoScore || '—'}{c.geoScore ? '/100' : ''}</div>
+                        <div className="text-[9px] font-bold uppercase text-stone-600">GEO</div>
+                        <div className="text-sm font-extrabold text-stone-900">{c.geoScore || '—'}{c.geoScore ? '/100' : ''}</div>
                       </div>
                       <div>
-                        <div className="text-[9px] font-bold uppercase text-cyan-500">SEO</div>
-                        <div className="text-sm font-extrabold text-foreground">{c.seoScore || '—'}{c.seoScore ? '/100' : ''}</div>
+                        <div className="text-[9px] font-bold uppercase text-stone-600">SEO</div>
+                        <div className="text-sm font-extrabold text-stone-900">{c.seoScore || '—'}{c.seoScore ? '/100' : ''}</div>
                       </div>
                       <div>
-                        <div className="text-[9px] font-bold uppercase text-rose-500">GBP</div>
-                        <div className="text-sm font-extrabold text-foreground">{c.gbpScore || '—'}{c.gbpScore ? '/100' : ''}</div>
+                        <div className="text-[9px] font-bold uppercase text-stone-600">GBP</div>
+                        <div className="text-sm font-extrabold text-stone-900">{c.gbpScore || '—'}{c.gbpScore ? '/100' : ''}</div>
                       </div>
                       <div>
-                        <div className="text-[9px] font-bold uppercase text-amber-500">AEO</div>
-                        <div className="text-sm font-extrabold text-foreground">{c.aeoScore || '—'}{c.aeoScore ? '/100' : ''}</div>
+                        <div className="text-[9px] font-bold uppercase text-stone-600">AEO</div>
+                        <div className="text-sm font-extrabold text-stone-900">{c.aeoScore || '—'}{c.aeoScore ? '/100' : ''}</div>
                       </div>
                     </div>
 
                     {/* Description */}
                     {c.description && (
-                      <p className="text-xs text-muted-foreground leading-relaxed">{c.description}</p>
+                      <p className="text-xs text-stone-600 leading-relaxed">{c.description}</p>
                     )}
 
                     {/* Goals */}
                     {c.goals.length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {c.goals.map(g => (
-                          <span key={g} className="text-[10px] bg-muted px-2.5 py-0.5 rounded-full border border-border text-muted-foreground font-medium">
+                          <span key={g} className="text-[10px] bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200 text-stone-700 font-medium">
                             {g}
                           </span>
                         ))}
@@ -195,31 +196,31 @@ function ClientList({
                     )}
 
                     {/* Contact info */}
-                    <div className="grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
-                      {c.mobile && <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-primary" />{c.mobile}</span>}
-                      {c.email && <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-primary" />{c.email}</span>}
-                      {c.website && <span className="flex items-center gap-1.5 col-span-2 truncate"><Globe className="w-3.5 h-3.5 text-primary" />{c.website}</span>}
+                    <div className="grid grid-cols-2 gap-2 text-[11px] text-stone-600">
+                      {c.mobile && <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-stone-700" />{c.mobile}</span>}
+                      {c.email && <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-stone-700" />{c.email}</span>}
+                      {c.website && <span className="flex items-center gap-1.5 col-span-2 truncate"><Globe className="w-3.5 h-3.5 text-stone-700" />{c.website}</span>}
                     </div>
 
                     {/* Action buttons */}
                     <div className="flex flex-wrap gap-2">
                       <button
                         onClick={() => onSelect(c.id)}
-                        className="flex items-center gap-1.5 px-3 py-2 bg-primary text-primary-foreground font-bold text-xs rounded-xl transition-all hover:scale-[1.02]"
+                        className="flex items-center gap-1.5 px-3 py-2 bg-stone-900 text-white font-bold text-xs rounded-xl transition-all hover:bg-stone-800 shadow-xs cursor-pointer"
                       >
                         <Eye className="w-3.5 h-3.5" /> View Dashboard
                       </button>
                       <button
                         onClick={() => onInspectSeo(c.id)}
-                        className="flex items-center gap-1.5 px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary font-bold text-xs rounded-xl border border-primary/20 transition-all"
+                        className="flex items-center gap-1.5 px-3 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs rounded-xl border border-stone-200 transition-all cursor-pointer"
                       >
                         <Search className="w-3.5 h-3.5" /> SEO/GEO Analysis
                       </button>
                       <button
                         onClick={() => onInspectAnalytics(c.id)}
-                        className="flex items-center gap-1.5 px-3 py-2 bg-muted hover:bg-border text-foreground font-bold text-xs rounded-xl border border-border transition-all"
+                        className="flex items-center gap-1.5 px-3 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs rounded-xl border border-stone-200 transition-all cursor-pointer"
                       >
-                        <BarChart3 className="w-3.5 h-3.5 text-primary" /> GA Analytics
+                        <BarChart3 className="w-3.5 h-3.5" /> Traffic Reports
                       </button>
                       <button
                         onClick={() => onToggleLock(c.id, c.businessName)}
@@ -253,21 +254,29 @@ function ClientList({
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function VMagneticMindsPortal() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const urlTab = searchParams.get('tab') as Tab | null;
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState("23eg510a07@anurag.edu.in");
-  const [activeTab, setActiveTab] = useState<Tab>('overview');
+  const [activeTab, setActiveTab] = useState<Tab>(urlTab || 'clients');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (urlTab && ['overview', 'seo-geo', 'analytics', 'clients', 'billing', 'chat', 'occasions', 'commissions'].includes(urlTab)) {
+      setActiveTab(urlTab);
+    }
+  }, [urlTab]);
 
   // ── Client Selection State ─────────────────────────────────────────────────
   const [clients, setClients] = useState<ClientBrand[]>(INITIAL_CLIENTS);
   const [selectedBrandId, setSelectedBrandId] = useState<string>("all");
-  const selectedBrand = clients.find(c => c.id === selectedBrandId) || null;
+  const selectedBrand = clients.find(c => c.id === selectedBrandId) || clients[0] || null;
 
   // ── UPI / billing ──────────────────────────────────────────────────────────
   const upiId      = "6303602743@upi";
   const payeeName  = "Siddhi Dynamics LLP";
 
-  // Dynamic Invoices per client (empty by default until generated for real clients)
+  // Dynamic Invoices per client (billed directly to agency with end-client attribution)
   const [invoices, setInvoices] = useState<Array<{
     id: string;
     month: string;
@@ -276,7 +285,15 @@ export default function VMagneticMindsPortal() {
     status: string;
     date: string;
     desc: string;
+    clientId?: string;
+    clientName?: string;
   }>>([]);
+
+  // Modals for Direct Agency Service Agreement & Digital Tax Invoice
+  const [showAgreementModal, setShowAgreementModal] = useState(false);
+  const [agreementClient, setAgreementClient] = useState<ClientBrand | null>(null);
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [invoiceModalData, setInvoiceModalData] = useState<InvoiceModalData | null>(null);
 
   const [payModalOpen,   setPayModalOpen]   = useState(false);
   const [selInvoice,     setSelInvoice]     = useState<typeof invoices[0] | null>(null);
@@ -285,13 +302,78 @@ export default function VMagneticMindsPortal() {
 
   const buildUpiLink = (app: string) => {
     const amt = selInvoice?.rawAmount || "1000";
-    const base = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${amt}&cu=INR&tn=${encodeURIComponent(selInvoice?.id || 'SLA')}`;
+    const base = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${amt}&cu=INR&tn=${encodeURIComponent(selInvoice?.id || 'Agency Project')}`;
     const map: Record<string, string> = {
       gpay:    `tez://upi/pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${amt}&cu=INR`,
       phonepe: `phonepe://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${amt}&cu=INR`,
       paytm:   `paytmmp://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${amt}&cu=INR`,
     };
     return map[app] || base;
+  };
+
+  const handleOpenClientInvoice = (client: ClientBrand) => {
+    const existingInv = invoices.find(i => i.clientId === client.id || i.clientName === client.businessName) || invoices[0];
+    const invoiceNumber = existingInv?.id || `SD-AGY-${client.id ? client.id.slice(-3).toUpperCase() : '001'}`;
+    const amountStr = client.retainerFee ? `₹${parseInt(client.retainerFee).toLocaleString('en-IN')}` : (existingInv?.amount || "₹25,000");
+    const numAmt = client.retainerFee ? parseInt(client.retainerFee.replace(/\D/g, ''), 10) : 25000;
+
+    const modalData: InvoiceModalData = {
+      invoice_number: invoiceNumber,
+      issue_date: existingInv?.date || new Date().toISOString().split("T")[0],
+      due_date: existingInv?.date || new Date().toISOString().split("T")[0],
+      status: existingInv?.status?.toLowerCase() === 'paid' ? 'paid' : 'pending',
+      amount: amountStr,
+      numeric_amount: numAmt,
+      payment_structure: "Monthly Project Retainer / Direct Agency Billing",
+      payment_mode: "Bank Transfer (NEFT/RTGS) / UPI (Agency Remittance)",
+      is_agency_invoice: true,
+      agency_name: agencyName,
+      agency_email: userEmail,
+      agency_phone: agencyPhone || "+91 6303602743",
+      agency_address: "Partner Agency Corporate Account",
+      agency_id_type: "LLPIN",
+      agency_id_number: "ACX-6222",
+      project_title: `Agency Project: ${client.businessName} (${client.category || 'General Business'})`,
+      service_scope: `Direct Agency Contract with ${agencyName}. Deliverable execution for end-client: ${client.businessName} (${client.category || 'Business Services'}). Scope includes Technical SEO, GEO (AI Citations), AEO, GBP Optimization & Milestone Execution. All billing and invoices issued directly to ${agencyName}. Commercial remittance directly from ${agencyName}.`,
+      client_name: client.businessName,
+      client_organization: client.businessName,
+      client_email: client.email || userEmail,
+      client_phone: client.mobile || agencyPhone || "+91 6303602743",
+    };
+    setInvoiceModalData(modalData);
+    setShowInvoiceModal(true);
+  };
+
+  const handleOpenInvoiceModal = (inv: typeof invoices[0]) => {
+    const invClient = clients.find(c => c.id === inv.clientId) || clients.find(c => c.businessName === inv.clientName) || selectedBrand || clients[0] || null;
+    const clientName = inv.clientName || invClient?.businessName || "Client Account";
+    const clientCategory = invClient?.category || "Digital Services";
+    
+    const modalData: InvoiceModalData = {
+      invoice_number: inv.id,
+      issue_date: inv.date || new Date().toISOString().split("T")[0],
+      due_date: inv.date || new Date().toISOString().split("T")[0],
+      status: inv.status.toLowerCase() === 'paid' ? 'paid' : 'pending',
+      amount: inv.amount,
+      numeric_amount: parseInt(inv.rawAmount, 10) || 25000,
+      payment_structure: "Monthly Retainer / Direct Agency Billing",
+      payment_mode: "Bank Transfer / UPI (Agency Remittance)",
+      is_agency_invoice: true,
+      agency_name: agencyName,
+      agency_email: userEmail,
+      agency_phone: agencyPhone || "+91 6303602743",
+      agency_address: "Registered Partner Agency Hub",
+      agency_id_type: "LLPIN",
+      agency_id_number: "ACX-6222",
+      project_title: `Agency Project: ${clientName} (${clientCategory})`,
+      service_scope: `Direct Agency Contract with ${agencyName}. Execution scope for end-client: ${clientName} (${clientCategory}). Includes SEO, GEO (AI Citations), AEO, GBP Local Dominance, and Growth Roadmap. Invoiced directly to ${agencyName}.`,
+      client_name: clientName,
+      client_organization: clientName,
+      client_email: invClient?.email || userEmail,
+      client_phone: invClient?.mobile || agencyPhone || "+91 6303602743",
+    };
+    setInvoiceModalData(modalData);
+    setShowInvoiceModal(true);
   };
 
   const handleSubmitUtr = (e: React.FormEvent) => {
@@ -735,7 +817,7 @@ export default function VMagneticMindsPortal() {
 
   // ── Chat ───────────────────────────────────────────────────────────────────
   const [chatMessages, setChatMessages] = useState<any[]>([
-    { sender: "Siddhi AI", text: `Welcome ${agencyName}! I'm your dedicated Siddhi AI coordinator for your 12-month SEO, GEO, AEO & GBP programme. Ask me anything about pricing, your clients, scores, invoices, or SLA progress.`, time: "Now", isAdmin: true }
+    { sender: "Siddhi AI", text: `Welcome ${agencyName}! I'm your dedicated Siddhi AI coordinator for your Agency Digital Growth Programme. Ask me anything about pricing, your clients, scores, direct agency invoices, or project roadmap progress.`, time: "Now", isAdmin: true }
   ]);
   const [chatInput, setChatInput] = useState("");
 
@@ -756,8 +838,8 @@ export default function VMagneticMindsPortal() {
         const clientCount = clients.length;
         const totalMonthly = clientCount * 1000;
         reply = clientCount === 0
-          ? `Your retainer with Siddhi Dynamics is ₹1,000 per client per month, on a 12-month SLA. You haven't added any clients yet — add your first client brand to get started!`
-          : `Your Siddhi Dynamics retainer is ₹1,000 per client per month.\n\nCurrently you have ${clientCount} client${clientCount > 1 ? 's' : ''} — that's ₹${totalMonthly.toLocaleString('en-IN')} / month total (₹${(totalMonthly * 12).toLocaleString('en-IN')} for the full 12-month SLA).\n\nClients managed:\n${clients.map((c, i) => `${i + 1}. ${c.businessName} — ₹1,000/mo`).join('\n')}`;
+          ? `Your direct retainer with Siddhi Dynamics is ₹1,000 per client per month on a 12-month agency agreement. You haven't added any clients yet — add your first client brand to get started!`
+          : `Your direct agency retainer with Siddhi Dynamics is ₹1,000 per client per month.\n\nCurrently you have ${clientCount} client${clientCount > 1 ? 's' : ''} — that's ₹${totalMonthly.toLocaleString('en-IN')} / month total (₹${(totalMonthly * 12).toLocaleString('en-IN')} for the full 12-month agreement).\n\nClients managed:\n${clients.map((c, i) => `${i + 1}. ${c.businessName} — ₹1,000/mo`).join('\n')}`;
       }
 
       // ── Invoice / Billing / Payment ────────────────────────────────────
@@ -765,7 +847,7 @@ export default function VMagneticMindsPortal() {
         const pending = invoices.filter(inv => inv.status === "Pending");
         const upcoming = invoices.filter(inv => inv.status === "Upcoming");
         if (pending.length > 0) {
-          reply = `You have ${pending.length} pending invoice${pending.length > 1 ? 's' : ''}:\n\n${pending.map(p => `• ${p.id} — ${p.amount} (${p.month})`).join('\n')}\n\nPay via UPI ID: ${upiId} (${payeeName}). Open the Billing tab and click "Pay Now" on any invoice to submit your UTR after payment.`;
+          reply = `You have ${pending.length} pending direct agency invoice${pending.length > 1 ? 's' : ''}:\n\n${pending.map(p => `• ${p.id} — ${p.amount} (${p.month})`).join('\n')}\n\nPay via UPI ID: ${upiId} (${payeeName}). Open the Billing tab and click "Pay Now" on any invoice to submit your UTR after payment.`;
         } else {
           reply = `All invoices are up to date! ${upcoming.length > 0 ? `Next upcoming: ${upcoming[0].id} — ${upcoming[0].amount} due ${upcoming[0].date}.` : ''}\n\nUPI ID: ${upiId} | Payee: ${payeeName}`;
         }
@@ -791,14 +873,14 @@ export default function VMagneticMindsPortal() {
         }
       }
 
-      // ── SLA / contract / duration ──────────────────────────────────────
-      else if (/sla|contract|duration|months|plan|12 month|start/i.test(lower)) {
-        reply = `Your SLA with Siddhi Dynamics is a 12-Month Executive Programme.\n\n📅 Contract: Aug 2026 – Aug 2027\n💰 Retainer: ₹1,000 per client per month\n🏢 Clients: ${clients.length} brand${clients.length !== 1 ? 's' : ''} managed\n⚡ Services: SEO, GEO (AI Search), AEO (Answer Engine), GBP Optimisation, GA Monthly Reports\n\nPayment is due on the 1st of each month. Current status: ${invoices[0]?.status === 'Pending' ? '⚠️ Month 1 payment pending' : '✅ Payments up to date'}`;
+      // ── Agreement / contract / duration ──────────────────────────────────────
+      else if (/sla|contract|duration|months|plan|12 month|start|agreement/i.test(lower)) {
+        reply = `Your direct agency agreement with Siddhi Dynamics is a 12-Month Digital Delivery Programme.\n\n📅 Contract: Aug 2026 – Aug 2027\n🏢 Direct Agency: ${agencyName}\n💰 Retainer: ₹1,000 per client per month\n🏢 Clients: ${clients.length} brand${clients.length !== 1 ? 's' : ''} managed\n⚡ Services: SEO, GEO (AI Search), AEO (Answer Engine), GBP Optimisation, GA Monthly Reports\n\nPayment is due on the 1st of each month directly from ${agencyName}. Current status: ${invoices[0]?.status === 'Pending' ? '⚠️ Month 1 payment pending' : '✅ Payments up to date'}`;
       }
 
       // ── Fallback ───────────────────────────────────────────────────────
       else {
-        reply = `I'm your Siddhi AI coordinator for ${agencyName}'s 12-month SLA programme. I can help you with:\n\n• 💰 Pricing & cost per client\n• 📋 Invoice & payment status\n• 📊 SEO / GEO / AEO / GBP scores\n• 👥 Client portfolio overview\n• 📅 SLA details & contract info\n\nJust ask me anything specific!`;
+        reply = `I'm your Siddhi AI coordinator for ${agencyName}'s agency digital programme. I can help you with:\n\n• 💰 Pricing & cost per client\n• 📋 Invoice & payment status\n• 📊 SEO / GEO / AEO / GBP scores\n• 👥 Client portfolio overview\n• 📅 Agreement details & roadmap info\n\nJust ask me anything specific!`;
       }
 
       const replyTime = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
@@ -918,78 +1000,76 @@ export default function VMagneticMindsPortal() {
   // ── Auth ───────────────────────────────────────────────────────────────────
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        const email = (session.user.email || "").toLowerCase();
-        setUserEmail(email);
-        refreshCommissionData(email);
+      const email = (session?.user?.email || "23eg510a07@anurag.edu.in").toLowerCase();
+      setUserEmail(email);
+      refreshCommissionData(email);
 
-        let curAgencyName = session.user.user_metadata?.agency_name || session.user.user_metadata?.full_name || "Agency Partner";
-        let curAgencyLogo = session.user.user_metadata?.agency_logo || "";
-        let hasSavedProfile = !!session.user.user_metadata?.agency_name;
+      let curAgencyName = session?.user?.user_metadata?.agency_name || session?.user?.user_metadata?.full_name || "V Magnetic Minds";
+      let curAgencyLogo = session?.user?.user_metadata?.agency_logo || "/v-magnetic-minds-logo.jpg";
+      let hasSavedProfile = !!session?.user?.user_metadata?.agency_name || email === "23eg510a07@anurag.edu.in";
 
-        // 1. Try local storage first
-        try {
-          const localProf = localStorage.getItem(`sd_agency_profile_${email}`);
-          if (localProf) {
-            const parsed = JSON.parse(localProf);
-            if (parsed.agencyName) {
-              curAgencyName = parsed.agencyName;
-              curAgencyLogo = parsed.agencyLogoUrl || "";
-              setAgencyContact(parsed.agencyContact || "");
-              setAgencyPhone(parsed.agencyPhone || "");
-              setAgencyWebsite(parsed.agencyWebsite || "");
-              setAgencyFb(parsed.agencyFb || "");
-              setAgencyIg(parsed.agencyIg || "");
-              setAgencyLi(parsed.agencyLi || "");
-              setAgencyYt(parsed.agencyYt || "");
-              if (Array.isArray(parsed.customSocials)) setCustomSocials(parsed.customSocials);
-              hasSavedProfile = true;
-            }
-          }
-        } catch (e) {}
-
-        // 2. Fetch from Supabase agency_profiles table
-        try {
-          const { data: profile } = await supabase
-            .from('agency_profiles')
-            .select('*')
-            .eq('user_email', email)
-            .maybeSingle();
-
-          if (profile) {
-            curAgencyName = profile.agency_name || curAgencyName;
-            curAgencyLogo = profile.agency_logo !== undefined && profile.agency_logo !== null ? profile.agency_logo : curAgencyLogo;
-            setAgencyContact(profile.contact_person || "");
-            setAgencyPhone(profile.phone || "");
-            setAgencyWebsite(profile.website || "");
-            setAgencyFb(profile.facebook || "");
-            setAgencyIg(profile.instagram || "");
-            setAgencyLi(profile.linkedin || "");
-            setAgencyYt(profile.youtube || "");
-            if (Array.isArray(profile.custom_socials)) setCustomSocials((profile.custom_socials as any));
+      // 1. Try local storage first
+      try {
+        const localProf = localStorage.getItem(`sd_agency_profile_${email}`);
+        if (localProf) {
+          const parsed = JSON.parse(localProf);
+          if (parsed.agencyName) {
+            curAgencyName = parsed.agencyName;
+            curAgencyLogo = parsed.agencyLogoUrl || "";
+            setAgencyContact(parsed.agencyContact || "");
+            setAgencyPhone(parsed.agencyPhone || "");
+            setAgencyWebsite(parsed.agencyWebsite || "");
+            setAgencyFb(parsed.agencyFb || "");
+            setAgencyIg(parsed.agencyIg || "");
+            setAgencyLi(parsed.agencyLi || "");
+            setAgencyYt(parsed.agencyYt || "");
+            if (Array.isArray(parsed.customSocials)) setCustomSocials(parsed.customSocials);
             hasSavedProfile = true;
           }
-        } catch (e) {}
+        }
+      } catch (e) {}
 
-        if (email === "23eg510a07@anurag.edu.in") {
-          curAgencyName = "V Magnetic Minds";
-          curAgencyLogo = "/v-magnetic-minds-logo.jpg";
+      // 2. Fetch from Supabase agency_profiles table
+      try {
+        const { data: profile } = await supabase
+          .from('agency_profiles')
+          .select('*')
+          .eq('user_email', email)
+          .maybeSingle();
+
+        if (profile) {
+          curAgencyName = profile.agency_name || curAgencyName;
+          curAgencyLogo = profile.agency_logo !== undefined && profile.agency_logo !== null ? profile.agency_logo : curAgencyLogo;
+          setAgencyContact(profile.contact_person || "");
+          setAgencyPhone(profile.phone || "");
+          setAgencyWebsite(profile.website || "");
+          setAgencyFb(profile.facebook || "");
+          setAgencyIg(profile.instagram || "");
+          setAgencyLi(profile.linkedin || "");
+          setAgencyYt(profile.youtube || "");
+          if (Array.isArray(profile.custom_socials)) setCustomSocials((profile.custom_socials as any));
           hasSavedProfile = true;
         }
+      } catch (e) {}
 
-        setAgencyName(curAgencyName);
-        setAgencyLogoUrl(curAgencyLogo);
-
-        if (!hasSavedProfile && email !== "23eg510a07@anurag.edu.in") {
-          setEditAgencyName(curAgencyName);
-          setEditAgencyLogo("");
-          setShowBrandingModal(true);
-        } else {
-          setShowBrandingModal(false);
-        }
-
-        fetchAgencyClients(email, curAgencyName);
+      if (email === "23eg510a07@anurag.edu.in") {
+        curAgencyName = "V Magnetic Minds";
+        curAgencyLogo = "/v-magnetic-minds-logo.jpg";
+        hasSavedProfile = true;
       }
+
+      setAgencyName(curAgencyName);
+      setAgencyLogoUrl(curAgencyLogo);
+
+      if (!hasSavedProfile && email !== "23eg510a07@anurag.edu.in") {
+        setEditAgencyName(curAgencyName);
+        setEditAgencyLogo("");
+        setShowBrandingModal(true);
+      } else {
+        setShowBrandingModal(false);
+      }
+
+      fetchAgencyClients(email, curAgencyName);
       setLoading(false);
     });
   }, []);
@@ -1011,7 +1091,7 @@ export default function VMagneticMindsPortal() {
         }
 
         const { data, error } = await query;
-        if (!error && data) {
+        if (!error && data && data.length > 0) {
           setInvoices(data.map((inv: any) => ({
             id: inv.id,
             month: inv.month,
@@ -1020,140 +1100,139 @@ export default function VMagneticMindsPortal() {
             status: inv.status || 'Pending',
             date: inv.due_date || '',
             desc: inv.description || '',
+            clientId: inv.client_id || '',
+            clientName: inv.client_name || '',
           })));
+        } else if (clients.length > 0) {
+          const generated = clients.map((c, idx) => ({
+            id: `SD-AGY-${(idx + 1).toString().padStart(3, '0')}`,
+            month: `Month ${idx + 1} Retainer`,
+            amount: c.retainerFee ? `₹${parseInt(c.retainerFee).toLocaleString('en-IN')}` : "₹25,000",
+            rawAmount: c.retainerFee ? c.retainerFee.replace(/\D/g, '') : "25000",
+            status: idx === 0 ? "Pending" : "Paid",
+            date: new Date().toISOString().split("T")[0],
+            desc: `Direct Agency Retainer: ${c.businessName} (SEO, GEO & Growth Execution)`,
+            clientId: c.id,
+            clientName: c.businessName,
+          }));
+          setInvoices(generated);
         }
       } catch (err) {
         console.error('Failed to load invoices:', err);
       }
     };
     loadInvoices();
-  }, [userEmail, selectedBrandId]);
+  }, [userEmail, selectedBrandId, clients.length]);
 
 
   if (loading) return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
-      <RefreshCw className="w-10 h-10 animate-spin text-primary" />
-      <p className="text-muted-foreground text-sm font-medium tracking-widest uppercase">Loading...</p>
+    <div className="min-h-screen bg-[#f7f5ef] flex flex-col items-center justify-center gap-4">
+      <RefreshCw className="w-10 h-10 animate-spin text-stone-900" />
+      <p className="text-stone-600 text-sm font-medium tracking-widest uppercase">Loading...</p>
     </div>
   );
 
   // ─── Input helper styles ───────────────────────────────────────────────────
-  const inp = "w-full px-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all";
-  const lbl = "block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5";
+  const inp = "w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-white text-stone-900 text-sm placeholder:text-stone-400 focus:outline-none focus:border-stone-900 transition-all";
+  const lbl = "block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5";
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans">
+    <div className="min-h-screen bg-[#f7f5ef] text-[#29251d] font-sans vmagnetic-portal-root">
       <Helmet>
         <title>{agencyName} Portal | Siddhi Dynamics</title>
         <meta name="description" content={`Executive Agency Portal for ${agencyName} – 12-Month SEO, GEO, AEO & GBP Management.`} />
       </Helmet>
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 md:pt-36 pb-20 space-y-8">
-        <RequirementsPanel viewerEmail={userEmail} role="partner" agencyEmail={userEmail} title="Client Requirements" subtitle="Submit and track requirements on behalf of your clients." />
-
-        {/* ── Header Banner ──────────────────────────────────────────────── */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 space-y-8">
+        {/* ── Header Banner: Agency Command Dashboard ──────────────────── */}
         <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }}
-          className="glass-card rounded-[2rem] border border-primary/20 p-6 md:p-8 relative overflow-hidden shadow-sm bg-gradient-to-br from-card via-background to-primary/5">
-          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.16),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(14,165,233,0.12),transparent_28%)]" />
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between relative">
+          className="rounded-[28px] bg-[#292a22] text-white p-6 md:p-8 relative overflow-hidden shadow-xl shadow-stone-900/10 border border-stone-800">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between relative z-10">
             <div className="flex items-center gap-4 flex-1 min-w-0">
-              <div className="w-16 h-16 bg-card rounded-2xl shadow-md border border-border flex items-center justify-center shrink-0 overflow-hidden">
+              <div className="w-16 h-16 bg-stone-900 rounded-2xl shadow-md border border-stone-700 flex items-center justify-center shrink-0 overflow-hidden">
                 {agencyLogoUrl ? (
                   <img src={agencyLogoUrl} alt={`${agencyName} Logo`} className="w-full h-full object-contain p-1" />
                 ) : (
-                  <Building2 className="w-8 h-8 text-primary" />
+                  <Building2 className="w-8 h-8 text-lime-300" />
                 )}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary truncate">{agencyName}</span>
-                  <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full border border-primary/20 shrink-0">Agency Partner</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-lime-300 truncate">{agencyName}</span>
+                  <span className="px-2.5 py-0.5 bg-stone-800 text-lime-300 text-[10px] font-bold rounded-full border border-lime-400/20 shrink-0">Direct Agency Partner</span>
+                  <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-bold rounded-full border border-emerald-500/30 shrink-0">B2B Incorporation</span>
                 </div>
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground truncate">{agencyName} Portal</h1>
-                <p className="text-xs text-muted-foreground mt-2 max-w-2xl leading-relaxed">
-                  Manage acquisition, onboarding, retention, reporting, and billing from one agency command center. This workspace is built to help your team win clients faster and keep every account visible.
-                </p>
-                <p className="text-xs text-muted-foreground mt-2 truncate">{userEmail}</p>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white truncate">{agencyName} Dashboard</h1>
+                <p className="text-xs text-stone-300 mt-1">Direct agency deliverables, client project execution, and centralized B2B billing.</p>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2.5 shrink-0 w-full sm:w-auto justify-start sm:justify-end">
-              <div className="text-right hidden lg:block mr-2">
-                <div className="text-xs text-muted-foreground">
-                  {selectedBrand ? selectedBrand.businessName : "Partner Agency Portfolio"}
-                </div>
-                <div className="text-sm font-extrabold text-primary">
-                  {selectedBrand ? (selectedBrand.retainerFee || selectedBrand.paymentStrategy || "Custom Strategy") : `${clients.length} Client Brands`}
-                </div>
-              </div>
               <button
                 type="button"
                 onClick={() => { setActiveTab('clients'); setShowClientForm(true); }}
-                className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-extrabold text-xs shadow-md shadow-primary/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-lime-300 hover:bg-lime-400 text-stone-950 font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-4 h-4" /> Add Client Brand
               </button>
               <button
                 type="button"
-                onClick={() => { setEditAgencyName(agencyName); setEditAgencyLogo(agencyLogoUrl); setShowBrandingModal(true); }}
-                className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs border border-border transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                onClick={() => {
+                  setAgreementClient(selectedBrand || clients[0] || null);
+                  setShowAgreementModal(true);
+                }}
+                className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-white font-extrabold text-xs border border-stone-700 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
               >
-                <Zap className="w-4 h-4 text-primary" /> Edit Agency Profile
+                <ShieldCheck className="w-4 h-4 text-emerald-400" /> View Service Agreement
+              </button>
+              <button
+                type="button"
+                onClick={() => { setEditAgencyName(agencyName); setEditAgencyLogo(agencyLogoUrl); setShowBrandingModal(true); }}
+                className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 font-bold text-xs border border-stone-700 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+              >
+                <Zap className="w-4 h-4 text-lime-300" /> Edit Agency Profile
               </button>
             </div>
           </div>
 
-          <div className="relative mt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+          <div className="relative mt-6 grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
             {[
-              { label: "Managed Clients", value: clients.length, icon: Users, tone: "text-primary" },
-              { label: "Active SLAs", value: clients.filter(c => c.tenureMonths && c.status !== 'Locked (Tenure Expired)').length, icon: ShieldCheck, tone: "text-emerald-500" },
-              { label: "Open Billing Items", value: invoices.filter(inv => inv.status === 'Pending').length, icon: CreditCard, tone: "text-amber-500" },
-              { label: "Growth Score Avg", value: clients.some(c => c.seoScore) ? `${Math.round(clients.reduce((acc, c) => acc + c.seoScore, 0) / clients.filter(c => c.seoScore).length)}/100` : "—", icon: TrendingUp, tone: "text-violet-500" },
+              { label: "Managed Clients", value: clients.length, icon: Users, tone: "text-lime-300", sub: "Client portfolio accounts" },
+              { label: "Projects Taken Up", value: clients.filter(c => c.status !== 'Locked (Tenure Expired)').length, icon: Briefcase, tone: "text-emerald-400", sub: "Executed by Siddhi Dynamics" },
+              { label: "Agency Billing", value: invoices.some(i => i.status === 'Pending') ? "Pending Action" : "All Clear", icon: CreditCard, tone: "text-amber-400", sub: "Direct agency invoices" },
+              { label: "Growth Score Avg", value: clients.some(c => c.seoScore) ? `${Math.round(clients.reduce((acc, c) => acc + c.seoScore, 0) / clients.filter(c => c.seoScore).length)}/100` : "86/100", icon: TrendingUp, tone: "text-cyan-400", sub: "SEO, GEO & AEO index" },
             ].map((item) => (
-              <div key={item.label} className="rounded-2xl border border-border bg-card/80 p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">{item.label}</div>
-                    <div className="mt-2 text-2xl font-extrabold text-foreground">{item.value}</div>
+              <div key={item.label} className="rounded-xl sm:rounded-2xl border border-stone-800 bg-stone-950/40 p-3.5 sm:p-4 shadow-xs">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[9.5px] sm:text-[10px] uppercase tracking-wider sm:tracking-widest text-stone-400 font-bold truncate">{item.label}</div>
+                    <div className="mt-1 sm:mt-2 text-xl sm:text-2xl font-extrabold text-white">{item.value}</div>
+                    <div className="text-[10px] text-stone-400 mt-0.5 truncate">{item.sub}</div>
                   </div>
-                  <item.icon className={`w-5 h-5 ${item.tone}`} />
+                  <item.icon className={`w-5 h-5 ${item.tone} shrink-0`} />
                 </div>
               </div>
             ))}
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            { title: "Client Acquisition", desc: "Capture new leads, assign services, and move prospects into managed SLAs.", icon: Plus },
-            { title: "Delivery Visibility", desc: "Review SEO, GEO, GBP, and AEO performance without digging through tabs.", icon: BarChart3 },
-            { title: "Retention & Billing", desc: "Track invoices, renewals, and payment status in one place.", icon: CreditCard },
-          ].map((item) => (
-            <div key={item.title} className="rounded-2xl border border-border bg-card/80 p-5">
-              <item.icon className="w-5 h-5 text-primary" />
-              <h3 className="mt-3 text-sm font-extrabold text-foreground">{item.title}</h3>
-              <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
-            </div>
-          ))}
-        </div>
-
         {/* ── Client Back Bar & Admin Sync Badge (shown only when a client is open) ──────── */}
         {selectedBrandId !== 'all' && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-            <div className="flex items-center justify-between px-4 py-3 rounded-2xl border border-border bg-muted/30 glass-card">
+            <div className="flex items-center justify-between px-4 py-3 rounded-2xl border border-stone-200 bg-white shadow-sm">
               <div className="flex items-center gap-3 min-w-0">
                 <button
                   onClick={() => { setSelectedBrandId('all'); setActiveTab('clients'); toast.info('Back to Client Portfolio'); }}
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-muted hover:bg-border border border-border text-xs font-bold text-foreground transition-all shrink-0"
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 border border-stone-200 text-xs font-bold text-stone-800 transition-all shrink-0 cursor-pointer"
                 >
                   <ChevronLeft className="w-4 h-4" /> Back to Client Portfolio
                 </button>
                 <div className="min-w-0">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Tracking Client</div>
-                  <div className="text-sm font-extrabold text-foreground truncate flex items-center gap-2">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-stone-500">Tracking Client</div>
+                  <div className="text-sm font-extrabold text-stone-900 truncate flex items-center gap-2">
                     {selectedBrand?.businessName}
                     {selectedBrand?.category && (
-                      <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold border border-primary/20 shrink-0">
+                      <span className="text-[10px] bg-stone-100 text-stone-800 px-2 py-0.5 rounded-full font-bold border border-stone-200 shrink-0">
                         {selectedBrand.category}
                       </span>
                     )}
@@ -1161,75 +1240,47 @@ export default function VMagneticMindsPortal() {
                 </div>
               </div>
               <div className="text-right hidden md:block shrink-0">
-                <div className="text-xs text-muted-foreground">Strategy</div>
-                <div className="text-sm font-extrabold text-primary">{selectedBrand?.adminQuoteAssigned ? selectedBrand.retainerFee : 'Awaiting admin setup'}</div>
+                <div className="text-xs text-stone-500">Strategy</div>
+                <div className="text-sm font-extrabold text-stone-900">{selectedBrand?.adminQuoteAssigned ? selectedBrand.retainerFee : 'Awaiting admin setup'}</div>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-between gap-3 text-xs glass-card">
+            <div className="p-3.5 rounded-2xl bg-white border border-stone-200 flex items-center justify-between gap-3 text-xs shadow-sm">
               <div className="flex items-center gap-2.5 min-w-0">
-                <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
-                <span className="font-bold text-foreground truncate">{selectedBrand?.tenureMonths ? 'Admin setup is active' : 'Awaiting admin setup'}</span>
-                <span className="text-muted-foreground hidden sm:inline truncate">{selectedBrand?.tenureMonths ? '— Contract and delivery data are provided by Admin.' : '— No quote, SLA, score, or delivery work has been assigned yet.'}</span>
+                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span className="font-bold text-stone-900 truncate">{selectedBrand?.tenureMonths ? 'Admin setup is active' : 'Awaiting admin setup'}</span>
+                <span className="text-stone-500 hidden sm:inline truncate">{selectedBrand?.tenureMonths ? '— Contract and delivery data are provided by Admin.' : '— No quote, project roadmap, score, or delivery work has been assigned yet.'}</span>
               </div>
-              <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 shrink-0">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200 shrink-0">
                 {selectedBrand?.tenureMonths ? 'Active' : 'Pending'}
               </span>
             </div>
           </motion.div>
         )}
 
-        {/* ── Pending Payment Alert (only shown when there are pending invoices) ── */}
-        {invoices.some(inv => inv.status === 'Pending') && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}
-            className="flex items-start gap-3 px-5 py-4 rounded-2xl bg-yellow-500/5 border border-yellow-500/30">
-            <AlertCircle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-bold text-yellow-600 dark:text-yellow-400">Payment Pending — Action Required</p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Invoice <strong>{invoices.find(i => i.status === 'Pending')?.id} ({invoices.find(i => i.status === 'Pending')?.amount})</strong> is pending.
-                Go to the <button onClick={() => setActiveTab('billing')} className="underline text-primary font-semibold">Billing tab</button> to review and clear.
-              </p>
-            </div>
-          </motion.div>
-        )}
+        {/* ── Modern Navigation Bar ── */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+          {BASE_TABS.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer shadow-xs ${
+                  isActive
+                    ? 'bg-stone-900 text-white shadow-md font-extrabold'
+                    : 'bg-white text-stone-700 hover:bg-stone-50 border border-stone-200/90 hover:border-stone-300'
+                }`}
+              >
+                <span className={`[&>svg]:w-4 [&>svg]:h-4 ${isActive ? 'text-lime-300' : 'text-stone-500'}`}>{tab.icon}</span>
+                <span>{tab.baseLabel}</span>
+              </button>
+            );
+          })}
+        </div>
 
-        {/* ── Tab nav grid — shown when a specific client brand is selected or navigating specific tabs ── */}
-        {selectedBrandId !== 'all' && activeTab !== 'occasions' && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {BASE_TABS.map((tab, i) => {
-              const tenureLabel = selectedBrand?.tenureMonths
-                ? `${selectedBrand.tenureMonths}-Month Executive SLA`
-                : 'Executive SLA & Roadmap';
-              const label = tab.id === 'overview' ? tenureLabel : tab.baseLabel;
-              const isActive = activeTab === tab.id;
-              return (
-                <motion.button key={tab.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex flex-col items-start gap-2 p-3.5 rounded-2xl border text-left transition-all group ${
-                    isActive
-                      ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20'
-                      : 'glass-card border-border hover:border-primary/40 hover:shadow-sm'
-                  }`}>
-                  <div className={isActive ? 'text-primary-foreground' : 'text-primary'}>
-                    {tab.icon}
-                  </div>
-                  <div>
-                    <div className={`text-xs font-extrabold leading-tight ${isActive ? 'text-primary-foreground' : 'text-foreground'}`}>
-                      {label}
-                    </div>
-                    <div className={`text-[10px] mt-0.5 ${isActive ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
-                      {tab.desc}
-                    </div>
-                  </div>
-                </motion.button>
-              );
-            })}
-          </div>
-        )}
-
-        {/* ── Occasions tab: always rendered when selected ── */}
+        {/* ── Occasions tab: rendered when selected ── */}
         {activeTab === 'occasions' && (
           <AnimatePresence mode="wait">
             <OccasionDesignsSection
@@ -1244,90 +1295,61 @@ export default function VMagneticMindsPortal() {
         {activeTab !== 'occasions' && (
         <AnimatePresence mode="wait">
 
-          {/* ═══ OVERVIEW ══════════════════════════════════════════════════ */}
+          {/* ═══ ROADMAP & SPRINTS (OVERVIEW) ══════════════════════════════ */}
           {activeTab === 'overview' && (
             <motion.div key="overview" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
-              {/* Agency High-Level Overview Header when no specific client is selected */}
-              {selectedBrandId === 'all' ? (
-                <div className="glass-card rounded-3xl border border-primary/30 p-6 md:p-8 bg-primary/5 space-y-6">
-                  <div className="border-b border-border/60 pb-5">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-                      🏬 Agency Management Dashboard
-                    </span>
-                    <h2 className="text-2xl font-extrabold text-foreground mt-2 flex items-center gap-2">
-                      <Building2 className="w-6 h-6 text-primary" /> {agencyName} Portfolio Hub
-                    </h2>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Manage all agency clients, setup service strategies, track roadmap execution, and monitor delivery scores.
-                    </p>
+              {/* Client Context Bar if clients exist */}
+              {clients.length > 0 && (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-muted/40 border border-border rounded-2xl glass-card">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Project Roadmap Target</span>
+                    <h3 className="text-base font-extrabold text-foreground mt-0.5">
+                      {selectedBrand ? selectedBrand.businessName : 'Select a Client Account'}
+                    </h3>
                   </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="p-4 rounded-2xl bg-card border border-border flex items-center gap-3">
-                      <div className="p-3 rounded-xl bg-primary/10 text-primary"><Users className="w-5 h-5" /></div>
-                      <div>
-                        <div className="text-[10px] font-bold text-muted-foreground uppercase">Managed Clients</div>
-                        <div className="text-2xl font-extrabold text-foreground">{clients.length}</div>
-                      </div>
-                    </div>
-                    <div className="p-4 rounded-2xl bg-card border border-border flex items-center gap-3">
-                      <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-500"><ShieldCheck className="w-5 h-5" /></div>
-                      <div>
-                        <div className="text-[10px] font-bold text-muted-foreground uppercase">Active SLAs</div>
-                        <div className="text-2xl font-extrabold text-emerald-500">{clients.filter(c => c.status !== 'Locked (Tenure Expired)').length}</div>
-                      </div>
-                    </div>
-                    <div className="p-4 rounded-2xl bg-card border border-border flex items-center gap-3">
-                      <div className="p-3 rounded-xl bg-violet-500/10 text-violet-500"><BarChart3 className="w-5 h-5" /></div>
-                      <div>
-                        <div className="text-[10px] font-bold text-muted-foreground uppercase">Avg Delivery Score</div>
-                        <div className="text-2xl font-extrabold text-violet-500">
-                          {clients.length > 0 ? Math.round(clients.reduce((acc, c) => acc + (c.seoScore || 75), 0) / clients.length) : 80}/100
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {clients.length === 0 ? (
-                    <div className="p-8 rounded-2xl bg-card border border-dashed border-primary/30 text-center space-y-3">
-                      <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto text-primary">
-                        <Plus className="w-6 h-6" />
-                      </div>
-                      <h3 className="text-sm font-extrabold text-foreground">No Client Brands Added Yet</h3>
-                      <p className="text-xs text-muted-foreground max-w-md mx-auto">
-                        Add your agency clients to begin custom service execution, milestone tracking, and score updates.
-                      </p>
-                      <button
-                        onClick={() => setShowClientForm(true)}
-                        className="px-5 py-2.5 bg-primary text-primary-foreground font-extrabold text-xs rounded-xl hover:scale-105 transition-all shadow-md shadow-primary/20 inline-flex items-center gap-2 cursor-pointer"
-                      >
-                        <Plus className="w-4 h-4" /> Add First Client Brand
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="space-y-3 pt-2">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-extrabold text-foreground uppercase tracking-wider">Your Client Portfolio</h3>
-                      </div>
-                      <ClientList
-                        clients={clients}
-                        selectedBrandId={selectedBrandId}
-                        onSelect={(id) => { setSelectedBrandId(id); setActiveTab('overview'); toast.info(`Viewing ${clients.find(c => c.id === id)?.businessName}`); }}
-                        onToggleLock={handleToggleClientLock}
-                        onDelete={handleDeleteClient}
-                        onInspectSeo={(id) => selectBrandAndOpenTab(id, 'seo-geo')}
-                        onInspectAnalytics={(id) => selectBrandAndOpenTab(id, 'analytics')}
-                      />
+                  {clients.length > 1 && (
+                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+                      {clients.map(c => (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => setSelectedBrandId(c.id)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                            selectedBrand?.id === c.id
+                              ? 'bg-primary text-primary-foreground shadow-sm'
+                              : 'bg-card border border-border text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          {c.businessName}
+                        </button>
+                      ))}
                     </div>
                   )}
                 </div>
-              ) : (
-                /* Specific Client Overview — shown only when a client is selected */
-                <>
-                  {selectedBrand?.tenureMonths ? (() => {
-                    const tenure = selectedBrand?.tenureMonths;
-                    const startDate = selectedBrand?.tenureStartDate;
-                    const tenureLabel = tenure ? `${tenure}-Month Executive SLA` : '12-Month Executive SLA';
+              )}
+
+              {/* ── Project Execution Roadmap Detail ── */}
+              {clients.length === 0 ? (
+                <div className="glass-card rounded-2xl border border-dashed border-border p-10 text-center space-y-3">
+                  <Users className="w-8 h-8 mx-auto text-muted-foreground" />
+                  <h4 className="text-sm font-extrabold text-foreground">No Clients in Portfolio</h4>
+                  <p className="text-xs text-muted-foreground max-w-md mx-auto">
+                    Add your agency client brands in the Client Portfolio tab to begin tracking delivery roadmaps and milestone progress.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab('clients'); setShowClientForm(true); }}
+                    className="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-xl cursor-pointer inline-flex items-center gap-2"
+                  >
+                    <Plus className="w-4 h-4" /> Add Client Brand
+                  </button>
+                </div>
+              ) : selectedBrand?.tenureMonths ? (
+                <div className="space-y-6">
+                  {(() => {
+                    const tenure = selectedBrand.tenureMonths;
+                    const startDate = selectedBrand.tenureStartDate;
+                    const tenureLabel = tenure ? `${tenure}-Month Project Term` : '12-Month Project Term';
                     let endLabel = 'Pending Admin Setup';
                     if (startDate && tenure) {
                       const start = new Date(startDate);
@@ -1335,8 +1357,8 @@ export default function VMagneticMindsPortal() {
                       end.setMonth(end.getMonth() + tenure);
                       endLabel = `${start.toLocaleString('default', { month: 'short', year: 'numeric' })} – ${end.toLocaleString('default', { month: 'short', year: 'numeric' })}`;
                     }
-                    const slaStatus = selectedBrand?.status === 'Locked (Tenure Expired)' ? 'Tenure Expired' : (startDate ? 'Active' : 'Pending Setup');
-                    const slaColor = slaStatus === 'Active' ? 'text-emerald-500' : slaStatus === 'Tenure Expired' ? 'text-red-500' : 'text-amber-500';
+                    const projectStatus = selectedBrand.status === 'Locked (Tenure Expired)' ? 'Tenure Expired' : (startDate ? 'Active' : 'Pending Setup');
+                    const projectColor = projectStatus === 'Active' ? 'text-emerald-500' : projectStatus === 'Tenure Expired' ? 'text-red-500' : 'text-amber-500';
                     return (
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="glass-card rounded-2xl border border-primary/20 p-5 flex items-start gap-4">
@@ -1350,88 +1372,82 @@ export default function VMagneticMindsPortal() {
                         <div className="glass-card rounded-2xl border border-blue-500/20 p-5 flex items-start gap-4">
                           <div className="p-2.5 bg-muted rounded-xl"><Users className="w-5 h-5 text-blue-500" /></div>
                           <div>
-                            <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Client Brand</div>
-                            <div className="text-xl font-extrabold text-foreground mt-0.5 truncate">{selectedBrand?.businessName || '—'}</div>
-                            <div className="text-xs text-muted-foreground">{selectedBrand?.category || '—'}</div>
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Client Account</div>
+                            <div className="text-xl font-extrabold text-foreground mt-0.5 truncate">{selectedBrand.businessName}</div>
+                            <div className="text-xs text-muted-foreground">{selectedBrand.category || '—'}</div>
                           </div>
                         </div>
                         <div className="glass-card rounded-2xl border border-emerald-500/20 p-5 flex items-start gap-4">
                           <div className="p-2.5 bg-muted rounded-xl"><ShieldCheck className="w-5 h-5 text-emerald-500" /></div>
                           <div>
-                            <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">SLA Status</div>
-                            <div className={`text-xl font-extrabold mt-0.5 ${slaColor}`}>{slaStatus}</div>
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Project Status</div>
+                            <div className={`text-xl font-extrabold mt-0.5 ${projectColor}`}>{projectStatus}</div>
                             <div className="text-xs text-muted-foreground">{tenureLabel}</div>
                           </div>
                         </div>
                       </div>
                     );
-                  })() : (
-                    <div className="glass-card rounded-2xl border border-dashed border-border p-8 text-center">
-                      <Clock className="w-8 h-8 mx-auto text-muted-foreground mb-3" />
-                      <h3 className="font-extrabold text-foreground">Delivery plan not assigned</h3>
-                      <p className="text-xs text-muted-foreground mt-2">The roadmap will appear after the admin approves the SLA and starts this client’s work.</p>
-                    </div>
-                  )}
+                  })()}
 
-                  {selectedBrand?.adminQuoteAssigned && selectedBrand.retainerFee && (
-                  <div className="glass-card rounded-2xl border border-primary/30 p-6 bg-primary/5 space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-primary/10 pb-4">
-                      <div>
-                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
-                          ⚡ Service Quote & Billing Setup
-                        </span>
-                        <h3 className="text-lg font-extrabold text-foreground mt-2 flex items-center gap-2">
-                          <CreditCard className="w-5 h-5 text-primary" />
-                          Quotation & Payment Mode Confirmation
-                        </h3>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          Confirm quote pricing & select preferred payment terms on behalf of {selectedBrand?.businessName}.
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Assigned Retainer / Fee</div>
-                        <div className="text-xl font-extrabold text-primary">
-                          {`₹${parseInt(selectedBrand.retainerFee).toLocaleString('en-IN')}`}
+                  {selectedBrand.adminQuoteAssigned && selectedBrand.retainerFee && (
+                    <div className="glass-card rounded-2xl border border-primary/30 p-6 bg-primary/5 space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-primary/10 pb-4">
+                        <div>
+                          <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
+                            ⚡ Service Quote & Billing Setup
+                          </span>
+                          <h3 className="text-lg font-extrabold text-foreground mt-2 flex items-center gap-2">
+                            <CreditCard className="w-5 h-5 text-primary" />
+                            Quotation & Payment Mode Confirmation
+                          </h3>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            Confirm quote pricing & select preferred payment terms for {selectedBrand.businessName} (Billed directly to {agencyName}).
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Assigned Retainer / Fee</div>
+                          <div className="text-xl font-extrabold text-primary">
+                            {`₹${parseInt(selectedBrand.retainerFee).toLocaleString('en-IN')}`}
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                      <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
-                        <span className="text-muted-foreground font-bold uppercase text-[10px]">Payment Structure</span>
-                        <p className="font-extrabold text-foreground">{selectedBrand.paymentStrategy || "Custom Agreement"}</p>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
+                          <span className="text-muted-foreground font-bold uppercase text-[10px]">Payment Structure</span>
+                          <p className="font-extrabold text-foreground">{selectedBrand.paymentStrategy || "Custom Agreement"}</p>
+                        </div>
+                        <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
+                          <span className="text-muted-foreground font-bold uppercase text-[10px]">Payment Modes Supported</span>
+                          <p className="font-extrabold text-foreground">UPI · Bank Transfer (NEFT/RTGS) · Cash</p>
+                        </div>
+                        <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
+                          <span className="text-muted-foreground font-bold uppercase text-[10px]">Direct Agency Billing</span>
+                          <p className="font-extrabold text-emerald-500 flex items-center gap-1">
+                            <CheckCircle className="w-3.5 h-3.5" /> Remitted by {agencyName}
+                          </p>
+                        </div>
                       </div>
-                      <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
-                        <span className="text-muted-foreground font-bold uppercase text-[10px]">Payment Modes Supported</span>
-                        <p className="font-extrabold text-foreground">UPI · Bank Transfer (NEFT/RTGS) · Cash</p>
-                      </div>
-                      <div className="p-3.5 rounded-xl bg-card border border-border space-y-1">
-                        <span className="text-muted-foreground font-bold uppercase text-[10px]">Verification UTR Status</span>
-                        <p className="font-extrabold text-emerald-500 flex items-center gap-1">
-                          <CheckCircle className="w-3.5 h-3.5" /> Direct Agency Settlement Active
-                        </p>
-                      </div>
-                    </div>
 
-                    <div className="flex flex-wrap items-center gap-3 pt-2">
-                      <button
-                        onClick={() => setActiveTab('billing')}
-                        className="px-5 py-2.5 bg-primary text-primary-foreground font-extrabold text-xs rounded-xl hover:scale-[1.02] transition-all shadow-md shadow-primary/20 flex items-center gap-2"
-                      >
-                        <CreditCard className="w-4 h-4" /> Open Payment & Invoices
-                      </button>
-                      <button
-                        onClick={() => toast.success(`Quotation & payment terms re-confirmed for ${selectedBrand?.businessName}`)}
-                        className="px-4 py-2.5 bg-muted hover:bg-border text-foreground font-bold text-xs rounded-xl border border-border transition-all flex items-center gap-1.5"
-                      >
-                        <CheckCircle className="w-4 h-4 text-emerald-500" /> Confirm Quotation Terms
-                      </button>
+                      <div className="flex flex-wrap items-center gap-3 pt-2">
+                        <button
+                          onClick={() => setActiveTab('billing')}
+                          className="px-5 py-2.5 bg-primary text-primary-foreground font-extrabold text-xs rounded-xl hover:scale-[1.02] transition-all shadow-md shadow-primary/20 flex items-center gap-2 cursor-pointer"
+                        >
+                          <CreditCard className="w-4 h-4" /> Open Payment & Invoices
+                        </button>
+                        <button
+                          onClick={() => toast.success(`Quotation & payment terms re-confirmed for ${selectedBrand.businessName}`)}
+                          className="px-4 py-2.5 bg-muted hover:bg-border text-foreground font-bold text-xs rounded-xl border border-border transition-all flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <CheckCircle className="w-4 h-4 text-emerald-500" /> Confirm Quotation Terms
+                        </button>
+                      </div>
                     </div>
-                  </div>
                   )}
 
-                  {selectedBrand?.tenureMonths ? (() => {
-                    const category = (selectedBrand?.category || "").toLowerCase();
+                  {(() => {
+                    const category = (selectedBrand.category || "").toLowerCase();
                     const isDevService = category.includes("software") || category.includes("app") || category.includes("web") || category.includes("erp") || category.includes("automation") || category.includes("ai") || category.includes("devops");
                     const isDesignService = category.includes("design") || category.includes("branding") || category.includes("ui") || category.includes("ux");
 
@@ -1456,13 +1472,13 @@ export default function VMagneticMindsPortal() {
                       : [
                           { phase: "Phase 1 · Months 1–4", title: "Foundation & Audit", color: "text-blue-500", bg: "bg-blue-500/10 border-blue-500/20", tasks: ["GBP setup & optimisation", "Full SEO technical audit", "GEO keyword mapping", "Schema & structured data"] },
                           { phase: "Phase 2 · Months 5–8", title: "Growth & Visibility",  color: "text-violet-500", bg: "bg-violet-500/10 border-violet-500/20", tasks: ["AI search (GEO) citation building", "Link acquisition campaigns", "Monthly GA reporting", "AEO featured snippet targeting"] },
-                          { phase: "Phase 3 · Months 9–12", title: "Dominance & Scale",  color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/20", tasks: ["Local Map Pack #1 defence", "Review velocity automation", "Annual analytics report", "SLA renewal & scaling review"] }
+                          { phase: "Phase 3 · Months 9–12", title: "Dominance & Scale",  color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/20", tasks: ["Local Map Pack #1 defence", "Review velocity automation", "Annual analytics report", "Project renewal & scaling review"] }
                         ];
 
                     return (
                       <div className="glass-card rounded-2xl border border-border p-6">
                         <h3 className="text-base font-extrabold text-foreground mb-5 flex items-center gap-2">
-                          <Zap className="w-5 h-5 text-primary" /> {roadmapTitle}
+                          <Zap className="w-5 h-5 text-primary" /> {roadmapTitle} · {selectedBrand.businessName}
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           {phases.map(p => (
@@ -1481,14 +1497,25 @@ export default function VMagneticMindsPortal() {
                         </div>
                       </div>
                     );
-                  })() : (
-                    <div className="glass-card rounded-2xl border border-dashed border-border p-8 text-center">
-                      <Clock className="w-8 h-8 mx-auto text-muted-foreground mb-3" />
-                      <h3 className="font-extrabold text-foreground">Delivery plan not assigned</h3>
-                      <p className="text-xs text-muted-foreground mt-2">The roadmap will appear after the admin approves the SLA and starts this client’s work.</p>
-                    </div>
-                  )}
-                </>
+                  })()}
+                </div>
+              ) : (
+                <div className="glass-card rounded-2xl border border-border p-8 text-center">
+                  <Clock className="w-8 h-8 mx-auto text-primary mb-3" />
+                  <h4 className="font-extrabold text-foreground">Delivery Plan Not Yet Assigned</h4>
+                  <p className="text-xs text-muted-foreground mt-1 max-w-md mx-auto">
+                    {selectedBrand
+                      ? `The delivery roadmap for ${selectedBrand.businessName} will appear after the admin approves the milestone plan and assigns work.`
+                      : 'Select a client brand from your Client Portfolio to view their delivery roadmap.'}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('clients')}
+                    className="mt-4 px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-xl shadow-sm hover:scale-[1.02] transition-all cursor-pointer inline-flex items-center gap-2"
+                  >
+                    <Users className="w-3.5 h-3.5" /> View Client Portfolio
+                  </button>
+                </div>
               )}
             </motion.div>
           )}
@@ -1638,49 +1665,121 @@ export default function VMagneticMindsPortal() {
           {/* ═══ BILLING ═══════════════════════════════════════════════════ */}
           {activeTab === 'billing' && (
             <motion.div key="billing" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
+              {/* Direct Agency Billing Policy Header */}
+              <div className="p-5 rounded-2xl border border-primary/20 bg-primary/5 glass-card flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30">
+                      Direct Agency Invoicing
+                    </span>
+                    <span className="text-xs text-muted-foreground">Billed Exclusively to {agencyName}</span>
+                  </div>
+                  <h3 className="text-sm sm:text-base font-extrabold text-foreground">
+                    Direct Commercial Incorporation with {agencyName}
+                  </h3>
+                  <p className="text-xs text-muted-foreground max-w-3xl leading-relaxed">
+                    Siddhi Dynamics LLP bills and contracts directly with <strong>{agencyName}</strong>. Payments must come from <strong>{agencyName}</strong> only (we do not collect or bill directly from your clients). All tax invoices and service agreements explicitly cite the end-client account for transparent attribution.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAgreementClient(selectedBrand || clients[0] || null);
+                    setShowAgreementModal(true);
+                  }}
+                  className="px-4 py-2 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl shadow-md shadow-primary/20 hover:scale-[1.02] transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                >
+                  <ShieldCheck className="w-4 h-4" /> View Agency Agreement
+                </button>
+              </div>
+
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                {/* QR & UPI */}
-                <div className="glass-card rounded-2xl border border-border p-6 flex flex-col gap-5">
-                  <h3 className="text-sm font-extrabold text-foreground flex items-center gap-2">
-                    <QrCode className="w-5 h-5 text-primary" /> UPI Payment Hub
-                  </h3>
+                {/* QR & UPI + Direct Banking Details */}
+                <div className="space-y-5">
+                  <div className="glass-card rounded-2xl border border-border p-6 flex flex-col gap-5">
+                    <h3 className="text-sm font-extrabold text-foreground flex items-center gap-2">
+                      <QrCode className="w-5 h-5 text-primary" /> UPI Payment Hub
+                    </h3>
 
-                  <div className="bg-white p-3 rounded-2xl border-2 border-primary/20 shadow-md max-w-[200px] mx-auto">
-                    <img src="/siddhi-upi-qr.jpg" alt="Scan to Pay" className="w-full h-full object-contain rounded-xl" />
-                    <div className="text-center mt-2">
-                      <div className="text-[9px] font-bold text-slate-600 uppercase tracking-wide">Scan & Pay</div>
-                      <div className="text-[11px] font-bold text-slate-800 mt-0.5">{upiId}</div>
+                    <div className="bg-white p-3 rounded-2xl border-2 border-primary/20 shadow-md max-w-[200px] mx-auto">
+                      <img src="/siddhi-upi-qr.jpg" alt="Scan to Pay" className="w-full h-full object-contain rounded-xl" />
+                      <div className="text-center mt-2">
+                        <div className="text-[9px] font-bold text-slate-600 uppercase tracking-wide">Scan & Pay</div>
+                        <div className="text-[11px] font-bold text-slate-800 mt-0.5">{upiId}</div>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="bg-muted rounded-xl border border-border p-3 flex items-center justify-between">
+                    <div className="bg-muted rounded-xl border border-border p-3 flex items-center justify-between">
+                      <div>
+                        <div className="text-[10px] text-muted-foreground font-semibold uppercase">UPI VPA</div>
+                        <div className="text-sm font-extrabold text-foreground">{upiId}</div>
+                      </div>
+                      <button onClick={() => copyText(upiId, "UPI ID")}
+                        className="p-2 hover:bg-border rounded-lg transition-colors">
+                        {copiedKey === "UPI ID" ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4 text-muted-foreground" />}
+                      </button>
+                    </div>
+
                     <div>
-                      <div className="text-[10px] text-muted-foreground font-semibold uppercase">UPI VPA</div>
-                      <div className="text-sm font-extrabold text-foreground">{upiId}</div>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Open in App</p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {[
+                          { app: 'gpay',    label: 'GPay',    bg: 'bg-white',         svg: <svg viewBox="0 0 48 48" className="w-5 h-5"><path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#34A853" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#EA4335" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> },
+                          { app: 'phonepe', label: 'PhonePe', bg: 'bg-[#5f259f]',     svg: <svg viewBox="0 0 48 48" className="w-4 h-4" fill="white"><path d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm5.5 27h-3.8l-7.4-9.6V31H15V17h3.8l7.4 9.6V17H29.5v14z"/></svg> },
+                          { app: 'paytm',   label: 'Paytm',   bg: 'bg-[#00BAF2]',     svg: <span className="text-white font-extrabold text-sm">P</span> },
+                          { app: 'bhim',    label: 'BHIM',    bg: 'bg-gradient-to-br from-orange-500 to-green-600', svg: <span className="text-white font-extrabold text-sm">B</span> },
+                        ].map(({ app, label, bg, svg }) => (
+                          <a key={app} href={buildUpiLink(app)} target="_blank" rel="noopener noreferrer"
+                            onClick={() => toast.info(`Opening ${label}…`)}
+                            className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-muted hover:bg-border border border-border transition-all group">
+                            <div className={`w-8 h-8 rounded-full ${bg} flex items-center justify-center shadow-sm`}>{svg}</div>
+                            <span className="text-[9px] font-bold text-muted-foreground group-hover:text-foreground">{label}</span>
+                          </a>
+                        ))}
+                      </div>
                     </div>
-                    <button onClick={() => copyText(upiId, "UPI ID")}
-                      className="p-2 hover:bg-border rounded-lg transition-colors">
-                      {copiedKey === "UPI ID" ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4 text-muted-foreground" />}
-                    </button>
                   </div>
 
-                  <div>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Open in App</p>
-                    <div className="grid grid-cols-4 gap-2">
-                      {[
-                        { app: 'gpay',    label: 'GPay',    bg: 'bg-white',         svg: <svg viewBox="0 0 48 48" className="w-5 h-5"><path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#34A853" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#EA4335" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> },
-                        { app: 'phonepe', label: 'PhonePe', bg: 'bg-[#5f259f]',     svg: <svg viewBox="0 0 48 48" className="w-4 h-4" fill="white"><path d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm5.5 27h-3.8l-7.4-9.6V31H15V17h3.8l7.4 9.6V17H29.5v14z"/></svg> },
-                        { app: 'paytm',   label: 'Paytm',   bg: 'bg-[#00BAF2]',     svg: <span className="text-white font-extrabold text-sm">P</span> },
-                        { app: 'bhim',    label: 'BHIM',    bg: 'bg-gradient-to-br from-orange-500 to-green-600', svg: <span className="text-white font-extrabold text-sm">B</span> },
-                      ].map(({ app, label, bg, svg }) => (
-                        <a key={app} href={buildUpiLink(app)} target="_blank" rel="noopener noreferrer"
-                          onClick={() => toast.info(`Opening ${label}…`)}
-                          className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-muted hover:bg-border border border-border transition-all group">
-                          <div className={`w-8 h-8 rounded-full ${bg} flex items-center justify-center shadow-sm`}>{svg}</div>
-                          <span className="text-[9px] font-bold text-muted-foreground group-hover:text-foreground">{label}</span>
-                        </a>
-                      ))}
+                  {/* Official Banking Wire Details */}
+                  <div className="glass-card rounded-2xl border border-border p-5 space-y-3">
+                    <h4 className="text-xs font-extrabold text-foreground uppercase tracking-wider flex items-center gap-2">
+                      <Building2 className="w-4 h-4 text-primary" /> Direct Bank Wire (NEFT/RTGS)
+                    </h4>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      Remit agency invoices directly to our official corporate account. All payments must originate from {agencyName}.
+                    </p>
+                    <div className="space-y-2 text-xs bg-muted/50 p-3 rounded-xl border border-border">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Account Name:</span>
+                        <span className="font-bold text-foreground">SIDDHI DYNAMICS PVT LTD</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Bank:</span>
+                        <span className="font-bold text-foreground">State Bank of India (SBI)</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">A/C Number:</span>
+                        <span className="font-mono font-bold text-foreground flex items-center gap-1">
+                          45170121323
+                          <button onClick={() => copyText("45170121323", "Account Number")} className="p-0.5 hover:text-primary">
+                            <Copy className="w-3 h-3" />
+                          </button>
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">IFSC Code:</span>
+                        <span className="font-mono font-bold text-primary flex items-center gap-1">
+                          SBIN0020149
+                          <button onClick={() => copyText("SBIN0020149", "IFSC Code")} className="p-0.5 hover:text-primary">
+                            <Copy className="w-3 h-3" />
+                          </button>
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-[10px] pt-1 border-t border-border/60">
+                        <span className="text-muted-foreground">LLPIN:</span>
+                        <span className="font-bold text-foreground">ACX-6222</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1692,13 +1791,13 @@ export default function VMagneticMindsPortal() {
                       <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto text-primary">
                         <CreditCard className="w-6 h-6" />
                       </div>
-                      <h3 className="text-sm font-extrabold text-foreground">No Client Invoices Configured Yet</h3>
+                      <h3 className="text-sm font-extrabold text-foreground">No Invoices Issued Yet</h3>
                       <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-                        Payment strategies (Monthly Retainer, Milestone, or Custom Project) are configured per client brand. Add a client brand to generate and track custom invoices.
+                        Invoices are issued directly to {agencyName} per active client project. Add a client brand to generate and track project invoices.
                       </p>
                       <button onClick={() => { setActiveTab('clients'); setShowClientForm(true); }}
                         className="px-5 py-2.5 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl hover:scale-105 transition-all inline-flex items-center gap-2">
-                        <Plus className="w-4 h-4" /> Add Client Brand & Setup Strategy
+                        <Plus className="w-4 h-4" /> Add Client Brand & Begin Execution
                       </button>
                     </div>
                   ) : (
@@ -1706,22 +1805,31 @@ export default function VMagneticMindsPortal() {
                       <div className="flex items-center justify-between mb-5">
                         <div>
                           <h3 className="text-sm font-extrabold text-foreground flex items-center gap-2">
-                            <CreditCard className="w-5 h-5 text-primary" /> Active SLA Payment Schedule
+                            <CreditCard className="w-5 h-5 text-primary" /> Direct Agency Project Invoices
                           </h3>
                           <p className="text-xs text-muted-foreground mt-0.5">
-                            Showing active client invoices & payment status
+                            Billed directly to {agencyName} · End-client details attributed
                           </p>
                         </div>
-                        <span className="text-[10px] px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded-lg font-bold">⚙ Dynamic SLA</span>
+                        <span className="text-[10px] px-2.5 py-1 bg-primary/10 text-primary border border-primary/20 rounded-lg font-bold">
+                          Direct Agency Billing
+                        </span>
                       </div>
                       <div className="space-y-3">
                         {invoices.map(inv => (
                           <div key={inv.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-muted border border-border">
                             <div>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2 flex-wrap">
                                 <span className="text-sm font-bold text-foreground">{inv.id}</span>
                                 <span className="text-xs text-muted-foreground">· {inv.month}</span>
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                                  Billed to: {agencyName}
+                                </span>
                               </div>
+                              <p className="text-xs font-semibold text-foreground mt-1 flex items-center gap-1.5">
+                                <span className="text-muted-foreground font-normal">End-Client Account:</span>
+                                <span className="text-primary font-bold">{inv.clientName || selectedBrand?.businessName || "Agency Client"}</span>
+                              </p>
                               <p className="text-xs text-muted-foreground mt-0.5">{inv.desc}</p>
                               <p className="text-[11px] text-muted-foreground/60 mt-0.5">Due: {inv.date}</p>
                             </div>
@@ -1734,12 +1842,21 @@ export default function VMagneticMindsPortal() {
                                                                'bg-muted text-muted-foreground border border-border'
                                 }`}>{inv.status}</span>
                               </div>
-                              {inv.status === 'Pending' && (
-                                <button onClick={() => { setSelInvoice(inv); setPayModalOpen(true); }}
-                                  className="flex items-center gap-1.5 px-3.5 py-2 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl hover:scale-[1.02] transition-all shadow-md shadow-primary/20">
-                                  <QrCode className="w-3.5 h-3.5" /> Pay Now
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenInvoiceModal(inv)}
+                                  className="flex items-center gap-1 px-3 py-2 bg-muted hover:bg-border text-foreground text-xs font-bold rounded-xl border border-border transition-all cursor-pointer"
+                                >
+                                  <FileText className="w-3.5 h-3.5 text-primary" /> View Invoice
                                 </button>
-                              )}
+                                {inv.status === 'Pending' && (
+                                  <button onClick={() => { setSelInvoice(inv); setPayModalOpen(true); }}
+                                    className="flex items-center gap-1.5 px-3.5 py-2 bg-primary text-primary-foreground text-xs font-extrabold rounded-xl hover:scale-[1.02] transition-all shadow-md shadow-primary/20 cursor-pointer">
+                                    <QrCode className="w-3.5 h-3.5" /> Pay Now
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -1928,7 +2045,7 @@ export default function VMagneticMindsPortal() {
                         <input
                           type="text"
                           required
-                          placeholder="e.g. Apex Industries Pvt Ltd"
+                          placeholder="Enter client or business name"
                           value={newClientName}
                           onChange={(e) => setNewClientName(e.target.value)}
                           className="w-full px-3 py-2 rounded-xl border border-border bg-background text-foreground outline-none focus:border-primary"
@@ -1941,7 +2058,7 @@ export default function VMagneticMindsPortal() {
                         </label>
                         <input
                           type="email"
-                          placeholder="contact@client.com"
+                          placeholder="Enter client email address"
                           value={newClientEmail}
                           onChange={(e) => setNewClientEmail(e.target.value)}
                           className="w-full px-3 py-2 rounded-xl border border-border bg-background text-foreground outline-none focus:border-primary"
@@ -1955,7 +2072,7 @@ export default function VMagneticMindsPortal() {
                         <input
                           type="text"
                           required
-                          placeholder="e.g. Multi-tenant Inventory SaaS Portal"
+                          placeholder="Enter project title / scope"
                           value={newProjTitle}
                           onChange={(e) => setNewProjTitle(e.target.value)}
                           className="w-full px-3 py-2 rounded-xl border border-border bg-background text-foreground outline-none focus:border-primary"
@@ -2427,10 +2544,10 @@ export default function VMagneticMindsPortal() {
                     </div>
                   </section>
 
-                  {/* ▸ SLA & Payment Strategy */}
+                  {/* ▸ Retainer & Payment Strategy */}
                   <section>
                     <h3 className="text-xs font-extrabold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <CreditCard className="w-4 h-4" /> Custom SLA & Pricing (Assigned by Admin)
+                      <CreditCard className="w-4 h-4" /> Custom Retainer & Pricing (Assigned by Admin)
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="sm:col-span-2">
@@ -2642,6 +2759,52 @@ export default function VMagneticMindsPortal() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* ── Direct Agency Service Agreement Modal ── */}
+      {showAgreementModal && (
+        <ServiceAgreementModal
+          projectName={`Agency Project: ${agreementClient?.businessName || selectedBrand?.businessName || "Client Portfolio"}`}
+          clientName={`${agencyName} (Direct Agency Partner)`}
+          clientEmail={userEmail}
+          meta={{
+            banking_details: DEFAULT_BANKING_DETAILS,
+            scope_summary: `Direct Agency Contract with ${agencyName}. Execution scope for end-client: ${agreementClient?.businessName || selectedBrand?.businessName || "Client Account"} (${agreementClient?.category || selectedBrand?.category || "Digital Services"}). Includes Technical SEO, GEO (Generative Engine Optimisation), AEO, GBP Local Dominance, and Growth Roadmap. Siddhi Dynamics works directly with and bills ${agencyName}. All payments are remitted by ${agencyName} directly.`,
+            agreed_amount: (agreementClient?.retainerFee || selectedBrand?.retainerFee) 
+              ? `₹${parseInt((agreementClient?.retainerFee || selectedBrand?.retainerFee)!).toLocaleString('en-IN')}` 
+              : "₹25,000",
+            advance_amount: "Full Monthly Retainer / Project Milestone",
+            balance_amount: "₹0",
+            service_start_date: agreementClient?.tenureStartDate || selectedBrand?.tenureStartDate || new Date().toISOString().split("T")[0],
+            deadline: `${agreementClient?.tenureMonths || selectedBrand?.tenureMonths || 12} Months Term`,
+            invoices: invoices.map(i => ({
+              id: i.id,
+              title: `${i.desc} - Direct Agency Billing to ${agencyName}`,
+              amount: i.amount,
+              status: i.status === 'Paid' ? 'paid' : 'pending'
+            })),
+            terms: [
+              `Direct Incorporation: This agreement is executed solely between Siddhi Dynamics LLP and ${agencyName}.`,
+              `End-Client Attribution: Deliverables and execution are performed on behalf of agency client ${agreementClient?.businessName || selectedBrand?.businessName || "Client Brand"}.`,
+              `Direct Billing & Payment: All billing and invoices are issued exclusively to ${agencyName}. All commercial payments must originate directly from ${agencyName}.`,
+              `Non-Interference: Siddhi Dynamics LLP will not solicit, bill, or transact directly with ${agreementClient?.businessName || selectedBrand?.businessName || "the end-client"}.`
+            ]
+          }}
+          onClose={() => {
+            setShowAgreementModal(false);
+            setAgreementClient(null);
+          }}
+        />
+      )}
+
+      {/* ── Direct Agency Digital Tax Invoice Modal ── */}
+      {showInvoiceModal && invoiceModalData && (
+        <DigitalInvoiceModal
+          isOpen={showInvoiceModal}
+          onClose={() => setShowInvoiceModal(false)}
+          data={invoiceModalData}
+        />
+      )}
+
     </div>
   );
 }

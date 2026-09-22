@@ -76,7 +76,7 @@ export const DirectPaymentModal: React.FC<DirectPaymentModalProps> = ({
   const formattedAmount = numericAmount > 0 ? `₹${numericAmount.toLocaleString("en-IN")}` : invoice.amount;
 
   const upiId = adminSettings?.upi_id || DEFAULT_BANKING_DETAILS.upi_id || "siddhidynamics@sbi";
-  const upiPayUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent("Siddhi Dynamics LLP")}&am=${numericAmount}&cu=INR&tn=${encodeURIComponent(invoice.title || "Project Invoice")}`;
+  const upiPayUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent("SIDDHI DYNAMICS PVT LTD")}&am=${numericAmount}&cu=INR&tn=${encodeURIComponent(invoice.title || "Project Invoice")}`;
   const qrCodeImgUrl = adminSettings?.qr_public_url || `https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=8&data=${encodeURIComponent(upiPayUrl)}`;
 
   const handleUploadReceipt = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -258,7 +258,7 @@ export const DirectPaymentModal: React.FC<DirectPaymentModalProps> = ({
                   <ol className="list-decimal pl-4 space-y-1 text-stone-400 text-[11px] leading-relaxed">
                     <li>Open Google Pay, PhonePe, Paytm or any UPI app.</li>
                     <li>Scan the QR code above or pay directly to UPI ID <strong className="text-stone-200 font-mono">{upiId}</strong>.</li>
-                    <li>Ensure beneficiary name is <strong className="text-emerald-400">Siddhi Dynamics LLP</strong>.</li>
+                    <li>Ensure beneficiary name is <strong className="text-emerald-400">SIDDHI DYNAMICS PVT LTD</strong>.</li>
                     <li>Complete payment and copy the 12-digit <strong className="text-white">UTR / Transaction Reference Number</strong>.</li>
                     <li>Paste the UTR number in the form below to initiate instant verification.</li>
                   </ol>

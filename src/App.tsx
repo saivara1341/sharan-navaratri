@@ -50,32 +50,25 @@ const Careers = lazy(() => import("@/pages/Careers"));
 const InternPortal = lazy(() => import("@/pages/InternPortal"));
 const CertificateVerification = lazy(() => import("@/pages/CertificateVerification"));
 
+import { resolveRoleForEmail, getPortalPathForRole } from "@/lib/roleResolver";
+
 const AuthRedirectHandler = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    const checkAdmin = (email?: string) => {
-      if (!email) return false;
-      const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com")
-        .split(",")
-        .map((e: string) => e.trim().toLowerCase());
-      return adminEmails.includes(email.trim().toLowerCase());
-    };
-
     const checkUserRoleAndRedirect = async (session: any) => {
       if (!session) return;
       const email = session.user.email?.trim().toLowerCase();
-      if (checkAdmin(email)) {
-        navigate("/admin-hq-nexus");
+
+      // 1. Grasp assigned role directly by email
+      const assignedRole = await resolveRoleForEmail(email);
+      if (assignedRole) {
+        navigate(getPortalPathForRole(assignedRole));
         return;
       }
 
-      if (email === '23eg510a07@anurag.edu.in') {
-        navigate("/portal/agency");
-        return;
-      }
-
+      // 2. Fallback to user metadata
       const role = session.user.user_metadata?.role;
       if (role === 'intern') {
         navigate("/portal/intern");
@@ -98,23 +91,21 @@ const AuthRedirectHandler = () => {
       navigate("/portal");
     };
 
-    // Check initial session - ONLY redirect if user is on the auth or portal page
-    if (location.pathname === '/auth' || location.pathname === '/auth/' || location.pathname === '/portal' || location.pathname === '/portal/') {
+    // Check initial session - redirect /auth directly to /portal or role workspace
+    if (location.pathname === '/auth' || location.pathname === '/auth/') {
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (session) {
           checkUserRoleAndRedirect(session);
+        } else {
+          navigate('/portal');
         }
       });
     }
 
-    // Listen for auth changes (like login success) - only redirect if on auth/portal gateway
+    // Listen for auth changes - only redirect if on auth page
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      const isAuthOrPortalGate =
-        location.pathname === '/auth' ||
-        location.pathname === '/auth/' ||
-        location.pathname === '/portal' ||
-        location.pathname === '/portal/';
-      if (event === 'SIGNED_IN' && session && isAuthOrPortalGate) {
+      const isAuthGate = location.pathname === '/auth' || location.pathname === '/auth/';
+      if (event === 'SIGNED_IN' && session && isAuthGate) {
         checkUserRoleAndRedirect(session);
       }
     });
@@ -196,6 +187,7 @@ const App = () => {
                     <Route path="/submit" element={<ProjectSubmitForm />} />
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/portal" element={<PortalGateway />} />
+                    <Route path="/portals" element={<PortalGateway />} />
                     <Route path="/portal/client" element={<ClientPortal />} />
                     <Route path="/portal/intern" element={<InternPortal />} />
                     <Route path="/portal/agency" element={<VMagneticMindsPortal />} />

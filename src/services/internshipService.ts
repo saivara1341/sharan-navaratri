@@ -1,5 +1,132 @@
 import { supabase } from '@/integrations/supabase/client';
 
+export type EmploymentType = 'Full Time' | 'Remote' | 'Part Time';
+export type RoleCategory = 'Business Development' | 'Digital Marketing' | 'Product Management' | 'Software Engineering' | 'Operations & Strategy';
+
+export interface RoleJD {
+  id: string;
+  title: string;
+  category: RoleCategory;
+  employmentType: EmploymentType;
+  compensation: string;
+  certificatePolicy: string;
+  lorPolicy: string;
+  workflowDetails: string;
+  targetAudience: string;
+  tagline: string;
+  durations: string[];
+  overview: string;
+  keyResponsibilities: string[];
+  learningOutcomes: string[];
+  interlinkingFeature: string;
+  requirements: string[];
+}
+
+export const DEFAULT_CAREER_ROLES: RoleJD[] = [
+  {
+    id: 'pm-intern',
+    title: 'Product Manager Intern',
+    category: 'Product Management',
+    employmentType: 'Remote',
+    compensation: 'Unpaid Internship (Skill-Building & Academic Practical Track)',
+    certificatePolicy: 'Official Certificate of Internship Completion awarded upon successful tenure and task completion.',
+    lorPolicy: 'Letter of Recommendation (LOR) is provided strictly upon completing 2 years of continuous active working with Siddhi Dynamics.',
+    workflowDetails: 'Tasks assigned via internal platform with stipulated deadlines. PRD reviews, feature wireframes, and sprint extensions require direct CEO portal approval.',
+    targetAudience: 'MBA / B.Tech / BCA / Engineering & Management Students / Aspiring Product Managers',
+    tagline: 'Bridge business strategy, user experience, and agile engineering. Architect PRDs, wireframes, and feature roadmaps for PrintFlow and AI tools.',
+    durations: ['3 Months', '6 Months', '9 Months', '12 Months'],
+    overview: 'As a Product Manager Intern at Siddhi Dynamics, you sit at the epicenter of software engineering, user experience, and business strategy. You will collaborate directly with our engineering squad and business development teams to translate real-world client requirements into structured Product Requirement Documents (PRDs), user stories, and interactive wireframes. You will work on flagship platforms like PrintFlow (our print industry SaaS/ERP) and AI automation suites. This is an unpaid learning and credentialing track where every shipped feature, PRD, and usability test directly contributes to your verifiable Point of Proof portfolio.',
+    keyResponsibilities: [
+      'Collaborate with Business Development and Digital Marketing teams to gather real client pain points, feature requests, and workflow bottlenecks.',
+      'Draft detailed Product Requirement Documents (PRDs), user journeys, system flowcharts, and wireframes for PrintFlow and internal enterprise tools.',
+      'Break down strategic initiatives into actionable sprint tickets with clear acceptance criteria for engineering teams.',
+      'Conduct usability reviews, user acceptance testing (UAT), and telemetry analysis to validate feature releases.',
+      'Maintain product backlogs and sprint milestones within the internal task platform, adhering to stipulated deadlines.'
+    ],
+    learningOutcomes: [
+      'Mastery of end-to-end agile product development lifecycles, PRD formulation, and backlog prioritization (RICE / MoSCoW frameworks).',
+      'Direct experience driving AI-native SaaS product iterations and enterprise workflows.',
+      'Official Certificate of Internship Completion with a verifiable cryptographic checksum on our ledger upon concluding tenure.',
+      'Clear eligibility for a formal institutional Letter of Recommendation (LOR) upon completing 2 years of active service.'
+    ],
+    interlinkingFeature: 'Tri-Squad Synergy: You translate market signals captured by Business Development and content engagement insights from Digital Marketing into clear engineering specifications.',
+    requirements: [
+      'Currently enrolled in or graduate of B.Tech / BE, MBA, MCA, BBA, or related technical/management disciplines.',
+      'Deep curiosity about SaaS architecture, user experience design, and AI automation tools.',
+      'Strong written and verbal communication skills with the ability to articulate complex technical ideas simply.',
+      'Understanding and acceptance that this is an unpaid internship granting an official completion certificate (with LOR upon 2 years of working).'
+    ]
+  },
+  {
+    id: 'bd-intern',
+    title: 'Business Development Intern',
+    category: 'Business Development',
+    employmentType: 'Remote',
+    compensation: 'Unpaid Internship (Skill-Building & Academic Practical Track)',
+    certificatePolicy: 'Official Certificate of Internship Completion awarded upon successful tenure and task completion.',
+    lorPolicy: 'Letter of Recommendation (LOR) is provided strictly upon completing 2 years of continuous active working with Siddhi Dynamics.',
+    workflowDetails: 'Tasks assigned via internal platform with stipulated deadlines. Client lead approvals and timeline extensions require direct CEO portal approval.',
+    targetAudience: 'MBA & BBA Students / Business Graduates',
+    tagline: 'Drive client acquisition, identify market opportunities, and convert real-world enterprise pipeline across regional hubs.',
+    durations: ['3 Months', '6 Months', '9 Months', '12 Months'],
+    overview: 'As a Business Development Intern at Siddhi Dynamics, you operate at the frontier of technology commercialization. You will research regional enterprises, introduce cutting-edge business automation, ERP solutions (like PrintFlow & Nexus ERP), and customized digital transformation pipelines to business owners. This role provides practical boardroom sales and B2B consultative experience. It is an unpaid learning track where deliverables build your verifiable Point of Proof portfolio.',
+    keyResponsibilities: [
+      'Research and identify target client segments across regional hubs (Hyderabad, Nizamabad, Bangalore, Mumbai) needing business automation & ERP solutions.',
+      'Conduct exploratory client discovery calls and demonstrate product capabilities including PrintFlow, Nexus ERP, and Custom Automations.',
+      'Execute structured business development tasks assigned through the internal platform within stipulated timelines.',
+      'Log verified outreach milestones, client requirements, and stage transitions directly in the internal portal for audit and review.',
+      'Coordinate with the Digital Marketing team to align client outreach campaigns with tailored content assets.'
+    ],
+    learningOutcomes: [
+      'Mastery of B2B SaaS sales cycles, enterprise product demonstrations, and CRM pipeline governance.',
+      'Direct real-world experience negotiating and structuring software solution proposals for regional MSMEs.',
+      'Official Certificate of Internship Completion with a verifiable online record on our ledger upon concluding tenure.',
+      'Clear eligibility for a formal institutional Letter of Recommendation (LOR) upon completing 2 years of active service.'
+    ],
+    interlinkingFeature: 'Cross-functional synergy: Every BD lead feeds real-time market data to our Digital Marketing interns for contextual collateral generation.',
+    requirements: [
+      'Currently enrolled in or graduate of MBA, BBA, B.Com, or related business and management programs.',
+      'Strong communication and interpersonal skills in English and Hindi or Telugu.',
+      'High ownership mindset, dedication to meeting stipulated deadlines, and eagerness to build genuine career credentials.',
+      'Understanding and acceptance that this is an unpaid internship granting an official completion certificate (with LOR upon 2 years of working).'
+    ]
+  },
+  {
+    id: 'dm-intern',
+    title: 'Digital Marketing Intern',
+    category: 'Digital Marketing',
+    employmentType: 'Remote',
+    compensation: 'Unpaid Internship (Skill-Building & Academic Practical Track)',
+    certificatePolicy: 'Official Certificate of Internship Completion awarded upon successful tenure and task completion.',
+    lorPolicy: 'Letter of Recommendation (LOR) is provided strictly upon completing 2 years of continuous active working with Siddhi Dynamics.',
+    workflowDetails: 'Tasks assigned via internal platform with stipulated deadlines. Creative asset access and deadline extensions can be requested by interns and approved by CEO.',
+    targetAudience: 'BBA / MBA Marketing, Media & Creative Innovators',
+    tagline: 'Scale Instagram reach, craft viral content for PrintFlow & client brands, and engineer data-driven social conversion funnels.',
+    durations: ['3 Months', '6 Months', '9 Months', '12 Months'],
+    overview: 'Shape the visual and organic identity of Siddhi Dynamics and our flagship products (like PrintFlow and AI automation suites). You will oversee growth for @siddhidynamics, architect high-retention Instagram reels, create educational carousels, and respond to sales intelligence to drive inbound client pipeline. This is an unpaid educational internship with tasks assigned through our platform to build a verifiable public portfolio.',
+    keyResponsibilities: [
+      'Drive organic growth and audience engagement on the official Instagram page (@siddhidynamics) and partner accounts.',
+      'Create high-hook Reels, carousel infographics, and short-form video scripts highlighting PrintFlow and AI automation.',
+      'Collaborate in real-time with the Business Development team to deploy targeted content based on real market questions.',
+      'Execute content sprint tasks within stipulated platform deadlines, requesting asset access or timeline extensions via admin.',
+      'Track reach, hook retention rate, non-follower discovery, and profile conversion metrics as verifiable Points of Proof.'
+    ],
+    learningOutcomes: [
+      'Hands-on expertise in algorithm-driven organic social growth, A/B video hook testing, and SaaS product marketing.',
+      'Attribution tracking mastery: track customer journey from Instagram Reel view to demo booking.',
+      'Official Certificate of Internship Completion with a verifiable online record on our ledger upon concluding tenure.',
+      'Clear eligibility for a formal institutional Letter of Recommendation (LOR) upon completing 2 years of active service.'
+    ],
+    interlinkingFeature: 'Agile Content Sprints: You work hand-in-hand with the BD team using our unified referral and interlink tracker for mutual attribution.',
+    requirements: [
+      'Enrolled in or completed BBA, MBA (Marketing), Mass Communication, or passionate self-taught social media marketer.',
+      'Familiarity with Instagram Reels, CapCut/Premiere/Canva, and current B2B social media trends.',
+      'Creativity, prompt turnaround, and passion for AI and software automation.',
+      'Understanding and acceptance that this is an unpaid internship granting an official completion certificate (with LOR upon 2 years of working).'
+    ]
+  }
+];
+
 export interface InternshipApplication {
   id: string;
   created_at: string;
@@ -9,8 +136,8 @@ export interface InternshipApplication {
   college: string;
   degree: string;
   graduation_year: string;
-  role: 'Business Development Intern' | 'Digital Marketing Intern';
-  duration: '3 Months' | '6 Months' | '9 Months' | '12 Months';
+  role: 'Business Development Intern' | 'Digital Marketing Intern' | 'Product Manager Intern' | string;
+  duration: '3 Months' | '6 Months' | '9 Months' | '12 Months' | string;
   linkedin?: string;
   portfolio_or_social?: string;
   statement_of_purpose: string;
@@ -91,6 +218,22 @@ export interface InternTask {
   status: 'Pending' | 'In Progress' | 'Under Review' | 'Completed';
   created_at: string;
   created_by: string; // CEO
+}
+
+export interface TaskSubmission {
+  id: string;
+  task_id: string;
+  task_title: string;
+  intern_email: string;
+  intern_name: string;
+  role: string;
+  deliverable_url: string; // Live Link, GitHub repo, Drive folder, Figma
+  summary_of_work: string;
+  metrics_or_outcome?: string;
+  submitted_at: string;
+  status: 'Under Review' | 'Verified & Approved' | 'Revision Requested';
+  admin_feedback?: string;
+  reviewed_at?: string;
 }
 
 export interface DeadlineExtensionRequest {
@@ -372,7 +515,8 @@ const STORAGE_KEYS = {
   SCRATCHED: 'sd_scratched_rewards',
   CERTIFICATES: 'sd_issued_certificates',
   REVIEWS: 'sd_intern_reviews',
-  ROLE_REQUESTS: 'sd_role_approval_requests'
+  ROLE_REQUESTS: 'sd_role_approval_requests',
+  TASK_SUBMISSIONS: 'sd_intern_task_submissions'
 };
 
 // These records are created by admins and must never be populated with sample
@@ -381,7 +525,6 @@ const ADMIN_DATA_KEYS_WITHOUT_SEEDS = new Set([
   STORAGE_KEYS.APPLICATIONS,
   STORAGE_KEYS.WHITELIST,
   STORAGE_KEYS.AGREEMENTS,
-  STORAGE_KEYS.TASKS,
   STORAGE_KEYS.EXTENSIONS,
   STORAGE_KEYS.DATA_REQUESTS,
   STORAGE_KEYS.PROOFS,
@@ -495,28 +638,11 @@ export const internshipService = {
       }]);
       if (directErr) {
         console.warn('Could not insert to career_applications (table may be pending migration):', directErr);
+      } else {
+        console.info('career_applications: application stored successfully for role:', newApp.role);
       }
     } catch (err) {
       console.warn('career_applications insert error:', err);
-    }
-
-    // 2. Secondary fallback: Also mirror into contact_submissions table
-    try {
-      await supabase.from('contact_submissions').insert([{
-        name: newApp.full_name,
-        email: newApp.email,
-        designation: `${newApp.degree} Student (${newApp.graduation_year})`,
-        organization: newApp.college,
-        inquiry_type: 'internship_application',
-        message: `Role Applied: ${newApp.role}\nDuration: ${newApp.duration}\nPhone: ${newApp.phone}\nLinkedIn/Social: ${newApp.linkedin || newApp.portfolio_or_social || 'N/A'}\n\nStatement of Purpose:\n${newApp.statement_of_purpose}\n\nResume/Portfolio Link:\n${newApp.resume_url || 'N/A'}`,
-        status: 'Received',
-        progress: 10,
-        consent_given: true,
-        consent_at: new Date().toISOString(),
-        is_public: false
-      }]);
-    } catch (err) {
-      console.warn('Could not mirror to Supabase contact_submissions:', err);
     }
 
     return newApp;
@@ -885,6 +1011,29 @@ export const internshipService = {
     return getLocal<InternshipApplication[]>(STORAGE_KEYS.APPLICATIONS, []);
   },
 
+  /**
+   * Returns all applications for a specific role from career_applications.
+   * role: 'Product Manager Intern' | 'Business Development Intern' | 'Digital Marketing Intern'
+   */
+  async getApplicationsByRole(role: string): Promise<InternshipApplication[]> {
+    const all = await this.getApplications();
+    return all.filter(app => app.role === role);
+  },
+
+  /**
+   * Returns a summary object categorizing all applications by role.
+   * All data sourced from the single public.career_applications table.
+   */
+  async getApplicationsGroupedByRole(): Promise<Record<string, InternshipApplication[]>> {
+    const all = await this.getApplications();
+    return all.reduce<Record<string, InternshipApplication[]>>((acc, app) => {
+      const key = app.role || 'Unknown';
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(app);
+      return acc;
+    }, {});
+  },
+
   async deleteApplication(id: string, email?: string): Promise<boolean> {
     try {
       // 1. Delete from career_applications
@@ -1187,6 +1336,79 @@ export const internshipService = {
     const current = this.getTasks();
     const updated = current.map(t => t.id === id ? { ...t, status } : t);
     setLocal(STORAGE_KEYS.TASKS, updated);
+    return updated;
+  },
+
+  // ── 4b. Task Submissions & Admin Deliverables ──────────────────────────────
+  getTaskSubmissions(email?: string): TaskSubmission[] {
+    const all = getLocal<TaskSubmission[]>(STORAGE_KEYS.TASK_SUBMISSIONS, [
+      {
+        id: 'sub-sample-1',
+        task_id: 'task-1',
+        task_title: 'PrintFlow Instagram Reel Campaign (5 High-Retention Hooks)',
+        intern_email: 'intern.dm@siddhidynamics.in',
+        intern_name: 'Ananya Verma',
+        role: 'Digital Marketing Intern',
+        deliverable_url: 'https://instagram.com/reel/printflow_campaign_demo',
+        summary_of_work: 'Produced 5 high-engagement Instagram Reels detailing automated invoice parsing. 3 published, 2 scheduled.',
+        metrics_or_outcome: 'Reached 12,400 organic views, +84 demo inquiries.',
+        submitted_at: '2026-09-12',
+        status: 'Verified & Approved',
+        admin_feedback: 'Outstanding hook structure and crisp brand colors. Approved.'
+      }
+    ]);
+    if (!email) return all;
+    const clean = email.trim().toLowerCase();
+    return all.filter(s => s.intern_email.toLowerCase() === clean);
+  },
+
+  submitTaskDeliverable(submission: Omit<TaskSubmission, 'id' | 'submitted_at' | 'status'>): TaskSubmission {
+    const newSub: TaskSubmission = {
+      ...submission,
+      id: 'sub-' + Math.random().toString(36).substring(2, 8),
+      submitted_at: new Date().toISOString().split('T')[0],
+      status: 'Under Review'
+    };
+    const all = this.getTaskSubmissions();
+    const updated = [newSub, ...all];
+    setLocal(STORAGE_KEYS.TASK_SUBMISSIONS, updated);
+
+    // Also update associated task status to Under Review
+    this.updateTaskStatus(submission.task_id, 'Under Review');
+
+    // Also record point of proof automatically
+    this.submitPointOfProof({
+      intern_email: submission.intern_email,
+      intern_name: submission.intern_name,
+      role: submission.role,
+      title: `Submission: ${submission.task_title}`,
+      before_state: 'Pending task assignment',
+      after_state: submission.summary_of_work,
+      metric_summary: submission.metrics_or_outcome || 'Completed deliverable submitted for review',
+      proof_link_or_notes: submission.deliverable_url
+    });
+
+    return newSub;
+  },
+
+  reviewTaskSubmission(id: string, status: TaskSubmission['status'], adminFeedback?: string): TaskSubmission[] {
+    const all = this.getTaskSubmissions();
+    const target = all.find(s => s.id === id);
+    const updated = all.map(s => s.id === id ? {
+      ...s,
+      status,
+      admin_feedback: adminFeedback,
+      reviewed_at: new Date().toISOString().split('T')[0]
+    } : s);
+    setLocal(STORAGE_KEYS.TASK_SUBMISSIONS, updated);
+
+    // If verified, update the task to Completed
+    if (target && status === 'Verified & Approved') {
+      this.updateTaskStatus(target.task_id, 'Completed');
+    } else if (target && status === 'Revision Requested') {
+      this.updateTaskStatus(target.task_id, 'In Progress');
+    }
+
     return updated;
   },
 
@@ -1590,5 +1812,87 @@ export const internshipService = {
     const current = this.getInternReviews();
     const updated = current.map(r => r.id === id ? { ...r, status, admin_notes: admin_notes ?? r.admin_notes } : r);
     setLocal(STORAGE_KEYS.REVIEWS, updated);
+  },
+
+  // ── 9. Career Roles & JDs (Persistent Database + Fallback) ───────────────────
+
+  /**
+   * Retrieves active career roles / job descriptions from Supabase 'career_roles' table.
+   * If the table is not yet migrated or Supabase is offline, falls back seamlessly to DEFAULT_CAREER_ROLES.
+   */
+  async getCareerRoles(): Promise<RoleJD[]> {
+    try {
+      const { data, error } = await supabase
+        .from('career_roles')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+
+      if (error || !data || data.length === 0) {
+        return DEFAULT_CAREER_ROLES;
+      }
+
+      return data.map((r: any) => ({
+        id: r.id,
+        title: r.title,
+        category: r.category as RoleCategory,
+        employmentType: r.employment_type as EmploymentType,
+        compensation: r.compensation,
+        certificatePolicy: r.certificate_policy || '',
+        lorPolicy: r.lor_policy || '',
+        workflowDetails: r.workflow_details || '',
+        targetAudience: r.target_audience || '',
+        tagline: r.tagline || '',
+        durations: (r.durations && r.durations.length > 0) ? r.durations : ['3 Months', '6 Months', '9 Months', '12 Months'],
+        overview: r.overview,
+        keyResponsibilities: r.key_responsibilities || [],
+        learningOutcomes: r.learning_outcomes || [],
+        interlinkingFeature: r.interlinking_feature || '',
+        requirements: r.requirements || []
+      }));
+    } catch (err) {
+      console.warn('Could not load career_roles from database, using fallback roles:', err);
+      return DEFAULT_CAREER_ROLES;
+    }
+  },
+
+  /**
+   * Upserts a career role in the Supabase 'career_roles' database table.
+   */
+  async saveCareerRole(role: RoleJD & { display_order?: number; is_active?: boolean }): Promise<{ success: boolean; error?: string }> {
+    try {
+      const payload = {
+        id: role.id,
+        title: role.title,
+        category: role.category,
+        employment_type: role.employmentType,
+        compensation: role.compensation,
+        certificate_policy: role.certificatePolicy,
+        lor_policy: role.lorPolicy,
+        workflow_details: role.workflowDetails,
+        target_audience: role.targetAudience,
+        tagline: role.tagline,
+        durations: role.durations,
+        overview: role.overview,
+        key_responsibilities: role.keyResponsibilities,
+        learning_outcomes: role.learningOutcomes,
+        interlinking_feature: role.interlinkingFeature,
+        requirements: role.requirements,
+        display_order: role.display_order ?? 0,
+        is_active: role.is_active ?? true,
+        updated_at: new Date().toISOString()
+      };
+
+      const { error } = await supabase
+        .from('career_roles')
+        .upsert(payload, { onConflict: 'id' });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Failed to save role' };
+    }
   }
 };

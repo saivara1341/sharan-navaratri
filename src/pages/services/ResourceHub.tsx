@@ -24,7 +24,7 @@ import {
   Users,
   Handshake
 } from "lucide-react";
-import { Helmet } from "react-helmet-async";
+import { SeoHead } from '@/components/seo/SeoHead';
 import { Link, useSearchParams } from "react-router-dom";
 
 const ResourceHub = () => {
@@ -166,10 +166,21 @@ const ResourceHub = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col pt-32">
       <Navbar />
-      <Helmet>
-        <title>Nexus Resource Hub | Siddhi Dynamics</title>
-        <meta name="description" content="A specialized multi-profile resource hub for Architects, Founders, Investors, and Students." />
-      </Helmet>
+      <SeoHead
+        title="Nexus Resource Hub — Tools for Architects, Founders, Investors & Students | Siddhi Dynamics"
+        description="A specialized multi-profile resource hub for Architects, Founders, Investors, and Students. Access AI tools, blueprints, and career resources tailored to your profile. Built by Siddhi Dynamics."
+        canonical="/services/resource-hub"
+        keywords="resource hub India, AI tools for architects, startup resources India, investor resources India, student career tools, Nexus resource hub Siddhi Dynamics"
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'Service',
+          name: 'Nexus Resource Hub',
+          provider: { '@type': 'Organization', name: 'Siddhi Dynamics LLP', url: 'https://siddhidynamics.in' },
+          description: 'A specialized multi-profile resource hub for Architects, Founders, Investors, and Students with AI-powered tools and blueprints.',
+          areaServed: 'IN',
+          url: 'https://siddhidynamics.in/services/resource-hub',
+        }}
+      />
 
       <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />

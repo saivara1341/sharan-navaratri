@@ -641,7 +641,7 @@ ${fileListFormatted || "No direct files uploaded"}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-card border border-border">
           <div className="text-xs text-muted-foreground flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Direct SBI Settlement Coordinates: A/C 45170121323 · IFSC SBIN0021632</span>
+            <span>Direct Settlement Coordinates: Assigned by Admin (Corporate or Personal)</span>
           </div>
           <button
             type="submit"

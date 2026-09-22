@@ -35,7 +35,7 @@ export function parseSubmissionMessage(rawMessage: string | null | undefined): P
   const attachments: string[] = [];
 
   // 1. Extract Selected Services
-  const servicesMatch = text.match(/\[Selected Services:\s*([^\]]+)\]/i);
+  const servicesMatch = text.match(/\[(?:Selected Services|SERVICES REQUESTED):\s*([^\]]+)\]/i);
   if (servicesMatch) {
     const rawContent = servicesMatch[1];
     const rawList = rawContent.split(',').map(s => s.trim()).filter(Boolean);
@@ -130,7 +130,7 @@ export function parseSubmissionMessage(rawMessage: string | null | undefined): P
 
   // 7. Strip all bracket tags from text
   let clean = text
-    .replace(/\[Selected Services:[^\]]*\]/gi, '')
+    .replace(/\[(?:Selected Services|SERVICES REQUESTED):[^\]]*\]/gi, '')
     .replace(/\[Budget Preference:[^\]]*\]/gi, '')
     .replace(/\[Consent:[^\]]*\]/gi, '')
     .replace(/\[Outreach:[^\]]*\]/gi, '')

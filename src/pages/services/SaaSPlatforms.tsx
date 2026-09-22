@@ -70,16 +70,17 @@ export default function SaaSPlatforms() {
         <title>Custom SaaS Platform Development in Nizamabad &amp; Hyderabad | Siddhi Dynamics</title>
         <meta name="description" content="Custom SaaS platform development for Indian businesses and startups. Multi-tenant, Razorpay-integrated, GST-compliant. Built by Siddhi Dynamics, Hyderabad &amp; Nizamabad." />
         <meta name="keywords" content="custom SaaS development India, SaaS platform India, cloud software development India, SaaS startup India, SaaS for Indian businesses, software as a service Hyderabad, software as a service Nizamabad, SaaS developer Nizamabad" />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <link rel="canonical" href="https://siddhidynamics.in/services/saas" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://siddhidynamics.in/services/saas" />
         <meta property="og:title" content="Custom SaaS Platform Development India | Siddhi Dynamics" />
         <meta property="og:description" content="Custom SaaS platforms for Indian businesses — multi-tenant, Razorpay-integrated, GST-compliant. Built by Siddhi Dynamics, Hyderabad." />
-        <meta property="og:image" content="https://siddhidynamics.in/favicon.jpg" />
+        <meta property="og:image" content="https://siddhidynamics.in/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Custom SaaS Platform Development India | Siddhi Dynamics" />
         <meta name="twitter:description" content="Custom SaaS platforms for Indian startups and businesses. Built by Siddhi Dynamics, Hyderabad." />
-        <meta name="twitter:image" content="https://siddhidynamics.in/favicon.jpg" />
+        <meta name="twitter:image" content="https://siddhidynamics.in/og-image.png" />
         <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>

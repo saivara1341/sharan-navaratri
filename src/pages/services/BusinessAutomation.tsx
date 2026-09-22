@@ -94,16 +94,17 @@ export default function BusinessAutomation() {
         <title>Business Automation & AI Solutions in Nizamabad & Hyderabad | Siddhi Dynamics</title>
         <meta name="description" content="End-to-end business automation for Indian SMBs — AI invoice processing, bookkeeping automation, GST compliance, and workflow digitization. Siddhi Dynamics, Hyderabad & Nizamabad." />
         <meta name="keywords" content="business automation India, AI automation SMB India, invoice automation India, GST automation Hyderabad, workflow digitization India, business process automation Nizamabad" />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <link rel="canonical" href="https://siddhidynamics.in/services/business-automation" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://siddhidynamics.in/services/business-automation" />
         <meta property="og:title" content="Business Automation for Indian SMBs | Siddhi Dynamics" />
         <meta property="og:description" content="AI-powered invoice processing, bookkeeping, GST compliance and workflow automation for Indian businesses." />
-        <meta property="og:image" content="https://siddhidynamics.in/favicon.jpg" />
+        <meta property="og:image" content="https://siddhidynamics.in/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Business Automation for Indian SMBs | Siddhi Dynamics" />
         <meta name="twitter:description" content="AI-powered invoice processing, bookkeeping, GST compliance and workflow automation for Indian businesses." />
-        <meta name="twitter:image" content="https://siddhidynamics.in/favicon.jpg" />
+        <meta name="twitter:image" content="https://siddhidynamics.in/og-image.png" />
         <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>

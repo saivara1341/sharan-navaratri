@@ -3,7 +3,31 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import siddhiHeaderLogo from '@/assets/siddhi-dynamics-header-logo.png';
-import { LogOut, Home, X, LayoutDashboard, User, Bot } from 'lucide-react';
+import { 
+  X, 
+  Home,
+  ExternalLink,
+  ChevronRight,
+  Sparkles,
+  ArrowRight,
+  Shield,
+  Layers,
+  LayoutDashboard,
+  PanelsTopLeft,
+  CreditCard,
+  ReceiptText,
+  Settings as SettingsIcon,
+  LogOut,
+  GraduationCap,
+  Briefcase,
+  CalendarCheck,
+  Landmark,
+  CheckCircle2,
+  Clock,
+  FileText,
+  Building2,
+  Send
+} from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
@@ -28,8 +52,11 @@ export const Navbar = () => {
     location.pathname === '/about' ||
     location.pathname === '/blog' ||
     location.pathname.startsWith('/services/');
-  const isPortal = location.pathname.includes('/portal');
-  const isClientPortal = location.pathname.startsWith('/portal/client') || (userRole === 'client' && location.pathname.startsWith('/portal'));
+  const isPortal = location.pathname.includes('/portal') || location.pathname.includes('/admin-hq-nexus');
+  const isInternPortal = location.pathname.startsWith('/portal/intern');
+  const isEmployeePortal = location.pathname.startsWith('/portal/employee');
+  const isAgencyPortal = location.pathname.startsWith('/portal/agency') || location.pathname.startsWith('/portal/v-magnetic-minds');
+  const isClientPortal = location.pathname.startsWith('/portal/client') || (!isInternPortal && !isEmployeePortal && !isAgencyPortal && isPortal);
 
   const navLinks = [
     { name: t('nav.submitChallenge', 'Submit Your Challenge'), href: isPortal ? '#/portal?tab=contact&type=problem' : '#/submit?type=problem' },
@@ -183,7 +210,7 @@ export const Navbar = () => {
               />
             </motion.a>
 
-            {/* Main Menu Toggle Button (shown on desktop and mobile) */}
+            {/* Main Menu & Action Buttons */}
             <div className="flex items-center gap-2 z-[110]">
               <motion.button
                 className="relative flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-muted/60 hover:bg-muted border border-border text-foreground transition-all cursor-pointer shadow-sm"
@@ -256,224 +283,499 @@ export const Navbar = () => {
                   <X className="w-6 h-6" />
                 </motion.button>
 
-                {/* 1. Home */}
-                <motion.a
-                  href="#/"
-                  onClick={handleHomeClick}
-                  className={`text-2xl sm:text-3xl font-display font-bold transition-colors flex items-center gap-3 relative z-[120] cursor-pointer ${
-                    location.pathname === '/' && !location.hash ? 'text-primary' : 'text-foreground hover:text-primary'
-                  }`}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 }}
-                >
-                  <Home className="w-7 h-7" />
-                  {t('nav.home', 'Home')}
-                </motion.a>
+                {/* ── PORTAL WORKSPACE MENU (MOBILE ONLY WHEN IN PORTAL) ── */}
+                {isPortal && (
+                  <div className="md:hidden flex flex-col items-center gap-3 w-full max-w-sm relative z-[120] text-center my-auto py-4">
+                    
+                    {/* INTERN PORTAL MENU */}
+                    {isInternPortal && (
+                      <>
+                        <div className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-1">
+                          <GraduationCap className="w-3.5 h-3.5" />
+                          <span>Intern Workspace</span>
+                        </div>
 
-                {/* 2. Services */}
-                <motion.a
-                  href="/#services"
-                  onClick={handleAnchorClick('services')}
-                  className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120] cursor-pointer"
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.08 }}
-                >
-                  {t('nav.services', 'Services')}
-                </motion.a>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            document.body.style.overflow = 'unset';
+                            window.dispatchEvent(new CustomEvent('intern-nav-tab', { detail: { tab: 'tasks' } }));
+                          }}
+                          className="w-full py-3 px-5 rounded-2xl bg-card border border-border hover:border-amber-500/40 text-base font-bold text-foreground hover:text-amber-400 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+                        >
+                          <Clock className="w-5 h-5 text-amber-400" />
+                          <span>Tasks & Deadlines</span>
+                        </button>
 
-                {/* 3. About Us */}
-                <motion.a
-                  href="/about"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                    navigate('/about');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className={`text-xl font-bold transition-colors relative z-[120] cursor-pointer ${
-                    location.pathname === '/about' ? 'text-primary' : 'text-foreground hover:text-primary'
-                  }`}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.11 }}
-                >
-                  {t('nav.aboutUs', 'About Us')}
-                </motion.a>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            document.body.style.overflow = 'unset';
+                            window.dispatchEvent(new CustomEvent('intern-nav-tab', { detail: { tab: 'submissions' } }));
+                          }}
+                          className="w-full py-3 px-5 rounded-2xl bg-card border border-border hover:border-amber-500/40 text-base font-bold text-foreground hover:text-amber-400 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+                        >
+                          <CheckCircle2 className="w-5 h-5 text-amber-400" />
+                          <span>Submit Work & Proofs</span>
+                        </button>
 
-                {/* 4. Careers */}
-                <motion.a
-                  href="/careers"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                    navigate('/careers');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className={`text-xl font-bold transition-colors relative z-[120] cursor-pointer ${
-                    location.pathname === '/careers' ? 'text-primary' : 'text-foreground hover:text-primary'
-                  }`}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.14 }}
-                >
-                  {t('nav.careers', 'Careers')}
-                </motion.a>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            document.body.style.overflow = 'unset';
+                            window.dispatchEvent(new CustomEvent('intern-nav-tab', { detail: { tab: 'documents' } }));
+                          }}
+                          className="w-full py-3 px-5 rounded-2xl bg-card border border-border hover:border-amber-500/40 text-base font-bold text-foreground hover:text-amber-400 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+                        >
+                          <FileText className="w-5 h-5 text-amber-400" />
+                          <span>Offer & Certificates</span>
+                        </button>
 
-                {/* 5. Blogs */}
-                <motion.a
-                  href="/blog"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                    navigate('/blog');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className={`text-xl font-bold transition-colors relative z-[120] cursor-pointer ${
-                    location.pathname === '/blog' ? 'text-primary' : 'text-foreground hover:text-primary'
-                  }`}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.17 }}
-                >
-                  {t('nav.blogs', 'Blogs')}
-                </motion.a>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            document.body.style.overflow = 'unset';
+                            window.dispatchEvent(new CustomEvent('intern-open-request-modal'));
+                          }}
+                          className="w-full py-3 px-5 rounded-2xl bg-card border border-border hover:border-amber-500/40 text-base font-bold text-foreground hover:text-amber-400 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+                        >
+                          <Send className="w-5 h-5 text-amber-400" />
+                          <span>Request Data / Assets</span>
+                        </button>
+                      </>
+                    )}
 
-                {/* Additional navigation links */}
-                <motion.a
-                  href="/#vision"
-                  onClick={handleAnchorClick('vision')}
-                  className="text-lg font-medium text-foreground/80 hover:text-primary transition-colors relative z-[120] cursor-pointer"
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.19 }}
-                >
-                  {t('nav.vision', 'Vision')}
-                </motion.a>
+                    {/* EMPLOYEE PORTAL MENU */}
+                    {isEmployeePortal && (
+                      <>
+                        <div className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-1">
+                          <Briefcase className="w-3.5 h-3.5" />
+                          <span>Employee Builder Hub</span>
+                        </div>
 
-                <motion.a
-                  href="/#projects"
-                  onClick={handleAnchorClick('projects')}
-                  className="text-lg font-medium text-foreground/80 hover:text-primary transition-colors relative z-[120] cursor-pointer"
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.21 }}
-                >
-                  {t('nav.projects', 'Projects')}
-                </motion.a>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            document.body.style.overflow = 'unset';
+                            window.dispatchEvent(new CustomEvent('employee-nav-tab', { detail: { tab: 'workloads' } }));
+                          }}
+                          className="w-full py-3 px-5 rounded-2xl bg-card border border-border hover:border-blue-500/40 text-base font-bold text-foreground hover:text-blue-400 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+                        >
+                          <Briefcase className="w-5 h-5 text-blue-400" />
+                          <span>Client Roadmaps & Projects</span>
+                        </button>
 
-                <motion.a
-                  href="/contact"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                    navigate('/contact');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className="text-lg font-medium text-foreground/80 hover:text-primary transition-colors relative z-[120] cursor-pointer"
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.23 }}
-                >
-                  {t('nav.contactUs', 'Contact Us')}
-                </motion.a>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            document.body.style.overflow = 'unset';
+                            window.dispatchEvent(new CustomEvent('employee-nav-tab', { detail: { tab: 'tasks' } }));
+                          }}
+                          className="w-full py-3 px-5 rounded-2xl bg-card border border-border hover:border-blue-500/40 text-base font-bold text-foreground hover:text-blue-400 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+                        >
+                          <CheckCircle2 className="w-5 h-5 text-blue-400" />
+                          <span>Tasks & Sprints</span>
+                        </button>
 
-                <motion.a
-                  href="/submit?type=problem"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                    if (location.pathname === '/') {
-                      setTimeout(() => {
-                        const el = document.getElementById('submit');
-                        if (el) {
-                          const offset = 80;
-                          const bodyRect = document.body.getBoundingClientRect().top;
-                          const elementRect = el.getBoundingClientRect().top;
-                          const offsetPosition = Math.max(0, elementRect - bodyRect - offset);
-                          window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-                          return;
-                        }
-                        navigate('/submit?type=problem');
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }, 100);
-                    } else {
-                      navigate('/submit?type=problem');
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-                  }}
-                  className="text-lg font-extrabold text-primary hover:text-primary/80 transition-colors relative z-[120] cursor-pointer"
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.25 }}
-                >
-                  {t('nav.submit', 'Submit Problem')}
-                </motion.a>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            document.body.style.overflow = 'unset';
+                            window.dispatchEvent(new CustomEvent('employee-nav-tab', { detail: { tab: 'attendance' } }));
+                          }}
+                          className="w-full py-3 px-5 rounded-2xl bg-card border border-border hover:border-blue-500/40 text-base font-bold text-foreground hover:text-blue-400 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+                        >
+                          <CalendarCheck className="w-5 h-5 text-blue-400" />
+                          <span>Daily Attendance Check-In</span>
+                        </button>
 
-                <div className="w-28 h-[1px] bg-border/60 my-1 relative z-[120]" />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            document.body.style.overflow = 'unset';
+                            window.dispatchEvent(new CustomEvent('employee-nav-tab', { detail: { tab: 'salary' } }));
+                          }}
+                          className="w-full py-3 px-5 rounded-2xl bg-card border border-blue-500/40 text-base font-bold text-foreground hover:text-blue-400 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+                        >
+                          <Landmark className="w-5 h-5 text-blue-400" />
+                          <span>Salary & Banking Details</span>
+                        </button>
+                      </>
+                    )}
 
-                {/* 6. English / LanguageSwitcher */}
-                <div className="relative z-[120]">
-                  <LanguageSwitcher />
-                </div>
+                    {/* AGENCY PORTAL MENU */}
+                    {isAgencyPortal && (
+                      <>
+                        <div className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 mb-1">
+                          <Building2 className="w-3.5 h-3.5" />
+                          <span>Agency Command Center</span>
+                        </div>
 
-                {/* Dashboard & Logout (shown only when user is authenticated) */}
-                {isLoggedIn && (
-                  <div className="flex flex-col gap-3 w-full max-w-xs relative z-[120]">
-                    <motion.a
-                      href={isAdmin ? "/admin-hq-nexus" : `/portal/${userRole || ''}`}
-                      onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); handleDashboardClick(e); }}
-                      className="w-full text-center px-8 py-3.5 rounded-2xl font-bold text-base bg-gradient-to-r from-primary to-accent text-primary-foreground flex items-center justify-center gap-2 shadow-xl shadow-primary/20 cursor-pointer"
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.28 }}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            document.body.style.overflow = 'unset';
+                            navigate('/portal/agency?tab=clients');
+                          }}
+                          className="w-full py-3 px-5 rounded-2xl bg-card border border-border hover:border-purple-500/40 text-base font-bold text-foreground hover:text-purple-400 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+                        >
+                          <Building2 className="w-5 h-5 text-purple-400" />
+                          <span>Managed Clients</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            document.body.style.overflow = 'unset';
+                            navigate('/portal/agency?tab=billing');
+                          }}
+                          className="w-full py-3 px-5 rounded-2xl bg-card border border-border hover:border-purple-500/40 text-base font-bold text-foreground hover:text-purple-400 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+                        >
+                          <ReceiptText className="w-5 h-5 text-purple-400" />
+                          <span>Invoices & Agreements</span>
+                        </button>
+                      </>
+                    )}
+
+                    {/* CLIENT WORKSPACE MENU */}
+                    {isClientPortal && !isInternPortal && !isEmployeePortal && !isAgencyPortal && (
+                      <>
+                        <div className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 mb-1">
+                          <PanelsTopLeft className="w-3 h-3" />
+                          <span>Client Workspace</span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            document.body.style.overflow = 'unset';
+                            if (location.pathname === '/portal/client') {
+                              window.dispatchEvent(new CustomEvent('portal-nav-tab', { detail: { tab: 'services' } }));
+                            } else {
+                              navigate('/portal/client?tab=services');
+                            }
+                          }}
+                          className="w-full py-3 px-5 rounded-2xl bg-card border border-border hover:border-primary/40 text-base font-bold text-foreground hover:text-primary transition-all flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+                        >
+                          <PanelsTopLeft className="w-5 h-5 text-primary" />
+                          <span>Services</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            document.body.style.overflow = 'unset';
+                            window.dispatchEvent(new CustomEvent('open-client-profile-settings'));
+                          }}
+                          className="w-full py-3 px-5 rounded-2xl bg-card border border-border hover:border-primary/40 text-base font-bold text-foreground hover:text-primary transition-all flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+                        >
+                          <User className="w-5 h-5 text-primary" />
+                          <span>Profile</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            document.body.style.overflow = 'unset';
+                            if (location.pathname === '/portal/client') {
+                              window.dispatchEvent(new CustomEvent('portal-nav-tab', { detail: { tab: 'billing' } }));
+                            } else {
+                              navigate('/portal/client?tab=billing');
+                            }
+                          }}
+                          className="w-full py-3 px-5 rounded-2xl bg-card border border-border hover:border-primary/40 text-base font-bold text-foreground hover:text-primary transition-all flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+                        >
+                          <CreditCard className="w-5 h-5 text-primary" />
+                          <span>Payments</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            document.body.style.overflow = 'unset';
+                            if (location.pathname === '/portal/client') {
+                              window.dispatchEvent(new CustomEvent('portal-nav-tab', { detail: { tab: 'billing' } }));
+                            } else {
+                              navigate('/portal/client?tab=billing');
+                            }
+                          }}
+                          className="w-full py-3 px-5 rounded-2xl bg-card border border-border hover:border-primary/40 text-base font-bold text-foreground hover:text-primary transition-all flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+                        >
+                          <ReceiptText className="w-5 h-5 text-primary" />
+                          <span>Invoices</span>
+                        </button>
+                      </>
+                    )}
+
+                    <div className="w-full h-[1px] bg-border/60 my-1" />
+
+                    {/* Switch Portal */}
+                    <motion.button
+                      type="button"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        document.body.style.overflow = 'unset';
+                        navigate('/portal');
+                      }}
+                      className="w-full py-2.5 px-5 rounded-xl font-bold text-xs bg-muted border border-border text-foreground hover:text-primary flex items-center justify-center gap-2 cursor-pointer transition-colors"
                     >
-                      <LayoutDashboard className="w-5 h-5" />
-                      {t('nav.dashboard', 'Dashboard')}
-                    </motion.a>
-                    {userRole === 'client' && (
+                      <LayoutDashboard className="w-4 h-4" />
+                      <span>All Portals / Switch Workspace</span>
+                    </motion.button>
+
+                    {/* Logout */}
+                    {isLoggedIn && (
                       <motion.button
+                        type="button"
                         onClick={() => {
                           setMobileMenuOpen(false);
-                          if (location.pathname === '/portal/client') {
-                            window.dispatchEvent(new CustomEvent('open-client-profile-settings'));
-                          } else {
-                            navigate('/portal/client?action=profile');
-                          }
+                          document.body.style.overflow = 'unset';
+                          handleLogout();
                         }}
-                        className="w-full text-center px-8 py-3 rounded-2xl font-bold text-sm bg-muted border border-border text-foreground hover:text-primary flex items-center justify-center gap-2 cursor-pointer"
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
+                        className="w-full py-2.5 px-5 rounded-xl font-bold text-xs bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 flex items-center justify-center gap-2 cursor-pointer transition-colors"
                       >
-                        <User className="w-4 h-4" />
-                        {t('nav.profileSettings', 'Profile Settings')}
+                        <LogOut className="w-4 h-4" />
+                        <span>Sign Out</span>
                       </motion.button>
                     )}
-                    <motion.button
-                      onClick={() => {
-                        handleLogout();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="w-full text-center px-8 py-3 rounded-2xl font-bold text-sm bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 flex items-center justify-center gap-2 cursor-pointer transition-colors"
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.32 }}
-                    >
-                      <LogOut className="w-4 h-4" />
-                      {t('nav.logout', 'Logout')}
-                    </motion.button>
                   </div>
                 )}
 
+                {/* ── PUBLIC WEBSITE MENU (DESKTOP IN PORTALS, ALL SCREENS ON PUBLIC SITE) ── */}
+                <div className={`w-full flex-col items-center gap-4 md:gap-5 relative z-[120] ${isPortal ? 'hidden md:flex' : 'flex'}`}>
+                  {/* 1. Home */}
+                  <motion.a
+                    href="#/"
+                    onClick={handleHomeClick}
+                    className={`text-2xl sm:text-3xl font-display font-bold transition-colors flex items-center gap-3 relative z-[120] cursor-pointer ${
+                      location.pathname === '/' && !location.hash ? 'text-primary' : 'text-foreground hover:text-primary'
+                    }`}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.05 }}
+                  >
+                    <Home className="w-7 h-7" />
+                    {t('nav.home', 'Home')}
+                  </motion.a>
+
+                  {/* 2. Services */}
+                  <motion.a
+                    href="/#services"
+                    onClick={handleAnchorClick('services')}
+                    className="text-xl font-bold text-foreground hover:text-primary transition-colors relative z-[120] cursor-pointer"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.08 }}
+                  >
+                    {t('nav.services', 'Services')}
+                  </motion.a>
+
+                  {/* 3. About Us */}
+                  <motion.a
+                    href="/about"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setMobileMenuOpen(false);
+                      document.body.style.overflow = 'unset';
+                      navigate('/about');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className={`text-xl font-bold transition-colors relative z-[120] cursor-pointer ${
+                      location.pathname === '/about' ? 'text-primary' : 'text-foreground hover:text-primary'
+                    }`}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.11 }}
+                  >
+                    {t('nav.aboutUs', 'About Us')}
+                  </motion.a>
+
+                  {/* 4. Careers */}
+                  <motion.a
+                    href="/careers"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setMobileMenuOpen(false);
+                      document.body.style.overflow = 'unset';
+                      navigate('/careers');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className={`text-xl font-bold transition-colors relative z-[120] cursor-pointer ${
+                      location.pathname === '/careers' ? 'text-primary' : 'text-foreground hover:text-primary'
+                    }`}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.14 }}
+                  >
+                    {t('nav.careers', 'Careers')}
+                  </motion.a>
+
+                  {/* 5. Blogs */}
+                  <motion.a
+                    href="/blog"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setMobileMenuOpen(false);
+                      document.body.style.overflow = 'unset';
+                      navigate('/blog');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className={`text-xl font-bold transition-colors relative z-[120] cursor-pointer ${
+                      location.pathname === '/blog' ? 'text-primary' : 'text-foreground hover:text-primary'
+                    }`}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.17 }}
+                  >
+                    {t('nav.blogs', 'Blogs')}
+                  </motion.a>
+
+                  {/* Additional navigation links */}
+                  <motion.a
+                    href="/#vision"
+                    onClick={handleAnchorClick('vision')}
+                    className="text-lg font-medium text-foreground/80 hover:text-primary transition-colors relative z-[120] cursor-pointer"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.19 }}
+                  >
+                    {t('nav.vision', 'Vision')}
+                  </motion.a>
+
+                  <motion.a
+                    href="/#projects"
+                    onClick={handleAnchorClick('projects')}
+                    className="text-lg font-medium text-foreground/80 hover:text-primary transition-colors relative z-[120] cursor-pointer"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.21 }}
+                  >
+                    {t('nav.projects', 'Projects')}
+                  </motion.a>
+
+                  <motion.a
+                    href="/contact"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setMobileMenuOpen(false);
+                      document.body.style.overflow = 'unset';
+                      navigate('/contact');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="text-lg font-medium text-foreground/80 hover:text-primary transition-colors relative z-[120] cursor-pointer"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.23 }}
+                  >
+                    {t('nav.contactUs', 'Contact Us')}
+                  </motion.a>
+
+                  <motion.a
+                    href="/submit?type=problem"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setMobileMenuOpen(false);
+                      document.body.style.overflow = 'unset';
+                      if (location.pathname === '/') {
+                        setTimeout(() => {
+                          const el = document.getElementById('submit');
+                          if (el) {
+                            const offset = 80;
+                            const bodyRect = document.body.getBoundingClientRect().top;
+                            const elementRect = el.getBoundingClientRect().top;
+                            const offsetPosition = Math.max(0, elementRect - bodyRect - offset);
+                            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+                            return;
+                          }
+                          navigate('/submit?type=problem');
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }, 100);
+                      } else {
+                        navigate('/submit?type=problem');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }
+                    }}
+                    className="text-lg font-extrabold text-primary hover:text-primary/80 transition-colors relative z-[120] cursor-pointer"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25 }}
+                  >
+                    {t('nav.submit', 'Submit Problem')}
+                  </motion.a>
+
+                  <div className="w-28 h-[1px] bg-border/60 my-1 relative z-[120]" />
+
+                  {/* LanguageSwitcher */}
+                  <div className="relative z-[120]">
+                    <LanguageSwitcher />
+                  </div>
+
+                  {/* Dashboard & Logout (Shown only on public site when logged in) */}
+                  {isLoggedIn && !isPortal && (
+                    <div className="flex flex-col gap-3 w-full max-w-xs relative z-[120]">
+                      <motion.a
+                        href={isAdmin ? "/admin-hq-nexus" : `/portal/${userRole || ''}`}
+                        onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); handleDashboardClick(e); }}
+                        className="w-full text-center px-8 py-3.5 rounded-2xl font-bold text-base bg-gradient-to-r from-primary to-accent text-primary-foreground flex items-center justify-center gap-2 shadow-xl shadow-primary/20 cursor-pointer"
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.28 }}
+                      >
+                        <LayoutDashboard className="w-5 h-5" />
+                        {t('nav.dashboard', 'Dashboard')}
+                      </motion.a>
+                      {userRole === 'client' && (
+                        <motion.button
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            if (location.pathname === '/portal/client') {
+                              window.dispatchEvent(new CustomEvent('open-client-profile-settings'));
+                            } else {
+                              navigate('/portal/client?action=profile');
+                            }
+                          }}
+                          className="w-full text-center px-8 py-3 rounded-2xl font-bold text-sm bg-muted border border-border text-foreground hover:text-primary flex items-center justify-center gap-2 cursor-pointer"
+                          initial={{ opacity: 0, y: 15 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.3 }}
+                        >
+                          <User className="w-4 h-4" />
+                          {t('nav.profileSettings', 'Profile Settings')}
+                        </motion.button>
+                      )}
+                      <motion.button
+                        onClick={() => {
+                          handleLogout();
+                          setMobileMenuOpen(false);
+                        }}
+                        className="w-full text-center px-8 py-3 rounded-2xl font-bold text-sm bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.32 }}
+                      >
+                        <LogOut className="w-4 h-4" />
+                        {t('nav.logout', 'Logout')}
+                      </motion.button>
+                    </div>
+                  )}
+                </div>
+
               <motion.div
-                className="flex items-center gap-8 mt-4 relative z-10"
+                className={`items-center gap-8 mt-4 relative z-10 ${isPortal ? 'hidden md:flex' : 'flex'}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * navLinks.length + 0.1 }}

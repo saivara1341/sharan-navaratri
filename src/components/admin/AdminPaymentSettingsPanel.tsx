@@ -186,12 +186,15 @@ export function AdminPaymentSettingsPanel() {
         </button>
       </div>
 
-      {/* UPI + Bank */}
+      {/* UPI + Bank - Account 1 */}
       <div className="adm-card">
-        <div className="adm-card-header">
+        <div className="adm-card-header flex items-center justify-between">
           <span className="adm-card-title flex items-center gap-2">
             <CreditCard className="w-4 h-4 adm-olive-accent" />
-            UPI & Bank Details
+            1. Corporate Account (Firm / LLP)
+          </span>
+          <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            Primary Inflow
           </span>
         </div>
 
@@ -201,7 +204,7 @@ export function AdminPaymentSettingsPanel() {
             className="adm-input font-mono"
             value={settings.upi_id}
             onChange={e => setSettings(p => ({ ...p, upi_id: e.target.value }))}
-            placeholder="yourname@bankname"
+            placeholder="siddhidynamics@sbi"
           />
         </div>
 
@@ -239,6 +242,37 @@ export function AdminPaymentSettingsPanel() {
               value={settings.ifsc}
               onChange={e => setSettings(p => ({ ...p, ifsc: e.target.value }))}
             />
+          </div>
+        </div>
+      </div>
+
+      {/* Account 2: Personal / Designated Partner */}
+      <div className="adm-card md:col-span-2">
+        <div className="adm-card-header flex items-center justify-between">
+          <span className="adm-card-title flex items-center gap-2">
+            <CreditCard className="w-4 h-4 adm-olive-accent" />
+            2. Personal / Designated Partner Account
+          </span>
+          <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            Personal / Designated Partner
+          </span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+          <div className="adm-form-group">
+            <label className="adm-label">Account Holder</label>
+            <div className="adm-input font-semibold flex items-center select-all">Sarugu Sai Vara Prasad</div>
+          </div>
+          <div className="adm-form-group">
+            <label className="adm-label">Bank Name</label>
+            <div className="adm-input flex items-center select-all">State Bank of India (SBI)</div>
+          </div>
+          <div className="adm-form-group">
+            <label className="adm-label">Account Number</label>
+            <div className="adm-input font-mono font-bold text-emerald-400 flex items-center select-all">62495383611</div>
+          </div>
+          <div className="adm-form-group">
+            <label className="adm-label">IFSC Code</label>
+            <div className="adm-input font-mono font-bold text-emerald-400 flex items-center select-all">SBIN0020149</div>
           </div>
         </div>
       </div>

@@ -3,45 +3,40 @@
    Color palette: near-black, olive, gold-olive, deep charcoal
    ============================================================ */
 
-/* ── CSS Custom Properties (scoped to admin root) ───────── */
-.admin-portal-root {
-  --adm-bg:            #080808;
-  --adm-surface:       #101010;
-  --adm-card:          #141414;
-  --adm-card-hover:    #1a1a1a;
-  --adm-border:        #252525;
-  --adm-border-light:  #303030;
+/* ── CSS Custom Properties ─────────────────────────────────── */
+:root, .admin-portal-root {
+  --adm-bg:            #f7f5ef;
+  --adm-surface:       #ffffff;
+  --adm-card:          #ffffff;
+  --adm-card-hover:    #fcfbf9;
+  --adm-border:        #e7e5e4;
+  --adm-border-light:  #e7e5e4;
 
-  /* Olive palette */
-  --adm-olive:         #6b7c3d;
-  --adm-olive-mid:     #7d9148;
-  --adm-olive-light:   #93a854;
-  --adm-olive-glow:    rgba(107, 124, 61, 0.2);
+  /* Primary theme accent */
+  --adm-olive:         #1c1917;
+  --adm-olive-mid:     #292524;
+  --adm-olive-light:   #44403c;
+  --adm-olive-glow:    rgba(28, 25, 23, 0.08);
 
-  /* Gold / accent */
-  --adm-gold:          #c9b96f;
-  --adm-gold-light:    #d9cc90;
-  --adm-gold-dim:      rgba(201, 185, 111, 0.15);
+  /* Lime / Accent */
+  --adm-gold:          #4d7c0f;
+  --adm-gold-light:    #65a30d;
+  --adm-gold-dim:      rgba(101, 163, 13, 0.12);
 
   /* Semantic */
-  --adm-success:       #4a7c59;
-  --adm-warning:       #8a6e2f;
-  --adm-danger:        #7c3d3d;
-  --adm-info:          #3d5a7c;
+  --adm-success:       #15803d;
+  --adm-warning:       #b45309;
+  --adm-danger:        #b91c1c;
+  --adm-info:          #0369a1;
 
   /* Text */
-  --adm-text-primary:  #e8e8e8;
-  --adm-text-secondary:#9a9a9a;
-  --adm-text-muted:    #606060;
+  --adm-text-primary:  #1c1917;
+  --adm-text-secondary:#57534e;
+  --adm-text-muted:    #78716c;
 
   /* Sidebar */
   --adm-sidebar-w:     240px;
-  --adm-sidebar-bg:    #0c0c0c;
-
-  background-color: var(--adm-bg);
-  color: var(--adm-text-primary);
-  font-family: 'Inter', 'Outfit', system-ui, -apple-system, sans-serif;
-  min-height: 100vh;
+  --adm-sidebar-bg:    #ffffff;
 }
 
 /* ── Scrollbar ──────────────────────────────────────────── */
@@ -558,4 +553,88 @@
 }
 .adm-empty-msg {
   font-size: 0.875rem;
+}
+
+/* ============================================================
+   Unified Client Portal Theme Overrides for Admin Portal
+   ============================================================ */
+.admin-portal-root {
+  background-color: #f7f5ef !important;
+  color: #29251d !important;
+}
+
+.admin-portal-root .glass-card {
+  background: #ffffff !important;
+  border: 1px solid #e7e5e4 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+  color: #1c1917 !important;
+  backdrop-filter: none !important;
+}
+
+.admin-portal-root .glass-card::before,
+.admin-portal-root .glass-card::after {
+  display: none !important;
+}
+
+.admin-portal-root .electric-border::before,
+.admin-portal-root .electric-border::after {
+  display: none !important;
+}
+
+.admin-portal-root .electric-border {
+  border: 1px solid #e7e5e4 !important;
+  border-radius: 1rem !important;
+  background: #ffffff !important;
+}
+
+.admin-portal-root .bg-card {
+  background-color: #ffffff !important;
+}
+
+.admin-portal-root .border-border {
+  border-color: #e7e5e4 !important;
+}
+
+.admin-portal-root .text-foreground {
+  color: #1c1917 !important;
+}
+
+.admin-portal-root .text-muted-foreground {
+  color: #57534e !important;
+}
+
+.admin-portal-root .bg-muted {
+  background-color: #f5f5f4 !important;
+  color: #1c1917 !important;
+}
+
+.admin-portal-root input:not([type="checkbox"]):not([type="radio"]),
+.admin-portal-root select,
+.admin-portal-root textarea {
+  background-color: #ffffff !important;
+  color: #1c1917 !important;
+  border-color: #e7e5e4 !important;
+}
+
+.admin-portal-root input::placeholder,
+.admin-portal-root textarea::placeholder {
+  color: #a8a29e !important;
+}
+
+.admin-portal-root table {
+  color: #1c1917 !important;
+}
+
+.admin-portal-root th {
+  background-color: #fafaf9 !important;
+  color: #57534e !important;
+  border-color: #e7e5e4 !important;
+}
+
+.admin-portal-root td {
+  border-color: #f5f5f4 !important;
+}
+
+.admin-portal-root tr:hover td {
+  background-color: #fafaf9 !important;
 }

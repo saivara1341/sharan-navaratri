@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
 import { emailService } from "@/services/emailService";
 
+import { resolveRoleForEmail, getPortalPathForRole } from "@/lib/roleResolver";
+
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -20,24 +22,23 @@ const Auth = () => {
 
   const navigate = useNavigate();
 
-  const checkAdmin = (emailToCheck?: string) => {
-    if (!emailToCheck) return false;
-    const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "ssaivaraprasad51@gmail.com")
-      .split(",")
-      .map((e: string) => e.trim().toLowerCase());
-    return adminEmails.includes(emailToCheck.trim().toLowerCase());
-  };
-
   const checkRoleAndRedirect = async (user: any) => {
     if (!user) return;
-    const email = user.email;
-    if (checkAdmin(email)) {
-      navigate("/admin-hq-nexus");
+    const email = user.email?.trim().toLowerCase();
+
+    // 1. Grasp assigned role directly by email
+    const assignedRole = await resolveRoleForEmail(email);
+    if (assignedRole) {
+      navigate(getPortalPathForRole(assignedRole));
       return;
     }
 
+    // 2. Fallback to user metadata
     const role = user.user_metadata?.role;
-    if (role === 'employee') {
+    if (role === 'intern') {
+      navigate("/portal/intern");
+      return;
+    } else if (role === 'employee') {
       navigate("/portal/employee");
       return;
     } else if (role === 'client') {
@@ -47,11 +48,11 @@ const Auth = () => {
       navigate("/portal/investor");
       return;
     } else if (role === 'partner') {
-      navigate("/portal/v-magnetic-minds");
+      navigate("/portal/agency");
       return;
     }
 
-    // If user has no role set yet (e.g. first-time Google login), redirect to Portal Gateway to choose role
+    // If user has no role set yet, redirect to Portal Gateway
     navigate("/portal");
   };
 

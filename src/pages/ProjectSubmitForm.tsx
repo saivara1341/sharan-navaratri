@@ -341,6 +341,28 @@ export default function ProjectSubmitForm() {
 
             if (error) throw error;
 
+            // Cache locally so client portal reflects the submission immediately
+            try {
+                const LOCAL_KEY = "siddhi_local_service_requests";
+                const existing = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
+                existing.unshift({
+                    id: submissionId,
+                    name: name.trim(),
+                    email: email.trim().toLowerCase(),
+                    designation: designation.trim() || null,
+                    organization: organization.trim() || null,
+                    inquiry_type: "requirement",
+                    message: submissionMessage,
+                    status: "Discovery & Scope Review",
+                    progress: 10,
+                    bounty_reward: null,
+                    created_at: new Date().toISOString()
+                });
+                localStorage.setItem(LOCAL_KEY, JSON.stringify(existing));
+            } catch (e) {
+                console.warn("Could not cache to local storage", e);
+            }
+
             // Trigger automated email confirmation to client
             emailService.projectStart(
                 email.trim().toLowerCase(),
@@ -541,16 +563,28 @@ export default function ProjectSubmitForm() {
                                     className="space-y-5"
                                 >
                                     {/* Notice Banner */}
-                                    <div className={`rounded-2xl border p-4 text-sm transition-all ${profileLoaded && name.trim() && organization.trim() && phone.trim() ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" : "border-amber-500/40 bg-amber-500/10 text-amber-200"}`}>
+                                    <div className={`rounded-2xl border p-4 text-sm transition-all ${
+                                        profileLoaded && name.trim() && organization.trim() && phone.trim() 
+                                            ? "border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/40" 
+                                            : "border-amber-400/80 bg-amber-50 dark:bg-amber-950/50"
+                                    }`}>
                                         <div className="flex items-start gap-3">
                                             <span className="text-xl mt-0.5">{profileLoaded && name.trim() && organization.trim() && phone.trim() ? "✅" : "👤"}</span>
                                             <div>
-                                                <p className="font-bold text-foreground">
+                                                <p className={`font-bold text-sm sm:text-base ${
+                                                    profileLoaded && name.trim() && organization.trim() && phone.trim()
+                                                        ? "text-emerald-950 dark:text-emerald-100"
+                                                        : "text-amber-950 dark:text-amber-100"
+                                                }`}>
                                                     {profileLoaded && name.trim() && organization.trim() && phone.trim()
                                                         ? t('submitForm.profile.readyTitle', 'Profile details are ready')
                                                         : t('submitForm.profile.completeTitle', 'Complete your profile to continue')}
                                                 </p>
-                                                <p className="mt-1 text-xs leading-relaxed opacity-85">
+                                                <p className={`mt-1 text-xs sm:text-sm leading-relaxed font-medium ${
+                                                    profileLoaded && name.trim() && organization.trim() && phone.trim()
+                                                        ? "text-emerald-900 dark:text-emerald-200"
+                                                        : "text-amber-900 dark:text-amber-200"
+                                                }`}>
                                                     {profileLoaded && name.trim() && organization.trim() && phone.trim()
                                                         ? t('submitForm.profile.readyDesc', 'Your contact and business details are loaded below. You can review or edit them before proceeding to service selection.')
                                                         : t('submitForm.profile.completeDesc', 'Add your name, business name and mobile number below. These details are needed before we can schedule your service.')}
@@ -576,7 +610,7 @@ export default function ProjectSubmitForm() {
                                                     required
                                                     value={name}
                                                     onChange={(e) => setName(e.target.value)}
-                                                    placeholder="e.g. Ravi Kumar"
+                                                    placeholder={t('submitForm.profile.fullNamePlaceholder', 'Enter your full name')}
                                                     className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-border bg-card text-foreground text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                                 />
                                             </div>
@@ -606,7 +640,7 @@ export default function ProjectSubmitForm() {
                                                     value={organization}
                                                     required
                                                     onChange={(e) => setOrganization(e.target.value)}
-                                                    placeholder={t('submitForm.profile.brandPlaceholder', 'e.g. Indhur Farms, PrintFlow')}
+                                                    placeholder={t('submitForm.profile.brandPlaceholder', 'Enter business / brand name')}
                                                     className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-border bg-card text-foreground text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                                 />
                                             </div>
@@ -619,7 +653,7 @@ export default function ProjectSubmitForm() {
                                                     required
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
-                                                    placeholder="e.g. name@company.com"
+                                                    placeholder={t('submitForm.profile.emailPlaceholder', 'Enter your email address')}
                                                     readOnly={!!sessionEmail}
                                                     className={`w-full px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-border bg-card text-foreground text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all ${sessionEmail ? "opacity-70 cursor-not-allowed" : ""}`}
                                                 />
@@ -637,7 +671,7 @@ export default function ProjectSubmitForm() {
                                                 type="text"
                                                 value={designation}
                                                 onChange={(e) => setDesignation(e.target.value)}
-                                                placeholder={t('submitForm.profile.designationPlaceholder', 'e.g. Founder, CEO, CTO, Operations Head')}
+                                                placeholder={t('submitForm.profile.designationPlaceholder', 'Enter designation or role (optional)')}
                                                 className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-border bg-card text-foreground text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                             />
                                         </div>

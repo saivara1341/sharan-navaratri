@@ -28,11 +28,11 @@ export interface BankingDetails {
 export const DEFAULT_BANK_ACCOUNTS: BankAccount[] = [
   {
     id: "llp",
-    account_holder: "Siddhi Dynamics LLP",
+    account_holder: "SIDDHI DYNAMICS PVT LTD",
     bank_name: "State Bank of India (SBI)",
     account_number: "45170121323",
-    ifsc_code: "SBIN0021632",
-    account_type: "Current / Firm Account",
+    ifsc_code: "SBIN0020149",
+    account_type: "Corporate / Current Account",
     is_selected: true
   },
   {
@@ -40,18 +40,18 @@ export const DEFAULT_BANK_ACCOUNTS: BankAccount[] = [
     account_holder: "Sarugu Sai Vara Prasad",
     bank_name: "State Bank of India (SBI)",
     account_number: "62495383611",
-    ifsc_code: "SBIN0021632",
-    account_type: "Designated Partner / Savings Account",
+    ifsc_code: "SBIN0020149",
+    account_type: "Personal / Designated Partner Account",
     is_selected: true
   }
 ];
 
 export const DEFAULT_BANKING_DETAILS: BankingDetails = {
-  account_holder: "Siddhi Dynamics LLP",
+  account_holder: "SIDDHI DYNAMICS PVT LTD",
   bank_name: "State Bank of India (SBI)",
   account_number: "45170121323",
-  ifsc_code: "SBIN0021632",
-  upi_id: "6303602743@sbi",
+  ifsc_code: "SBIN0020149",
+  upi_id: "siddhidynamics@sbi",
   llpin: "ACX-6222",
   pan: "AFXFS7312H",
   poc_name: "Sarugu Sai Vara Prasad",
@@ -156,6 +156,32 @@ export interface ProjectUpdate {
   visible_to_client: boolean;
 }
 
+export interface ClientChangeRequest {
+  id: string;
+  title: string;
+  category: 'UI / Design' | 'Content / Copy' | 'Feature / Logic' | 'Bug / Fix' | 'General Change';
+  priority: 'Normal' | 'High' | 'Urgent';
+  description: string;
+  status: 'pending_review' | 'in_progress' | 'completed' | 'declined';
+  submitted_at: string;
+  admin_response?: string;
+  asset_url?: string;
+}
+
+export interface MeetingScheduleRequest {
+  id: string;
+  meeting_mode: 'Virtual (Google Meet / Zoom)' | 'Direct / In-Person (Nizamabad / Hyderabad Office)';
+  preferred_date: string;
+  preferred_time: string;
+  agenda: string;
+  client_phone?: string;
+  client_name?: string;
+  status: 'requested' | 'confirmed' | 'rescheduled' | 'completed';
+  meeting_link?: string;
+  admin_notes?: string;
+  created_at: string;
+}
+
 export interface ProjectLifecycleMeta {
   // Quoting & Agreement
   agreement?: string; // total price quote string (e.g. "₹25,000")
@@ -186,5 +212,12 @@ export interface ProjectLifecycleMeta {
   // Invoices & Updates
   invoices?: ProjectInvoice[];
   updates?: ProjectUpdate[];
+
+  // Live Inspection & Change Requests (Portal-based collaboration instead of WhatsApp)
+  change_requests?: ClientChangeRequest[];
+
+  // Meeting & Consultation Bookings (Virtual & Direct)
+  meeting_requests?: MeetingScheduleRequest[];
 }
+
 

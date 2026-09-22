@@ -14,17 +14,30 @@ import {
   GraduationCap,
   Briefcase
 } from "lucide-react";
-import { Helmet } from "react-helmet-async";
+import { SeoHead } from '@/components/seo/SeoHead';
 import { Link } from "react-router-dom";
 
 const ResumeBuilder = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col pt-32">
       <Navbar />
-      <Helmet>
-        <title>AI Resume Builder | Nexus Careers | Siddhi Dynamics</title>
-        <meta name="description" content="Build high-impact, ATS-friendly resumes using our Neural Hub's AI Resume Builder." />
-      </Helmet>
+      <SeoHead
+        title="AI Resume Builder — ATS-Optimized Resumes | Nexus Careers | Siddhi Dynamics"
+        description="Build high-impact, ATS-friendly resumes using Siddhi Dynamics' AI Resume Builder. Part of the Nexus Careers platform — tailored for Indian students and fresh graduates."
+        canonical="/services/resume-builder"
+        keywords="AI resume builder India, ATS resume India, free resume builder India, resume for freshers India, Nexus careers resume, job resume AI India"
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'SoftwareApplication',
+          name: 'AI Resume Builder by Nexus Careers',
+          applicationCategory: 'BusinessApplication',
+          operatingSystem: 'Web',
+          provider: { '@type': 'Organization', name: 'Siddhi Dynamics LLP', url: 'https://siddhidynamics.in' },
+          description: 'ATS-optimized AI Resume Builder for Indian students and job seekers. Part of the Nexus Careers platform.',
+          url: 'https://siddhidynamics.in/services/resume-builder',
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'INR' },
+        }}
+      />
 
       <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />
       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />

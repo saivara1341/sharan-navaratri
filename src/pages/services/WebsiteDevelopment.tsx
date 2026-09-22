@@ -70,16 +70,17 @@ export default function WebsiteDevelopment() {
         <title>Website Development &amp; Design in Nizamabad &amp; Hyderabad | Siddhi Dynamics</title>
         <meta name="description" content="Professional business profile websites for Indian businesses. Mobile-first, SEO-optimized, WhatsApp-integrated. Fast turnaround. Siddhi Dynamics, Hyderabad &amp; Nizamabad." />
         <meta name="keywords" content="website development Nizamabad, website design Hyderabad, business website India, website development company Telangana, affordable website design India, SEO website India" />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <link rel="canonical" href="https://siddhidynamics.in/services/website-development" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://siddhidynamics.in/services/website-development" />
         <meta property="og:title" content="Business Website Development in India | Siddhi Dynamics" />
         <meta property="og:description" content="Mobile-first, SEO-optimized business websites for Indian businesses. WhatsApp-integrated. Built by Siddhi Dynamics, Hyderabad &amp; Nizamabad." />
-        <meta property="og:image" content="https://siddhidynamics.in/favicon.jpg" />
+        <meta property="og:image" content="https://siddhidynamics.in/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Business Website Development in India | Siddhi Dynamics" />
         <meta name="twitter:description" content="Mobile-first, SEO-optimized business websites for Indian businesses. WhatsApp-integrated. Built by Siddhi Dynamics." />
-        <meta name="twitter:image" content="https://siddhidynamics.in/favicon.jpg" />
+        <meta name="twitter:image" content="https://siddhidynamics.in/og-image.png" />
         <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>

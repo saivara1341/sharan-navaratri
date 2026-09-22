@@ -313,8 +313,12 @@ export const DigitalInvoiceModal: React.FC<DigitalInvoiceModalProps> = ({
                 <div className="p-5 flex flex-col sm:flex-row items-start justify-between gap-5 bg-stone-50">
                   <div className="space-y-2 text-xs font-medium text-stone-600">
                     <div className="flex flex-col gap-0.5">
+                      <span className="text-[9px] font-black uppercase tracking-wider text-stone-400">Account Holder</span>
+                      <span className="font-bold text-stone-900 text-sm">SIDDHI DYNAMICS PVT LTD</span>
+                    </div>
+                    <div className="flex flex-col gap-0.5">
                       <span className="text-[9px] font-black uppercase tracking-wider text-stone-400">Bank Name</span>
-                      <span className="font-bold text-stone-900 text-sm">State Bank of India (SBI)</span>
+                      <span className="font-bold text-stone-900 text-xs">State Bank of India (SBI)</span>
                     </div>
                     <div className="grid grid-cols-2 gap-x-8 gap-y-2">
                       <div>
@@ -331,14 +335,14 @@ export const DigitalInvoiceModal: React.FC<DigitalInvoiceModalProps> = ({
                       </div>
                       <div>
                         <span className="text-[9px] font-black uppercase tracking-wider text-stone-400 block">Account Type</span>
-                        <span className="font-bold text-stone-900 mt-0.5 block">Current Account</span>
+                        <span className="font-bold text-stone-900 mt-0.5 block">Corporate / Current A/C</span>
                       </div>
                       <div>
                         <span className="text-[9px] font-black uppercase tracking-wider text-stone-400 block">IFSC Code</span>
                         <div className="flex items-center gap-1.5 mt-0.5">
-                          <span className="font-mono font-extrabold text-stone-900">SBIN0021632</span>
+                          <span className="font-mono font-extrabold text-stone-900">SBIN0020149</span>
                           <button
-                            onClick={() => copy('SBIN0021632', 'IFSC code')}
+                            onClick={() => copy('SBIN0020149', 'IFSC code')}
                             className="p-0.5 rounded hover:bg-stone-200 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer print:hidden"
                           >
                             <Copy className="w-3 h-3" />
@@ -348,9 +352,9 @@ export const DigitalInvoiceModal: React.FC<DigitalInvoiceModalProps> = ({
                       <div>
                         <span className="text-[9px] font-black uppercase tracking-wider text-stone-400 block">UPI ID</span>
                         <div className="flex items-center gap-1.5 mt-0.5">
-                          <span className="font-mono font-extrabold text-stone-900">6303602743@sbi</span>
+                          <span className="font-mono font-extrabold text-stone-900">siddhidynamics@sbi</span>
                           <button
-                            onClick={() => copy('6303602743@sbi', 'UPI ID')}
+                            onClick={() => copy('siddhidynamics@sbi', 'UPI ID')}
                             className="p-0.5 rounded hover:bg-stone-200 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer print:hidden"
                           >
                             <Copy className="w-3 h-3" />

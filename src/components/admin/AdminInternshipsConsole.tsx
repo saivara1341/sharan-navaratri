@@ -48,17 +48,19 @@ import {
   IncentiveReward,
   InterlinkAlert,
   CertificateRecord,
-  InternReview
+  InternReview,
+  TaskSubmission
 } from '@/services/internshipService';
 import { emailService } from '@/services/emailService';
 
 export function AdminInternshipsConsole() {
-  const [activeSubTab, setActiveSubTab] = useState<'applications' | 'whitelist' | 'tasks' | 'approvals' | 'incentives' | 'proofs' | 'certificates' | 'reviews'>('applications');
+  const [activeSubTab, setActiveSubTab] = useState<'applications' | 'whitelist' | 'tasks' | 'submissions' | 'approvals' | 'incentives' | 'proofs' | 'certificates' | 'reviews'>('applications');
   
   // Data states
   const [applications, setApplications] = useState<InternshipApplication[]>([]);
   const [whitelist, setWhitelist] = useState<WhitelistedUser[]>([]);
   const [tasks, setTasks] = useState<InternTask[]>([]);
+  const [submissions, setSubmissions] = useState<TaskSubmission[]>([]);
   const [extensions, setExtensions] = useState<DeadlineExtensionRequest[]>([]);
   const [dataRequests, setDataRequests] = useState<DataAssetRequest[]>([]);
   const [incentives, setIncentives] = useState<IncentiveReward[]>([]);
@@ -154,6 +156,7 @@ export function AdminInternshipsConsole() {
       setApplications(apps);
       setWhitelist(internshipService.getWhitelist());
       setTasks(internshipService.getTasks());
+      setSubmissions(internshipService.getTaskSubmissions());
       setExtensions(internshipService.getExtensionRequests());
       setDataRequests(internshipService.getDataRequests());
       setIncentives(internshipService.getIncentiveRewards());
@@ -382,6 +385,7 @@ export function AdminInternshipsConsole() {
 
     if (appRoleFilter === 'bd') return matchesSearch && app.role.includes('Business Development');
     if (appRoleFilter === 'dm') return matchesSearch && app.role.includes('Digital Marketing');
+    if (appRoleFilter === 'pm') return matchesSearch && app.role.includes('Product Manager');
     return matchesSearch;
   });
 
@@ -394,6 +398,7 @@ export function AdminInternshipsConsole() {
             { id: 'applications', label: 'Intern Applications', icon: GraduationCap, count: applications.length },
             { id: 'whitelist', label: 'Authorized Whitelist', icon: ShieldCheck, count: whitelist.length },
             { id: 'tasks', label: 'Task Stipulations', icon: Clock, count: tasks.length },
+            { id: 'submissions', label: 'Intern Submissions', icon: CheckCircle2, count: submissions.filter(s => s.status === 'Under Review').length },
             { id: 'approvals', label: 'CEO Approvals', icon: CheckCircle2, count: extensions.filter(e => e.status === 'Pending').length + dataRequests.filter(d => d.status === 'Pending').length },
             { id: 'incentives', label: 'Milestone Goodies (CRUD)', icon: Gift, count: incentives.length },
             { id: 'proofs', label: 'Points of Proof & Interlinks', icon: Award, count: proofs.length },
@@ -452,9 +457,21 @@ export function AdminInternshipsConsole() {
 
             <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-card border border-border/60 shadow-sm flex items-center justify-between">
               <div>
+                <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wider">Product Mgmt</p>
+                <h4 className="text-xl sm:text-2xl font-black text-emerald-500 mt-0.5">
+                  {applications.filter(a => a.role.includes('Product Manager')).length}
+                </h4>
+              </div>
+              <div className="p-2 sm:p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500">
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+              </div>
+            </div>
+
+            <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-card border border-border/60 shadow-sm flex items-center justify-between">
+              <div>
                 <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wider">Business Dev</p>
                 <h4 className="text-xl sm:text-2xl font-black text-blue-500 mt-0.5">
-                  {applications.filter(a => a.role.includes('Business')).length}
+                  {applications.filter(a => a.role.includes('Business Development')).length}
                 </h4>
               </div>
               <div className="p-2 sm:p-2.5 rounded-xl bg-blue-500/10 text-blue-500">
@@ -466,23 +483,11 @@ export function AdminInternshipsConsole() {
               <div>
                 <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wider">Digital Mktg</p>
                 <h4 className="text-xl sm:text-2xl font-black text-purple-500 mt-0.5">
-                  {applications.filter(a => a.role.includes('Digital')).length}
+                  {applications.filter(a => a.role.includes('Digital Marketing')).length}
                 </h4>
               </div>
               <div className="p-2 sm:p-2.5 rounded-xl bg-purple-500/10 text-purple-500">
                 <Layers className="w-4 h-4 sm:w-5 sm:h-5" />
-              </div>
-            </div>
-
-            <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-card border border-border/60 shadow-sm flex items-center justify-between">
-              <div>
-                <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wider">Interviews / Offers</p>
-                <h4 className="text-xl sm:text-2xl font-black text-emerald-500 mt-0.5">
-                  {applications.filter(a => a.status === 'Interview Scheduled' || a.status === 'Offered').length}
-                </h4>
-              </div>
-              <div className="p-2 sm:p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500">
-                <BadgeCheck className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
             </div>
           </div>
@@ -499,15 +504,27 @@ export function AdminInternshipsConsole() {
                 />
               </div>
 
-              <select
-                value={appRoleFilter}
-                onChange={(e) => setAppRoleFilter(e.target.value)}
-                className="px-3 py-1.5 rounded-xl bg-card border border-border/50 text-xs text-foreground focus:outline-none focus:border-primary font-semibold"
-              >
-                <option value="all">All Roles</option>
-                <option value="bd">Business Development</option>
-                <option value="dm">Digital Marketing</option>
-              </select>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {[
+                  { key: 'all', label: 'All Roles', count: applications.length, color: 'bg-primary text-primary-foreground', inactive: 'bg-muted/60 text-muted-foreground border border-border/50 hover:text-foreground' },
+                  { key: 'pm', label: '🟢 Product Mgmt', count: applications.filter(a => a.role.includes('Product Manager')).length, color: 'bg-emerald-500 text-white', inactive: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20' },
+                  { key: 'bd', label: '🔵 Biz Dev', count: applications.filter(a => a.role.includes('Business Development')).length, color: 'bg-blue-500 text-white', inactive: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/30 hover:bg-blue-500/20' },
+                  { key: 'dm', label: '🟣 Digital Mktg', count: applications.filter(a => a.role.includes('Digital Marketing')).length, color: 'bg-purple-500 text-white', inactive: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/30 hover:bg-purple-500/20' },
+                ].map(pill => (
+                  <button
+                    key={pill.key}
+                    onClick={() => setAppRoleFilter(pill.key)}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                      appRoleFilter === pill.key ? pill.color + ' shadow-sm' : pill.inactive
+                    }`}
+                  >
+                    {pill.label}
+                    <span className={`px-1.5 py-0 rounded-full text-[10px] font-black ${
+                      appRoleFilter === pill.key ? 'bg-white/25' : 'bg-black/10 dark:bg-white/10'
+                    }`}>{pill.count}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -541,7 +558,9 @@ export function AdminInternshipsConsole() {
                         </td>
                         <td className="py-3.5 px-4">
                           <span className={`px-2 py-0.5 rounded text-[10.5px] font-bold block w-fit mb-1 ${
-                            app.role.includes('Business')
+                            app.role.includes('Product Manager')
+                              ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                              : app.role.includes('Business')
                               ? 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30'
                               : 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30'
                           }`}>
@@ -742,6 +761,107 @@ export function AdminInternshipsConsole() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* SUB-TAB: Intern Work Submissions & Verification */}
+      {activeSubTab === 'submissions' && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-black text-foreground">Intern Work Submissions & Verification</h3>
+              <p className="text-xs text-muted-foreground">Inspect submitted deliverables, review work quality, and verify points of proof for completion certificates.</p>
+            </div>
+          </div>
+
+          {submissions.length === 0 ? (
+            <div className="p-12 text-center rounded-2xl bg-card border border-border text-muted-foreground">
+              <CheckCircle2 className="w-10 h-10 mx-auto text-primary mb-2 opacity-50" />
+              <p className="font-bold text-foreground text-sm">No intern deliverables submitted yet.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {submissions.map(sub => (
+                <div key={sub.id} className="p-5 rounded-2xl bg-card border border-border space-y-3 shadow-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/50 pb-3">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-primary px-2 py-0.5 rounded bg-primary/10">
+                          {sub.role}
+                        </span>
+                        <span className="text-xs font-bold text-foreground">
+                          {sub.intern_name} ({sub.intern_email})
+                        </span>
+                      </div>
+                      <h4 className="text-base font-extrabold text-foreground">{sub.task_title}</h4>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">Submitted: {sub.submitted_at}</span>
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                        sub.status === 'Verified & Approved'
+                          ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                          : sub.status === 'Revision Requested'
+                          ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                          : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                      }`}>
+                        {sub.status}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="text-xs text-muted-foreground leading-relaxed">
+                    <strong className="text-foreground block mb-1">Summary of Work Accomplished:</strong>
+                    <p className="bg-muted/40 p-3 rounded-xl border border-border/50 text-foreground">{sub.summary_of_work}</p>
+                  </div>
+
+                  {sub.metrics_or_outcome && (
+                    <div className="text-xs">
+                      <strong className="text-primary">Key Metrics / Outcome: </strong>
+                      <span className="text-foreground">{sub.metrics_or_outcome}</span>
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-border/50 text-xs">
+                    <a
+                      href={sub.deliverable_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-primary hover:underline flex items-center gap-1.5 font-bold"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" /> Open Deliverable Link ({sub.deliverable_url.slice(0, 50)}...)
+                    </a>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          const note = prompt('Enter revision feedback for intern:');
+                          if (note) {
+                            internshipService.reviewTaskSubmission(sub.id, 'Revision Requested', note);
+                            toast.success(`Revision request logged for ${sub.intern_name}.`);
+                            refreshData();
+                          }
+                        }}
+                        className="px-3.5 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold transition-colors cursor-pointer border border-rose-500/20"
+                      >
+                        Request Revision
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          internshipService.reviewTaskSubmission(sub.id, 'Verified & Approved', 'Deliverable verified & approved by Founder & CEO.');
+                          toast.success(`Task verified and approved for ${sub.intern_name}!`);
+                          refreshData();
+                        }}
+                        className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors cursor-pointer shadow-sm"
+                      >
+                        Verify & Approve
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -1910,6 +2030,7 @@ INSERT INTO storage.buckets (id, name, public) VALUES ('project-attachments', 'p
                       onChange={(e) => setCertRole(e.target.value)}
                       className="w-full px-3 py-2 rounded-xl bg-muted border border-border text-foreground text-xs focus:outline-none focus:border-primary"
                     >
+                      <option value="Product Manager Intern">Product Manager Intern</option>
                       <option value="Business Development Intern">Business Development Intern</option>
                       <option value="Digital Marketing Intern">Digital Marketing Intern</option>
                       <option value="Software Developer">Software Developer</option>

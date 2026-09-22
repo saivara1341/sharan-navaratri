@@ -1,6 +1,6 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Users, Star } from 'lucide-react';
@@ -25,12 +25,15 @@ const linkVariants = {
   })
 };
 
-export const FooterSection = () => {
+export const FooterSection = ({ hideDetailedOffices }: { hideDetailedOffices?: boolean } = {}) => {
   const { t } = useTranslation();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const navigate = useNavigate();
+  const location = useLocation();
   const isMobile = useIsMobile();
+
+  const isPortal = hideDetailedOffices || location.pathname.startsWith('/portal') || location.pathname.startsWith('/admin');
 
   const handleHomeClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -95,7 +98,7 @@ export const FooterSection = () => {
   };
 
   return (
-    <footer ref={ref} className="py-20 border-t border-white/10 bg-black text-white relative overflow-hidden">
+    <footer ref={ref} className="pt-7 pb-3 sm:pt-10 sm:pb-5 md:py-20 border-t border-white/10 bg-black text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent" />
       <motion.div
         className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/10 rounded-full blur-[150px]"
@@ -108,10 +111,10 @@ export const FooterSection = () => {
 
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4 sm:gap-5 md:gap-6">
           {/* Desktop Line 1: Logo + Siddhi Dynamics LLP on left, Nav links on right */}
           {/* Desktop Line 2: Next-Generation AI Solutions */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
             <div className="flex flex-col items-start text-left w-full md:w-auto">
               <motion.a
                 href="/"
@@ -123,7 +126,7 @@ export const FooterSection = () => {
                 className="flex items-center gap-3.5 group cursor-pointer relative z-10"
               >
                 <motion.div
-                  className="relative w-12 h-12 shrink-0"
+                  className="relative w-14 h-14 sm:w-14 sm:h-14 md:w-12 md:h-12 shrink-0"
                   whileHover={{ rotate: 5, scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
@@ -131,29 +134,30 @@ export const FooterSection = () => {
                   <img
                     src={siddhiLogo}
                     alt="Siddhi Dynamics"
-                    width="48"
-                    height="48"
+                    width="56"
+                    height="56"
                     loading="lazy"
                     decoding="async"
                     className="relative w-full h-full object-contain"
                   />
                 </motion.div>
-                <span className="font-extrabold text-xl md:text-2xl text-white tracking-wide whitespace-nowrap">
-                  Siddhi Dynamics LLP
-                </span>
+                <div className="flex flex-col justify-center">
+                  <span className="font-extrabold text-2xl sm:text-2xl md:text-2xl text-white tracking-wide whitespace-nowrap leading-tight">
+                    Siddhi Dynamics LLP
+                  </span>
+                  {/* Line 2: Next-Generation AI Solutions */}
+                  <span className="text-sm md:text-sm text-primary font-bold tracking-wider mt-0.5 block leading-tight">
+                    {t('hero.badge', 'Next-Generation AI Solutions')}
+                  </span>
+                </div>
               </motion.a>
-
-              {/* Line 2: Next-Generation AI Solutions */}
-              <span className="text-xs md:text-sm text-primary font-semibold tracking-wider mt-1 ml-[60px] block">
-                {t('hero.badge', 'Next-Generation AI Solutions')}
-              </span>
             </div>
 
             {/* Nav Links in Line 1 (Right Side) */}
             <motion.nav
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
-              className="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-2.5 md:gap-x-6"
+              className="flex flex-wrap items-center justify-center md:justify-end gap-x-3 gap-y-2 sm:gap-x-4 sm:gap-y-2.5 md:gap-x-6"
             >
               {[
                 { name: t('nav.home', 'Home'), href: '/' },
@@ -172,7 +176,7 @@ export const FooterSection = () => {
                   onClick={(e) => handleNavClick(e, link.href)}
                   custom={index}
                   variants={linkVariants}
-                  className="relative text-sm font-semibold text-slate-300 hover:text-white transition-colors group whitespace-nowrap cursor-pointer"
+                  className="relative text-xs sm:text-sm font-semibold text-slate-300 hover:text-white transition-colors group whitespace-nowrap cursor-pointer"
                   whileHover={{ y: -3, scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -298,7 +302,7 @@ export const FooterSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.6, duration: 0.8 }}
-          className="relative mt-16 pt-8 pb-8 px-6 md:px-8 border-t border-white/10 flex flex-col items-center gap-6 w-full rounded-3xl bg-white/[0.02] overflow-hidden"
+          className="relative mt-6 sm:mt-10 md:mt-16 pt-4 pb-3 sm:pt-6 sm:pb-5 md:pt-8 md:pb-8 px-3.5 sm:px-6 md:px-8 border-t border-white/10 flex flex-col items-center gap-3.5 sm:gap-5 md:gap-6 w-full rounded-2xl sm:rounded-3xl bg-white/[0.02] overflow-hidden"
         >
           {/* Checkered Grid Background Pattern */}
           <div 
@@ -313,16 +317,16 @@ export const FooterSection = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col items-center gap-5 md:flex-row md:justify-between md:w-full">
+          <div className="relative z-10 flex flex-col items-center gap-3 sm:gap-4 md:flex-row md:justify-between md:w-full">
             <motion.p
-              className="text-sm text-slate-400"
+              className="text-xs sm:text-sm text-slate-400 text-center md:text-left"
               initial={{ opacity: 0 }}
               animate={isInView ? { opacity: 1 } : {}}
               transition={{ delay: 0.7 }}
             >
               {t('footer.copyright', { year: new Date().getFullYear() })}
             </motion.p>
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 max-w-full pb-1 px-1">
+            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-x-4 sm:gap-y-2 max-w-full px-1">
               {[
                 { label: t('footer.legal.privacy', 'Privacy Policy'), href: 'https://siddhidynamics.in/privacy' },
                 { label: t('footer.legal.terms', 'Terms & Conditions'), href: 'https://siddhidynamics.in/terms-and-conditions' },
@@ -338,73 +342,75 @@ export const FooterSection = () => {
                   initial={{ opacity: 0 }}
                   animate={isInView ? { opacity: 1 } : {}}
                   transition={{ delay: 0.8 + index * 0.05 }}
-                  className="text-xs text-slate-400 hover:text-primary transition-colors whitespace-nowrap"
+                  className="text-[11px] sm:text-xs text-slate-300 sm:text-slate-400 hover:text-white sm:hover:text-primary transition-colors px-2 py-0.5 sm:px-0 sm:py-0 rounded-md sm:rounded-none bg-white/[0.04] sm:bg-transparent border border-white/[0.08] sm:border-transparent whitespace-nowrap"
                 >
                   {link.label}
                 </motion.a>
               ))}
             </div>
           </div>
-          <motion.address
-            className="relative z-10 grid w-full max-w-3xl gap-3 not-italic text-left md:grid-cols-2"
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.8 }}
-          >
-            <span className="sr-only">{t('footer.locations.title', 'Siddhi Dynamics LLP office locations:')} </span>
-            <span className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-5 shadow-sm group hover:border-primary/40 transition-all">
-              <div 
-                className="absolute inset-0 pointer-events-none opacity-15"
-                style={{
-                  backgroundImage: `
-                    linear-gradient(to right, rgba(245, 158, 11, 0.25) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(245, 158, 11, 0.25) 1px, transparent 1px)
-                  `,
-                  backgroundSize: '20px 20px'
-                }}
-              />
-              <div className="relative z-10">
-                <strong className="mb-1 block text-sm font-semibold text-white">{t('footer.locations.nizamabad', 'Nizamabad office')}</strong>
-                <span className="block text-xs leading-5 text-slate-400">
-                  3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001
-                </span>
-                <a
-                  href={nizamabadMapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3 inline-flex text-xs font-semibold text-primary transition-colors hover:text-white"
-                >
-                  {t('footer.locations.openMaps', 'Open in Google Maps ↗')}
-                </a>
-              </div>
-            </span>
-            <span className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-5 shadow-sm group hover:border-primary/40 transition-all">
-              <div 
-                className="absolute inset-0 pointer-events-none opacity-15"
-                style={{
-                  backgroundImage: `
-                    linear-gradient(to right, rgba(245, 158, 11, 0.25) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(245, 158, 11, 0.25) 1px, transparent 1px)
-                  `,
-                  backgroundSize: '20px 20px'
-                }}
-              />
-              <div className="relative z-10">
-                <strong className="mb-1 block text-sm font-semibold text-white">{t('footer.locations.hyderabad', 'Hyderabad office')}</strong>
-                <span className="block text-xs leading-5 text-slate-400">
-                  HIVE, Anurag University, Hyderabad, Telangana 500049
-                </span>
-                <a
-                  href={hyderabadMapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3 inline-flex text-xs font-semibold text-primary transition-colors hover:text-white"
-                >
-                  {t('footer.locations.openMaps', 'Open in Google Maps ↗')}
-                </a>
-              </div>
-            </span>
-          </motion.address>
+          {!isPortal && (
+            <motion.address
+              className="relative z-10 grid w-full max-w-3xl gap-3 not-italic text-left md:grid-cols-2"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+              transition={{ delay: 0.8 }}
+            >
+              <span className="sr-only">{t('footer.locations.title', 'Siddhi Dynamics LLP office locations:')} </span>
+              <span className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-5 shadow-sm group hover:border-primary/40 transition-all">
+                <div 
+                  className="absolute inset-0 pointer-events-none opacity-15"
+                  style={{
+                    backgroundImage: `
+                      linear-gradient(to right, rgba(245, 158, 11, 0.25) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(245, 158, 11, 0.25) 1px, transparent 1px)
+                    `,
+                    backgroundSize: '20px 20px'
+                  }}
+                />
+                <div className="relative z-10">
+                  <strong className="mb-1 block text-sm font-semibold text-white">{t('footer.locations.nizamabad', 'Nizamabad office')}</strong>
+                  <span className="block text-xs leading-5 text-slate-400">
+                    3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001
+                  </span>
+                  <a
+                    href={nizamabadMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex text-xs font-semibold text-primary transition-colors hover:text-white"
+                  >
+                    {t('footer.locations.openMaps', 'Open in Google Maps ↗')}
+                  </a>
+                </div>
+              </span>
+              <span className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-5 shadow-sm group hover:border-primary/40 transition-all">
+                <div 
+                  className="absolute inset-0 pointer-events-none opacity-15"
+                  style={{
+                    backgroundImage: `
+                      linear-gradient(to right, rgba(245, 158, 11, 0.25) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(245, 158, 11, 0.25) 1px, transparent 1px)
+                    `,
+                    backgroundSize: '20px 20px'
+                  }}
+                />
+                <div className="relative z-10">
+                  <strong className="mb-1 block text-sm font-semibold text-white">{t('footer.locations.hyderabad', 'Hyderabad office')}</strong>
+                  <span className="block text-xs leading-5 text-slate-400">
+                    HIVE, Anurag University, Hyderabad, Telangana 500049
+                  </span>
+                  <a
+                    href={hyderabadMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex text-xs font-semibold text-primary transition-colors hover:text-white"
+                  >
+                    {t('footer.locations.openMaps', 'Open in Google Maps ↗')}
+                  </a>
+                </div>
+              </span>
+            </motion.address>
+          )}
         </motion.div>
       </div>
     </footer>

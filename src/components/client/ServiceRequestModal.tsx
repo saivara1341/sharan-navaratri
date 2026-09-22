@@ -524,7 +524,7 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
               <ShieldCheck className="w-3.5 h-3.5" /> 6. Direct Payment & Service Kickoff Terms
             </h3>
             <p className="text-[11px] text-stone-700 leading-relaxed">
-              <strong>Direct QR & Bank Verification:</strong> Siddhi Dynamics LLP processes payments via direct official UPI QR code (<strong className="font-mono text-emerald-800">6303602743@sbi</strong>) and State Bank of India Current Account. Zero intermediate gateway delays.
+              <strong>Direct QR & Bank Verification:</strong> SIDDHI DYNAMICS PVT LTD processes payments via direct official UPI QR code (<strong className="font-mono text-emerald-800">siddhidynamics@sbi</strong>) and State Bank of India Current Account. Zero intermediate gateway delays.
             </p>
             <p className="text-[11px] text-stone-700 leading-relaxed">
               <strong>Admin Quote Review:</strong> Our tech lead and admin evaluate your specifications (Tier: <strong>{complexityTier}</strong>) and assign exact milestone pricing before advance is due.

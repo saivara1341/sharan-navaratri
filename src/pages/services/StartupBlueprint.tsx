@@ -13,7 +13,7 @@ import {
   Layout,
   Briefcase
 } from "lucide-react";
-import { Helmet } from "react-helmet-async";
+import { SeoHead } from '@/components/seo/SeoHead';
 import { Link } from "react-router-dom";
 
 const StartupBlueprint = () => {
@@ -27,10 +27,21 @@ const StartupBlueprint = () => {
     return (
         <div className="min-h-screen bg-background relative overflow-hidden flex flex-col pt-32">
             <Navbar />
-            <Helmet>
-                <title>Startup Blueprint | Siddhi Dynamics</title>
-                <meta name="description" content="Generate a technical and business roadmap for your startup idea through our Neural Hub." />
-            </Helmet>
+            <SeoHead
+              title="Startup Blueprint — AI-Driven Tech Roadmap | Siddhi Dynamics LLP"
+              description="Generate a tailored technical and business roadmap for your startup idea. Siddhi Dynamics' Startup Blueprint gives you an AI-powered go-to-market plan, tech stack recommendations, and execution path."
+              canonical="/services/startup-blueprint"
+              keywords="startup blueprint India, startup roadmap AI, tech startup India, MVP development India, startup consulting Hyderabad, startup strategy India, SaaS startup blueprint"
+              schema={{
+                '@context': 'https://schema.org',
+                '@type': 'Service',
+                name: 'Startup Blueprint',
+                provider: { '@type': 'Organization', name: 'Siddhi Dynamics LLP', url: 'https://siddhidynamics.in' },
+                description: 'AI-generated technical and business roadmap for Indian startups. Covers tech stack, go-to-market strategy, MVP scope, and execution timeline.',
+                areaServed: 'IN',
+                url: 'https://siddhidynamics.in/services/startup-blueprint',
+              }}
+            />
 
             <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
