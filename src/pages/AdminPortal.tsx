@@ -1,6 +1,12 @@
 import { AdminClientsConsole } from "@/components/requirements/AdminClientsConsole";
 import { FooterSection } from "@/components/sections/FooterSection";
 import { AdminInternshipsConsole } from "@/components/admin/AdminInternshipsConsole";
+import { AdminInternRegistry } from "@/components/admin/AdminInternRegistry";
+import { AdminEmployeesConsole } from "@/components/admin/AdminEmployeesConsole";
+import { AdminInvestorsConsole } from "@/components/admin/AdminInvestorsConsole";
+import { assignRoleToEmail, deleteAssignedRole, getAssignedRoles } from "@/lib/roleResolver";
+import { employeeService } from "@/services/employeeService";
+
 import { ClientServiceRequestSection } from "@/components/admin/ClientServiceRequestSection";
 import { DirectPaymentModal } from "@/components/payments/DirectPaymentModal";
 import { AdminPaymentSettingsPanel } from "@/components/admin/AdminPaymentSettingsPanel";
@@ -123,7 +129,7 @@ const AdminPortal = () => {
     const [chatInput, setChatInput] = useState("");
     const [chatLoading, setChatLoading] = useState(false);
     const [viewMode, setViewMode] = useState<
-        'submissions' | 'verifications' | 'clients' | 'agency' | 'users' | 'internships' | 'knowledge' | 'seo-geo'
+        'submissions' | 'verifications' | 'clients' | 'agency' | 'users' | 'internships' | 'employees' | 'investors' | 'knowledge' | 'seo-geo'
     >('submissions');
     const [paymentSubTab, setPaymentSubTab] = useState<'queue' | 'settings'>('queue');
     const [usersSubTab, setUsersSubTab] = useState<'users' | 'invites'>('users');
@@ -201,7 +207,6 @@ const AdminPortal = () => {
         submissionId?: string;
     } | null>(null);
     const [submittingPaymentProof, setSubmittingPaymentProof] = useState(false);
-    const [internshipTab, setInternshipTab] = useState<'payroll' | 'console'>('payroll');
 
     // ── Clients & Projects Command Center ───────────────────────────────────
     const [clientSearch, setClientSearch] = useState('');
@@ -224,12 +229,8 @@ const AdminPortal = () => {
     const clientProjects = useMemo(() => {
         return submissions.filter(s => {
             if ((s.status || '').toLowerCase() === 'archived') return false;
-            return (
-                s.inquiry_type === 'requirement' ||
-                s.inquiry_type === 'problem' ||
-                Boolean(s.organization && s.organization.trim()) ||
-                (s.bounty_reward && s.bounty_reward.trim().startsWith('{'))
-            );
+            if (s.inquiry_type === 'internship_application' || s.inquiry_type === 'career_application') return false;
+            return true;
         });
     }, [submissions]);
 
@@ -291,19 +292,47 @@ const AdminPortal = () => {
 **Scope & Requirements:**
 ${manualClientForm.scope.trim() || 'Custom software development & digital engineering initiative.'}`;
 
-            const { error } = await supabase.from('contact_submissions').insert([{
+            const newSubmission: Submission = {
+                id: crypto.randomUUID(),
+                created_at: new Date().toISOString(),
                 name: manualClientForm.name.trim(),
                 email: manualClientForm.email.trim().toLowerCase(),
                 organization: manualClientForm.organization.trim() || 'Direct Client',
-                designation: 'Client Partner',
+                designation: manualClientForm.phone.trim() || 'Client Partner',
                 inquiry_type: 'requirement',
                 message: structuredMessage,
                 status: manualClientForm.status || 'Pending Review',
                 progress: 0,
                 bounty_reward: serializeProjectMeta(lifecycleMeta as any)
-            }]);
+            };
 
-            if (error) throw error;
+            // Always preserve in local storage
+            try {
+                const LOCAL_KEY = 'siddhi_local_service_requests';
+                const localExisting = JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]');
+                localExisting.unshift(newSubmission);
+                localStorage.setItem(LOCAL_KEY, JSON.stringify(localExisting));
+            } catch (_) {}
+
+            setSubmissions(prev => [newSubmission, ...prev]);
+
+            // Sync with Supabase in background
+            try {
+                await supabase.from('contact_submissions').insert([{
+                    id: newSubmission.id,
+                    name: newSubmission.name,
+                    email: newSubmission.email,
+                    organization: newSubmission.organization,
+                    designation: newSubmission.designation,
+                    inquiry_type: newSubmission.inquiry_type,
+                    message: newSubmission.message,
+                    status: newSubmission.status,
+                    progress: 0,
+                    bounty_reward: newSubmission.bounty_reward
+                }]);
+            } catch (sbErr) {
+                console.warn('Supabase insert note (local copy preserved):', sbErr);
+            }
 
             toast.success(`Client project for ${manualClientForm.name} created!`);
             setIsAddClientModalOpen(false);
@@ -621,6 +650,13 @@ ${manualClientForm.scope.trim() || 'Custom software development & digital engine
         setAgencyEditModalOpen(true);
     };
 
+    const handleDeleteAgency = (email: string, name: string) => {
+        if (!confirm(`Are you sure you want to remove "${name}" from the platform?`)) return;
+        agencyCommissionService.deleteAgencyConfig(email);
+        refreshAgencyData();
+        toast.success(`Agency "${name}" removed.`);
+    };
+
     const handleMarkAgencyPayout = (projId: string) => {
         const ref = prompt("Enter bank UTR / payment reference for this payout:", "SBI-UTR-" + Math.floor(1000000000 + Math.random() * 9000000000));
         if (!ref) return;
@@ -871,6 +907,7 @@ ${manualClientForm.scope.trim() || 'Custom software development & digital engine
         if (!email) return;
         try {
             // 1. portal_users
+            deleteAssignedRole(email);
             await (supabase as any).from('portal_users').delete().ilike('email', email);
             // 2. contact_submissions
             await (supabase as any).from('contact_submissions').delete().ilike('email', email);
@@ -1420,8 +1457,8 @@ ${manualClientForm.scope.trim() || 'Custom software development & digital engine
             const currentMeta = parseProjectMeta(quoteModalSub.bounty_reward);
             const advanceNum = parseInt(quoteAdvanceAmount.replace(/\D/g, '') || quoteAmount.replace(/\D/g, '') || '0');
 
-            let existingInvoices = currentMeta.invoices || [];
-            let updatedInvoices = [...existingInvoices];
+            const existingInvoices = currentMeta.invoices || [];
+            const updatedInvoices = [...existingInvoices];
             const hasAdvanceInv = updatedInvoices.some(inv => inv.title.toLowerCase().includes("advance"));
             if (!hasAdvanceInv) {
                 const advId = generateInvoiceId(updatedInvoices);
@@ -1820,7 +1857,9 @@ ${manualClientForm.scope.trim() || 'Custom software development & digital engine
                             { id: 'clients', label: 'Clients & Projects', icon: Building2, count: clientProjects.length },
                             { id: 'agency', label: 'Agency', icon: Handshake, onSelect: () => { fetchAgencyClients(); refreshAgencyData(); } },
                             { id: 'users', label: 'Users & Roles', icon: Users, count: roleRequests.filter(r => r.status === 'pending').length, alert: true, onSelect: () => { fetchAllUsers(); refreshRoleRequests(); } },
-                            { id: 'internships', label: 'Internships', icon: GraduationCap, count: registeredInternsCount }
+                            { id: 'internships', label: 'Internships', icon: GraduationCap, count: registeredInternsCount },
+                            { id: 'employees', label: 'Employees', icon: Users },
+                            { id: 'investors', label: 'Investors', icon: TrendingUp }
                         ].map((t: any) => {
                             const Icon = t.icon;
                             const isActive = viewMode === t.id;
@@ -2531,6 +2570,7 @@ ${manualClientForm.scope.trim() || 'Custom software development & digital engine
                                             const isManual = meta.source === 'admin_manual' || sub.bounty_reward?.includes('admin_manual');
                                             const assignedAmount = meta.assigned_amount || (meta.invoices && meta.invoices[0]?.amount) || '';
                                             const currentStatus = sub.status || 'Pending Review';
+                                            const clientOtherServices = clientProjects.filter(s => sub.email && s.email?.toLowerCase().trim() === sub.email.toLowerCase().trim() && s.id !== sub.id);
 
                                             return (
                                                 <div key={sub.id} className="glass-card rounded-2xl border border-border p-5 hover:border-primary/40 transition-all space-y-4 shadow-xs">
@@ -2590,6 +2630,39 @@ ${manualClientForm.scope.trim() || 'Custom software development & digital engine
                                                         </div>
                                                     </div>
 
+                                                    {/* Multi-Service Account Indicator */}
+                                                    {clientOtherServices.length > 0 && (
+                                                        <div className="p-3.5 rounded-2xl bg-primary/10 border border-primary/25 space-y-2">
+                                                            <div className="flex items-center justify-between text-xs">
+                                                                <span className="font-extrabold text-foreground flex items-center gap-1.5">
+                                                                    <Layers className="w-3.5 h-3.5 text-primary" /> Multi-Service Account ({clientOtherServices.length + 1} Associated Services)
+                                                                </span>
+                                                                <span className="text-[11px] text-muted-foreground font-medium">Manage multiple services at one place</span>
+                                                            </div>
+                                                            <div className="flex flex-wrap gap-1.5 pt-0.5">
+                                                                <span className="px-2.5 py-1 rounded-lg bg-primary text-primary-foreground font-extrabold text-[11px] shadow-xs">
+                                                                    Active View: {meta.package_type || 'Primary Service'} ({currentStatus})
+                                                                </span>
+                                                                {clientOtherServices.map(other => {
+                                                                    const otherMeta = parseProjectMeta(other.bounty_reward);
+                                                                    return (
+                                                                        <button
+                                                                            key={other.id}
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                setClientSearch(other.name || other.email || other.id);
+                                                                            }}
+                                                                            className="px-2.5 py-1 rounded-lg bg-card border border-border text-foreground hover:border-primary font-bold text-[11px] transition-all flex items-center gap-1 shadow-xs cursor-pointer"
+                                                                        >
+                                                                            <span>{otherMeta.package_type || other.inquiry_type || 'Linked Service'}</span>
+                                                                            <span className="text-[10px] text-muted-foreground">({other.status || 'Active'})</span>
+                                                                        </button>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
                                                     {/* Card Middle: Scope & Budget */}
                                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                                                         <div className="md:col-span-2 p-3 rounded-xl bg-muted/30 border border-border/60 space-y-1">
@@ -2638,6 +2711,27 @@ ${manualClientForm.scope.trim() || 'Custom software development & digital engine
                                                     {/* Card Action Buttons */}
                                                     <div className="flex items-center justify-between gap-2 pt-2 border-t border-border/60 flex-wrap">
                                                         <div className="flex items-center gap-1.5 flex-wrap">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setManualClientForm({
+                                                                        name: sub.name,
+                                                                        email: sub.email,
+                                                                        organization: sub.organization || '',
+                                                                        phone: sub.designation || '',
+                                                                        projectTitle: (sub.organization || sub.name) + ' - Additional Service',
+                                                                        serviceCategory: 'SEO, GEO & AEO Programme',
+                                                                        budget: '₹35,000',
+                                                                        scope: '',
+                                                                        status: 'Pending Review'
+                                                                    });
+                                                                    setIsAddClientModalOpen(true);
+                                                                }}
+                                                                className="px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-bold text-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                                                                title="Add another service for this client"
+                                                            >
+                                                                <Plus className="w-3.5 h-3.5" /> + Add Service
+                                                            </button>
                                                             <button
                                                                 onClick={() => openQuoteModal(sub)}
                                                                 className="px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary border border-primary/25 font-bold text-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer"
@@ -2740,7 +2834,7 @@ ${manualClientForm.scope.trim() || 'Custom software development & digital engine
                                             const stored = JSON.parse(localStorage.getItem('siddhi_pre_assigned_roles') || '{}');
                                             stored[emailInput] = roleSelect;
                                             localStorage.setItem('siddhi_pre_assigned_roles', JSON.stringify(stored));
-                                            // Also upsert into portal_users so it's persistent in DB
+                                            assignRoleToEmail(emailInput, roleSelect, emailInput.split('@')[0]);
                                             await (supabase as any).from('portal_users').upsert({ email: emailInput, role: roleSelect, name: emailInput.split('@')[0], confirmed: false }, { onConflict: 'email' });
                                             toast.success(`Role "${roleSelect}" pre-assigned to ${emailInput}. They will get this role upon login.`);
                                             fetchAllUsers();
@@ -2960,7 +3054,7 @@ ${manualClientForm.scope.trim() || 'Custom software development & digital engine
                                     <Building2 className="w-6 h-6 text-[#6b7c45]" /> Agency Management
                                 </h2>
                                 <p className="text-xs text-muted-foreground mt-1">
-                                    Agencies registered on the platform. Click any agency to see their clients and projects.
+                                    Agencies registered on the platform.
                                 </p>
                             </div>
                             <div className="flex items-center gap-2">
@@ -2993,475 +3087,103 @@ ${manualClientForm.scope.trim() || 'Custom software development & digital engine
                             </div>
                         </div>
 
-                        {/* Sub-tabs: Self Projects / Client Projects */}
-                        <div className="flex items-center gap-3">
-                            <button
-                                onClick={() => setAgencySubTab('commissions')}
-                                className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border ${
-                                    agencySubTab === 'commissions'
-                                        ? 'bg-[#6b7c45] text-white border-[#6b7c45] shadow-md'
-                                        : 'bg-[#1a1c14] text-stone-400 hover:text-white border-[#3d4230]'
-                                }`}
-                            >
-                                <Briefcase className="w-4 h-4" /> Self Projects
-                            </button>
-                            <button
-                                onClick={() => setAgencySubTab('clients')}
-                                className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border ${
-                                    agencySubTab === 'clients'
-                                        ? 'bg-[#6b7c45] text-white border-[#6b7c45] shadow-md'
-                                        : 'bg-[#1a1c14] text-stone-400 hover:text-white border-[#3d4230]'
-                                }`}
-                            >
-                                <Users className="w-4 h-4" /> Client Projects
-                                {agencyClients.length > 0 && (
-                                    <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-[#2a2d1e] text-[#a0b550]">
-                                        {agencyClients.length}
-                                    </span>
-                                )}
-                            </button>
-                        </div>
-
-                        {agencySubTab === 'commissions' ? (
-                            /* ── SELF PROJECTS: Services the agency took from Siddhi Dynamics ── */
-                            <div className="space-y-6">
-                                {/* Agency Cards */}
-                                {agencyConfigs.length === 0 ? (
-                                    <div className="text-center py-16 rounded-2xl border border-dashed border-[#3d4230] bg-[#1a1c14]">
-                                        <Building2 className="w-12 h-12 text-[#6b7c45]/30 mx-auto mb-4" />
-                                        <h3 className="text-lg font-bold text-white mb-2">No Agencies Yet</h3>
-                                        <p className="text-xs text-stone-500">Add agencies manually or they will appear here once they sign up on the platform.</p>
-                                    </div>
-                                ) : (
-                                    <div className="space-y-4">
-                                        {agencyConfigs.map((cfg) => (
-                                            <div key={cfg.agency_email} className="rounded-2xl border border-[#3d4230] bg-[#1a1c14] overflow-hidden">
-                                                {/* Agency Row Header */}
-                                                <div className="flex items-center justify-between p-5 border-b border-[#2a2d1e]">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 rounded-xl bg-[#6b7c45]/15 flex items-center justify-center">
-                                                            <Building2 className="w-5 h-5 text-[#a0b550]" />
-                                                        </div>
-                                                        <div>
-                                                            <h3 className="font-extrabold text-white">{cfg.agency_name}</h3>
-                                                            <p className="text-xs text-stone-500 font-mono">{cfg.agency_email}</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${
-                                                            cfg.model === 'commission'
-                                                                ? 'bg-[#6b7c45]/20 text-[#a0b550] border-[#6b7c45]/30'
-                                                                : 'bg-[#2a2d1e] text-stone-400 border-[#3d4230]'
-                                                        }`}>
-                                                            {cfg.model === 'commission' ? `Commission (${cfg.commission_rate}%)` : 'Non-Commission'}
-                                                        </span>
-                                                        <button
-                                                            onClick={() => openEditFullAgency(cfg)}
-                                                            className="px-3 py-1.5 rounded-lg bg-[#2a2d1e] hover:bg-[#3d4230] text-stone-300 border border-[#3d4230] font-bold text-[11px] flex items-center gap-1.5"
-                                                        >
-                                                            <Edit className="w-3.5 h-3.5" /> Edit
-                                                        </button>
-                                                    </div>
-                                                </div>
-
-                                                {/* Self Projects for this agency */}
-                                                <div className="p-5 space-y-3">
-                                                    <div className="flex items-center justify-between">
-                                                        <h4 className="text-xs font-bold text-stone-400 uppercase tracking-wider">Services / Self Projects</h4>
-                                                        <button
-                                                            onClick={() => {
-                                                                const projTitle = prompt(`Service/Project Title for ${cfg.agency_name}:`);
-                                                                if (!projTitle) return;
-                                                                const valStr = prompt("Project Value (₹):", "50000");
-                                                                const val = parseInt(valStr || "50000", 10);
-                                                                agencyCommissionService.addProject({
-                                                                    agency_email: cfg.agency_email,
-                                                                    project_title: projTitle,
-                                                                    client_name: cfg.agency_name,
-                                                                    project_value: val,
-                                                                    commission_payout_status: 'pending',
-                                                                    inflow_status: 'received',
-                                                                    inflow_utr: 'SBI-INFLOW-' + Math.floor(1000000000 + Math.random() * 9000000000),
-                                                                    invoice_no: 'SD-AGY-INV-' + Math.floor(100 + Math.random() * 900),
-                                                                });
-                                                                refreshAgencyData();
-                                                                toast.success("Service project added!");
-                                                            }}
-                                                            className="text-xs font-bold text-[#a0b550] hover:underline flex items-center gap-1"
-                                                        >
-                                                            <Plus className="w-3.5 h-3.5" /> Add Service
-                                                        </button>
-                                                    </div>
-
-                                                    {agencyProjects.filter(p => p.agency_email.toLowerCase() === cfg.agency_email.toLowerCase()).length === 0 ? (
-                                                        <div className="py-6 text-center text-xs text-stone-600 bg-[#2a2d1e] rounded-xl border border-dashed border-[#3d4230]">
-                                                            No services added yet. Click "Add Service" to record a service taken by this agency.
-                                                        </div>
-                                                    ) : (
-                                                        <div className="space-y-2">
-                                                            {agencyProjects.filter(p => p.agency_email.toLowerCase() === cfg.agency_email.toLowerCase()).map((p) => (
-                                                                <div key={p.id} className="flex items-center justify-between p-3 rounded-xl bg-[#2a2d1e] border border-[#3d4230]">
-                                                                    <div>
-                                                                        <p className="font-bold text-white text-sm">{p.project_title}</p>
-                                                                        <p className="text-[11px] text-stone-500">Value: ₹{p.project_value?.toLocaleString('en-IN')}</p>
-                                                                    </div>
-                                                                    <div className="flex items-center gap-2">
-                                                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                                                                            p.commission_payout_status === 'paid'
-                                                                                ? 'bg-[#6b7c45]/20 text-[#a0b550] border-[#6b7c45]/30'
-                                                                                : 'bg-amber-900/20 text-amber-400 border-amber-700/30'
-                                                                        }`}>
-                                                                            {p.commission_payout_status === 'paid' ? 'Paid' : 'Pending'}
-                                                                        </span>
-                                                                        <button
-                                                                            onClick={() => handleViewAgencyInvoice(p, cfg)}
-                                                                            className="px-2.5 py-1.5 rounded-lg bg-[#6b7c45]/15 hover:bg-[#6b7c45]/25 text-[#a0b550] border border-[#6b7c45]/30 font-bold text-[10px] transition-all flex items-center gap-1"
-                                                                        >
-                                                                            <Printer className="w-3 h-3" /> Invoice
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
+                        {/* List of Registered Agencies */}
+                        {agencyConfigs.length === 0 ? (
+                            <div className="text-center py-16 rounded-2xl border border-dashed border-[#3d4230] bg-[#1a1c14]">
+                                <Building2 className="w-12 h-12 text-[#6b7c45]/30 mx-auto mb-4" />
+                                <h3 className="text-lg font-bold text-white mb-2">No Agencies Registered Yet</h3>
+                                <p className="text-xs text-stone-500">Click "Add Agency Manually" to register an agency partner on the platform.</p>
                             </div>
                         ) : (
-                            /* ── CLIENT PROJECTS: Services raised by agency for their own clients ── */
-                            <div className="space-y-5">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-xs text-stone-500">Services that agency clients have raised from Siddhi Dynamics through their respective agency partners.</p>
-                                    </div>
-                                    <input
-                                        type="text"
-                                        placeholder="Search clients..."
-                                        value={agencySearchTerm}
-                                        onChange={e => setAgencySearchTerm(e.target.value)}
-                                        className="px-4 py-2 rounded-xl border border-[#3d4230] bg-[#1a1c14] text-white text-xs focus:outline-none focus:ring-2 focus:ring-[#6b7c45]/30 w-52 placeholder:text-stone-600"
-                                    />
-                                </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {agencyConfigs.map((cfg) => (
+                                    <div key={cfg.agency_email} className="rounded-2xl border border-[#3d4230] bg-[#1a1c14] p-5 space-y-4 hover:border-[#6b7c45]/50 transition-all">
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-11 h-11 rounded-xl bg-[#6b7c45]/15 border border-[#6b7c45]/30 flex items-center justify-center shrink-0">
+                                                    <Building2 className="w-5 h-5 text-[#a0b550]" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-extrabold text-base text-white">{cfg.agency_name}</h3>
+                                                    <p className="text-xs text-stone-400 font-mono">{cfg.agency_email}</p>
+                                                </div>
+                                            </div>
+                                            <span className={`px-2.5 py-1 rounded-full text-[11px] font-extrabold border shrink-0 ${
+                                                cfg.model === 'commission'
+                                                    ? 'bg-[#6b7c45]/20 text-[#a0b550] border-[#6b7c45]/30'
+                                                    : 'bg-[#2a2d1e] text-stone-400 border-[#3d4230]'
+                                            }`}>
+                                                {cfg.model === 'commission' ? `Commission (${cfg.commission_rate}%)` : 'Non-Commission'}
+                                            </span>
+                                        </div>
 
-                                {agencyClientsLoading ? (
-                                    <div className="flex items-center justify-center py-20">
-                                        <RefreshCw className="w-8 h-8 animate-spin text-[#6b7c45]" />
-                                    </div>
-                                ) : agencyClients.length === 0 ? (
-                                    <div className="rounded-2xl border border-dashed border-[#3d4230] bg-[#1a1c14] p-16 text-center">
-                                        <Users className="w-12 h-12 text-[#6b7c45]/30 mx-auto mb-4" />
-                                        <h3 className="text-lg font-extrabold text-white mb-2">No Agency Client Projects</h3>
-                                        <p className="text-sm text-stone-500">Agency clients who raise service requests through their agency partner will appear here.</p>
-                                    </div>
-                                ) : (
-                                    <div className="space-y-3">
-                                        {agencyClients
-                                            .filter(c =>
-                                                !agencySearchTerm ||
-                                                c.business_name?.toLowerCase().includes(agencySearchTerm.toLowerCase()) ||
-                                                c.agency_email?.toLowerCase().includes(agencySearchTerm.toLowerCase()) ||
-                                                c.category?.toLowerCase().includes(agencySearchTerm.toLowerCase())
-                                            )
-                                            .map(client => {
-                                                const agencyCfg = agencyConfigs.find(a => a.agency_email?.toLowerCase() === client.agency_email?.toLowerCase());
-                                                return (
-                                                    <div key={client.id} className="rounded-2xl border border-[#3d4230] bg-[#1a1c14] p-5 space-y-4">
-                                                        <div className="flex items-start justify-between gap-3">
-                                                            <div>
-                                                                <h3 className="font-extrabold text-base text-white">{client.business_name}</h3>
-                                                                <p className="text-xs text-stone-500">
-                                                                    {client.category || '—'} · Via: <span className="text-[#a0b550]">{agencyCfg?.agency_name || client.agency_email}</span>
-                                                                </p>
-                                                            </div>
-                                                            <div className="flex items-center gap-2">
-                                                                <span className={`px-2 py-0.5 rounded-lg text-[10px] font-extrabold border ${
-                                                                    client.status === 'Locked (Tenure Expired)' ? 'bg-red-900/20 text-red-400 border-red-800/30' :
-                                                                    client.status === 'Active Optimization' ? 'bg-[#6b7c45]/20 text-[#a0b550] border-[#6b7c45]/30' :
-                                                                    'bg-amber-900/20 text-amber-400 border-amber-700/30'
-                                                                }`}>{client.status || 'Onboarding'}</span>
-                                                                <button
-                                                                    onClick={() => openEditAgencyClient(client)}
-                                                                    className="px-3 py-1.5 rounded-lg bg-[#2a2d1e] hover:bg-[#3d4230] text-stone-300 border border-[#3d4230] font-bold text-[11px] flex items-center gap-1.5"
-                                                                >
-                                                                    <Edit className="w-3.5 h-3.5" /> Edit
-                                                                </button>
-                                                            </div>
-                                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-stone-400 bg-[#2a2d1e]/60 rounded-xl p-3 border border-[#3d4230]/50">
+                                            {cfg.agency_poc_name && (
+                                                <div>
+                                                    <span className="text-[10px] uppercase font-bold text-stone-500 block">Contact Person</span>
+                                                    <span className="text-stone-200 font-medium">{cfg.agency_poc_name}</span>
+                                                </div>
+                                            )}
+                                            {cfg.agency_phone && (
+                                                <div>
+                                                    <span className="text-[10px] uppercase font-bold text-stone-500 block">Phone</span>
+                                                    <span className="text-stone-200 font-mono">{cfg.agency_phone}</span>
+                                                </div>
+                                            )}
+                                            {cfg.agency_id_number && (
+                                                <div>
+                                                    <span className="text-[10px] uppercase font-bold text-stone-500 block">{cfg.agency_id_type || 'ID Number'}</span>
+                                                    <span className="text-stone-200 font-mono">{cfg.agency_id_number}</span>
+                                                </div>
+                                            )}
+                                            <div>
+                                                <span className="text-[10px] uppercase font-bold text-stone-500 block">Status</span>
+                                                <span className="text-emerald-400 font-bold capitalize">{cfg.status || 'Active'}</span>
+                                            </div>
+                                            {cfg.agency_address && (
+                                                <div className="col-span-full">
+                                                    <span className="text-[10px] uppercase font-bold text-stone-500 block">Address</span>
+                                                    <span className="text-stone-300 text-[11px] leading-relaxed">{cfg.agency_address}</span>
+                                                </div>
+                                            )}
+                                        </div>
 
-                                                        {/* Score Summary */}
-                                                        <div className="grid grid-cols-4 gap-2 text-center bg-[#2a2d1e] rounded-xl p-3">
-                                                            {[['GEO', client.geo_score], ['SEO', client.seo_score], ['GBP', client.gbp_score], ['AEO', client.aeo_score]].map(([label, val]) => (
-                                                                <div key={label as string}>
-                                                                    <div className="text-[9px] font-extrabold uppercase text-[#a0b550]">{label}</div>
-                                                                    <div className="text-sm font-extrabold text-white">{val || 0}</div>
-                                                                </div>
-                                                            ))}
-                                                        </div>
+                                        {cfg.notes && (
+                                            <p className="text-[11px] text-stone-400 italic bg-[#2a2d1e]/30 px-3 py-1.5 rounded-lg border border-[#3d4230]/30">
+                                                {cfg.notes}
+                                            </p>
+                                        )}
 
-                                                        <div className="flex items-center gap-4 text-xs text-stone-500">
-                                                            <span className="flex items-center gap-1.5">
-                                                                <Calendar className="w-3.5 h-3.5 text-[#6b7c45]" />
-                                                                {client.tenure_months ? `${client.tenure_months}-Month SLA` : '⏳ Tenure not set'}
-                                                            </span>
-                                                            <span className="flex items-center gap-1.5">
-                                                                <CreditCard className="w-3.5 h-3.5 text-[#6b7c45]" />
-                                                                {client.retainer_fee ? `₹${client.retainer_fee}/month` : '⏳ Fee not set'}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })
-                                        }
+                                        <div className="pt-2 flex items-center justify-end gap-2 border-t border-[#2a2d1e]">
+                                            <button
+                                                onClick={() => handleDeleteAgency(cfg.agency_email, cfg.agency_name)}
+                                                className="px-3 py-1.5 rounded-lg bg-red-900/20 hover:bg-red-900/30 text-red-400 border border-red-800/30 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" /> Remove
+                                            </button>
+                                            <button
+                                                onClick={() => openEditFullAgency(cfg)}
+                                                className="px-3.5 py-1.5 rounded-lg bg-[#2a2d1e] hover:bg-[#3d4230] text-stone-300 border border-[#3d4230] font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                                            >
+                                                <Edit className="w-3.5 h-3.5" /> Edit Agency
+                                            </button>
+                                        </div>
                                     </div>
-                                )}
+                                ))}
                             </div>
                         )}
                     </motion.div>
+                ) : viewMode === 'investors' ? (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 text-left">
+                        <AdminInvestorsConsole />
+                    </motion.div>
                 ) : viewMode === 'internships' ? (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 text-left">
-                        {/* Sub-tabs switcher */}
-                        <div className="flex items-center gap-2 border-b border-border pb-3">
-                            <button
-                                onClick={() => setInternshipTab('payroll')}
-                                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                                    internshipTab === 'payroll'
-                                        ? 'bg-primary text-primary-foreground shadow-md'
-                                        : 'glass-card text-muted-foreground hover:text-foreground'
-                                }`}
-                            >
-                                <DollarSign className="w-4 h-4" /> Salaries, Stipends & Incentives
-                                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono">
-                                    ₹{payrollSummary.total_disbursed.toLocaleString('en-IN')}
-                                </span>
-                            </button>
-                            <button
-                                onClick={() => setInternshipTab('console')}
-                                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                                    internshipTab === 'console'
-                                        ? 'bg-primary text-primary-foreground shadow-md'
-                                        : 'glass-card text-muted-foreground hover:text-foreground'
-                                }`}
-                            >
-                                <GraduationCap className="w-4 h-4" /> Intern Tasks & Whitelist Console
-                                {registeredInternsCount > 0 && (
-                                    <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 text-[10px] font-mono">
-                                        {registeredInternsCount}
-                                    </span>
-                                )}
-                            </button>
-                        </div>
-
-                        {internshipTab === 'payroll' ? (
-                            <div className="space-y-6">
-                                {/* Header */}
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                    <div>
-                                        <h2 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
-                                            <DollarSign className="w-6 h-6 text-primary" /> Team Salaries, Stipends & Incentives Ledger
-                                        </h2>
-                                        <p className="text-xs text-muted-foreground mt-1">
-                                            Manage employee salaries, intern stipends, performance incentives, bonuses, and verified digital internship completion certificates.
-                                        </p>
-                                    </div>
-                                    <button
-                                        onClick={() => setNewDisbursementModalOpen(true)}
-                                        className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all self-start sm:self-auto"
-                                    >
-                                        <Plus className="w-4 h-4" /> Record New Disbursement
-                                    </button>
-                                </div>
-
-                                {/* Summary KPIs */}
-                                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                                    <div className="glass-card p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
-                                        <span className="text-[10px] text-emerald-400 uppercase font-bold tracking-wider block">Total Disbursed</span>
-                                        <span className="text-xl font-black text-emerald-400 mt-1 block">
-                                            ₹{payrollSummary.total_disbursed.toLocaleString('en-IN')}
-                                        </span>
-                                    </div>
-                                    <div className="glass-card p-4 rounded-xl border border-amber-500/30 bg-amber-500/5">
-                                        <span className="text-[10px] text-amber-400 uppercase font-bold tracking-wider block">Pending Outflow</span>
-                                        <span className="text-xl font-black text-amber-400 mt-1 block">
-                                            ₹{payrollSummary.total_pending.toLocaleString('en-IN')}
-                                        </span>
-                                    </div>
-                                    <div className="glass-card p-4 rounded-xl border border-border">
-                                        <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider block">Employee Salaries</span>
-                                        <span className="text-xl font-black text-foreground mt-1 block">
-                                            ₹{payrollSummary.employee_salaries.toLocaleString('en-IN')}
-                                        </span>
-                                    </div>
-                                    <div className="glass-card p-4 rounded-xl border border-primary/30 bg-primary/5">
-                                        <span className="text-[10px] text-primary uppercase font-bold tracking-wider block">Intern Stipends</span>
-                                        <span className="text-xl font-black text-primary mt-1 block">
-                                            ₹{payrollSummary.intern_stipends.toLocaleString('en-IN')}
-                                        </span>
-                                    </div>
-                                    <div className="glass-card p-4 rounded-xl border border-violet-500/30 bg-violet-500/5">
-                                        <span className="text-[10px] text-violet-400 uppercase font-bold tracking-wider block">Incentives & Bonus</span>
-                                        <span className="text-xl font-black text-violet-400 mt-1 block">
-                                            ₹{(payrollSummary.performance_incentives + payrollSummary.bonuses).toLocaleString('en-IN')}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Compensation Disbursements Table */}
-                                <div className="space-y-3">
-                                    <h3 className="font-extrabold text-base text-foreground flex items-center gap-2">
-                                        <CreditCard className="w-5 h-5 text-emerald-400" /> Outflow Disbursements & Bank Wire Records
-                                    </h3>
-                                    <div className="glass-card rounded-2xl border border-border overflow-hidden">
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full text-left text-xs">
-                                                <thead className="bg-muted/50 border-b border-border text-muted-foreground font-bold uppercase tracking-wider text-[10px]">
-                                                    <tr>
-                                                        <th className="p-3.5">Recipient & Role</th>
-                                                        <th className="p-3.5">Category</th>
-                                                        <th className="p-3.5">Period</th>
-                                                        <th className="p-3.5">Amount (₹)</th>
-                                                        <th className="p-3.5">Disbursement Status</th>
-                                                        <th className="p-3.5">Bank Reference / UTR</th>
-                                                        <th className="p-3.5">Certificate Reference</th>
-                                                        <th className="p-3.5 text-right">Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-border/60">
-                                                    {payrollRecords.map((r) => (
-                                                        <tr key={r.id} className="hover:bg-muted/20 transition-colors">
-                                                            <td className="p-3.5">
-                                                                <div className="font-extrabold text-foreground flex items-center gap-2">
-                                                                    {r.recipient_name}
-                                                                    <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${
-                                                                        r.role === 'employee' 
-                                                                            ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30' 
-                                                                            : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
-                                                                    }`}>
-                                                                        {r.role}
-                                                                    </span>
-                                                                </div>
-                                                                <div className="text-muted-foreground text-[11px] font-mono">{r.recipient_email}</div>
-                                                            </td>
-                                                            <td className="p-3.5 font-semibold text-foreground capitalize">
-                                                                {r.disbursement_type}
-                                                            </td>
-                                                            <td className="p-3.5 text-muted-foreground">
-                                                                {r.period}
-                                                            </td>
-                                                            <td className="p-3.5 font-black text-emerald-400 text-sm">
-                                                                ₹{r.amount.toLocaleString('en-IN')}
-                                                            </td>
-                                                            <td className="p-3.5">
-                                                                {r.status === 'paid' ? (
-                                                                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-[10px] border border-emerald-500/30 flex items-center gap-1 w-fit">
-                                                                        <CheckCircle2 className="w-3 h-3" /> Disbursed
-                                                                    </span>
-                                                                ) : (
-                                                                    <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold text-[10px] border border-amber-500/30 animate-pulse flex items-center gap-1 w-fit">
-                                                                        <Clock className="w-3 h-3" /> Pending Wire
-                                                                    </span>
-                                                                )}
-                                                            </td>
-                                                            <td className="p-3.5 font-mono text-[11px] text-muted-foreground">
-                                                                {r.transaction_utr || '—'}
-                                                            </td>
-                                                            <td className="p-3.5">
-                                                                {r.certificate_id ? (
-                                                                    <span className="px-2 py-0.5 rounded bg-primary/15 text-primary text-[10px] font-mono font-bold border border-primary/30 flex items-center gap-1 w-fit">
-                                                                        <Award className="w-3 h-3" /> {r.certificate_id}
-                                                                    </span>
-                                                                ) : (
-                                                                    <span className="text-muted-foreground text-[11px]">—</span>
-                                                                )}
-                                                            </td>
-                                                            <td className="p-3.5 text-right">
-                                                                {r.status === 'pending' ? (
-                                                                    <button
-                                                                        onClick={() => handleMarkPayrollPaid(r.id)}
-                                                                        className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-[11px] transition-all shadow-sm"
-                                                                    >
-                                                                        Mark Paid (Enter UTR)
-                                                                    </button>
-                                                                ) : (
-                                                                    <span className="text-muted-foreground text-[11px] font-semibold">Verified</span>
-                                                                )}
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Verified Intern Completion Certificates Section */}
-                                <div className="space-y-3 pt-4 border-t border-border">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h3 className="font-extrabold text-base text-foreground flex items-center gap-2">
-                                                <Award className="w-5 h-5 text-amber-400" /> Issued Internship Completion Certificates
-                                            </h3>
-                                            <p className="text-xs text-muted-foreground">
-                                                Self-authenticating credentials verified under Siddhi Dynamics LLP registration ACX-6222.
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {[
-                                            {
-                                                name: "Rohan Verma",
-                                                certId: "SD-CERT-2026-089",
-                                                domain: "Full-Stack Web & Generative AI Systems",
-                                                issuedAt: "September 15, 2026",
-                                                status: "Verified & Digitally Sealed"
-                                            },
-                                            {
-                                                name: "Ananya Deshmukh",
-                                                certId: "SD-CERT-2026-104",
-                                                domain: "Deep-Tech Cloud Infrastructure & LLM Tuning",
-                                                issuedAt: "August 30, 2026",
-                                                status: "Verified & Digitally Sealed"
-                                            }
-                                        ].map((cert) => (
-                                            <div key={cert.certId} className="glass-card p-5 rounded-2xl border border-amber-500/30 bg-amber-500/5 space-y-3">
-                                                <div className="flex items-start justify-between gap-3">
-                                                    <div>
-                                                        <h4 className="font-extrabold text-foreground text-base flex items-center gap-2">
-                                                            {cert.name}
-                                                        </h4>
-                                                        <p className="text-xs text-primary font-bold">{cert.domain}</p>
-                                                    </div>
-                                                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-[10px] border border-emerald-500/30 flex items-center gap-1">
-                                                        <BadgeCheck className="w-3.5 h-3.5" /> {cert.status}
-                                                    </span>
-                                                </div>
-
-                                                <div className="bg-muted/40 p-3 rounded-xl border border-border/60 text-xs flex items-center justify-between">
-                                                    <div>
-                                                        <span className="text-[10px] uppercase font-bold text-muted-foreground block">Certificate Number</span>
-                                                        <span className="font-mono font-extrabold text-foreground">{cert.certId}</span>
-                                                    </div>
-                                                    <div className="text-right">
-                                                        <span className="text-[10px] uppercase font-bold text-muted-foreground block">Issue Date</span>
-                                                        <span className="font-semibold text-foreground">{cert.issuedAt}</span>
-                                                    </div>
-                                                </div>
-
-                                                <div className="text-[10px] text-muted-foreground flex items-center justify-between">
-                                                    <span>Issuer: Siddhi Dynamics LLP (LLPIN: ACX-6222)</span>
-                                                    <span>IT Act 2000 Section 65B Compliant</span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <AdminInternshipsConsole />
-                        )}
+                        <AdminInternRegistry />
+                    </motion.div>
+                ) : viewMode === 'employees' ? (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 text-left">
+                        <AdminEmployeesConsole />
                     </motion.div>
                 ) : viewMode === 'invoices' ? (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 text-left">

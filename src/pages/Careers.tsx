@@ -37,6 +37,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { employeeService } from '@/services/employeeService';
 import { 
   internshipService, 
   RoleJD, 
@@ -238,7 +239,7 @@ SIDDHI DYNAMICS LLP — OFFICIAL JOB DESCRIPTION & INTERNSHIP TERMS
 Position: ${role.title}
 Department: ${role.category}
 Employment Type: ${role.employmentType} (Remote Task-Based Platform Workflow)
-Compensation: ${role.compensation}
+Compensation: UNPAID (No Stipend) — ${role.compensation}
 Target Candidates: ${role.targetAudience}
 Available Durations: ${role.durations.join(', ')}
 Location: Remote / Virtual (Offices in Hyderabad & Nizamabad)
@@ -269,7 +270,7 @@ ${role.requirements.map((req, i) => `• ${req}`).join('\n')}
 
 6. TRANSPARENT TERMS & CREDENTIALING POLICY (CRUCIAL INFORMATION)
 --------------------------------------------------------------------------------
-• COMPENSATION: ${role.compensation}
+• COMPENSATION: UNPAID (Strictly No Monetary Stipend) — ${role.compensation}
 
 • CERTIFICATE POLICY: ${role.certificatePolicy}
   Tamper-proof cryptographic checksum verifiable on:
@@ -335,6 +336,24 @@ ${role.requirements.map((req, i) => `• ${req}`).join('\n')}
         finalResumeUrl = uploadedFiles.map(f => `${f.name} (${(f.size / 1024).toFixed(0)} KB)`).join(', ');
       }
 
+      if (applicationModal?.employmentType === 'Full Time') {
+        employeeService.submitApplicant({
+          full_name: fullName,
+          email,
+          phone: digitsOnly,
+          applied_role: applicationModal.title,
+          department: (applicationModal.category as string) || 'Engineering',
+          experience: 'Direct applicant through careers portal',
+          college,
+          degree: selectedDegree,
+          expected_salary: 'As per industry benchmark',
+          resume_url: finalResumeUrl,
+          portfolio_url: portfolioOrSocial,
+          linkedin_url: linkedin,
+          statement_of_purpose: statementOfPurpose
+        });
+      }
+
       await internshipService.submitApplication({
         full_name: fullName,
         email,
@@ -342,8 +361,8 @@ ${role.requirements.map((req, i) => `• ${req}`).join('\n')}
         college,
         degree: selectedDegree,
         graduation_year: '2026',
-        role: (applicationModal?.title || 'Business Development Intern') as any,
-        duration,
+        role: (applicationModal?.title || 'Business Development Intern') as 'Business Development Intern' | 'Digital Marketing Intern' | 'Product Manager Intern',
+        duration: applicationModal?.employmentType === 'Full Time' ? 'Full Time Permanent' : duration,
         linkedin,
         portfolio_or_social: portfolioOrSocial,
         statement_of_purpose: statementOfPurpose,
@@ -546,10 +565,19 @@ ${role.requirements.map((req, i) => `• ${req}`).join('\n')}
                   >
                     <div className="flex items-start justify-between">
                       <div className="space-y-1">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center flex-wrap gap-2 mb-1">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${empColor(role.employmentType)}`}>
                             {role.employmentType}
                           </span>
+                          {role.employmentType === 'Full Time' ? (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold border bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/30">
+                              Full Time • Paid
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold border bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/30">
+                              Unpaid
+                            </span>
+                          )}
                           <span className="px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold">
                             {role.category}
                           </span>
@@ -562,15 +590,26 @@ ${role.requirements.map((req, i) => `• ${req}`).join('\n')}
                         <Briefcase className="w-5 h-5" />
                       </div>
                     </div>
+                    {role.employmentType === 'Full Time' ? (
+                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-[11px] font-semibold">
+                        <Building2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                        <span>Full-Time Role • Competitive Salary & Growth</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-[11px] font-semibold">
+                        <AlertCircle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                        <span>Unpaid Internship • Official Certificate Awarded</span>
+                      </div>
+                    )}
                     <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
                       {role.overview}
                     </p>
                     <div className="pt-4 flex items-center justify-between gap-3">
                       <button
                         onClick={() => setSelectedJdModal(role)}
-                        className="flex-1 px-4 py-2 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border text-xs font-bold transition-colors"
+                        className="flex-1 px-4 py-2 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border text-xs font-bold transition-colors cursor-pointer"
                       >
-                        View Details
+                        View JD
                       </button>
                       <button
                         onClick={() => handleOpenApply(role)}
@@ -660,10 +699,30 @@ ${role.requirements.map((req, i) => `• ${req}`).join('\n')}
                   <h3 className="text-xl md:text-2xl font-black text-foreground mb-1">
                     {selectedJdModal.title}
                   </h3>
-                  <p className="text-xs text-muted-foreground">
-                    {selectedJdModal.category} • {selectedJdModal.employmentType}
-                  </p>
-                  <div className="mt-3.5 p-3 rounded-xl bg-blue-500/10 border border-blue-500/25 text-[11px] sm:text-xs text-blue-800 dark:text-blue-300 leading-relaxed space-y-0.5">
+                  <div className="flex items-center flex-wrap gap-2 mt-2 mb-2">
+                    <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${empColor(selectedJdModal.employmentType)}`}>
+                      {selectedJdModal.employmentType}
+                    </span>
+                    {selectedJdModal.employmentType === 'Full Time' ? (
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black border bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/30">
+                        Full Time Position
+                      </span>
+                    ) : (
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black border bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/30">
+                        Unpaid Internship
+                      </span>
+                    )}
+                    <span className="px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold">
+                      {selectedJdModal.category}
+                    </span>
+                  </div>
+                  <div className="mt-3.5 p-3 rounded-xl bg-blue-500/10 border border-blue-500/25 text-[11px] sm:text-xs text-blue-800 dark:text-blue-300 leading-relaxed space-y-1">
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 rounded-md bg-amber-500/15 border border-amber-500/30 flex items-center justify-center shrink-0">
+                        <AlertCircle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                      </div>
+                      <span><strong className="font-semibold text-amber-900 dark:text-amber-200">Stipend / Compensation:</strong> Strictly Unpaid (No monetary stipend). Hands-on industry training & academic practical track with verifiable credentials.</span>
+                    </div>
                     <div className="flex items-center gap-2">
                       <div className="w-5 h-5 rounded-md bg-blue-500/15 border border-blue-500/30 flex items-center justify-center shrink-0">
                         <Award className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
@@ -686,6 +745,28 @@ ${role.requirements.map((req, i) => `• ${req}`).join('\n')}
                 </div>
 
                 <div className="space-y-6 text-xs text-foreground/80 dark:text-muted-foreground">
+                  {selectedJdModal.employmentType === 'Full Time' ? (
+                    <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 space-y-1">
+                      <h4 className="font-extrabold text-emerald-900 dark:text-emerald-200 text-sm flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                        Compensation & Perks: Full-Time Employment
+                      </h4>
+                      <p className="leading-relaxed text-xs text-emerald-800 dark:text-emerald-300 font-medium">
+                        {selectedJdModal.compensation}. High-growth enterprise environment with comprehensive health and incentive programs.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-1">
+                      <h4 className="font-extrabold text-amber-900 dark:text-amber-200 text-sm flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                        Compensation & Stipend Policy: Unpaid Internship
+                      </h4>
+                      <p className="leading-relaxed text-xs text-amber-800 dark:text-amber-300 font-medium">
+                        This is strictly an <strong>UNPAID</strong> internship position (no stipend or salary provided). It is structured for practical skill development, portfolio building, and academic experience. Interns will receive an official verifiable Certificate of Internship Completion upon completing their tenure.
+                      </p>
+                    </div>
+                  )}
+
                   <div>
                     <h4 className="font-bold text-foreground text-sm mb-1.5">Overview</h4>
                     <p className="leading-relaxed text-foreground/80 dark:text-muted-foreground">{selectedJdModal.overview}</p>
@@ -794,14 +875,37 @@ ${role.requirements.map((req, i) => `• ${req}`).join('\n')}
                   <h3 className="text-xl md:text-2xl font-black text-foreground mb-1 pr-10">
                     {applicationModal.title}
                   </h3>
+                  <div className="flex items-center flex-wrap gap-2 mt-2 mb-2">
+                    <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${empColor(applicationModal.employmentType)}`}>
+                      {applicationModal.employmentType}
+                    </span>
+                    {applicationModal.employmentType === 'Full Time' ? (
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black border bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/30">
+                        Full Time
+                      </span>
+                    ) : (
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black border bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/30">
+                        Unpaid
+                      </span>
+                    )}
+                    <span className="px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold">
+                      {applicationModal.category}
+                    </span>
+                  </div>
                   <p className="text-xs text-muted-foreground">
-                    {applicationModal.category} • {applicationModal.employmentType} • Applications reviewed directly by Founder & CEO.
+                    Applications reviewed directly by Founder & CEO.
                   </p>
 
-                  <div className="mt-3.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-[11px] sm:text-xs text-amber-800 dark:text-amber-300 leading-relaxed space-y-0.5">
-                    <div><strong className="font-semibold text-amber-900 dark:text-amber-200">Notice:</strong> This is an unpaid internship for practical skill growth. Interns receive an official Certificate of Completion upon finishing tenure.</div>
-                    <div className="text-[10.5px] sm:text-[11px] text-amber-700 dark:text-amber-400 font-medium">(Letter of Recommendation is provided strictly upon 2 years of active service).</div>
-                  </div>
+                  {applicationModal.employmentType === 'Full Time' ? (
+                    <div className="mt-3.5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-[11px] sm:text-xs text-emerald-800 dark:text-emerald-300 leading-relaxed space-y-0.5">
+                      <div><strong className="font-semibold text-emerald-900 dark:text-emerald-200">Notice:</strong> You are applying for a full-time career position at Siddhi Dynamics. Candidates are evaluated for immediate joining.</div>
+                    </div>
+                  ) : (
+                    <div className="mt-3.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-[11px] sm:text-xs text-amber-800 dark:text-amber-300 leading-relaxed space-y-0.5">
+                      <div><strong className="font-semibold text-amber-900 dark:text-amber-200">Notice:</strong> This is strictly an UNPAID internship (no financial stipend) for practical skill growth and credentialing. Interns receive an official verifiable Certificate of Completion upon finishing tenure.</div>
+                      <div className="text-[10.5px] sm:text-[11px] text-amber-700 dark:text-amber-400 font-medium">(Letter of Recommendation is provided strictly upon 2 years of active service).</div>
+                    </div>
+                  )}
                 </div>
 
                 <form onSubmit={handleFormSubmit} className="relative z-10 space-y-3.5 sm:space-y-4">
@@ -842,7 +946,7 @@ ${role.requirements.map((req, i) => `• ${req}`).join('\n')}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                     <div>
                       <label className="text-[11.5px] font-semibold text-foreground/90 block mb-1">Current Degree <span className="text-primary">*</span></label>
-                      <select value={degree} onChange={(e: any) => setDegree(e.target.value)} className={dashboardSelect}>
+                      <select value={degree} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setDegree(e.target.value)} className={dashboardSelect}>
                         <option value="MBA">MBA</option>
                         <option value="BBA">BBA</option>
                         <option value="B.Tech">B.Tech / Engineering</option>
@@ -858,7 +962,7 @@ ${role.requirements.map((req, i) => `• ${req}`).join('\n')}
                     </div>
                     <div>
                       <label className="text-[11.5px] font-semibold text-foreground/90 block mb-1">Preferred Duration <span className="text-primary">*</span></label>
-                      <select value={duration} onChange={(e: any) => setDuration(e.target.value)} className={dashboardSelect}>
+                      <select value={duration} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setDuration(e.target.value)} className={dashboardSelect}>
                         <option value="3 Months">3 Months</option>
                         <option value="6 Months">6 Months</option>
                         <option value="9 Months">9 Months</option>
@@ -975,7 +1079,9 @@ ${role.requirements.map((req, i) => `• ${req}`).join('\n')}
                       )}
                     </button>
                     <p className="text-[11px] text-muted-foreground text-center mt-2.5 leading-relaxed">
-                      By submitting, you acknowledge that this is an unpaid internship granting an official completion certificate (and LOR upon 2 years). Applications are delivered to{' '}
+                      {applicationModal?.employmentType === 'Full Time' 
+                        ? 'By submitting, you confirm that your provided profile and resume details are accurate. Applications are delivered to '
+                        : 'By submitting, you acknowledge that this is an unpaid internship granting an official completion certificate (and LOR upon 2 years). Applications are delivered to '}
                       <strong className="text-foreground">careers@siddhidynamics.in</strong>.
                     </p>
                   </div>

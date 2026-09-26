@@ -148,6 +148,12 @@ export const agencyCommissionService = {
     return saved;
   },
 
+  deleteAgencyConfig(email: string): void {
+    const clean = email.trim().toLowerCase();
+    const list = this.getAgencyConfigs().filter((a) => a.agency_email.toLowerCase() !== clean);
+    setStored(STORAGE_KEYS.COMMISSION_CONFIGS, list);
+  },
+
   getAgencyProjects(agencyEmail?: string): AgencyCommissionProject[] {
     const all = getStored<AgencyCommissionProject[]>(STORAGE_KEYS.COMMISSION_PROJECTS, DEFAULT_PROJECTS);
     if (!agencyEmail) return all;

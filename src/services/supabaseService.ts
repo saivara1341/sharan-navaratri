@@ -43,16 +43,41 @@ export const supabaseService = {
     async getSubmissions(email?: string, seed?: string) {
         const pageSize = 500;
         const allRows: any[] = [];
-        for (let page = 0; ; page += 1) {
-            let query = supabase.from('contact_submissions').select('*');
-            if (email) query = query.eq('email', email);
-            const { data, error } = await query
-                .order('created_at', { ascending: false })
-                .range(page * pageSize, (page + 1) * pageSize - 1);
-            if (error) throw new Error(`Fetch Error: ${error.message}`);
-            allRows.push(...(data || []));
-            if (!data || data.length < pageSize) break;
+        try {
+            for (let page = 0; ; page += 1) {
+                let query = supabase.from('contact_submissions').select('*');
+                if (email) query = query.eq('email', email);
+                const { data, error } = await query
+                    .order('created_at', { ascending: false })
+                    .range(page * pageSize, (page + 1) * pageSize - 1);
+                if (error) {
+                    console.warn('Supabase contact_submissions query warning:', error);
+                    break;
+                }
+                allRows.push(...(data || []));
+                if (!data || data.length < pageSize) break;
+            }
+        } catch (err) {
+            console.warn('Supabase fetch error, merging local cache:', err);
         }
+
+        // Always merge local requests (from ClientPortal, ProjectSubmitForm, manual intakes)
+        try {
+            const rawLocal = localStorage.getItem('siddhi_local_service_requests');
+            if (rawLocal) {
+                const localList = JSON.parse(rawLocal);
+                if (Array.isArray(localList)) {
+                    for (const item of localList) {
+                        if (!email || (item.email && item.email.toLowerCase() === email.toLowerCase())) {
+                            if (!allRows.some(r => r.id === item.id)) {
+                                allRows.unshift(item);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (_err) { void _err; }
+
         return allRows;
     },
 

@@ -4,13 +4,31 @@ export interface PayrollRecord {
   recipient_email: string;
   role: 'intern' | 'employee';
   type: 'salary' | 'stipend' | 'incentive' | 'bonus';
+  disbursement_type?: string;
   amount: number;
   period: string; // e.g. "March 2026"
   status: 'paid' | 'pending';
   utr_reference?: string;
+  transaction_utr?: string;
+  certificate_id?: string;
   paid_at?: string;
   notes?: string;
   created_at: string;
+}
+
+export interface PayrollSummary {
+  total_disbursed: number;
+  total_pending: number;
+  employee_salaries: number;
+  intern_stipends: number;
+  performance_incentives: number;
+  bonuses: number;
+  recordsCount: number;
+  totalPaid: number;
+  totalPending: number;
+  employeeSalariesPaid: number;
+  internStipendsPaid: number;
+  incentivesDisbursed: number;
 }
 
 const STORAGE_KEY = 'siddhi_payroll_records_v1';
@@ -131,13 +149,25 @@ function setStored<T>(key: string, value: T): void {
 
 export const payrollService = {
   getPayrollRecords(): PayrollRecord[] {
-    return getStored<PayrollRecord[]>(STORAGE_KEY, DEFAULT_PAYROLL);
+    const raw = getStored<PayrollRecord[]>(STORAGE_KEY, DEFAULT_PAYROLL);
+    return raw.map((r) => ({
+      ...r,
+      disbursement_type: r.disbursement_type || r.type || 'stipend',
+      transaction_utr: r.transaction_utr || r.utr_reference || '',
+      type: r.type || (r.disbursement_type as any) || 'stipend',
+      amount: typeof r.amount === 'number' ? r.amount : Number(r.amount) || 0,
+    }));
   },
 
   addPayrollRecord(record: Omit<PayrollRecord, 'id' | 'created_at'>): PayrollRecord {
     const current = this.getPayrollRecords();
     const newRecord: PayrollRecord = {
       ...record,
+      type: (record.type || record.disbursement_type || 'stipend') as any,
+      disbursement_type: record.disbursement_type || record.type || 'stipend',
+      transaction_utr: record.transaction_utr || record.utr_reference || '',
+      amount: typeof record.amount === 'number' ? record.amount : Number(record.amount) || 0,
+      status: record.status || 'pending',
       id: `PAY-2026-${String(current.length + 1).padStart(3, '0')}`,
       created_at: new Date().toISOString(),
     };
@@ -158,29 +188,41 @@ export const payrollService = {
     return true;
   },
 
-  getPayrollSummary() {
+  getPayrollSummary(): PayrollSummary {
     const records = this.getPayrollRecords();
     const totalPaid = records
       .filter((r) => r.status === 'paid')
-      .reduce((sum, r) => sum + r.amount, 0);
+      .reduce((sum, r) => sum + (r.amount || 0), 0);
 
     const totalPending = records
       .filter((r) => r.status === 'pending')
-      .reduce((sum, r) => sum + r.amount, 0);
+      .reduce((sum, r) => sum + (r.amount || 0), 0);
 
     const employeeSalariesPaid = records
       .filter((r) => r.role === 'employee' && r.type === 'salary' && r.status === 'paid')
-      .reduce((sum, r) => sum + r.amount, 0);
+      .reduce((sum, r) => sum + (r.amount || 0), 0);
 
     const internStipendsPaid = records
       .filter((r) => r.role === 'intern' && r.type === 'stipend' && r.status === 'paid')
-      .reduce((sum, r) => sum + r.amount, 0);
+      .reduce((sum, r) => sum + (r.amount || 0), 0);
 
-    const incentivesDisbursed = records
-      .filter((r) => (r.type === 'incentive' || r.type === 'bonus') && r.status === 'paid')
-      .reduce((sum, r) => sum + r.amount, 0);
+    const performanceIncentives = records
+      .filter((r) => r.type === 'incentive' && r.status === 'paid')
+      .reduce((sum, r) => sum + (r.amount || 0), 0);
+
+    const bonuses = records
+      .filter((r) => r.type === 'bonus' && r.status === 'paid')
+      .reduce((sum, r) => sum + (r.amount || 0), 0);
+
+    const incentivesDisbursed = performanceIncentives + bonuses;
 
     return {
+      total_disbursed: totalPaid,
+      total_pending: totalPending,
+      employee_salaries: employeeSalariesPaid,
+      intern_stipends: internStipendsPaid,
+      performance_incentives: performanceIncentives,
+      bonuses: bonuses,
       totalPaid,
       totalPending,
       employeeSalariesPaid,

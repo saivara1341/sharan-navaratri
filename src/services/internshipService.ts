@@ -28,7 +28,7 @@ export const DEFAULT_CAREER_ROLES: RoleJD[] = [
     title: 'Product Manager Intern',
     category: 'Product Management',
     employmentType: 'Remote',
-    compensation: 'Unpaid Internship (Skill-Building & Academic Practical Track)',
+    compensation: 'Unpaid (No Stipend) — Skill-Building & Academic Practical Track',
     certificatePolicy: 'Official Certificate of Internship Completion awarded upon successful tenure and task completion.',
     lorPolicy: 'Letter of Recommendation (LOR) is provided strictly upon completing 2 years of continuous active working with Siddhi Dynamics.',
     workflowDetails: 'Tasks assigned via internal platform with stipulated deadlines. PRD reviews, feature wireframes, and sprint extensions require direct CEO portal approval.',
@@ -62,7 +62,7 @@ export const DEFAULT_CAREER_ROLES: RoleJD[] = [
     title: 'Business Development Intern',
     category: 'Business Development',
     employmentType: 'Remote',
-    compensation: 'Unpaid Internship (Skill-Building & Academic Practical Track)',
+    compensation: 'Unpaid (No Stipend) — Skill-Building & Academic Practical Track',
     certificatePolicy: 'Official Certificate of Internship Completion awarded upon successful tenure and task completion.',
     lorPolicy: 'Letter of Recommendation (LOR) is provided strictly upon completing 2 years of continuous active working with Siddhi Dynamics.',
     workflowDetails: 'Tasks assigned via internal platform with stipulated deadlines. Client lead approvals and timeline extensions require direct CEO portal approval.',
@@ -96,7 +96,7 @@ export const DEFAULT_CAREER_ROLES: RoleJD[] = [
     title: 'Digital Marketing Intern',
     category: 'Digital Marketing',
     employmentType: 'Remote',
-    compensation: 'Unpaid Internship (Skill-Building & Academic Practical Track)',
+    compensation: 'Unpaid (No Stipend) — Skill-Building & Academic Practical Track',
     certificatePolicy: 'Official Certificate of Internship Completion awarded upon successful tenure and task completion.',
     lorPolicy: 'Letter of Recommendation (LOR) is provided strictly upon completing 2 years of continuous active working with Siddhi Dynamics.',
     workflowDetails: 'Tasks assigned via internal platform with stipulated deadlines. Creative asset access and deadline extensions can be requested by interns and approved by CEO.',
@@ -123,6 +123,70 @@ export const DEFAULT_CAREER_ROLES: RoleJD[] = [
       'Familiarity with Instagram Reels, CapCut/Premiere/Canva, and current B2B social media trends.',
       'Creativity, prompt turnaround, and passion for AI and software automation.',
       'Understanding and acceptance that this is an unpaid internship granting an official completion certificate (with LOR upon 2 years of working).'
+    ]
+  },
+  {
+    id: 'swe-fulltime',
+    title: 'Senior Full-Stack Engineer',
+    category: 'Software Engineering',
+    employmentType: 'Full Time',
+    compensation: '₹60,000 - ₹90,000 / month + Performance Bonuses & Equity Options',
+    certificatePolicy: 'Full-time employment credentials and experience letter.',
+    lorPolicy: 'Executive recommendation letters upon successful tenure.',
+    workflowDetails: 'Direct collaboration with CTO/CEO. Architecture sprints, daily syncs, CI/CD code reviews, and enterprise deployment.',
+    targetAudience: 'Experienced Full-Stack Engineers with 2+ years experience in React, TypeScript, Node.js, and Cloud Infrastructure.',
+    tagline: 'Lead core architecture for PrintFlow, AI automation pipelines, and client enterprise applications.',
+    durations: ['Full Time Permanent'],
+    overview: 'As a Senior Full-Stack Engineer at Siddhi Dynamics, you will lead the core technical architecture of our flagship SaaS solutions (PrintFlow, Nexus ERP, and custom generative AI integrations). You will design scalable database schemas, implement secure authentication, build ultra-fast interactive frontends, and deploy microservices with high reliability.',
+    keyResponsibilities: [
+      'Architect and build resilient, production-ready full-stack applications using React, TypeScript, TailwindCSS, Node.js, and Supabase/PostgreSQL.',
+      'Optimize Web performance, API response times, and state management for mission-critical client dashboards.',
+      'Implement robust RBAC security, automated CI/CD pipelines, and cloud telemetry monitoring.',
+      'Collaborate with Product Managers and UI/UX designers to translate complex workflows into effortless interfaces.',
+      'Mentor junior developers and participate in code reviews.'
+    ],
+    learningOutcomes: [
+      'Deep exposure to AI-native enterprise architectures and high-scale production systems.',
+      'Direct ownership of end-to-end product features from conception to enterprise customer deployment.',
+      'Leadership track within an agile, rapidly growing technology enterprise.'
+    ],
+    interlinkingFeature: 'Core Engineering Backbone: You build the platforms, APIs, and tools used by our clients, partners, and internal business squads.',
+    requirements: [
+      '2+ years of professional full-stack development experience with modern React, TypeScript, and Node/Express or Go.',
+      'Strong knowledge of PostgreSQL, relational database indexing, and REST/GraphQL APIs.',
+      'Experience with cloud platforms, Git workflows, and security best practices.',
+      'B.Tech / B.E. / MCA in Computer Science or equivalent proven technical experience.'
+    ]
+  },
+  {
+    id: 'bd-lead-fulltime',
+    title: 'B2B Enterprise Growth Lead',
+    category: 'Business Development',
+    employmentType: 'Full Time',
+    compensation: '₹40,000 - ₹60,000 / month + High-Ticket Deal Commissions & Incentives',
+    certificatePolicy: 'Full-time employment credentials and experience letter.',
+    lorPolicy: 'Executive leadership recommendations.',
+    workflowDetails: 'Drive regional enterprise pipeline, enterprise consultative closures, and partnership networks across major hubs.',
+    targetAudience: 'B2B Sales Specialists & Enterprise Account Executives with consultative technology sales experience.',
+    tagline: 'Close enterprise ERP, PrintFlow, and digital automation contracts with MSMEs and large manufacturers.',
+    durations: ['Full Time Permanent'],
+    overview: 'As our B2B Enterprise Growth Lead, you will own the business expansion for Siddhi Dynamics across industrial hubs in Hyderabad, Nizamabad, Bangalore, and Mumbai. You will engage with CXOs and business owners, conduct consultative demonstrations of our software solutions, and close high-value annual contracts.',
+    keyResponsibilities: [
+      'Build and execute consultative outreach campaigns targeting commercial printing presses, manufacturers, and regional MSMEs.',
+      'Conduct executive demos of PrintFlow SaaS and customized enterprise automation pipelines.',
+      'Negotiate and close high-ticket software contracts and recurring annual service retainers.',
+      'Cultivate long-term executive client relationships and identify upselling opportunities.',
+      'Partner with product and engineering teams to feed market requirements back into product roadmaps.'
+    ],
+    learningOutcomes: [
+      'High-velocity enterprise consultative sales and high-ticket B2B closing mastery.',
+      'Uncapped commission structure with immediate leadership acceleration.'
+    ],
+    interlinkingFeature: 'Revenue Engine: You drive client pipeline that directly powers client portals and enterprise accounts.',
+    requirements: [
+      '1-3 years of proven experience in B2B software sales, SaaS sales, or business technology consulting.',
+      'Outstanding communication, presentation, and executive negotiation skills.',
+      "Bachelor's or Master's in Business Administration, Marketing, or equivalent field."
     ]
   }
 ];
@@ -917,17 +981,15 @@ export const internshipService = {
 
   async getApplications(): Promise<InternshipApplication[]> {
     let directMapped: InternshipApplication[] = [];
-    let directQueried = false;
 
-    // 1. Primary: Load from dedicated career_applications table
+    // 1. Primary: Load from dedicated career_applications table in Supabase
     try {
       const { data: directData, error: directErr } = await supabase
         .from('career_applications')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!directErr && directData !== null) {
-        directQueried = true;
+      if (!directErr && directData && directData.length > 0) {
         directMapped = directData.map((row: any) => ({
           id: row.id,
           created_at: row.created_at || new Date().toISOString(),
@@ -951,14 +1013,7 @@ export const internshipService = {
       console.warn('Direct career_applications load error:', e);
     }
 
-    // If career_applications succeeded, it is the authoritative source!
-    // Overwrite local storage cache so deleted records are permanently removed locally too.
-    if (directQueried) {
-      setLocal(STORAGE_KEYS.APPLICATIONS, directMapped);
-      return directMapped;
-    }
-
-    // 2. Fallback: Only if career_applications failed (e.g. table not created yet), load from contact_submissions
+    // 2. Also check contact_submissions for any applications submitted through legacy/contact channel
     let contactMapped: InternshipApplication[] = [];
     try {
       const { data, error } = await supabase
@@ -967,7 +1022,7 @@ export const internshipService = {
         .eq('inquiry_type', 'internship_application')
         .order('created_at', { ascending: false });
 
-      if (!error && data !== null) {
+      if (!error && data && data.length > 0) {
         contactMapped = data.map((sub: any) => {
           const msg = sub.message || '';
           const roleMatch = msg.match(/Role Applied:\s*([^\n]+)/);
@@ -999,16 +1054,44 @@ export const internshipService = {
             status: (sub.status === 'Interview Scheduled' ? 'Interview Scheduled' : sub.status === 'Offered' ? 'Offered' : 'Received') as any
           };
         });
-
-        setLocal(STORAGE_KEYS.APPLICATIONS, contactMapped);
-        return contactMapped;
       }
     } catch (e) {
       console.warn('contact_submissions load error:', e);
     }
 
-    // 3. Fallback to local storage ONLY if offline / all network queries failed
-    return getLocal<InternshipApplication[]>(STORAGE_KEYS.APPLICATIONS, []);
+    // 3. Load locally stored applications (purge any previous mock items)
+    const rawLocal = getLocal<InternshipApplication[]>(STORAGE_KEYS.APPLICATIONS, []);
+    const local = rawLocal.filter(a => (
+      !a.id?.startsWith('app-bd-') &&
+      !a.id?.startsWith('app-dm-') &&
+      !a.id?.startsWith('app-pm-') &&
+      !a.resume_url?.includes('example.com')
+    ));
+
+    // 4. Safely merge all real sources without ever showing fake demo data
+    const map = new Map<string, InternshipApplication>();
+
+    // Real local applications from form submissions
+    for (const app of local) {
+      map.set(app.id, app);
+      if (app.email) map.set(app.email.toLowerCase().trim(), app);
+    }
+
+    // Overlay contact submissions from Supabase
+    for (const app of contactMapped) {
+      map.set(app.id, app);
+      if (app.email) map.set(app.email.toLowerCase().trim(), app);
+    }
+
+    // Overlay primary career_applications from Supabase
+    for (const app of directMapped) {
+      map.set(app.id, app);
+      if (app.email) map.set(app.email.toLowerCase().trim(), app);
+    }
+
+    const merged = Array.from(new Set(Array.from(map.values())));
+    setLocal(STORAGE_KEYS.APPLICATIONS, merged);
+    return merged;
   },
 
   /**
