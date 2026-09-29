@@ -22,7 +22,7 @@ export const NineDaySchedule: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header section */}
-      <div className="border-b border-amber-200/80 pb-4">
+      <div className="border-b-2 sm:border-b-4 border-amber-300 pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div>
             <h2 className="font-serif font-black text-2xl md:text-3xl text-[#8B1E1E] flex items-center gap-2">
@@ -32,11 +32,10 @@ export const NineDaySchedule: React.FC = () => {
               </span>
             </h2>
             <p className="text-sm text-stone-600 mt-1">
-              Nine sacred Navadurga forms from 11–19 October, culminating in Vijaya Dashami on 20 October 2026
+              {language === "te"
+                ? "శ్రీ అన్నపూర్ణా దేవి, శ్రీ సరస్వతీ దేవి, శ్రీ లక్ష్మీ దేవి, శ్రీ కాళికా దేవి సహా 10 దివ్య అలంకారాలు (11–20 అక్టోబర్ 2026)"
+                : "10 Sacred Devi Alankaranas including Sri Annapurna Devi, Sri Maha Saraswathi Devi, Sri Maha Lakshmi Devi, Sri Kalika Devi, culminating on Vijaya Dashami (11–20 October 2026)"}
             </p>
-          </div>
-          <div className="text-xs text-stone-500 italic bg-amber-50/80 px-3 py-1.5 rounded-lg border border-amber-200/60 max-w-md">
-            ✨ Tap on any card or button below to view full pooja details, sacred offerings, and prasad rituals.
           </div>
         </div>
       </div>

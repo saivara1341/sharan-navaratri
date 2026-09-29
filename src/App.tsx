@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { lazy, Suspense, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -49,6 +49,27 @@ const AgencyClientIntake = lazy(() => import("./pages/AgencyClientIntake"));
 const Careers = lazy(() => import("@/pages/Careers"));
 const InternPortal = lazy(() => import("@/pages/InternPortal"));
 const CertificateVerification = lazy(() => import("@/pages/CertificateVerification"));
+
+// Navaratri Mandapam PWA
+const NavaratriAppLayout = lazy(() => import("./navaratri/NavaratriAppLayout").then(m => ({ default: m.NavaratriAppLayout })));
+const NavaratriHome = lazy(() => import("./navaratri/pages/NavaratriHome").then(m => ({ default: m.NavaratriHome })));
+const NavaratriKnow = lazy(() => import("./navaratri/pages/NavaratriKnow").then(m => ({ default: m.NavaratriKnow })));
+const NavaratriNearMe = lazy(() => import("./navaratri/pages/NavaratriNearMe").then(m => ({ default: m.NavaratriNearMe })));
+const NavaratriMandapamDetail = lazy(() => import("./navaratri/pages/NavaratriMandapamDetail").then(m => ({ default: m.NavaratriMandapamDetail })));
+const NavaratriFollowing = lazy(() => import("./navaratri/pages/NavaratriFollowing").then(m => ({ default: m.NavaratriFollowing })));
+const NavaratriRegister = lazy(() => import("./navaratri/pages/NavaratriRegister").then(m => ({ default: m.NavaratriRegister })));
+const NavaratriOrganizer = lazy(() => import("./navaratri/pages/NavaratriOrganizer").then(m => ({ default: m.NavaratriOrganizer })));
+const NavaratriAdmin = lazy(() => import("./navaratri/pages/NavaratriAdmin").then(m => ({ default: m.NavaratriAdmin })));
+const NavaratriAdvertise = lazy(() => import("./navaratri/pages/NavaratriAdvertise").then(m => ({ default: m.NavaratriAdvertise })));
+
+const isNavaratriSubdomain = typeof window !== 'undefined' && (
+  window.location.hostname.toLowerCase().startsWith('navaratri') ||
+  window.location.hostname.toLowerCase().startsWith('navarathri') ||
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1' ||
+  window.location.search.includes('navaratri') ||
+  window.location.search.includes('navarathri')
+);
 
 import { resolveRoleForEmail, getPortalPathForRole } from "@/lib/roleResolver";
 
@@ -175,15 +196,34 @@ const App = () => {
             <BrowserRouter>
               <ScrollToTop />
               <AuthRedirectHandler />
-              <SiteIntro />
-              <CookieConsentBanner />
+              {!isNavaratriSubdomain && <SiteIntro />}
+              {!isNavaratriSubdomain && <CookieConsentBanner />}
               <ErrorBoundary>
                 <Suspense fallback={<PageLoadingFallback />}>
                   <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/vision" element={<Index />} />
-                    <Route path="/services" element={<Index />} />
-                    <Route path="/projects" element={<Index />} />
+                    {isNavaratriSubdomain ? (
+                      <>
+                        <Route path="/" element={<NavaratriAppLayout><NavaratriHome /></NavaratriAppLayout>} />
+                        <Route path="/explore" element={<Navigate to="/know" replace />} />
+                        <Route path="/know" element={<NavaratriAppLayout><NavaratriKnow /></NavaratriAppLayout>} />
+                        <Route path="/near-me" element={<NavaratriAppLayout><NavaratriNearMe /></NavaratriAppLayout>} />
+                        <Route path="/following" element={<NavaratriAppLayout><NavaratriFollowing /></NavaratriAppLayout>} />
+                        <Route path="/pallaki" element={<Navigate to="/" replace />} />
+                        <Route path="/dheeksha" element={<Navigate to="/" replace />} />
+                        <Route path="/nimarjanam" element={<Navigate to="/" replace />} />
+                        <Route path="/register" element={<NavaratriAppLayout><NavaratriRegister /></NavaratriAppLayout>} />
+                        <Route path="/organizer" element={<NavaratriAppLayout><NavaratriOrganizer /></NavaratriAppLayout>} />
+                        <Route path="/admin" element={<NavaratriAppLayout><NavaratriAdmin /></NavaratriAppLayout>} />
+                        <Route path="/advertise" element={<NavaratriAppLayout><NavaratriAdvertise /></NavaratriAppLayout>} />
+                      </>
+                    ) : (
+                      <>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/vision" element={<Index />} />
+                        <Route path="/services" element={<Index />} />
+                        <Route path="/projects" element={<Index />} />
+                      </>
+                    )}
                     <Route path="/submit" element={<ProjectSubmitForm />} />
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/portal" element={<PortalGateway />} />
@@ -228,6 +268,30 @@ const App = () => {
                     <Route path="/services/saas" element={<SaaSPlatforms />} />
                     <Route path="/services/erp" element={<ERPSolutions />} />
                     <Route path="/software-company-nizamabad" element={<SoftwareCompanyNizamabad />} />
+
+                    {/* NAVARATRI MANDAPAM PWA ROUTES */}
+                    <Route path="/m/:slug" element={<NavaratriAppLayout><NavaratriMandapamDetail /></NavaratriAppLayout>} />
+
+                    <Route path="/navaratri" element={<NavaratriAppLayout><NavaratriHome /></NavaratriAppLayout>} />
+                    <Route path="/navaratri/explore" element={<Navigate to="/navaratri/know" replace />} />
+                    <Route path="/navaratri/know" element={<NavaratriAppLayout><NavaratriKnow /></NavaratriAppLayout>} />
+                    <Route path="/navaratri/near-me" element={<NavaratriAppLayout><NavaratriNearMe /></NavaratriAppLayout>} />
+                    <Route path="/navaratri/following" element={<NavaratriAppLayout><NavaratriFollowing /></NavaratriAppLayout>} />
+                    <Route path="/navaratri/pallaki" element={<Navigate to="/navaratri" replace />} />
+                    <Route path="/navaratri/dheeksha" element={<Navigate to="/navaratri" replace />} />
+                    <Route path="/navaratri/nimarjanam" element={<Navigate to="/navaratri" replace />} />
+                    <Route path="/navaratri/register" element={<NavaratriAppLayout><NavaratriRegister /></NavaratriAppLayout>} />
+                    <Route path="/navaratri/organizer" element={<NavaratriAppLayout><NavaratriOrganizer /></NavaratriAppLayout>} />
+                    <Route path="/navaratri/admin" element={<NavaratriAppLayout><NavaratriAdmin /></NavaratriAppLayout>} />
+                    <Route path="/navaratri/advertise" element={<NavaratriAppLayout><NavaratriAdvertise /></NavaratriAppLayout>} />
+                    <Route path="/navaratri/m/:slug" element={<NavaratriAppLayout><NavaratriMandapamDetail /></NavaratriAppLayout>} />
+
+                    {/* Navarathri Alternate Spelling Aliases */}
+                    <Route path="/navarathri" element={<NavaratriAppLayout><NavaratriHome /></NavaratriAppLayout>} />
+                    <Route path="/navarathri/*" element={<NavaratriAppLayout><NavaratriHome /></NavaratriAppLayout>} />
+
+
+
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

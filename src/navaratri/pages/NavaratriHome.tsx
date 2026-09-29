@@ -20,6 +20,7 @@ import { useNavaratriData } from "../context/NavaratriDataContext";
 import { useNavaratriLanguage } from "../context/NavaratriLanguageContext";
 import { NineDaySchedule } from "../components/citizen/NineDaySchedule";
 import { NavaratriAdsSpace } from "../components/ads/NavaratriAdsSpace";
+import { NavaratriHeroSideAd } from "../components/ads/NavaratriHeroSideAd";
 import { AuspiciousRibbonBorder } from "../components/devotional/AuspiciousRibbonBorder";
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
@@ -52,131 +53,203 @@ export const NavaratriHome: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-10 pb-8 sm:pb-12 pt-5 sm:pt-8 font-sans">
-      {/* 1. SACRED HERO: SHARAN NAVARATRI, ALL IN ONE PLACE */}
-      <section className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-amber-500/30 bg-gradient-to-r from-[#5C1010] via-[#8B1E1E] to-[#781B1B] max-w-6xl mx-auto">
-        {/* Top Ornamental Temple Filigree Border from User Design */}
-        <div
-          aria-hidden="true"
-          className="w-full h-4 sm:h-5 md:h-6 pointer-events-none select-none relative z-10"
-          style={{
-            backgroundImage: `url('${navaratriAsset("/navaratri/assets/royal-maroon-gold-filigree-border.png")}')`,
-            backgroundRepeat: "repeat-x",
-            backgroundSize: "auto 100%",
-            backgroundPosition: "center"
-          }}
-        />
+    <div className="max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1440px] mx-auto px-4 sm:px-6 space-y-10 pb-8 sm:pb-12 pt-5 sm:pt-8 font-sans">
+      {/* 1. TOP SECTION: SACRED HERO CONTAINER + RIGHT AD SPACE ON DESKTOP */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-7 items-stretch">
+        {/* Sacred Hero Container */}
+        <section className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-amber-500/30 bg-gradient-to-r from-[#5C1010] via-[#8B1E1E] to-[#781B1B] lg:col-span-8 xl:col-span-8 2xl:col-span-9 flex flex-col justify-between">
+          {/* Top Ornamental Temple Filigree Border from User Design */}
+          <div
+            aria-hidden="true"
+            className="w-full h-4 sm:h-5 md:h-6 pointer-events-none select-none relative z-10"
+            style={{
+              backgroundImage: `url('${navaratriAsset("/navaratri/assets/royal-maroon-gold-filigree-border.png")}')`,
+              backgroundRepeat: "repeat-x",
+              backgroundSize: "auto 100%",
+              backgroundPosition: "center"
+            }}
+          />
 
-        <FloatingAuspiciousParticles />
+          <FloatingAuspiciousParticles />
 
-        <div className="relative z-10 p-5 sm:p-7 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6 lg:gap-8 text-white">
-          <div className="max-w-2xl space-y-4 sm:space-y-4.5 flex-1">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-200 border border-amber-300/40 text-xs font-bold tracking-wide backdrop-blur-sm shadow-sm">
-              <img
-                src={navaratriAsset("/navaratri/assets/sacred-lotus-flower.png")}
-                alt="Sacred Lotus"
-                className="h-6 sm:h-7 w-auto shrink-0 object-contain drop-shadow-[0_2px_6px_rgba(245,158,11,0.6)]"
-              />
-              <span className="tracking-wide">
-                SHARAN NAVARATRI <span className="font-['Cinzel',serif] font-black text-xs sm:text-sm text-amber-300 tracking-wider drop-shadow-sm">2026</span> • 9 DAYS OF DIVINE BLISS
-              </span>
-            </div>
-
-            <div className="space-y-2">
-              <h1 className="font-['Cinzel',serif] font-black text-2xl sm:text-3xl md:text-3.5xl lg:text-4xl text-[#FFFBEB] leading-snug tracking-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.5)]">
-                Celebrate{" "}
-                <span className="inline-flex items-center gap-1.5 sm:gap-2 align-middle">
-                  <span>Sharan</span>
-                  <img
-                    src={navaratriAsset("/navaratri/assets/maa-durga-simhavahana-icon.png")}
-                    alt="Maa Durga Matha"
-                    className="inline-block md:hidden h-11 sm:h-12 w-auto object-contain align-middle -translate-y-1 drop-shadow-[0_2px_14px_rgba(251,191,36,0.95)]"
-                  />
-                </span>{" "}
-                Navaratri <span className="text-amber-300">2026</span> with Maa Durga's Divine Blessings
-              </h1>
-              <p className="font-['Plus_Jakarta_Sans',sans-serif] text-xs sm:text-sm text-amber-100/90 leading-relaxed max-w-xl font-medium">
-                One QR. Every Mandapam. Everything a devotee needs. Discover today’s sacred Maa Darshan, live poojas, and annadanam offerings across Nizamabad & Telangana.
-              </p>
-            </div>
-
-            {/* Search Bar */}
-            <form onSubmit={handleSearchSubmit} className="pt-1">
-              <div className="flex flex-col sm:flex-row items-center gap-2 bg-[#FAF7F0] p-1.5 sm:p-2 rounded-xl sm:rounded-full shadow-lg border-2 border-amber-400">
-                <div className="flex items-center gap-2.5 flex-1 px-3 w-full text-stone-900">
-                  <Search className="w-4 h-4 text-[#8B1E1E] shrink-0" />
-                  <input
-                    type="search"
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder={t.searchPlaceholder || "Search Mandapam by name or area (e.g. Subhash Nagar)..."}
-                    className="w-full bg-transparent text-xs sm:text-sm font-semibold focus:outline-none placeholder:text-stone-400"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full sm:w-auto px-5 py-2.5 sm:px-6 sm:py-2.5 rounded-lg sm:rounded-full bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-md transition-all whitespace-nowrap tracking-wide"
-                >
-                  Find My Mandapam
-                </button>
+          <div className="relative z-10 p-6 sm:p-8 md:p-9 lg:p-9 xl:p-11 flex flex-col md:flex-row md:items-center md:justify-between gap-6 lg:gap-8 text-white flex-1">
+            <div className="max-w-2xl space-y-4 sm:space-y-4.5 flex-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-200 border border-amber-300/40 text-xs font-bold tracking-wide backdrop-blur-sm shadow-sm">
+                <img
+                  src={navaratriAsset("/navaratri/assets/sacred-lotus-flower.png")}
+                  alt="Sacred Lotus"
+                  className="h-6 sm:h-7 w-auto shrink-0 object-contain drop-shadow-[0_2px_6px_rgba(245,158,11,0.6)]"
+                />
+                <span className="tracking-wide">
+                  SHARAN NAVARATRI <span className="font-['Cinzel',serif] font-black text-xs sm:text-sm text-amber-300 tracking-wider drop-shadow-sm">2026</span> • 9 DAYS OF DIVINE BLISS
+                </span>
               </div>
-            </form>
 
-            {/* Quick action buttons */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs font-semibold">
-              <Link to="/navaratri/near-me?category=annadanam" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
-                <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
-                  <Utensils className="w-3.5 h-3.5 shrink-0 text-amber-200" />
-                  <span className="truncate">Annadanam Near Me</span>
-                </span>
-              </Link>
-              <Link to="/navaratri/near-me?category=bhajans_pallaki" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
-                <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
-                  <Music2 className="w-3.5 h-3.5 shrink-0 text-amber-200" />
-                  <span className="truncate">Pallaki Seva & Bhajans</span>
-                </span>
-              </Link>
-              <Link to="/navaratri/near-me?category=activities" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
-                <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
-                  <DandiyaIcon className="w-4 h-4 shrink-0 text-amber-200" />
-                  <span className="truncate">Dandiya & Activities</span>
-                </span>
-              </Link>
-              <Link to="/navaratri/know" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
-                <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
-                  <BookOpen className="w-3.5 h-3.5 shrink-0 text-amber-200" />
-                  <span className="truncate">Sacred Devi Guide</span>
-                </span>
-              </Link>
+              <div className="space-y-2">
+                <h1 className="font-['Cinzel',serif] font-black text-2xl sm:text-3xl md:text-3.5xl lg:text-4xl xl:text-[2.6rem] text-[#FFFBEB] leading-snug tracking-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.5)]">
+                  Celebrate{" "}
+                  <span className="inline-flex items-center gap-1.5 sm:gap-2 align-middle">
+                    <span>Sharan</span>
+                    <img
+                      src={navaratriAsset("/navaratri/assets/maa-durga-simhavahana-icon.png")}
+                      alt="Maa Durga Matha"
+                      className="inline-block md:hidden h-11 sm:h-12 w-auto object-contain align-middle -translate-y-1 drop-shadow-[0_2px_14px_rgba(251,191,36,0.95)]"
+                    />
+                  </span>{" "}
+                  Navaratri <span className="text-amber-300">2026</span> with Maa Durga's Divine Blessings
+                </h1>
+                <p className="font-['Plus_Jakarta_Sans',sans-serif] text-xs sm:text-sm md:text-base text-amber-100/90 leading-relaxed max-w-2xl font-medium">
+                  One QR. Every Mandapam. Everything a devotee needs. Discover today’s sacred Maa Darshan, live poojas, and annadanam offerings across Nizamabad & Telangana.
+                </p>
+              </div>
+
+              {/* Search Bar */}
+              <form onSubmit={handleSearchSubmit} className="pt-1">
+                <div className="flex flex-col sm:flex-row items-center gap-2 bg-[#FAF7F0] p-2 sm:p-2.5 rounded-xl sm:rounded-full shadow-xl border-2 border-amber-400">
+                  <div className="flex items-center gap-2.5 flex-1 px-3 w-full text-stone-900">
+                    <Search className="w-4 h-4 text-[#8B1E1E] shrink-0" />
+                    <input
+                      type="search"
+                      value={searchQuery}
+                      onChange={(event) => setSearchQuery(event.target.value)}
+                      placeholder={t.searchPlaceholder || "Search Mandapam by name, colony or area..."}
+                      className="w-full bg-transparent text-xs sm:text-sm font-semibold focus:outline-none placeholder:text-stone-400"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full sm:w-auto px-6 py-2.5 sm:px-7 sm:py-3 rounded-lg sm:rounded-full bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-md transition-all whitespace-nowrap tracking-wide cursor-pointer"
+                  >
+                    Find My Mandapam
+                  </button>
+                </div>
+              </form>
+
+              {/* Quick action buttons */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs font-semibold">
+                <Link to="/navaratri/near-me?category=annadanam" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
+                  <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
+                    <Utensils className="w-3.5 h-3.5 shrink-0 text-amber-200" />
+                    <span className="truncate">Annadanam Near Me</span>
+                  </span>
+                </Link>
+                <Link to="/navaratri/near-me?category=bhajans_pallaki" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
+                  <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
+                    <Music2 className="w-3.5 h-3.5 shrink-0 text-amber-200" />
+                    <span className="truncate">Pallaki Seva & Bhajans</span>
+                  </span>
+                </Link>
+                <Link to="/navaratri/near-me?category=activities" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
+                  <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
+                    <DandiyaIcon className="w-4 h-4 shrink-0 text-amber-200" />
+                    <span className="truncate">Dandiya & Activities</span>
+                  </span>
+                </Link>
+                <Link to="/navaratri/know" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
+                  <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
+                    <BookOpen className="w-3.5 h-3.5 shrink-0 text-amber-200" />
+                    <span className="truncate">Sacred Devi Guide</span>
+                  </span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Right side Maa Durga image in desktop view */}
+            <div className="hidden md:flex flex-col items-center justify-center shrink-0 relative pr-1 lg:pr-3">
+              <div className="relative">
+                {/* Divine golden halo glow */}
+                <div className="absolute inset-0 bg-amber-400/25 blur-2xl rounded-full scale-110 pointer-events-none" />
+                <img
+                  src={navaratriAsset("/navaratri/assets/maa-durga-hero-darshan.png")}
+                  alt="Maa Durga Simhavahana Darshan"
+                  className="relative z-10 w-52 sm:w-60 md:w-64 lg:w-72 xl:w-84 max-h-[380px] h-auto object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.65)] hover:scale-105 transition-transform duration-500 pointer-events-none select-none"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Right side Maa Durga image in desktop view */}
-          <div className="hidden md:flex flex-col items-center justify-center shrink-0 relative pr-1 lg:pr-4">
-            <div className="relative">
-              {/* Divine golden halo glow */}
-              <div className="absolute inset-0 bg-amber-400/25 blur-2xl rounded-full scale-110 pointer-events-none" />
-              <img
-                src={navaratriAsset("/navaratri/assets/maa-durga-hero-darshan.png")}
-                alt="Maa Durga Mahishasuramardini"
-                className="relative z-10 w-48 sm:w-56 md:w-60 lg:w-72 xl:w-80 h-auto object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.65)] hover:scale-105 transition-transform duration-500 pointer-events-none select-none"
-              />
+          {/* Bottom Ornamental Temple Filigree Border from User Design (Inverted) */}
+          <div
+            aria-hidden="true"
+            className="w-full h-4 sm:h-5 md:h-6 pointer-events-none select-none relative z-10 rotate-180"
+            style={{
+              backgroundImage: `url('${navaratriAsset("/navaratri/assets/royal-maroon-gold-filigree-border.png")}')`,
+              backgroundRepeat: "repeat-x",
+              backgroundSize: "auto 100%",
+              backgroundPosition: "center"
+            }}
+          />
+        </section>
+
+        {/* Right side desktop Ad Space */}
+        <aside className="hidden lg:flex lg:col-span-4 xl:col-span-4 2xl:col-span-3 h-full">
+          <NavaratriHeroSideAd />
+        </aside>
+      </div>
+
+      {/* QUICK ACTIONS: 2 DESIGNS (SCAN QR AND REGISTER MANDAPAM) UNDER CONTAINER */}
+      <section className="flex flex-row flex-wrap items-center justify-center gap-4 sm:gap-8 pt-1 pb-1 max-w-2xl mx-auto">
+        <button
+          type="button"
+          onClick={handleOpenScanner}
+          className="group relative w-40 min-[390px]:w-44 sm:w-52 h-40 min-[390px]:h-44 sm:h-52 p-2 sm:p-4 flex flex-col items-center justify-center text-[#1E3A8A] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E3A8A] focus-visible:ring-offset-2 cursor-pointer"
+        >
+          <img
+            src={navaratriAsset("/navaratri/assets/blue-scalloped-cta-frame.png")}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-contain drop-shadow-md transition-all group-hover:drop-shadow-xl"
+          />
+          <div className="relative z-10 flex flex-col items-center justify-center text-center px-2 space-y-1 sm:space-y-1.5 -translate-y-1 sm:-translate-y-2">
+            <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-blue-100/90 border border-blue-300 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+              <QrCode className="w-4 h-4 sm:w-6 sm:h-6 text-[#1E3A8A]" />
+            </div>
+            <span className="font-serif text-[11px] min-[390px]:text-xs sm:text-sm font-black leading-tight text-[#1E3A8A]">
+              Scan Mandapam<br />QR (Camera)
+            </span>
+          </div>
+        </button>
+
+        {/* Sacred Rhombus Divider for Desktop View */}
+        <div className="hidden sm:flex items-center justify-center gap-2.5 px-1 select-none pointer-events-none" aria-hidden="true">
+          <span className="w-6 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-amber-500 rounded-full" />
+          <div className="relative w-6 h-6 flex items-center justify-center">
+            {/* Outer golden rhombus */}
+            <div className="w-5 h-5 rotate-45 rounded-[2px] bg-gradient-to-br from-amber-300 via-amber-100 to-amber-500 border-2 border-[#8B1E1E] shadow-sm flex items-center justify-center">
+              {/* Inner ruby rhombus core */}
+              <div className="w-2 h-2 rounded-[1px] bg-[#8B1E1E]" />
             </div>
           </div>
+          <span className="w-6 h-0.5 bg-gradient-to-l from-transparent via-amber-400 to-amber-500 rounded-full" />
         </div>
 
-        {/* Bottom Ornamental Temple Filigree Border from User Design (Inverted) */}
-        <div
-          aria-hidden="true"
-          className="w-full h-4 sm:h-5 md:h-6 pointer-events-none select-none relative z-10 rotate-180"
-          style={{
-            backgroundImage: `url('${navaratriAsset("/navaratri/assets/royal-maroon-gold-filigree-border.png")}')`,
-            backgroundRepeat: "repeat-x",
-            backgroundSize: "auto 100%",
-            backgroundPosition: "center"
-          }}
-        />
+        <Link
+          to="/navaratri/register"
+          className="group relative w-40 min-[390px]:w-44 sm:w-52 h-40 min-[390px]:h-44 sm:h-52 p-2 sm:p-4 flex flex-col items-center justify-center text-[#8B1E1E] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B1E1E] focus-visible:ring-offset-2"
+        >
+          <img
+            src={navaratriAsset("/navaratri/assets/ivory-scalloped-cta-frame.png")}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-contain drop-shadow-md transition-all group-hover:drop-shadow-xl"
+          />
+          <div className="relative z-10 flex flex-col items-center justify-center text-center px-2 space-y-1 sm:space-y-1.5 -translate-y-1 sm:-translate-y-2">
+            <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-amber-100/90 border border-amber-300 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+              <Building className="w-4 h-4 sm:w-6 sm:h-6 text-[#8B1E1E]" />
+            </div>
+            <span className="font-serif text-[11px] min-[390px]:text-xs sm:text-sm font-black leading-tight text-[#8B1E1E]">
+              Register Your<br />Durga Mandapam
+            </span>
+          </div>
+        </Link>
       </section>
+
+      {/* Sacred Emerald Vine Ribbon Divider below 2 CTA Designs */}
+      <AuspiciousRibbonBorder
+        variant="emerald-vine"
+        heightClass="h-8 sm:h-11 md:h-13 lg:h-15"
+        className="rounded-none my-4 sm:my-6"
+      />
 
       {/* 2. YOUR FOLLOWED MANDAPAMS (IF ANY) */}
       {savedMandapams.length > 0 && (
@@ -260,73 +333,17 @@ export const NavaratriHome: React.FC = () => {
         </section>
       )}
 
-      {/* QUICK ACTIONS: SCAN QR OR REGISTER */}
-      <section className="flex flex-row flex-wrap items-center justify-center gap-4 sm:gap-8 pt-3 pb-3 max-w-2xl mx-auto">
-        <button
-          type="button"
-          onClick={handleOpenScanner}
-          className="group relative w-40 min-[390px]:w-44 sm:w-52 h-40 min-[390px]:h-44 sm:h-52 p-2 sm:p-4 flex flex-col items-center justify-center text-[#1E3A8A] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E3A8A] focus-visible:ring-offset-2 cursor-pointer"
-        >
-          <img
-            src={navaratriAsset("/navaratri/assets/blue-scalloped-cta-frame.png")}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-contain drop-shadow-md transition-all group-hover:drop-shadow-xl"
-          />
-          <div className="relative z-10 flex flex-col items-center justify-center text-center px-2 space-y-1 sm:space-y-1.5 -translate-y-1 sm:-translate-y-2">
-            <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-blue-100/90 border border-blue-300 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-              <QrCode className="w-4 h-4 sm:w-6 sm:h-6 text-[#1E3A8A]" />
-            </div>
-            <span className="font-serif text-[11px] min-[390px]:text-xs sm:text-sm font-black leading-tight text-[#1E3A8A]">
-              Scan Mandapam<br />QR (Camera)
-            </span>
-          </div>
-        </button>
-
-        {/* Sacred Rhombus Divider for Desktop View */}
-        <div className="hidden sm:flex items-center justify-center gap-2.5 px-1 select-none pointer-events-none" aria-hidden="true">
-          <span className="w-6 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-amber-500 rounded-full" />
-          <div className="relative w-6 h-6 flex items-center justify-center">
-            {/* Outer golden rhombus */}
-            <div className="w-5 h-5 rotate-45 rounded-[2px] bg-gradient-to-br from-amber-300 via-amber-100 to-amber-500 border-2 border-[#8B1E1E] shadow-sm flex items-center justify-center">
-              {/* Inner ruby rhombus core */}
-              <div className="w-2 h-2 rounded-[1px] bg-[#8B1E1E]" />
-            </div>
-          </div>
-          <span className="w-6 h-0.5 bg-gradient-to-l from-transparent via-amber-400 to-amber-500 rounded-full" />
-        </div>
-
-        <Link
-          to="/navaratri/register"
-          className="group relative w-40 min-[390px]:w-44 sm:w-52 h-40 min-[390px]:h-44 sm:h-52 p-2 sm:p-4 flex flex-col items-center justify-center text-[#8B1E1E] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B1E1E] focus-visible:ring-offset-2"
-        >
-          <img
-            src={navaratriAsset("/navaratri/assets/ivory-scalloped-cta-frame.png")}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-contain drop-shadow-md transition-all group-hover:drop-shadow-xl"
-          />
-          <div className="relative z-10 flex flex-col items-center justify-center text-center px-2 space-y-1 sm:space-y-1.5 -translate-y-1 sm:-translate-y-2">
-            <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-amber-100/90 border border-amber-300 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-              <Building className="w-4 h-4 sm:w-6 sm:h-6 text-[#8B1E1E]" />
-            </div>
-            <span className="font-serif text-[11px] min-[390px]:text-xs sm:text-sm font-black leading-tight text-[#8B1E1E]">
-              Register Your<br />Durga Mandapam
-            </span>
-          </div>
-        </Link>
-      </section>
-
-      {/* Sacred Emerald Vine Ribbon Divider (Sharp Corner to Corner) */}
-      <AuspiciousRibbonBorder variant="emerald-vine" heightClass="h-5 sm:h-6" className="rounded-none my-3 sm:my-4" />
-
       {/* 3. 9-DAY SACRED NAVARATRI CALENDAR & ALANKARANAS */}
       <section className="space-y-4 -mt-2 sm:-mt-3">
         <NineDaySchedule />
       </section>
 
       {/* Traditional Maroon & Gold Kolam Lace Ribbon Divider */}
-      <AuspiciousRibbonBorder variant="kolam-lace" heightClass="h-6 sm:h-8" className="rounded-none my-6" />
+      <AuspiciousRibbonBorder
+        variant="kolam-lace"
+        heightClass="h-9 sm:h-12 md:h-15 lg:h-18"
+        className="rounded-none my-5 sm:my-7"
+      />
 
       {/* 4. LOCAL FESTIVAL SPONSORED ADS SPACE & MARKETPLACE */}
       <NavaratriAdsSpace currentCity={userLocation?.city || "Nizamabad"} />

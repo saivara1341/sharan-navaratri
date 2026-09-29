@@ -84,7 +84,7 @@ export const NavaratriOrganizer: React.FC = () => {
     const cleanPass = loginPasscode.trim();
 
     if (!cleanId || !cleanPass) {
-      toast.error("Please enter your Mandapam ID or Mobile, and 8-digit passcode.");
+      toast.error("Please enter your Mandapam ID or Mobile, and passcode.");
       return;
     }
 
@@ -100,9 +100,9 @@ export const NavaratriOrganizer: React.FC = () => {
       return;
     }
 
-    const expectedPasscode = matched.passcode || "12345678";
+    const expectedPasscode = matched.passcode || "123456";
     if (cleanPass !== expectedPasscode) {
-      toast.error("Incorrect 8-digit passcode. Please check your credentials slip.");
+      toast.error("Incorrect passcode. Please check your credentials slip.");
       return;
     }
 
@@ -155,7 +155,7 @@ export const NavaratriOrganizer: React.FC = () => {
               Mandapam Organizer Portal
             </h1>
             <p className="text-xs sm:text-sm text-stone-600 max-w-md mx-auto leading-relaxed">
-              Enter your official Mandapam ID (or registered mobile) and 8-digit passcode to manage your notice board and citizen bookings.
+              Enter your official Mandapam ID (or registered mobile) and passcode to manage your notice board and citizen bookings.
             </p>
           </div>
 
@@ -169,7 +169,7 @@ export const NavaratriOrganizer: React.FC = () => {
                 required
                 value={loginInput}
                 onChange={(e) => setLoginInput(e.target.value)}
-                placeholder="e.g. m-rr-nizamabad or Registered Mobile"
+                placeholder="Enter Mandapam ID or Registered Mobile"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-amber-300 bg-white text-xs font-semibold text-stone-900 focus:ring-2 focus:ring-amber-500 focus:outline-none"
               />
             </div>
@@ -177,18 +177,18 @@ export const NavaratriOrganizer: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="block text-xs font-bold text-stone-800">
-                  8-Digit Passcode *
+                  Passcode / PIN *
                 </label>
-                <span className="text-[10px] text-stone-500">8 digits required</span>
+                <span className="text-[10px] text-stone-500">4–6 digits</span>
               </div>
               <div className="relative">
                 <input
                   type={showLoginPasscode ? "text" : "password"}
-                  maxLength={8}
+                  maxLength={6}
                   required
                   value={loginPasscode}
                   onChange={(e) => setLoginPasscode(e.target.value)}
-                  placeholder="Enter 8-digit passcode"
+                  placeholder="Enter passcode (4–6 digits)"
                   className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-amber-300 bg-white text-xs font-mono font-bold tracking-widest text-stone-900 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
                 <button
@@ -831,13 +831,13 @@ export const NavaratriOrganizer: React.FC = () => {
 
               <div className="space-y-2">
                 <label className="block text-xs font-bold text-stone-700">
-                  To confirm permanent deletion, type <span className="font-mono bg-stone-200 px-1.5 py-0.5 rounded text-red-800 font-bold">DELETE</span> or enter your 8-digit passcode:
+                  To confirm permanent deletion, type <span className="font-mono bg-stone-200 px-1.5 py-0.5 rounded text-red-800 font-bold">DELETE</span> or enter your passcode:
                 </label>
                 <input
                   type="text"
                   value={deleteConfirmInput}
                   onChange={(e) => setDeleteConfirmInput(e.target.value)}
-                  placeholder="Type DELETE or enter 8-digit passcode"
+                  placeholder="Type DELETE or enter passcode"
                   className="w-full px-3.5 py-2.5 rounded-xl border-2 border-red-300 focus:border-red-600 focus:outline-none text-sm font-semibold bg-white"
                   autoFocus
                 />
