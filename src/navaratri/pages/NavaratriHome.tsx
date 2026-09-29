@@ -89,7 +89,7 @@ export const NavaratriHome: React.FC = () => {
                 <img
                   src={navaratriAsset("/navaratri/assets/maa-durga-simhavahana-icon.png")}
                   alt="Maa Durga Matha"
-                  className="inline-block h-7 sm:h-9 md:h-10 w-auto object-contain align-middle -translate-y-0.5 drop-shadow-[0_2px_10px_rgba(251,191,36,0.85)] hover:scale-105 transition-transform duration-300"
+                  className="inline-block md:hidden h-11 sm:h-12 w-auto object-contain align-middle -translate-y-1 drop-shadow-[0_2px_14px_rgba(251,191,36,0.95)]"
                 />
               </span>{" "}
               Navaratri <span className="text-amber-300">2026</span> with Maa Durga's Divine Blessings
