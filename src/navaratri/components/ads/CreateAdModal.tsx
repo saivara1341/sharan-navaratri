@@ -11,7 +11,8 @@ import {
   Eye,
   Sparkles,
   Smartphone,
-  Monitor
+  Monitor,
+  QrCode
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -43,6 +44,8 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
   const [previewMode, setPreviewMode] = useState<"banner" | "card">("banner");
   const [transactionId, setTransactionId] = useState("");
   const [isCopied, setIsCopied] = useState(false);
+  const [isCopied2, setIsCopied2] = useState(false);
+  const [showBigQr, setShowBigQr] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const price = selectedDays === 1 ? 49 : selectedDays === 3 ? 129 : 349;
@@ -72,7 +75,14 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
     setTimeout(() => setIsCopied(false), 2500);
   };
 
-  const handleSubmitAd = (bypassPay = false) => {
+  const handleCopyUpi2 = () => {
+    navigator.clipboard.writeText("6303602743@upi");
+    setIsCopied2(true);
+    toast.success("UPI ID copied: 6303602743@upi");
+    setTimeout(() => setIsCopied2(false), 2500);
+  };
+
+  const handleSubmitAd = () => {
     if (!businessName.trim()) {
       toast.error("Please enter your business or shop name");
       return;
@@ -82,16 +92,16 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
       return;
     }
     const cleanPhone = phone.replace(/\D/g, "").slice(0, 10);
-    if (!cleanPhone) {
-      toast.error("Please provide a contact 10-digit mobile or WhatsApp number");
-      return;
-    }
-    if (cleanPhone.length !== 10) {
-      toast.error("Please enter a valid 10-digit mobile number (e.g. 9848012345)");
+    if (!cleanPhone || cleanPhone.length !== 10) {
+      toast.error("Please enter a valid 10-digit mobile number");
       return;
     }
     if (!uploadedImage) {
       toast.error("Please upload a banner image for your advertisement");
+      return;
+    }
+    if (!transactionId.trim() || transactionId.trim().length < 6) {
+      toast.error("Please enter the UPI / UTR 12-digit transaction reference number to confirm payment");
       return;
     }
 
@@ -108,9 +118,9 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
         phone: phone.trim(),
         whatsapp: phone.trim(),
         pricePaid: price,
-        paymentStatus: "PAID",
-        transactionId: transactionId.trim() || (bypassPay ? `TEST-UPI-${Date.now().toString().slice(-6)}` : `UPI-${Date.now().toString().slice(-6)}`),
-        status: "ACTIVE",
+        paymentStatus: "PENDING_VERIFICATION",
+        transactionId: transactionId.trim(),
+        status: "PENDING",
         ctaText: buttonLabel.trim() || "Order Now",
         ctaUrl: actionUrl.trim() || `tel:${phone.trim()}`,
         startDate: "2026-10-11",
@@ -120,7 +130,7 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
       setIsSubmitting(false);
       onClose();
       onSuccess?.();
-      toast.success("Ad launched successfully! It is now live on the portal.");
+      toast.success("Payment submitted for verification! Our team will verify and activate your ad shortly.");
 
       // Reset form
       setBusinessName("");
@@ -203,7 +213,7 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
                   required
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
-                  placeholder="e.g. Sri Lakshmi Sweets & Bakers"
+                  placeholder="e.g. Your Business / Brand Name"
                   className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1E1E]/30 text-stone-900 font-medium"
                 />
               </div>
@@ -275,7 +285,7 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
                       maxLength={10}
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                      placeholder="e.g. 9848012345"
+                      placeholder="e.g. 9XXXXXXXXX"
                       className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white text-stone-900 font-mono"
                     />
                     <span className="absolute right-3 top-2.5 text-[10px] font-bold text-stone-400">
@@ -401,78 +411,113 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
               )}
 
               {/* UPI Payment Gateway */}
-              <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-300 space-y-3 pt-3">
+              <div className="p-4 rounded-2xl bg-amber-50/90 border border-amber-300 space-y-3 pt-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] font-bold text-amber-900 uppercase">Payment Due</span>
-                    <h4 className="font-['Cinzel',serif] font-black text-lg text-[#8B1E1E]">
+                    <span className="text-[10px] font-bold text-amber-900 uppercase tracking-wider">Payment Due</span>
+                    <h4 className="font-['Cinzel',serif] font-black text-xl text-[#8B1E1E]">
                       Total: ₹{price}
                     </h4>
                   </div>
-                  <span className="px-2 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
-                    Instant Activation
+                  <span className="px-2.5 py-1 rounded-full bg-amber-100 text-[#8B1E1E] border border-amber-200 font-bold text-[10px]">
+                    ⏳ Verification on UTR Match
                   </span>
                 </div>
 
-                {/* QR & UPI info */}
-                <div className="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-amber-200">
-                  <div className="w-16 h-16 bg-white p-1 rounded-lg border border-amber-300 shrink-0">
+                {/* Big QR with Button */}
+                <div className="p-3.5 rounded-2xl bg-white border border-amber-200 text-center space-y-2.5 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div className="text-left">
+                      <p className="text-xs font-bold text-stone-900">UPI QR</p>
+                      <p className="text-[11px] text-stone-500">Scan via GPay / PhonePe / Paytm</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowBigQr(!showBigQr)}
+                      className="px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-[#8B1E1E] text-[11px] font-bold flex items-center gap-1 transition-colors border border-amber-300 cursor-pointer shadow-xs"
+                    >
+                      <QrCode className="w-3.5 h-3.5" />
+                      <span>{showBigQr ? "Standard QR" : "Show Big QR"}</span>
+                    </button>
+                  </div>
+
+                  <div className={`mx-auto rounded-2xl bg-white p-2.5 border-2 border-amber-400 shadow-md flex items-center justify-center transition-all duration-200 ${showBigQr ? "w-60 h-60 sm:w-64 sm:h-64" : "w-44 h-44"}`}>
                     <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=${showBigQr ? "260x260" : "180x180"}&data=${encodeURIComponent(
                         `upi://pay?pa=siddhidynamics@icici&pn=NavaratriMandapamAds&am=${price}&cu=INR`
                       )}`}
-                      alt="UPI QR"
+                      alt="UPI QR Code"
                       className="w-full h-full object-contain"
                     />
                   </div>
-                  <div className="space-y-1 min-w-0 flex-1">
-                    <p className="text-[11px] font-bold text-stone-800">Scan via GPay / PhonePe / Paytm</p>
-                    <div className="flex items-center gap-1.5 text-[11px] font-mono text-stone-600">
-                      <span className="truncate">siddhidynamics@icici</span>
-                      <button
-                        type="button"
-                        onClick={handleCopyUpi}
-                        className="p-1 rounded bg-amber-100 text-[#8B1E1E] shrink-0 cursor-pointer"
-                        title="Copy UPI ID"
-                      >
-                        {isCopied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
-                      </button>
+
+                  <p className="text-[11px] font-bold text-[#8B1E1E]">
+                    Scan QR or Pay directly to UPI IDs below:
+                  </p>
+                </div>
+
+                {/* Dual UPI IDs with Copy Buttons */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-amber-200">
+                    <div className="flex flex-col text-left">
+                      <span className="text-[9px] font-semibold text-stone-400 uppercase">Primary UPI</span>
+                      <span className="font-mono text-xs font-bold text-stone-900">siddhidynamics@icici</span>
                     </div>
+                    <button
+                      type="button"
+                      onClick={handleCopyUpi}
+                      className="px-2.5 py-1 rounded-lg bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-[10px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      {isCopied ? <Check className="w-3 h-3 text-emerald-300" /> : <Copy className="w-3 h-3" />}
+                      <span>{isCopied ? "Copied" : "Copy"}</span>
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-amber-200">
+                    <div className="flex flex-col text-left">
+                      <span className="text-[9px] font-semibold text-stone-400 uppercase">Alternate UPI</span>
+                      <span className="font-mono text-xs font-bold text-stone-900">6303602743@upi</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleCopyUpi2}
+                      className="px-2.5 py-1 rounded-lg bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-[10px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      {isCopied2 ? <Check className="w-3 h-3 text-emerald-300" /> : <Copy className="w-3 h-3" />}
+                      <span>{isCopied2 ? "Copied" : "Copy"}</span>
+                    </button>
                   </div>
                 </div>
 
                 {/* UTR Input */}
-                <div>
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-bold text-stone-800">
+                    UTR / UPI Reference Number (12 Digits) *
+                  </label>
                   <input
                     type="text"
                     value={transactionId}
                     onChange={(e) => setTransactionId(e.target.value)}
-                    placeholder="Enter 12-digit UTR / UPI Reference (Optional in test mode)"
-                    className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white font-mono text-xs text-stone-900"
+                    placeholder="e.g. 427812984501 (from your payment receipt)"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-mono text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
                   />
+                  <p className="text-[10px] text-stone-500">
+                    Ad activates automatically once admin verifies the UTR in our bank feed.
+                  </p>
                 </div>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="pt-2 flex flex-col sm:flex-row gap-2">
+            <div className="pt-2">
               <button
                 type="button"
-                disabled={isSubmitting}
-                onClick={() => handleSubmitAd(false)}
-                className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                disabled={isSubmitting || !transactionId.trim() || transactionId.trim().length < 6}
+                onClick={handleSubmitAd}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <CheckCircle2 className="w-4 h-4 text-amber-300" />
-                <span>{isSubmitting ? "Activating..." : `Pay ₹${price} & Publish Ad`}</span>
-              </button>
-
-              <button
-                type="button"
-                disabled={isSubmitting}
-                onClick={() => handleSubmitAd(true)}
-                className="py-3 px-4 rounded-xl bg-amber-100 hover:bg-amber-200 text-stone-800 text-xs font-bold transition-colors cursor-pointer"
-              >
-                Instant Test Pay
+                <span>{isSubmitting ? "Submitting for Verification..." : `Confirm Payment & Submit Ad (₹${price})`}</span>
               </button>
             </div>
           </motion.div>
