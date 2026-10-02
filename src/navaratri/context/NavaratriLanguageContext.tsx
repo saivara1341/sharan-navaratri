@@ -20,6 +20,7 @@ export interface Translations {
   myReminders: string;
   askQuestion: string;
   registerMandapam: string;
+  mandapamLogin: string;
   organizerPortal: string;
   adminPortal: string;
   todayDarshan: string;
@@ -77,6 +78,7 @@ const DICTIONARY: Record<LanguageCode, Translations> = {
     myReminders: "My Reminders",
     askQuestion: "Ask a Question",
     registerMandapam: "Register Mandapam",
+    mandapamLogin: "Login as Mandapam",
     organizerPortal: "Organizer Portal",
     adminPortal: "Admin HQ",
     todayDarshan: "Today's Maa Darshan",
@@ -132,6 +134,7 @@ const DICTIONARY: Record<LanguageCode, Translations> = {
     myReminders: "నా రిమైండర్స్",
     askQuestion: "ప్రశ్న అడగండి",
     registerMandapam: "మండపం నమోదు చేయండి",
+    mandapamLogin: "మండపం లాగిన్",
     organizerPortal: "నిర్వాహకుల లాగిన్",
     adminPortal: "అడ్మిన్ హెచ్‌క్యూ",
     todayDarshan: "నేటి అమ్మవారి దర్శనం",
@@ -187,6 +190,7 @@ const DICTIONARY: Record<LanguageCode, Translations> = {
     myReminders: "स्मरणपत्र",
     askQuestion: "प्रश्न पूछें",
     registerMandapam: "मंडप पंजीकृत करें",
+    mandapamLogin: "मंडप लॉगिन",
     organizerPortal: "आयोजक पोर्टल",
     adminPortal: "एडमिन मुख्यालय",
     todayDarshan: "आज का माँ दर्शन",
@@ -229,7 +233,7 @@ const DICTIONARY: Record<LanguageCode, Translations> = {
     home: "முகப்பு", explore: "தேடுங்கள்", know: "அறிந்துகொள்ளுங்கள்", nearMe: "அருகில்", following: "பின்தொடர்பவை", services: "சேவைகள் & பூஜைகள்",
     activities: "நிகழ்ச்சிகள் & போட்டிகள்", annadanam: "அன்னதானம்", pallakiSeva: "பல்லக்கு சேவை", dheeksha: "தீட்சை", nimarjanam: "விசர்ஜனம்",
     myBookings: "என் முன்பதிவுகள்", myReminders: "நினைவூட்டல்கள்", askQuestion: "கேள்வி கேளுங்கள்", registerMandapam: "மண்டபத்தைப் பதிவு செய்க",
-    organizerPortal: "நிர்வாகி தளம்", adminPortal: "நிர்வாக மையம்", todayDarshan: "இன்றைய அம்மன் தரிசனம்", today: "இன்று", tomorrow: "நாளை",
+    mandapamLogin: "மண்டபம் உள்நுழைவு", organizerPortal: "நிர்வாகி தளம்", adminPortal: "நிர்வாக மையம்", todayDarshan: "இன்றைய அம்மன் தரிசனம்", today: "இன்று", tomorrow: "நாளை",
     tomorrowPrep: "நாளைய தயாரிப்பு", poojaTimings: "பூஜை நேரங்கள்", naivedhyam: "நைவேத்தியம்", prasadam: "பிரசாதம்", itemsToBring: "கொண்டு வர வேண்டியவை",
     nineDaySchedule: "9 நாள் நவராத்திரி அட்டவணை", verifiedMandapam: "சரிபார்க்கப்பட்ட மண்டபம்", directions: "வழிகாட்டி", share: "பகிரவும்",
     follow: "பின்தொடரவும்", followingBtn: "பின்தொடர்கிறது", bookService: "சேவையைப் பதிவு செய்க", scanQr: "மண்டப QR-ஐ ஸ்கேன் செய்க",
@@ -244,7 +248,7 @@ const DICTIONARY: Record<LanguageCode, Translations> = {
     home: "ഹോം", explore: "കണ്ടെത്തുക", know: "അറിയുക", nearMe: "സമീപത്ത്", following: "പിന്തുടരുന്നവ", services: "സേവനങ്ങളും പൂജകളും",
     activities: "പരിപാടികളും മത്സരങ്ങളും", annadanam: "അന്നദാനം", pallakiSeva: "പല്ലക്കി സേവ", dheeksha: "ദീക്ഷ", nimarjanam: "നിമജ്ജനം",
     myBookings: "എന്റെ ബുക്കിങ്ങുകൾ", myReminders: "ഓർമ്മപ്പെടുത്തലുകൾ", askQuestion: "ചോദ്യം ചോദിക്കുക", registerMandapam: "മണ്ഡപം രജിസ്റ്റർ ചെയ്യുക",
-    organizerPortal: "സംഘാടക പോർട്ടൽ", adminPortal: "അഡ്മിൻ കേന്ദ്രം", todayDarshan: "ഇന്നത്തെ അമ്മ ദർശനം", today: "ഇന്ന്", tomorrow: "നാളെ",
+    mandapamLogin: "മണ്ഡപം ലോഗിൻ", organizerPortal: "സംഘാടക പോർട്ടൽ", adminPortal: "അഡ്മിൻ കേന്ദ്രം", todayDarshan: "ഇന്നത്തെ അമ്മ ദർശനം", today: "ഇന്ന്", tomorrow: "നാളെ",
     tomorrowPrep: "നാളത്തെ ഒരുക്കം", poojaTimings: "പൂജാ സമയം", naivedhyam: "നൈവേദ്യം", prasadam: "പ്രസാദം", itemsToBring: "കൊണ്ടുവരേണ്ട സാധനങ്ങൾ",
     nineDaySchedule: "9 ദിവസത്തെ നവരാത്രി ക്രമം", verifiedMandapam: "സ്ഥിരീകരിച്ച മണ്ഡപം", directions: "വഴി", share: "പങ്കിടുക",
     follow: "പിന്തുടരുക", followingBtn: "പിന്തുടരുന്നു", bookService: "സേവനം ബുക്ക് ചെയ്യുക", scanQr: "മണ്ഡപ QR സ്കാൻ ചെയ്യുക",
@@ -259,7 +263,7 @@ const DICTIONARY: Record<LanguageCode, Translations> = {
     home: "ಮುಖಪುಟ", explore: "ಹುಡುಕಿ", know: "ತಿಳಿಯಿರಿ", nearMe: "ನನ್ನ ಹತ್ತಿರ", following: "ಅನುಸರಿಸುವವು", services: "ಸೇವೆಗಳು ಮತ್ತು ಪೂಜೆಗಳು",
     activities: "ಕಾರ್ಯಕ್ರಮಗಳು ಮತ್ತು ಸ್ಪರ್ಧೆಗಳು", annadanam: "ಅನ್ನದಾನ", pallakiSeva: "ಪಲ್ಲಕ್ಕಿ ಸೇವೆ", dheeksha: "ದೀಕ್ಷೆ", nimarjanam: "ವಿಸರ್ಜನೆ",
     myBookings: "ನನ್ನ ಬುಕ್ಕಿಂಗ್‌ಗಳು", myReminders: "ಜ್ಞಾಪನೆಗಳು", askQuestion: "ಪ್ರಶ್ನೆ ಕೇಳಿ", registerMandapam: "ಮಂಟಪ ನೋಂದಾಯಿಸಿ",
-    organizerPortal: "ಆಯೋಜಕರ ಪೋರ್ಟಲ್", adminPortal: "ನಿರ್ವಾಹಕ ಕೇಂದ್ರ", todayDarshan: "ಇಂದಿನ ದೇವಿ ದರ್ಶನ", today: "ಇಂದು", tomorrow: "ನಾಳೆ",
+    mandapamLogin: "ಮಂಟಪ ಲಾಗಿನ್", organizerPortal: "ಆಯೋಜಕರ ಪೋರ್ಟಲ್", adminPortal: "ನಿರ್ವಾಹಕ ಕೇಂದ್ರ", todayDarshan: "ಇಂದಿನ ದೇವಿ ದರ್ಶನ", today: "ಇಂದು", tomorrow: "ನಾಳೆ",
     tomorrowPrep: "ನಾಳೆಯ ಸಿದ್ಧತೆ", poojaTimings: "ಪೂಜೆಯ ಸಮಯ", naivedhyam: "ನೈವೇದ್ಯ", prasadam: "ಪ್ರಸಾದ", itemsToBring: "ತರಬೇಕಾದ ಸಾಮಗ್ರಿಗಳು",
     nineDaySchedule: "9 ದಿನಗಳ ನವರಾತ್ರಿ ವೇಳಾಪಟ್ಟಿ", verifiedMandapam: "ಪರಿಶೀಲಿಸಿದ ಮಂಟಪ", directions: "ದಾರಿ", share: "ಹಂಚಿಕೊಳ್ಳಿ",
     follow: "ಅನುಸರಿಸಿ", followingBtn: "ಅನುಸರಿಸಲಾಗುತ್ತಿದೆ", bookService: "ಸೇವೆ ಬುಕ್ ಮಾಡಿ", scanQr: "ಮಂಟಪ QR ಸ್ಕ್ಯಾನ್ ಮಾಡಿ",

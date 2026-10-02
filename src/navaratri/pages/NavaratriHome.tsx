@@ -12,7 +12,9 @@ import {
   Music2,
   ChevronRight,
   Building,
-  QrCode
+  QrCode,
+  KeyRound,
+  ArrowRight
 } from "lucide-react";
 import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
 import { FloatingAuspiciousParticles } from "../components/devotional/SacredMotionGraphics";
@@ -34,6 +36,30 @@ export const NavaratriHome: React.FC = () => {
     window.dispatchEvent(new Event("navaratri:open-scanner"));
   };
 
+  const primaryConnectedMandapam = useMemo(() => {
+    if (scannedIds.length > 0) {
+      const found = mandapams.find(m => m.id === scannedIds[0]);
+      if (found) {
+        return {
+          ...found,
+          sourceType: "SCANNED" as const,
+          todayAlankarana: alankaranas.find((item) => item.mandapamId === found.id)
+        };
+      }
+    }
+    if (followedIds.length > 0) {
+      const found = mandapams.find(m => m.id === followedIds[0]);
+      if (found) {
+        return {
+          ...found,
+          sourceType: "FOLLOWED" as const,
+          todayAlankarana: alankaranas.find((item) => item.mandapamId === found.id)
+        };
+      }
+    }
+    return null;
+  }, [scannedIds, followedIds, mandapams, alankaranas]);
+
   const savedMandapams = useMemo(() => {
     const ids = new Set([...followedIds, ...scannedIds]);
     return mandapams
@@ -52,7 +78,97 @@ export const NavaratriHome: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1440px] mx-auto px-4 sm:px-6 space-y-10 pb-8 sm:pb-12 pt-5 sm:pt-8 font-sans">
+    <div className="max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1440px] mx-auto px-4 sm:px-6 space-y-8 pb-8 sm:pb-12 pt-3 sm:pt-6 font-sans">
+      {/* 0. CONNECTED / SCANNED MANDAPAM BANNER (SHOWN UPON SCANNING & OPENING LANDING PAGE) */}
+      {primaryConnectedMandapam && (
+        <div
+          onClick={() => navigate(`/navaratri/m/${primaryConnectedMandapam.slug}`)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              navigate(`/navaratri/m/${primaryConnectedMandapam.slug}`);
+            }
+          }}
+          className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-amber-400 bg-gradient-to-r from-[#FFFBEB] via-[#FEF3C7] to-[#FDE68A] p-4 sm:p-5 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-amber-500"
+        >
+          {/* Subtle decorative temple corner filigree */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-radial from-amber-400/20 to-transparent pointer-events-none rounded-bl-full" />
+
+          <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5 sm:gap-4.5 min-w-0">
+              {/* Mandapam Logo with glowing golden frame */}
+              <div className="relative shrink-0">
+                <div className="absolute inset-0 rounded-2xl bg-amber-400/40 blur-md group-hover:scale-110 transition-transform" />
+                <img
+                  src={
+                    primaryConnectedMandapam.logoUrl ||
+                    primaryConnectedMandapam.todayAlankarana?.imageUrl ||
+                    primaryConnectedMandapam.coverImageUrl ||
+                    navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg")
+                  }
+                  alt={primaryConnectedMandapam.name}
+                  className="relative h-14 w-14 sm:h-18 sm:w-18 rounded-2xl border-2 border-amber-400 object-cover shadow-md group-hover:scale-105 transition-transform"
+                />
+                <span className="absolute -bottom-1 -right-1 rounded-full bg-[#8B1E1E] text-[10px] text-amber-200 px-1.5 py-0.2 border border-amber-300 font-bold shadow-xs">
+                  卐
+                </span>
+              </div>
+
+              {/* Mandapam Details */}
+              <div className="min-w-0 space-y-1">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[#8B1E1E] px-2.5 py-0.5 text-[9px] sm:text-[10px] font-bold text-white shadow-xs tracking-wide">
+                    {primaryConnectedMandapam.sourceType === "SCANNED" ? (
+                      <>
+                        <QrCode className="h-3 w-3 text-amber-300" />
+                        <span>YOUR SCANNED MANDAPAM</span>
+                      </>
+                    ) : (
+                      <>
+                        <Heart className="h-3 w-3 fill-current text-amber-300" />
+                        <span>YOUR CONNECTED SHRINE</span>
+                      </>
+                    )}
+                  </span>
+                  {primaryConnectedMandapam.verificationStatus === "VERIFIED" && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2 py-0.5 text-[9px] font-bold text-white shadow-xs">
+                      <ShieldCheck className="h-3 w-3" /> Verified Mandapam
+                    </span>
+                  )}
+                  <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-900 bg-amber-200/80 px-2 py-0.5 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" /> Live Notice Board
+                  </span>
+                </div>
+
+                <h2 className="font-serif text-base sm:text-xl font-black text-[#8B1E1E] truncate group-hover:text-[#6B1111] transition-colors">
+                  {primaryConnectedMandapam.name}
+                </h2>
+
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-700 font-medium">
+                  <span className="flex items-center gap-1 font-semibold text-amber-900">
+                    <MapPin className="h-3.5 w-3.5 text-[#8B1E1E] shrink-0" />
+                    {primaryConnectedMandapam.area}, {primaryConnectedMandapam.city}
+                  </span>
+                  <span className="hidden sm:inline text-amber-300">•</span>
+                  <span className="text-[11px] sm:text-xs text-stone-600">
+                    Today's Pooja: <strong className="text-[#8B1E1E]">{primaryConnectedMandapam.todayAlankarana?.deviName || primaryConnectedMandapam.deviName}</strong>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Tap to Open Button */}
+            <div className="flex items-center gap-2 self-end sm:self-center shrink-0 w-full sm:w-auto">
+              <div className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] group-hover:from-[#781B1B] group-hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-md flex items-center justify-center gap-1.5 transition-all">
+                <span>Open Mandapam Page</span>
+                <ChevronRight className="w-4 h-4 text-amber-300 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 1. TOP SECTION: SACRED HERO CONTAINER */}
       <section className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-amber-500/30 bg-gradient-to-r from-[#5C1010] via-[#8B1E1E] to-[#781B1B] flex flex-col justify-between max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1440px] mx-auto">
         {/* Top Ornamental Temple Filigree Border from User Design */}
@@ -232,6 +348,24 @@ export const NavaratriHome: React.FC = () => {
           </div>
         </Link>
       </section>
+
+      {/* Organizer Quick Access: Login for Registered Mandapams vs Register New */}
+      <div className="w-full flex items-center justify-center px-4 -mt-1 mb-2">
+        <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 px-3.5 py-1.5 rounded-2xl bg-gradient-to-r from-amber-50 via-white to-orange-50 border border-amber-300 shadow-xs text-xs text-stone-700">
+          <span className="font-semibold text-stone-800 flex items-center gap-1.5">
+            <span>🚩</span>
+            <span>Already registered your Durga Mandapam?</span>
+          </span>
+          <Link
+            to="/navaratri/organizer"
+            className="font-bold text-[#8B1E1E] hover:text-[#781B1B] inline-flex items-center gap-1 bg-amber-100/80 hover:bg-amber-200/90 px-2.5 py-1 rounded-xl transition-all border border-amber-300/80 shadow-2xs hover:shadow-xs active:scale-95"
+          >
+            <KeyRound className="w-3.5 h-3.5 text-[#8B1E1E]" />
+            <span>Login as Mandapam</span>
+            <ArrowRight className="w-3 h-3 text-[#8B1E1E]" />
+          </Link>
+        </div>
+      </div>
 
       {/* Sacred Emerald Vine Ribbon Divider below 2 CTA Designs */}
       <AuspiciousRibbonBorder

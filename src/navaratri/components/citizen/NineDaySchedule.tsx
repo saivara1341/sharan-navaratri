@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { STANDARD_NAVARATRI_DAYS } from "../../data/standardNavaratriDays";
-import { StandardFestivalDay } from "../../types";
+import { StandardFestivalDay, Mandapam, MandapamDaySetting } from "../../types";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { PrasadBowlIcon } from "../devotional/PrasadBowlIcon";
 import { 
@@ -16,10 +16,20 @@ import {
   Volume2,
   Sun,
   Moon,
-  HeartHandshake
+  HeartHandshake,
+  Utensils,
+  Clock
 } from "lucide-react";
 
-export const NineDaySchedule: React.FC = () => {
+interface NineDayScheduleProps {
+  mandapam?: Mandapam;
+  mandapamDaySettings?: MandapamDaySetting[];
+}
+
+export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
+  mandapam,
+  mandapamDaySettings = []
+}) => {
   const { language } = useNavaratriLanguage();
   const [selectedDay, setSelectedDay] = useState<StandardFestivalDay | null>(null);
   const todayIso = new Date().toLocaleDateString("en-CA");
@@ -31,13 +41,15 @@ export const NineDaySchedule: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div>
             <h2 className="font-serif font-black text-2xl md:text-3xl text-[#8B1E1E] flex items-center gap-2">
-              <span>Sharad Navaratri 2026 Schedule</span>
+              <span>{mandapam ? `${mandapam.name} • 10-Day Festival Schedule` : "Sharad Navaratri 2026 Schedule"}</span>
               <span className="text-xs font-sans font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
                 10 Divine Days
               </span>
             </h2>
             <p className="text-sm text-stone-600 mt-1">
-              {language === "te"
+              {mandapam
+                ? `Official daily Maa Alankaranas, Pooja timings, Naivedhyam (Bhog), and Annadanam schedule organized at ${mandapam.name}.`
+                : language === "te"
                 ? "శ్రీ అన్నపూర్ణా దేవి, శ్రీ సరస్వతీ దేవి, శ్రీ లక్ష్మీ దేవి, శ్రీ కాళికా దేవి సహా 10 దివ్య అలంకారాలు • నైవేద్యం, మంత్రాలు & ఆధ్యాత్మిక విశిష్టత (11–20 అక్టోబర్ 2026)"
                 : "10 Sacred Devi Alankaranas including Sri Annapurna Devi, Sri Maha Saraswathi Devi, Sri Maha Lakshmi Devi, Sri Kalika Devi • Sacred Chants, Bhog & Devotee Guide (11–20 October 2026)"}
             </p>
@@ -49,12 +61,29 @@ export const NineDaySchedule: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
         {STANDARD_NAVARATRI_DAYS.map((day) => {
           const isToday = day.date === todayIso;
-          const deviDisplayName =
-            language === "te"
-              ? day.teluguDeviName
-              : language === "hi"
-              ? day.hindiDeviName
-              : day.deviName;
+          const customSetting = mandapamDaySettings.find((s) => s.dayNumber === day.dayNumber);
+
+          const isDual = customSetting?.isDualAlankarana ?? !!day.dualSessionNote;
+          const morningDevi = customSetting?.morningDeviName || day.dualSessionNote?.morningAlankarana;
+          const eveningDevi = customSetting?.eveningDeviName || day.dualSessionNote?.eveningAlankarana;
+
+          const deviDisplayName = isDual && morningDevi && eveningDevi
+            ? `${morningDevi} & ${eveningDevi}`
+            : customSetting?.useStandardDevi === false && customSetting.customDeviName
+            ? customSetting.customDeviName
+            : language === "te"
+            ? day.teluguDeviName
+            : language === "hi"
+            ? day.hindiDeviName
+            : day.deviName;
+
+          const dayNaivedhyam = customSetting?.useStandardNaivedhyam === false && customSetting.customNaivedhyam
+            ? customSetting.customNaivedhyam
+            : day.suggestedOfferings;
+
+          const dayPooja = customSetting?.useStandardPooja === false && customSetting.customPoojaTimings
+            ? customSetting.customPoojaTimings
+            : null;
 
           return (
             <div
@@ -136,14 +165,28 @@ export const NineDaySchedule: React.FC = () => {
 
                 {/* Suggested Naivedhyam / Bhog Quick Preview with Bowl Icon */}
                 <div className="bg-gradient-to-r from-amber-50 to-orange-50/70 p-2.5 rounded-xl border border-amber-200/70 space-y-1">
-                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#8B1E1E] uppercase">
-                    <PrasadBowlIcon className="w-4 h-4 text-amber-700 shrink-0" />
-                    <span>Suggested Naivedhyam (Bhog)</span>
+                  <div className="flex items-center justify-between text-[11px] font-bold text-[#8B1E1E] uppercase">
+                    <span className="flex items-center gap-1.5">
+                      <PrasadBowlIcon className="w-4 h-4 text-amber-700 shrink-0" />
+                      <span>Suggested Naivedhyam (Bhog)</span>
+                    </span>
+                    {customSetting?.annadanamEnabled && (
+                      <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-full font-bold">
+                        Annadanam
+                      </span>
+                    )}
                   </div>
                   <p className="text-xs text-stone-700 line-clamp-1 font-medium">
-                    {day.suggestedOfferings}
+                    {dayNaivedhyam}
                   </p>
                 </div>
+
+                {dayPooja && (
+                  <div className="text-[11px] text-stone-600 bg-white p-2 rounded-xl border border-amber-200/60 flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-[#8B1E1E] shrink-0" />
+                    <span className="truncate font-semibold">{dayPooja}</span>
+                  </div>
+                )}
 
                 {/* Short Description */}
                 <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">

@@ -1,5 +1,5 @@
 import { navaratriAsset } from "../utils/navaratriAssets";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
 import { useNavaratriLanguage } from "../context/NavaratriLanguageContext";
@@ -449,9 +449,12 @@ export const NavaratriMandapamDetail: React.FC = () => {
         </section>
       )}
 
-      {/* 9. 9-DAY SCHEDULE */}
+      {/* 9. 10-DAY FESTIVAL SCHEDULE (Mandapam-Specific with Custom Alankaranas & Settings) */}
       <section>
-        <NineDaySchedule />
+        <NineDaySchedule
+          mandapam={mandapam}
+          mandapamDaySettings={daySettings.filter(s => s.mandapamId === mandapam.id)}
+        />
       </section>
 
       {/* 10. COMMUNITY Q&A */}

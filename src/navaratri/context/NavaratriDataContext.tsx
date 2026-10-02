@@ -40,6 +40,7 @@ import {
   INITIAL_ADVERTISEMENTS
 } from "../data/mockNavaratriData";
 import { STANDARD_NAVARATRI_DAYS } from "../data/standardNavaratriDays";
+import { navaratriAsset } from "../utils/navaratriAssets";
 
 export type UserRole = "devotee" | "organizer" | "admin";
 
@@ -111,7 +112,9 @@ interface NavaratriDataContextType {
   createAdvertisement: (data: Omit<Advertisement, "id" | "impressions" | "clicks" | "status" | "createdAt">) => Advertisement;
   moderateAd: (adId: string, status: AdStatus, rejectionReason?: string) => void;
   recordAdImpression: (adId: string) => void;
-  recordAdClick: (adId: string) => void;
+  createActivity: (data: Omit<Activity, "id">) => Activity;
+  updateActivity: (id: string, data: Partial<Activity>) => void;
+  deleteActivity: (id: string) => void;
   deleteMandapam: (mandapamId: string) => boolean;
 }
 
@@ -184,6 +187,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => saveStorage("services", services), [services]);
   useEffect(() => saveStorage("slots", slots), [slots]);
   useEffect(() => saveStorage("bookings", bookings), [bookings]);
+  useEffect(() => saveStorage("activities", activities), [activities]);
   useEffect(() => saveStorage("announcements", announcements), [announcements]);
   useEffect(() => saveStorage("questions", questions), [questions]);
   useEffect(() => saveStorage("followed_mandapams", followedIds), [followedIds]);
@@ -468,6 +472,178 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       createdAt: new Date().toISOString()
     };
 
+    // 1. Initialize all 10 standard days settings for the new mandapam
+    const initialDaySettings: MandapamDaySetting[] = STANDARD_NAVARATRI_DAYS.map((d) => ({
+      id: `ds-${shortId}-${d.dayNumber}`,
+      mandapamId: shortId,
+      dayNumber: d.dayNumber,
+      date: d.date,
+      useStandardDevi: true,
+      customDeviName: d.deviName,
+      isDualAlankarana: !!d.dualSessionNote,
+      morningDeviName: d.dualSessionNote?.morningAlankarana || d.deviName,
+      eveningDeviName: d.dualSessionNote?.eveningAlankarana || "",
+      useStandardPooja: true,
+      customPoojaTimings: d.dayNumber === 1
+        ? "Morning 07:30 AM (Kalash & Ganapathi Sthapana) | Evening 06:30 PM (Maha Harathi)"
+        : "Morning 08:00 AM (Daily Sahasranama Pooja) | Evening 06:30 PM (Maha Deeparadhana)",
+      useStandardNaivedhyam: true,
+      customNaivedhyam: d.suggestedOfferings,
+      useStandardPrasadam: true,
+      customPrasadam: `${d.suggestedOfferings} distributed to all visiting devotees`,
+      useStandardItems: true,
+      customItemsToBring: d.suggestedItems,
+      annadanamEnabled: true,
+      annadanamStartTime: "12:30 PM",
+      annadanamEndTime: "03:30 PM",
+      annadanamLocation: "Mandapam Annadanam Dining Hall",
+      annadanamExpectedCount: 500,
+      annadanamNotes: "Daily sacred Annaprasadam seva for all devotees"
+    }));
+    setDaySettings(prev => [...initialDaySettings, ...prev]);
+
+    // 2. Initialize Day 1 Alankarana
+    const initialAlankarana: Alankarana = {
+      id: `alan-${shortId}-1`,
+      mandapamId: shortId,
+      date: "2026-10-11",
+      title: "Day 1 Sacred Alankarana",
+      deviName: data.deviName || STANDARD_NAVARATRI_DAYS[0].deviName,
+      description: "Consecrated idol decorated with festive gold ornaments and traditional silks",
+      imageUrl: data.coverImageUrl || STANDARD_NAVARATRI_DAYS[0].imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"),
+      published: true,
+      createdAt: new Date().toISOString()
+    };
+    setAlankaranas(prev => [initialAlankarana, ...prev]);
+
+    // 3. Initialize Standard Temple Pooja Services & Slots
+    const initialServices: Service[] = [
+      {
+        id: `srv-${shortId}-1`,
+        mandapamId: shortId,
+        name: "Sri Durga Devi Sahasranama Archana",
+        description: "Sacred 1008 divine names archana with fresh red kumkum, bilva, and fragrant flowers for family well-being.",
+        type: "POOJA",
+        price: 0,
+        currency: "INR",
+        durationMinutes: 45,
+        itemsRequired: "Coconuts, Betel leaves, Fresh flower garland, Bananas",
+        enabled: true
+      },
+      {
+        id: `srv-${shortId}-2`,
+        mandapamId: shortId,
+        name: "Sri Lalitha Sahasranama Kumkumarchana",
+        description: "Special women's sacred Kumkuma puja invoking Maa Durga's divine protection and prosperity.",
+        type: "KUMKUMARCHANA",
+        price: 0,
+        currency: "INR",
+        durationMinutes: 30,
+        itemsRequired: "Pure Sindoor/Kumkum, Fresh jasmine flowers, Turmeric",
+        enabled: true
+      },
+      {
+        id: `srv-${shortId}-3`,
+        mandapamId: shortId,
+        name: "Maha Deeparadhana & Harathi Darshan Pass",
+        description: "Priority sanctum darshan during the divine evening Maha Mangala Harathi and sacred prasad distribution.",
+        type: "HARATHI",
+        price: 0,
+        currency: "INR",
+        durationMinutes: 20,
+        itemsRequired: "Devotion and sacred offerings",
+        enabled: true
+      },
+      {
+        id: `srv-${shortId}-4`,
+        mandapamId: shortId,
+        name: "Chandi Parayanam & Homa Sankalpam",
+        description: "Special sankalpam during the holy Navaratri Chandi Homam conducted by Vedic priests.",
+        type: "HOMA",
+        price: 0,
+        currency: "INR",
+        durationMinutes: 60,
+        itemsRequired: "Gotram, Family names, Homa samagri",
+        enabled: true
+      }
+    ];
+    setServices(prev => [...initialServices, ...prev]);
+
+    // 4. Initialize Slots for each service
+    const initialSlots: ServiceSlot[] = [];
+    initialServices.forEach(srv => {
+      initialSlots.push({
+        id: `slot-${srv.id}-morn`,
+        serviceId: srv.id,
+        mandapamId: shortId,
+        date: "2026-10-11",
+        startTime: "09:00 AM",
+        endTime: "10:30 AM",
+        capacity: 50,
+        bookedCount: 0,
+        walkinCount: 0,
+        status: "AVAILABLE"
+      });
+      initialSlots.push({
+        id: `slot-${srv.id}-eve`,
+        serviceId: srv.id,
+        mandapamId: shortId,
+        date: "2026-10-11",
+        startTime: "06:30 PM",
+        endTime: "07:30 PM",
+        capacity: 100,
+        bookedCount: 0,
+        walkinCount: 0,
+        status: "AVAILABLE"
+      });
+    });
+    setSlots(prev => [...initialSlots, ...prev]);
+
+    // 5. Initialize Welcome Announcement
+    const initialAnnouncement: Announcement = {
+      id: `ann-${shortId}-1`,
+      mandapamId: shortId,
+      title: "Divine Navaratri 2026 Celebrations",
+      message: `Welcome all devotees to ${data.name}! Join us daily for sacred Maa Darshan, Annadanam, and Evening Maha Harathi. Free Pooja booking passes are available online.`,
+      priority: "HIGH",
+      published: true,
+      createdAt: new Date().toISOString()
+    };
+    setAnnouncements(prev => [initialAnnouncement, ...prev]);
+
+    // 6. Initialize Activity
+    const initialActivity: Activity = {
+      id: `act-${shortId}-1`,
+      mandapamId: shortId,
+      title: "Maha Navami Dandiya Utsav & Bhajans",
+      category: "Dandiya Night",
+      date: "2026-10-19",
+      startTime: "07:30 PM",
+      endTime: "10:30 PM",
+      location: `${data.area} Mandapam Grounds`,
+      description: "Traditional Garba, Dandiya Ras, and spiritual bhajan sandhya celebrating Maa Durga.",
+      bookingEnabled: true,
+      published: true
+    };
+    setActivities(prev => [initialActivity, ...prev]);
+
+    // 7. Initialize Nimarjanam / Visarjan Schedule
+    const initialNimarjanam: NimarjanamSchedule = {
+      id: `nim-${shortId}`,
+      mandapamId: shortId,
+      date: "2026-10-20",
+      startTime: "02:00 PM",
+      startLocation: `${data.address || data.name}`,
+      destinationWaterBody: "Ashok Nagar Shobha Yatra Lake / Godavari River",
+      routeDescription: `${data.area} Main Road -> Clock Tower -> Collectorate Road -> Lake Ghat`,
+      queueStatus: "SCHEDULED",
+      currentSlotTime: "04:30 PM",
+      vehicleNumber: "TS-16-UT-2026",
+      driverPhone: data.contactPhone || data.organizerMobile,
+      assignedGhat: "Ghat 1 (Main Procession Deck)"
+    };
+    setNimarjanamSchedules(prev => [initialNimarjanam, ...prev]);
+
     setMandapams(prev => [newMandapam, ...prev]);
     return { success: true, mandapam: newMandapam, duplicateWarning };
   };
@@ -509,6 +685,23 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     setAdvertisements(prev => prev.map(a => a.id === adId ? { ...a, clicks: a.clicks + 1 } : a));
   };
 
+  const createActivity = (data: Omit<Activity, "id">): Activity => {
+    const newAct: Activity = {
+      ...data,
+      id: `act-${Date.now()}`
+    };
+    setActivities(prev => [newAct, ...prev]);
+    return newAct;
+  };
+
+  const updateActivity = (id: string, data: Partial<Activity>) => {
+    setActivities(prev => prev.map(a => a.id === id ? { ...a, ...data } : a));
+  };
+
+  const deleteActivity = (id: string) => {
+    setActivities(prev => prev.filter(a => a.id !== id));
+  };
+
   const deleteMandapam = (mandapamId: string): boolean => {
     setMandapams(prev => prev.filter(m => m.id !== mandapamId));
     setAlankaranas(prev => prev.filter(a => a.mandapamId !== mandapamId));
@@ -516,6 +709,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     setServices(prev => prev.filter(s => s.mandapamId !== mandapamId));
     setSlots(prev => prev.filter(sl => sl.mandapamId !== mandapamId));
     setBookings(prev => prev.filter(b => b.mandapamId !== mandapamId));
+    setActivities(prev => prev.filter(ac => ac.mandapamId !== mandapamId));
     setAnnouncements(prev => prev.filter(an => an.mandapamId !== mandapamId));
     setPallakiSevas(prev => prev.filter(p => p.mandapamId !== mandapamId));
     setNimarjanamSchedules(prev => prev.filter(n => n.mandapamId !== mandapamId));
@@ -577,6 +771,9 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
         moderateAd,
         recordAdImpression,
         recordAdClick,
+        createActivity,
+        updateActivity,
+        deleteActivity,
         deleteMandapam
       }}
     >

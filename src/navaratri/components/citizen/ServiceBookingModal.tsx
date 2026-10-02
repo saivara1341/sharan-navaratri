@@ -53,8 +53,13 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
 
   const handleProceedToOtp = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !mobile.trim()) {
+    const cleanMobile = mobile.replace(/\D/g, "");
+    if (!name.trim() || !cleanMobile) {
       toast.error("Please enter your Name and Mobile number.");
+      return;
+    }
+    if (cleanMobile.length !== 10) {
+      toast.error("Please enter a valid 10-digit mobile number (e.g. 9876543210).");
       return;
     }
     if (!selectedSlotId) {
@@ -222,14 +227,16 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
 
               <div>
                 <label className="block text-xs font-semibold text-stone-700 mb-1">
-                  Mobile Number (for OTP & Pass) *
+                  Mobile Number (10 Digits Only) *
                 </label>
                 <input
                   type="tel"
                   required
+                  maxLength={10}
+                  pattern="[0-9]{10}"
                   value={mobile}
-                  onChange={(e) => setMobile(e.target.value)}
-                  placeholder="Enter 10-digit mobile number"
+                  onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                  placeholder="e.g. 9876543210"
                   className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>

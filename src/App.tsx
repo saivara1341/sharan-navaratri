@@ -213,6 +213,7 @@ const App = () => {
                         <Route path="/nimarjanam" element={<Navigate to="/" replace />} />
                         <Route path="/register" element={<NavaratriAppLayout><NavaratriRegister /></NavaratriAppLayout>} />
                         <Route path="/organizer" element={<NavaratriAppLayout><NavaratriOrganizer /></NavaratriAppLayout>} />
+                        <Route path="/organizer/:mandapamId" element={<NavaratriAppLayout><NavaratriOrganizer /></NavaratriAppLayout>} />
                         <Route path="/admin" element={<NavaratriAppLayout><NavaratriAdmin /></NavaratriAppLayout>} />
                         <Route path="/advertise" element={<NavaratriAppLayout><NavaratriAdvertise /></NavaratriAppLayout>} />
                       </>
@@ -282,6 +283,7 @@ const App = () => {
                     <Route path="/navaratri/nimarjanam" element={<Navigate to="/navaratri" replace />} />
                     <Route path="/navaratri/register" element={<NavaratriAppLayout><NavaratriRegister /></NavaratriAppLayout>} />
                     <Route path="/navaratri/organizer" element={<NavaratriAppLayout><NavaratriOrganizer /></NavaratriAppLayout>} />
+                    <Route path="/navaratri/organizer/:mandapamId" element={<NavaratriAppLayout><NavaratriOrganizer /></NavaratriAppLayout>} />
                     <Route path="/navaratri/admin" element={<NavaratriAppLayout><NavaratriAdmin /></NavaratriAppLayout>} />
                     <Route path="/navaratri/advertise" element={<NavaratriAppLayout><NavaratriAdvertise /></NavaratriAppLayout>} />
                     <Route path="/navaratri/m/:slug" element={<NavaratriAppLayout><NavaratriMandapamDetail /></NavaratriAppLayout>} />

@@ -12,7 +12,8 @@ import {
   X,
   Store,
   MapPin,
-  QrCode
+  QrCode,
+  KeyRound
 } from "lucide-react";
 import { TrishoolIcon } from "../devotional/SacredMotionGraphics";
 
@@ -53,13 +54,25 @@ export const NavaratriHeader: React.FC = () => {
           </span>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Subtle Login as Mandapam Link */}
+          <Link
+            to="/navaratri/organizer"
+            className="text-[11px] font-bold text-amber-300 hover:text-white transition-colors flex items-center gap-1"
+            title="Registered Mandapam Organizer Login"
+          >
+            <KeyRound className="w-3 h-3 text-amber-300" />
+            <span>{t.mandapamLogin}</span>
+          </Link>
+
+          <span className="text-amber-400/40 text-[10px] hidden sm:inline">•</span>
+
           {/* Subtle Register Mandapam Link */}
           <Link
             to="/navaratri/register"
             className="text-[11px] font-semibold text-amber-200 hover:text-white transition-colors hidden sm:inline"
           >
-            {t.registerMandapam}
+            <span>+ {t.registerMandapam}</span>
           </Link>
 
           {/* Multilingual Switcher */}
@@ -147,16 +160,26 @@ export const NavaratriHeader: React.FC = () => {
 
           <Link
             to="/navaratri/advertise"
-            className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100/80 hover:bg-amber-200 text-amber-950 text-xs font-bold border border-amber-300/80 transition-colors shadow-sm"
+            className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100/80 hover:bg-amber-200 text-amber-950 text-xs font-bold border border-amber-300/80 transition-colors shadow-xs"
           >
             <Store className="w-3.5 h-3.5 text-[#8B1E1E]" />
             <span>{t.advertiseWithUs}</span>
           </Link>
 
+          {/* Desktop Login as Mandapam Button */}
+          <Link
+            to="/navaratri/organizer"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-100/90 hover:bg-amber-200/90 text-[#8B1E1E] text-xs font-bold border border-amber-300/90 transition-all shadow-xs hover:shadow active:scale-95"
+            title="Organizer Login for Registered Mandapams"
+          >
+            <KeyRound className="w-3.5 h-3.5 text-[#8B1E1E]" />
+            <span>{t.mandapamLogin}</span>
+          </Link>
+
           {/* Desktop Register Button */}
           <Link
             to="/navaratri/register"
-            className="hidden sm:inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all"
+            className="hidden sm:inline-flex items-center gap-1 px-3.5 py-2 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95"
           >
             <span>+</span>
             <span>{t.registerMandapam}</span>
@@ -208,6 +231,17 @@ export const NavaratriHeader: React.FC = () => {
               <span>Scan Mandapam QR (Camera)</span>
             </button>
 
+            {/* Login as Mandapam for Mobile */}
+            <Link
+              to="/navaratri/organizer"
+              onClick={() => setMobileMenuOpen(false)}
+              className="py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-[#8B1E1E] text-xs font-bold text-center border border-amber-300 flex items-center justify-center gap-1.5 transition-all shadow-xs"
+            >
+              <KeyRound className="w-4 h-4 text-[#8B1E1E]" />
+              <span>{t.mandapamLogin} (Organizers)</span>
+            </Link>
+
+            {/* + Register Mandapam for Mobile */}
             <Link
               to="/navaratri/register"
               onClick={() => setMobileMenuOpen(false)}

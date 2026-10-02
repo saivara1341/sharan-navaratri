@@ -106,9 +106,21 @@ export const NavaratriAdvertise: React.FC = () => {
 
   const handleProceedToPayment = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!businessName.trim() || !phone.trim() || !title.trim()) {
-      toast.error("Please fill in business name, contact phone, and advertisement title.");
+    const cleanPhone = phone.replace(/\D/g, "").slice(0, 10);
+    if (!businessName.trim() || !cleanPhone || !title.trim()) {
+      toast.error("Please fill in business name, 10-digit contact phone, and advertisement title.");
       return;
+    }
+    if (cleanPhone.length !== 10) {
+      toast.error("Please enter a valid 10-digit mobile number (e.g. 9848012345).");
+      return;
+    }
+    if (whatsapp) {
+      const cleanWa = whatsapp.replace(/\D/g, "").slice(0, 10);
+      if (cleanWa.length > 0 && cleanWa.length !== 10) {
+        toast.error("WhatsApp number must be 10 digits.");
+        return;
+      }
     }
     setPaymentStep(true);
     window.scrollTo({ top: 300, behavior: "smooth" });
@@ -418,26 +430,42 @@ export const NavaratriAdvertise: React.FC = () => {
               {/* Contact Information */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 <div>
-                  <label className="block font-bold mb-1 text-stone-800">Phone for Devotees to Call *</label>
-                  <input
-                    type="tel"
-                    required
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="e.g. Your Mobile No."
-                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
-                  />
+                  <label className="block font-bold mb-1 text-stone-800">
+                    Phone for Devotees to Call (10 Digits) *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      required
+                      maxLength={10}
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                      placeholder="e.g. 9848012345"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-mono"
+                    />
+                    <span className="absolute right-3 top-2.5 text-[10px] font-bold text-stone-400">
+                      {phone.length}/10
+                    </span>
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block font-bold mb-1 text-stone-800">WhatsApp Number (Optional)</label>
-                  <input
-                    type="tel"
-                    value={whatsapp}
-                    onChange={(e) => setWhatsapp(e.target.value)}
-                    placeholder="e.g. Your WhatsApp No."
-                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
-                  />
+                  <label className="block font-bold mb-1 text-stone-800">
+                    WhatsApp Number (10 Digits, Optional)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      maxLength={10}
+                      value={whatsapp}
+                      onChange={(e) => setWhatsapp(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                      placeholder="e.g. 9848012345"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-mono"
+                    />
+                    <span className="absolute right-3 top-2.5 text-[10px] font-bold text-stone-400">
+                      {whatsapp.length}/10
+                    </span>
+                  </div>
                 </div>
               </div>
 

@@ -59,8 +59,13 @@ export const WalkInRegisterModal: React.FC<WalkInRegisterModalProps> = ({
 
   const handleAddWalkinSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!walkinName.trim() || !walkinMobile.trim()) {
+    const cleanMobile = walkinMobile.replace(/\D/g, "");
+    if (!walkinName.trim() || !cleanMobile) {
       toast.error("Please provide devotee name and mobile.");
+      return;
+    }
+    if (cleanMobile.length !== 10) {
+      toast.error("Please enter a valid 10-digit mobile number (e.g. 9876543210).");
       return;
     }
 
@@ -69,7 +74,7 @@ export const WalkInRegisterModal: React.FC<WalkInRegisterModalProps> = ({
       serviceId: walkinServiceId,
       mandapamId: mandapam.id,
       name: walkinName,
-      mobile: walkinMobile,
+      mobile: cleanMobile,
       quantity: walkinQuantity,
       notes: walkinNotes
     });
@@ -150,13 +155,15 @@ export const WalkInRegisterModal: React.FC<WalkInRegisterModalProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold mb-1">Mobile Number *</label>
+                <label className="block font-semibold mb-1">Mobile Number (10 Digits Only) *</label>
                 <input
                   type="tel"
                   required
+                  maxLength={10}
+                  pattern="[0-9]{10}"
                   value={walkinMobile}
-                  onChange={(e) => setWalkinMobile(e.target.value)}
-                  placeholder="Enter 10-digit mobile number"
+                  onChange={(e) => setWalkinMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                  placeholder="e.g. 9876543210"
                   className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white"
                 />
               </div>

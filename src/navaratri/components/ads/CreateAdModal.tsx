@@ -81,8 +81,13 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
       toast.error("Please enter an ad headline");
       return;
     }
-    if (!phone.trim()) {
-      toast.error("Please provide a contact phone or WhatsApp number");
+    const cleanPhone = phone.replace(/\D/g, "").slice(0, 10);
+    if (!cleanPhone) {
+      toast.error("Please provide a contact 10-digit mobile or WhatsApp number");
+      return;
+    }
+    if (cleanPhone.length !== 10) {
+      toast.error("Please enter a valid 10-digit mobile number (e.g. 9848012345)");
       return;
     }
     if (!uploadedImage) {
@@ -260,15 +265,23 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block font-bold mb-1 text-stone-800">Contact Phone / WhatsApp *</label>
-                  <input
-                    type="tel"
-                    required
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="e.g. +91 98480 12345"
-                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white text-stone-900"
-                  />
+                  <label className="block font-bold mb-1 text-stone-800">
+                    Contact Phone / WhatsApp (10 Digits) *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      required
+                      maxLength={10}
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                      placeholder="e.g. 9848012345"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white text-stone-900 font-mono"
+                    />
+                    <span className="absolute right-3 top-2.5 text-[10px] font-bold text-stone-400">
+                      {phone.length}/10
+                    </span>
+                  </div>
                 </div>
               </div>
 

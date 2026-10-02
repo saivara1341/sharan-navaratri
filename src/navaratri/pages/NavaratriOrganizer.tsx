@@ -8,6 +8,8 @@ import { WalkInRegisterModal } from "../components/organizer/WalkInRegisterModal
 import { ShareQrModal } from "../components/citizen/ShareQrModal";
 import { STANDARD_NAVARATRI_DAYS } from "../data/standardNavaratriDays";
 import { downloadMandapamCredentials, copyToClipboard } from "../utils/mandapamCredentials";
+import { PrasadBowlIcon } from "../components/devotional/PrasadBowlIcon";
+import { Activity } from "../types";
 import {
   ShieldCheck,
   Upload,
@@ -33,7 +35,15 @@ import {
   ArrowRight,
   Trash2,
   AlertOctagon,
-  X
+  X,
+  Music2,
+  Flame,
+  ShoppingBag,
+  Sun,
+  Moon,
+  CheckCircle2,
+  CalendarDays,
+  PartyPopper
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -47,6 +57,9 @@ export const NavaratriOrganizer: React.FC = () => {
     daySettings,
     bookings,
     slots,
+    activities,
+    createActivity,
+    deleteActivity,
     announcements,
     publishAnnouncement,
     deleteMandapam
@@ -64,10 +77,25 @@ export const NavaratriOrganizer: React.FC = () => {
   const [showLoginPasscode, setShowLoginPasscode] = useState(false);
   const [showDashboardPasscode, setShowDashboardPasscode] = useState(false);
 
+  // Active Organizer Tab
+  const [activeTab, setActiveTab] = useState<"days" | "events" | "announcements" | "bookings">("days");
+
   // Modals & Drawers
   const [updateDrawerOpen, setUpdateDrawerOpen] = useState(false);
+  const [drawerDayNumber, setDrawerDayNumber] = useState(1);
   const [registerModalOpen, setRegisterModalOpen] = useState(false);
   const [qrModalOpen, setQrModalOpen] = useState(false);
+
+  // Event Creator Modal State
+  const [eventModalOpen, setEventModalOpen] = useState(false);
+  const [eventTitle, setEventTitle] = useState("");
+  const [eventCategory, setEventCategory] = useState<Activity["category"]>("Special Program");
+  const [eventDate, setEventDate] = useState("2026-10-15");
+  const [eventStartTime, setEventStartTime] = useState("06:30 PM");
+  const [eventEndTime, setEventEndTime] = useState("09:30 PM");
+  const [eventLocation, setEventLocation] = useState("Mandapam Main Stage");
+  const [eventDescription, setEventDescription] = useState("");
+  const [eventBookingEnabled, setEventBookingEnabled] = useState(false);
 
   // Two-Step Delete Account Modal State
   const [deleteStep, setDeleteStep] = useState<0 | 1 | 2>(0);
@@ -120,46 +148,24 @@ export const NavaratriOrganizer: React.FC = () => {
     toast.info("Logged out of Mandapam Organizer Portal.");
   };
 
-  // Tomorrow preparation checklist
-  const [checklist, setChecklist] = useState({
-    devi: true,
-    alankarana: false,
-    pooja: true,
-    naivedhyam: true,
-    prasadam: true,
-    items: true,
-    services: true,
-    bookings: true,
-    annadanam: true,
-    announcement: true
-  });
-
-  const toggleCheck = (key: keyof typeof checklist) => {
-    setChecklist((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  // If NOT authenticated, show the Login Screen
+  // If not authenticated, show Organizer Login Form
   if (!authenticatedMandapamId) {
     return (
-      <div className="max-w-2xl mx-auto space-y-6 pb-20 font-sans">
-        {/* Login Card */}
-        <div className="rounded-3xl border border-amber-300 bg-white/95 p-6 sm:p-8 shadow-xl space-y-6">
-          <div className="text-center space-y-2">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#8B1E1E] to-[#B45309] text-white shadow-md">
-              <Lock className="h-7 w-7" />
-            </div>
-            <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-900">
-              Mandapam Committee Access
-            </span>
-            <h1 className="font-serif text-2xl sm:text-3xl font-black text-[#8B1E1E]">
-              Mandapam Organizer Portal
-            </h1>
-            <p className="text-xs sm:text-sm text-stone-600 max-w-md mx-auto leading-relaxed">
-              Enter your official Mandapam ID (or registered mobile) and passcode to manage your notice board and citizen bookings.
-            </p>
+      <div className="max-w-md mx-auto px-4 py-8 space-y-6 font-sans">
+        <div className="text-center space-y-2">
+          <div className="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-br from-[#8B1E1E] to-[#B45309] text-white flex items-center justify-center shadow-lg border-2 border-amber-300">
+            <Lock className="w-8 h-8 text-amber-200" />
           </div>
+          <h1 className="font-serif font-black text-2xl sm:text-3xl text-[#8B1E1E]">
+            Mandapam Organizer Portal
+          </h1>
+          <p className="text-xs text-stone-600">
+            Log in with your official Mandapam ID or Registered Mobile number and passcode.
+          </p>
+        </div>
 
-          <form onSubmit={handleLogin} className="space-y-4 max-w-md mx-auto pt-2">
+        <div className="bg-white p-6 sm:p-7 rounded-3xl border-2 border-amber-300 shadow-xl space-y-4">
+          <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-stone-800 mb-1">
                 Mandapam ID or Registered Mobile *
@@ -167,35 +173,38 @@ export const NavaratriOrganizer: React.FC = () => {
               <input
                 type="text"
                 required
+                list="mandapam-suggestions"
                 value={loginInput}
                 onChange={(e) => setLoginInput(e.target.value)}
-                placeholder="Enter Mandapam ID or Registered Mobile"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-amber-300 bg-white text-xs font-semibold text-stone-900 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                placeholder="e.g. Mandapam ID or 10-digit Mobile number"
+                className="w-full px-3.5 py-2.5 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
               />
+              <datalist id="mandapam-suggestions">
+                {mandapams.map((m) => (
+                  <option key={m.id} value={m.organizerMobile || m.id}>
+                    {m.name} ({m.area})
+                  </option>
+                ))}
+              </datalist>
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-bold text-stone-800">
-                  Passcode / PIN *
-                </label>
-                <span className="text-[10px] text-stone-500">4–6 digits</span>
-              </div>
+              <label className="block text-xs font-bold text-stone-800 mb-1">
+                Passcode / PIN *
+              </label>
               <div className="relative">
                 <input
                   type={showLoginPasscode ? "text" : "password"}
-                  maxLength={6}
                   required
                   value={loginPasscode}
                   onChange={(e) => setLoginPasscode(e.target.value)}
-                  placeholder="Enter passcode (4–6 digits)"
-                  className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-amber-300 bg-white text-xs font-mono font-bold tracking-widest text-stone-900 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  placeholder="Enter 4-6 digit passcode"
+                  className="w-full px-3.5 py-2.5 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none pr-10 font-mono tracking-wider"
                 />
                 <button
                   type="button"
                   onClick={() => setShowLoginPasscode(!showLoginPasscode)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 p-1"
-                  aria-label={showLoginPasscode ? "Hide passcode" : "Show passcode"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
                 >
                   {showLoginPasscode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -204,12 +213,22 @@ export const NavaratriOrganizer: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
             >
               <KeyRound className="w-4 h-4" />
               <span>Login to Mandapam Dashboard →</span>
             </button>
           </form>
+
+          <div className="pt-3 border-t border-amber-200 text-center space-y-2">
+            <p className="text-xs text-stone-600">New organizer? Register your committee's mandapam:</p>
+            <Link
+              to="/navaratri/register"
+              className="w-full py-2.5 rounded-xl border border-amber-400 bg-amber-50 hover:bg-amber-100 text-[#8B1E1E] text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs hover:shadow-xs active:scale-98"
+            >
+              <span>+ Register New Durga Mandapam</span>
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -221,17 +240,41 @@ export const NavaratriOrganizer: React.FC = () => {
     mandapams.find((m) => m.id === activeMandapamId) ||
     mandapams[0];
 
-  const todayAlankarana = alankaranas.find((a) => a.mandapamId === currentMandapam.id);
-  const todaySetting = daySettings.find(
-    (s) => s.mandapamId === currentMandapam.id && s.dayNumber === 1
-  );
-  const tomorrowSetting = daySettings.find(
-    (s) => s.mandapamId === currentMandapam.id && s.dayNumber === 2
-  );
-
+  const mandapamActivities = activities.filter((a) => a.mandapamId === currentMandapam.id);
   const mandapamBookings = bookings.filter((b) => b.mandapamId === currentMandapam.id);
   const onlineBookingsCount = mandapamBookings.filter((b) => b.bookingType === "ONLINE").length;
   const walkinBookingsCount = mandapamBookings.filter((b) => b.bookingType === "WALK_IN").length;
+
+  const handleOpenDrawerForDay = (dayNum: number) => {
+    setDrawerDayNumber(dayNum);
+    setUpdateDrawerOpen(true);
+  };
+
+  const handleCreateEvent = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!eventTitle.trim() || !eventDate.trim() || !eventStartTime.trim()) {
+      toast.error("Please fill in event title, date, and timings.");
+      return;
+    }
+
+    createActivity({
+      mandapamId: currentMandapam.id,
+      title: eventTitle.trim(),
+      category: eventCategory,
+      date: eventDate.trim(),
+      startTime: eventStartTime.trim(),
+      endTime: eventEndTime.trim(),
+      location: eventLocation.trim(),
+      description: eventDescription.trim(),
+      bookingEnabled: eventBookingEnabled,
+      published: true
+    });
+
+    setEventTitle("");
+    setEventDescription("");
+    setEventModalOpen(false);
+    toast.success("Festival event added and published successfully!");
+  };
 
   const handleDeleteAccount = () => {
     if (!currentMandapam) return;
@@ -268,14 +311,14 @@ export const NavaratriOrganizer: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 pb-16 font-sans">
+    <div className="space-y-8 pb-16 font-sans max-w-7xl mx-auto px-4 sm:px-6">
       {/* Top Banner with Mandapam ID, Passcode, Download Slip & Logout */}
       <div className="p-6 rounded-3xl bg-gradient-to-r from-[#9A241C] via-[#8B1E1E] to-[#781B1B] text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-400/20 text-amber-200 text-xs font-bold">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Operational Control Center</span>
+              <span>Mandapam Control Center</span>
             </span>
             <span className="text-[11px] font-semibold text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/40">
               ● Live & Verified
@@ -287,7 +330,7 @@ export const NavaratriOrganizer: React.FC = () => {
           </h1>
 
           <p className="text-xs text-amber-100">
-            {currentMandapam.area}, {currentMandapam.city} • Organizer: {currentMandapam.organizerName}
+            {currentMandapam.area}, {currentMandapam.city} • Organizer: {currentMandapam.organizerName} ({currentMandapam.organizerMobile})
           </p>
 
           {/* Credentials Display Badges */}
@@ -310,7 +353,7 @@ export const NavaratriOrganizer: React.FC = () => {
             <div className="flex items-center gap-1 bg-black/30 border border-white/20 px-2.5 py-1 rounded-xl">
               <span className="text-amber-300 font-bold">Passcode:</span>
               <span className="font-mono font-bold tracking-widest">
-                {showDashboardPasscode ? currentMandapam.passcode || "12345678" : "••••••••"}
+                {showDashboardPasscode ? currentMandapam.passcode || "123456" : "••••••"}
               </span>
               <button
                 type="button"
@@ -322,7 +365,7 @@ export const NavaratriOrganizer: React.FC = () => {
               </button>
               <button
                 type="button"
-                onClick={() => copyToClipboard(currentMandapam.passcode || "12345678", "Passcode")}
+                onClick={() => copyToClipboard(currentMandapam.passcode || "123456", "Passcode")}
                 className="text-white/70 hover:text-white p-0.5"
                 title="Copy Passcode"
               >
@@ -334,7 +377,7 @@ export const NavaratriOrganizer: React.FC = () => {
             <button
               type="button"
               onClick={() => downloadMandapamCredentials(currentMandapam)}
-              className="flex items-center gap-1 px-3 py-1 rounded-xl bg-amber-400 text-stone-900 font-bold hover:bg-amber-300 shadow-sm transition-all"
+              className="flex items-center gap-1 px-3 py-1 rounded-xl bg-amber-400 text-stone-900 font-bold hover:bg-amber-300 shadow-sm transition-all cursor-pointer"
             >
               <Download className="w-3 h-3" />
               <span>Download Access Slip</span>
@@ -346,7 +389,7 @@ export const NavaratriOrganizer: React.FC = () => {
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setQrModalOpen(true)}
-            className="px-3.5 py-2 rounded-xl bg-white text-stone-900 text-xs font-bold hover:bg-amber-50 shadow-md flex items-center gap-1.5 transition-colors"
+            className="px-3.5 py-2 rounded-xl bg-white text-stone-900 text-xs font-bold hover:bg-amber-50 shadow-md flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <QrCode className="w-4 h-4 text-[#8B1E1E]" />
             <span>Counter Standee</span>
@@ -357,24 +400,12 @@ export const NavaratriOrganizer: React.FC = () => {
             className="px-3.5 py-2 rounded-xl bg-amber-400/90 text-stone-900 text-xs font-bold hover:bg-amber-300 shadow-md flex items-center gap-1.5 transition-colors"
           >
             <ExternalLink className="w-4 h-4" />
-            <span>Public Page</span>
+            <span>View Public Page</span>
           </Link>
 
           <button
-            onClick={() => {
-              setDeleteStep(1);
-              setDeleteConfirmInput("");
-            }}
-            className="px-3 py-2 rounded-xl bg-red-950/70 hover:bg-red-900 text-red-200 hover:text-white text-xs font-bold border border-red-500/40 flex items-center gap-1.5 transition-colors cursor-pointer"
-            title="Delete this mandapam account"
-          >
-            <Trash2 className="w-3.5 h-3.5 text-red-400" />
-            <span>Delete Account</span>
-          </button>
-
-          <button
             onClick={handleLogout}
-            className="px-3 py-2 rounded-xl bg-black/40 hover:bg-black/60 text-white text-xs font-bold border border-white/20 flex items-center gap-1.5 transition-colors"
+            className="px-3 py-2 rounded-xl bg-black/40 hover:bg-black/60 text-white text-xs font-bold border border-white/20 flex items-center gap-1.5 transition-colors cursor-pointer"
             title="Log out from organizer dashboard"
           >
             <LogOut className="w-3.5 h-3.5" />
@@ -383,122 +414,272 @@ export const NavaratriOrganizer: React.FC = () => {
         </div>
       </div>
 
-      {/* QUICK OPERATIONAL TOOLBAR */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {/* DASHBOARD TAB NAVIGATION */}
+      <div className="flex items-center gap-2 border-b-2 border-amber-300 pb-2 overflow-x-auto">
         <button
-          onClick={() => setUpdateDrawerOpen(true)}
-          className="p-4 rounded-2xl bg-[#FFFDF9] border border-amber-300 hover:border-[#8B1E1E] shadow-sm hover:shadow text-left space-y-1 transition-all group"
+          onClick={() => setActiveTab("days")}
+          className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeTab === "days"
+              ? "bg-[#8B1E1E] text-white shadow-md"
+              : "bg-white text-stone-700 hover:bg-amber-100 border border-amber-300"
+          }`}
         >
-          <div className="w-8 h-8 rounded-xl bg-amber-100 group-hover:bg-[#8B1E1E] text-[#8B1E1E] group-hover:text-white flex items-center justify-center transition-colors">
-            <Upload className="w-4 h-4" />
-          </div>
-          <p className="font-bold text-xs text-stone-900">Upload Alankarana</p>
-          <p className="text-[11px] text-stone-500">Daily Maa Darshan photo & updates</p>
+          <CalendarDays className="w-4 h-4 text-amber-300" />
+          <span>10-Day Festival Schedule Manager</span>
         </button>
 
         <button
-          onClick={() => setRegisterModalOpen(true)}
-          className="p-4 rounded-2xl bg-[#FFFDF9] border border-amber-300 hover:border-[#8B1E1E] shadow-sm hover:shadow text-left space-y-1 transition-all group"
+          onClick={() => setActiveTab("events")}
+          className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeTab === "events"
+              ? "bg-[#8B1E1E] text-white shadow-md"
+              : "bg-white text-stone-700 hover:bg-amber-100 border border-amber-300"
+          }`}
         >
-          <div className="w-8 h-8 rounded-xl bg-emerald-100 group-hover:bg-emerald-600 text-emerald-800 group-hover:text-white flex items-center justify-center transition-colors">
-            <Users className="w-4 h-4" />
-          </div>
-          <p className="font-bold text-xs text-stone-900">Walk-In Register</p>
-          <p className="text-[11px] text-stone-500">{mandapamBookings.length} total devotees</p>
+          <PartyPopper className="w-4 h-4 text-amber-300" />
+          <span>Mandapam Events & Programs ({mandapamActivities.length})</span>
         </button>
 
         <button
-          onClick={() => setUpdateDrawerOpen(true)}
-          className="p-4 rounded-2xl bg-[#FFFDF9] border border-amber-300 hover:border-[#8B1E1E] shadow-sm hover:shadow text-left space-y-1 transition-all group"
+          onClick={() => setActiveTab("announcements")}
+          className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeTab === "announcements"
+              ? "bg-[#8B1E1E] text-white shadow-md"
+              : "bg-white text-stone-700 hover:bg-amber-100 border border-amber-300"
+          }`}
         >
-          <div className="w-8 h-8 rounded-xl bg-blue-100 group-hover:bg-blue-600 text-blue-800 group-hover:text-white flex items-center justify-center transition-colors">
-            <Utensils className="w-4 h-4" />
-          </div>
-          <p className="font-bold text-xs text-stone-900">Annadanam Setup</p>
-          <p className="text-[11px] text-stone-500">12:30 PM (1200 expected)</p>
+          <Bell className="w-4 h-4 text-amber-300" />
+          <span>Flash Notices & Updates</span>
         </button>
 
         <button
-          onClick={() => setQrModalOpen(true)}
-          className="p-4 rounded-2xl bg-[#FFFDF9] border border-amber-300 hover:border-[#8B1E1E] shadow-sm hover:shadow text-left space-y-1 transition-all group"
+          onClick={() => setActiveTab("bookings")}
+          className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeTab === "bookings"
+              ? "bg-[#8B1E1E] text-white shadow-md"
+              : "bg-white text-stone-700 hover:bg-amber-100 border border-amber-300"
+          }`}
         >
-          <div className="w-8 h-8 rounded-xl bg-purple-100 group-hover:bg-purple-600 text-purple-800 group-hover:text-white flex items-center justify-center transition-colors">
-            <Printer className="w-4 h-4" />
-          </div>
-          <p className="font-bold text-xs text-stone-900">Print QR Standee</p>
-          <p className="text-[11px] text-stone-500">A4 Festival Display</p>
+          <Users className="w-4 h-4 text-amber-300" />
+          <span>Devotee Bookings & Tokens ({mandapamBookings.length})</span>
         </button>
       </div>
 
-      {/* DASHBOARD GRID: 2 COLUMNS */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column (2 Cols wide): Today's Operations & Live Feed */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Today's Alankarana & Schedule Card */}
-          <div className="rounded-3xl border border-amber-300 bg-white p-5 sm:p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-amber-200 pb-3">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900">
-                  Day 1 • 2026-10-11
-                </span>
-                <h2 className="font-serif text-lg font-black text-[#8B1E1E]">
-                  Today's Divine Alankarana & Schedule
-                </h2>
-              </div>
-              <button
-                onClick={() => setUpdateDrawerOpen(true)}
-                className="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-[#8B1E1E] text-xs font-bold transition-colors"
-              >
-                Edit Today's Schedule
-              </button>
+      {/* TAB 1: 10-DAY FESTIVAL SCHEDULE MANAGER */}
+      {activeTab === "days" && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-amber-50/80 p-4 rounded-2xl border border-amber-300">
+            <div>
+              <h2 className="font-serif font-black text-xl text-[#8B1E1E]">
+                Day-to-Day Festival Data (All 10 Divine Days)
+              </h2>
+              <p className="text-xs text-stone-600 mt-0.5">
+                Click "Edit Day Data" on any day to customize Alankaranas, dual morning/evening sessions, pooja timings, Bhog (Naivedhyam), and Annadanam.
+              </p>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <p className="text-xs text-stone-500 font-semibold">Devi Alankarana</p>
-                <div className="flex items-center gap-3">
-                  <img
-                    src={todayAlankarana?.imageUrl || navaratriAsset("/navaratri/assets/royal-maroon-arch.jpg")}
-                    alt="Devi"
-                    className="w-16 h-16 rounded-2xl object-cover border border-amber-300 shadow"
-                  />
-                  <div>
-                    <h3 className="font-serif text-base font-bold text-stone-900">
-                      {todayAlankarana?.deviName || "Sri Bala Tripura Sundari Devi"}
-                    </h3>
-                    <p className="text-xs text-amber-800 font-medium">
-                      Color of the Day: Golden Yellow
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-xs text-stone-500 font-semibold">Key Timings</p>
-                <div className="space-y-1.5 text-xs text-stone-700">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-3.5 h-3.5 text-amber-700" />
-                    <span>Pooja: 07:30 AM & 06:30 PM (Maha Harathi)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Utensils className="w-3.5 h-3.5 text-amber-700" />
-                    <span>Annadanam: 12:30 PM – 03:30 PM</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Bell className="w-3.5 h-3.5 text-amber-700" />
-                    <span>Pallaki Seva: 08:30 PM (Ward Colony Route)</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <button
+              type="button"
+              onClick={() => handleOpenDrawerForDay(1)}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs font-bold shadow-md transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              <span>Quick Update Today (Day 1)</span>
+            </button>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {STANDARD_NAVARATRI_DAYS.map((day) => {
+              const setting = daySettings.find((s) => s.mandapamId === currentMandapam.id && s.dayNumber === day.dayNumber);
+              const customAlankarana = alankaranas.find((a) => a.mandapamId === currentMandapam.id && a.date === day.date);
+
+              const deviTitle = setting?.isDualAlankarana 
+                ? `${setting.morningDeviName || day.deviName} (Morning) / ${setting.eveningDeviName || day.deviName} (Evening)`
+                : (setting?.useStandardDevi === false && setting?.customDeviName ? setting.customDeviName : day.deviName);
+
+              const poojaTimings = setting?.useStandardPooja === false && setting?.customPoojaTimings
+                ? setting.customPoojaTimings
+                : "Morning: 07:30 AM | Evening: 06:30 PM (Maha Harathi)";
+
+              const naivedhyam = setting?.useStandardNaivedhyam === false && setting?.customNaivedhyam
+                ? setting.customNaivedhyam
+                : day.suggestedOfferings;
+
+              const isAnnadanam = setting?.annadanamEnabled ?? true;
+
+              return (
+                <div
+                  key={day.dayNumber}
+                  className="p-4 sm:p-5 rounded-3xl bg-white border-2 border-amber-200/90 hover:border-amber-400 shadow-sm hover:shadow-md transition-all space-y-3"
+                >
+                  <div className="flex items-center justify-between border-b border-amber-100 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shadow-xs text-white"
+                        style={{ backgroundColor: day.colorHex }}
+                      >
+                        D{day.dayNumber}
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold text-amber-900 uppercase">Day {day.dayNumber} • {day.date}</span>
+                        <h3 className="font-serif font-black text-base text-stone-900 leading-tight">
+                          {deviTitle}
+                        </h3>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleOpenDrawerForDay(day.dayNumber)}
+                      className="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-[#8B1E1E] text-xs font-bold transition-colors cursor-pointer"
+                    >
+                      Edit Day {day.dayNumber}
+                    </button>
+                  </div>
+
+                  {/* Dual Session Badge if applicable */}
+                  {setting?.isDualAlankarana && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-50 border border-amber-300 text-[11px] font-semibold text-[#8B1E1E]">
+                      <Sun className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Morning: {setting.morningDeviName}</span>
+                      <span className="text-stone-400">|</span>
+                      <Moon className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>Evening: {setting.eveningDeviName}</span>
+                    </div>
+                  )}
+
+                  {/* Timings, Bhog, and Annadanam */}
+                  <div className="space-y-1.5 text-xs text-stone-700 pt-1">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                      <span className="truncate">{poojaTimings}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <PrasadBowlIcon className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                      <span className="truncate"><strong className="text-amber-950">Bhog:</strong> {naivedhyam}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Utensils className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                      <span>
+                        <strong className="text-amber-950">Annadanam:</strong>{" "}
+                        {isAnnadanam ? (
+                          <span className="text-emerald-800 font-bold">Active (12:30 PM - 03:30 PM)</span>
+                        ) : (
+                          <span className="text-stone-500">Not active today</span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: MANDAPAM EVENTS & SPECIAL ACTIVITIES */}
+      {activeTab === "events" && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-amber-50/80 p-4 rounded-2xl border border-amber-300">
+            <div>
+              <h2 className="font-serif font-black text-xl text-[#8B1E1E]">
+                Mandapam Events & Cultural Programs
+              </h2>
+              <p className="text-xs text-stone-600 mt-0.5">
+                Add special events like Maha Chandi Yagam, Dandiya Nights, Sangeetha Seva, Ayudha Pooja, and Shobhayatra.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setEventModalOpen(true)}
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs font-bold shadow-md transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add New Festival Event</span>
+            </button>
+          </div>
+
+          {mandapamActivities.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-3xl border-2 border-dashed border-amber-300 p-6 space-y-3">
+              <PartyPopper className="w-12 h-12 text-amber-500 mx-auto" />
+              <h3 className="font-serif font-bold text-lg text-stone-900">No Events Added Yet</h3>
+              <p className="text-xs text-stone-600 max-w-md mx-auto">
+                Organize special homams, Dandiya nights, or children competitions and publish them so devotees across town can participate!
+              </p>
+              <button
+                type="button"
+                onClick={() => setEventModalOpen(true)}
+                className="px-4 py-2 rounded-xl bg-[#8B1E1E] text-white text-xs font-bold shadow-sm"
+              >
+                + Add First Event
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {mandapamActivities.map((act) => (
+                <div
+                  key={act.id}
+                  className="p-5 rounded-3xl bg-white border border-amber-300 shadow-sm space-y-3 relative group"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900">
+                        {act.category}
+                      </span>
+                      <h3 className="font-serif font-black text-lg text-[#8B1E1E] mt-1">
+                        {act.title}
+                      </h3>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (confirm(`Delete event "${act.title}"?`)) {
+                          deleteActivity(act.id);
+                          toast.success("Event removed.");
+                        }
+                      }}
+                      className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                      title="Delete Event"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <p className="text-xs text-stone-700 leading-relaxed">
+                    {act.description}
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs text-stone-700 pt-2 border-t border-amber-100">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-amber-700" />
+                      <span>{act.date}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-amber-700" />
+                      <span>{act.startTime} {act.endTime ? `- ${act.endTime}` : ""}</span>
+                    </div>
+                  </div>
+
+                  {act.location && (
+                    <p className="text-[11px] text-stone-500 font-medium">
+                      📍 Venue: {act.location}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 3: ANNOUNCEMENTS & LIVE FLASH NOTICES */}
+      {activeTab === "announcements" && (
+        <div className="space-y-6">
           {/* Post Live Mandapam Announcement */}
           <div className="rounded-3xl border border-amber-300 bg-white p-5 sm:p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between border-b border-amber-200 pb-2">
               <h2 className="font-serif text-base sm:text-lg font-black text-[#8B1E1E] flex items-center gap-2">
                 <Bell className="w-4 h-4 text-amber-700" />
-                <span>Publish Announcement to Devotees</span>
+                <span>Publish Flash Announcement to Devotees</span>
               </h2>
               <span className="text-[10px] text-stone-500 font-semibold">
                 Appears on Citizen Mandapam Page instantly
@@ -550,7 +731,7 @@ export const NavaratriOrganizer: React.FC = () => {
                 </div>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-bold shadow transition-all flex items-center gap-1"
+                  className="px-4 py-2 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-bold shadow transition-all flex items-center gap-1 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Publish Notice</span>
@@ -559,7 +740,31 @@ export const NavaratriOrganizer: React.FC = () => {
             </form>
           </div>
 
-          {/* Bookings & Devotee Flow Tracker */}
+          {/* Announcements Feed */}
+          <div className="space-y-3">
+            <h3 className="font-serif font-black text-base text-stone-900">
+              Published Notices for {currentMandapam.name}
+            </h3>
+            {announcements.filter(a => a.mandapamId === currentMandapam.id).length === 0 ? (
+              <p className="text-xs text-stone-500 italic">No announcements published yet.</p>
+            ) : (
+              announcements.filter(a => a.mandapamId === currentMandapam.id).map((ann) => (
+                <div key={ann.id} className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-xs text-[#8B1E1E]">{ann.title}</span>
+                    <span className="text-[10px] text-stone-500">{new Date(ann.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <p className="text-xs text-stone-700">{ann.message}</p>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: DEVOTEE BOOKINGS & TOKEN COUNTER */}
+      {activeTab === "bookings" && (
+        <div className="space-y-6">
           <div className="rounded-3xl border border-amber-300 bg-white p-5 sm:p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between border-b border-amber-200 pb-2">
               <h2 className="font-serif text-base sm:text-lg font-black text-[#8B1E1E] flex items-center gap-2">
@@ -568,7 +773,7 @@ export const NavaratriOrganizer: React.FC = () => {
               </h2>
               <button
                 onClick={() => setRegisterModalOpen(true)}
-                className="text-xs font-bold text-emerald-800 bg-emerald-100 hover:bg-emerald-200 px-3 py-1 rounded-xl transition-colors"
+                className="text-xs font-bold text-emerald-800 bg-emerald-100 hover:bg-emerald-200 px-3 py-1 rounded-xl transition-colors cursor-pointer"
               >
                 + Issue Walk-In Token
               </button>
@@ -588,80 +793,28 @@ export const NavaratriOrganizer: React.FC = () => {
                 <p className="text-xl font-black text-emerald-900 mt-1">{walkinBookingsCount}</p>
               </div>
             </div>
+
+            {/* Bookings List */}
+            <div className="space-y-2 pt-2">
+              {mandapamBookings.length === 0 ? (
+                <p className="text-xs text-stone-500 italic text-center py-4">No citizen bookings recorded yet.</p>
+              ) : (
+                mandapamBookings.map((b) => (
+                  <div key={b.id} className="p-3 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between text-xs">
+                    <div>
+                      <p className="font-bold text-stone-900">{b.name} ({b.mobile})</p>
+                      <p className="text-[11px] text-stone-500">{b.bookingCode} • {b.quantity} Devotee(s) • {b.bookingType}</p>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                      {b.status}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
-
-        {/* Right Column: Tomorrow Preparation Checklist & QR Standee */}
-        <div className="space-y-6">
-          {/* Tomorrow Preparation Checklist */}
-          <div className="rounded-3xl border border-amber-300 bg-[#FFFDF9] p-5 sm:p-6 shadow-sm space-y-4">
-            <div className="border-b border-amber-200 pb-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900">
-                Day 2 Preparation
-              </span>
-              <h2 className="font-serif text-base sm:text-lg font-black text-[#8B1E1E]">
-                Tomorrow Readiness Checklist
-              </h2>
-              <p className="text-[11px] text-stone-500">
-                Ensure everything is verified before midnight
-              </p>
-            </div>
-
-            <div className="space-y-2 text-xs">
-              {[
-                { key: "devi", label: "Devi Alankarana confirmed (Gayatri Devi)" },
-                { key: "alankarana", label: "Special silk saree & flowers arranged" },
-                { key: "pooja", label: "Morning & evening pooja timings verified" },
-                { key: "naivedhyam", label: "Naivedhyam (Katta Pongali / Chitrannam)" },
-                { key: "prasadam", label: "Prasadam distribution tokens ready" },
-                { key: "annadanam", label: "Maha Annadanam provisions stocked" },
-                { key: "announcement", label: "Tomorrow's schedule posted on portal" }
-              ].map(({ key, label }) => (
-                <label
-                  key={key}
-                  className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-amber-100/50 cursor-pointer transition-colors"
-                >
-                  <input
-                    type="checkbox"
-                    checked={checklist[key as keyof typeof checklist] || false}
-                    onChange={() => toggleCheck(key as keyof typeof checklist)}
-                    className="rounded border-amber-300 text-[#8B1E1E] focus:ring-[#8B1E1E]"
-                  />
-                  <span
-                    className={`font-semibold ${
-                      checklist[key as keyof typeof checklist]
-                        ? "text-stone-800 line-through opacity-75"
-                        : "text-stone-900"
-                    }`}
-                  >
-                    {label}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Standee Preview & Quick Actions */}
-          <div className="rounded-3xl border border-amber-300 bg-white p-5 sm:p-6 shadow-sm text-center space-y-3">
-            <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-100 text-[#8B1E1E] flex items-center justify-center shadow">
-              <QrCode className="w-6 h-6" />
-            </div>
-            <h3 className="font-serif text-base font-bold text-stone-900">
-              Mandapam QR Standee
-            </h3>
-            <p className="text-xs text-stone-600">
-              Print this official A4 QR standee and place it near your Mandapam stage or darshan line for devotees to scan.
-            </p>
-            <button
-              onClick={() => setQrModalOpen(true)}
-              className="w-full py-2.5 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-bold shadow transition-all flex items-center justify-center gap-1.5"
-            >
-              <Printer className="w-4 h-4" />
-              <span>Preview & Print Standee</span>
-            </button>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* DANGER ZONE: ACCOUNT DELETION */}
       <div className="rounded-3xl border border-red-300 bg-gradient-to-r from-red-50/95 via-red-50/60 to-amber-50/30 p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -694,6 +847,8 @@ export const NavaratriOrganizer: React.FC = () => {
       {updateDrawerOpen && (
         <DailyUpdateDrawer
           mandapam={currentMandapam}
+          dayNumber={drawerDayNumber}
+          isOpen={updateDrawerOpen}
           onClose={() => setUpdateDrawerOpen(false)}
         />
       )}
@@ -712,8 +867,160 @@ export const NavaratriOrganizer: React.FC = () => {
         />
       )}
 
+      {/* EVENT CREATOR MODAL */}
+      {eventModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setEventModalOpen(false)}
+        >
+          <div
+            className="bg-[#FFFDF9] rounded-3xl max-w-lg w-full shadow-2xl border-2 border-amber-400 overflow-hidden animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-5 bg-gradient-to-r from-[#8B1E1E] to-[#B45309] text-white flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <PartyPopper className="w-5 h-5 text-amber-300" />
+                <h3 className="font-serif font-black text-lg text-white">
+                  Add Mandapam Event & Activity
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEventModalOpen(false)}
+                className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateEvent} className="p-5 sm:p-6 space-y-4 text-xs font-medium text-stone-800">
+              <div>
+                <label className="block text-stone-700 font-bold mb-1">
+                  Event Title *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={eventTitle}
+                  onChange={(e) => setEventTitle(e.target.value)}
+                  placeholder="e.g. Dandiya Raas Night / Maha Chandi Homam"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-bold mb-1">
+                    Event Category *
+                  </label>
+                  <select
+                    value={eventCategory}
+                    onChange={(e) => setEventCategory(e.target.value as Activity["category"])}
+                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
+                  >
+                    <option value="Pooja">Pooja / Homam</option>
+                    <option value="Game">Dandiya / Garba</option>
+                    <option value="Cultural Program">Cultural Program</option>
+                    <option value="Bhajan">Bhajan Sandhya</option>
+                    <option value="Pallaki Seva">Pallaki Seva / Shobhayatra</option>
+                    <option value="Annadanam">Special Annadanam</option>
+                    <option value="Competition">Competition / Drawing</option>
+                    <option value="Special Program">Special Program</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-stone-700 font-bold mb-1">
+                    Event Date *
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={eventDate}
+                    onChange={(e) => setEventDate(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
+                  >
+                  </input>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-bold mb-1">
+                    Start Time *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={eventStartTime}
+                    onChange={(e) => setEventStartTime(e.target.value)}
+                    placeholder="06:30 PM"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-bold mb-1">
+                    End Time
+                  </label>
+                  <input
+                    type="text"
+                    value={eventEndTime}
+                    onChange={(e) => setEventEndTime(e.target.value)}
+                    placeholder="09:30 PM"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-stone-700 font-bold mb-1">
+                  Location / Stage
+                </label>
+                <input
+                  type="text"
+                  value={eventLocation}
+                  onChange={(e) => setEventLocation(e.target.value)}
+                  placeholder="Mandapam Main Stage / Community Ground"
+                  className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-stone-700 font-bold mb-1">
+                  Description & Devotee Guidelines
+                </label>
+                <textarea
+                  rows={2}
+                  value={eventDescription}
+                  onChange={(e) => setEventDescription(e.target.value)}
+                  placeholder="Details for devotees, dress code, dandiya sticks provided, or entry rules..."
+                  className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
+                />
+              </div>
+
+              <div className="pt-2 border-t border-amber-200 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEventModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-stone-300 bg-white text-stone-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] text-white font-bold shadow-sm"
+                >
+                  Save & Publish Event
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* TWO-STEP DELETE CONFIRMATION MODALS */}
-      {/* STEP 1 OF 2: FIRST WARNING & ACKNOWLEDGEMENT */}
       {deleteStep === 1 && currentMandapam && (
         <div
           role="dialog"
@@ -755,16 +1062,12 @@ export const NavaratriOrganizer: React.FC = () => {
               <div className="bg-red-50 border border-red-200 rounded-xl p-3.5 space-y-2 text-xs text-red-900">
                 <p className="font-bold">Permanent consequences of deleting this account:</p>
                 <ul className="list-disc pl-4 space-y-1 text-stone-700">
-                  <li>Your public devotee page (<span className="font-mono text-[11px] text-stone-900">/navaratri/m/{currentMandapam.slug}</span>) will be taken offline immediately.</li>
+                  <li>Your public devotee page will be taken offline immediately.</li>
                   <li>All daily Alankarana photos, darshan updates, and announcements will be erased.</li>
                   <li>Devotees scanning your counter QR code will no longer see your mandapam.</li>
-                  <li>Your unique Mandapam ID (<span className="font-mono font-bold text-stone-900">{currentMandapam.id}</span>) and passcode credentials will be revoked.</li>
+                  <li>Your unique Mandapam ID and passcode credentials will be revoked.</li>
                 </ul>
               </div>
-
-              <p className="text-xs text-stone-500 italic bg-amber-50 p-2.5 rounded-lg border border-amber-200/60">
-                ℹ️ For your security, the platform requires a second final confirmation step before permanent removal.
-              </p>
             </div>
 
             <div className="p-4 bg-stone-100 border-t border-stone-200 flex items-center justify-end gap-2.5">
@@ -826,7 +1129,7 @@ export const NavaratriOrganizer: React.FC = () => {
 
             <div className="p-5 sm:p-6 space-y-4 text-xs sm:text-sm text-stone-800">
               <div className="p-3 bg-red-100/90 border border-red-300 rounded-xl text-red-950 font-medium text-xs leading-relaxed">
-                🚨 <strong>FINAL WARNING: THIS ACTION IS IRREVERSIBLE.</strong> Once confirmed, this mandapam account will be permanently purged and cannot be recovered.
+                🚨 <strong>FINAL WARNING: THIS ACTION IS IRREVERSIBLE.</strong>
               </div>
 
               <div className="space-y-2">
@@ -842,11 +1145,6 @@ export const NavaratriOrganizer: React.FC = () => {
                   autoFocus
                 />
               </div>
-
-              <div className="p-2.5 rounded-xl bg-stone-100 text-[11px] text-stone-600 flex items-center justify-between">
-                <span>Target: <strong>{currentMandapam.name}</strong></span>
-                <span className="font-mono font-bold text-stone-800">ID: {currentMandapam.id}</span>
-              </div>
             </div>
 
             <div className="p-4 bg-stone-100 border-t border-stone-200 flex items-center justify-between gap-2.5">
@@ -861,7 +1159,7 @@ export const NavaratriOrganizer: React.FC = () => {
                 type="button"
                 disabled={
                   deleteConfirmInput.trim().toUpperCase() !== "DELETE" &&
-                  deleteConfirmInput.trim() !== (currentMandapam.passcode || "12345678") &&
+                  deleteConfirmInput.trim() !== (currentMandapam.passcode || "123456") &&
                   deleteConfirmInput.trim() !== currentMandapam.id
                 }
                 onClick={handleDeleteAccount}
