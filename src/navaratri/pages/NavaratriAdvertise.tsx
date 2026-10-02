@@ -48,8 +48,9 @@ export const NavaratriAdvertise: React.FC = () => {
 
   // Payment Step State
   const [paymentStep, setPaymentStep] = useState(false);
-  const [transactionId, setTransactionId] = useState("");
+  const [utrNumber, setUtrNumber] = useState("");
   const [isCopied, setIsCopied] = useState(false);
+  const [isCopied2, setIsCopied2] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [createdAdId, setCreatedAdId] = useState<string | null>(null);
 
@@ -100,8 +101,15 @@ export const NavaratriAdvertise: React.FC = () => {
   const handleCopyUpi = () => {
     navigator.clipboard.writeText("siddhidynamics@icici");
     setIsCopied(true);
-    toast.success("UPI ID copied to clipboard!");
+    toast.success("UPI ID copied!");
     setTimeout(() => setIsCopied(false), 2500);
+  };
+
+  const handleCopyUpi2 = () => {
+    navigator.clipboard.writeText("6303602743@upi");
+    setIsCopied2(true);
+    toast.success("UPI ID copied!");
+    setTimeout(() => setIsCopied2(false), 2500);
   };
 
   const handleProceedToPayment = (e: React.FormEvent) => {
@@ -126,13 +134,14 @@ export const NavaratriAdvertise: React.FC = () => {
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
 
-  const handleCompletePayment = (simulateInstant: boolean = false) => {
+  const handleCompletePayment = () => {
+    if (!utrNumber.trim() || utrNumber.trim().length < 6) {
+      toast.error("Please enter a valid UPI Reference / UTR number (min 6 digits) after completing payment.");
+      return;
+    }
     setIsProcessingPayment(true);
 
     const effectiveZone = targetZone === "Custom" ? (customZone.trim() || "Local Mandapam Belt") : targetZone;
-    const effectiveTxn = simulateInstant
-      ? `UPI-TEST-${Math.floor(100000 + Math.random() * 900000)}`
-      : (transactionId.trim() || `UPI-TXN-${Date.now().toString().slice(-6)}`);
 
     setTimeout(() => {
       const newAd = createAdvertisement({
@@ -153,12 +162,14 @@ export const NavaratriAdvertise: React.FC = () => {
         ctaText: "Contact Store",
         ctaUrl: website.trim() || `tel:${phone.trim()}`,
         startDate: "2026-10-11",
-        endDate: "2026-10-21"
+        endDate: "2026-10-21",
+        utrNumber: utrNumber.trim(),
+        pricePaid: selectedPkg.priceInr
       });
 
       setCreatedAdId(newAd.id);
       setIsProcessingPayment(false);
-      toast.success(`Payment verified! Your advertisement is now live in ${effectiveZone}.`);
+      toast.success(`Payment submitted! Your ad will go live after our team verifies your payment.`);
     }, 1200);
   };
 
@@ -188,55 +199,59 @@ export const NavaratriAdvertise: React.FC = () => {
 
       {/* SUCCESS SCREEN */}
       {createdAdId ? (
-        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-b from-emerald-50 via-white to-amber-50 border-2 border-emerald-400 shadow-2xl text-center space-y-6">
-          <div className="w-16 h-16 mx-auto rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shadow-lg border-2 border-emerald-300">
-            <CheckCircle2 className="w-10 h-10" />
+        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-b from-amber-50 via-white to-orange-50 border-2 border-amber-400 shadow-2xl text-center space-y-6">
+          {/* Pending clock icon */}
+          <div className="w-16 h-16 mx-auto rounded-full bg-amber-100 text-amber-700 flex items-center justify-center shadow-lg border-2 border-amber-300 text-3xl">
+            ⏳
           </div>
           <div className="space-y-2">
-            <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider">
-              Payment Confirmed & Live
+            <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold uppercase tracking-wider border border-amber-300">
+              🔍 Pending Payment Verification
             </span>
-            <h2 className="font-['Cinzel',serif] font-black text-2xl sm:text-3xl text-emerald-950">
-              Your Advertisement Is Now Active!
+            <h2 className="font-['Cinzel',serif] font-black text-2xl sm:text-3xl text-[#8B1E1E]">
+              Ad Submitted — Awaiting Approval
             </h2>
             <p className="text-xs sm:text-sm text-stone-700 max-w-md mx-auto leading-relaxed">
-              Devotees browsing Mandapams in <strong>{effectiveDisplayZone} ({city})</strong> can now see your business banner, call your store, or order via WhatsApp.
+              Our team will verify your payment (UTR: <strong className="font-mono">{utrNumber}</strong>) and activate your ad within <strong>2–4 hours</strong>. You'll reach devotees in <strong>{effectiveDisplayZone}</strong> once approved.
             </p>
           </div>
 
+          {/* Summary Card */}
           <div className="max-w-md mx-auto p-4 rounded-2xl bg-white border border-amber-300 shadow-md text-left space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="font-bold text-[#8B1E1E]">{businessName}</span>
-              <span className="px-2 py-0.5 rounded-full bg-amber-100 text-[#8B1E1E] font-bold text-[10px]">
-                {category}
-              </span>
+              <span className="px-2 py-0.5 rounded-full bg-amber-100 text-[#8B1E1E] font-bold text-[10px]">{category}</span>
             </div>
             <p className="text-xs font-bold text-stone-900">{title}</p>
             <p className="text-[11px] text-stone-600">Target Zone: 📍 {effectiveDisplayZone}</p>
             <p className="text-[11px] text-stone-600">Package: {selectedPkg.name} (₹{selectedPkg.priceInr})</p>
+            <div className="pt-1 border-t border-amber-100 flex items-center gap-2 text-[11px]">
+              <span className="font-bold text-stone-700">UTR Ref:</span>
+              <span className="font-mono text-stone-900">{utrNumber}</span>
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <Link
-              to="/navaratri#local-ads"
-              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs sm:text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2"
-            >
-              <span>View Your Ad Live on Home Page</span>
-              <ArrowRight className="w-4 h-4 text-amber-300" />
-            </Link>
-            <button
-              onClick={() => {
-                setCreatedAdId(null);
-                setPaymentStep(false);
-                setBusinessName("");
-                setTitle("");
-                setDescription("");
-              }}
-              className="w-full sm:w-auto px-5 py-3 rounded-xl bg-amber-100 hover:bg-amber-200 text-stone-800 text-xs sm:text-sm font-bold transition-colors"
-            >
-              Create Another Advertisement
-            </button>
+          {/* What happens next */}
+          <div className="max-w-md mx-auto p-4 rounded-2xl bg-stone-50 border border-stone-200 text-left text-xs space-y-1.5">
+            <p className="font-bold text-stone-800 mb-1">What happens next?</p>
+            <p className="flex items-start gap-2 text-stone-700"><span className="text-amber-600 font-bold">1.</span> Our team checks your UTR against the UPI transaction.</p>
+            <p className="flex items-start gap-2 text-stone-700"><span className="text-amber-600 font-bold">2.</span> On confirmation, your ad goes <strong>live automatically</strong> — no action needed from you.</p>
+            <p className="flex items-start gap-2 text-stone-700"><span className="text-amber-600 font-bold">3.</span> For queries, WhatsApp us at <strong>+91 63036 02743</strong>.</p>
           </div>
+
+          <button
+            onClick={() => {
+              setCreatedAdId(null);
+              setPaymentStep(false);
+              setBusinessName("");
+              setTitle("");
+              setDescription("");
+              setUtrNumber("");
+            }}
+            className="px-5 py-3 rounded-xl bg-amber-100 hover:bg-amber-200 text-stone-800 text-xs sm:text-sm font-bold transition-colors"
+          >
+            Submit Another Advertisement
+          </button>
         </div>
       ) : (
         <div className="space-y-8">
@@ -658,27 +673,26 @@ export const NavaratriAdvertise: React.FC = () => {
                 </div>
               </div>
 
-              {/* STEP 3: UPI PAYMENT GATEWAY BOX */}
+              {/* STEP 3: UPI PAYMENT & CONFIRMATION */}
               {paymentStep && (
-                <div className="p-6 rounded-3xl bg-white border-2 border-amber-400 shadow-2xl space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                  <div className="border-b border-amber-200 pb-2 flex items-center justify-between">
+                <div className="p-6 rounded-3xl bg-white border-2 border-amber-400 shadow-2xl space-y-5 animate-in fade-in slide-in-from-top-4 duration-300">
+                  {/* Header */}
+                  <div className="border-b border-amber-200 pb-3 flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800">
-                        STEP 3: UPI SCAN & PAY
-                      </span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800">STEP 3: PAY & CONFIRM</span>
                       <h4 className="font-['Cinzel',serif] font-black text-lg text-[#8B1E1E]">
                         Total Due: ₹{selectedPkg.priceInr}
                       </h4>
                     </div>
-                    <span className="px-2.5 py-1 rounded-full bg-amber-100 text-[#8B1E1E] font-bold text-xs">
+                    <span className="px-2.5 py-1 rounded-full bg-amber-100 text-[#8B1E1E] font-bold text-xs border border-amber-200">
                       {selectedPkg.name}
                     </span>
                   </div>
 
-                  {/* QR Code Container */}
-                  <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-300 text-center space-y-3">
+                  {/* QR Code */}
+                  <div className="p-4 rounded-2xl bg-amber-50 border border-amber-300 text-center space-y-3">
+                    <p className="text-[11px] font-bold text-stone-600 uppercase tracking-wider">Scan QR to Pay</p>
                     <div className="w-44 h-44 mx-auto rounded-2xl bg-white p-3 border-2 border-amber-400 shadow-md flex items-center justify-center">
-                      {/* Dynamic UPI QR Code via QuickChart / Svg */}
                       <img
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
                           `upi://pay?pa=siddhidynamics@icici&pn=NavaratriMandapamAds&am=${selectedPkg.priceInr}&cu=INR&tn=${encodeURIComponent(businessName || "LocalAd")}`
@@ -687,67 +701,82 @@ export const NavaratriAdvertise: React.FC = () => {
                         className="w-full h-full object-contain"
                       />
                     </div>
-                    <p className="text-xs font-bold text-stone-900">
-                      Scan with Google Pay, PhonePe, Paytm, or BHIM
-                    </p>
+                    <p className="text-xs font-bold text-stone-900">Google Pay · PhonePe · Paytm · BHIM</p>
+                  </div>
 
-                    {/* Copy UPI ID */}
-                    <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-amber-300 text-xs">
-                      <span className="font-mono text-stone-700 font-semibold truncate">
-                        siddhidynamics@icici
-                      </span>
+                  {/* Dual UPI IDs */}
+                  <div className="space-y-2">
+                    <p className="text-[11px] font-bold text-stone-700 uppercase tracking-wider">Or Pay to UPI ID directly:</p>
+
+                    {/* UPI ID 1 */}
+                    <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-gradient-to-r from-amber-50 to-white border border-amber-300 shadow-sm">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-semibold text-stone-500">Primary UPI</span>
+                        <span className="font-mono text-sm font-bold text-stone-900">siddhidynamics@icici</span>
+                      </div>
                       <button
                         type="button"
                         onClick={handleCopyUpi}
-                        className="ml-2 px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-[#8B1E1E] font-bold text-[11px] flex items-center gap-1 transition-colors"
+                        className="ml-2 px-2.5 py-1.5 rounded-lg bg-[#8B1E1E] hover:bg-[#781B1B] text-white font-bold text-[11px] flex items-center gap-1 transition-colors shadow"
                       >
-                        {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                        <span>{isCopied ? "Copied" : "Copy"}</span>
+                        {isCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span>{isCopied ? "Copied!" : "Copy"}</span>
+                      </button>
+                    </div>
+
+                    {/* UPI ID 2 */}
+                    <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-gradient-to-r from-amber-50 to-white border border-amber-300 shadow-sm">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-semibold text-stone-500">Alternate UPI</span>
+                        <span className="font-mono text-sm font-bold text-stone-900">6303602743@upi</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleCopyUpi2}
+                        className="ml-2 px-2.5 py-1.5 rounded-lg bg-[#8B1E1E] hover:bg-[#781B1B] text-white font-bold text-[11px] flex items-center gap-1 transition-colors shadow"
+                      >
+                        {isCopied2 ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span>{isCopied2 ? "Copied!" : "Copy"}</span>
                       </button>
                     </div>
                   </div>
 
-                  {/* Reference / UTR Input */}
-                  <div className="space-y-2 text-xs">
+                  {/* UTR Input — Required */}
+                  <div className="space-y-1.5 text-xs">
                     <label className="block font-bold text-stone-800">
-                      Enter 12-Digit UPI Reference / UTR (Optional in preview mode):
+                      UPI Reference / UTR Number <span className="text-red-600">*</span>
                     </label>
                     <input
                       type="text"
-                      value={transactionId}
-                      onChange={(e) => setTransactionId(e.target.value)}
-                      placeholder="e.g. 427819203819"
-                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-mono"
+                      value={utrNumber}
+                      onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, ""))}
+                      placeholder="Enter 12-digit UTR after payment (e.g. 427819203819)"
+                      maxLength={22}
+                      className="w-full px-3 py-2.5 rounded-xl border-2 border-amber-300 focus:border-[#8B1E1E] bg-white font-mono text-sm outline-none transition-colors"
                     />
+                    <p className="text-stone-500 text-[11px]">Found in your UPI app under payment details / transaction history.</p>
                   </div>
 
-                  {/* Submit Payment Confirmation */}
-                  <div className="space-y-2 pt-2">
+                  {/* Submit */}
+                  <div className="pt-1">
                     <button
                       type="button"
-                      disabled={isProcessingPayment}
-                      onClick={() => handleCompletePayment(false)}
-                      className="w-full py-3.5 rounded-2xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs sm:text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                      disabled={isProcessingPayment || utrNumber.trim().length < 6}
+                      onClick={() => handleCompletePayment()}
+                      className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isProcessingPayment ? (
-                        <span>Verifying Payment...</span>
+                        <span>Submitting for Verification...</span>
                       ) : (
                         <>
                           <CheckCircle2 className="w-4 h-4 text-amber-300" />
-                          <span>I Have Paid ₹{selectedPkg.priceInr} • Launch Ad Now</span>
+                          <span>I Have Paid ₹{selectedPkg.priceInr} — Submit for Approval</span>
                         </>
                       )}
                     </button>
-
-                    <button
-                      type="button"
-                      disabled={isProcessingPayment}
-                      onClick={() => handleCompletePayment(true)}
-                      className="w-full py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-stone-800 text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#8B1E1E]" />
-                      <span>Instant Test Payment & Launch</span>
-                    </button>
+                    <p className="text-center text-[11px] text-stone-500 mt-2">
+                      🔒 Your ad will go <strong>live automatically</strong> once our team verifies payment (within 2–4 hours)
+                    </p>
                   </div>
                 </div>
               )}

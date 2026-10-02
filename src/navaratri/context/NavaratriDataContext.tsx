@@ -666,7 +666,8 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       id: `ad-${Date.now()}`,
       impressions: 0,
       clicks: 0,
-      status: "APPROVED", // Auto-approved for immediate local preview
+      status: "PENDING_REVIEW", // Requires admin payment confirmation before going live
+      paymentStatus: "PENDING_VERIFICATION",
       createdAt: new Date().toISOString()
     };
     setAdvertisements(prev => [newAd, ...prev]);

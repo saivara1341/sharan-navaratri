@@ -313,8 +313,10 @@ export interface Advertisement {
   rejectionReason?: string;
   impressions: number;
   clicks: number;
-  paymentStatus?: "PAID" | "PENDING";
+  paymentStatus?: "PAID" | "PENDING" | "PENDING_VERIFICATION";
   transactionId?: string;
+  utrNumber?: string;
+  paymentScreenshotUrl?: string;
   pricePaid?: number;
   createdAt: string;
 }
