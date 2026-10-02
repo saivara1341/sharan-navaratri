@@ -44,6 +44,20 @@ export interface Mandapam {
   updatedAt?: string;
 }
 
+export interface SacredChantingDetails {
+  moolaMantra: string;
+  sloka: string;
+  recommendedStotram: string;
+  bestChantingGuide: string;
+}
+
+export interface DualSessionInfo {
+  isCommonlyDual?: boolean;
+  morningAlankarana?: string;
+  eveningAlankarana?: string;
+  sessionGuide?: string;
+}
+
 export interface StandardFestivalDay {
   dayNumber: number;
   date: string;
@@ -53,11 +67,14 @@ export interface StandardFestivalDay {
   colorName: string;
   colorHex: string;
   description: string;
+  whyWeCelebrate: string;
+  sacredChanting: SacredChantingDetails;
   suggestedOfferings: string;
   suggestedItems: string;
   standardActivities: string;
   significance: string;
   imageUrl?: string;
+  dualSessionNote?: DualSessionInfo;
 }
 
 export interface MandapamDaySetting {
@@ -67,6 +84,9 @@ export interface MandapamDaySetting {
   date: string;
   useStandardDevi: boolean;
   customDeviName?: string;
+  isDualAlankarana?: boolean;
+  morningDeviName?: string;
+  eveningDeviName?: string;
   useStandardPooja: boolean;
   customPoojaTimings?: string;
   useStandardNaivedhyam: boolean;

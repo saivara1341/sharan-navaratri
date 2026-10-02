@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Mandapam, MandapamDaySetting, Alankarana, Service } from "../../types";
 import { STANDARD_NAVARATRI_DAYS } from "../../data/standardNavaratriDays";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
+import { PrasadBowlIcon } from "../devotional/PrasadBowlIcon";
 import {
   Calendar,
   Clock,
@@ -179,11 +180,11 @@ export const TodayTomorrowView: React.FC<TodayTomorrowViewProps> = ({
             {/* Naivedhyam & Prasadam */}
             <div className="p-4 rounded-2xl bg-[#FFFDF9] border border-amber-200/80 shadow-sm space-y-2">
               <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
-                <Flame className="w-4 h-4 text-amber-600" />
-                {t.naivedhyam} & {t.prasadam}
+                <PrasadBowlIcon className="w-4 h-4 text-amber-600" />
+                {t.naivedhyam} (Bhog) & {t.prasadam}
               </span>
               <div className="text-xs text-stone-800 space-y-1">
-                <p><strong className="text-amber-950">{t.naivedhyam}:</strong> {todayNaivedhyam}</p>
+                <p><strong className="text-amber-950">{t.naivedhyam} (Bhog):</strong> {todayNaivedhyam}</p>
                 <p><strong className="text-amber-950">{t.prasadam}:</strong> {todayPrasadam}</p>
               </div>
             </div>
@@ -268,8 +269,8 @@ export const TodayTomorrowView: React.FC<TodayTomorrowViewProps> = ({
             {/* Tomorrow Naivedhyam & Prasadam */}
             <div className="p-4 rounded-2xl bg-[#FFFDF9] border border-amber-200/80 shadow-sm space-y-2">
               <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
-                <Flame className="w-4 h-4 text-amber-600" />
-                Tomorrow's Suggested Naivedhyam
+                <PrasadBowlIcon className="w-4 h-4 text-amber-600" />
+                Tomorrow's Suggested Naivedhyam (Bhog)
               </span>
               <div className="text-xs text-stone-800 space-y-1">
                 <p><strong className="text-amber-950">Offer at Home / Mandapam:</strong> {tomorrowNaivedhyam}</p>

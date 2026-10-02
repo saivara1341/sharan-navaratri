@@ -2,16 +2,21 @@ import React, { useState } from "react";
 import { STANDARD_NAVARATRI_DAYS } from "../../data/standardNavaratriDays";
 import { StandardFestivalDay } from "../../types";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
+import { PrasadBowlIcon } from "../devotional/PrasadBowlIcon";
 import { 
   Calendar, 
-  Utensils, 
   ShoppingBag, 
   Sparkles, 
   X, 
   Eye, 
   Flame, 
   Info,
-  CheckCircle2
+  CheckCircle2,
+  BookOpen,
+  Volume2,
+  Sun,
+  Moon,
+  HeartHandshake
 } from "lucide-react";
 
 export const NineDaySchedule: React.FC = () => {
@@ -33,8 +38,8 @@ export const NineDaySchedule: React.FC = () => {
             </h2>
             <p className="text-sm text-stone-600 mt-1">
               {language === "te"
-                ? "శ్రీ అన్నపూర్ణా దేవి, శ్రీ సరస్వతీ దేవి, శ్రీ లక్ష్మీ దేవి, శ్రీ కాళికా దేవి సహా 10 దివ్య అలంకారాలు (11–20 అక్టోబర్ 2026)"
-                : "10 Sacred Devi Alankaranas including Sri Annapurna Devi, Sri Maha Saraswathi Devi, Sri Maha Lakshmi Devi, Sri Kalika Devi, culminating on Vijaya Dashami (11–20 October 2026)"}
+                ? "శ్రీ అన్నపూర్ణా దేవి, శ్రీ సరస్వతీ దేవి, శ్రీ లక్ష్మీ దేవి, శ్రీ కాళికా దేవి సహా 10 దివ్య అలంకారాలు • నైవేద్యం, మంత్రాలు & ఆధ్యాత్మిక విశిష్టత (11–20 అక్టోబర్ 2026)"
+                : "10 Sacred Devi Alankaranas including Sri Annapurna Devi, Sri Maha Saraswathi Devi, Sri Maha Lakshmi Devi, Sri Kalika Devi • Sacred Chants, Bhog & Devotee Guide (11–20 October 2026)"}
             </p>
           </div>
         </div>
@@ -71,7 +76,7 @@ export const NineDaySchedule: React.FC = () => {
                 />
 
                 {/* Gradient vignette for contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
 
                 {/* Day Badge (Top Left) */}
                 <div className="absolute top-3 left-3 flex items-center gap-1.5">
@@ -129,6 +134,17 @@ export const NineDaySchedule: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Suggested Naivedhyam / Bhog Quick Preview with Bowl Icon */}
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50/70 p-2.5 rounded-xl border border-amber-200/70 space-y-1">
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#8B1E1E] uppercase">
+                    <PrasadBowlIcon className="w-4 h-4 text-amber-700 shrink-0" />
+                    <span>Suggested Naivedhyam (Bhog)</span>
+                  </div>
+                  <p className="text-xs text-stone-700 line-clamp-1 font-medium">
+                    {day.suggestedOfferings}
+                  </p>
+                </div>
+
                 {/* Short Description */}
                 <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
                   {day.description}
@@ -161,7 +177,7 @@ export const NineDaySchedule: React.FC = () => {
           onClick={() => setSelectedDay(null)}
         >
           <div
-            className="bg-[#FFFDF9] rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border-2 border-amber-400/80 overflow-hidden animate-in zoom-in-95 duration-200"
+            className="bg-[#FFFDF9] rounded-3xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl border-2 border-amber-400/80 overflow-hidden animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -236,7 +252,7 @@ export const NineDaySchedule: React.FC = () => {
 
                   <div className="p-2.5 rounded-xl bg-white border border-amber-200/80 shadow-xs">
                     <span className="text-[10px] font-bold uppercase text-stone-500 block">
-                      Divine Significance
+                      Divine Significance & Blessings
                     </span>
                     <p className="font-medium text-amber-900 mt-0.5 leading-snug">
                       {selectedDay.significance}
@@ -245,43 +261,133 @@ export const NineDaySchedule: React.FC = () => {
                 </div>
               </div>
 
-              {/* Devotional Description */}
-              <div className="space-y-1.5">
-                <h4 className="font-serif font-black text-sm text-[#8B1E1E] flex items-center gap-1.5 uppercase tracking-wide">
-                  <Info className="w-4 h-4 text-amber-600" />
-                  <span>Devi Alankarana & Form Significance</span>
+              {/* 1. WHY DEVOTEES CELEBRATE THIS AVATHARAM */}
+              <div className="bg-gradient-to-br from-[#FFFBEB] via-[#FEF3C7]/40 to-[#FFFDF9] p-4 sm:p-5 rounded-2xl border-2 border-amber-300 shadow-sm space-y-2">
+                <h4 className="font-serif font-black text-sm sm:text-base text-[#8B1E1E] flex items-center gap-2 tracking-wide">
+                  <Sparkles className="w-4 h-4 text-amber-600" />
+                  <span>Why We Celebrate This Avatharam • అవతార విశిష్టత</span>
                 </h4>
-                <p className="text-xs sm:text-sm text-stone-700 leading-relaxed bg-white p-3.5 rounded-2xl border border-amber-200/70 shadow-xs">
-                  {selectedDay.description}
+                <p className="text-xs sm:text-sm text-stone-800 leading-relaxed font-normal">
+                  {selectedDay.whyWeCelebrate}
                 </p>
               </div>
 
-              {/* Offerings and devotee items */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                {/* Naivedhyam */}
-                <div className="bg-amber-50/60 p-4 rounded-2xl border border-amber-200/70 space-y-1.5">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#8B1E1E] uppercase">
-                    <Utensils className="w-4 h-4 text-amber-700" />
-                    <span>Suggested Naivedhyam (Bhog)</span>
+              {/* 2. SACRED CHANTING & MANTRAS (WHAT KIND OF CHANTING IS BEST) */}
+              <div className="bg-stone-950 text-amber-100 p-4 sm:p-5 rounded-2xl border-2 border-amber-500/60 shadow-md space-y-3">
+                <div className="flex items-center justify-between border-b border-amber-500/30 pb-2">
+                  <div className="flex items-center gap-2">
+                    <Volume2 className="w-4 h-4 text-amber-400" />
+                    <h4 className="font-serif font-black text-sm sm:text-base text-amber-200 tracking-wide">
+                      Sacred Chanting & Slokas • ఉత్తమ జప మంత్రాలు
+                    </h4>
                   </div>
-                  <p className="text-xs text-stone-700 leading-relaxed font-medium">
-                    {selectedDay.suggestedOfferings}
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                    Devotee Sadhana
+                  </span>
+                </div>
+
+                {/* Moola Mantra */}
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400/90 block">
+                    Moola Mantra • మూల మంత్రం
+                  </span>
+                  <div className="p-2.5 rounded-xl bg-amber-900/30 border border-amber-400/40 text-xs sm:text-sm font-serif font-bold text-amber-200">
+                    {selectedDay.sacredChanting.moolaMantra}
+                  </div>
+                </div>
+
+                {/* Sacred Sloka */}
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400/90 block">
+                    Sacred Sloka • పూజా శ్లోకం
+                  </span>
+                  <p className="text-xs sm:text-sm font-serif text-amber-100/95 italic bg-black/40 p-2.5 rounded-xl border border-white/10">
+                    {selectedDay.sacredChanting.sloka}
                   </p>
                 </div>
 
-                {/* Items to bring */}
-                <div className="bg-amber-50/60 p-4 rounded-2xl border border-amber-200/70 space-y-1.5">
+                {/* Recommended Stotram & Chanting Guide */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1 text-xs">
+                  <div className="p-2.5 rounded-xl bg-amber-950/40 border border-amber-500/20">
+                    <span className="text-[10px] font-bold text-amber-300 uppercase block mb-1">
+                      📖 Recommended Stotram
+                    </span>
+                    <p className="text-amber-100 font-medium">
+                      {selectedDay.sacredChanting.recommendedStotram}
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-amber-950/40 border border-amber-500/20">
+                    <span className="text-[10px] font-bold text-amber-300 uppercase block mb-1">
+                      🕊️ Best Chanting Practice
+                    </span>
+                    <p className="text-amber-100 font-medium leading-relaxed">
+                      {selectedDay.sacredChanting.bestChantingGuide}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. DUAL ALANKARANA EXPLAINER (MORNING & EVENING SESSIONS) */}
+              {selectedDay.dualSessionNote && (
+                <div className="bg-gradient-to-r from-amber-50 via-orange-50/60 to-amber-50 p-4 rounded-2xl border border-amber-300 space-y-2">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-[#8B1E1E]">
+                    <Sun className="w-4 h-4 text-amber-600" />
+                    <span className="font-serif font-black">🌅 Morning & 🌇 Evening Dual Alankaranas Guide</span>
+                  </div>
+                  <p className="text-xs text-stone-700 leading-relaxed">
+                    {selectedDay.dualSessionNote.sessionGuide}
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs">
+                    <div className="p-2 rounded-xl bg-white/90 border border-amber-200 flex items-center gap-2">
+                      <Sun className="w-4 h-4 text-amber-600 shrink-0" />
+                      <div>
+                        <span className="text-[10px] uppercase font-bold text-amber-800 block">Morning Session</span>
+                        <span className="font-semibold text-stone-900">{selectedDay.dualSessionNote.morningAlankarana}</span>
+                      </div>
+                    </div>
+                    <div className="p-2 rounded-xl bg-white/90 border border-amber-200 flex items-center gap-2">
+                      <Moon className="w-4 h-4 text-indigo-600 shrink-0" />
+                      <div>
+                        <span className="text-[10px] uppercase font-bold text-indigo-900 block">Evening Session</span>
+                        <span className="font-semibold text-stone-900">{selectedDay.dualSessionNote.eveningAlankarana}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 4. OFFERINGS & DEVOTEE POOJA SAMAGRI */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {/* Suggested Naivedhyam (Bhog) with PrasadBowlIcon */}
+                <div className="bg-amber-50/80 p-4 rounded-2xl border border-amber-300 space-y-1.5 shadow-xs">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-[#8B1E1E] uppercase">
-                    <ShoppingBag className="w-4 h-4 text-amber-700" />
+                    <PrasadBowlIcon className="w-4.5 h-4.5 text-amber-700 shrink-0" />
+                    <span>Suggested Naivedhyam (Bhog)</span>
+                  </div>
+                  <p className="text-xs text-stone-800 leading-relaxed font-semibold">
+                    {selectedDay.suggestedOfferings}
+                  </p>
+                  <p className="text-[11px] text-amber-900/80 italic pt-1">
+                    ✨ Preparing Naivedhyam with pure devotion and offering fresh warm prasad brings manifold blessings.
+                  </p>
+                </div>
+
+                {/* Items to bring (Pooja Samagri) */}
+                <div className="bg-amber-50/80 p-4 rounded-2xl border border-amber-300 space-y-1.5 shadow-xs">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#8B1E1E] uppercase">
+                    <ShoppingBag className="w-4.5 h-4.5 text-amber-700 shrink-0" />
                     <span>Devotee Pooja Samagri</span>
                   </div>
-                  <p className="text-xs text-stone-700 leading-relaxed font-medium">
+                  <p className="text-xs text-stone-800 leading-relaxed font-semibold">
                     {selectedDay.suggestedItems}
+                  </p>
+                  <p className="text-[11px] text-amber-900/80 italic pt-1">
+                    🌿 Devotees may bring fresh flowers of the sacred day's color to offer during community archana.
                   </p>
                 </div>
               </div>
 
-              {/* Common observances */}
+              {/* 5. STANDARD MANDAPAM OBSERVANCES & RITUALS */}
               <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-2xl border border-amber-200 space-y-2">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900 uppercase">
                   <Flame className="w-4 h-4 text-amber-600" />
@@ -292,7 +398,7 @@ export const NineDaySchedule: React.FC = () => {
                 </p>
                 <div className="pt-2 border-t border-amber-200/60 flex items-center gap-1.5 text-[11px] text-amber-800">
                   <CheckCircle2 className="w-3.5 h-3.5 text-green-600 shrink-0" />
-                  <span>Note: Local Mandapam committee schedules and priest traditions take precedence.</span>
+                  <span>Note: Individual Mandapam committee schedules, priest sankalpam, and local traditions take precedence.</span>
                 </div>
               </div>
             </div>
@@ -300,14 +406,14 @@ export const NineDaySchedule: React.FC = () => {
             {/* Modal Footer */}
             <div className="p-4 bg-stone-100 border-t border-amber-200 flex items-center justify-between gap-3 shrink-0">
               <span className="text-xs text-stone-500 hidden sm:inline">
-                Sharan Navaratri 2026 Devotional Guide
+                Sharan Navaratri 2026 Devotional Guide • భక్తుల పూజా మార్గదర్శి
               </span>
               <button
                 type="button"
                 onClick={() => setSelectedDay(null)}
-                className="w-full sm:w-auto px-6 py-2 rounded-xl bg-gradient-to-r from-stone-800 to-stone-900 hover:from-stone-900 hover:to-black text-white text-xs font-bold shadow-sm transition-all"
+                className="w-full sm:w-auto px-6 py-2 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
               >
-                Close Details
+                Close Details / మూసివేయండి
               </button>
             </div>
           </div>
