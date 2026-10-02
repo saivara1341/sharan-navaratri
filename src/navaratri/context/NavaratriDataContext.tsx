@@ -142,8 +142,14 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   const [activeMandapamId, setActiveMandapamId] = useState<string>("m-rr-nizamabad");
   const [season, setSeason] = useState<Season>(() => loadStorage("season", INITIAL_SEASON));
   const [mandapams, setMandapams] = useState<Mandapam[]>(() => {
-    const loaded = loadStorage("mandapams", INITIAL_MANDAPAMS);
-    return loaded.map(m => {
+    const loaded = loadStorage<Mandapam[]>("mandapams", INITIAL_MANDAPAMS);
+    const merged = [...loaded];
+    for (const initM of INITIAL_MANDAPAMS) {
+      if (!merged.some(m => m.id === initM.id || (m.slug && initM.slug && m.slug.toLowerCase() === initM.slug.toLowerCase()))) {
+        merged.push(initM);
+      }
+    }
+    return merged.map(m => {
       if (!m.passcode) {
         const found = INITIAL_MANDAPAMS.find(im => im.id === m.id);
         return {
@@ -154,9 +160,36 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       return m;
     });
   });
-  const [alankaranas, setAlankaranas] = useState<Alankarana[]>(() => loadStorage("alankaranas", INITIAL_ALANKARANAS));
-  const [daySettings, setDaySettings] = useState<MandapamDaySetting[]>(() => loadStorage("day_settings", INITIAL_DAY_SETTINGS));
-  const [services, setServices] = useState<Service[]>(() => loadStorage("services", INITIAL_SERVICES));
+  const [alankaranas, setAlankaranas] = useState<Alankarana[]>(() => {
+    const loaded = loadStorage<Alankarana[]>("alankaranas", INITIAL_ALANKARANAS);
+    const merged = [...loaded];
+    for (const initA of INITIAL_ALANKARANAS) {
+      if (!merged.some(a => a.id === initA.id || (a.mandapamId === initA.mandapamId && a.date === initA.date))) {
+        merged.push(initA);
+      }
+    }
+    return merged;
+  });
+  const [daySettings, setDaySettings] = useState<MandapamDaySetting[]>(() => {
+    const loaded = loadStorage<MandapamDaySetting[]>("day_settings", INITIAL_DAY_SETTINGS);
+    const merged = [...loaded];
+    for (const initDs of INITIAL_DAY_SETTINGS) {
+      if (!merged.some(s => s.id === initDs.id || (s.mandapamId === initDs.mandapamId && s.dayNumber === initDs.dayNumber))) {
+        merged.push(initDs);
+      }
+    }
+    return merged;
+  });
+  const [services, setServices] = useState<Service[]>(() => {
+    const loaded = loadStorage<Service[]>("services", INITIAL_SERVICES);
+    const merged = [...loaded];
+    for (const initS of INITIAL_SERVICES) {
+      if (!merged.some(s => s.id === initS.id)) {
+        merged.push(initS);
+      }
+    }
+    return merged;
+  });
   const [slots, setSlots] = useState<ServiceSlot[]>(() => loadStorage("slots", INITIAL_SLOTS));
   const [bookings, setBookings] = useState<Booking[]>(() => loadStorage("bookings", INITIAL_BOOKINGS));
   const [activities, setActivities] = useState<Activity[]>(() => loadStorage("activities", INITIAL_ACTIVITIES));

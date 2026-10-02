@@ -57,12 +57,24 @@ export const NavaratriMandapamDetail: React.FC = () => {
   const [selectedServiceId, setSelectedServiceId] = useState<string | undefined>(undefined);
   const [qrModalOpen, setQrModalOpen] = useState(false);
 
-  // Find mandapam by slug or id
-  const mandapam = mandapams.find(
-    m => m.slug.toLowerCase() === (slug || "").toLowerCase() || m.id.toLowerCase() === (slug || "").toLowerCase()
-  ) || mandapams[0];
+  // Normalize and decode search slug
+  const normalizedSlug = decodeURIComponent(slug || "").trim().toLowerCase();
 
-  const following = isFollowing(mandapam.id);
+  // Find mandapam by exact slug, id, or partial match, falling back to first mandapam
+  const mandapam =
+    mandapams.find(
+      m => (m.slug && m.slug.toLowerCase() === normalizedSlug) ||
+           (m.id && m.id.toLowerCase() === normalizedSlug)
+    ) ||
+    (normalizedSlug
+      ? mandapams.find(
+          m => (m.slug && m.slug.toLowerCase().includes(normalizedSlug)) ||
+               (m.name && m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").includes(normalizedSlug))
+        )
+      : undefined) ||
+    mandapams[0];
+
+  const following = mandapam ? isFollowing(mandapam.id) : false;
 
   // Automatically mark as visited/scanned so it appears on user's home landing page
   useEffect(() => {
@@ -70,6 +82,28 @@ export const NavaratriMandapamDetail: React.FC = () => {
       markScanned(mandapam.id);
     }
   }, [mandapam?.id, markScanned]);
+
+  if (!mandapam) {
+    return (
+      <div className="min-h-[50vh] flex flex-col items-center justify-center p-6 text-center space-y-4">
+        <div className="w-16 h-16 rounded-full bg-amber-100 border-2 border-amber-300 flex items-center justify-center text-3xl">
+          🪔
+        </div>
+        <h2 className="font-serif font-black text-2xl text-[#8B1E1E]">
+          Mandapam Not Found
+        </h2>
+        <p className="text-sm text-stone-600 max-w-md">
+          We couldn't locate this specific mandapam page. It may have been updated or you can browse other active mandapams.
+        </p>
+        <Link
+          to="/navaratri"
+          className="px-6 py-2.5 rounded-xl bg-[#8B1E1E] text-white text-sm font-bold shadow-md hover:bg-[#9A241C]"
+        >
+          Explore All Mandapams
+        </Link>
+      </div>
+    );
+  }
 
   const todayAlankarana = alankaranas.find(a => a.mandapamId === mandapam.id);
   const todaySetting = daySettings.find(s => s.mandapamId === mandapam.id && s.dayNumber === 1);

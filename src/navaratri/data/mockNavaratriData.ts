@@ -126,6 +126,31 @@ export const INITIAL_MANDAPAMS: Mandapam[] = [
     whatsappNumber: "+91 94900 33445",
     passcode: "949003",
     createdAt: "2026-09-20T09:15:00Z"
+  },
+  {
+    id: "mnp-178584",
+    seasonId: "season-2026",
+    name: "Hrudhaya Ragu Ram Youth",
+    slug: "hrudhaya-ragu-ram-youth-nizamabad",
+    description: "Grand Sharan Navaratri celebrations organized by Hrudhaya Ragu Ram Youth in Nizamabad with daily sacred Devi Alankaranas, Sahasranama Archana, and Maha Annadanam.",
+    deviName: "Sri Swarna Kavachalankruta Durga Devi",
+    address: "Near Municipal Office, Subhash Nagar Road",
+    area: "Subhash Nagar",
+    city: "Nizamabad",
+    state: "Telangana",
+    pincode: "503002",
+    latitude: 18.6725,
+    longitude: 78.0941,
+    verificationStatus: "VERIFIED",
+    organizerName: "Hrudhaya Ragu Ram Youth Committee",
+    organizerMobile: "6303602743",
+    organizerEmail: "hrudhaya.raguram@gmail.com",
+    logoUrl: navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"),
+    coverImageUrl: navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg"),
+    contactPhone: "6303602743",
+    whatsappNumber: "6303602743",
+    passcode: "178584",
+    createdAt: "2026-10-02T10:00:00Z"
   }
 ];
 
@@ -166,6 +191,43 @@ export const INITIAL_DAY_SETTINGS: MandapamDaySetting[] = [
     annadanamLocation: "Kalyana Mandapam Dining Hall",
     annadanamExpectedCount: 1000,
     annadanamNotes: "Satvik festival meal for all devotees."
+  },
+  {
+    id: "ds-hr-1",
+    mandapamId: "mnp-178584",
+    dayNumber: 1,
+    date: "2026-10-11",
+    useStandardDevi: true,
+    useStandardPooja: false,
+    customPoojaTimings: "Morning: 07:30 AM (Kalash & Ganapathi Sthapana) | Evening: 06:30 PM (Maha Harathi)",
+    useStandardNaivedhyam: false,
+    customNaivedhyam: "Katte Pongali, Ghee Appalu, Honey, Bananas, Coconuts",
+    useStandardPrasadam: false,
+    customPrasadam: "Hot Pongali & Sweet Prasadam for all visiting devotees",
+    useStandardItems: true,
+    annadanamEnabled: true,
+    annadanamStartTime: "12:30 PM",
+    annadanamEndTime: "03:30 PM",
+    annadanamLocation: "Mandapam Annadanam Pandal, Nizamabad",
+    annadanamExpectedCount: 600,
+    annadanamNotes: "Daily sacred Annaprasadam seva for all devotees"
+  },
+  {
+    id: "ds-hr-2",
+    mandapamId: "mnp-178584",
+    dayNumber: 2,
+    date: "2026-10-12",
+    useStandardDevi: true,
+    useStandardPooja: true,
+    useStandardNaivedhyam: true,
+    useStandardPrasadam: true,
+    useStandardItems: true,
+    annadanamEnabled: true,
+    annadanamStartTime: "12:30 PM",
+    annadanamEndTime: "03:00 PM",
+    annadanamLocation: "Mandapam Annadanam Pandal, Nizamabad",
+    annadanamExpectedCount: 500,
+    annadanamNotes: "Daily sacred Annaprasadam seva for all devotees"
   }
 ];
 
@@ -205,10 +267,35 @@ export const INITIAL_ALANKARANAS: Alankarana[] = [
     imageUrl: navaratriAsset("/navaratri/assets/sage-floral-bg.jpg"),
     published: true,
     createdAt: "2026-10-11T07:00:00Z"
+  },
+  {
+    id: "alan-hr-today",
+    mandapamId: "mnp-178584",
+    seasonId: "season-2026",
+    date: "2026-10-11",
+    title: "Sri Swarna Kavachalankruta Durga Devi Alankarana (Day 1)",
+    deviName: "Sri Swarna Kavachalankruta Durga Devi",
+    description: "Grand inaugural darshan adorned with radiant golden armor (Swarna Kavacham), conferring divine courage and prosperity upon all devotees.",
+    imageUrl: navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"),
+    published: true,
+    createdAt: "2026-10-11T06:00:00Z"
   }
 ];
 
 export const INITIAL_SERVICES: Service[] = [
+  {
+    id: "srv-hr-archana",
+    mandapamId: "mnp-178584",
+    type: "Kumkum Archana",
+    name: "Sri Durga Devi Sahasranama Archana",
+    description: "Participate in person with individual pooja plate, sacred bilva archana, and receive holy Prasadam packet.",
+    instructions: "Devotees are requested to wear traditional dress and arrive 15 minutes before the scheduled slot.",
+    enabled: true,
+    bookingEnabled: true,
+    itemsRequired: "2 Yellow coconuts, Betel leaves, Fresh red flower garland, Bananas",
+    durationMinutes: 45,
+    capacityPerSlot: 50
+  },
   {
     id: "srv-kumkumarchana",
     mandapamId: "m-rr-nizamabad",
