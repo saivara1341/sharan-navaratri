@@ -191,8 +191,16 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     return merged;
   });
   const [slots, setSlots] = useState<ServiceSlot[]>(() => loadStorage("slots", INITIAL_SLOTS));
-  const [bookings, setBookings] = useState<Booking[]>(() => loadStorage("bookings", INITIAL_BOOKINGS));
-  const [activities, setActivities] = useState<Activity[]>(() => loadStorage("activities", INITIAL_ACTIVITIES));
+  const [activities, setActivities] = useState<Activity[]>(() => {
+    const loaded = loadStorage<Activity[]>("activities", INITIAL_ACTIVITIES);
+    const merged = [...loaded];
+    for (const initA of INITIAL_ACTIVITIES) {
+      if (!merged.some(a => a.id === initA.id)) {
+        merged.push(initA);
+      }
+    }
+    return merged;
+  });
   const [pallakiSevas, setPallakiSevas] = useState<PallakiSeva[]>(() => loadStorage("pallaki", INITIAL_PALLAKI_SEVAS));
   const [dheekshaPrograms, setDheekshaPrograms] = useState<DheekshaProgram[]>(() => loadStorage("dheeksha", INITIAL_DHEEKSHA_PROGRAMS));
   const [nimarjanamSchedules, setNimarjanamSchedules] = useState<NimarjanamSchedule[]>(() => loadStorage("nimarjanam", INITIAL_NIMARJANAM_SCHEDULES));

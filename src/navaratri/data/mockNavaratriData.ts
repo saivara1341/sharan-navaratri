@@ -623,6 +623,66 @@ export const INITIAL_ACTIVITIES: Activity[] = [
     bookingEnabled: false,
     instructions: "Open to all devotees. Songbooks and prasad will be distributed.",
     published: true
+  },
+  {
+    id: "act-hr-1",
+    mandapamId: "mnp-178584",
+    title: "Maha Bathukamma Sambaralu & Floral Pooja",
+    category: "Cultural Program",
+    description: "Grand traditional Bathukamma festivities organized by Hrudhaya Ragu Ram Youth. Devotees and families gather with flowers, folk singing, and prizes for best decorated Bathukamma.",
+    date: "2026-10-18",
+    startTime: "05:00 PM",
+    endTime: "08:00 PM",
+    location: "Mandapam Festival Ground, Nizamabad",
+    capacity: 600,
+    bookingEnabled: true,
+    instructions: "Free registration. Traditional attire encouraged. Saddula prasadam will be offered to all participants.",
+    published: true
+  },
+  {
+    id: "act-hr-2",
+    mandapamId: "mnp-178584",
+    title: "Children's Devi Vesha Dharana & Sloka Recitation",
+    category: "Competition",
+    description: "Children under 15 years dress up in sacred Navadurga divine forms and recite Devi slokas. Divine mementos & certificates for all participants.",
+    date: "2026-10-16",
+    startTime: "04:30 PM",
+    endTime: "07:00 PM",
+    location: "Mandapam Community Stage, Nizamabad",
+    capacity: 100,
+    bookingEnabled: true,
+    instructions: "Free registration online or at counter. Parents please register participant names in advance.",
+    published: true
+  },
+  {
+    id: "act-hr-3",
+    mandapamId: "mnp-178584",
+    title: "Sri Lalitha Sahasranama Stotram Group Parayanam",
+    category: "Pooja & Chanting",
+    description: "Mass sacred chanting of Sri Lalitha Sahasranama with kumkuma archana for family prosperity, peace, and health.",
+    date: "2026-10-15",
+    startTime: "06:00 PM",
+    endTime: "07:30 PM",
+    location: "Main Mandapam Sanctum, Nizamabad",
+    capacity: 300,
+    bookingEnabled: true,
+    instructions: "All devotees are welcome to join the parayanam. Stotram books provided.",
+    published: true
+  },
+  {
+    id: "act-hr-4",
+    mandapamId: "mnp-178584",
+    title: "Akhanda Dandiya & Kolatam Youth Night",
+    category: "Cultural Program",
+    description: "High-energy devotional Garba & Dandiya dance night by Hrudhaya Ragu Ram Youth. Pure devotional music, joyful celebration with prizes for best traditional dancers.",
+    date: "2026-10-19",
+    startTime: "07:00 PM",
+    endTime: "10:30 PM",
+    location: "Subhash Nagar Open Ground, Nizamabad",
+    capacity: 800,
+    bookingEnabled: true,
+    instructions: "Open to youth and families. Entry is free with online registration.",
+    published: true
   }
 ];
 
