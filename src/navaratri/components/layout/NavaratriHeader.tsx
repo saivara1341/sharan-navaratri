@@ -55,10 +55,10 @@ export const NavaratriHeader: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2.5 sm:gap-3">
-          {/* Subtle Login as Mandapam Link */}
+          {/* Subtle Login as Mandapam Link (Hidden on mobile, available in mobile hamburger menu) */}
           <Link
             to="/navaratri/organizer"
-            className="text-[11px] font-bold text-amber-300 hover:text-white transition-colors flex items-center gap-1"
+            className="hidden sm:flex text-[11px] font-bold text-amber-300 hover:text-white transition-colors items-center gap-1"
             title="Registered Mandapam Organizer Login"
           >
             <KeyRound className="w-3 h-3 text-amber-300" />
