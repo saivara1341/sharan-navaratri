@@ -26,7 +26,8 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
 
   if (!isOpen) return null;
 
-  const publicUrl = `${window.location.origin}${base}/m/${mandapam.slug}`;
+  // Build correct public URL matching the /navaratri/m/:slug route
+  const publicUrl = `${window.location.origin}${base}/navaratri/m/${mandapam.slug}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(publicUrl);

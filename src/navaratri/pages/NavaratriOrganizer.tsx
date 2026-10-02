@@ -848,6 +848,7 @@ export const NavaratriOrganizer: React.FC = () => {
       {qrModalOpen && (
         <ShareQrModal
           mandapam={currentMandapam}
+          isOpen={qrModalOpen}
           onClose={() => setQrModalOpen(false)}
         />
       )}

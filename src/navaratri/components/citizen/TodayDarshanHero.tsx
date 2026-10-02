@@ -28,7 +28,7 @@ export const TodayDarshanHero: React.FC<TodayDarshanHeroProps> = ({
 
   const handleShare = () => {
     const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
-    const url = `${window.location.origin}${base}/m/${mandapam.slug}`;
+    const url = `${window.location.origin}${base}/navaratri/m/${mandapam.slug}`;
     if (navigator.share) {
       navigator.share({
         title: `${alankarana?.deviName || mandapam.deviName} Darshan - ${mandapam.name}`,
