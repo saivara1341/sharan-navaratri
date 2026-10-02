@@ -36,30 +36,30 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Header section */}
+      {/* Header section - Single Unified Heading */}
       <div className="border-b-2 sm:border-b-4 border-amber-300 pb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <div>
-            <h2 className="font-serif font-black text-2xl md:text-3xl text-[#8B1E1E] flex items-center gap-2">
-              <span>{mandapam ? `${mandapam.name} • 10-Day Festival Schedule` : "Sharad Navaratri 2026 Schedule"}</span>
-              <span className="text-xs font-sans font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
-                10 Divine Days
-              </span>
+        <div>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <h2 className="font-serif font-black text-2xl md:text-3xl text-[#8B1E1E] leading-tight">
+              {mandapam ? `${mandapam.name} • 10-Day Festival Schedule` : "Sharad Navaratri 2026 Schedule"}
             </h2>
-            <p className="text-sm text-stone-600 mt-1">
-              {mandapam
-                ? `Official daily Maa Alankaranas, Pooja timings, Naivedhyam (Bhog), and Annadanam schedule organized at ${mandapam.name}.`
-                : language === "te"
-                ? "శ్రీ అన్నపూర్ణా దేవి, శ్రీ సరస్వతీ దేవి, శ్రీ లక్ష్మీ దేవి, శ్రీ కాళికా దేవి సహా 10 దివ్య అలంకారాలు • నైవేద్యం, మంత్రాలు & ఆధ్యాత్మిక విశిష్టత (11–20 అక్టోబర్ 2026)"
-                : "10 Sacred Devi Alankaranas including Sri Annapurna Devi, Sri Maha Saraswathi Devi, Sri Maha Lakshmi Devi, Sri Kalika Devi • Sacred Chants, Bhog & Devotee Guide (11–20 October 2026)"}
-            </p>
+            <span className="text-xs font-sans font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 shrink-0">
+              10 Divine Days
+            </span>
           </div>
+          <p className="text-xs sm:text-sm text-stone-600 mt-1.5 leading-relaxed">
+            {mandapam
+              ? `Official daily Maa Alankaranas, Pooja timings, Naivedhyam (Bhog), and Annadanam schedule organized at ${mandapam.name}.`
+              : language === "te"
+              ? "శ్రీ అన్నపూర్ణా దేవి, శ్రీ సరస్వతీ దేవి, శ్రీ లక్ష్మీ దేవి, శ్రీ కాళికా దేవి సహా 10 దివ్య అలంకారాలు • నైవేద్యం, మంత్రాలు & ఆధ్యాత్మిక విశిష్టత (11–20 అక్టోబర్ 2026)"
+              : "10 Sacred Devi Alankaranas including Sri Annapurna Devi, Sri Maha Saraswathi Devi, Sri Maha Lakshmi Devi, Sri Kalika Devi • Sacred Chants, Bhog & Devotee Guide (11–20 October 2026)"}
+          </p>
         </div>
       </div>
 
-      {/* Responsive 3-in-a-row Grid (1 col mobile, 2 col tablet, 3 col desktop) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-        {STANDARD_NAVARATRI_DAYS.map((day) => {
+      {/* Responsive Cards: Sticky Stack Scroll Animation on Mobile, Multi-col Grid on Desktop */}
+      <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 pb-6">
+        {STANDARD_NAVARATRI_DAYS.map((day, index) => {
           const isToday = day.date === todayIso;
           const customSetting = mandapamDaySettings.find((s) => s.dayNumber === day.dayNumber);
 
@@ -67,9 +67,8 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
           const morningDevi = customSetting?.morningDeviName || day.dualSessionNote?.morningAlankarana;
           const eveningDevi = customSetting?.eveningDeviName || day.dualSessionNote?.eveningAlankarana;
 
-          const deviDisplayName = isDual && morningDevi && eveningDevi
-            ? `${morningDevi} & ${eveningDevi}`
-            : customSetting?.useStandardDevi === false && customSetting.customDeviName
+          // Single Canonical Devi Alankarana Heading
+          const deviDisplayName = customSetting?.customDeviName
             ? customSetting.customDeviName
             : language === "te"
             ? day.teluguDeviName
@@ -85,21 +84,28 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
             ? customSetting.customPoojaTimings
             : null;
 
+          // Mobile sticky stack top offset: 70px + index * 8px
+          const stickyTop = 70 + index * 8;
+
           return (
             <div
               key={day.dayNumber}
               onClick={() => setSelectedDay(day)}
-              className={`group rounded-2xl border transition-all duration-300 flex flex-col overflow-hidden cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 text-left ${
+              style={{
+                top: `${stickyTop}px`,
+                zIndex: index + 1
+              }}
+              className={`group rounded-3xl border-2 transition-all duration-300 flex flex-col overflow-hidden cursor-pointer text-left sticky sm:static sm:top-auto sm:z-auto mb-6 sm:mb-0 shadow-[0_-4px_20px_rgba(0,0,0,0.06),0_12px_28px_rgba(0,0,0,0.12)] sm:shadow-sm sm:hover:shadow-xl sm:hover:-translate-y-1 ${
                 isToday
-                  ? "bg-gradient-to-b from-[#FFFBEB] to-[#FEF3C7] border-amber-400 ring-2 ring-amber-400/40"
-                  : "bg-gradient-to-b from-[#FFFDF9] via-[#FFFFFF] to-[#FFF9F0] border-amber-200/90 hover:border-amber-400"
+                  ? "bg-gradient-to-b from-[#FFFBEB] via-[#FFFDF9] to-[#FEF3C7] border-amber-400 ring-2 ring-amber-400/40"
+                  : "bg-gradient-to-b from-[#FFFDF9] via-[#FFFFFF] to-[#FFF9F0] border-amber-300/90 hover:border-amber-400"
               }`}
             >
               {/* Image Container with Day and Date badges */}
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-900">
+              <div className="relative aspect-[16/10] sm:aspect-[4/3] w-full overflow-hidden bg-stone-900">
                 <img
                   src={day.imageUrl}
-                  alt={day.deviName}
+                  alt={deviDisplayName}
                   className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
                 />
@@ -134,12 +140,12 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                   </div>
                 </div>
 
-                {/* Bottom title overlay on image */}
+                {/* Single Heading on Image */}
                 <div className="absolute bottom-2.5 left-3 right-3 text-white">
-                  <h3 className="font-serif font-black text-lg sm:text-xl drop-shadow-md text-amber-100 group-hover:text-amber-300 transition-colors">
+                  <h3 className="font-serif font-black text-base sm:text-lg lg:text-xl drop-shadow-md text-amber-100 group-hover:text-amber-300 transition-colors leading-tight">
                     {deviDisplayName}
                   </h3>
-                  <div className="flex items-center gap-2 text-xs text-stone-200 drop-shadow">
+                  <div className="flex items-center gap-2 text-[11px] sm:text-xs text-stone-200 drop-shadow mt-0.5">
                     <span>{day.teluguDeviName}</span>
                     <span>•</span>
                     <span>{day.hindiDeviName}</span>
@@ -149,6 +155,14 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
 
               {/* Card Body */}
               <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+                {/* Special Dual Session Badge if applicable */}
+                {isDual && morningDevi && eveningDevi && (
+                  <div className="text-[11px] font-semibold text-amber-900 bg-amber-100/80 p-2 rounded-xl border border-amber-300/80 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-[#8B1E1E] shrink-0" />
+                    <span className="truncate">Special: {morningDevi} & {eveningDevi}</span>
+                  </div>
+                )}
+
                 {/* Sacred Color strip */}
                 <div className="flex items-center gap-2 bg-amber-50/70 p-2 rounded-xl border border-amber-200/50">
                   <span
@@ -200,7 +214,7 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                     e.stopPropagation();
                     setSelectedDay(day);
                   }}
-                  className="w-full mt-2 py-2 px-3 rounded-xl bg-gradient-to-r from-amber-600 to-[#8B1E1E] text-white hover:from-amber-700 hover:to-[#6B1414] text-xs font-bold shadow-sm flex items-center justify-center gap-1.5 transition-all group-hover:shadow"
+                  className="w-full mt-2 py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-600 to-[#8B1E1E] text-white hover:from-amber-700 hover:to-[#6B1414] text-xs font-bold shadow-sm flex items-center justify-center gap-1.5 transition-all group-hover:shadow"
                 >
                   <Eye className="w-3.5 h-3.5" />
                   <span>View Details / పూజా విధానం</span>
