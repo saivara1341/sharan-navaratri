@@ -7,8 +7,9 @@ import { DailyUpdateDrawer } from "../components/organizer/DailyUpdateDrawer";
 import { WalkInRegisterModal } from "../components/organizer/WalkInRegisterModal";
 import { ShareQrModal } from "../components/citizen/ShareQrModal";
 import { STANDARD_NAVARATRI_DAYS } from "../data/standardNavaratriDays";
-import { downloadMandapamCredentials, copyToClipboard } from "../utils/mandapamCredentials";
+import { downloadMandapamCredentials, copyToClipboard, getPrivatePasscode } from "../utils/mandapamCredentials";
 import { PrasadBowlIcon } from "../components/devotional/PrasadBowlIcon";
+import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifiedBadge";
 import { Activity } from "../types";
 import {
   ShieldCheck,
@@ -128,7 +129,7 @@ export const NavaratriOrganizer: React.FC = () => {
       return;
     }
 
-    const expectedPasscode = matched.passcode || "123456";
+    const expectedPasscode = getPrivatePasscode(matched.id, matched.passcode || "123456");
     if (cleanPass !== expectedPasscode) {
       toast.error("Incorrect passcode. Please check your credentials slip.");
       return;
@@ -320,13 +321,15 @@ export const NavaratriOrganizer: React.FC = () => {
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Mandapam Control Center</span>
             </span>
-            <span className="text-[11px] font-semibold text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/40">
-              ● Live & Verified
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-200 bg-sky-950/70 px-2.5 py-0.5 rounded-full border border-sky-400/50 shadow-sm">
+              <InstagramVerifiedBadge className="w-3.5 h-3.5" />
+              <span>Verified Organizer</span>
             </span>
           </div>
 
-          <h1 className="font-serif font-black text-2xl sm:text-3xl text-white">
-            {currentMandapam.name}
+          <h1 className="font-serif font-black text-2xl sm:text-3xl text-white flex items-center gap-2">
+            <span>{currentMandapam.name}</span>
+            <InstagramVerifiedBadge className="w-6 h-6 shrink-0 drop-shadow" title="Official Verified Mandapam" />
           </h1>
 
           <p className="text-xs text-amber-100">
@@ -342,44 +345,26 @@ export const NavaratriOrganizer: React.FC = () => {
               <button
                 type="button"
                 onClick={() => copyToClipboard(currentMandapam.id, "Mandapam ID")}
-                className="text-white/70 hover:text-white ml-1 p-0.5"
+                className="text-white/70 hover:text-white ml-1 p-0.5 cursor-pointer"
                 title="Copy Mandapam ID"
               >
                 <Copy className="w-3 h-3" />
               </button>
             </div>
 
-            {/* Passcode Badge */}
-            <div className="flex items-center gap-1 bg-black/30 border border-white/20 px-2.5 py-1 rounded-xl">
-              <span className="text-amber-300 font-bold">Passcode:</span>
-              <span className="font-mono font-bold tracking-widest">
-                {showDashboardPasscode ? currentMandapam.passcode || "123456" : "••••••"}
-              </span>
-              <button
-                type="button"
-                onClick={() => setShowDashboardPasscode(!showDashboardPasscode)}
-                className="text-white/70 hover:text-white ml-0.5 p-0.5"
-                title={showDashboardPasscode ? "Hide Passcode" : "Show Passcode"}
-              >
-                {showDashboardPasscode ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-              </button>
-              <button
-                type="button"
-                onClick={() => copyToClipboard(currentMandapam.passcode || "123456", "Passcode")}
-                className="text-white/70 hover:text-white p-0.5"
-                title="Copy Passcode"
-              >
-                <Copy className="w-3 h-3" />
-              </button>
+            {/* Confidential Protected Passcode Indicator */}
+            <div className="flex items-center gap-1.5 bg-black/30 border border-emerald-400/30 px-2.5 py-1 rounded-xl text-emerald-300">
+              <Lock className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="font-semibold text-[11px]">Passcode: Protected in Slip</span>
             </div>
 
             {/* Download Credentials Slip */}
             <button
               type="button"
               onClick={() => downloadMandapamCredentials(currentMandapam)}
-              className="flex items-center gap-1 px-3 py-1 rounded-xl bg-amber-400 text-stone-900 font-bold hover:bg-amber-300 shadow-sm transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-400 text-stone-900 font-bold hover:bg-amber-300 shadow-sm transition-all cursor-pointer"
             >
-              <Download className="w-3 h-3" />
+              <Download className="w-3.5 h-3.5" />
               <span>Download Access Slip</span>
             </button>
           </div>
@@ -414,54 +399,54 @@ export const NavaratriOrganizer: React.FC = () => {
         </div>
       </div>
 
-      {/* DASHBOARD TAB NAVIGATION */}
-      <div className="flex items-center gap-2 border-b-2 border-amber-300 pb-2 overflow-x-auto">
+      {/* DASHBOARD TAB NAVIGATION - 2 in a row on mobile view */}
+      <div className="grid grid-cols-2 lg:flex lg:items-center gap-2.5 border-b-2 border-amber-300 pb-3">
         <button
           onClick={() => setActiveTab("days")}
-          className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+          className={`w-full lg:w-auto px-3 sm:px-4 py-3 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-black flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer text-center ${
             activeTab === "days"
-              ? "bg-[#8B1E1E] text-white shadow-md"
-              : "bg-white text-stone-700 hover:bg-amber-100 border border-amber-300"
+              ? "bg-[#8B1E1E] text-white shadow-md ring-2 ring-amber-400/50"
+              : "bg-white text-stone-700 hover:bg-amber-50 border border-amber-300"
           }`}
         >
-          <CalendarDays className="w-4 h-4 text-amber-300" />
-          <span>10-Day Festival Schedule Manager</span>
+          <CalendarDays className="w-4 h-4 text-amber-500 shrink-0" />
+          <span className="leading-tight">10-Day Festival Schedule Manager</span>
         </button>
 
         <button
           onClick={() => setActiveTab("events")}
-          className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+          className={`w-full lg:w-auto px-3 sm:px-4 py-3 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-black flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer text-center ${
             activeTab === "events"
-              ? "bg-[#8B1E1E] text-white shadow-md"
-              : "bg-white text-stone-700 hover:bg-amber-100 border border-amber-300"
+              ? "bg-[#8B1E1E] text-white shadow-md ring-2 ring-amber-400/50"
+              : "bg-white text-stone-700 hover:bg-amber-50 border border-amber-300"
           }`}
         >
-          <PartyPopper className="w-4 h-4 text-amber-300" />
-          <span>Mandapam Events & Programs ({mandapamActivities.length})</span>
+          <PartyPopper className="w-4 h-4 text-amber-500 shrink-0" />
+          <span className="leading-tight">Mandapam Events & Programs ({mandapamActivities.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab("announcements")}
-          className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+          className={`w-full lg:w-auto px-3 sm:px-4 py-3 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-black flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer text-center ${
             activeTab === "announcements"
-              ? "bg-[#8B1E1E] text-white shadow-md"
-              : "bg-white text-stone-700 hover:bg-amber-100 border border-amber-300"
+              ? "bg-[#8B1E1E] text-white shadow-md ring-2 ring-amber-400/50"
+              : "bg-white text-stone-700 hover:bg-amber-50 border border-amber-300"
           }`}
         >
-          <Bell className="w-4 h-4 text-amber-300" />
-          <span>Flash Notices & Updates</span>
+          <Bell className="w-4 h-4 text-amber-500 shrink-0" />
+          <span className="leading-tight">Flash Notices & Updates</span>
         </button>
 
         <button
           onClick={() => setActiveTab("bookings")}
-          className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+          className={`w-full lg:w-auto px-3 sm:px-4 py-3 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-black flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer text-center ${
             activeTab === "bookings"
-              ? "bg-[#8B1E1E] text-white shadow-md"
-              : "bg-white text-stone-700 hover:bg-amber-100 border border-amber-300"
+              ? "bg-[#8B1E1E] text-white shadow-md ring-2 ring-amber-400/50"
+              : "bg-white text-stone-700 hover:bg-amber-50 border border-amber-300"
           }`}
         >
-          <Users className="w-4 h-4 text-amber-300" />
-          <span>Devotee Bookings & Tokens ({mandapamBookings.length})</span>
+          <Users className="w-4 h-4 text-amber-500 shrink-0" />
+          <span className="leading-tight">Devotee Bookings & Tokens ({mandapamBookings.length})</span>
         </button>
       </div>
 

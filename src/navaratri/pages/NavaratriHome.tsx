@@ -23,6 +23,7 @@ import { useNavaratriLanguage } from "../context/NavaratriLanguageContext";
 import { NineDaySchedule } from "../components/citizen/NineDaySchedule";
 import { NavaratriAdsSpace } from "../components/ads/NavaratriAdsSpace";
 import { AuspiciousRibbonBorder } from "../components/devotional/AuspiciousRibbonBorder";
+import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifiedBadge";
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
 
@@ -132,8 +133,8 @@ export const NavaratriHome: React.FC = () => {
                     )}
                   </span>
                   {primaryConnectedMandapam.verificationStatus === "VERIFIED" && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2 py-0.5 text-[9px] font-bold text-white shadow-xs">
-                      <ShieldCheck className="h-3 w-3" /> Verified Mandapam
+                    <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 text-sky-800 border border-sky-300 px-2 py-0.5 text-[9px] font-bold shadow-xs">
+                      <InstagramVerifiedBadge className="h-3 w-3" /> Verified Mandapam
                     </span>
                   )}
                   <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-900 bg-amber-200/80 px-2 py-0.5 rounded-full">
@@ -141,8 +142,9 @@ export const NavaratriHome: React.FC = () => {
                   </span>
                 </div>
 
-                <h2 className="font-serif text-base sm:text-xl font-black text-[#8B1E1E] truncate group-hover:text-[#6B1111] transition-colors">
-                  {primaryConnectedMandapam.name}
+                <h2 className="font-serif text-base sm:text-xl font-black text-[#8B1E1E] truncate group-hover:text-[#6B1111] transition-colors flex items-center gap-1.5">
+                  <span>{primaryConnectedMandapam.name}</span>
+                  <InstagramVerifiedBadge className="w-4 h-4 shrink-0 drop-shadow-xs" />
                 </h2>
 
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-700 font-medium">
@@ -415,13 +417,14 @@ export const NavaratriHome: React.FC = () => {
                           </span>
                         )}
                         {mandapam.verificationStatus === "VERIFIED" && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold text-emerald-800">
-                            <ShieldCheck className="h-3 w-3" /> Verified
+                          <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 border border-sky-300 px-2 py-0.5 text-[9px] font-bold text-sky-800">
+                            <InstagramVerifiedBadge className="h-3 w-3" /> Verified
                           </span>
                         )}
                       </div>
-                      <h3 className="font-serif text-base sm:text-lg font-black leading-tight text-[#8B1E1E]">
-                        {mandapam.name}
+                      <h3 className="font-serif text-base sm:text-lg font-black leading-tight text-[#8B1E1E] flex items-center gap-1.5">
+                        <span>{mandapam.name}</span>
+                        <InstagramVerifiedBadge className="w-4 h-4 shrink-0 drop-shadow-xs" />
                       </h3>
                       <p className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-stone-600">
                         <MapPin className="h-3.5 w-3.5 text-amber-700 shrink-0" />

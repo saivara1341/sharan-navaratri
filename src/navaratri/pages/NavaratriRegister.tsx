@@ -22,7 +22,7 @@ import {
   ExternalLink,
   Sparkles
 } from "lucide-react";
-import { generatePasscode, copyToClipboard, downloadMandapamCredentials } from "../utils/mandapamCredentials";
+import { generatePasscode, copyToClipboard, downloadMandapamCredentials, savePrivateCredentials } from "../utils/mandapamCredentials";
 import { Mandapam } from "../types";
 import { toast } from "sonner";
 
@@ -97,6 +97,7 @@ export const NavaratriRegister: React.FC = () => {
     }
 
     if (res.success && res.mandapam) {
+      savePrivateCredentials(res.mandapam.id, passcode.trim());
       setActiveMandapamId(res.mandapam.id);
       setRole("organizer");
       toggleFollow(res.mandapam.id);

@@ -14,8 +14,35 @@ export const copyToClipboard = async (text: string, label: string = "Text") => {
   }
 };
 
+// Store private organizer credentials in isolated storage rather than exposing in public mandapam records
+const PRIVATE_CREDENTIALS_KEY = "navaratri_private_organizer_credentials";
+
+export const savePrivateCredentials = (mandapamId: string, passcode: string) => {
+  try {
+    const raw = localStorage.getItem(PRIVATE_CREDENTIALS_KEY);
+    const map = raw ? JSON.parse(raw) : {};
+    map[mandapamId] = passcode;
+    localStorage.setItem(PRIVATE_CREDENTIALS_KEY, JSON.stringify(map));
+  } catch (e) {
+    console.error("Failed to store private credentials", e);
+  }
+};
+
+export const getPrivatePasscode = (mandapamId: string, fallback?: string): string => {
+  try {
+    const raw = localStorage.getItem(PRIVATE_CREDENTIALS_KEY);
+    if (raw) {
+      const map = JSON.parse(raw);
+      if (map[mandapamId]) return map[mandapamId];
+    }
+  } catch (e) {
+    console.error("Failed to read private credentials", e);
+  }
+  return fallback || "123456";
+};
+
 export const downloadMandapamCredentials = (mandapam: Mandapam) => {
-  const passcode = mandapam.passcode || "123456";
+  const passcode = getPrivatePasscode(mandapam.id, mandapam.passcode);
   const portalUrl = `${window.location.origin}${window.location.pathname.includes("/sharan-navaratri") ? "/sharan-navaratri" : ""}/navaratri/organizer`;
   const mandapamUrl = `${window.location.origin}${window.location.pathname.includes("/sharan-navaratri") ? "/sharan-navaratri" : ""}/navaratri/m/${mandapam.slug}`;
 

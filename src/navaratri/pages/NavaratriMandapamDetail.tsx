@@ -13,6 +13,7 @@ import { CommunityQnA } from "../components/citizen/CommunityQnA";
 import { ShareQrModal } from "../components/citizen/ShareQrModal";
 import { SponsoredCard } from "../components/ads/SponsoredCard";
 import { TempleArchFrame } from "../components/devotional/TempleArchFrame";
+import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifiedBadge";
 import {
   MapPin,
   Share2,
@@ -152,11 +153,12 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="font-serif font-black text-xl sm:text-2xl text-[#8B1E1E]">
-                    {mandapam.name}
+                  <h1 className="font-serif font-black text-xl sm:text-2xl text-[#8B1E1E] flex items-center gap-1.5">
+                    <span>{mandapam.name}</span>
+                    <InstagramVerifiedBadge className="w-5 h-5 shrink-0 drop-shadow-xs" title="Official Verified Mandapam" />
                   </h1>
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold flex items-center gap-1 border border-emerald-300">
-                    <ShieldCheck className="w-3.5 h-3.5" />
+                  <span className="px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-800 text-[11px] font-bold flex items-center gap-1 border border-sky-300 shadow-xs">
+                    <InstagramVerifiedBadge className="w-3.5 h-3.5" />
                     <span>{t.verifiedMandapam}</span>
                   </span>
                 </div>
