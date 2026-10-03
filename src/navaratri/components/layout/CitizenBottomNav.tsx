@@ -38,16 +38,16 @@ export const CitizenBottomNav: React.FC = () => {
       </Link>
 
       {/* Center Floating Scan QR Button */}
-      <div className="relative -top-5">
+      <div className="relative -top-3.5 flex flex-col items-center justify-center">
         <button
           type="button"
           onClick={handleOpenScanner}
-          className="w-13 h-13 rounded-full bg-gradient-to-tr from-[#9A241C] via-[#B45309] to-[#D97706] text-white p-3 shadow-lg hover:shadow-xl transform active:scale-95 transition-all flex flex-col items-center justify-center border-2 border-white ring-2 ring-[#D97706]/40 cursor-pointer"
+          className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#9A241C] via-[#B45309] to-[#D97706] text-white flex items-center justify-center shadow-lg hover:shadow-xl transform active:scale-95 transition-all border-2 border-white ring-2 ring-[#D97706]/40 cursor-pointer"
           aria-label="Scan Mandapam QR with Camera"
         >
-          <QrCode className="w-6 h-6 animate-pulse" />
+          <QrCode className="w-6 h-6" />
         </button>
-        <span className="absolute -bottom-4 inset-x-0 text-center text-[9px] font-bold text-[#8B1E1E]">
+        <span className="mt-1 text-center text-[9px] font-bold text-[#8B1E1E] leading-tight whitespace-nowrap block drop-shadow-xs">
           {t.scanQr}
         </span>
       </div>

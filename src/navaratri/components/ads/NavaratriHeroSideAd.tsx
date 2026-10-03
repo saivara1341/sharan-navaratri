@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
-import { ImagePlus, Sparkles, Megaphone, ArrowUpRight } from "lucide-react";
+import { ImagePlus, Sparkles, Megaphone, ArrowUpRight, ExternalLink } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
 import { navaratriAsset } from "../../utils/navaratriAssets";
+import { getAdCtaDetails } from "../../utils/adButtonHelpers";
 
 export const NavaratriHeroSideAd: React.FC = () => {
   const { advertisements, recordAdClick, recordAdImpression } = useNavaratriData();
@@ -15,6 +16,7 @@ export const NavaratriHeroSideAd: React.FC = () => {
   );
 
   const currentAd = activeAdsWithImages[activeIndex];
+  const ctaInfo = getAdCtaDetails(currentAd);
 
   // Track impressions if an ad is displayed
   useEffect(() => {
@@ -52,20 +54,45 @@ export const NavaratriHeroSideAd: React.FC = () => {
     <>
       <div className="w-full h-full flex flex-col">
         {currentAd?.imageUrl ? (
-          /* Active Ad Display */
+          /* Active Framed Ad Display: completely visible in frame with dynamic CTA */
           <div
             onClick={handleContainerClick}
-            className="w-full h-full min-h-[380px] rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-amber-400 shadow-lg hover:shadow-2xl transition-all cursor-pointer bg-stone-950 flex flex-col relative group"
-            title="Sponsor Advertisement"
+            className="w-full h-full min-h-[380px] rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-amber-400 shadow-lg hover:shadow-2xl transition-all cursor-pointer bg-[#1e130e] flex items-center justify-center relative group"
+            title={`Sponsor Advertisement: ${currentAd.businessName || ""}`}
           >
-            <div className="absolute top-3 left-3 z-10 px-2.5 py-0.5 rounded-full bg-black/70 backdrop-blur-sm border border-amber-300/40 text-[10px] font-bold tracking-wider text-amber-200 uppercase">
-              Sponsored
+            {/* Ambient Blurred Backdrop */}
+            <div
+              className="absolute inset-0 bg-cover bg-center blur-lg opacity-35 scale-110 pointer-events-none"
+              style={{ backgroundImage: `url("${navaratriAsset(currentAd.imageUrl)}")` }}
+            />
+
+            {/* Top Badge */}
+            <div className="absolute top-3 left-3 z-20 px-2.5 py-0.5 rounded-full bg-black/70 backdrop-blur-sm border border-amber-300/40 text-[10px] font-bold tracking-wider text-amber-200 uppercase flex items-center gap-1.5 shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              <span>Sponsored</span>
             </div>
+
+            {/* Framed Image: object-contain preserves all content in frame */}
             <img
               src={navaratriAsset(currentAd.imageUrl)}
-              alt="Sponsor Advertisement"
-              className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
+              alt={currentAd.businessName || "Sponsor Advertisement"}
+              className="w-full h-full object-contain relative z-10 mx-auto group-hover:scale-[1.01] transition-transform duration-500"
             />
+
+            {/* Bottom Floating CTA Button */}
+            <div className="absolute bottom-3 inset-x-3 z-20">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleContainerClick();
+                }}
+                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] hover:from-[#F59E0B] hover:to-[#B45309] text-white text-xs sm:text-sm font-bold shadow-xl hover:shadow-2xl transition-all transform active:scale-95 flex items-center justify-center gap-2 border border-amber-300/60 cursor-pointer"
+              >
+                <span>{ctaInfo.label}</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         ) : (
           /* Empty Sponsor Slot matching hero height on desktop */

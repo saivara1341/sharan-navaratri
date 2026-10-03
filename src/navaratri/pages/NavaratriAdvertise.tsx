@@ -22,20 +22,24 @@ import {
   Check,
   X,
   Play,
-  Clock
+  Clock,
+  Utensils
 } from "lucide-react";
 import { toast } from "sonner";
+import { getDefaultCtaForCategory } from "../utils/adButtonHelpers";
 
 export const NavaratriAdvertise: React.FC = () => {
   const { adPackages, advertisements, createAdvertisement } = useNavaratriData();
   const { t } = useNavaratriLanguage();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const paymentRef = useRef<HTMLDivElement>(null);
 
   // Form State
   const [selectedPkgId, setSelectedPkgId] = useState(adPackages[0]?.id || "pkg-starter");
   const [businessName, setBusinessName] = useState("");
   const [category, setCategory] = useState("Sweets & Upvas Food");
+  const [ctaButton, setCtaButton] = useState("Order Now");
   const [phone, setPhone] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [website, setWebsite] = useState("");
@@ -59,6 +63,7 @@ export const NavaratriAdvertise: React.FC = () => {
   // Ad Preview Modal
   const [showAdPreview, setShowAdPreview] = useState(false);
   const [showBigQr, setShowBigQr] = useState(false);
+  const [previewTab, setPreviewTab] = useState<"mobile" | "desktop">("mobile");
 
   // Go-live countdown helper — estimates 2h from now
   const goLiveTime = new Date(Date.now() + 2 * 60 * 60 * 1000);
@@ -137,7 +142,9 @@ export const NavaratriAdvertise: React.FC = () => {
       }
     }
     setPaymentStep(true);
-    window.scrollTo({ top: 300, behavior: "smooth" });
+    setTimeout(() => {
+      paymentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 150);
   };
 
   const handleCompletePayment = () => {
@@ -165,7 +172,7 @@ export const NavaratriAdvertise: React.FC = () => {
         title: title.trim(),
         description: description.trim() || "Navaratri festive discounts and special offers. Satvik preparations.",
         imageUrl: imagePreview,
-        ctaText: "Contact Store",
+        ctaText: ctaButton.trim() || getDefaultCtaForCategory(category),
         ctaUrl: website.trim() || `tel:${phone.trim()}`,
         startDate: "2026-10-11",
         endDate: "2026-10-21",
@@ -183,23 +190,23 @@ export const NavaratriAdvertise: React.FC = () => {
 
   return (
     <>
-      <div className="max-w-5xl mx-auto space-y-10 pb-20 font-sans">
+      <div className="max-w-4xl mx-auto px-3 sm:px-6 space-y-5 sm:space-y-8 pb-24 font-sans">
       {/* Hero Banner */}
-      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#9A241C] via-[#8B1E1E] to-[#B45309] text-white p-6 sm:p-10 shadow-2xl border-4 border-amber-400/40">
+      <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-gradient-to-r from-[#9A241C] via-[#8B1E1E] to-[#B45309] text-white p-4 sm:p-8 shadow-xl border-2 sm:border-4 border-amber-400/40">
         <div
           className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-30 pointer-events-none"
           style={{ backgroundImage: `url("${navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg")}")` }}
         />
-        <div className="relative z-10 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-400/20 text-amber-200 text-xs font-bold border border-amber-300/40 backdrop-blur-sm">
-            <Store className="w-3.5 h-3.5 text-amber-300" />
-            <span>Hyper-Local Navaratri Advertising • Reach 15,000+ Devotees</span>
+        <div className="relative z-10 space-y-2">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-400/20 text-amber-200 text-[10px] sm:text-xs font-bold border border-amber-300/40 backdrop-blur-sm">
+            <Store className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300 shrink-0" />
+            <span className="truncate">Hyper-Local Advertising • 15,000+ Devotees</span>
           </div>
-          <h1 className="font-['Cinzel',serif] font-black text-2xl sm:text-4xl text-white drop-shadow">
-            Promote Your Local Business Starting at ₹49/day
+          <h1 className="font-['Cinzel',serif] font-black text-lg sm:text-3xl md:text-4xl text-white drop-shadow leading-tight">
+            Promote Your Business from ₹49/day
           </h1>
-          <p className="text-xs sm:text-sm text-amber-100/90 max-w-2xl font-medium leading-relaxed">
-            Showcase your sweet stall, flower garlands, pooja samagri store, handloom silks, or catering service directly to citizens discovering Mandapams in your chosen neighborhood zone.
+          <p className="text-[11px] sm:text-sm text-amber-100/90 max-w-2xl font-medium leading-snug">
+            Reach devotees discovering Mandapams in your zone — sweet stalls, flowers, pooja items, silks &amp; more.
           </p>
         </div>
       </div>
@@ -269,39 +276,53 @@ export const NavaratriAdvertise: React.FC = () => {
                 <Tag className="w-3.5 h-3.5" />
                 <span>STEP 1: SELECT DURATION & PRICING</span>
               </div>
-              <h2 className="font-['Cinzel',serif] font-bold text-xl text-stone-900">
+              <h2 className="font-['Cinzel',serif] font-bold text-lg sm:text-xl text-stone-900">
                 Transparent & Affordable Daily Pricing
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {[
-                {
-                  id: "pkg-starter",
-                  name: "1 Day Daily Booster",
-                  priceInr: 49,
-                  durationDays: 1,
-                  impressions: "1,500+",
-                  desc: "Ideal for flash offers, special pooja day rush, or 1-day sweet stall promo."
-                },
-                {
-                  id: "pkg-growth",
-                  name: "3 Days Weekend Rush",
-                  priceInr: 129,
-                  popular: true,
-                  durationDays: 3,
-                  impressions: "5,000+",
-                  desc: "Perfect for Moola Nakshatram, Durgashtami, and weekend devotee peaks."
-                },
-                {
-                  id: "pkg-festival",
-                  name: "9 Days Maha Utsav Pass",
-                  priceInr: 349,
-                  durationDays: 9,
-                  impressions: "18,000+",
-                  desc: "Complete 9-day coverage throughout Navaratri and Vijaya Dashami festival."
-                }
-              ].map((pkg) => {
+            {/* Mobile: Horizontal scroll chips — Desktop: 3-col grid */}
+            <div className="sm:hidden flex gap-3 overflow-x-auto pb-1 -mx-1 px-1 snap-x snap-mandatory">
+              {adPackages.map((pkg) => {
+                const isSelected = selectedPkgId === pkg.id;
+                return (
+                  <div
+                    key={pkg.id}
+                    onClick={() => setSelectedPkgId(pkg.id)}
+                    className={`cursor-pointer rounded-2xl p-3.5 border-2 transition-all flex-shrink-0 w-[72vw] max-w-[260px] snap-start relative overflow-hidden ${
+                      isSelected
+                        ? "bg-gradient-to-b from-[#FFFDF9] to-[#FAF5EC] border-[#8B1E1E] shadow-lg ring-2 ring-[#8B1E1E]/20"
+                        : "bg-white border-amber-200"
+                    }`}
+                  >
+                    {pkg.popular && (
+                      <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-[#8B1E1E] text-white text-[9px] font-bold shadow">
+                        POPULAR
+                      </span>
+                    )}
+                    <p className="font-bold text-[10px] uppercase tracking-wider text-amber-900 font-serif mb-1.5">{pkg.name}</p>
+                    <div className="flex items-baseline gap-1 mb-1">
+                      <span className="text-2xl font-black text-[#8B1E1E]">₹{pkg.priceInr}</span>
+                      <span className="text-[10px] text-stone-500 font-semibold">/ {pkg.durationDays} day(s)</span>
+                    </div>
+                    <p className="text-[11px] text-stone-600 leading-snug mb-2">{pkg.description}</p>
+                    <div className="text-[10px] text-stone-600 space-y-0.5 mb-3">
+                      <p>✓ ~{pkg.impressionLimit?.toLocaleString()} Impressions</p>
+                      <p>✓ Zone-targeted · Call & WhatsApp</p>
+                    </div>
+                    <div className={`w-full py-2 rounded-xl text-[11px] font-bold text-center ${
+                      isSelected ? "bg-[#8B1E1E] text-white" : "bg-amber-100 text-stone-800"
+                    }`}>
+                      {isSelected ? "Selected ✓" : "Tap to Choose"}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop: 3-col grid */}
+            <div className="hidden sm:grid grid-cols-3 gap-4">
+              {adPackages.map((pkg) => {
                 const isSelected = selectedPkgId === pkg.id;
                 return (
                   <div
@@ -309,8 +330,8 @@ export const NavaratriAdvertise: React.FC = () => {
                     onClick={() => setSelectedPkgId(pkg.id)}
                     className={`cursor-pointer rounded-3xl p-5 border-2 transition-all flex flex-col justify-between space-y-4 relative overflow-hidden ${
                       isSelected
-                        ? "bg-gradient-to-b from-[#FFFDF9] to-[#FAF5EC] border-[#8B1E1E] shadow-xl ring-2 ring-[#8B1E1E]/20 scale-[1.02]"
-                        : "bg-white border-amber-200 hover:border-amber-400 shadow-sm"
+                        ? "bg-gradient-to-b from-[#FFFDF9] to-[#FAF5EC] border-[#8B1E1E] shadow-lg ring-2 ring-[#8B1E1E]/20"
+                        : "bg-white border-amber-200 hover:border-amber-400 shadow-xs"
                     }`}
                   >
                     {pkg.popular && (
@@ -318,33 +339,22 @@ export const NavaratriAdvertise: React.FC = () => {
                         POPULAR
                       </span>
                     )}
-
                     <div className="space-y-2">
-                      <p className="font-bold text-xs uppercase tracking-wider text-amber-900 font-serif">
-                        {pkg.name}
-                      </p>
+                      <p className="font-bold text-xs uppercase tracking-wider text-amber-900 font-serif">{pkg.name}</p>
                       <div className="flex items-baseline gap-1">
                         <span className="text-3xl font-black text-[#8B1E1E]">₹{pkg.priceInr}</span>
                         <span className="text-xs text-stone-500 font-semibold">/ {pkg.durationDays} day(s)</span>
                       </div>
-                      <p className="text-xs text-stone-600 leading-relaxed">
-                        {pkg.desc}
-                      </p>
+                      <p className="text-xs text-stone-600 leading-relaxed">{pkg.description}</p>
                       <div className="pt-2 border-t border-amber-100 text-[11px] text-stone-600 space-y-1">
-                        <p>✓ ~{pkg.impressions} Devotee Impressions</p>
+                        <p>✓ ~{pkg.impressionLimit?.toLocaleString()} Devotee Impressions</p>
                         <p>✓ Zone-targeted display</p>
                         <p>✓ Call & WhatsApp integration</p>
                       </div>
                     </div>
-
-                    <button
-                      type="button"
-                      className={`w-full py-2 rounded-xl text-xs font-bold transition-all ${
-                        isSelected
-                          ? "bg-[#8B1E1E] text-white shadow"
-                          : "bg-amber-100 text-stone-800 hover:bg-amber-200"
-                      }`}
-                    >
+                    <button type="button" className={`w-full py-2 rounded-xl text-xs font-bold transition-all ${
+                      isSelected ? "bg-[#8B1E1E] text-white shadow" : "bg-amber-100 text-stone-800 hover:bg-amber-200"
+                    }`}>
                       {isSelected ? "Selected ✓" : "Choose Package"}
                     </button>
                   </div>
@@ -353,10 +363,10 @@ export const NavaratriAdvertise: React.FC = () => {
             </div>
           </div>
 
-          {/* MAIN FORM & LIVE PREVIEW */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* MAIN FORM & PAYMENT FLOW */}
+          <div className="space-y-6">
             {/* Form Column */}
-            <form onSubmit={handleProceedToPayment} className="lg:col-span-7 p-6 sm:p-8 rounded-3xl bg-[#FFFDF9] border-2 border-amber-300 shadow-xl space-y-5">
+            <form onSubmit={handleProceedToPayment} className="p-4 sm:p-7 rounded-3xl bg-[#FFFDF9] border-2 border-amber-300/80 shadow-md space-y-5">
               <div className="border-b border-amber-200 pb-3">
                 <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#8B1E1E]">
                   <Tag className="w-3.5 h-3.5" />
@@ -385,7 +395,11 @@ export const NavaratriAdvertise: React.FC = () => {
                   <label className="block font-bold mb-1 text-stone-800">Category *</label>
                   <select
                     value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                    onChange={(e) => {
+                      const newCat = e.target.value;
+                      setCategory(newCat);
+                      setCtaButton(getDefaultCtaForCategory(newCat));
+                    }}
                     className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-[#8B1E1E]/30"
                   >
                     <option value="Sweets & Upvas Food">Sweets & Upvas Food</option>
@@ -541,6 +555,38 @@ export const NavaratriAdvertise: React.FC = () => {
                 </div>
               </div>
 
+              {/* Clickable Action Button (CTA) Selection */}
+              <div className="text-xs pt-2 border-t border-amber-200">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block font-bold text-stone-800">Clickable Action Button (CTA) *</label>
+                  <span className="text-[10px] text-stone-500 font-semibold">e.g. Order Now for food, Open for companies</span>
+                </div>
+                <input
+                  type="text"
+                  value={ctaButton}
+                  onChange={(e) => setCtaButton(e.target.value)}
+                  placeholder="Order Now, Open, More Details, Shop Now..."
+                  className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-semibold text-stone-900"
+                />
+                {/* Preset Quick CTA Options */}
+                <div className="flex flex-wrap gap-1.5 mt-1.5">
+                  {["Order Now", "Open / More Details", "Shop Now", "View Details", "Call Store", "WhatsApp Us"].map((preset) => (
+                    <button
+                      type="button"
+                      key={preset}
+                      onClick={() => setCtaButton(preset)}
+                      className={`text-[10px] px-2.5 py-1 rounded-lg font-semibold transition-all border ${
+                        ctaButton === preset
+                          ? "bg-[#8B1E1E] text-white border-[#8B1E1E] shadow-xs"
+                          : "bg-white text-stone-700 border-amber-300 hover:bg-amber-50"
+                      }`}
+                    >
+                      {preset}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* IMAGE UPLOAD SECTION */}
               <div className="text-xs space-y-3 pt-2 border-t border-amber-200">
                 <div className="flex items-center justify-between">
@@ -567,244 +613,185 @@ export const NavaratriAdvertise: React.FC = () => {
                   <p className="text-[11px] text-stone-500">Supports direct mobile photos of your storefront or products</p>
                 </div>
 
-                {/* Festive Preset Chips */}
-                <div className="space-y-1.5 pt-1">
-                  <span className="text-[11px] font-bold text-stone-600">Or pick a ready festive background preset:</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {festivePresets.map((preset) => (
-                      <button
-                        key={preset.label}
-                        type="button"
-                        onClick={() => handlePresetSelect(preset.url)}
-                        className="px-2.5 py-1 rounded-full bg-white border border-amber-300 text-[10px] font-semibold text-stone-700 hover:bg-amber-100 transition-colors shadow-sm"
-                      >
-                        {preset.label}
-                      </button>
-                    ))}
+                {/* In-Frame Live Banner Preview */}
+                {imagePreview && (
+                  <div className="space-y-1.5 pt-1">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-stone-700">
+                      <span>Live Banner Frame Preview:</span>
+                      <span className="text-emerald-700 font-semibold">✓ 100% In-Frame (Never cropped)</span>
+                    </div>
+                    <div className="relative w-full h-32 sm:h-36 rounded-2xl overflow-hidden border-2 border-amber-400 bg-[#1e130e] flex items-center justify-center shadow-md">
+                      <div
+                        className="absolute inset-0 bg-cover bg-center blur-md opacity-30 scale-110 pointer-events-none"
+                        style={{ backgroundImage: `url("${imagePreview}")` }}
+                      />
+                      <div className="absolute top-2 left-2 z-20 px-2 py-0.5 rounded-full bg-black/60 text-[9px] font-bold text-amber-200 border border-white/20">
+                        Sponsored
+                      </div>
+                      <img
+                        src={imagePreview}
+                        alt="Banner Preview"
+                        className="w-full h-full object-contain relative z-10 mx-auto"
+                      />
+                      <div className="absolute bottom-2 right-2 z-20">
+                        <span className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[11px] font-bold shadow-md flex items-center gap-1 border border-amber-300/60">
+                          {ctaButton || "Order Now"} ↗
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Preview Ad Button — appears after image is selected */}
-              <div className="pt-2 flex gap-2">
+              <div className="pt-2">
                 <button
                   type="button"
                   onClick={() => setShowAdPreview(true)}
-                  className="flex-1 py-2.5 rounded-xl border-2 border-[#8B1E1E] text-[#8B1E1E] text-xs font-bold hover:bg-[#8B1E1E]/5 flex items-center justify-center gap-1.5 transition-colors"
+                  className="w-full py-2.5 rounded-xl border-2 border-[#8B1E1E] text-[#8B1E1E] text-xs font-bold hover:bg-[#8B1E1E]/5 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <Play className="w-3.5 h-3.5" />
                   Preview My Ad
                 </button>
               </div>
 
-              <div className="pt-3 border-t border-amber-200">
-                {/* Payment Due — Premium font + style */}
-                <div className="mb-3 p-3 rounded-2xl bg-gradient-to-r from-[#8B1E1E]/8 to-amber-50 border border-amber-300">
+              <div className="pt-3 border-t border-amber-200 space-y-3">
+                {/* Payment Due Summary */}
+                <div className="p-3.5 rounded-2xl bg-gradient-to-r from-[#8B1E1E]/8 via-amber-50 to-amber-100/50 border border-amber-300">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-stone-600 font-sans">Payment Due</span>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-amber-900 font-sans block">Selected Plan</span>
+                      <span className="text-xs sm:text-sm font-bold text-stone-800 font-serif">{selectedPkg.name}</span>
+                    </div>
                     <div className="flex items-baseline gap-1">
-                      <span className="font-['Cinzel',serif] font-black text-2xl text-[#8B1E1E]">₹{selectedPkg.priceInr}</span>
-                      <span className="text-[10px] text-stone-500 font-medium">/ {selectedPkg.durationDays} day{selectedPkg.durationDays > 1 ? 's' : ''}</span>
+                      <span className="font-['Cinzel',serif] font-black text-2xl sm:text-3xl text-[#8B1E1E]">₹{selectedPkg.priceInr}</span>
+                      <span className="text-[10px] sm:text-xs text-stone-600 font-semibold">/ {selectedPkg.durationDays} day{selectedPkg.durationDays > 1 ? 's' : ''}</span>
                     </div>
                   </div>
-                  <p className="text-[10px] text-stone-500 mt-0.5">Includes up to {selectedPkg.impressionLimit?.toLocaleString()} devotee impressions</p>
+                  <p className="text-[10px] sm:text-[11px] text-stone-600 mt-1">Includes ~{selectedPkg.impressionLimit?.toLocaleString()} devotee impressions across your zone</p>
                 </div>
+
                 <button
                   type="submit"
-                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#8B1E1E] via-[#9A241C] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-sm font-bold shadow-xl transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3.5 sm:py-4 rounded-2xl bg-gradient-to-r from-[#8B1E1E] via-[#9A241C] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-sm sm:text-base font-bold shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>Proceed to Pay ₹{selectedPkg.priceInr} via UPI →</span>
                 </button>
               </div>
             </form>
 
-            {/* Live Preview & Payment Step Column */}
-            <div className="lg:col-span-5 space-y-6">
-              {/* LIVE AD PREVIEW CARD */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-amber-900 font-serif flex items-center gap-1.5">
-                    <Eye className="w-4 h-4 text-[#8B1E1E]" />
-                    <span>Live Devotee Preview</span>
-                  </span>
-                  <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
-                    Target: {effectiveDisplayZone}
-                  </span>
-                </div>
-
-                {/* The Exact Preview Card as it will look on Home Page */}
-                <div className="rounded-3xl bg-gradient-to-b from-[#FFFDF9] via-[#FAF6EE] to-[#F5EEDC] border-2 border-amber-400 shadow-xl overflow-hidden p-4 space-y-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-[#8B1E1E] text-[10px] font-bold border border-amber-200">
-                      <Tag className="w-3 h-3 text-[#8B1E1E]" />
-                      <span>{category}</span>
-                    </span>
-
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white text-stone-700 text-[10px] font-semibold border border-amber-200 shadow-sm">
-                      <MapPin className="w-3 h-3 text-amber-700 shrink-0" />
-                      <span>{effectiveDisplayZone}</span>
-                    </span>
-                  </div>
-
-                  {/* Image Preview */}
-                  <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-amber-50 border border-amber-300 shadow-inner">
-                    <img
-                      src={imagePreview}
-                      alt="Ad Preview"
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-[#8B1E1E]/90 text-white text-[9px] font-bold flex items-center gap-1 shadow">
-                      <ShieldCheck className="w-3 h-3 text-amber-300" />
-                      <span>Sponsored Store</span>
-                    </div>
-                  </div>
-
+            {/* STEP 3: UPI PAYMENT & CONFIRMATION */}
+            {paymentStep && (
+              <div ref={paymentRef} className="p-5 sm:p-8 rounded-3xl bg-white border-2 border-amber-400 shadow-2xl space-y-5 animate-in fade-in slide-in-from-top-4 duration-300">
+                {/* Header */}
+                <div className="border-b border-amber-200 pb-3 flex items-center justify-between">
                   <div>
-                    <h3 className="font-['Cinzel',serif] font-bold text-base text-[#8B1E1E]">
-                      {businessName || "Your Business Name"}
-                    </h3>
-                    <p className="font-semibold text-xs text-stone-900 mt-0.5">
-                      {title || "Your Festive Offer Title"}
-                    </p>
-                    <p className="text-[11px] text-stone-600 mt-1 line-clamp-2 leading-relaxed">
-                      {description || "Your store details, festive discounts, and offerings will be shown to devotees here."}
-                    </p>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800">STEP 3: PAY & CONFIRM</span>
+                    <h4 className="font-['Cinzel',serif] font-black text-xl text-[#8B1E1E]">
+                      Total Due: ₹{selectedPkg.priceInr}
+                    </h4>
                   </div>
-
-                  <div className="pt-2 border-t border-amber-200 space-y-2">
-                    <p className="text-[10px] text-stone-500 truncate flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-amber-700 shrink-0" />
-                      <span>{address || `${effectiveDisplayZone}, ${city}`}</span>
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        className="flex-1 py-2 rounded-xl bg-[#8B1E1E] text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 shadow"
-                      >
-                        <Phone className="w-3.5 h-3.5" />
-                        <span>Call Business</span>
-                      </button>
-                      <button
-                        type="button"
-                        className="p-2 rounded-xl bg-emerald-600 text-white text-xs font-bold flex items-center justify-center shadow"
-                      >
-                        <MessageCircle className="w-4 h-4" />
-                      </button>
-                      {website && (
-                        <button
-                          type="button"
-                          className="p-2 rounded-xl bg-white text-stone-800 border border-amber-300 text-xs font-bold flex items-center justify-center shadow-sm"
-                        >
-                          <ExternalLink className="w-4 h-4 text-amber-800" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
+                  <span className="px-3 py-1 rounded-full bg-amber-100 text-[#8B1E1E] font-bold text-xs border border-amber-200">
+                    {selectedPkg.name}
+                  </span>
                 </div>
-              </div>
 
-              {/* STEP 3: UPI PAYMENT & CONFIRMATION */}
-              {paymentStep && (
-                <div className="p-6 rounded-3xl bg-white border-2 border-amber-400 shadow-2xl space-y-5 animate-in fade-in slide-in-from-top-4 duration-300">
-                  {/* Header */}
-                  <div className="border-b border-amber-200 pb-3 flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800">STEP 3: PAY & CONFIRM</span>
-                      <h4 className="font-['Cinzel',serif] font-black text-lg text-[#8B1E1E]">
-                        Total Due: ₹{selectedPkg.priceInr}
-                      </h4>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full bg-amber-100 text-[#8B1E1E] font-bold text-xs border border-amber-200">
-                      {selectedPkg.name}
-                    </span>
+                {/* Direct 1-Tap Mobile UPI link */}
+                <a
+                  href={`upi://pay?pa=6303602743@upi&pn=NavaratriMandapamAds&am=${selectedPkg.priceInr}&cu=INR&tn=${encodeURIComponent((businessName || "FestivalAd").slice(0, 20))}`}
+                  className="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-800 text-white text-sm font-bold shadow-md flex items-center justify-center gap-2.5 text-center active:scale-95 transition-all cursor-pointer"
+                >
+                  <span className="text-xl">📱</span>
+                  <div className="flex flex-col items-start">
+                    <span className="text-xs text-emerald-200 font-semibold">One-tap Payment</span>
+                    <span>Pay ₹{selectedPkg.priceInr} via GPay / PhonePe / Paytm</span>
                   </div>
+                </a>
 
-                  {/* QR Code */}
-                  <div className="p-4 rounded-2xl bg-amber-50 border border-amber-300 text-center space-y-3">
-                    <div className="flex items-center justify-between">
-                      <p className="text-[11px] font-bold text-stone-600 uppercase tracking-wider">UPI QR Code</p>
-                      <button
-                        type="button"
-                        onClick={() => setShowBigQr(!showBigQr)}
-                        className="px-2.5 py-1 rounded-lg bg-amber-200 hover:bg-amber-300 text-[#8B1E1E] text-[11px] font-bold flex items-center gap-1 transition-colors border border-amber-300 shadow-xs cursor-pointer"
-                      >
-                        <QrCode className="w-3.5 h-3.5" />
-                        <span>{showBigQr ? "Standard Size QR" : "Show Big QR"}</span>
-                      </button>
-                    </div>
-                    <div className={`mx-auto rounded-2xl bg-white p-3 border-2 border-amber-400 shadow-md flex items-center justify-center transition-all duration-200 ${showBigQr ? "w-64 h-64 sm:w-72 sm:h-72" : "w-44 h-44"}`}>
-                      <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=${showBigQr ? "280x280" : "180x180"}&data=${encodeURIComponent(
-                          `upi://pay?pa=6303602743@upi&pn=NavaratriMandapamAds&am=${selectedPkg.priceInr}&cu=INR&tn=${encodeURIComponent(businessName || "LocalAd")}`
-                        )}`}
-                        alt="UPI Payment QR Code"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <p className="text-xs font-bold text-stone-900">Scan via GPay / PhonePe / Paytm / BHIM</p>
-                  </div>
-
-                  {/* UPI ID */}
-                  <div className="space-y-2">
-                    <p className="text-[11px] font-bold text-stone-700 uppercase tracking-wider">Or Pay to UPI ID directly:</p>
-
-                    {/* UPI ID 2 */}
-                    <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-gradient-to-r from-amber-50 to-white border border-amber-300 shadow-sm">
-                      <div className="flex flex-col">
-                        <span className="text-[10px] font-semibold text-stone-500">Alternate UPI</span>
-                        <span className="font-mono text-sm font-bold text-stone-900">6303602743@upi</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={handleCopyUpi2}
-                        className="ml-2 px-2.5 py-1.5 rounded-lg bg-[#8B1E1E] hover:bg-[#781B1B] text-white font-bold text-[11px] flex items-center gap-1 transition-colors shadow"
-                      >
-                        {isCopied2 ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                        <span>{isCopied2 ? "Copied!" : "Copy"}</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* UTR Input — Required */}
-                  <div className="space-y-1.5 text-xs">
-                    <label className="block font-bold text-stone-800">
-                      UPI Reference / UTR Number <span className="text-red-600">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={utrNumber}
-                      onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, ""))}
-                      placeholder="Enter 12-digit UTR after payment (e.g. 427819203819)"
-                      maxLength={22}
-                      className="w-full px-3 py-2.5 rounded-xl border-2 border-amber-300 focus:border-[#8B1E1E] bg-white font-mono text-sm outline-none transition-colors"
-                    />
-                    <p className="text-stone-500 text-[11px]">Found in your UPI app under payment details / transaction history.</p>
-                  </div>
-
-                  {/* Submit */}
-                  <div className="pt-1">
+                {/* QR Code */}
+                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-300 text-center space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[11px] font-bold text-stone-600 uppercase tracking-wider">Or Scan UPI QR Code</p>
                     <button
                       type="button"
-                      disabled={isProcessingPayment || utrNumber.trim().length < 6}
-                      onClick={() => handleCompletePayment()}
-                      className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={() => setShowBigQr(!showBigQr)}
+                      className="px-2.5 py-1 rounded-lg bg-amber-200 hover:bg-amber-300 text-[#8B1E1E] text-[11px] font-bold flex items-center gap-1 transition-colors border border-amber-300 shadow-xs cursor-pointer"
                     >
-                      {isProcessingPayment ? (
-                        <span>Submitting for Verification...</span>
-                      ) : (
-                        <>
-                          <CheckCircle2 className="w-4 h-4 text-amber-300" />
-                          <span>I Have Paid ₹{selectedPkg.priceInr} — Submit for Approval</span>
-                        </>
-                      )}
+                      <QrCode className="w-3.5 h-3.5" />
+                      <span>{showBigQr ? "Standard Size QR" : "Show Big QR"}</span>
                     </button>
-                    <p className="text-center text-[11px] text-stone-500 mt-2">
-                      🔒 Your ad will go <strong>live automatically</strong> once our team verifies payment (within 2–4 hours)
-                    </p>
+                  </div>
+                  <div className={`mx-auto rounded-2xl bg-white p-3 border-2 border-amber-400 shadow-md flex items-center justify-center transition-all duration-200 ${showBigQr ? "w-64 h-64 sm:w-72 sm:h-72" : "w-44 h-44"}`}>
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=${showBigQr ? "280x280" : "180x180"}&data=${encodeURIComponent(
+                        `upi://pay?pa=6303602743@upi&pn=NavaratriMandapamAds&am=${selectedPkg.priceInr}&cu=INR&tn=${encodeURIComponent(businessName || "LocalAd")}`
+                      )}`}
+                      alt="UPI Payment QR Code"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  <p className="text-xs font-bold text-stone-900">Scan via GPay / PhonePe / Paytm / BHIM</p>
+                </div>
+
+                {/* UPI ID */}
+                <div className="space-y-2">
+                  <p className="text-[11px] font-bold text-stone-700 uppercase tracking-wider">Or Pay to UPI ID directly:</p>
+
+                  <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-gradient-to-r from-amber-50 to-white border border-amber-300 shadow-sm">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-semibold text-stone-500">Official UPI ID</span>
+                      <span className="font-mono text-sm font-bold text-stone-900">6303602743@upi</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleCopyUpi2}
+                      className="ml-2 px-3 py-1.5 rounded-lg bg-[#8B1E1E] hover:bg-[#781B1B] text-white font-bold text-[11px] flex items-center gap-1 transition-colors shadow cursor-pointer"
+                    >
+                      {isCopied2 ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{isCopied2 ? "Copied!" : "Copy"}</span>
+                    </button>
                   </div>
                 </div>
-              )}
-            </div>
+
+                {/* UTR Input — Required */}
+                <div className="space-y-1.5 text-xs">
+                  <label className="block font-bold text-stone-800">
+                    UPI Reference / UTR Number <span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={utrNumber}
+                    onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, ""))}
+                    placeholder="Enter 12-digit UTR after payment (e.g. 427819203819)"
+                    maxLength={22}
+                    className="w-full px-3 py-2.5 rounded-xl border-2 border-amber-300 focus:border-[#8B1E1E] bg-white font-mono text-sm outline-none transition-colors"
+                  />
+                  <p className="text-stone-500 text-[11px]">Found in your UPI app under payment details / transaction history.</p>
+                </div>
+
+                {/* Submit */}
+                <div className="pt-1">
+                  <button
+                    type="button"
+                    disabled={isProcessingPayment || utrNumber.trim().length < 6}
+                    onClick={() => handleCompletePayment()}
+                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  >
+                    {isProcessingPayment ? (
+                      <span>Submitting for Verification...</span>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-4 h-4 text-amber-300" />
+                        <span>I Have Paid ₹{selectedPkg.priceInr} — Submit for Approval</span>
+                      </>
+                    )}
+                  </button>
+                  <p className="text-center text-[11px] text-stone-500 mt-2">
+                    🔒 Your ad will go <strong>live automatically</strong> once our team verifies payment (within 2–4 hours)
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -858,115 +845,323 @@ export const NavaratriAdvertise: React.FC = () => {
 
       {/* ===== AD PREVIEW MODAL ===== */}
       {showAdPreview && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in">
-          <div className="w-full max-w-sm bg-[#FFFDF9] rounded-3xl shadow-2xl border-2 border-amber-400 overflow-hidden my-6">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-5 py-3.5 bg-gradient-to-r from-[#8B1E1E] to-[#B45309] text-white">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-start justify-center overflow-y-auto animate-in fade-in p-3 sm:p-6">
+          <div className="w-full max-w-2xl my-4 sm:my-8 space-y-3">
+
+            {/* Modal chrome header */}
+            <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-[#8B1E1E] to-[#B45309] rounded-2xl text-white shadow-xl">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-amber-200">Live Devotee View</p>
-                <h3 className="font-['Cinzel',serif] font-black text-base">Your Ad Preview</h3>
+                <h3 className="font-['Cinzel',serif] font-black text-base leading-tight">Your Ad Preview</h3>
               </div>
-              <button
-                onClick={() => setShowAdPreview(false)}
-                className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-2">
+                {/* Mobile / Desktop tab switcher */}
+                <div className="flex items-center bg-black/30 rounded-xl p-0.5 text-[11px] font-bold">
+                  <button
+                    onClick={() => setPreviewTab("mobile")}
+                    className={`px-3 py-1.5 rounded-lg transition-all ${previewTab === "mobile" ? "bg-white text-[#8B1E1E] shadow" : "text-amber-200 hover:text-white"}`}
+                  >📱 Mobile</button>
+                  <button
+                    onClick={() => setPreviewTab("desktop")}
+                    className={`px-3 py-1.5 rounded-lg transition-all ${previewTab === "desktop" ? "bg-white text-[#8B1E1E] shadow" : "text-amber-200 hover:text-white"}`}
+                  >🖥 Desktop</button>
+                </div>
+                <button onClick={() => setShowAdPreview(false)} className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-colors">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
-            {/* Simulated Home Page Context */}
-            <div className="p-4 bg-stone-100 border-b border-stone-200">
-              <div className="flex items-center gap-2 text-[10px] text-stone-500 font-semibold uppercase tracking-wider mb-2">
-                <Store className="w-3.5 h-3.5" />
-                <span>As it appears on Navaratri Home Page</span>
-              </div>
+            {/* MOBILE PHONE FRAME */}
+            {previewTab === "mobile" && (
+              <div className="flex justify-center">
+                <div className="relative w-[300px] sm:w-[320px] rounded-[2.5rem] bg-stone-900 p-[9px] shadow-2xl border-4 border-stone-700">
+                  {/* Notch */}
+                  <div className="absolute top-[9px] left-1/2 -translate-x-1/2 w-20 h-5 bg-stone-900 rounded-full z-10" />
+                  {/* Screen */}
+                  <div className="rounded-[2rem] overflow-hidden bg-[#FDFBF7] flex flex-col" style={{ height: 580 }}>
 
-              {/* Exact Ad Card replica */}
-              <div className="rounded-3xl bg-gradient-to-b from-[#FFFDF9] via-[#FAF6EE] to-[#F5EEDC] border-2 border-amber-400 shadow-xl overflow-hidden">
-                {/* Banner Image */}
-                <div className="relative aspect-[16/9] overflow-hidden">
-                  <img
-                    src={imagePreview}
-                    alt="Ad Banner"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-[#8B1E1E]/90 text-white text-[9px] font-bold flex items-center gap-1 shadow">
-                    <ShieldCheck className="w-3 h-3 text-amber-300" />
-                    <span>Sponsored</span>
-                  </div>
-                  <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-amber-500/90 text-white text-[9px] font-bold shadow">
-                    {category}
-                  </div>
-                </div>
+                    {/* Real Header — Mobile */}
+                    <div className="shrink-0 bg-[#FDFBF7] border-b-2 border-amber-300/40 shadow-sm">
+                      <div className="bg-gradient-to-r from-[#8B1E1E] via-[#9A241C] to-[#8B1E1E] text-white px-3 py-1 flex items-center justify-between">
+                        <span className="font-serif text-amber-200 font-bold text-[9px]">॥ Om Sri Matre Namaha ॥</span>
+                        <span className="text-[9px] text-amber-300 font-bold">🌐 English</span>
+                      </div>
+                      <div className="px-3 h-10 flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-lg">🔱</span>
+                          <span className="font-['Cinzel',serif] font-black text-[12px] text-[#8B1E1E]">Sharan Navaratri</span>
+                        </div>
+                        <div className="w-7 h-7 rounded-lg bg-amber-50 border border-amber-200 flex flex-col items-center justify-center gap-[3px]">
+                          <span className="w-3.5 h-[2px] bg-stone-600 rounded" />
+                          <span className="w-3.5 h-[2px] bg-stone-600 rounded" />
+                          <span className="w-3.5 h-[2px] bg-stone-600 rounded" />
+                        </div>
+                      </div>
+                    </div>
 
-                {/* Card Body */}
-                <div className="p-3 space-y-2">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <h4 className="font-['Cinzel',serif] font-bold text-sm text-[#8B1E1E] leading-tight">
-                        {businessName || "Your Business Name"}
-                      </h4>
-                      <p className="font-semibold text-xs text-stone-900 mt-0.5">
-                        {title || "Your Festive Offer Headline"}
+                    {/* Scrollable page content */}
+                    <div className="flex-1 overflow-y-auto bg-[#FDFBF7] px-2.5 py-2.5 space-y-2">
+                      <p className="text-[8px] font-bold uppercase tracking-widest text-stone-400 flex items-center gap-1">
+                        <Store className="w-2.5 h-2.5" /> Sponsored · Local Business
+                      </p>
+
+                      {/* Exact SponsoredCard replica — mobile */}
+                      <div className="p-3 rounded-xl bg-gradient-to-r from-[#FFFDF9] via-[#FAF6ED] to-[#FEF3C7] border border-amber-300 shadow-sm space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-full bg-amber-200 text-amber-950 flex items-center gap-1">
+                            <Store className="w-2.5 h-2.5 text-amber-800" /> Sponsored
+                          </span>
+                          <span className="text-[9px] text-stone-500">{city} • {category}</span>
+                        </div>
+                        <div className="space-y-0.5">
+                          <h4 className="font-serif font-bold text-[12px] text-[#8B1E1E]">{businessName || "Your Business Name"}</h4>
+                          <p className="text-[10px] text-stone-800 font-medium">{title || "Your Festive Offer Headline"}</p>
+                          <p className="text-[9px] text-stone-600 line-clamp-2">{description || "Your promotional details and festive offers will appear here for all devotees browsing this Mandapam zone."}</p>
+                        </div>
+                        <div className="relative rounded-lg overflow-hidden aspect-[16/7] bg-[#1e130e] flex items-center justify-center border border-amber-400/40">
+                          <div
+                            className="absolute inset-0 bg-cover bg-center blur-md opacity-30 scale-110 pointer-events-none"
+                            style={{ backgroundImage: `url("${imagePreview}")` }}
+                          />
+                          <img src={imagePreview} alt="Ad" className="w-full h-full object-contain relative z-10 mx-auto" />
+                        </div>
+                        <div className="pt-1 border-t border-amber-200/60 flex items-center justify-between">
+                          <span className="flex items-center gap-1 text-[9px] text-stone-500 truncate max-w-[55%]">
+                            <MapPin className="w-2.5 h-2.5 text-amber-700 shrink-0" />
+                            {address || `${effectiveDisplayZone}, ${city}`}
+                          </span>
+                          <button className="shrink-0 px-2.5 py-1 rounded-lg bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[9px] font-bold flex items-center gap-1 shadow-sm">
+                            <ExternalLink className="w-2.5 h-2.5" /> {ctaButton || "Order Now"}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Ghost context cards */}
+                      <p className="text-[8px] font-bold uppercase tracking-widest text-stone-400 mt-1">Nearby Mandapams</p>
+                      {["Sri Durga Mandapam", "Lalitha Mata Mandapam"].map(name => (
+                        <div key={name} className="p-2 rounded-xl bg-white border border-amber-200 shadow-xs flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-lg bg-amber-100 shrink-0" />
+                          <div className="space-y-1 flex-1">
+                            <div className="h-2 w-24 bg-stone-200 rounded" />
+                            <div className="h-1.5 w-16 bg-stone-100 rounded" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Real Bottom Nav Bar */}
+                    <div className="shrink-0 bg-[#FDFBF7] border-t-2 border-amber-300/40 px-2 py-1 grid grid-cols-5 gap-0.5 shadow-inner items-center">
+                      <div className="flex flex-col items-center gap-0.5 py-1 rounded-lg bg-[#8B1E1E]/10">
+                        <span className="text-xs">🏛</span>
+                        <span className="text-[8px] font-bold text-[#8B1E1E]">Home</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-0.5 py-1 rounded-lg">
+                        <span className="text-xs">📖</span>
+                        <span className="text-[8px] font-bold text-stone-400">Know</span>
+                      </div>
+                      {/* Center QR button */}
+                      <div className="flex flex-col items-center -mt-2">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#9A241C] to-[#D97706] text-white flex items-center justify-center text-[10px] shadow-sm">
+                          📷
+                        </div>
+                        <span className="text-[7px] font-bold text-[#8B1E1E] mt-0.5 leading-none">Scan QR</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-0.5 py-1 rounded-lg">
+                        <span className="text-xs">📍</span>
+                        <span className="text-[8px] font-bold text-stone-400">Near Me</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-0.5 py-1 rounded-lg">
+                        <span className="text-xs">❤️</span>
+                        <span className="text-[8px] font-bold text-stone-400">Following</span>
+                      </div>
+                    </div>
+
+                    {/* Real Footer with 2 lines sloka and 2 lines branding */}
+                    <div className="shrink-0 bg-gradient-to-b from-[#2D0B0B] via-[#200606] to-[#120303] px-3 py-2 text-center space-y-0.5 border-t border-amber-500/20">
+                      <p className="text-[8px] font-bold text-amber-300 tracking-wider font-serif">
+                        ॥ Om Sri Matre Namaha ॥
+                      </p>
+                      <p className="text-[7px] font-semibold text-amber-300/80 font-serif">
+                        Sarva Mangala Mangalye Shive Sarvartha Sadhike
+                      </p>
+                      <p className="font-['Cinzel',serif] font-bold text-[9px] text-amber-200 pt-0.5">
+                        Sharan Navaratri 2026
+                      </p>
+                      <p className="font-serif font-bold text-[8px] text-amber-400/90">
+                        Navaratri Mandapam 2026
                       </p>
                     </div>
+
                   </div>
-                  <p className="text-[11px] text-stone-600 line-clamp-2 leading-relaxed">
-                    {description || "Your promotional details and festive offers will appear here for all devotees browsing this Mandapam zone."}
-                  </p>
-                  <div className="flex items-center gap-1 text-[10px] text-stone-500">
-                    <MapPin className="w-3 h-3 text-amber-700 shrink-0" />
-                    <span className="truncate">{effectiveDisplayZone}, {city}</span>
+                  {/* Home indicator */}
+                  <div className="mt-2 mx-auto w-16 h-1 bg-stone-600 rounded-full" />
+                </div>
+              </div>
+            )}
+
+            {/* DESKTOP BROWSER FRAME */}
+            {previewTab === "desktop" && (
+              <div className="rounded-2xl overflow-hidden shadow-2xl border-2 border-stone-700 bg-stone-800">
+                {/* Browser chrome */}
+                <div className="bg-stone-700 px-3 py-2 flex items-center gap-2">
+                  <div className="flex gap-1.5">
+                    <span className="w-3 h-3 rounded-full bg-red-500" />
+                    <span className="w-3 h-3 rounded-full bg-yellow-400" />
+                    <span className="w-3 h-3 rounded-full bg-green-500" />
                   </div>
-                  {/* CTA Buttons */}
-                  <div className="flex gap-2 pt-1">
-                    <button className="flex-1 py-2 rounded-xl bg-[#8B1E1E] text-white text-[11px] font-bold flex items-center justify-center gap-1 shadow">
-                      <Phone className="w-3 h-3" />
-                      <span>Call Business</span>
-                    </button>
-                    <button className="p-2 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow">
-                      <MessageCircle className="w-4 h-4" />
-                    </button>
-                    {website && (
-                      <button className="p-2 rounded-xl bg-white border border-amber-300 text-stone-800 flex items-center justify-center shadow-sm">
-                        <ExternalLink className="w-4 h-4 text-amber-800" />
-                      </button>
-                    )}
+                  <div className="flex-1 bg-stone-600 rounded-md px-3 py-1 text-[10px] text-stone-300 font-mono truncate">
+                    sharan-navratri.vercel.app/navaratri
+                  </div>
+                </div>
+
+                {/* Page */}
+                <div className="bg-[#FDFBF7]">
+                  {/* Real Header — Desktop */}
+                  <div className="bg-[#FDFBF7] border-b-2 border-amber-300/40 shadow-sm">
+                    <div className="bg-gradient-to-r from-[#8B1E1E] via-[#9A241C] to-[#8B1E1E] text-white px-4 py-1 flex items-center justify-between">
+                      <span className="font-serif text-amber-200 font-bold text-[10px]">॥ Om Sri Matre Namaha ॥</span>
+                      <span className="text-[10px] text-amber-100 font-bold">🌐 English ▾</span>
+                    </div>
+                    <div className="px-4 h-12 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">🔱</span>
+                        <span className="font-['Cinzel',serif] font-black text-sm text-[#8B1E1E]">Sharan Navaratri</span>
+                      </div>
+                      <div className="flex items-center gap-4 text-[11px] font-bold text-stone-600">
+                        {["Home", "Know", "Near Me", "Following"].map((l, i) => (
+                          <span key={l} className={i === 0 ? "text-[#8B1E1E] border-b border-[#8B1E1E]" : ""}>{l}</span>
+                        ))}
+                      </div>
+                      <div className="flex items-center p-0.5 rounded-xl bg-white border border-amber-300 text-[9px] font-bold gap-0.5">
+                        <span className="px-2 py-1 rounded-lg text-stone-700">Login as Mandapam</span>
+                        <span className="w-px h-3 bg-amber-200" />
+                        <span className="px-2 py-1 rounded-lg bg-[#8B1E1E] text-white">+ Register</span>
+                        <span className="w-px h-3 bg-amber-200" />
+                        <span className="px-2 py-1 rounded-lg text-amber-900">🏪</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Page body */}
+                  <div className="px-4 py-3 grid grid-cols-3 gap-3">
+                    {/* Main feed */}
+                    <div className="col-span-2 space-y-2.5">
+                      <p className="text-[9px] font-bold uppercase tracking-widest text-stone-400 flex items-center gap-1">
+                        <Store className="w-2.5 h-2.5" /> Sponsored
+                      </p>
+                      {/* Exact SponsoredCard replica — desktop */}
+                      <div className="p-3.5 rounded-2xl bg-gradient-to-r from-[#FFFDF9] via-[#FAF6ED] to-[#FEF3C7] border border-amber-300 shadow-sm space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] font-bold uppercase px-2 py-0.5 rounded-full bg-amber-200 text-amber-950 flex items-center gap-1">
+                            <Store className="w-2.5 h-2.5 text-amber-800" /> Sponsored
+                          </span>
+                          <span className="text-[10px] text-stone-500">{city} • {category}</span>
+                        </div>
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="space-y-0.5 flex-1 min-w-0">
+                            <h4 className="font-serif font-bold text-sm text-[#8B1E1E] truncate">{businessName || "Your Business Name"}</h4>
+                            <p className="text-[11px] text-stone-800 font-medium truncate">{title || "Your Festive Offer Headline"}</p>
+                            <p className="text-[10px] text-stone-600 line-clamp-1">{description || "Your promotional details and festive offers will appear here for all devotees browsing this Mandapam zone."}</p>
+                          </div>
+                          <button className="shrink-0 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[10px] font-bold flex items-center gap-1 shadow-sm">
+                            <ExternalLink className="w-3 h-3" /> {ctaButton || "Order Now"}
+                          </button>
+                        </div>
+                        {/* Framed Image Banner inside desktop card */}
+                        <div className="relative w-full h-32 rounded-xl overflow-hidden bg-[#1e130e] flex items-center justify-center border border-amber-400/40">
+                          <div
+                            className="absolute inset-0 bg-cover bg-center blur-md opacity-30 scale-110 pointer-events-none"
+                            style={{ backgroundImage: `url("${imagePreview}")` }}
+                          />
+                          <img src={imagePreview} alt="Ad Preview" className="w-full h-full object-contain relative z-10 mx-auto" />
+                        </div>
+                        <div className="pt-1.5 border-t border-amber-200/60 flex items-center justify-between text-[9px] text-stone-500">
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-2.5 h-2.5 text-amber-700" />
+                            {address || `${effectiveDisplayZone}, ${city}`}
+                          </span>
+                          <span className="italic text-amber-800">Festival Verified Store</span>
+                        </div>
+                      </div>
+
+                      {/* Ghost mandapam cards */}
+                      <p className="text-[9px] font-bold uppercase tracking-widest text-stone-400">Nearby Mandapams</p>
+                      {["Sri Durga Mandapam · Subhash Nagar", "Lalitha Mata Mandapam · Gandhi Chowk"].map(name => (
+                        <div key={name} className="p-2.5 rounded-xl bg-white border border-amber-200 flex items-center gap-2.5">
+                          <div className="w-10 h-10 rounded-xl bg-amber-100 shrink-0" />
+                          <div className="space-y-1 flex-1">
+                            <div className="h-2 w-36 bg-stone-200 rounded" />
+                            <div className="h-1.5 w-20 bg-stone-100 rounded" />
+                          </div>
+                          <div className="h-6 w-14 rounded-lg bg-amber-100 border border-amber-200" />
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Sidebar */}
+                    <div className="space-y-2.5">
+                      <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 space-y-1.5">
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-stone-400">Festival Info</p>
+                        <div className="h-2 w-20 bg-stone-200 rounded" />
+                        <div className="h-1.5 w-28 bg-stone-100 rounded" />
+                        <div className="h-1.5 w-16 bg-stone-100 rounded" />
+                      </div>
+                      <div className="p-3 rounded-xl bg-[#8B1E1E]/5 border border-[#8B1E1E]/20 space-y-1.5">
+                        <p className="text-[9px] font-bold text-[#8B1E1E] uppercase tracking-wider">Advertise Here</p>
+                        <div className="h-1.5 w-20 bg-[#8B1E1E]/20 rounded" />
+                        <div className="h-6 w-full rounded-lg bg-[#8B1E1E]/30" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Real Footer with 2 lines sloka and 2 lines branding */}
+                  <div className="bg-gradient-to-b from-[#2D0B0B] via-[#200606] to-[#120303] px-4 py-3 text-center space-y-1 border-t border-amber-500/20">
+                    <p className="text-[10px] font-bold text-amber-300 tracking-wider font-serif">
+                      ॥ Om Sri Matre Namaha ॥
+                    </p>
+                    <p className="text-[9px] font-semibold text-amber-300/80 font-serif">
+                      Sarva Mangala Mangalye Shive Sarvartha Sadhike
+                    </p>
+                    <p className="font-['Cinzel',serif] font-bold text-xs text-amber-200 pt-0.5">
+                      Sharan Navaratri 2026
+                    </p>
+                    <p className="font-serif font-bold text-[11px] text-amber-400/90">
+                      Navaratri Mandapam 2026
+                    </p>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Go-Live Timer */}
-            <div className="p-4 space-y-3">
-              <div className="flex items-center gap-3 p-3 rounded-2xl bg-amber-50 border border-amber-200">
-                <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+            {/* Go-Live info + action buttons */}
+            <div className="bg-white rounded-2xl border border-amber-300 shadow-md p-4 space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0 border border-amber-300">
                   <Clock className="w-5 h-5 text-amber-700" />
                 </div>
                 <div>
-                  <p className="text-[11px] font-bold text-stone-800">Estimated Go-Live Time</p>
-                  <p className="font-['Cinzel',serif] font-black text-[#8B1E1E] text-base">
-                    {goLiveLabel} · {goLiveDate}
-                  </p>
+                  <p className="text-xs font-bold text-stone-800">Estimated Go-Live Time</p>
+                  <p className="font-['Cinzel',serif] font-black text-[#8B1E1E] text-base leading-tight">{goLiveLabel} · {goLiveDate}</p>
                   <p className="text-[10px] text-stone-500">~2 hrs after payment confirmation by our team</p>
                 </div>
               </div>
-
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowAdPreview(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-[#8B1E1E] text-white text-xs font-bold hover:bg-[#781B1B] transition-colors"
+                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] text-white text-sm font-bold hover:from-[#781B1B] hover:to-[#92400E] transition-all shadow"
                 >
                   Looks Good — Continue
                 </button>
                 <button
                   onClick={() => setShowAdPreview(false)}
-                  className="px-3 py-2.5 rounded-xl bg-stone-100 text-stone-600 text-xs font-bold hover:bg-stone-200 transition-colors"
+                  className="px-4 py-3 rounded-xl bg-stone-100 text-stone-700 text-sm font-bold hover:bg-stone-200 transition-colors"
                 >
                   Edit
                 </button>
               </div>
             </div>
+
           </div>
         </div>
       )}

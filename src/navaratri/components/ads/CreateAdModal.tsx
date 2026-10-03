@@ -259,14 +259,34 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
               {/* Action Button Label & Contact */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold mb-1 text-stone-800">Button Label *</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block font-bold text-stone-800">Button Label (CTA) *</label>
+                    <span className="text-[10px] text-stone-500 font-semibold">e.g. Order Now, Open</span>
+                  </div>
                   <input
                     type="text"
                     value={buttonLabel}
                     onChange={(e) => setButtonLabel(e.target.value)}
-                    placeholder="Order Now, Call Shop, Visit Store..."
-                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white text-stone-900 font-semibold"
+                    placeholder="Order Now, Open, More Details..."
+                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white text-stone-900 font-semibold text-xs"
                   />
+                  {/* Preset quick selection pills */}
+                  <div className="flex flex-wrap gap-1 mt-1.5">
+                    {["Order Now", "Open / More Details", "Shop Now", "Call Store", "WhatsApp Us"].map((preset) => (
+                      <button
+                        type="button"
+                        key={preset}
+                        onClick={() => setButtonLabel(preset)}
+                        className={`text-[9px] px-2 py-0.5 rounded-md font-semibold transition-all border ${
+                          buttonLabel === preset
+                            ? "bg-[#8B1E1E] text-white border-[#8B1E1E]"
+                            : "bg-white text-stone-700 border-amber-300 hover:bg-amber-50"
+                        }`}
+                      >
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div>
@@ -367,28 +387,46 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Render simulated website ad */}
+                  {/* Render simulated website ad — framed & never cropped or out of frame */}
                   {previewMode === "banner" ? (
-                    <div className="w-full h-24 sm:h-28 rounded-2xl overflow-hidden border border-amber-400 shadow-md bg-stone-900 relative">
-                      <div className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full bg-black/60 text-[9px] font-bold text-amber-200 border border-white/20">
-                        Sponsored Banner Preview
+                    <div className="relative w-full h-28 sm:h-32 rounded-2xl overflow-hidden border-2 border-amber-400 shadow-md bg-[#1e130e] flex items-center justify-center">
+                      <div
+                        className="absolute inset-0 bg-cover bg-center blur-md opacity-30 scale-110 pointer-events-none"
+                        style={{ backgroundImage: `url("${uploadedImage}")` }}
+                      />
+                      <div className="absolute top-2 left-2 z-20 px-2 py-0.5 rounded-full bg-black/60 text-[9px] font-bold text-amber-200 border border-white/20">
+                        Sponsored Banner
                       </div>
                       <img
                         src={uploadedImage}
                         alt="Ad Preview"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain relative z-10 mx-auto"
                       />
+                      <div className="absolute bottom-2 right-2 z-20">
+                        <span className="px-3 py-1 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[10px] font-bold shadow-md flex items-center gap-1 border border-amber-300/60">
+                          {buttonLabel || "Order Now"} ↗
+                        </span>
+                      </div>
                     </div>
                   ) : (
-                    <div className="w-full max-w-sm mx-auto h-44 rounded-2xl overflow-hidden border-2 border-amber-400 shadow-md bg-stone-900 relative">
-                      <div className="absolute top-2 left-2 z-10 px-2.5 py-0.5 rounded-full bg-black/70 text-[9px] font-bold text-amber-200 border border-amber-300/40 uppercase">
-                        Sponsored Hero Spotlight
+                    <div className="relative w-full max-w-sm mx-auto h-48 rounded-2xl overflow-hidden border-2 border-amber-400 shadow-md bg-[#1e130e] flex items-center justify-center">
+                      <div
+                        className="absolute inset-0 bg-cover bg-center blur-md opacity-30 scale-110 pointer-events-none"
+                        style={{ backgroundImage: `url("${uploadedImage}")` }}
+                      />
+                      <div className="absolute top-2 left-2 z-20 px-2.5 py-0.5 rounded-full bg-black/70 text-[9px] font-bold text-amber-200 border border-amber-300/40 uppercase">
+                        Sponsored Spotlight
                       </div>
                       <img
                         src={uploadedImage}
                         alt="Ad Preview"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain relative z-10 mx-auto"
                       />
+                      <div className="absolute bottom-2.5 inset-x-3 z-20">
+                        <span className="w-full py-1.5 px-3 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-xs font-bold shadow-md flex items-center justify-center gap-1 border border-amber-300/60">
+                          {buttonLabel || "Order Now"} ↗
+                        </span>
+                      </div>
                     </div>
                   )}
 
