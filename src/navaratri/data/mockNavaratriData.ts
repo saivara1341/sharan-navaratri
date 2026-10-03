@@ -133,7 +133,7 @@ export const INITIAL_MANDAPAMS: Mandapam[] = [
     name: "Hrudhaya Ragu Ram Youth",
     slug: "hrudhaya-ragu-ram-youth-nizamabad",
     description: "Grand Sharan Navaratri celebrations organized by Hrudhaya Ragu Ram Youth in Nizamabad with daily sacred Devi Alankaranas, Sahasranama Archana, and Maha Annadanam.",
-    deviName: "Sri Swarna Kavachalankruta Durga Devi",
+    deviName: "Sri Bala Tripura Sundari Devi",
     address: "Near Municipal Office, Subhash Nagar Road",
     area: "Subhash Nagar",
     city: "Nizamabad",
@@ -273,10 +273,10 @@ export const INITIAL_ALANKARANAS: Alankarana[] = [
     mandapamId: "mnp-178584",
     seasonId: "season-2026",
     date: "2026-10-11",
-    title: "Sri Swarna Kavachalankruta Durga Devi Alankarana (Day 1)",
-    deviName: "Sri Swarna Kavachalankruta Durga Devi",
-    description: "Grand inaugural darshan adorned with radiant golden armor (Swarna Kavacham), conferring divine courage and prosperity upon all devotees.",
-    imageUrl: navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"),
+    title: "Sri Bala Tripura Sundari Devi Alankarana (Day 1)",
+    deviName: "Sri Bala Tripura Sundari Devi",
+    description: "Grand inaugural darshan with Ghatasthapana and Suprabhatha Seva to invoke the young, divine motherly form.",
+    imageUrl: navaratriAsset("/navaratri/assets/bala-tripura-sundari-alankarana.jpg"),
     published: true,
     createdAt: "2026-10-11T06:00:00Z"
   }
