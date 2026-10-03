@@ -195,7 +195,8 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   const [bookings, setBookings] = useState<Booking[]>(() => loadStorage("bookings", []));
   const [activities, setActivities] = useState<Activity[]>(() => {
     const loaded = loadStorage<Activity[]>("activities", INITIAL_ACTIVITIES);
-    const merged = [...loaded];
+    const cleaned = (loaded || []).filter(a => !(a.mandapamId === "m-rr-nizamabad" && (a.category === "Annadanam" || a.title.toLowerCase().includes("annadanam"))));
+    const merged = [...cleaned];
     for (const initA of INITIAL_ACTIVITIES) {
       if (!merged.some(a => a.id === initA.id)) {
         merged.push(initA);

@@ -195,7 +195,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
     if (navigator.share) {
       navigator.share({
         title: `${mandapam.name} - Navaratri Mandapam`,
-        text: `Check out 10-Day Alankaranas, Pooja Timings, Annadanam & Activities for ${mandapam.name}:`,
+        text: `Check out 10-Day Alankaranas, Pooja Timings & Activities for ${mandapam.name}:`,
         url
       }).catch(() => {});
     } else {
@@ -790,76 +790,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. MAHA ANNADANAM CARD (Directly below 10-day buttons) */}
-      <section className="rounded-3xl border-2 border-amber-400 bg-gradient-to-br from-[#FFFBEB] via-[#FFFDF9] to-[#FEF3C7] p-5 sm:p-6 shadow-lg relative overflow-hidden space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-300/80 pb-3">
-          <div className="flex items-center gap-3.5">
-            <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border-2 border-amber-400 bg-white shadow-sm overflow-hidden shrink-0 flex items-center justify-center p-0.5">
-              <img
-                src={navaratriAsset("/navaratri/assets/maha-annadanam-logo.png")}
-                alt="Maha Annadanam Official Logo"
-                className="w-full h-full object-cover rounded-xl"
-              />
-            </div>
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <h3 className="font-serif font-black text-xl sm:text-2xl text-[#8B1E1E]">
-                  {t.mahaAnnadanam}
-                </h3>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-700" />
-                  <span>{t.freeForAll}</span>
-                </span>
-              </div>
-              <p className="text-xs text-amber-950 font-serif font-semibold mt-0.5">
-                నిత్యాన్నదాన సేవ • Sacred Prasadam Bhojanam
-              </p>
-            </div>
-          </div>
-
-          <div className="px-3 py-1.5 rounded-xl bg-amber-100/80 border border-amber-300 text-xs font-bold text-amber-900 self-start sm:self-center">
-            {todaySetting?.annadanamExpectedCount || 500}{t.devoteesServedDaily}
-          </div>
-        </div>
-
-        {/* Date & Time Specs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* Starting Date to End Date */}
-          <div className="p-3.5 rounded-2xl bg-white/95 border border-amber-200 shadow-xs flex items-start gap-3">
-            <CalendarDays className="w-5 h-5 text-[#8B1E1E] shrink-0 mt-0.5" />
-            <div className="space-y-0.5">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-stone-500">
-                {t.annadanamDatesLabel}
-              </span>
-              <p className="text-sm font-bold text-stone-900 leading-snug">
-                {t.annadanamDatesValue}
-              </p>
-              <p className="text-[11px] text-amber-800 font-medium">
-                {t.annadanamDatesNote}
-              </p>
-            </div>
-          </div>
-
-          {/* Time & Location */}
-          <div className="p-3.5 rounded-2xl bg-white/95 border border-amber-200 shadow-xs flex items-start gap-3">
-            <Clock className="w-5 h-5 text-[#B45309] shrink-0 mt-0.5" />
-            <div className="space-y-0.5">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-stone-500">
-                {t.dailyAnnadanamTimings}
-              </span>
-              <p className="text-sm font-bold text-stone-900 leading-snug">
-                {todaySetting?.annadanamStartTime || "12:30 PM"} – {todaySetting?.annadanamEndTime || "03:30 PM"} Daily
-              </p>
-              <p className="text-[11px] text-stone-600">
-                {t.annadanamLocationPrefix} {todaySetting?.annadanamLocation || "Mandapam Annadanam Dining Hall / Pandal"}
-              </p>
-            </div>
-          </div>
-        </div>
-
-      </section>
-
-      {/* 4. MANDAPAM ACTIVITIES & COMPETITIONS (With Registration Action) */}
+      {/* 3. MANDAPAM ACTIVITIES & COMPETITIONS (With Registration Action) */}
       <section className="bg-white border-2 border-amber-300 rounded-3xl p-5 sm:p-6 shadow-lg space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200/80 pb-3">
           <div>

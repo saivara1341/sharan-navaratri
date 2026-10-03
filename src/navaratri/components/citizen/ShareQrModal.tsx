@@ -121,7 +121,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
     if (navigator.share) {
       navigator.share({
         title: `${mandapam.name} - Navaratri Mandapam`,
-        text: `Scan the QR code or visit the digital notice board of ${mandapam.name} for Today's Darshan, Pooja timings, Prasadam, Annadanam and book services:`,
+        text: `Scan the QR code or visit the digital notice board of ${mandapam.name} for Today's Darshan, Pooja timings, Prasadam, and book services:`,
         url: publicUrl
       }).catch(() => {});
     } else {
@@ -321,7 +321,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
 
       ctx.fillStyle = "#57534E";
       ctx.font = "bold 16px sans-serif";
-      ctx.fillText("Daily Alankaram • Pooja Timings • Annadanam Seva • Devotee Bookings", canvas.width / 2, msgBoxY + 74);
+      ctx.fillText("Daily Alankaram • Pooja Timings • Devotee Seva • Devotee Bookings", canvas.width / 2, msgBoxY + 74);
 
       // 9. Public URL text
       ctx.fillStyle = "#78716C";
@@ -548,7 +548,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
               “One QR. Every Mandapam. Everything a devotee needs.”
             </p>
             <p className="text-[11px] text-stone-600 font-medium">
-              Daily Alankaram • Pooja Timings • Annadanam Seva • Devotee Bookings
+              Daily Alankaram • Pooja Timings • Devotee Seva • Devotee Bookings
             </p>
             <p className="text-[11px] text-stone-500 font-mono break-all pt-0.5">
               {publicUrl}
