@@ -191,6 +191,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     return merged;
   });
   const [slots, setSlots] = useState<ServiceSlot[]>(() => loadStorage("slots", INITIAL_SLOTS));
+  const [bookings, setBookings] = useState<Booking[]>(() => loadStorage("bookings", []));
   const [activities, setActivities] = useState<Activity[]>(() => {
     const loaded = loadStorage<Activity[]>("activities", INITIAL_ACTIVITIES);
     const merged = [...loaded];

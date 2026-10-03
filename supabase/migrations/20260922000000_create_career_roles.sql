@@ -108,7 +108,8 @@ VALUES
     'Remote',
     'Unpaid Internship (Skill-Building & Academic Practical Track)',
     'Official Certificate of Internship Completion awarded upon successful tenure and task completion.',
-    'Letter of Recommendation (LOR) is provided strictly upon completing 2 years of continuous active working with Siddhi Dynamics.',
+    'Lette
+    r of Recommendation (LOR) is provided strictly upon completing 2 years of continuous active working with Siddhi Dynamics.',
     'Tasks assigned via internal platform with stipulated deadlines. PRD reviews, feature wireframes, and sprint extensions require direct CEO portal approval.',
     'MBA / B.Tech / BCA / Engineering & Management Students / Aspiring Product Managers',
     'Bridge business strategy, user experience, and agile engineering. Architect PRDs, wireframes, and feature roadmaps for PrintFlow and AI tools.',
