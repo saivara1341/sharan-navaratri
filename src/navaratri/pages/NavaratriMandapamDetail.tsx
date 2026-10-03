@@ -840,25 +840,6 @@ export const NavaratriMandapamDetail: React.FC = () => {
           </div>
         </div>
 
-        {/* Menu & Notes with Visual Logo Banner */}
-        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-50/95 via-amber-100/40 to-orange-50/95 border border-amber-300/80 text-xs text-stone-800 flex flex-col sm:flex-row items-center gap-4">
-          <div className="w-full sm:w-36 h-28 sm:h-22 rounded-xl overflow-hidden border border-amber-300/80 shadow-xs shrink-0 bg-white">
-            <img
-              src={navaratriAsset("/navaratri/assets/maha-annadanam-logo.png")}
-              alt="Maha Annadanam - Serving Devotees with Reverence"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="space-y-1 w-full text-center sm:text-left">
-            <span className="font-bold text-amber-950 flex items-center justify-center sm:justify-start gap-1.5">
-              <Utensils className="w-3.5 h-3.5 text-[#8B1E1E]" />
-              {t.satvikmenu}
-            </span>
-            <p className="leading-relaxed text-stone-700">
-              {todaySetting?.annadanamNotes || t.annadanamDefaultNotes}
-            </p>
-          </div>
-        </div>
       </section>
 
       {/* 4. MANDAPAM ACTIVITIES & COMPETITIONS (With Registration Action) */}
