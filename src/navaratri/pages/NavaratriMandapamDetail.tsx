@@ -27,7 +27,10 @@ import {
   Info,
   CalendarDays,
   ExternalLink,
-  MessageCircle
+  MessageCircle,
+  ShoppingBag,
+  Flower2,
+  Gift
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -825,29 +828,53 @@ export const NavaratriMandapamDetail: React.FC = () => {
                     </p>
                   </div>
 
-                  {/* Naivedhyam (Bhog) */}
-                  <div className="p-3 rounded-2xl bg-white border border-amber-200 shadow-xs space-y-1">
-                    <span className="font-bold text-amber-900 flex items-center gap-1.5 uppercase text-[10px] tracking-wider">
-                      <Flame className="w-3.5 h-3.5 text-amber-600" />
-                      Suggested Naivedhyam (Bhog) & Prasadam
-                    </span>
-                    <p className="text-stone-800 font-medium leading-relaxed">
-                      {naivedhyam}
-                    </p>
-                    <p className="text-[11px] text-stone-600 pt-0.5">
-                      <strong>Prasadam Distribution:</strong> {prasadam}
-                    </p>
+                  {/* Naivedhyam (Bhog) & Prasadam */}
+                  <div className="p-3.5 rounded-2xl bg-white border border-amber-200/90 shadow-xs space-y-2">
+                    <div className="flex items-center justify-between border-b border-amber-100 pb-1.5">
+                      <span className="font-bold text-amber-950 flex items-center gap-1.5 uppercase text-[10.5px] tracking-wider font-sans">
+                        <PrasadBowlIcon className="w-4 h-4 text-[#D97706] shrink-0" />
+                        Suggested Naivedhyam (Bhog) & Prasadam
+                      </span>
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200">
+                        భోగ్ నైవేద్యం
+                      </span>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex items-start gap-2 text-stone-800">
+                        <Utensils className="w-3.5 h-3.5 text-[#B45309] shrink-0 mt-0.5" />
+                        <p className="font-medium leading-relaxed">
+                          {naivedhyam}
+                        </p>
+                      </div>
+
+                      <div className="flex items-start gap-2 text-[11px] text-stone-700 bg-amber-50/70 p-2 rounded-xl border border-amber-200/60">
+                        <Gift className="w-3.5 h-3.5 text-emerald-700 shrink-0 mt-0.5" />
+                        <p className="leading-relaxed">
+                          <strong className="text-amber-950">Prasadam Distribution:</strong> {prasadam}
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Items to Bring */}
-                  <div className="p-3 rounded-2xl bg-white border border-amber-200 shadow-xs space-y-1">
-                    <span className="font-bold text-amber-900 flex items-center gap-1.5 uppercase text-[10px] tracking-wider">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-                      Suggested Pooja Items for Devotees
-                    </span>
-                    <p className="text-stone-700 leading-relaxed">
-                      {itemsToBring}
-                    </p>
+                  {/* Items to Bring for Devotees */}
+                  <div className="p-3.5 rounded-2xl bg-white border border-amber-200/90 shadow-xs space-y-2">
+                    <div className="flex items-center justify-between border-b border-amber-100 pb-1.5">
+                      <span className="font-bold text-amber-950 flex items-center gap-1.5 uppercase text-[10.5px] tracking-wider font-sans">
+                        <ShoppingBag className="w-4 h-4 text-[#8B1E1E] shrink-0" />
+                        Suggested Pooja Items for Devotees
+                      </span>
+                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-[#8B1E1E] border border-rose-200">
+                        భక్తులు తేవలసినవి
+                      </span>
+                    </div>
+
+                    <div className="flex items-start gap-2 text-stone-700 leading-relaxed">
+                      <Flower2 className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
+                      <p className="font-medium text-stone-800">
+                        {itemsToBring}
+                      </p>
+                    </div>
                   </div>
 
                   {/* Sacred Sloka */}
