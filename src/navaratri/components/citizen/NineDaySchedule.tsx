@@ -110,9 +110,6 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                   loading="lazy"
                 />
 
-                {/* Gradient vignette for contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
-
                 {/* Day Badge (Top Left) */}
                 <div className="absolute top-3 left-3 flex items-center gap-1.5">
                   <div
@@ -139,22 +136,21 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                     <span>{day.date}</span>
                   </div>
                 </div>
+              </div>
 
-                {/* Single Heading on Image */}
-                <div className="absolute bottom-2.5 left-3 right-3 text-white">
-                  <h3 className="font-serif font-black text-base sm:text-lg lg:text-xl drop-shadow-md text-amber-100 group-hover:text-amber-300 transition-colors leading-tight">
+              {/* Card Body */}
+              <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+                {/* Devi Name & Sacred Titles (Cleanly below image) */}
+                <div>
+                  <h3 className="font-serif font-black text-base sm:text-lg lg:text-xl text-[#8B1E1E] group-hover:text-amber-700 transition-colors leading-tight">
                     {deviDisplayName}
                   </h3>
-                  <div className="flex items-center gap-2 text-[11px] sm:text-xs text-stone-200 drop-shadow mt-0.5">
+                  <div className="flex items-center gap-2 text-[11px] sm:text-xs text-stone-600 font-semibold mt-1">
                     <span>{day.teluguDeviName}</span>
                     <span>•</span>
                     <span>{day.hindiDeviName}</span>
                   </div>
                 </div>
-              </div>
-
-              {/* Card Body */}
-              <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                 {/* Special Dual Session Badge if applicable */}
                 {isDual && morningDevi && eveningDevi && (
                   <div className="text-[11px] font-semibold text-amber-900 bg-amber-100/80 p-2 rounded-xl border border-amber-300/80 flex items-center gap-1.5">

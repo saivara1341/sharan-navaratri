@@ -56,12 +56,6 @@ export const TempleArchFrame: React.FC<TempleArchFrameProps> = ({
             <p className="text-sm font-medium text-[#78350F]">Sacred Sanctum Darshan</p>
           </div>
         )}
-
-        {/* Bottom sacred lotus glow */}
-        <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-[#1F1914]/80 via-[#1F1914]/30 to-transparent flex flex-col justify-end p-4 text-white text-center">
-          {title && <h3 className="text-lg font-bold drop-shadow-sm font-serif">{title}</h3>}
-          {subtitle && <p className="text-xs text-amber-200 font-medium drop-shadow-sm">{subtitle}</p>}
-        </div>
       </div>
 
       <div className="w-full mt-4">
