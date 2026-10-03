@@ -61,6 +61,9 @@ export interface DualSessionInfo {
 export interface StandardFestivalDay {
   dayNumber: number;
   date: string;
+  tithi?: string;
+  morningAlankaram?: string;
+  eveningTransition?: string;
   deviName: string;
   teluguDeviName: string;
   hindiDeviName: string;
