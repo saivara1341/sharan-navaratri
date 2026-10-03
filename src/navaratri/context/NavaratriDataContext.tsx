@@ -104,7 +104,11 @@ interface NavaratriDataContextType {
   askQuestion: (mandapamId: string, askerName: string, question: string, language?: string) => void;
   answerQuestion: (questionId: string, responderName: string, answer: string, isOfficial?: boolean) => void;
   createService: (data: Omit<Service, "id">) => Service;
+  updateService: (id: string, data: Partial<Service>) => void;
+  deleteService: (id: string) => void;
   createSlot: (data: Omit<ServiceSlot, "id" | "bookedCount" | "walkinCount" | "status">) => ServiceSlot;
+  updateSlot: (id: string, data: Partial<ServiceSlot>) => void;
+  deleteSlot: (id: string) => void;
   registerMandapam: (data: Omit<Mandapam, "id" | "slug" | "verificationStatus" | "createdAt">) => { success: boolean; mandapam?: Mandapam; duplicateWarning?: string };
   verifyMandapam: (mandapamId: string, status: VerificationStatus) => void;
   updatePallakiStatus: (id: string, status: PallakiLiveStatus) => void;
@@ -302,21 +306,48 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     quantity: number;
     notes?: string;
   }) => {
-    const slot = slots.find(s => s.id === data.slotId);
-    if (!slot) return { success: false, error: "Slot not found" };
-
-    const currentTotal = slot.bookedCount + slot.walkinCount;
-    if (currentTotal + data.quantity > slot.capacity) {
-      return { success: false, error: "Slot capacity exceeded" };
+    let slot = slots.find(s => s.id === data.slotId);
+    if (!slot && data.serviceId) {
+      slot = slots.find(s => s.serviceId === data.serviceId && s.mandapamId === data.mandapamId);
+    }
+    if (!slot) {
+      slot = slots.find(s => s.mandapamId === data.mandapamId);
     }
 
     const service = services.find(s => s.id === data.serviceId);
+    const capacityLimit = slot?.capacity || service?.capacityPerSlot || 4;
+
+    if (!slot) {
+      const autoSlot: ServiceSlot = {
+        id: `slot-auto-${Date.now()}`,
+        serviceId: data.serviceId,
+        mandapamId: data.mandapamId,
+        date: new Date().toISOString().split("T")[0],
+        startTime: "09:00 AM",
+        endTime: "09:00 PM",
+        capacity: capacityLimit,
+        bookedCount: 0,
+        walkinCount: 0,
+        status: "AVAILABLE"
+      };
+      setSlots(prev => [...prev, autoSlot]);
+      slot = autoSlot;
+    }
+
+    const currentTotal = slot.bookedCount + slot.walkinCount;
+    if (currentTotal + data.quantity > slot.capacity) {
+      return {
+        success: false,
+        error: `Booking quota reached! Available remaining slots: ${Math.max(0, slot.capacity - currentTotal)}.`
+      };
+    }
+
     const bookingCode = `NM-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const newBooking: Booking = {
       id: `bk-${Date.now()}`,
       bookingCode,
-      slotId: data.slotId,
+      slotId: slot.id,
       serviceId: data.serviceId,
       mandapamId: data.mandapamId,
       name: data.name,
@@ -325,7 +356,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       bookingType: "ONLINE",
       status: "CONFIRMED",
       notes: data.notes,
-      serviceName: service ? service.name : "Devi Pooja Seva",
+      serviceName: service ? service.name : (slot.serviceId ? (services.find(s => s.id === slot?.serviceId)?.name || "Devi Pooja Seva") : "Devi Pooja Seva"),
       slotTime: `${slot.startTime} - ${slot.endTime}`,
       date: slot.date,
       createdAt: new Date().toISOString()
@@ -333,7 +364,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Update slot counts atomically
     setSlots(prev => prev.map(s => {
-      if (s.id === slot.id) {
+      if (s.id === slot!.id) {
         const newBooked = s.bookedCount + data.quantity;
         return {
           ...s,
@@ -349,25 +380,57 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const addWalkIn = (data: {
-    slotId: string;
-    serviceId: string;
+    slotId?: string;
+    serviceId?: string;
     mandapamId: string;
     name: string;
     mobile: string;
     quantity: number;
     notes?: string;
   }) => {
-    const slot = slots.find(s => s.id === data.slotId);
-    if (!slot) return { success: false, error: "Slot not found" };
+    let slot = data.slotId ? slots.find(s => s.id === data.slotId) : undefined;
+    if (!slot && data.serviceId) {
+      slot = slots.find(s => s.serviceId === data.serviceId && s.mandapamId === data.mandapamId);
+    }
+    if (!slot) {
+      slot = slots.find(s => s.mandapamId === data.mandapamId);
+    }
 
-    const service = services.find(s => s.id === data.serviceId);
+    const service = data.serviceId ? services.find(s => s.id === data.serviceId) : undefined;
+    const capacityLimit = slot?.capacity || service?.capacityPerSlot || 100;
+
+    if (!slot) {
+      const autoSlot: ServiceSlot = {
+        id: `slot-counter-${Date.now()}`,
+        serviceId: data.serviceId || `srv-counter-${data.mandapamId}`,
+        mandapamId: data.mandapamId,
+        date: new Date().toISOString().split("T")[0],
+        startTime: "09:00 AM",
+        endTime: "09:00 PM",
+        capacity: capacityLimit,
+        bookedCount: 0,
+        walkinCount: 0,
+        status: "AVAILABLE"
+      };
+      setSlots(prev => [...prev, autoSlot]);
+      slot = autoSlot;
+    }
+
+    const currentTotal = slot.bookedCount + slot.walkinCount;
+    if (currentTotal + data.quantity > slot.capacity) {
+      return {
+        success: false,
+        error: `Slot capacity reached! Available tokens remaining: ${Math.max(0, slot.capacity - currentTotal)}.`
+      };
+    }
+
     const bookingCode = `WI-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const newBooking: Booking = {
       id: `wi-${Date.now()}`,
       bookingCode,
-      slotId: data.slotId,
-      serviceId: data.serviceId,
+      slotId: slot.id,
+      serviceId: service?.id || slot.serviceId || `srv-counter-${data.mandapamId}`,
       mandapamId: data.mandapamId,
       name: data.name,
       mobile: data.mobile,
@@ -375,14 +438,14 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       bookingType: "WALK_IN",
       status: "CHECKED_IN",
       notes: data.notes || "Walk-in entry recorded at counter",
-      serviceName: service ? service.name : "Devi Pooja Seva",
+      serviceName: service ? service.name : (slot.serviceId ? (services.find(s => s.id === slot?.serviceId)?.name || "Mandapam Darshan & Pooja Token") : "Mandapam Darshan & Pooja Token"),
       slotTime: `${slot.startTime} - ${slot.endTime}`,
       date: slot.date,
       createdAt: new Date().toISOString()
     };
 
     setSlots(prev => prev.map(s => {
-      if (s.id === slot.id) {
+      if (s.id === slot!.id) {
         const newWalkin = s.walkinCount + data.quantity;
         return {
           ...s,
@@ -478,6 +541,23 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     };
     setSlots(prev => [...prev, newSlot]);
     return newSlot;
+  };
+
+  const updateService = (id: string, data: Partial<Service>) => {
+    setServices(prev => prev.map(s => s.id === id ? { ...s, ...data } : s));
+  };
+
+  const deleteService = (id: string) => {
+    setServices(prev => prev.filter(s => s.id !== id));
+    setSlots(prev => prev.filter(s => s.serviceId !== id));
+  };
+
+  const updateSlot = (id: string, data: Partial<ServiceSlot>) => {
+    setSlots(prev => prev.map(s => s.id === id ? { ...s, ...data } : s));
+  };
+
+  const deleteSlot = (id: string) => {
+    setSlots(prev => prev.filter(s => s.id !== id));
   };
 
   const registerMandapam = (data: Omit<Mandapam, "id" | "slug" | "verificationStatus" | "createdAt">) => {
@@ -813,7 +893,11 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
         askQuestion,
         answerQuestion,
         createService,
+        updateService,
+        deleteService,
         createSlot,
+        updateSlot,
+        deleteSlot,
         registerMandapam,
         verifyMandapam,
         updatePallakiStatus,

@@ -35,12 +35,15 @@ export const WalkInRegisterModal: React.FC<WalkInRegisterModalProps> = ({
   const [filterService, setFilterService] = useState<string>("ALL");
   const [isAddingWalkin, setIsAddingWalkin] = useState(false);
 
+  const mandapamServices = services.filter(s => s.mandapamId === mandapam.id);
+  const mandapamSlots = slots.filter(s => s.mandapamId === mandapam.id);
+
   // New Walkin form fields
   const [walkinName, setWalkinName] = useState("");
   const [walkinMobile, setWalkinMobile] = useState("");
   const [walkinQuantity, setWalkinQuantity] = useState(1);
-  const [walkinServiceId, setWalkinServiceId] = useState(services[0]?.id || "");
-  const [walkinSlotId, setWalkinSlotId] = useState(slots[0]?.id || "");
+  const [walkinServiceId, setWalkinServiceId] = useState(mandapamServices[0]?.id || "");
+  const [walkinSlotId, setWalkinSlotId] = useState(mandapamSlots[0]?.id || "");
   const [walkinNotes, setWalkinNotes] = useState("");
 
   if (!isOpen) return null;
@@ -70,13 +73,13 @@ export const WalkInRegisterModal: React.FC<WalkInRegisterModalProps> = ({
     }
 
     const res = addWalkIn({
-      slotId: walkinSlotId,
-      serviceId: walkinServiceId,
+      slotId: walkinSlotId || undefined,
+      serviceId: walkinServiceId || undefined,
       mandapamId: mandapam.id,
-      name: walkinName,
+      name: walkinName.trim(),
       mobile: cleanMobile,
       quantity: walkinQuantity,
-      notes: walkinNotes
+      notes: walkinNotes.trim()
     });
 
     if (res.success && res.booking) {
@@ -181,14 +184,20 @@ export const WalkInRegisterModal: React.FC<WalkInRegisterModalProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold mb-1">Select Service</label>
+                <label className="block font-semibold mb-1">Select Program / Seva</label>
                 <select
                   value={walkinServiceId}
-                  onChange={(e) => setWalkinServiceId(e.target.value)}
+                  onChange={(e) => {
+                    const sId = e.target.value;
+                    setWalkinServiceId(sId);
+                    const matchingSlot = slots.find(s => s.serviceId === sId && s.mandapamId === mandapam.id);
+                    if (matchingSlot) setWalkinSlotId(matchingSlot.id);
+                  }}
                   className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white"
                 >
-                  {services.filter(s => s.mandapamId === mandapam.id).map(s => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
+                  <option value="">General Counter Darshan & Pooja Token</option>
+                  {mandapamServices.map(s => (
+                    <option key={s.id} value={s.id}>{s.name} ({s.type})</option>
                   ))}
                 </select>
               </div>
@@ -200,8 +209,14 @@ export const WalkInRegisterModal: React.FC<WalkInRegisterModalProps> = ({
                   onChange={(e) => setWalkinSlotId(e.target.value)}
                   className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white"
                 >
-                  {slots.filter(s => s.mandapamId === mandapam.id).map(s => (
-                    <option key={s.id} value={s.id}>{s.startTime} - {s.endTime} ({s.date})</option>
+                  <option value="">Current Live Counter Slot</option>
+                  {(walkinServiceId
+                    ? slots.filter(s => s.serviceId === walkinServiceId && s.mandapamId === mandapam.id)
+                    : mandapamSlots
+                  ).map(s => (
+                    <option key={s.id} value={s.id}>
+                      {s.startTime} - {s.endTime} ({s.date}) • {Math.max(0, s.capacity - (s.bookedCount + s.walkinCount))} left
+                    </option>
                   ))}
                 </select>
               </div>

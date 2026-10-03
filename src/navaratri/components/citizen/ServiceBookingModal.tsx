@@ -43,6 +43,16 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
   const [enteredOtp, setEnteredOtp] = useState("");
   const [confirmedBooking, setConfirmedBooking] = useState<Booking | null>(null);
 
+  React.useEffect(() => {
+    if (preselectedServiceId) {
+      setSelectedServiceId(preselectedServiceId);
+      const matchingSlot = slots.find(s => s.serviceId === preselectedServiceId && s.mandapamId === mandapam.id);
+      if (matchingSlot) {
+        setSelectedSlotId(matchingSlot.id);
+      }
+    }
+  }, [preselectedServiceId, slots, mandapam.id]);
+
   if (!isOpen) return null;
 
   const currentSlot = slots.find(s => s.id === selectedSlotId);
@@ -50,6 +60,7 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
   const remainingCapacity = currentSlot
     ? Math.max(0, currentSlot.capacity - (currentSlot.bookedCount + currentSlot.walkinCount))
     : 0;
+  const isSlotFull = currentSlot ? (currentSlot.bookedCount + currentSlot.walkinCount) >= currentSlot.capacity : false;
 
   const handleProceedToOtp = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,8 +77,12 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
       toast.error("Please select a pooja time slot.");
       return;
     }
+    if (isSlotFull || remainingCapacity === 0) {
+      toast.error("This slot has reached full capacity. No more bookings allowed.");
+      return;
+    }
     if (quantity > remainingCapacity) {
-      toast.error("Requested number of participants exceeds available slot capacity.");
+      toast.error(`Only ${remainingCapacity} slot(s) available. Please adjust devotee count.`);
       return;
     }
 
@@ -245,15 +260,19 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-stone-700 mb-1">
-                  Number of Devotees
+                  Number of Devotees {remainingCapacity > 0 && <span className="text-stone-400 font-normal">(Max: {Math.min(6, remainingCapacity)})</span>}
                 </label>
                 <input
                   type="number"
                   min="1"
-                  max="6"
+                  max={Math.max(1, Math.min(6, remainingCapacity))}
+                  disabled={remainingCapacity <= 0}
                   value={quantity}
-                  onChange={(e) => setQuantity(Math.min(6, Math.max(1, parseInt(e.target.value) || 1)))}
-                  className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  onChange={(e) => {
+                    const maxAllowed = Math.max(1, Math.min(6, remainingCapacity));
+                    setQuantity(Math.min(maxAllowed, Math.max(1, parseInt(e.target.value) || 1)));
+                  }}
+                  className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none disabled:bg-stone-100 disabled:text-stone-400"
                 />
               </div>
 
@@ -271,6 +290,18 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
               </div>
             </div>
 
+            {remainingCapacity <= 0 && (
+              <div className="p-3.5 rounded-xl bg-red-50 border border-red-300 text-red-900 text-xs font-bold flex items-center gap-2">
+                <span className="text-base">🔒</span>
+                <div>
+                  <p className="font-black">FILLED SLOTS / HOUSEFULL</p>
+                  <p className="text-[11px] font-normal text-red-800">
+                    All token quotas for this slot have been booked. Please choose another seva or check back later.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {currentService?.itemsRequired && (
               <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-950">
                 <strong>Items Devotees should bring:</strong> {currentService.itemsRequired}
@@ -280,9 +311,9 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
             <button
               type="submit"
               disabled={remainingCapacity <= 0}
-              className="w-full py-3 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs font-bold shadow-lg transition-all disabled:opacity-50"
+              className="w-full py-3 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs font-bold shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              Confirm Booking & Generate Pass →
+              {remainingCapacity <= 0 ? "🔒 Slots Filled - Housefull" : "Confirm Booking & Generate Pass →"}
             </button>
           </form>
         )}

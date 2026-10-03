@@ -49,7 +49,10 @@ import {
   PartyPopper,
   Camera,
   RefreshCw,
-  Check
+  Check,
+  Search,
+  Ticket,
+  Filter
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -97,7 +100,13 @@ export const NavaratriOrganizer: React.FC = () => {
     announcements,
     publishAnnouncement,
     deleteMandapam,
-    updateMandapam
+    updateMandapam,
+    services,
+    createService,
+    deleteService,
+    createSlot,
+    deleteSlot,
+    updateBookingStatus
   } = useNavaratriData();
   const { t } = useNavaratriLanguage();
 
@@ -154,6 +163,23 @@ export const NavaratriOrganizer: React.FC = () => {
   const [editAddress, setEditAddress] = useState("");
   const [editArea, setEditArea] = useState("");
   const [editCity, setEditCity] = useState("");
+
+  // Booking Slot & Quota State
+  const [slotModalOpen, setSlotModalOpen] = useState(false);
+  const [slotTitle, setSlotTitle] = useState("");
+  const [slotCategory, setSlotCategory] = useState<"Pooja" | "Lottery / Lucky Draw" | "Dandiya / Garba" | "Daily Pooja" | "Other">("Pooja");
+  const [customSlotCategory, setCustomSlotCategory] = useState("");
+  const [slotDate, setSlotDate] = useState("2026-10-15");
+  const [slotStartTime, setSlotStartTime] = useState("06:00 PM");
+  const [slotEndTime, setSlotEndTime] = useState("08:00 PM");
+  const [slotCapacity, setSlotCapacity] = useState<number>(4);
+  const [slotPrice, setSlotPrice] = useState("0");
+  const [slotDescription, setSlotDescription] = useState("");
+  const [slotItemsRequired, setSlotItemsRequired] = useState("");
+
+  // Devotee Bookings Search & Filter State
+  const [bookingSearchQuery, setBookingSearchQuery] = useState("");
+  const [bookingFilterType, setBookingFilterType] = useState<"ALL" | "ONLINE" | "WALK_IN">("ALL");
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -285,6 +311,131 @@ export const NavaratriOrganizer: React.FC = () => {
   const mandapamBookings = bookings.filter((b) => b.mandapamId === currentMandapam.id);
   const onlineBookingsCount = mandapamBookings.filter((b) => b.bookingType === "ONLINE").length;
   const walkinBookingsCount = mandapamBookings.filter((b) => b.bookingType === "WALK_IN").length;
+
+  const mandapamServices = services.filter((s) => s.mandapamId === currentMandapam.id);
+  const mandapamSlots = slots.filter((s) => s.mandapamId === currentMandapam.id);
+
+  const filteredMandapamBookings = mandapamBookings.filter((b) => {
+    const matchesFilter =
+      bookingFilterType === "ALL" ||
+      (bookingFilterType === "ONLINE" && b.bookingType === "ONLINE") ||
+      (bookingFilterType === "WALK_IN" && b.bookingType === "WALK_IN");
+    if (!matchesFilter) return false;
+    if (!bookingSearchQuery.trim()) return true;
+
+    const q = bookingSearchQuery.toLowerCase().trim();
+    const devoteeName = (b.name || "").toLowerCase();
+    const devoteeMobile = (b.mobile || "").toLowerCase();
+    const bookingCode = (b.bookingCode || "").toLowerCase();
+    const srvName = (services.find((s) => s.id === b.serviceId)?.name || "").toLowerCase();
+    return devoteeName.includes(q) || devoteeMobile.includes(q) || bookingCode.includes(q) || srvName.includes(q);
+  });
+
+  const handleCreateBookingSlot = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!slotTitle.trim()) {
+      toast.error("Please enter a title for the booking opening.");
+      return;
+    }
+    const cap = Math.max(1, slotCapacity || 4);
+    const finalCategory = slotCategory === "Other" ? (customSlotCategory.trim() || "Special Program") : slotCategory;
+
+    const newSrv = createService({
+      mandapamId: currentMandapam.id,
+      name: slotTitle.trim(),
+      type: finalCategory,
+      description: slotDescription.trim() || `${finalCategory} opening with limited quota of ${cap} devotee token(s).`,
+      durationMinutes: 60,
+      itemsRequired: slotItemsRequired.trim() || undefined,
+      enabled: true,
+      bookingEnabled: true,
+      price: parseInt(slotPrice) || 0,
+      date: slotDate,
+      timeSlot: `${slotStartTime} - ${slotEndTime}`
+    });
+
+    createSlot({
+      serviceId: newSrv.id,
+      mandapamId: currentMandapam.id,
+      date: slotDate,
+      startTime: slotStartTime,
+      endTime: slotEndTime,
+      capacity: cap
+    });
+
+    setSlotModalOpen(false);
+    setSlotTitle("");
+    setCustomSlotCategory("");
+    setSlotDescription("");
+    setSlotItemsRequired("");
+    setSlotCapacity(4);
+    toast.success(`Booking slot "${slotTitle}" opened with quota of ${cap} tokens!`);
+  };
+
+  const handleDeleteServiceOpening = (srvId: string) => {
+    if (window.confirm("Are you sure you want to close and remove this booking opening?")) {
+      deleteService(srvId);
+      toast.info("Booking opening removed.");
+    }
+  };
+
+  const handlePrintBookingSlip = (b: (typeof mandapamBookings)[0]) => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      window.print();
+      return;
+    }
+    const srv = services.find((s) => s.id === b.serviceId);
+    const srvName = srv ? srv.name : b.bookingType === "WALK_IN" ? "Counter Walk-In Token" : "Navaratri Devotee Pass";
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Token Slip - ${b.bookingCode}</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 24px; max-width: 360px; margin: 0 auto; color: #1c1917; }
+            .card { border: 2px dashed #b45309; padding: 20px; border-radius: 16px; text-align: center; background: #fffdfa; }
+            .title { font-size: 18px; font-weight: 900; color: #8B1E1E; margin-bottom: 4px; }
+            .subtitle { font-size: 12px; color: #78350f; font-weight: 700; margin-bottom: 12px; }
+            .token-box { background: #fef3c7; border: 2px solid #d97706; padding: 12px; border-radius: 12px; margin: 12px 0; }
+            .token-num { font-size: 28px; font-weight: 900; color: #8B1E1E; letter-spacing: 2px; }
+            .details { text-align: left; font-size: 12px; line-height: 1.6; margin-top: 12px; border-top: 1px solid #fed7aa; padding-top: 10px; }
+            .footer { font-size: 10px; color: #78716c; margin-top: 14px; text-align: center; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <div class="title">${currentMandapam.name}</div>
+            <div class="subtitle">🪔 NAVARATRI UTSAV 2026 🪔</div>
+            <div class="token-box">
+              <div style="font-size: 11px; text-transform: uppercase; font-weight: bold; color: #92400e;">Devotee Token Code</div>
+              <div class="token-num">${b.bookingCode}</div>
+              <div style="font-size: 11px; font-weight: bold; color: #047857;">${b.bookingType === "WALK_IN" ? "Counter Walk-In Token" : "Online Devotee Pass"}</div>
+            </div>
+            <div class="details">
+              <div><strong>Program/Seva:</strong> ${srvName}</div>
+              <div><strong>Devotee:</strong> ${b.name} (${b.mobile})</div>
+              <div><strong>Persons:</strong> ${b.quantity} Devotee(s)</div>
+              <div><strong>Status:</strong> ${b.status}</div>
+              <div><strong>Issued:</strong> ${new Date(b.createdAt).toLocaleString()}</div>
+              ${b.notes ? `<div><strong>Notes:</strong> ${b.notes}</div>` : ""}
+            </div>
+            <div class="footer">
+              Please present this token at the mandapam seva counter.<br/>
+              🙏 Sarve Janah Sukhino Bhavantu 🙏
+            </div>
+          </div>
+          <script>
+            window.onload = function() {
+              window.print();
+              setTimeout(function() { window.close(); }, 500);
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
 
   const handleOpenDrawerForDay = (dayNum: number) => {
     setDrawerDayNumber(dayNum);
@@ -968,51 +1119,392 @@ export const NavaratriOrganizer: React.FC = () => {
       {/* TAB 4: DEVOTEE BOOKINGS & TOKEN COUNTER */}
       {activeTab === "bookings" && (
         <div className="space-y-6">
+          {/* Action Bar & Stats Header */}
+          <div className="rounded-3xl border border-amber-300 bg-white p-5 sm:p-6 shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-amber-200 pb-3">
+              <div>
+                <h2 className="font-serif text-lg sm:text-xl font-black text-[#8B1E1E] flex items-center gap-2">
+                  <Users className="w-5 h-5 text-emerald-700" />
+                  <span>Citizen Bookings & Walk-In Crowds</span>
+                </h2>
+                <p className="text-xs text-stone-600 mt-0.5">
+                  Manage limited devotee quotas for Poojas, Lottery, Dandiya, or Lucky Draws, and issue counter walk-in tokens.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setSlotModalOpen(true)}
+                  className="px-3.5 py-2 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>+ Open Booking Opening / Quota</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRegisterModalOpen(true)}
+                  className="px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Ticket className="w-4 h-4" />
+                  <span>+ Issue Walk-In Token</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Metrics */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-stone-500">Total Devotees</p>
+                <p className="text-2xl font-black text-[#8B1E1E] mt-1">{mandapamBookings.length}</p>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-blue-50 border border-blue-200">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-blue-700">Online Passes</p>
+                <p className="text-2xl font-black text-blue-900 mt-1">{onlineBookingsCount}</p>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Counter Tokens</p>
+                <p className="text-2xl font-black text-emerald-900 mt-1">{walkinBookingsCount}</p>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-purple-50 border border-purple-200">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-purple-700">Active Openings</p>
+                <p className="text-2xl font-black text-purple-900 mt-1">{mandapamServices.length}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Section: Active Booking Openings & Quota Limits */}
           <div className="rounded-3xl border border-amber-300 bg-white p-5 sm:p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-amber-200 pb-2">
-              <h2 className="font-serif text-base sm:text-lg font-black text-[#8B1E1E] flex items-center gap-2">
-                <Users className="w-4 h-4 text-emerald-700" />
-                <span>Citizen Bookings & Walk-In Crowds</span>
-              </h2>
+            <div className="flex items-center justify-between border-b border-amber-200 pb-2.5">
+              <div>
+                <h3 className="font-serif text-base sm:text-lg font-black text-[#8B1E1E] flex items-center gap-2">
+                  <Ticket className="w-4 h-4 text-amber-700" />
+                  <span>Mandapam Booking Openings & Quota Limits</span>
+                </h3>
+                <p className="text-[11px] text-stone-500">
+                  Slots automatically close as "FILLED SLOTS" when all token quotas are booked.
+                </p>
+              </div>
               <button
-                onClick={() => setRegisterModalOpen(true)}
-                className="text-xs font-bold text-emerald-800 bg-emerald-100 hover:bg-emerald-200 px-3 py-1 rounded-xl transition-colors cursor-pointer"
+                type="button"
+                onClick={() => setSlotModalOpen(true)}
+                className="text-xs font-bold text-[#8B1E1E] hover:text-[#B45309] flex items-center gap-1 cursor-pointer"
               >
-                + Issue Walk-In Token
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Opening</span>
               </button>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 text-center">
-              <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200">
-                <p className="text-[10px] font-bold uppercase text-stone-500">Total Devotees</p>
-                <p className="text-xl font-black text-stone-900 mt-1">{mandapamBookings.length}</p>
+            {mandapamServices.length === 0 ? (
+              <div className="text-center py-6 px-4 rounded-2xl bg-amber-50/60 border border-dashed border-amber-300 space-y-2">
+                <p className="text-xs font-semibold text-amber-900">
+                  No active booking openings created yet.
+                </p>
+                <p className="text-[11px] text-stone-600 max-w-md mx-auto">
+                  Organizers can create limited quotas for Poojas, Lottery, Dandiya, or Lucky Draws (e.g. limit to 4 devotees).
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSlotModalOpen(true)}
+                  className="mt-2 px-3 py-1.5 rounded-xl bg-[#8B1E1E] text-white text-xs font-bold hover:bg-[#9A241C] transition-colors cursor-pointer"
+                >
+                  + Open Booking Slot (e.g. 4 Slots)
+                </button>
               </div>
-              <div className="p-3 rounded-2xl bg-blue-50 border border-blue-200">
-                <p className="text-[10px] font-bold uppercase text-stone-500">Online Passes</p>
-                <p className="text-xl font-black text-blue-900 mt-1">{onlineBookingsCount}</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                {mandapamServices.map((srv) => {
+                  const srvSlots = slots.filter((s) => s.serviceId === srv.id && s.mandapamId === currentMandapam.id);
+                  const totalCap = srvSlots.reduce((acc, s) => acc + s.capacity, 0);
+                  const totalBooked = srvSlots.reduce((acc, s) => acc + s.bookedCount + s.walkinCount, 0);
+                  const isFull = totalCap > 0 && totalBooked >= totalCap;
+                  const remaining = Math.max(0, totalCap - totalBooked);
+                  const percentFilled = totalCap > 0 ? Math.min(100, Math.round((totalBooked / totalCap) * 100)) : 0;
+
+                  return (
+                    <div
+                      key={srv.id}
+                      className={`p-4 rounded-2xl border transition-all space-y-3 ${
+                        isFull
+                          ? "bg-red-50/40 border-red-300 shadow-sm"
+                          : "bg-[#FFFDF9] border-amber-300 shadow-sm"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-100 text-[#8B1E1E] uppercase">
+                              {srv.type}
+                            </span>
+                            {srv.price && srv.price > 0 ? (
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-700">
+                                ₹{srv.price}
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                                Free
+                              </span>
+                            )}
+                          </div>
+                          <h4 className="font-serif font-bold text-sm sm:text-base text-[#8B1E1E]">
+                            {srv.name}
+                          </h4>
+                          <p className="text-[11px] text-stone-600 line-clamp-2">
+                            {srv.description}
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteServiceOpening(srv.id)}
+                          className="p-1.5 rounded-lg text-stone-400 hover:text-red-700 hover:bg-red-50 transition-colors cursor-pointer"
+                          title="Delete Opening"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      {/* Timings */}
+                      <div className="flex items-center gap-3 text-[11px] text-stone-600">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3 text-[#8B1E1E]" />
+                          <span>{srv.date || srvSlots[0]?.date || "Festival Days"}</span>
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-[#8B1E1E]" />
+                          <span>{srv.timeSlot || (srvSlots[0] ? `${srvSlots[0].startTime} - ${srvSlots[0].endTime}` : "60 mins")}</span>
+                        </span>
+                      </div>
+
+                      {/* Quota Progress Bar */}
+                      <div className="space-y-1.5 pt-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-stone-700">
+                            Quota: {totalBooked} / {totalCap || "∞"} Booked
+                          </span>
+                          {isFull ? (
+                            <span className="font-black text-[11px] px-2 py-0.5 rounded-full bg-red-100 text-red-800 border border-red-300 flex items-center gap-1">
+                              <Lock className="w-3 h-3 text-red-700" />
+                              <span>FILLED SLOTS</span>
+                            </span>
+                          ) : (
+                            <span className="font-bold text-[11px] text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
+                              {remaining} Slots Left
+                            </span>
+                          )}
+                        </div>
+                        {totalCap > 0 && (
+                          <div className="w-full h-2 rounded-full bg-stone-200 overflow-hidden">
+                            <div
+                              className={`h-full transition-all duration-300 ${
+                                isFull ? "bg-red-600" : percentFilled > 75 ? "bg-amber-500" : "bg-emerald-600"
+                              }`}
+                              style={{ width: `${percentFilled}%` }}
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Card Footer Actions */}
+                      <div className="pt-2 border-t border-amber-200/60 flex items-center justify-between">
+                        <span className="text-[10px] text-stone-500 font-medium">
+                          {isFull ? "Slot locked for citizens" : "Open for Devotees"}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setRegisterModalOpen(true)}
+                          className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 hover:bg-emerald-100 text-[11px] font-bold border border-emerald-300 flex items-center gap-1 transition-colors cursor-pointer"
+                        >
+                          <Ticket className="w-3 h-3" />
+                          <span>+ Walk-In Token</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200">
-                <p className="text-[10px] font-bold uppercase text-stone-500">Counter Tokens</p>
-                <p className="text-xl font-black text-emerald-900 mt-1">{walkinBookingsCount}</p>
+            )}
+          </div>
+
+          {/* Section: Devotee Bookings & Tokens Register */}
+          <div className="rounded-3xl border border-amber-300 bg-white p-5 sm:p-6 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-amber-200 pb-3">
+              <div>
+                <h3 className="font-serif text-base sm:text-lg font-black text-[#8B1E1E] flex items-center gap-2">
+                  <Users className="w-4 h-4 text-emerald-700" />
+                  <span>Devotee Bookings & Tokens ({filteredMandapamBookings.length})</span>
+                </h3>
+                <p className="text-[11px] text-stone-500">
+                  Full list of citizen registrations, online passes, and walk-in counter slips.
+                </p>
+              </div>
+
+              {/* Filter Tabs */}
+              <div className="flex items-center gap-1.5 bg-stone-100 p-1 rounded-xl shrink-0 text-xs font-bold">
+                <button
+                  type="button"
+                  onClick={() => setBookingFilterType("ALL")}
+                  className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                    bookingFilterType === "ALL" ? "bg-white text-stone-900 shadow-xs" : "text-stone-600 hover:text-stone-900"
+                  }`}
+                >
+                  All ({mandapamBookings.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBookingFilterType("ONLINE")}
+                  className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                    bookingFilterType === "ONLINE" ? "bg-white text-blue-900 shadow-xs" : "text-stone-600 hover:text-stone-900"
+                  }`}
+                >
+                  Online ({onlineBookingsCount})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBookingFilterType("WALK_IN")}
+                  className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                    bookingFilterType === "WALK_IN" ? "bg-white text-emerald-900 shadow-xs" : "text-stone-600 hover:text-stone-900"
+                  }`}
+                >
+                  Walk-In ({walkinBookingsCount})
+                </button>
               </div>
             </div>
 
-            {/* Bookings List */}
-            <div className="space-y-2 pt-2">
-              {mandapamBookings.length === 0 ? (
-                <p className="text-xs text-stone-500 italic text-center py-4">No citizen bookings recorded yet.</p>
+            {/* Search Input */}
+            <div className="relative">
+              <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={bookingSearchQuery}
+                onChange={(e) => setBookingSearchQuery(e.target.value)}
+                placeholder="Search by devotee name, mobile number, or token code (e.g. TK-1234)..."
+                className="w-full pl-9 pr-4 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+              />
+              {bookingSearchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setBookingSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 text-xs font-bold cursor-pointer"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+
+            {/* Bookings List Cards */}
+            <div className="space-y-2.5">
+              {filteredMandapamBookings.length === 0 ? (
+                <div className="text-center py-8 px-4 rounded-2xl bg-stone-50 border border-stone-200">
+                  <p className="text-xs text-stone-600 font-semibold">
+                    {bookingSearchQuery ? "No bookings match your search query." : "No citizen bookings recorded yet."}
+                  </p>
+                  <p className="text-[11px] text-stone-400 mt-1">
+                    Bookings made by citizens or issued at counter will be listed here in real-time.
+                  </p>
+                </div>
               ) : (
-                mandapamBookings.map((b) => (
-                  <div key={b.id} className="p-3 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between text-xs">
-                    <div>
-                      <p className="font-bold text-stone-900">{b.name} ({b.mobile})</p>
-                      <p className="text-[11px] text-stone-500">{b.bookingCode} • {b.quantity} Devotee(s) • {b.bookingType}</p>
+                filteredMandapamBookings.map((b) => {
+                  const srv = services.find((s) => s.id === b.serviceId);
+                  const srvName = srv ? srv.name : b.bookingType === "WALK_IN" ? "Counter Walk-In Token" : "Devotee Pooja Pass";
+
+                  return (
+                    <div
+                      key={b.id}
+                      className="p-3.5 sm:p-4 rounded-2xl bg-stone-50/80 border border-stone-200 hover:border-amber-300 transition-all flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-mono font-black text-xs px-2 py-0.5 rounded-lg bg-amber-100 text-[#8B1E1E] border border-amber-300">
+                            {b.bookingCode}
+                          </span>
+                          <span
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                              b.bookingType === "WALK_IN"
+                                ? "bg-emerald-100 text-emerald-800"
+                                : "bg-blue-100 text-blue-800"
+                            }`}
+                          >
+                            {b.bookingType === "WALK_IN" ? "🎫 Counter Token" : "📱 Online Pass"}
+                          </span>
+                          <span
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                              b.status === "CHECKED_IN"
+                                ? "bg-purple-100 text-purple-800"
+                                : b.status === "CANCELLED"
+                                ? "bg-red-100 text-red-800"
+                                : "bg-stone-200 text-stone-800"
+                            }`}
+                          >
+                            {b.status}
+                          </span>
+                        </div>
+
+                        <div className="pt-0.5">
+                          <p className="font-black text-sm text-stone-900">
+                            {b.name}{" "}
+                            <span className="text-stone-500 font-normal">
+                              ({b.mobile})
+                            </span>
+                          </p>
+                          <p className="text-[11px] text-stone-600 font-medium">
+                            <strong className="text-[#8B1E1E]">{srvName}</strong> • {b.quantity} Devotee(s)
+                          </p>
+                          {b.notes && (
+                            <p className="text-[10px] text-stone-500 italic mt-0.5">
+                              {b.notes}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-1.5 self-end sm:self-center shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newStatus = b.status === "CHECKED_IN" ? "CONFIRMED" : "CHECKED_IN";
+                            updateBookingStatus(b.id, newStatus);
+                            toast.success(`Booking ${b.bookingCode} marked as ${newStatus}`);
+                          }}
+                          className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-colors flex items-center gap-1 cursor-pointer ${
+                            b.status === "CHECKED_IN"
+                              ? "bg-purple-100 hover:bg-purple-200 text-purple-900"
+                              : "bg-emerald-100 hover:bg-emerald-200 text-emerald-900"
+                          }`}
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>{b.status === "CHECKED_IN" ? "Present ✓" : "Check In"}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handlePrintBookingSlip(b)}
+                          className="px-2.5 py-1.5 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-800 text-[11px] font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                          title="Print Token Slip"
+                        >
+                          <Printer className="w-3.5 h-3.5" />
+                          <span>Print</span>
+                        </button>
+
+                        {b.status !== "CANCELLED" && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (window.confirm(`Cancel booking ${b.bookingCode}?`)) {
+                                updateBookingStatus(b.id, "CANCELLED");
+                                toast.info(`Booking ${b.bookingCode} cancelled.`);
+                              }
+                            }}
+                            className="p-1.5 rounded-lg text-stone-400 hover:text-red-700 hover:bg-red-50 transition-colors cursor-pointer"
+                            title="Cancel Booking"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
-                      {b.status}
-                    </span>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>
@@ -1059,8 +1551,221 @@ export const NavaratriOrganizer: React.FC = () => {
       {registerModalOpen && (
         <WalkInRegisterModal
           mandapam={currentMandapam}
+          isOpen={registerModalOpen}
           onClose={() => setRegisterModalOpen(false)}
         />
+      )}
+
+      {/* OPEN BOOKING OPENING / QUOTA MODAL */}
+      {slotModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setSlotModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-lg bg-[#FFFDF9] rounded-3xl border-2 border-amber-400 shadow-2xl p-5 sm:p-6 space-y-4 my-8 max-h-[92vh] overflow-y-auto animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-amber-200 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-[#8B1E1E]">
+                  <Ticket className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-black text-lg text-[#8B1E1E]">
+                    Open Booking / Quota Limit
+                  </h3>
+                  <p className="text-[11px] text-stone-600 font-medium">
+                    Pooja, Lottery, Dandiya, or Lucky Draw with exact token capacity
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSlotModalOpen(false)}
+                className="p-1.5 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateBookingSlot} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-stone-800 mb-1">
+                  Booking Opening Title *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={slotTitle}
+                  onChange={(e) => setSlotTitle(e.target.value)}
+                  placeholder="e.g. Special Chandi Homam, Maha Dandiya Night, Navaratri Lucky Draw, Daily Evening Pooja"
+                  className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">
+                    Category *
+                  </label>
+                  <select
+                    value={slotCategory}
+                    onChange={(e) => setSlotCategory(e.target.value as any)}
+                    className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none font-semibold text-stone-800"
+                  >
+                    <option value="Pooja">🪔 Special Pooja / Seva</option>
+                    <option value="Lottery / Lucky Draw">🎟️ Lottery / Lucky Draw</option>
+                    <option value="Dandiya / Garba">💃 Dandiya / Garba</option>
+                    <option value="Daily Pooja">☀️ Daily Pooja</option>
+                    <option value="Other">🎯 Other (Custom)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">
+                    Token Quota Limit (Max Bookings) *
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="1000"
+                    required
+                    value={slotCapacity}
+                    onChange={(e) => setSlotCapacity(Math.max(1, parseInt(e.target.value) || 1))}
+                    placeholder="e.g. 4"
+                    className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none font-bold text-[#8B1E1E]"
+                  />
+                  <p className="text-[10px] text-stone-500 mt-0.5">
+                    e.g. Set to 4 to strictly allow 4 bookings. When reached, shows FILLED SLOTS.
+                  </p>
+                </div>
+              </div>
+
+              {slotCategory === "Other" && (
+                <div>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">
+                    Enter Custom Category Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={customSlotCategory}
+                    onChange={(e) => setCustomSlotCategory(e.target.value)}
+                    placeholder="e.g. Youth Quiz, Annadanam Seva, Cultural Contest"
+                    className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  />
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">
+                    Festival Date *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={slotDate}
+                    onChange={(e) => setSlotDate(e.target.value)}
+                    placeholder="e.g. 2026-10-15 or Day 5"
+                    className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">
+                    Start Time *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={slotStartTime}
+                    onChange={(e) => setSlotStartTime(e.target.value)}
+                    placeholder="e.g. 06:00 PM"
+                    className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">
+                    End Time *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={slotEndTime}
+                    onChange={(e) => setSlotEndTime(e.target.value)}
+                    placeholder="e.g. 08:00 PM"
+                    className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">
+                    Dakshina / Ticket Amount (₹)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={slotPrice}
+                    onChange={(e) => setSlotPrice(e.target.value)}
+                    placeholder="0 for Free community entry"
+                    className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  />
+                  <p className="text-[10px] text-stone-500 mt-0.5">Leave 0 for free seva / token.</p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">
+                    Items Devotees Should Bring (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={slotItemsRequired}
+                    onChange={(e) => setSlotItemsRequired(e.target.value)}
+                    placeholder="e.g. Coconuts, Flowers, Dandiya sticks"
+                    className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-stone-800 mb-1">
+                  Description / Instructions for Devotees
+                </label>
+                <textarea
+                  rows={2}
+                  value={slotDescription}
+                  onChange={(e) => setSlotDescription(e.target.value)}
+                  placeholder="Details about ritual, reporting timing, dress code, or lucky draw rules..."
+                  className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-amber-200">
+                <button
+                  type="button"
+                  onClick={() => setSlotModalOpen(false)}
+                  className="px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Open Quota & Publish Slot</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
       {qrModalOpen && (

@@ -132,6 +132,9 @@ export interface Service {
   itemsRequired?: string;
   durationMinutes: number;
   capacityPerSlot: number;
+  price?: number;
+  date?: string;
+  timeSlot?: string;
 }
 
 export interface ServiceSlot {

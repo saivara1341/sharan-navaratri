@@ -38,7 +38,8 @@ import {
   Trash2,
   Check,
   RefreshCw,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Lock
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -90,12 +91,14 @@ export const NavaratriMandapamDetail: React.FC = () => {
     alankaranas,
     daySettings,
     services,
+    slots,
     activities,
     announcements,
     toggleFollow,
     isFollowing,
     markScanned,
-    updateMandapam
+    updateMandapam,
+    createBooking
   } = useNavaratriData();
   const { t, language } = useNavaratriLanguage();
 
@@ -395,6 +398,14 @@ export const NavaratriMandapamDetail: React.FC = () => {
     } catch {
       // ignore
     }
+
+    createBooking({
+      mandapamId: mandapam.id,
+      name: regName.trim(),
+      mobile: cleanMobile,
+      quantity: regCount,
+      notes: `[Activity: ${regActivity.title}] ${regCategory ? `Category: ${regCategory}. ` : ""}${regNotes.trim()}`.trim()
+    });
 
     setRegSuccessTicket(regRecord);
     toast.success(`Registration Confirmed for ${regActivity.title}!`);
@@ -924,20 +935,55 @@ export const NavaratriMandapamDetail: React.FC = () => {
                   )}
                 </div>
 
-                <div className="pt-2 border-t border-amber-200/60 flex items-center justify-between">
-                  <span className="text-xs font-bold text-emerald-800">
-                    {t.slotsAvailable}
-                  </span>
-                  <button
-                    onClick={() => {
-                      setSelectedServiceId(srv.id);
-                      setBookingModalOpen(true);
-                    }}
-                    className="px-4 py-2 rounded-xl bg-[#8B1E1E] text-white text-xs font-bold hover:bg-[#9A241C] shadow-sm transition-colors"
-                  >
-                    {t.bookSlot}
-                  </button>
-                </div>
+                {(() => {
+                  const srvSlots = slots.filter((s) => s.serviceId === srv.id && s.mandapamId === mandapam.id);
+                  const totalCap = srvSlots.reduce((acc, s) => acc + s.capacity, 0);
+                  const totalBooked = srvSlots.reduce((acc, s) => acc + s.bookedCount + s.walkinCount, 0);
+                  const isFull = totalCap > 0 && totalBooked >= totalCap;
+                  const remainingSlots = Math.max(0, totalCap - totalBooked);
+
+                  return (
+                    <div className="pt-2 border-t border-amber-200/60 flex flex-wrap items-center justify-between gap-2">
+                      {isFull ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 border border-red-300 text-red-800 text-[11px] font-black uppercase tracking-wide">
+                          <Lock className="w-3.5 h-3.5 text-red-700" />
+                          <span>FILLED SLOTS ({totalBooked}/{totalCap} FULL)</span>
+                        </span>
+                      ) : totalCap > 0 ? (
+                        <span className="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                          <span>{remainingSlots} Slots Left ({totalBooked}/{totalCap} Booked)</span>
+                        </span>
+                      ) : (
+                        <span className="text-xs font-bold text-emerald-800">
+                          {t.slotsAvailable}
+                        </span>
+                      )}
+
+                      {isFull ? (
+                        <button
+                          type="button"
+                          disabled
+                          className="px-4 py-2 rounded-xl bg-stone-200 text-stone-500 text-xs font-bold cursor-not-allowed border border-stone-300 shadow-none flex items-center gap-1.5"
+                        >
+                          <Lock className="w-3.5 h-3.5 text-stone-400" />
+                          <span>Slots Filled</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedServiceId(srv.id);
+                            setBookingModalOpen(true);
+                          }}
+                          className="px-4 py-2 rounded-xl bg-[#8B1E1E] text-white text-xs font-bold hover:bg-[#9A241C] shadow-sm transition-colors cursor-pointer"
+                        >
+                          {t.bookSlot} →
+                        </button>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             ))}
           </div>
