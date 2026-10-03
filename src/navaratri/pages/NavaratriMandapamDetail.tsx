@@ -352,13 +352,20 @@ export const NavaratriMandapamDetail: React.FC = () => {
             const isToday = day.date === todayIso;
             const customSetting = mandapamDaySettings.find((s) => s.dayNumber === day.dayNumber);
             const deviDisplayName = customSetting?.customDeviName || day.deviName;
+            const customAlankarana = alankaranas.find(
+              (a) => a.mandapamId === mandapam?.id && a.date === day.date
+            );
+            const avatarImg =
+              customAlankarana?.imageUrl && !customAlankarana.imageUrl.includes("-bg.jpg")
+                ? customAlankarana.imageUrl
+                : day.imageUrl || navaratriAsset("/navaratri/assets/maa-durga-icon.png");
 
             return (
               <button
                 key={day.dayNumber}
                 type="button"
                 onClick={() => setSelectedDay(day)}
-                className={`p-1.5 sm:p-2.5 rounded-xl sm:rounded-2xl border transition-all flex flex-col items-center justify-between text-center relative group active:scale-95 cursor-pointer min-h-[78px] sm:min-h-[92px] ${
+                className={`p-1 sm:p-2 rounded-xl sm:rounded-2xl border transition-all flex flex-col items-center justify-between text-center relative group active:scale-95 cursor-pointer min-h-[96px] sm:min-h-[114px] ${
                   isToday
                     ? "bg-gradient-to-b from-[#8B1E1E] to-[#9A241C] text-white border-amber-400 shadow-md ring-2 ring-amber-400/50"
                     : "bg-white hover:bg-amber-50 text-stone-900 border-amber-300/80 shadow-xs hover:border-amber-400"
@@ -371,24 +378,31 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 )}
 
                 {/* Day Number */}
-                <span className={`text-[11px] sm:text-xs font-black font-serif ${isToday ? "text-amber-200" : "text-[#8B1E1E]"}`}>
+                <span className={`text-[10px] sm:text-xs font-black font-serif ${isToday ? "text-amber-200" : "text-[#8B1E1E]"}`}>
                   Day {day.dayNumber}
                 </span>
 
-                {/* Sacred Color Dot */}
-                <div
-                  className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border border-white/80 shadow-xs my-0.5"
-                  style={{ backgroundColor: day.colorHex }}
-                  title={day.colorName}
-                />
+                {/* Respected Avatharam / Durga Matha Idol Image */}
+                <div className="relative my-0.5 sm:my-1 w-9 h-9 sm:w-12 sm:h-12 rounded-full p-0.5 border-2 border-amber-400 bg-amber-50 shadow-xs overflow-hidden flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <img
+                    src={avatarImg}
+                    alt={deviDisplayName}
+                    className="w-full h-full object-cover rounded-full"
+                    loading="lazy"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = navaratriAsset("/navaratri/assets/maa-durga-icon.png");
+                    }}
+                  />
+                  <div className="absolute inset-0 rounded-full ring-1 ring-amber-500/30 pointer-events-none" />
+                </div>
 
                 {/* Date */}
-                <span className={`text-[9px] sm:text-[11px] font-bold ${isToday ? "text-white" : "text-stone-700"}`}>
+                <span className={`text-[8.5px] sm:text-[10.5px] font-bold ${isToday ? "text-white" : "text-stone-700"}`}>
                   {formatDateShort(day.date)}
                 </span>
 
                 {/* Avatar Preview */}
-                <span className={`text-[8px] sm:text-[10px] truncate max-w-full font-medium ${isToday ? "text-amber-100" : "text-stone-500"}`}>
+                <span className={`text-[7.5px] sm:text-[9.5px] truncate max-w-full font-medium leading-tight px-0.5 ${isToday ? "text-amber-100" : "text-stone-600"}`}>
                   {getShortAvatar(deviDisplayName)}
                 </span>
               </button>
