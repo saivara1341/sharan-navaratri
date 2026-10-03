@@ -205,16 +205,20 @@ export const NavaratriMandapamDetail: React.FC = () => {
     }
   };
 
-  // Synchronize custom card background from localStorage or mandapam record
+  // Synchronize custom card background and committee logo from localStorage or mandapam record
+  const [customLogo, setCustomLogo] = useState<string>("");
+
   useEffect(() => {
     if (mandapam?.id) {
       const storedCard = localStorage.getItem(`mandapam_card_bg_${mandapam.id}`) || mandapam.cardBgImageUrl || "";
       const storedCover = localStorage.getItem(`mandapam_cover_${mandapam.id}`) || mandapam.coverImageUrl || "";
+      const storedLogo = localStorage.getItem(`mandapam_logo_${mandapam.id}`) || mandapam.logoUrl || "";
       const effective = storedCard || storedCover || "";
       setCustomCardBg(effective);
       setBgPreviewUrl(effective);
+      setCustomLogo(storedLogo);
     }
-  }, [mandapam?.id, mandapam?.cardBgImageUrl, mandapam?.coverImageUrl]);
+  }, [mandapam?.id, mandapam?.cardBgImageUrl, mandapam?.coverImageUrl, mandapam?.logoUrl]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -493,7 +497,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
               <div className="flex items-start sm:items-center gap-3.5">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-100 border-2 border-amber-400 p-0.5 shadow-md shrink-0 overflow-hidden relative group">
                   <img
-                    src={mandapam.logoUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg")}
+                    src={customLogo || mandapam.logoUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg")}
                     alt="Logo"
                     className="w-full h-full object-cover rounded-[14px]"
                   />
@@ -1459,7 +1463,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 <div className="relative z-10 flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl bg-amber-100 border-2 border-amber-400 p-0.5 shrink-0 overflow-hidden shadow-sm">
                     <img
-                      src={mandapam.logoUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg")}
+                      src={customLogo || mandapam.logoUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg")}
                       alt="Logo"
                       className="w-full h-full object-cover rounded-[10px]"
                     />

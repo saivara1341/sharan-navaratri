@@ -67,7 +67,10 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
   const [selectedTemplate, setSelectedTemplate] = useState<StandeeTemplateId>("temple-gold");
   const [isDownloading, setIsDownloading] = useState(false);
 
-  // Available Matha / Devi images
+  const storedLogo = typeof window !== "undefined" ? localStorage.getItem(`mandapam_logo_${mandapam.id}`) : null;
+  const storedCover = typeof window !== "undefined" ? localStorage.getItem(`mandapam_cover_${mandapam.id}`) : null;
+
+  // Available Matha / Devi images & Committee branding
   const mathaImages = [
     {
       id: "maa-durga",
@@ -87,13 +90,23 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
       subtitle: "Indrakeeladri Alankarana",
       url: navaratriAsset("/navaratri/assets/durga-devi-alankarana.jpg")
     },
-    ...(mandapam.coverImageUrl || mandapam.cardBgImageUrl
+    ...(mandapam.logoUrl || storedLogo
+      ? [
+          {
+            id: "mandapam-logo",
+            name: "Committee Logo",
+            subtitle: mandapam.name,
+            url: mandapam.logoUrl || storedLogo || ""
+          }
+        ]
+      : []),
+    ...(mandapam.coverImageUrl || mandapam.cardBgImageUrl || storedCover
       ? [
           {
             id: "mandapam-custom",
             name: "Mandapam Photo",
             subtitle: mandapam.name,
-            url: mandapam.coverImageUrl || mandapam.cardBgImageUrl || ""
+            url: mandapam.coverImageUrl || mandapam.cardBgImageUrl || storedCover || ""
           }
         ]
       : [])
@@ -193,18 +206,22 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
       ctx.textAlign = "center";
       ctx.fillText("॥ ॐ శ్రీ మాత్రే నమః ॥ • सर्वमङ्गलमाङ्गल्ये शिवे सर्वार्थसाधिके", canvas.width / 2, 85);
 
-      // 3. Platform Badge (NO LIGHT / NO 🪔 - exactly as requested)
+      // 3. Sacred Diya & Platform Badge
+      ctx.font = "24px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("🪔", canvas.width / 2, 114);
+
       const badgeText = "NAVARATRI MANDAPAM PLATFORM";
-      ctx.font = "bold 16px sans-serif";
+      ctx.font = "bold 15px sans-serif";
       const badgeWidth = ctx.measureText(badgeText).width + 48;
-      const badgeHeight = 36;
+      const badgeHeight = 34;
       const badgeX = (canvas.width - badgeWidth) / 2;
-      const badgeY = 110;
+      const badgeY = 126;
 
       // Rounded Pill
       ctx.fillStyle = isGold ? "#8B1E1E" : isSaffron ? "#C2410C" : "#781B1B";
       ctx.beginPath();
-      ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 18);
+      ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 17);
       ctx.fill();
 
       // Border for pill
@@ -213,7 +230,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
       ctx.stroke();
 
       ctx.fillStyle = "#FFFFFF";
-      ctx.fillText(badgeText, canvas.width / 2, badgeY + 24);
+      ctx.fillText(badgeText, canvas.width / 2, badgeY + 23);
 
       // 4. Draw Matha Image in Ornate Circular Halo
       await new Promise<void>((resolve) => {
@@ -506,8 +523,9 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
             </div>
           </div>
 
-          {/* Top Platform Arch Badge (NO LIGHT / NO 🪔 - exactly as requested) */}
-          <div className="pt-2">
+          {/* Sacred Diya & Top Platform Arch Badge */}
+          <div className="pt-2 flex flex-col items-center gap-1">
+            <span className="text-xl sm:text-2xl leading-none select-none">🪔</span>
             <div
               className={`inline-flex items-center px-4 py-1.5 rounded-full ${currentTemplate.badgeBg} text-white text-xs font-bold shadow-md tracking-wider border border-amber-300/40`}
             >
