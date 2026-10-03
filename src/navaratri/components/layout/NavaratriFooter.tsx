@@ -1,6 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { Heart, Sparkles } from "lucide-react";
+import { Heart } from "lucide-react";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { FOOTER_SLOKA_TRANSLATIONS } from "../../utils/navaratriTranslations";
 
@@ -53,19 +52,6 @@ export const NavaratriFooter: React.FC = () => {
           {t.tagline}
         </p>
 
-        {/* Catchy Ad CTA Line */}
-        <Link
-          to="/navaratri/advertise"
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-400/30 hover:bg-amber-500/20 hover:border-amber-400/60 transition-all duration-300 group"
-        >
-          <Sparkles className="w-3.5 h-3.5 text-amber-400 group-hover:animate-spin" />
-          <span className="text-xs font-semibold text-amber-300 group-hover:text-amber-100 tracking-wide">
-            Want your sweet stall, silk store or pooja shop here?
-          </span>
-          <span className="text-xs font-bold text-amber-400 group-hover:text-white transition-colors">
-            Run Your Ad →
-          </span>
-        </Link>
 
         <div className="pt-4 border-t border-amber-500/15 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-amber-200/80">
           <p>© {currentYear} Sharan Navaratri • {t.appName}. {t.allRightsReserved}</p>

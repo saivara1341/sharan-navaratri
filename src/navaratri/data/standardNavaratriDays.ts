@@ -25,7 +25,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     hindiDeviName: "श्री बाला त्रिपुरा सुंदरी देवी",
     colorName: "Bright Yellow / పసుపు / पीला",
     colorHex: "#EAB308",
-    imageUrl: navaratriAsset("/navaratri/assets/bala-tripura-sundari-alankarana.jpg"),
+    imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-1-bala-tripura-sundari.jpg"),
     description: "The youthful child manifestation of the Divine Mother Tripura Sundari, personifying innocence, spiritual wisdom, memory power, and divine protection.",
     whyWeCelebrate: "Morning starts with Ghatasthapana and Suprabhatha Seva to invoke the young, divine motherly form. In the evening, as the Padyami tithi transitions into Vidiya, the dress/decoration shifts to Gayatri Devi.",
     sacredChanting: {
@@ -56,7 +56,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     hindiDeviName: "श्री गायत्री देवी",
     colorName: "Auspicious Orange / నారింజ / नारंगी",
     colorHex: "#EA580C",
-    imageUrl: navaratriAsset("/navaratri/assets/navadurga/day-3-chandraghanta.jpg"),
+    imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-2-gayatri-devi.jpg"),
     description: "The Vedamatha and supreme source of spiritual illumination, adorned with sacred faces, bestowing Vedic intellect, wisdom, and inner light.",
     whyWeCelebrate: "Morning worship is dedicated to the Goddess of Vedic wisdom and light. Evening worship switches to Annapurna Devi, the giver of sustenance and food.",
     sacredChanting: {
@@ -87,7 +87,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     hindiDeviName: "श्री अन्नपूर्णा देवी",
     colorName: "Golden Saffron / కుంకుమ పసుపు / केसरिया",
     colorHex: "#D97706",
-    imageUrl: navaratriAsset("/navaratri/assets/navadurga/day-4-kushmanda.jpg"),
+    imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-3-annapurna-devi.jpg"),
     description: "The eternal provider of nourishment and mother of Kasi Kshetram, seated with a golden ladle and bowl of nectarous food, sustaining all living beings.",
     whyWeCelebrate: "Morning focuses on nourishment and grace. Evening shifts to the more protective, formidable form of Maha Chandi Devi to destroy negativity.",
     sacredChanting: {
@@ -118,7 +118,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     hindiDeviName: "श्री महा चंडी देवी",
     colorName: "Fiery Crimson Red / ఎరుపు / गहरा लाल",
     colorHex: "#DC2626",
-    imageUrl: navaratriAsset("/navaratri/assets/navadurga/day-1-shailaputri.jpg"),
+    imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-4-maha-chandi-devi.jpg"),
     description: "The fierce, invincible warrior form of the Divine Mother mounted to vanquish negative energies, fear, and adversities, establishing cosmic righteousness.",
     whyWeCelebrate: "Morning continues with the fierce Chandi form and sacred Chandi Parayanam. Evening transitions to the royal, benevolent Lalitha Tripura Sundari Devi.",
     sacredChanting: {
@@ -149,7 +149,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     hindiDeviName: "श्री ललिता त्रिपुरा सुंदरी देवी",
     colorName: "Royal Gold / బంగారు పసుపు / सुनहरा पीला",
     colorHex: "#CA8A04",
-    imageUrl: navaratriAsset("/navaratri/assets/navadurga/day-5-skandamata.jpg"),
+    imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-5-lalitha-tripura-sundari.jpg"),
     description: "The supreme empress of the Sri Chakra (Sri Yantra), seated on a divine lotus throne, personifying royal splendor, universal bliss, compassion, and sovereign grace.",
     whyWeCelebrate: "Morning centers on royal splendor and harmony with Sri Chakra Navavarana Pooja. Evening transitions into the sacred Saraswati Alankaram ahead of Moola Nakshatram.",
     sacredChanting: {
@@ -180,7 +180,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     hindiDeviName: "श्री सरस्वती देवी (मूला नक्षत्र)",
     colorName: "Pure White & Vedic Green / శ్వేతం & ఆకుపచ్చ / श्वेत व हरा",
     colorHex: "#16A34A",
-    imageUrl: navaratriAsset("/navaratri/assets/navadurga/day-6-katyayani.jpg"),
+    imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-6-saraswati-devi.jpg"),
     description: "Celebrated on sacred Moola Nakshatram holding the veena, book, and crystal rosary; the supreme goddess of wisdom, education, and fine arts.",
     whyWeCelebrate: "Moola Nakshatram is the most auspicious day for students and scholars seeking wisdom (Aksharabhyasam). In the evening/night, the form changes to Maha Lakshmi Devi for wealth and prosperity.",
     sacredChanting: {
@@ -211,7 +211,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     hindiDeviName: "श्री महा लक्ष्मी देवी",
     colorName: "Sacred Ash / Grey / బూడిద రంగు / धूसर",
     colorHex: "#6B7280",
-    imageUrl: navaratriAsset("/navaratri/assets/navadurga/day-7-kalaratri.jpg"),
+    imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-7-maha-lakshmi-devi.jpg"),
     description: "The auspicious embodiment of Ashta Lakshmi, bestowing prosperity, agricultural abundance, wealth, and auspicious fortune.",
     whyWeCelebrate: "Morning honors abundance and auspiciousness with Sri Maha Lakshmi Sahasra Deeparadhana. Evening shifts to Durga Devi as Durgashtami approaches.",
     sacredChanting: {
@@ -242,7 +242,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     hindiDeviName: "श्री दुर्गा देवी (दुर्गाष्टमी)",
     colorName: "Royal Purple & Red / ఊదా / बैंगनी",
     colorHex: "#7E22CE",
-    imageUrl: navaratriAsset("/navaratri/assets/durga-devi-alankarana.jpg"),
+    imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-8-durga-devi.jpg"),
     description: "Worshipped on sacred Durgashtami as the mighty lion-rider; the universal warrior mother who protects righteousness and eliminates all hardships.",
     whyWeCelebrate: "Morning is dedicated to the warrior form mounted on a lion. Evening transitions into the fiercest form, Mahishasura Mardhini, preparing for the final battle against evil.",
     sacredChanting: {
@@ -273,7 +273,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     hindiDeviName: "श्री महिषासुर मर्दिनी देवी (महानवमी)",
     colorName: "Peacock Green / నెమలి ఆకుపచ్చ / मोरपंखी हरा",
     colorHex: "#0F766E",
-    imageUrl: navaratriAsset("/navaratri/assets/navadurga/day-9-siddhidatri.jpg"),
+    imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-9-mahishasura-mardhini.jpg"),
     description: "Celebrated on Maha Navami as the victorious warrior goddess who vanquished the demon Mahishasura, restoring peace and cosmic Dharma.",
     whyWeCelebrate: "Morning honors the slaying of the demon Mahishasura. Evening shifts to the triumphant, peaceful queen of the universe, Sri Raja Rajeshwari Devi.",
     sacredChanting: {
@@ -304,7 +304,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     hindiDeviName: "श्री राजराजेश्वरी देवी (विजयदशमी व तेप्पोत्सवम्)",
     colorName: "Royal Saffron / కాషాయం / केसरिया",
     colorHex: "#B45309",
-    imageUrl: navaratriAsset("/navaratri/assets/navadurga/day-10-vijayadashami.jpg"),
+    imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-10-raja-rajeshwari.jpg"),
     description: "The supreme empress and victorious queen of the universe, conferring peace, fulfillment, nobility, and ultimate victory on Vijayadashami.",
     whyWeCelebrate: "Full Day Alankaram: Sri Raja Rajeshwari Devi. At 3:30 PM: Nagarotsavam (City Procession). From 5:00 PM – 6:00 PM: Teppotsavam (Float Festival in Krishna River) where the deities (Utsava Vigrahams) are taken on the decorated Hamsa Vahanam (swan boat) at Durga Ghat, marking official conclusion and Nimarjanam.",
     sacredChanting: {
