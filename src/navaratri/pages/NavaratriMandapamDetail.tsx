@@ -11,6 +11,7 @@ import { TempleArchFrame } from "../components/devotional/TempleArchFrame";
 import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifiedBadge";
 import { PrasadBowlIcon } from "../components/devotional/PrasadBowlIcon";
 import { MandapamIcon } from "../components/devotional/MandapamIcon";
+import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
 import {
   MapPin,
   Share2,
@@ -795,7 +796,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200/80 pb-3">
           <div>
             <div className="flex items-center gap-2">
-              <MandapamIcon className="w-6 h-6 text-[#8B1E1E]" />
+              <DandiyaIcon className="w-6 h-6 text-[#8B1E1E]" />
               <h3 className="font-serif font-black text-xl text-[#8B1E1E]">
                 {t.activitiesTitle}
               </h3>
@@ -1279,7 +1280,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
               <form onSubmit={handleSubmitActivityReg} className="space-y-4">
                 <div>
                   <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900 uppercase">
-                    <Sparkles className="w-3.5 h-3.5 text-[#8B1E1E]" />
+                    <DandiyaIcon className="w-3.5 h-3.5 text-[#8B1E1E]" />
                     <span>{t.freeEventRegistration}</span>
                   </div>
                   <h3 className="font-serif font-black text-xl text-[#8B1E1E] mt-0.5">
