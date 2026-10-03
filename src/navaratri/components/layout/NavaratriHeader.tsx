@@ -93,34 +93,36 @@ export const NavaratriHeader: React.FC = () => {
           </div>
         </Link>
 
-        {/* Desktop Action CTAs (Advertise, Login, Register) - Navigation links removed from desktop mode */}
-        <div className="hidden lg:flex items-center gap-2.5">
-          {/* Advertise With Us */}
+        {/* Unified 1-Button: [Login as Mandapam (Organizers)] [+Register Mandapam] [🏪] */}
+        <div className="hidden lg:flex items-center p-1 rounded-2xl bg-white border-2 border-amber-300 shadow-xs hover:shadow-md transition-all">
           <Link
-            to="/navaratri/advertise"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100/90 hover:bg-amber-200 text-amber-950 text-xs font-bold border border-amber-300/80 transition-colors shadow-xs"
-          >
-            <Store className="w-3.5 h-3.5 text-[#8B1E1E]" />
-            <span>{t.advertiseWithUs}</span>
-          </Link>
-
-          {/* Login as Mandapam */}
-          <Link
-            to="/navaratri/organizer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-amber-50 text-[#8B1E1E] text-xs font-bold border border-amber-300 transition-all shadow-xs hover:shadow active:scale-95"
+            to="/navaratri/login"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-stone-700 hover:text-[#8B1E1E] hover:bg-amber-50 text-xs font-bold transition-all"
             title="Organizer Login for Registered Mandapams"
           >
             <KeyRound className="w-3.5 h-3.5 text-[#8B1E1E]" />
-            <span>{t.mandapamLogin}</span>
+            <span>Login as Mandapam (Organizers)</span>
           </Link>
 
-          {/* + Register Mandapam */}
+          <div className="h-4 w-[1px] bg-amber-200 mx-0.5" />
+
           <Link
             to="/navaratri/register"
             className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-bold shadow-xs hover:shadow transition-all active:scale-95"
+            title="Register New Mandapam"
           >
             <span>+</span>
             <span>{t.registerMandapam}</span>
+          </Link>
+
+          <div className="h-4 w-[1px] bg-amber-200 mx-0.5" />
+
+          <Link
+            to="/navaratri/advertise"
+            className="px-2.5 py-1.5 rounded-xl text-amber-900 hover:bg-amber-100 transition-colors flex items-center justify-center text-sm"
+            title={t.advertiseWithUs || "Advertise With Us"}
+          >
+            <span role="img" aria-label="Advertise">🏪</span>
           </Link>
         </div>
 
@@ -169,34 +171,40 @@ export const NavaratriHeader: React.FC = () => {
               <span>Scan Mandapam QR (Camera)</span>
             </button>
 
-            {/* Login as Mandapam for Mobile */}
-            <Link
-              to="/navaratri/organizer"
-              onClick={() => setMobileMenuOpen(false)}
-              className="py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-[#8B1E1E] text-xs font-bold text-center border border-amber-300 flex items-center justify-center gap-1.5 transition-all shadow-xs"
-            >
-              <KeyRound className="w-4 h-4 text-[#8B1E1E]" />
-              <span>{t.mandapamLogin} (Organizers)</span>
-            </Link>
+            {/* Unified 1-Button for Mobile: [Login as Mandapam (Organizers) | + Register Mandapam | 🏪] */}
+            <div className="p-1 rounded-2xl bg-white border-2 border-amber-300 shadow-xs flex items-center justify-between gap-1">
+              <Link
+                to="/navaratri/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex-1 py-2 px-1.5 rounded-xl text-stone-800 hover:text-[#8B1E1E] hover:bg-amber-50 text-xs font-bold text-center flex items-center justify-center gap-1 transition-all"
+                title="Login as Mandapam (Organizers)"
+              >
+                <KeyRound className="w-3.5 h-3.5 text-[#8B1E1E] shrink-0" />
+                <span className="truncate">Login as Mandapam</span>
+              </Link>
 
-            {/* + Register Mandapam for Mobile */}
-            <Link
-              to="/navaratri/register"
-              onClick={() => setMobileMenuOpen(false)}
-              className="py-2.5 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-bold text-center shadow-md flex items-center justify-center gap-1.5 transition-all"
-            >
-              <span>+</span>
-              <span>{t.registerMandapam}</span>
-            </Link>
+              <div className="h-5 w-[1px] bg-amber-200" />
 
-            <Link
-              to="/navaratri/advertise"
-              onClick={() => setMobileMenuOpen(false)}
-              className="py-2.5 rounded-xl bg-amber-100 text-amber-950 text-xs font-bold text-center border border-amber-300 flex items-center justify-center gap-1.5"
-            >
-              <span>🏪</span>
-              <span>{t.advertiseWithUs} (₹49/day)</span>
-            </Link>
+              <Link
+                to="/navaratri/register"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex-1 py-2 px-1.5 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-bold text-center flex items-center justify-center gap-1 transition-all shadow-xs"
+                title="Register Mandapam"
+              >
+                <span className="truncate">+ Register</span>
+              </Link>
+
+              <div className="h-5 w-[1px] bg-amber-200" />
+
+              <Link
+                to="/navaratri/advertise"
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-2 rounded-xl hover:bg-amber-100 text-stone-700 flex items-center justify-center text-base"
+                title={t.advertiseWithUs || "Advertise With Us"}
+              >
+                <span role="img" aria-label="Advertise">🏪</span>
+              </Link>
+            </div>
           </div>
         </div>
       )}

@@ -346,7 +346,7 @@ export const NavaratriRegister: React.FC = () => {
             </span>
           </div>
           <Link
-            to="/navaratri/organizer"
+            to="/navaratri/login"
             className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-bold shadow-xs hover:shadow transition-all"
           >
             <span>Login as Mandapam Organizer</span>
@@ -650,7 +650,7 @@ export const NavaratriRegister: React.FC = () => {
           <div className="mt-4 pt-3 border-t border-dashed border-amber-200 text-center flex flex-col sm:flex-row items-center justify-center gap-1.5 text-xs text-stone-600">
             <span>Already have your Mandapam ID and Passcode?</span>
             <Link
-              to="/navaratri/organizer"
+              to="/navaratri/login"
               className="font-bold text-[#8B1E1E] hover:underline inline-flex items-center gap-1"
             >
               <span>Login to Mandapam Dashboard</span>

@@ -359,7 +359,7 @@ export const NavaratriHome: React.FC = () => {
             <span>Already registered your Durga Mandapam?</span>
           </span>
           <Link
-            to="/navaratri/organizer"
+            to="/navaratri/login"
             className="font-bold text-[#8B1E1E] hover:text-[#781B1B] inline-flex items-center gap-1 bg-amber-100/80 hover:bg-amber-200/90 px-2.5 py-1 rounded-xl transition-all border border-amber-300/80 shadow-2xs hover:shadow-xs active:scale-95"
           >
             <KeyRound className="w-3.5 h-3.5 text-[#8B1E1E]" />
