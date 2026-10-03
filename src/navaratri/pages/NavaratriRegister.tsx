@@ -629,7 +629,7 @@ export const NavaratriRegister: React.FC = () => {
               </button>
             </div>
             <p className="text-[11px] text-stone-500 mt-1">
-              Enter a passcode you can remember, or tap <strong>Auto Generate</strong>. You'll use it with your Mandapam ID to log in, and can download your Access Slip right after registration.
+              This passcode (4 to 6 digits) will be stored with your Mandapam ID. You will be able to download your access credentials slip right after registration.
             </p>
           </div>
         </div>

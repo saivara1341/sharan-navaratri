@@ -747,7 +747,7 @@ export const NavaratriOrganizer: React.FC = () => {
             title="Download Official Mandapam Access Slip"
           >
             <Download className="w-4 h-4 text-emerald-900" />
-            <span>Download Slip</span>
+            <span>Download Access Slip</span>
           </button>
 
           {/* Mandapam Logo, Photos & Location Button */}
