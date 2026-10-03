@@ -96,6 +96,37 @@ export const NavaratriHeader: React.FC = () => {
           </div>
         </Link>
 
+        {/* Desktop Action CTAs (Advertise, Login, Register) - Navigation links removed from desktop mode */}
+        <div className="hidden lg:flex items-center gap-2.5">
+          {/* Advertise With Us */}
+          <Link
+            to="/navaratri/advertise"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100/90 hover:bg-amber-200 text-amber-950 text-xs font-bold border border-amber-300/80 transition-colors shadow-xs"
+          >
+            <Store className="w-3.5 h-3.5 text-[#8B1E1E]" />
+            <span>{t.advertiseWithUs}</span>
+          </Link>
+
+          {/* Login as Mandapam */}
+          <Link
+            to="/navaratri/organizer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-amber-50 text-[#8B1E1E] text-xs font-bold border border-amber-300 transition-all shadow-xs hover:shadow active:scale-95"
+            title="Organizer Login for Registered Mandapams"
+          >
+            <KeyRound className="w-3.5 h-3.5 text-[#8B1E1E]" />
+            <span>{t.mandapamLogin}</span>
+          </Link>
+
+          {/* + Register Mandapam */}
+          <Link
+            to="/navaratri/register"
+            className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-bold shadow-xs hover:shadow transition-all active:scale-95"
+          >
+            <span>+</span>
+            <span>{t.registerMandapam}</span>
+          </Link>
+        </div>
+
         {/* Mobile Menu Hamburger */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -104,80 +135,6 @@ export const NavaratriHeader: React.FC = () => {
         >
           {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
-      </div>
-
-      {/* Dedicated Main Menu for Desktop View (Hidden on mobile view, contains all 8 items) */}
-      <div className="hidden lg:block border-t border-amber-200/80 bg-gradient-to-r from-[#FFFDF9] via-[#FAF6EE] to-[#FFFDF9]">
-        <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
-          {/* Main Navigation Links */}
-          <nav className="flex items-center gap-1.5 xl:gap-2">
-            {navLinks.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`relative px-3 py-1.5 rounded-xl text-xs font-bold font-sans flex items-center gap-1.5 transition-all ${
-                    isActive
-                      ? "bg-[#8B1E1E] text-white shadow-sm"
-                      : "text-stone-800 hover:text-[#8B1E1E] hover:bg-amber-100/70"
-                  }`}
-                >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? "text-amber-300" : "text-[#8B1E1E]"}`} />
-                  <span>{item.label}</span>
-                  {item.badge !== undefined && item.badge > 0 && (
-                    <span className="w-4 h-4 rounded-full bg-amber-400 text-stone-950 font-bold text-[9px] flex items-center justify-center ml-0.5">
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-
-            {/* Scan QR in Main Menu */}
-            <button
-              type="button"
-              onClick={handleOpenScanner}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-stone-950 text-xs font-bold transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer border border-amber-300"
-              title="Scan Mandapam QR with Camera"
-            >
-              <QrCode className="w-3.5 h-3.5 text-stone-950" />
-              <span>Scan QR</span>
-            </button>
-          </nav>
-
-          {/* Action CTAs in Main Menu */}
-          <div className="flex items-center gap-2">
-            {/* Advertise With Us */}
-            <Link
-              to="/navaratri/advertise"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100/90 hover:bg-amber-200 text-amber-950 text-xs font-bold border border-amber-300/80 transition-colors shadow-xs"
-            >
-              <Store className="w-3.5 h-3.5 text-[#8B1E1E]" />
-              <span>{t.advertiseWithUs}</span>
-            </Link>
-
-            {/* Login as Mandapam */}
-            <Link
-              to="/navaratri/organizer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-amber-50 text-[#8B1E1E] text-xs font-bold border border-amber-300 transition-all shadow-xs hover:shadow active:scale-95"
-              title="Organizer Login for Registered Mandapams"
-            >
-              <KeyRound className="w-3.5 h-3.5 text-[#8B1E1E]" />
-              <span>{t.mandapamLogin}</span>
-            </Link>
-
-            {/* + Register Mandapam */}
-            <Link
-              to="/navaratri/register"
-              className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-bold shadow-xs hover:shadow transition-all active:scale-95"
-            >
-              <span>+</span>
-              <span>{t.registerMandapam}</span>
-            </Link>
-          </div>
-        </div>
       </div>
 
       {/* Mobile Drawer */}
