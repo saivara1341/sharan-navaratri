@@ -153,7 +153,7 @@ export const NavaratriOrganizer: React.FC = () => {
 
   // Mandapam Branding, Media & Location State
   const [brandingModalOpen, setBrandingModalOpen] = useState(false);
-  const [brandingTab, setBrandingTab] = useState<"logo" | "photos" | "location">("logo");
+  const [brandingTab, setBrandingTab] = useState<"logo" | "photos" | "location" | "organizer">("logo");
   const [logoPreview, setLogoPreview] = useState("");
   const [logoInputUrl, setLogoInputUrl] = useState("");
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
@@ -163,6 +163,10 @@ export const NavaratriOrganizer: React.FC = () => {
   const [editAddress, setEditAddress] = useState("");
   const [editArea, setEditArea] = useState("");
   const [editCity, setEditCity] = useState("");
+  const [editOrganizerName, setEditOrganizerName] = useState("");
+  const [editOrganizerMobile, setEditOrganizerMobile] = useState("");
+  const [editWhatsappNumber, setEditWhatsappNumber] = useState("");
+  const [showOrganizerPublicly, setShowOrganizerPublicly] = useState(true);
 
   // Booking Slot & Quota State
   const [slotModalOpen, setSlotModalOpen] = useState(false);
@@ -627,10 +631,17 @@ export const NavaratriOrganizer: React.FC = () => {
     if (editAddress.trim()) updates.address = editAddress.trim();
     if (editArea.trim()) updates.area = editArea.trim();
     if (editCity.trim()) updates.city = editCity.trim();
+    if (editOrganizerName.trim()) updates.organizerName = editOrganizerName.trim();
+    if (editOrganizerMobile.trim()) {
+      updates.organizerMobile = editOrganizerMobile.trim();
+      updates.contactPhone = editOrganizerMobile.trim();
+    }
+    if (editWhatsappNumber.trim()) updates.whatsappNumber = editWhatsappNumber.trim();
+    updates.showOrganizerPublicly = showOrganizerPublicly;
 
     updateMandapam(currentMandapam.id, updates);
     setBrandingModalOpen(false);
-    toast.success("Mandapam logo, photo and location saved! Devotees scanning your QR code will see your updated branding.");
+    toast.success("Mandapam logo, photo, location, and organizer details saved! Devotees scanning your QR code will see your updated branding.");
   };
 
   const handleResetMandapamBranding = () => {
@@ -730,14 +741,18 @@ export const NavaratriOrganizer: React.FC = () => {
               setEditAddress(currentMandapam.address || "");
               setEditArea(currentMandapam.area || "");
               setEditCity(currentMandapam.city || "");
+              setEditOrganizerName(currentMandapam.organizerName || "");
+              setEditOrganizerMobile(currentMandapam.organizerMobile || currentMandapam.contactPhone || "");
+              setEditWhatsappNumber(currentMandapam.whatsappNumber || "");
+              setShowOrganizerPublicly(currentMandapam.showOrganizerPublicly !== false);
               setBrandingTab("logo");
               setBrandingModalOpen(true);
             }}
             className="px-3.5 py-2 rounded-xl bg-amber-400 text-stone-900 text-xs font-bold hover:bg-amber-300 shadow-md flex items-center gap-1.5 transition-colors cursor-pointer"
-            title="Upload Logo, Mandapam Photos & Update Location"
+            title="Upload Logo, Mandapam Photos, Location & Committee Details"
           >
             <Camera className="w-4 h-4 text-[#8B1E1E]" />
-            <span>Logo, Photos & Location</span>
+            <span>Branding, Photos & Info</span>
           </button>
 
           <button
@@ -2167,44 +2182,57 @@ export const NavaratriOrganizer: React.FC = () => {
             </div>
 
             {/* Tab Navigation inside Modal */}
-            <div className="grid grid-cols-3 border-b border-amber-200 bg-amber-50/60 p-1.5 gap-1.5 text-xs font-bold">
+            <div className="grid grid-cols-2 sm:grid-cols-4 border-b border-amber-200 bg-amber-50/60 p-1.5 gap-1.5 text-xs font-bold">
               <button
                 type="button"
                 onClick={() => setBrandingTab("logo")}
-                className={`py-2 px-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                className={`py-2 px-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                   brandingTab === "logo"
                     ? "bg-[#8B1E1E] text-white shadow-xs"
                     : "text-stone-700 hover:bg-white/60"
                 }`}
               >
                 <Check className={`w-3.5 h-3.5 ${logoPreview ? "text-amber-300" : "opacity-0"}`} />
-                <span>1. Mandapam Logo</span>
+                <span>1. Logo</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setBrandingTab("photos")}
-                className={`py-2 px-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                className={`py-2 px-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                   brandingTab === "photos"
                     ? "bg-[#8B1E1E] text-white shadow-xs"
                     : "text-stone-700 hover:bg-white/60"
                 }`}
               >
                 <Camera className="w-3.5 h-3.5" />
-                <span>2. Mandapam Photos</span>
+                <span>2. Photos</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setBrandingTab("location")}
-                className={`py-2 px-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                className={`py-2 px-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                   brandingTab === "location"
                     ? "bg-[#8B1E1E] text-white shadow-xs"
                     : "text-stone-700 hover:bg-white/60"
                 }`}
               >
                 <MapPin className="w-3.5 h-3.5" />
-                <span>3. Location & Address</span>
+                <span>3. Location</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setBrandingTab("organizer")}
+                className={`py-2 px-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                  brandingTab === "organizer"
+                    ? "bg-[#8B1E1E] text-white shadow-xs"
+                    : "text-stone-700 hover:bg-white/60"
+                }`}
+              >
+                <Users className="w-3.5 h-3.5" />
+                <span>4. Organizer</span>
               </button>
             </div>
 
@@ -2475,6 +2503,79 @@ export const NavaratriOrganizer: React.FC = () => {
                       <p className="font-semibold text-stone-800">
                         📍 {editAddress ? `${editAddress}, ` : ""}{editArea}, {editCity}
                       </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 4: ORGANIZER CONTACT & PUBLIC VIEW */}
+              {brandingTab === "organizer" && (
+                <div className="space-y-4 animate-in fade-in duration-150">
+                  <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-stone-700">
+                    👤 <strong>Public Committee Details:</strong> Control how your mandapam organizer or youth committee contact details appear on your public visitor card.
+                  </div>
+
+                  <div className="space-y-3">
+                    {/* Toggle: Show on Public View */}
+                    <div className="p-3.5 rounded-2xl bg-white border border-amber-300 flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-bold text-stone-900">
+                          Display Organizer Details on Public Card
+                        </p>
+                        <p className="text-[11px] text-stone-500">
+                          Devotees visiting your mandapam can see committee contact and tap to call or WhatsApp.
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={showOrganizerPublicly}
+                          onChange={(e) => setShowOrganizerPublicly(e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8B1E1E]"></div>
+                      </label>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-stone-800 mb-1">
+                        Organizer / Committee Name *
+                      </label>
+                      <input
+                        type="text"
+                        value={editOrganizerName}
+                        onChange={(e) => setEditOrganizerName(e.target.value)}
+                        placeholder="e.g. Hrudhaya Ragu Ram Youth Committee / RAGHU"
+                        className="w-full px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-stone-800 mb-1">
+                          Organizer Mobile / Phone *
+                        </label>
+                        <input
+                          type="tel"
+                          value={editOrganizerMobile}
+                          onChange={(e) => setEditOrganizerMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                          placeholder="e.g. 6303602743"
+                          className="w-full px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-stone-800 mb-1">
+                          WhatsApp Number (Optional)
+                        </label>
+                        <input
+                          type="tel"
+                          value={editWhatsappNumber}
+                          onChange={(e) => setEditWhatsappNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                          placeholder="e.g. 6303602743"
+                          className="w-full px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>

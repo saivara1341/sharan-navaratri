@@ -35,6 +35,7 @@ export interface Mandapam {
   organizerName: string;
   organizerMobile: string;
   organizerEmail?: string;
+  showOrganizerPublicly?: boolean;
   logoUrl?: string;
   coverImageUrl?: string;
   cardBgImageUrl?: string;

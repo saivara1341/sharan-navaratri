@@ -464,10 +464,10 @@ export const NavaratriMandapamDetail: React.FC = () => {
         {/* Profile Card */}
         <div className="relative -mt-10 mx-3 sm:mx-5 rounded-2xl border-2 border-amber-300/90 shadow-lg mb-3 overflow-hidden p-4 sm:p-6 transition-all bg-[#FDFBF7]">
           {/* Card Background Image (Custom Mandapam Photo or Default) */}
-          {customCardBg ? (
+          {(customCardBg || mandapam.cardBgImageUrl || mandapam.coverImageUrl) ? (
             <div className="absolute inset-0 pointer-events-none z-0">
               <img
-                src={customCardBg}
+                src={customCardBg || mandapam.cardBgImageUrl || mandapam.coverImageUrl}
                 alt={`${mandapam.name} Background`}
                 className="w-full h-full object-cover"
               />
@@ -582,6 +582,55 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 )}
               </div>
             </div>
+
+            {/* Organizer / Committee Details (If shared for public view) */}
+            {(mandapam.showOrganizerPublicly !== false) && (mandapam.organizerName || mandapam.organizerMobile || mandapam.contactPhone) && (
+              <div className="mt-4 pt-3.5 border-t border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-amber-50/85 p-3.5 rounded-2xl border border-amber-200 shadow-xs">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#8B1E1E] to-[#B45309] text-white flex items-center justify-center font-bold text-xs shadow-xs shrink-0">
+                    <Users className="w-4 h-4 text-amber-200" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900">
+                        Mandapam Organizer / Committee
+                      </span>
+                      <span className="px-2 py-0.2 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-300">
+                        Official Contact
+                      </span>
+                    </div>
+                    <p className="font-serif font-bold text-xs sm:text-sm text-[#8B1E1E]">
+                      {mandapam.organizerName || "Youth Committee Lead"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+                  {(mandapam.organizerMobile || mandapam.contactPhone) && (
+                    <a
+                      href={`tel:${mandapam.organizerMobile || mandapam.contactPhone}`}
+                      className="px-3.5 py-1.5 rounded-xl bg-white hover:bg-amber-100 text-emerald-900 border border-emerald-300 text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
+                      title="Call Organizer"
+                    >
+                      <Phone className="w-3.5 h-3.5 text-emerald-700" />
+                      <span>{mandapam.organizerMobile || mandapam.contactPhone}</span>
+                    </a>
+                  )}
+
+                  {(mandapam.whatsappNumber || mandapam.organizerMobile) && (
+                    <a
+                      href={`https://wa.me/91${(mandapam.whatsappNumber || mandapam.organizerMobile).replace(/\D/g, "")}?text=${encodeURIComponent(`Namaste, visiting ${mandapam.name} Navaratri Mandapam.`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
+                      title="WhatsApp Mandapam Organizer"
+                    >
+                      <span>💬 WhatsApp</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

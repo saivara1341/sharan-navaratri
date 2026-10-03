@@ -13,14 +13,51 @@ import {
   Store,
   Layers,
   Archive,
-  RotateCcw
+  RotateCcw,
+  Camera,
+  Upload,
+  Image as ImageIcon,
+  ExternalLink,
+  X,
+  Check
 } from "lucide-react";
 import { toast } from "sonner";
+import { Mandapam } from "../types";
+import { navaratriAsset } from "../utils/navaratriAssets";
+
+const ADMIN_PRESETS = [
+  {
+    id: "preset-terracotta",
+    name: "Terracotta Kolam",
+    url: navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg"),
+  },
+  {
+    id: "preset-golden",
+    name: "Golden Lotus",
+    url: navaratriAsset("/navaratri/assets/golden-lotus-bg.jpg"),
+  },
+  {
+    id: "preset-ivory",
+    name: "Ivory Lotus",
+    url: navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"),
+  },
+  {
+    id: "preset-sage",
+    name: "Sage Floral",
+    url: navaratriAsset("/navaratri/assets/sage-floral-bg.jpg"),
+  },
+  {
+    id: "preset-royal",
+    name: "Royal Mandir",
+    url: navaratriAsset("/navaratri/assets/royal-maroon-arch.jpg"),
+  }
+];
 
 export const NavaratriAdmin: React.FC = () => {
   const {
     mandapams,
     verifyMandapam,
+    updateMandapam,
     season,
     advertisements,
     moderateAd,
@@ -30,6 +67,102 @@ export const NavaratriAdmin: React.FC = () => {
   const { t } = useNavaratriLanguage();
 
   const [activeTab, setActiveTab] = useState<"overview" | "mandapams" | "ads" | "standard_data" | "seasons">("overview");
+
+  // Admin Mandapam Card Background State
+  const [adminCardModalOpen, setAdminCardModalOpen] = useState(false);
+  const [selectedAdminMandapam, setSelectedAdminMandapam] = useState<Mandapam | null>(null);
+  const [adminImagePreview, setAdminImagePreview] = useState("");
+  const [adminImageInputUrl, setAdminImageInputUrl] = useState("");
+  const [isUploadingAdminImage, setIsUploadingAdminImage] = useState(false);
+
+  const handleAdminImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file (JPG, PNG, WebP).");
+      return;
+    }
+
+    try {
+      setIsUploadingAdminImage(true);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const maxWidth = 1200;
+          let width = img.width;
+          let height = img.height;
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressed = canvas.toDataURL("image/jpeg", 0.85);
+            setAdminImagePreview(compressed);
+            toast.success("Image processed! Click 'Apply to Public Card' to save.");
+          } else {
+            setAdminImagePreview(event.target?.result as string);
+          }
+          setIsUploadingAdminImage(false);
+        };
+        img.onerror = () => {
+          setIsUploadingAdminImage(false);
+          toast.error("Failed to process image.");
+        };
+        img.src = event.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    } catch {
+      setIsUploadingAdminImage(false);
+      toast.error("Error reading image file.");
+    }
+  };
+
+  const handleApplyAdminCardBg = () => {
+    if (!selectedAdminMandapam) return;
+    const targetUrl = (adminImagePreview || adminImageInputUrl).trim();
+    if (!targetUrl) {
+      toast.error("Please upload an image or choose a preset.");
+      return;
+    }
+
+    try {
+      localStorage.setItem(`mandapam_card_bg_${selectedAdminMandapam.id}`, targetUrl);
+      localStorage.setItem(`mandapam_cover_${selectedAdminMandapam.id}`, targetUrl);
+    } catch {}
+
+    updateMandapam(selectedAdminMandapam.id, {
+      cardBgImageUrl: targetUrl,
+      coverImageUrl: targetUrl
+    });
+
+    setAdminCardModalOpen(false);
+    toast.success(`Mandapam card background updated for ${selectedAdminMandapam.name}!`);
+  };
+
+  const handleResetAdminCardBg = () => {
+    if (!selectedAdminMandapam) return;
+    try {
+      localStorage.removeItem(`mandapam_card_bg_${selectedAdminMandapam.id}`);
+      localStorage.removeItem(`mandapam_cover_${selectedAdminMandapam.id}`);
+    } catch {}
+
+    updateMandapam(selectedAdminMandapam.id, {
+      cardBgImageUrl: "",
+      coverImageUrl: ""
+    });
+
+    setAdminImagePreview("");
+    setAdminImageInputUrl("");
+    setAdminCardModalOpen(false);
+    toast.info(`Card image reset to default devotional theme for ${selectedAdminMandapam.name}.`);
+  };
 
   const totalMandapams = mandapams.length;
   const verifiedMandapams = mandapams.filter(m => m.verificationStatus === "VERIFIED").length;
@@ -161,27 +294,59 @@ export const NavaratriAdmin: React.FC = () => {
                       </span>
                     </td>
                     <td className="p-3 text-right">
-                      {m.verificationStatus !== "VERIFIED" ? (
+                      <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                        {/* Set Card Background Image */}
                         <button
+                          type="button"
                           onClick={() => {
-                            verifyMandapam(m.id, "VERIFIED");
-                            toast.success(`${m.name} verified!`);
+                            setSelectedAdminMandapam(m);
+                            const effective = m.cardBgImageUrl || m.coverImageUrl || (typeof window !== "undefined" ? localStorage.getItem(`mandapam_card_bg_${m.id}`) : null) || "";
+                            setAdminImagePreview(effective);
+                            setAdminImageInputUrl("");
+                            setAdminCardModalOpen(true);
                           }}
-                          className="px-3 py-1 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700"
+                          className="px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-[#8B1E1E] text-xs font-bold border border-amber-300 flex items-center gap-1 transition-colors cursor-pointer"
+                          title="Set or Change Mandapam Card Background Image"
                         >
-                          Approve ✓
+                          <Camera className="w-3.5 h-3.5 text-[#8B1E1E]" />
+                          <span>Card Image</span>
                         </button>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            verifyMandapam(m.id, "SUSPENDED");
-                            toast.error(`${m.name} suspended`);
-                          }}
-                          className="px-2.5 py-1 rounded-lg bg-stone-200 text-stone-700 text-xs hover:bg-stone-300"
+
+                        <a
+                          href={`/navaratri/m/${m.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold border border-stone-300 flex items-center gap-1 transition-colors"
+                          title="Open Public Mandapam Page"
                         >
-                          Suspend
-                        </button>
-                      )}
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          <span>Public Page</span>
+                        </a>
+
+                        {m.verificationStatus !== "VERIFIED" ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              verifyMandapam(m.id, "VERIFIED");
+                              toast.success(`${m.name} verified!`);
+                            }}
+                            className="px-3 py-1 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 cursor-pointer"
+                          >
+                            Approve ✓
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              verifyMandapam(m.id, "SUSPENDED");
+                              toast.error(`${m.name} suspended`);
+                            }}
+                            className="px-2.5 py-1 rounded-lg bg-stone-200 text-stone-700 text-xs hover:bg-stone-300 cursor-pointer"
+                          >
+                            Suspend
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -400,6 +565,181 @@ export const NavaratriAdmin: React.FC = () => {
             >
               Archive Season
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* ADMIN MANDAPAM CARD IMAGE MODAL */}
+      {adminCardModalOpen && selectedAdminMandapam && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setAdminCardModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-lg bg-[#FFFDF9] rounded-3xl border-2 border-amber-400 shadow-2xl p-5 sm:p-6 space-y-4 my-8 max-h-[92vh] overflow-y-auto animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-amber-200 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-[#8B1E1E]">
+                  <Camera className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-black text-lg text-[#8B1E1E]">
+                    Set Mandapam Card Background
+                  </h3>
+                  <p className="text-[11px] text-stone-600 font-medium">
+                    {selectedAdminMandapam.name} • Public Profile Card Background
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAdminCardModalOpen(false)}
+                className="p-1.5 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Preview */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-stone-700">
+                  Card Background Live Preview:
+                </label>
+                <div className="relative h-36 rounded-2xl overflow-hidden border-2 border-amber-300 bg-stone-900 shadow-inner flex items-center justify-center">
+                  {adminImagePreview ? (
+                    <>
+                      <img
+                        src={adminImagePreview}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-r from-amber-50/90 via-amber-50/80 to-transparent p-4 flex flex-col justify-end">
+                        <p className="font-serif font-black text-base text-[#8B1E1E]">{selectedAdminMandapam.name}</p>
+                        <p className="text-[11px] text-stone-700 font-semibold">{selectedAdminMandapam.address}, {selectedAdminMandapam.city}</p>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center text-stone-400 p-4">
+                      <Camera className="w-8 h-8 mx-auto mb-1 opacity-50" />
+                      <p className="text-xs">No image selected. Default devotional style will be used.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Upload from Device */}
+              <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
+                    <Upload className="w-4 h-4 text-[#8B1E1E]" />
+                    <span>Upload Mandapam Image from Computer</span>
+                  </span>
+                  {isUploadingAdminImage && (
+                    <span className="text-[10px] font-bold text-amber-700 animate-pulse">Compressing...</span>
+                  )}
+                </div>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleAdminImageUpload}
+                  className="w-full text-xs text-stone-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#8B1E1E] file:text-white hover:file:bg-[#9A241C] file:cursor-pointer"
+                />
+                <p className="text-[10px] text-stone-500">Supports JPG, PNG, WebP (auto-optimized).</p>
+              </div>
+
+              {/* Or Paste URL */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-stone-700">
+                  Or Paste Photo URL:
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={adminImageInputUrl}
+                    onChange={(e) => {
+                      setAdminImageInputUrl(e.target.value);
+                      if (e.target.value.trim().startsWith("http") || e.target.value.trim().startsWith("/")) {
+                        setAdminImagePreview(e.target.value.trim());
+                      }
+                    }}
+                    placeholder="https://example.com/mandapam-photo.jpg"
+                    className="flex-1 px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (adminImageInputUrl.trim()) {
+                        setAdminImagePreview(adminImageInputUrl.trim());
+                        toast.success("Image URL loaded!");
+                      }
+                    }}
+                    className="px-3 py-2 rounded-xl bg-amber-200 hover:bg-amber-300 text-[#8B1E1E] text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    Load
+                  </button>
+                </div>
+              </div>
+
+              {/* Devotional Presets */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-stone-700">
+                  Or Select Devotional Sanctum Theme:
+                </label>
+                <div className="grid grid-cols-5 gap-2">
+                  {ADMIN_PRESETS.map((preset) => (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => setAdminImagePreview(preset.url)}
+                      className={`p-1 rounded-xl border text-center transition-all cursor-pointer ${
+                        adminImagePreview === preset.url
+                          ? "border-[#8B1E1E] ring-2 ring-[#8B1E1E] bg-amber-100"
+                          : "border-stone-200 hover:border-amber-300 bg-white"
+                      }`}
+                      title={preset.name}
+                    >
+                      <div className="w-full h-12 rounded-lg overflow-hidden bg-stone-100 relative">
+                        <img src={preset.url} alt={preset.name} className="w-full h-full object-cover" />
+                      </div>
+                      <p className="text-[9px] font-bold text-stone-700 mt-1 truncate">{preset.name}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Footer Actions */}
+              <div className="pt-3 border-t border-amber-200 flex items-center justify-between gap-2">
+                <button
+                  type="button"
+                  onClick={handleResetAdminCardBg}
+                  className="px-3 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-600 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Reset to Default
+                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setAdminCardModalOpen(false)}
+                    className="px-3.5 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleApplyAdminCardBg}
+                    className="px-5 py-2 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span>Apply to Public Card</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
