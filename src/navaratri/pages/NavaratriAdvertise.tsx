@@ -109,12 +109,7 @@ export const NavaratriAdvertise: React.FC = () => {
     toast.info("Festive preset applied to your ad banner.");
   };
 
-  const handleCopyUpi = () => {
-    navigator.clipboard.writeText("siddhidynamics@icici");
-    setIsCopied(true);
-    toast.success("UPI ID copied!");
-    setTimeout(() => setIsCopied(false), 2500);
-  };
+
 
   const handleCopyUpi2 = () => {
     navigator.clipboard.writeText("6303602743@upi");
@@ -740,7 +735,7 @@ export const NavaratriAdvertise: React.FC = () => {
                     <div className={`mx-auto rounded-2xl bg-white p-3 border-2 border-amber-400 shadow-md flex items-center justify-center transition-all duration-200 ${showBigQr ? "w-64 h-64 sm:w-72 sm:h-72" : "w-44 h-44"}`}>
                       <img
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=${showBigQr ? "280x280" : "180x180"}&data=${encodeURIComponent(
-                          `upi://pay?pa=siddhidynamics@icici&pn=NavaratriMandapamAds&am=${selectedPkg.priceInr}&cu=INR&tn=${encodeURIComponent(businessName || "LocalAd")}`
+                          `upi://pay?pa=6303602743@upi&pn=NavaratriMandapamAds&am=${selectedPkg.priceInr}&cu=INR&tn=${encodeURIComponent(businessName || "LocalAd")}`
                         )}`}
                         alt="UPI Payment QR Code"
                         className="w-full h-full object-contain"
@@ -749,25 +744,9 @@ export const NavaratriAdvertise: React.FC = () => {
                     <p className="text-xs font-bold text-stone-900">Scan via GPay / PhonePe / Paytm / BHIM</p>
                   </div>
 
-                  {/* Dual UPI IDs */}
+                  {/* UPI ID */}
                   <div className="space-y-2">
                     <p className="text-[11px] font-bold text-stone-700 uppercase tracking-wider">Or Pay to UPI ID directly:</p>
-
-                    {/* UPI ID 1 */}
-                    <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-gradient-to-r from-amber-50 to-white border border-amber-300 shadow-sm">
-                      <div className="flex flex-col">
-                        <span className="text-[10px] font-semibold text-stone-500">Primary UPI</span>
-                        <span className="font-mono text-sm font-bold text-stone-900">siddhidynamics@icici</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={handleCopyUpi}
-                        className="ml-2 px-2.5 py-1.5 rounded-lg bg-[#8B1E1E] hover:bg-[#781B1B] text-white font-bold text-[11px] flex items-center gap-1 transition-colors shadow"
-                      >
-                        {isCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                        <span>{isCopied ? "Copied!" : "Copy"}</span>
-                      </button>
-                    </div>
 
                     {/* UPI ID 2 */}
                     <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-gradient-to-r from-amber-50 to-white border border-amber-300 shadow-sm">

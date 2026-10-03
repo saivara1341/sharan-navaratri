@@ -68,12 +68,7 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
     }
   };
 
-  const handleCopyUpi = () => {
-    navigator.clipboard.writeText("siddhidynamics@icici");
-    setIsCopied(true);
-    toast.success("UPI ID copied: siddhidynamics@icici");
-    setTimeout(() => setIsCopied(false), 2500);
-  };
+
 
   const handleCopyUpi2 = () => {
     navigator.clipboard.writeText("6303602743@upi");
@@ -444,7 +439,7 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
                   <div className={`mx-auto rounded-2xl bg-white p-2.5 border-2 border-amber-400 shadow-md flex items-center justify-center transition-all duration-200 ${showBigQr ? "w-60 h-60 sm:w-64 sm:h-64" : "w-44 h-44"}`}>
                     <img
                       src={`https://api.qrserver.com/v1/create-qr-code/?size=${showBigQr ? "260x260" : "180x180"}&data=${encodeURIComponent(
-                        `upi://pay?pa=siddhidynamics@icici&pn=NavaratriMandapamAds&am=${price}&cu=INR`
+                        `upi://pay?pa=6303602743@upi&pn=NavaratriMandapamAds&am=${price}&cu=INR`
                       )}`}
                       alt="UPI QR Code"
                       className="w-full h-full object-contain"
@@ -456,22 +451,8 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
                   </p>
                 </div>
 
-                {/* Dual UPI IDs with Copy Buttons */}
+                {/* UPI IDs with Copy Buttons */}
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-amber-200">
-                    <div className="flex flex-col text-left">
-                      <span className="text-[9px] font-semibold text-stone-400 uppercase">Primary UPI</span>
-                      <span className="font-mono text-xs font-bold text-stone-900">siddhidynamics@icici</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleCopyUpi}
-                      className="px-2.5 py-1 rounded-lg bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-[10px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
-                    >
-                      {isCopied ? <Check className="w-3 h-3 text-emerald-300" /> : <Copy className="w-3 h-3" />}
-                      <span>{isCopied ? "Copied" : "Copy"}</span>
-                    </button>
-                  </div>
 
                   <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-amber-200">
                     <div className="flex flex-col text-left">
