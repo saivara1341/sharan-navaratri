@@ -118,6 +118,7 @@ export const NavaratriOrganizer: React.FC = () => {
   // Login Form State
   const [loginInput, setLoginInput] = useState("");
   const [loginPasscode, setLoginPasscode] = useState("");
+  const [sessionPasscode, setSessionPasscode] = useState("");
   const [showLoginPasscode, setShowLoginPasscode] = useState(false);
   const [showDashboardPasscode, setShowDashboardPasscode] = useState(false);
 
@@ -215,12 +216,14 @@ export const NavaratriOrganizer: React.FC = () => {
 
     setAuthenticatedMandapamId(matched.id);
     setActiveMandapamId(matched.id);
+    setSessionPasscode(cleanPass);
     sessionStorage.setItem("navaratri_organizer_id", matched.id);
     toast.success(`Welcome to ${matched.name} Organizer Dashboard!`);
   };
 
   const handleLogout = () => {
     setAuthenticatedMandapamId(null);
+    setSessionPasscode("");
     sessionStorage.removeItem("navaratri_organizer_id");
     setLoginInput("");
     setLoginPasscode("");
@@ -725,6 +728,17 @@ export const NavaratriOrganizer: React.FC = () => {
                 <Copy className="w-3 h-3" />
               </button>
             </div>
+
+            {/* Download Credentials Slip */}
+            <button
+              type="button"
+              onClick={() => downloadMandapamCredentials(currentMandapam, sessionPasscode)}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-400 text-stone-900 font-bold hover:bg-amber-300 shadow-sm transition-all cursor-pointer"
+              title="Download Official Mandapam Access Slip"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Download Access Slip</span>
+            </button>
           </div>
         </div>
 

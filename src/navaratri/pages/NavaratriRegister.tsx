@@ -206,22 +206,27 @@ export const NavaratriRegister: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <button
                 type="button"
-                onClick={() => downloadMandapamCredentials(registeredMandapam)}
-                className="py-3 rounded-xl border border-emerald-600 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-1.5"
+                onClick={() => downloadMandapamCredentials(registeredMandapam, registeredMandapam.passcode)}
+                className="py-3 rounded-xl border border-emerald-600 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                title="Download Official Mandapam Access Slip directly to your computer"
               >
                 <Download className="w-4 h-4 text-emerald-700" />
-                <span>Download Passcode Slip</span>
+                <span>Download Access Slip</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => navigate(`/navaratri/m/${registeredMandapam.slug}`)}
-                className="py-3 rounded-xl border border-amber-300 bg-white hover:bg-amber-50 text-stone-800 text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-1.5"
+                className="py-3 rounded-xl border border-amber-300 bg-white hover:bg-amber-50 text-stone-800 text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <span>View Public Notice Board</span>
                 <ExternalLink className="w-3.5 h-3.5 text-amber-700" />
               </button>
             </div>
+
+            <p className="text-[11px] text-stone-500 text-center">
+              🔒 <strong>Zero Frontend Storage:</strong> Your access slip document is generated on-demand and downloaded directly to your device. It is never stored in browser storage.
+            </p>
         </div>
       </div>
     );

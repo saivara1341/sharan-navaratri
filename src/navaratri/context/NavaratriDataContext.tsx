@@ -147,6 +147,13 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   const [activeMandapamId, setActiveMandapamId] = useState<string>("m-rr-nizamabad");
   const [season, setSeason] = useState<Season>(() => loadStorage("season", INITIAL_SEASON));
   const [mandapams, setMandapams] = useState<Mandapam[]>(() => {
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("navaratri_private_organizer_credentials");
+      }
+    } catch {
+      // ignore
+    }
     const loaded = loadStorage<Mandapam[]>("mandapams", INITIAL_MANDAPAMS);
     const merged = [...loaded];
     for (const initM of INITIAL_MANDAPAMS) {
@@ -155,14 +162,11 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     }
     return merged.map(m => {
-      if (!m.passcode) {
-        const found = INITIAL_MANDAPAMS.find(im => im.id === m.id);
-        return {
-          ...m,
-          passcode: found?.passcode || Math.floor(10000000 + Math.random() * 90000000).toString()
-        };
-      }
-      return m;
+      const found = INITIAL_MANDAPAMS.find(im => im.id === m.id);
+      return {
+        ...m,
+        passcode: m.passcode || found?.passcode || "123456"
+      };
     });
   });
   const [alankaranas, setAlankaranas] = useState<Alankarana[]>(() => {
@@ -229,8 +233,11 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     area: "Subhash Nagar"
   });
 
-  // Sync state to localStorage
-  useEffect(() => saveStorage("mandapams", mandapams), [mandapams]);
+  // Sync state to localStorage (Security: do not persist passcodes or private credentials in frontend storage)
+  useEffect(() => {
+    const sanitized = mandapams.map(({ passcode, ...rest }) => rest);
+    saveStorage("mandapams", sanitized);
+  }, [mandapams]);
   useEffect(() => saveStorage("alankaranas", alankaranas), [alankaranas]);
   useEffect(() => saveStorage("day_settings", daySettings), [daySettings]);
   useEffect(() => saveStorage("services", services), [services]);
