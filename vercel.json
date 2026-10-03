@@ -1,0 +1,22 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/sharan-navaratri/assets/:match*",
+      "destination": "/assets/:match*"
+    },
+    {
+      "source": "/sharan-navaratri/navaratri/assets/:match*",
+      "destination": "/navaratri/assets/:match*"
+    },
+    {
+      "source": "/sharan-navaratri/:match*",
+      "destination": "/:match*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

@@ -64,12 +64,14 @@ const NavaratriAdvertise = lazy(() => import("./navaratri/pages/NavaratriAdverti
 const NavaratriLogin = lazy(() => import("./navaratri/pages/NavaratriLogin").then(m => ({ default: m.NavaratriLogin })));
 
 const isNavaratriSubdomain = typeof window !== 'undefined' && (
-  window.location.hostname.toLowerCase().startsWith('navaratri') ||
-  window.location.hostname.toLowerCase().startsWith('navarathri') ||
+  window.location.hostname.toLowerCase().includes('navaratri') ||
+  window.location.hostname.toLowerCase().includes('navarathri') ||
+  window.location.hostname.toLowerCase().includes('navratri') ||
   window.location.hostname === 'localhost' ||
   window.location.hostname === '127.0.0.1' ||
   window.location.search.includes('navaratri') ||
-  window.location.search.includes('navarathri')
+  window.location.search.includes('navarathri') ||
+  window.location.search.includes('navratri')
 );
 
 import { resolveRoleForEmail, getPortalPathForRole } from "@/lib/roleResolver";
