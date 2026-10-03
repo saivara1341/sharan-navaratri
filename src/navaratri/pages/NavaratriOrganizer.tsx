@@ -2177,7 +2177,6 @@ export const NavaratriOrganizer: React.FC = () => {
                 type="button"
                 onClick={() => {
                   setBrandingModalOpen(false);
-                  setPhotoModalOpen(false);
                 }}
                 className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
                 aria-label="Close modal"
@@ -2605,7 +2604,6 @@ export const NavaratriOrganizer: React.FC = () => {
                   type="button"
                   onClick={() => {
                     setBrandingModalOpen(false);
-                    setPhotoModalOpen(false);
                   }}
                   className="px-3.5 py-2 rounded-xl bg-white border border-stone-300 hover:bg-stone-100 text-stone-700 text-xs font-bold transition-colors cursor-pointer"
                 >
