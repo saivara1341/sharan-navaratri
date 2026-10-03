@@ -44,9 +44,40 @@ import {
   Moon,
   CheckCircle2,
   CalendarDays,
-  PartyPopper
+  PartyPopper,
+  Camera,
+  RefreshCw,
+  Check
 } from "lucide-react";
 import { toast } from "sonner";
+
+const PRESET_MANDAPAM_BACKGROUNDS = [
+  {
+    id: "preset-terracotta",
+    name: "Terracotta Kolam Utsav",
+    url: navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg"),
+  },
+  {
+    id: "preset-golden",
+    name: "Golden Lotus Sanctum",
+    url: navaratriAsset("/navaratri/assets/golden-lotus-bg.jpg"),
+  },
+  {
+    id: "preset-ivory",
+    name: "Ivory Lotus Sanctum",
+    url: navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"),
+  },
+  {
+    id: "preset-sage",
+    name: "Sage Floral Utsav",
+    url: navaratriAsset("/navaratri/assets/sage-floral-bg.jpg"),
+  },
+  {
+    id: "preset-royal",
+    name: "Royal Mandir Sanctum",
+    url: navaratriAsset("/navaratri/assets/royal-maroon-arch.jpg"),
+  }
+];
 
 export const NavaratriOrganizer: React.FC = () => {
   const navigate = useNavigate();
@@ -63,7 +94,8 @@ export const NavaratriOrganizer: React.FC = () => {
     deleteActivity,
     announcements,
     publishAnnouncement,
-    deleteMandapam
+    deleteMandapam,
+    updateMandapam
   } = useNavaratriData();
   const { t } = useNavaratriLanguage();
 
@@ -106,6 +138,12 @@ export const NavaratriOrganizer: React.FC = () => {
   const [annTitle, setAnnTitle] = useState("");
   const [annMessage, setAnnMessage] = useState("");
   const [annPriority, setAnnPriority] = useState<"NORMAL" | "HIGH">("NORMAL");
+
+  // Mandapam Photo Customization State
+  const [photoModalOpen, setPhotoModalOpen] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState("");
+  const [photoInputUrl, setPhotoInputUrl] = useState("");
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -311,11 +349,104 @@ export const NavaratriOrganizer: React.FC = () => {
     toast.success("Mandapam announcement published to all devotee pages!");
   };
 
+  const handlePhotoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file (JPG, PNG, WebP).");
+      return;
+    }
+
+    try {
+      setIsUploadingPhoto(true);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const maxWidth = 1200;
+          let width = img.width;
+          let height = img.height;
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressed = canvas.toDataURL("image/jpeg", 0.85);
+            setPhotoPreview(compressed);
+            toast.success("Mandapam photo loaded! Click 'Save Mandapam Photo' below.");
+          } else {
+            setPhotoPreview(event.target?.result as string);
+          }
+          setIsUploadingPhoto(false);
+        };
+        img.onerror = () => {
+          setIsUploadingPhoto(false);
+          toast.error("Failed to parse image file.");
+        };
+        img.src = event.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    } catch {
+      setIsUploadingPhoto(false);
+      toast.error("Failed to read selected image.");
+    }
+  };
+
+  const handleSaveMandapamPhoto = () => {
+    if (!currentMandapam) return;
+    const finalPhoto = photoPreview.trim() || photoInputUrl.trim();
+    if (!finalPhoto) {
+      toast.error("Please choose a photo, upload an image, or enter an image URL.");
+      return;
+    }
+
+    updateMandapam(currentMandapam.id, {
+      coverImageUrl: finalPhoto,
+      cardBgImageUrl: finalPhoto
+    });
+    localStorage.setItem(`mandapam_cover_${currentMandapam.id}`, finalPhoto);
+    localStorage.setItem(`mandapam_card_bg_${currentMandapam.id}`, finalPhoto);
+
+    setPhotoModalOpen(false);
+    toast.success("Mandapam photo saved and updated across all devotee cards!");
+  };
+
+  const handleResetMandapamPhoto = () => {
+    if (!currentMandapam) return;
+    updateMandapam(currentMandapam.id, {
+      coverImageUrl: undefined,
+      cardBgImageUrl: undefined
+    });
+    localStorage.removeItem(`mandapam_cover_${currentMandapam.id}`);
+    localStorage.removeItem(`mandapam_card_bg_${currentMandapam.id}`);
+    setPhotoPreview("");
+    setPhotoInputUrl("");
+    setPhotoModalOpen(false);
+    toast.info("Mandapam photo reset to default theme.");
+  };
+
   return (
     <div className="space-y-8 pb-16 font-sans max-w-7xl mx-auto px-4 sm:px-6">
-      {/* Top Banner with Mandapam ID, Passcode, Download Slip & Logout */}
-      <div className="p-6 rounded-3xl bg-gradient-to-r from-[#9A241C] via-[#8B1E1E] to-[#781B1B] text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="space-y-2">
+      {/* Top Banner with Mandapam ID, Passcode, Download Slip, Photo & Logout */}
+      <div className="relative overflow-hidden p-6 rounded-3xl bg-gradient-to-r from-[#9A241C] via-[#8B1E1E] to-[#781B1B] text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        {(currentMandapam.coverImageUrl || currentMandapam.cardBgImageUrl) && (
+          <div className="absolute inset-0 pointer-events-none opacity-20 z-0">
+            <img
+              src={currentMandapam.coverImageUrl || currentMandapam.cardBgImageUrl}
+              alt={currentMandapam.name}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#8B1E1E] via-[#8B1E1E]/80 to-transparent" />
+          </div>
+        )}
+
+        <div className="relative z-10 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-400/20 text-amber-200 text-xs font-bold">
               <ShieldCheck className="w-3.5 h-3.5" />
@@ -371,7 +502,22 @@ export const NavaratriOrganizer: React.FC = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="relative z-10 flex flex-wrap items-center gap-2">
+          {/* Mandapam Photo Upload Button */}
+          <button
+            type="button"
+            onClick={() => {
+              setPhotoPreview(currentMandapam.coverImageUrl || currentMandapam.cardBgImageUrl || "");
+              setPhotoInputUrl("");
+              setPhotoModalOpen(true);
+            }}
+            className="px-3.5 py-2 rounded-xl bg-amber-400 text-stone-900 text-xs font-bold hover:bg-amber-300 shadow-md flex items-center gap-1.5 transition-colors cursor-pointer"
+            title="Upload or customize mandapam photo"
+          >
+            <Camera className="w-4 h-4 text-[#8B1E1E]" />
+            <span>{currentMandapam.coverImageUrl || currentMandapam.cardBgImageUrl ? "Change Mandapam Photo" : "Upload Mandapam Photo"}</span>
+          </button>
+
           <button
             onClick={() => setQrModalOpen(true)}
             className="px-3.5 py-2 rounded-xl bg-white text-stone-900 text-xs font-bold hover:bg-amber-50 shadow-md flex items-center gap-1.5 transition-colors cursor-pointer"
@@ -1154,6 +1300,191 @@ export const NavaratriOrganizer: React.FC = () => {
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Permanently Delete Mandapam</span>
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MANDAPAM PHOTO CUSTOMIZATION MODAL */}
+      {photoModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border-2 border-amber-300 animate-in fade-in zoom-in duration-150 my-6">
+            {/* Modal Header */}
+            <div className="p-5 bg-gradient-to-r from-[#8B1E1E] to-[#B45309] text-white flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-amber-400/20 border border-amber-300 flex items-center justify-center text-amber-200">
+                  <Camera className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-black text-lg text-white">
+                    Mandapam Image & Banner
+                  </h3>
+                  <p className="text-[11px] text-amber-100">
+                    Add or update your mandapam photo for devotee cards
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPhotoModalOpen(false)}
+                className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
+              {/* Photo Preview */}
+              {(photoPreview || photoInputUrl) && (
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-stone-700">Preview</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPhotoPreview("");
+                        setPhotoInputUrl("");
+                      }}
+                      className="text-[11px] font-bold text-red-600 hover:text-red-700 underline cursor-pointer"
+                    >
+                      Clear Selection
+                    </button>
+                  </div>
+                  <div className="relative h-44 rounded-2xl overflow-hidden border-2 border-amber-300 shadow-md">
+                    <img
+                      src={photoPreview || photoInputUrl}
+                      alt="Mandapam Preview"
+                      className="w-full h-full object-cover"
+                      onError={() => {
+                        toast.error("Image failed to load. Please check the URL or try another photo.");
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-3">
+                      <span className="text-[11px] font-bold text-white drop-shadow">
+                        Will appear on {currentMandapam.name} cards
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Upload Option 1: File from Device / Camera */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-stone-800">
+                  Option 1: Upload from Phone / Device
+                </label>
+                <label className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-amber-300 hover:border-amber-500 rounded-2xl bg-amber-50/50 hover:bg-amber-50 cursor-pointer transition-colors group">
+                  <Upload className="w-6 h-6 text-[#8B1E1E] group-hover:scale-110 transition-transform mb-1" />
+                  <span className="text-xs font-bold text-stone-800">
+                    {isUploadingPhoto ? "Processing photo..." : "Tap to Select Mandapam Photo"}
+                  </span>
+                  <span className="text-[10px] text-stone-700 font-medium">
+                    Supports JPG, PNG, WebP (auto-compressed for best speed)
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoFileUpload}
+                    className="hidden"
+                    disabled={isUploadingPhoto}
+                  />
+                </label>
+              </div>
+
+              {/* Upload Option 2: Image URL */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-stone-800">
+                  Option 2: Or Paste Online Image URL
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={photoInputUrl}
+                    onChange={(e) => {
+                      setPhotoInputUrl(e.target.value);
+                      setPhotoPreview(e.target.value);
+                    }}
+                    placeholder="https://example.com/our-mandapam.jpg"
+                    className="flex-1 px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Option 3: Presets */}
+              <div className="space-y-1.5 pt-1">
+                <label className="block text-xs font-bold text-stone-800">
+                  Option 3: Or Choose Devotional Theme
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {PRESET_MANDAPAM_BACKGROUNDS.map((preset) => (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => {
+                        setPhotoPreview(preset.url);
+                        setPhotoInputUrl(preset.url);
+                      }}
+                      className={`relative rounded-xl overflow-hidden border-2 text-left p-1 transition-all cursor-pointer ${
+                        photoPreview === preset.url
+                          ? "border-amber-500 ring-2 ring-amber-400"
+                          : "border-stone-200 hover:border-amber-300"
+                      }`}
+                    >
+                      <div className="h-14 w-full rounded-lg overflow-hidden relative">
+                        <img
+                          src={preset.url}
+                          alt={preset.name}
+                          className="w-full h-full object-cover"
+                        />
+                        {photoPreview === preset.url && (
+                          <div className="absolute inset-0 bg-amber-500/30 flex items-center justify-center">
+                            <span className="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center">
+                              <Check className="w-3 h-3" />
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-[10px] font-bold text-stone-800 mt-1 truncate px-0.5">
+                        {preset.name}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="p-4 bg-stone-50 border-t border-amber-200 flex flex-wrap items-center justify-between gap-2.5">
+              {(currentMandapam.coverImageUrl || currentMandapam.cardBgImageUrl) && (
+                <button
+                  type="button"
+                  onClick={handleResetMandapamPhoto}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-stone-600 hover:text-stone-900 hover:bg-stone-200/70 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Reset Default</span>
+                </button>
+              )}
+
+              <div className="flex items-center gap-2 ml-auto">
+                <button
+                  type="button"
+                  onClick={() => setPhotoModalOpen(false)}
+                  className="px-3.5 py-2 rounded-xl bg-white border border-stone-300 hover:bg-stone-100 text-stone-700 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={!photoPreview && !photoInputUrl}
+                  onClick={handleSaveMandapamPhoto}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold shadow-md transition-all cursor-pointer"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Save Mandapam Photo</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

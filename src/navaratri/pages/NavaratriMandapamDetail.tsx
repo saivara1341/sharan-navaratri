@@ -107,7 +107,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
   const [customCardBg, setCustomCardBg] = useState<string>("");
   const [bgInputUrl, setBgInputUrl] = useState("");
   const [bgPreviewUrl, setBgPreviewUrl] = useState("");
-  const [alsoApplyToCover, setAlsoApplyToCover] = useState(false);
+  const [alsoApplyToCover, setAlsoApplyToCover] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
 
   // 10-Day Pop-up State
@@ -207,11 +207,13 @@ export const NavaratriMandapamDetail: React.FC = () => {
   // Synchronize custom card background from localStorage or mandapam record
   useEffect(() => {
     if (mandapam?.id) {
-      const stored = localStorage.getItem(`mandapam_card_bg_${mandapam.id}`) || mandapam.cardBgImageUrl || "";
-      setCustomCardBg(stored);
-      setBgPreviewUrl(stored);
+      const storedCard = localStorage.getItem(`mandapam_card_bg_${mandapam.id}`) || mandapam.cardBgImageUrl || "";
+      const storedCover = localStorage.getItem(`mandapam_cover_${mandapam.id}`) || mandapam.coverImageUrl || "";
+      const effective = storedCard || storedCover || "";
+      setCustomCardBg(effective);
+      setBgPreviewUrl(effective);
     }
-  }, [mandapam?.id, mandapam?.cardBgImageUrl]);
+  }, [mandapam?.id, mandapam?.cardBgImageUrl, mandapam?.coverImageUrl]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -275,6 +277,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
     try {
       localStorage.setItem(`mandapam_card_bg_${mandapam.id}`, targetUrl);
+      localStorage.setItem(`mandapam_cover_${mandapam.id}`, targetUrl);
     } catch (err) {
       console.warn("Storage quota warning", err);
     }
@@ -282,29 +285,27 @@ export const NavaratriMandapamDetail: React.FC = () => {
     setCustomCardBg(targetUrl);
 
     // Update mandapam in context & persistence
-    const updates: Partial<typeof mandapam> = { cardBgImageUrl: targetUrl };
-    if (alsoApplyToCover) {
-      updates.coverImageUrl = targetUrl;
-      try {
-        localStorage.setItem(`mandapam_cover_${mandapam.id}`, targetUrl);
-      } catch {}
-    }
+    const updates: Partial<typeof mandapam> = {
+      cardBgImageUrl: targetUrl,
+      coverImageUrl: targetUrl
+    };
     updateMandapam(mandapam.id, updates);
 
     setBgModalOpen(false);
-    toast.success(`Mandapam background updated for ${mandapam.name}! 🪔`);
+    toast.success(`Mandapam image updated for ${mandapam.name}! 🪔`);
   };
 
   const handleResetBg = () => {
     try {
       localStorage.removeItem(`mandapam_card_bg_${mandapam.id}`);
+      localStorage.removeItem(`mandapam_cover_${mandapam.id}`);
     } catch {}
     setCustomCardBg("");
     setBgPreviewUrl("");
     setBgInputUrl("");
-    updateMandapam(mandapam.id, { cardBgImageUrl: "" });
+    updateMandapam(mandapam.id, { cardBgImageUrl: "", coverImageUrl: "" });
     setBgModalOpen(false);
-    toast.success("Card background reset to default devotional theme.");
+    toast.success("Mandapam image reset to default devotional theme.");
   };
 
   // Helper for short dates (e.g., "11 Oct")
@@ -406,6 +407,22 @@ export const NavaratriMandapamDetail: React.FC = () => {
             className="w-full h-full object-cover opacity-85"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
+
+          {/* Add / Change Mandapam Image on Cover Banner Card (Top Left) */}
+          <div className="absolute top-3 left-3 z-10">
+            <button
+              onClick={() => {
+                setBgPreviewUrl(mandapam.coverImageUrl || customCardBg || "");
+                setAlsoApplyToCover(true);
+                setBgModalOpen(true);
+              }}
+              className="px-3.5 py-1.5 rounded-full bg-black/60 hover:bg-black/85 text-amber-200 hover:text-white text-xs font-bold shadow-lg border border-amber-400/70 backdrop-blur-md flex items-center gap-1.5 transition-all group active:scale-95 cursor-pointer"
+              title="Add or Change Mandapam Image"
+            >
+              <Camera className="w-3.5 h-3.5 text-amber-300 group-hover:scale-110 transition-transform" />
+              <span>{mandapam.coverImageUrl || customCardBg ? "Change Mandapam Image" : "Add Mandapam Image"}</span>
+            </button>
+          </div>
 
           {/* Quick Actions (Top Right) */}
           <div className="absolute top-3 right-3 flex items-center gap-2">
