@@ -90,9 +90,6 @@ export const NavaratriHeader: React.FC = () => {
             <span className="whitespace-nowrap font-['Cinzel',serif] font-black text-base sm:text-xl text-[#8B1E1E] tracking-tight leading-none drop-shadow-xs">
               Sharan Navaratri
             </span>
-            <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-amber-800/90 mt-0.5">
-              Nizamabad & Telangana
-            </span>
           </div>
         </Link>
 

@@ -214,7 +214,7 @@ export const NavaratriHome: React.FC = () => {
                 Navaratri <span className="text-amber-300">2026</span> with Maa Durga's Divine Blessings
               </h1>
               <p className="font-['Plus_Jakarta_Sans',sans-serif] text-xs sm:text-sm md:text-base text-amber-100/90 leading-relaxed max-w-2xl font-medium">
-                One QR. Every Mandapam. Everything a devotee needs. Discover today’s sacred Maa Darshan, live poojas, and annadanam offerings across Nizamabad & Telangana.
+                One QR. Every Mandapam. Everything a devotee needs. Discover today’s sacred Maa Darshan, live poojas, and annadanam offerings across all mandapams.
               </p>
             </div>
 
