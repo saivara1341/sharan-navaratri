@@ -177,6 +177,27 @@ export const NavaratriMandapamDetail: React.FC = () => {
     return clean.length > 12 ? clean.substring(0, 11) + "…" : clean;
   };
 
+  // Helper to highlight only the time in red color (e.g. "Morning 08:00 AM (Sahasranama Archana)")
+  const renderHighlightedTiming = (text: string) => {
+    const parts = text.split(/(\b\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)\b)/);
+    const isTime = (str: string) => /^\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)$/i.test(str.trim());
+
+    return (
+      <>
+        {parts.map((part, idx) => {
+          if (isTime(part)) {
+            return (
+              <span key={idx} className="text-red-600 font-black">
+                {part}
+              </span>
+            );
+          }
+          return <span key={idx}>{part}</span>;
+        })}
+      </>
+    );
+  };
+
   // Activity Registration Handler
   const handleOpenActivityReg = (act: Activity) => {
     setRegActivity(act);
@@ -800,7 +821,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                       Pooja Timings at {mandapam.name}
                     </span>
                     <p className="text-stone-800 font-semibold leading-relaxed">
-                      {poojaTimings}
+                      {renderHighlightedTiming(poojaTimings)}
                     </p>
                   </div>
 

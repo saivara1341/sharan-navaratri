@@ -36,6 +36,26 @@ export const TodayTomorrowView: React.FC<TodayTomorrowViewProps> = ({
   const todayStd = STANDARD_NAVARATRI_DAYS[0]; // Day 1
   const tomorrowStd = STANDARD_NAVARATRI_DAYS[1]; // Day 2
 
+  const renderHighlightedTiming = (text: string) => {
+    const parts = text.split(/(\b\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)\b)/);
+    const isTime = (str: string) => /^\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)$/i.test(str.trim());
+
+    return (
+      <>
+        {parts.map((part, idx) => {
+          if (isTime(part)) {
+            return (
+              <span key={idx} className="text-red-600 font-black">
+                {part}
+              </span>
+            );
+          }
+          return <span key={idx}>{part}</span>;
+        })}
+      </>
+    );
+  };
+
   // Derive today's values (respecting field-level customization)
   const todayDevi = todaySetting?.useStandardDevi === false && todaySetting.customDeviName
     ? todaySetting.customDeviName
@@ -156,7 +176,7 @@ export const TodayTomorrowView: React.FC<TodayTomorrowViewProps> = ({
                 </span>
               </div>
               <p className="text-xs text-stone-800 leading-relaxed font-medium">
-                {todayPooja}
+                {renderHighlightedTiming(todayPooja)}
               </p>
             </div>
 
@@ -266,8 +286,8 @@ export const TodayTomorrowView: React.FC<TodayTomorrowViewProps> = ({
                 <Clock className="w-4 h-4 text-[#8B1E1E]" />
                 Tomorrow's Pooja Schedule
               </span>
-              <p className="text-xs text-stone-800 leading-relaxed">
-                {tomorrowPooja}
+              <p className="text-xs text-stone-800 leading-relaxed font-medium">
+                {renderHighlightedTiming(tomorrowPooja)}
               </p>
             </div>
 
