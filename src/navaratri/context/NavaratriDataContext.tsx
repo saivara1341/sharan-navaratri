@@ -220,8 +220,9 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   const [questions, setQuestions] = useState<CommunityQuestion[]>(() => loadStorage("questions", INITIAL_QUESTIONS));
   const adPackages = INITIAL_AD_PACKAGES;
   const [advertisements, setAdvertisements] = useState<Advertisement[]>(() => {
-    const loaded = loadStorage("ads", INITIAL_ADVERTISEMENTS);
-    return (loaded || []).filter(a => a && !a.id?.startsWith("ad-"));
+    const loaded = loadStorage("ads", []);
+    const userAds = (loaded || []).filter(a => a && !a.id?.startsWith("ad-") && !a.id?.startsWith("sponsor-"));
+    return [...INITIAL_ADVERTISEMENTS, ...userAds];
   });
   const [followedIds, setFollowedIds] = useState<string[]>(() => loadStorage("followed_mandapams", []));
   const [scannedIds, setScannedIds] = useState<string[]>(() => loadStorage("scanned_mandapams", []));

@@ -4,6 +4,7 @@ import { ImagePlus } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { AD_PLACEHOLDER_TRANSLATIONS } from "../../utils/navaratriTranslations";
+import { navaratriAsset } from "../../utils/navaratriAssets";
 
 interface NavaratriAdsSpaceProps {
   currentCity?: string;
@@ -66,7 +67,7 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
           title="Click to visit sponsor"
         >
           <img
-            src={currentAd.imageUrl}
+            src={navaratriAsset(currentAd.imageUrl)}
             alt="Advertisement"
             className="w-full h-full object-cover"
           />

@@ -5,6 +5,7 @@ import { ImagePlus } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { AD_PLACEHOLDER_TRANSLATIONS } from "../../utils/navaratriTranslations";
+import { navaratriAsset } from "../../utils/navaratriAssets";
 
 export const NavaratriTopAdBanner: React.FC = () => {
   const { language } = useNavaratriLanguage();
@@ -68,7 +69,7 @@ export const NavaratriTopAdBanner: React.FC = () => {
             title="Advertisement"
           >
             <img
-              src={currentAd.imageUrl}
+              src={navaratriAsset(currentAd.imageUrl)}
               alt="Advertisement"
               className="w-full h-full object-cover"
             />

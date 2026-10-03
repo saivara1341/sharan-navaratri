@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import { ImagePlus, Sparkles, Megaphone, ArrowUpRight } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
+import { navaratriAsset } from "../../utils/navaratriAssets";
 
 export const NavaratriHeroSideAd: React.FC = () => {
   const { advertisements, recordAdClick, recordAdImpression } = useNavaratriData();
@@ -61,7 +62,7 @@ export const NavaratriHeroSideAd: React.FC = () => {
               Sponsored
             </div>
             <img
-              src={currentAd.imageUrl}
+              src={navaratriAsset(currentAd.imageUrl)}
               alt="Sponsor Advertisement"
               className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
             />
