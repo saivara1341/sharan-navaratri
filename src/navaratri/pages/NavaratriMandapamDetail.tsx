@@ -112,16 +112,16 @@ export const NavaratriMandapamDetail: React.FC = () => {
           🪔
         </div>
         <h2 className="font-serif font-black text-2xl text-[#8B1E1E]">
-          Mandapam Not Found
+          {t.mandapamNotFound}
         </h2>
         <p className="text-sm text-stone-600 max-w-md">
-          We couldn't locate this specific mandapam page. It may have been updated or you can browse other active mandapams.
+          {t.mandapamNotFoundMsg}
         </p>
         <Link
           to="/navaratri"
           className="px-6 py-2.5 rounded-xl bg-[#8B1E1E] text-white text-sm font-bold shadow-md hover:bg-[#9A241C]"
         >
-          Explore All Mandapams
+          {t.exploreAllMandapams}
         </Link>
       </div>
     );
@@ -173,11 +173,10 @@ export const NavaratriMandapamDetail: React.FC = () => {
   // Helper for short avatar preview in 2-row buttons
   const getShortAvatar = (fullName: string) => {
     const clean = fullName
-      .replace(/^Sri\s+/i, "")
-      .replace(/^Maa\s+/i, "")
-      .replace(/\s+Devi$/i, "")
+      .replace(/^(?:Sri|Maa|శ్రీ|माँ)\s+/i, "")
+      .replace(/\s+(?:Devi|దేవి|देवी)$/i, "")
       .replace(/\s+Alankarana.*$/i, "");
-    return clean.length > 12 ? clean.substring(0, 11) + "…" : clean;
+    return clean.length > 13 ? clean.substring(0, 12) + "…" : clean;
   };
 
   // Helper to highlight only the time in red color (e.g. "Morning 08:00 AM (Sahasranama Archana)")
@@ -308,7 +307,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 </p>
 
                 <p className="text-xs text-stone-700 pt-0.5 line-clamp-2 leading-relaxed">
-                  {mandapam.description}
+                  {mandapam.description === "Annual Community Navaratri Utsav" ? t.annualCommunityUtsav : (mandapam.description || t.annualCommunityUtsav)}
                 </p>
               </div>
             </div>
@@ -358,15 +357,15 @@ export const NavaratriMandapamDetail: React.FC = () => {
             <span className="text-xl">🪔</span>
             <div>
               <h2 className="font-serif font-black text-lg sm:text-xl text-[#8B1E1E]">
-                10 Divine Days Schedule
+                {t.tenDivineSchedule}
               </h2>
               <p className="text-[11px] sm:text-xs text-stone-600">
-                Tap any day to view Maa Devi Avatharam, Pooja timings & Naivedhyam
+                {t.tapDayInstruction}
               </p>
             </div>
           </div>
           <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-200/90 text-amber-950 border border-amber-300">
-            10 Days
+            {t.tenDays}
           </span>
         </div>
 
@@ -375,7 +374,9 @@ export const NavaratriMandapamDetail: React.FC = () => {
           {STANDARD_NAVARATRI_DAYS.map((day) => {
             const isToday = day.date === todayIso;
             const customSetting = mandapamDaySettings.find((s) => s.dayNumber === day.dayNumber);
-            const deviDisplayName = customSetting?.customDeviName || day.deviName;
+            const deviDisplayName = customSetting?.customDeviName || (
+              language === "te" ? day.teluguDeviName : language === "hi" ? day.hindiDeviName : day.deviName
+            );
             const customAlankarana = alankaranas.find(
               (a) => a.mandapamId === mandapam?.id && a.date === day.date
             );
@@ -397,13 +398,13 @@ export const NavaratriMandapamDetail: React.FC = () => {
               >
                 {isToday && (
                   <span className="absolute -top-1.5 right-1 px-1 py-0.2 rounded-full bg-amber-400 text-amber-950 text-[7px] sm:text-[8px] font-black uppercase tracking-wider shadow-xs">
-                    Today
+                    {t.today}
                   </span>
                 )}
 
                 {/* Day Number */}
                 <span className={`text-[10px] sm:text-xs font-black font-serif ${isToday ? "text-amber-200" : "text-[#8B1E1E]"}`}>
-                  Day {day.dayNumber}
+                  {t.dayLabel} {day.dayNumber}
                 </span>
 
                 {/* Respected Avatharam / Durga Matha Idol Image */}
@@ -449,11 +450,11 @@ export const NavaratriMandapamDetail: React.FC = () => {
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="font-serif font-black text-xl sm:text-2xl text-[#8B1E1E]">
-                  Maha Annadanam
+                  {t.mahaAnnadanam}
                 </h3>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3 text-emerald-700" />
-                  <span>Free for All Devotees</span>
+                  <span>{t.freeForAll}</span>
                 </span>
               </div>
               <p className="text-xs text-amber-950 font-serif font-semibold mt-0.5">
@@ -463,7 +464,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
           </div>
 
           <div className="px-3 py-1.5 rounded-xl bg-amber-100/80 border border-amber-300 text-xs font-bold text-amber-900 self-start sm:self-center">
-            {todaySetting?.annadanamExpectedCount || 500}+ Devotees Served Daily
+            {todaySetting?.annadanamExpectedCount || 500}{t.devoteesServedDaily}
           </div>
         </div>
 
@@ -474,13 +475,13 @@ export const NavaratriMandapamDetail: React.FC = () => {
             <CalendarDays className="w-5 h-5 text-[#8B1E1E] shrink-0 mt-0.5" />
             <div className="space-y-0.5">
               <span className="text-[10px] uppercase font-bold tracking-wider text-stone-500">
-                Annadanam Dates (Daily)
+                {t.annadanamDatesLabel}
               </span>
               <p className="text-sm font-bold text-stone-900 leading-snug">
-                11 October 2026 – 20 October 2026
+                {t.annadanamDatesValue}
               </p>
               <p className="text-[11px] text-amber-800 font-medium">
-                Conducted every day throughout all 10 Sacred Days
+                {t.annadanamDatesNote}
               </p>
             </div>
           </div>
@@ -490,13 +491,13 @@ export const NavaratriMandapamDetail: React.FC = () => {
             <Clock className="w-5 h-5 text-[#B45309] shrink-0 mt-0.5" />
             <div className="space-y-0.5">
               <span className="text-[10px] uppercase font-bold tracking-wider text-stone-500">
-                Daily Annadanam Timings
+                {t.dailyAnnadanamTimings}
               </span>
               <p className="text-sm font-bold text-stone-900 leading-snug">
                 {todaySetting?.annadanamStartTime || "12:30 PM"} – {todaySetting?.annadanamEndTime || "03:30 PM"} Daily
               </p>
               <p className="text-[11px] text-stone-600">
-                Location: {todaySetting?.annadanamLocation || "Mandapam Annadanam Dining Hall / Pandal"}
+                {t.annadanamLocationPrefix} {todaySetting?.annadanamLocation || "Mandapam Annadanam Dining Hall / Pandal"}
               </p>
             </div>
           </div>
@@ -514,11 +515,10 @@ export const NavaratriMandapamDetail: React.FC = () => {
           <div className="space-y-1 w-full text-center sm:text-left">
             <span className="font-bold text-amber-950 flex items-center justify-center sm:justify-start gap-1.5">
               <Utensils className="w-3.5 h-3.5 text-[#8B1E1E]" />
-              Satvik Menu & Devotee Seva
+              {t.satvikmenu}
             </span>
             <p className="leading-relaxed text-stone-700">
-              {todaySetting?.annadanamNotes ||
-                "Pure satvik prasadam meals (Pulihora, Sambar Rice, Sweet Pongali & Buttermilk) served with devotion to all visiting devotees and families."}
+              {todaySetting?.annadanamNotes || t.annadanamDefaultNotes}
             </p>
           </div>
         </div>
@@ -531,15 +531,15 @@ export const NavaratriMandapamDetail: React.FC = () => {
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-[#8B1E1E]" />
               <h3 className="font-serif font-black text-xl text-[#8B1E1E]">
-                Mandapam Activities & Competitions
+                {t.activitiesTitle}
               </h3>
             </div>
             <p className="text-xs text-stone-600 mt-0.5">
-              Conducted at {mandapam.name} • Free public participation for youth, children & families
+              {mandapam.name} • {t.activitiesSubtitle}
             </p>
           </div>
           <span className="text-xs font-bold text-amber-900 bg-amber-100 px-3 py-1 rounded-full border border-amber-300 self-start sm:self-center">
-            {mandapamActivities.length} Events
+            {mandapamActivities.length} {t.eventsLabel}
           </span>
         </div>
 
@@ -571,12 +571,12 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 <div className="space-y-1 pt-1 text-[11px] text-stone-600">
                   <div className="flex items-center gap-1.5 font-medium text-stone-800">
                     <Clock className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                    <span>Time: {act.startTime} {act.endTime ? `– ${act.endTime}` : ""}</span>
+                    <span>{t.timeLabel} {act.startTime} {act.endTime ? `– ${act.endTime}` : ""}</span>
                   </div>
                   {act.location && (
                     <div className="flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                      <span>Location: {act.location}</span>
+                      <span>{t.locationLabel} {act.location}</span>
                     </div>
                   )}
                   {act.instructions && (
@@ -592,14 +592,14 @@ export const NavaratriMandapamDetail: React.FC = () => {
               <div className="pt-2 border-t border-amber-200/60 flex items-center justify-between">
                 <span className="text-[11px] font-bold text-emerald-800 flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3" />
-                  Free Entry
+                  {t.freeEntry}
                 </span>
                 <button
                   type="button"
                   onClick={() => handleOpenActivityReg(act)}
                   className="px-4 py-2 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5"
                 >
-                  <span>Register to Participate</span>
+                  <span>{t.registerToParticipate}</span>
                   <span>→</span>
                 </button>
               </div>
@@ -616,11 +616,11 @@ export const NavaratriMandapamDetail: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Flame className="w-5 h-5 text-[#8B1E1E]" />
                 <h3 className="font-serif font-black text-xl text-[#8B1E1E]">
-                  Mandapam Poojas & Special Sevas
+                  {t.poojasTitle}
                 </h3>
               </div>
               <p className="text-xs text-stone-600 mt-0.5">
-                Reserve your individual pooja plate & time slot in advance
+                {t.slotBookingNotice}
               </p>
             </div>
           </div>
@@ -637,7 +637,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                       {srv.type}
                     </span>
                     <span className="text-xs text-stone-500 font-medium">
-                      {srv.durationMinutes} mins
+                      {srv.durationMinutes} {t.minsLabel}
                     </span>
                   </div>
                   <h4 className="font-serif font-bold text-base text-[#8B1E1E]">
@@ -648,14 +648,14 @@ export const NavaratriMandapamDetail: React.FC = () => {
                   </p>
                   {srv.itemsRequired && (
                     <p className="text-[11px] text-amber-900 bg-amber-50 p-2 rounded-xl border border-amber-200/60">
-                      <strong>Items to bring:</strong> {srv.itemsRequired}
+                      <strong>{t.itemsToBringLabel}</strong> {srv.itemsRequired}
                     </p>
                   )}
                 </div>
 
                 <div className="pt-2 border-t border-amber-200/60 flex items-center justify-between">
                   <span className="text-xs font-bold text-emerald-800">
-                    Slots Available
+                    {t.slotsAvailable}
                   </span>
                   <button
                     onClick={() => {
@@ -664,7 +664,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                     }}
                     className="px-4 py-2 rounded-xl bg-[#8B1E1E] text-white text-xs font-bold hover:bg-[#9A241C] shadow-sm transition-colors"
                   >
-                    Book Slot →
+                    {t.bookSlot}
                   </button>
                 </div>
               </div>
@@ -678,7 +678,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
         <section className="bg-white border-2 border-amber-300 rounded-3xl p-5 shadow-md space-y-3">
           <h3 className="font-serif font-bold text-lg text-[#8B1E1E] flex items-center gap-2">
             <span>📢</span>
-            <span>Mandapam Notice Board</span>
+            <span>{t.noticeBoard}</span>
           </h3>
           <div className="space-y-2">
             {mandapamAnnouncements.map((ann) => (
@@ -704,7 +704,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
             <div className="flex items-center justify-between border-b border-amber-200 pb-3">
               <div className="flex items-center gap-2">
                 <span className="px-3 py-1 rounded-full bg-[#8B1E1E] text-white font-serif font-black text-xs">
-                  Day {selectedDay.dayNumber}
+                  {t.dayLabel} {selectedDay.dayNumber}
                 </span>
                 <span className="text-xs font-semibold text-stone-600">
                   {selectedDay.date}
@@ -733,39 +733,44 @@ export const NavaratriMandapamDetail: React.FC = () => {
             </div>
 
             {/* Devi Avatharam & Consecrated Darshan */}
-            <div className="text-center space-y-2">
-              <div className="max-w-[260px] sm:max-w-xs mx-auto">
-                <TempleArchFrame
-                  imageUrl={
-                    (selectedDay.dayNumber === 1 && todayAlankarana?.imageUrl)
-                      ? todayAlankarana.imageUrl
-                      : selectedDay.imageUrl
-                  }
-                  title={
-                    mandapamDaySettings.find(s => s.dayNumber === selectedDay.dayNumber)?.customDeviName ||
-                    selectedDay.deviName
-                  }
-                  subtitle={
-                    (selectedDay.dayNumber === 1 && todayAlankarana?.title)
-                      ? todayAlankarana.title
-                      : `Day ${selectedDay.dayNumber} Sacred Darshan`
-                  }
-                  badge="Devi Alankarana"
-                />
-              </div>
+            {(() => {
+              const selectedDayDeviName = mandapamDaySettings.find(s => s.dayNumber === selectedDay.dayNumber)?.customDeviName || (
+                language === "te" ? selectedDay.teluguDeviName : language === "hi" ? selectedDay.hindiDeviName : selectedDay.deviName
+              );
 
-              <div>
-                <h3 className="font-serif font-black text-xl sm:text-2xl text-[#8B1E1E] leading-snug">
-                  {mandapamDaySettings.find(s => s.dayNumber === selectedDay.dayNumber)?.customDeviName || selectedDay.deviName}
-                </h3>
-                <p className="text-sm font-serif font-semibold text-amber-900 mt-0.5">
-                  {selectedDay.teluguDeviName}
-                </p>
-                <p className="text-xs text-stone-600 mt-1 leading-relaxed">
-                  {selectedDay.description}
-                </p>
-              </div>
-            </div>
+              return (
+                <div className="text-center space-y-2">
+                  <div className="max-w-[260px] sm:max-w-xs mx-auto">
+                    <TempleArchFrame
+                      imageUrl={
+                        (selectedDay.dayNumber === 1 && todayAlankarana?.imageUrl)
+                          ? todayAlankarana.imageUrl
+                          : selectedDay.imageUrl
+                      }
+                      title={selectedDayDeviName}
+                      subtitle={
+                        (selectedDay.dayNumber === 1 && todayAlankarana?.title)
+                          ? todayAlankarana.title
+                          : `${t.dayLabel} ${selectedDay.dayNumber} ${t.daySacredDarshan}`
+                      }
+                      badge="Devi Alankarana"
+                    />
+                  </div>
+
+                  <div>
+                    <h3 className="font-serif font-black text-xl sm:text-2xl text-[#8B1E1E] leading-snug">
+                      {selectedDayDeviName}
+                    </h3>
+                    <p className="text-sm font-serif font-semibold text-amber-900 mt-0.5">
+                      {language === "te" ? selectedDay.deviName : selectedDay.teluguDeviName}
+                    </p>
+                    <p className="text-xs text-stone-600 mt-1 leading-relaxed">
+                      {selectedDay.description}
+                    </p>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Dual Session Note if Enabled */}
             {(() => {
@@ -778,15 +783,15 @@ export const NavaratriMandapamDetail: React.FC = () => {
               return (
                 <div className="p-3 rounded-2xl bg-amber-50 border border-amber-300/80 text-xs space-y-1">
                   <span className="font-bold text-amber-950 flex items-center gap-1.5">
-                    <span>✨</span> Dual Alankarana Sessions
+                    <span>✨</span> {t.dualAlankaranaSessions}
                   </span>
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     <div className="p-2 rounded-xl bg-white border border-amber-200">
-                      <span className="text-[10px] font-bold text-stone-500 uppercase">Morning</span>
+                      <span className="text-[10px] font-bold text-stone-500 uppercase">{t.morningLabel}</span>
                       <p className="font-bold text-stone-800 text-xs">{morning}</p>
                     </div>
                     <div className="p-2 rounded-xl bg-white border border-amber-200">
-                      <span className="text-[10px] font-bold text-stone-500 uppercase">Evening</span>
+                      <span className="text-[10px] font-bold text-stone-500 uppercase">{t.eveningLabel}</span>
                       <p className="font-bold text-[#8B1E1E] text-xs">{evening}</p>
                     </div>
                   </div>
@@ -821,7 +826,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                   <div className="p-3 rounded-2xl bg-white border border-amber-200 shadow-xs space-y-1">
                     <span className="font-bold text-amber-900 flex items-center gap-1.5 uppercase text-[10px] tracking-wider">
                       <Clock className="w-3.5 h-3.5 text-[#8B1E1E]" />
-                      Pooja Timings at {mandapam.name}
+                      {t.poojaTimingsAt} {mandapam.name}
                     </span>
                     <p className="text-stone-800 font-semibold leading-relaxed">
                       {renderHighlightedTiming(poojaTimings)}
@@ -833,7 +838,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                     <div className="flex items-center justify-between border-b border-amber-100 pb-1.5">
                       <span className="font-bold text-amber-950 flex items-center gap-1.5 uppercase text-[10.5px] tracking-wider font-sans">
                         <PrasadBowlIcon className="w-4 h-4 text-[#D97706] shrink-0" />
-                        Suggested Naivedhyam (Bhog) & Prasadam
+                        {t.suggestedNaivedhyam}
                       </span>
                       <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200">
                         భోగ్ నైవేద్యం
@@ -851,7 +856,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                       <div className="flex items-start gap-2 text-[11px] text-stone-700 bg-amber-50/70 p-2 rounded-xl border border-amber-200/60">
                         <Gift className="w-3.5 h-3.5 text-emerald-700 shrink-0 mt-0.5" />
                         <p className="leading-relaxed">
-                          <strong className="text-amber-950">Prasadam Distribution:</strong> {prasadam}
+                          <strong className="text-amber-950">{t.prasadamDistribution}</strong> {prasadam}
                         </p>
                       </div>
                     </div>
@@ -862,7 +867,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                     <div className="flex items-center justify-between border-b border-amber-100 pb-1.5">
                       <span className="font-bold text-amber-950 flex items-center gap-1.5 uppercase text-[10.5px] tracking-wider font-sans">
                         <ShoppingBag className="w-4 h-4 text-[#8B1E1E] shrink-0" />
-                        Suggested Pooja Items for Devotees
+                        {t.suggestedPoojaItems}
                       </span>
                       <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-[#8B1E1E] border border-rose-200">
                         భక్తులు తేవలసినవి
@@ -880,7 +885,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                   {/* Sacred Sloka */}
                   <div className="p-3.5 rounded-2xl bg-amber-50/90 border border-amber-300 space-y-1.5 text-center">
                     <span className="text-[10px] font-serif font-bold text-amber-900 uppercase tracking-wider block">
-                      Sacred Devi Sloka • పవిత్ర శ్లోకం
+                      {t.sacredSloka}
                     </span>
                     <p className="font-serif font-bold text-[#8B1E1E] text-xs leading-relaxed">
                       {selectedDay.sacredChanting.sloka}
@@ -893,8 +898,21 @@ export const NavaratriMandapamDetail: React.FC = () => {
               );
             })()}
 
+            {/* Pooja Slot Guidance Notice */}
+            <div className="p-3 rounded-2xl bg-amber-50/90 border border-amber-300/80 text-[11px] text-amber-950 flex items-start gap-2.5">
+              <span className="text-base shrink-0">🪔</span>
+              <div className="space-y-0.5 leading-relaxed">
+                <p className="font-bold text-[#8B1E1E]">
+                  {t.poojaSlotNoticeTitle}
+                </p>
+                <p className="text-stone-700">
+                  {t.poojaSlotNoticeBody}
+                </p>
+              </div>
+            </div>
+
             {/* Pop-up Action Buttons */}
-            <div className="flex gap-2 pt-2">
+            <div className="flex gap-2 pt-1">
               {mandapamServices.length > 0 && (
                 <button
                   type="button"
@@ -906,7 +924,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                   className="flex-1 py-3 rounded-2xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs font-bold shadow-md transition-colors flex items-center justify-center gap-1.5"
                 >
                   <Flame className="w-3.5 h-3.5" />
-                  <span>Book Pooja Slot</span>
+                  <span>{t.bookPoojaSlotBtn}</span>
                 </button>
               )}
               <button
@@ -914,7 +932,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 onClick={() => setSelectedDay(null)}
                 className="flex-1 py-3 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-950 text-xs font-bold transition-colors"
               >
-                Close Pop-up
+                {t.closeBtn}
               </button>
             </div>
           </div>
@@ -945,41 +963,41 @@ export const NavaratriMandapamDetail: React.FC = () => {
                     ॥ శ్రీ మాత్రే నమః ॥
                   </span>
                   <h3 className="font-serif font-black text-2xl text-[#8B1E1E]">
-                    Registration Confirmed!
+                    {t.registrationConfirmed}
                   </h3>
                   <p className="text-xs text-stone-600">
-                    Your spot is confirmed for {regActivity.title} at {mandapam.name}.
+                    {t.registrationConfirmedMsg} {regActivity.title} at {mandapam.name}.
                   </p>
                 </div>
 
                 {/* Ticket Details */}
                 <div className="p-4 rounded-2xl bg-white border border-amber-300 text-left text-xs space-y-2 shadow-xs">
                   <div className="flex justify-between border-b border-amber-100 pb-2">
-                    <span className="text-stone-500 font-medium">Registration ID</span>
+                    <span className="text-stone-500 font-medium">{t.registrationIdLabel}</span>
                     <span className="font-mono font-bold text-[#8B1E1E]">{regSuccessTicket.id}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500 font-medium">Participant Name</span>
+                    <span className="text-stone-500 font-medium">{t.participantNameLabel}</span>
                     <span className="font-bold text-stone-900">{regSuccessTicket.name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500 font-medium">Event Date & Time</span>
+                    <span className="text-stone-500 font-medium">{t.eventDateTimeLabel}</span>
                     <span className="font-bold text-stone-900">{regActivity.date} • {regActivity.startTime}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500 font-medium">Total Participants</span>
+                    <span className="text-stone-500 font-medium">{t.totalParticipantsLabel}</span>
                     <span className="font-bold text-stone-900">{regSuccessTicket.count}</span>
                   </div>
                   {regActivity.location && (
                     <div className="flex justify-between">
-                      <span className="text-stone-500 font-medium">Location</span>
+                      <span className="text-stone-500 font-medium">{t.locationLabel}</span>
                       <span className="font-bold text-stone-900">{regActivity.location}</span>
                     </div>
                   )}
                 </div>
 
                 <p className="text-[11px] text-amber-900 bg-amber-50 p-2.5 rounded-xl border border-amber-200">
-                  Please arrive 15 minutes before the scheduled time and show your name/Registration ID at the mandapam reception.
+                  {t.arriveEarlyNotice}
                 </p>
 
                 <button
@@ -987,7 +1005,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                   onClick={() => setRegModalOpen(false)}
                   className="w-full py-3 rounded-xl bg-[#8B1E1E] text-white text-xs font-bold hover:bg-[#9A241C] shadow-md transition-colors"
                 >
-                  Done • Back to Mandapam
+                  {t.doneBackBtn}
                 </button>
               </div>
             ) : (
@@ -996,7 +1014,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 <div>
                   <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900 uppercase">
                     <Sparkles className="w-3.5 h-3.5 text-[#8B1E1E]" />
-                    <span>Free Event Registration</span>
+                    <span>{t.freeEventRegistration}</span>
                   </div>
                   <h3 className="font-serif font-black text-xl text-[#8B1E1E] mt-0.5">
                     {regActivity.title}
@@ -1009,7 +1027,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 <div className="space-y-3 text-xs">
                   <div>
                     <label className="block font-bold text-stone-800 mb-1">
-                      Participant Full Name *
+                      {t.participantFullName}
                     </label>
                     <input
                       type="text"
@@ -1023,7 +1041,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
                   <div>
                     <label className="block font-bold text-stone-800 mb-1">
-                      WhatsApp / Mobile Number (10 Digits) *
+                      {t.whatsappMobile}
                     </label>
                     <input
                       type="tel"
@@ -1039,7 +1057,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block font-bold text-stone-800 mb-1">
-                        Category / Age
+                        {t.categoryAge}
                       </label>
                       <select
                         value={regCategory}
@@ -1056,7 +1074,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
                     <div>
                       <label className="block font-bold text-stone-800 mb-1">
-                        No. of Participants
+                        {t.noOfParticipants}
                       </label>
                       <input
                         type="number"
@@ -1071,7 +1089,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
                   <div>
                     <label className="block font-bold text-stone-800 mb-1">
-                      Special Notes / Message (Optional)
+                      {t.specialNotes}
                     </label>
                     <textarea
                       rows={2}
@@ -1088,14 +1106,14 @@ export const NavaratriMandapamDetail: React.FC = () => {
                     type="submit"
                     className="flex-1 py-3 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs font-bold shadow-md transition-colors"
                   >
-                    Confirm Registration (Free)
+                    {t.confirmRegistration}
                   </button>
                   <button
                     type="button"
                     onClick={() => setRegModalOpen(false)}
                     className="py-3 px-4 rounded-xl bg-stone-200 text-stone-700 text-xs font-bold hover:bg-stone-300 transition-colors"
                   >
-                    Cancel
+                    {t.cancelBtn}
                   </button>
                 </div>
               </form>

@@ -1,279 +1,99 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 export type LanguageCode = "en" | "te" | "hi" | "ta" | "ml" | "kn";
 
 export interface Translations {
-  appName: string;
-  tagline: string;
-  home: string;
-  explore: string;
-  know: string;
-  nearMe: string;
-  following: string;
-  services: string;
-  activities: string;
-  annadanam: string;
-  pallakiSeva: string;
-  dheeksha: string;
-  nimarjanam: string;
-  myBookings: string;
-  myReminders: string;
-  askQuestion: string;
-  registerMandapam: string;
-  mandapamLogin: string;
-  organizerPortal: string;
-  adminPortal: string;
-  todayDarshan: string;
-  today: string;
-  tomorrow: string;
-  tomorrowPrep: string;
-  poojaTimings: string;
-  naivedhyam: string;
-  prasadam: string;
-  itemsToBring: string;
-  nineDaySchedule: string;
-  verifiedMandapam: string;
-  directions: string;
-  share: string;
-  follow: string;
-  followingBtn: string;
-  bookService: string;
-  scanQr: string;
-  exploreMandapams: string;
-  searchPlaceholder: string;
-  filterBy: string;
-  allCities: string;
-  openToday: string;
-  annadanamToday: string;
-  pallakiLive: string;
-  sponsored: string;
-  advertiseWithUs: string;
-  supportLocal: string;
-  walkInRegister: string;
-  addWalkIn: string;
-  slotFull: string;
-  confirmed: string;
-  bookingSuccess: string;
-  remindMe: string;
-  uploadAlankarana: string;
-  publishAnnouncement: string;
+  appName: string; tagline: string; home: string; explore: string; know: string; nearMe: string; following: string; services: string; activities: string; annadanam: string; pallakiSeva: string; dheeksha: string; nimarjanam: string; myBookings: string; myReminders: string; askQuestion: string; registerMandapam: string; mandapamLogin: string; organizerPortal: string; adminPortal: string; todayDarshan: string; today: string; tomorrow: string; tomorrowPrep: string; poojaTimings: string; naivedhyam: string; prasadam: string; itemsToBring: string; nineDaySchedule: string; verifiedMandapam: string; directions: string; share: string; follow: string; followingBtn: string; bookService: string; scanQr: string; exploreMandapams: string; searchPlaceholder: string; filterBy: string; allCities: string; openToday: string; annadanamToday: string; pallakiLive: string; sponsored: string; advertiseWithUs: string; supportLocal: string; walkInRegister: string; addWalkIn: string; slotFull: string; confirmed: string; bookingSuccess: string; remindMe: string; uploadAlankarana: string; publishAnnouncement: string;
+  tenDivineSchedule: string; tapDayInstruction: string; tenDays: string; dayLabel: string;
+  mahaAnnadanam: string; freeForAll: string; devoteesServedDaily: string; annadanamDatesLabel: string; annadanamDatesValue: string; annadanamDatesNote: string; dailyAnnadanamTimings: string; annadanamLocationPrefix: string; satvikmenu: string; annadanamDefaultNotes: string;
+  activitiesTitle: string; activitiesSubtitle: string; eventsLabel: string; freeEntry: string; registerToParticipate: string; timeLabel: string; locationLabel: string;
+  poojasTitle: string; slotBookingNotice: string; slotsAvailable: string; bookSlot: string; minsLabel: string; itemsToBringLabel: string;
+  noticeBoard: string;
+  dualAlankaranaSessions: string; morningLabel: string; eveningLabel: string; poojaTimingsAt: string; suggestedNaivedhyam: string; prasadamDistribution: string; suggestedPoojaItems: string; sacredSloka: string; poojaSlotNoticeTitle: string; poojaSlotNoticeBody: string; bookPoojaSlotBtn: string; closeBtn: string; daySacredDarshan: string;
+  freeEventRegistration: string; registrationConfirmed: string; registrationConfirmedMsg: string; registrationIdLabel: string; participantNameLabel: string; eventDateTimeLabel: string; totalParticipantsLabel: string; arriveEarlyNotice: string; doneBackBtn: string; participantFullName: string; whatsappMobile: string; categoryAge: string; noOfParticipants: string; specialNotes: string; confirmRegistration: string; cancelBtn: string;
+  mandapamNotFound: string; mandapamNotFoundMsg: string; exploreAllMandapams: string;
+  annualCommunityUtsav: string;
 }
 
-const DICTIONARY: Record<LanguageCode, Translations> = {
-  en: {
-    appName: "Navaratri Mandapam",
-    tagline: "One QR. Every Mandapam. Everything a devotee needs.",
-    home: "Home",
-    explore: "Explore",
-    know: "Know",
-    nearMe: "Near Me",
-    following: "Following",
-    services: "Services",
-    activities: "Activities & Events",
-    annadanam: "Annadanam",
-    pallakiSeva: "Pallaki Seva",
-    dheeksha: "Dheeksha",
-    nimarjanam: "Nimarjanam",
-    myBookings: "My Bookings",
-    myReminders: "My Reminders",
-    askQuestion: "Ask a Question",
-    registerMandapam: "Register Mandapam",
-    mandapamLogin: "Login as Mandapam",
-    organizerPortal: "Organizer Portal",
-    adminPortal: "Admin HQ",
-    todayDarshan: "Today's Maa Darshan",
-    today: "Today",
-    tomorrow: "Tomorrow",
-    tomorrowPrep: "Tomorrow's Preparation",
-    poojaTimings: "Pooja Timings",
-    naivedhyam: "Naivedhyam",
-    prasadam: "Prasadam",
-    itemsToBring: "Items to Bring",
-    nineDaySchedule: "9-Day Navaratri Schedule",
-    verifiedMandapam: "Verified Mandapam",
-    directions: "Directions",
-    share: "Share",
-    follow: "Follow",
-    followingBtn: "Following",
-    bookService: "Book Service",
-    scanQr: "Scan Mandapam QR",
-    exploreMandapams: "Explore Mandapams",
-    searchPlaceholder: "Search Mandapam, area, city or Devi...",
-    filterBy: "Filter by",
-    allCities: "All Cities",
-    openToday: "Open Today",
-    annadanamToday: "Annadanam Today",
-    pallakiLive: "Pallaki Live Tracking",
-    sponsored: "Sponsored Discovery",
-    advertiseWithUs: "Advertise With Us",
-    supportLocal: "Support Local Businesses",
-    walkInRegister: "Walk-In Register",
-    addWalkIn: "Add Walk-In",
-    slotFull: "Slot Full",
-    confirmed: "Confirmed",
-    bookingSuccess: "Booking Confirmed Successfully",
-    remindMe: "Remind Me",
-    uploadAlankarana: "Upload Daily Alankarana",
-    publishAnnouncement: "Publish Announcement"
-  },
-  te: {
-    appName: "నవరాత్రి మండపం",
-    tagline: "ఒకే QR. ప్రతి మండపం. భక్తులకు కావాల్సిన సర్వస్వం.",
-    home: "హోమ్",
-    explore: "అన్వేషణ",
-    know: "తెలుసుకోండి",
-    nearMe: "నా దగ్గరలో",
-    following: "నేను ఫాలో అయ్యేవి",
-    services: "సేవలు & పూజలు",
-    activities: "కార్యక్రమాలు & వేడుకలు",
-    annadanam: "అన్నదానం",
-    pallakiSeva: "పల్లకీ సేవ",
-    dheeksha: "భవాని దీక్ష",
-    nimarjanam: "నిమజ్జనం",
-    myBookings: "నా బుకింగ్స్",
-    myReminders: "నా రిమైండర్స్",
-    askQuestion: "ప్రశ్న అడగండి",
-    registerMandapam: "మండపం నమోదు చేయండి",
-    mandapamLogin: "మండపం లాగిన్",
-    organizerPortal: "నిర్వాహకుల లాగిన్",
-    adminPortal: "అడ్మిన్ హెచ్‌క్యూ",
-    todayDarshan: "నేటి అమ్మవారి దర్శనం",
-    today: "నేడు",
-    tomorrow: "రేపు",
-    tomorrowPrep: "రేపటి సన్నాహాలు",
-    poojaTimings: "పూజా సమయాలు",
-    naivedhyam: "నైవేద్యం",
-    prasadam: "ప్రసాదం",
-    itemsToBring: "భక్తులు తేవాల్సిన పూజా ద్రవ్యాలు",
-    nineDaySchedule: "నవరాత్రి 9 రోజుల వివరాలు",
-    verifiedMandapam: "ధృవీకరించబడిన మండపం",
-    directions: "దారి / లొకేషన్",
-    share: "షేర్ చేయండి",
-    follow: "ఫాలో అవ్వండి",
-    followingBtn: "ఫాలో అవుతున్నారు",
-    bookService: "సేవ బుక్ చేయండి",
-    scanQr: "QR కోడ్ స్కాన్ చేయండి",
-    exploreMandapams: "మండపాలను చూడండి",
-    searchPlaceholder: "మండపం పేరు, ప్రాంతం, ఊరు లేదా దేవి రూపం వెతకండి...",
-    filterBy: "ఫిల్టర్",
-    allCities: "అన్ని నగరాలు",
-    openToday: "ఈరోజు తెరిచి ఉంది",
-    annadanamToday: "నేడు అన్నదానం",
-    pallakiLive: "పల్లకీ సేవ లైవ్ ట్రాకింగ్",
-    sponsored: "స్థానిక ప్రకటన / స్పాన్సర్డ్",
-    advertiseWithUs: "వ్యాపార ప్రకటన ఇవ్వండి",
-    supportLocal: "స్థానిక వ్యాపారాలను ఆదరించండి",
-    walkInRegister: "వాక్-ఇన్ రిజిస్టర్",
-    addWalkIn: "వాక్-ఇన్ నమోదు",
-    slotFull: "స్లాట్ నిండినది",
-    confirmed: "ఖరారైనది",
-    bookingSuccess: "బుకింగ్ విజయవంతంగా నమోదైనది",
-    remindMe: "గుర్తుచేయండి (రిమైండర్)",
-    uploadAlankarana: "నేటి అలంకరణ ఫోటో అప్‌లోడ్",
-    publishAnnouncement: "ముఖ్య ప్రకటన జారీ చేయండి"
-  },
-  hi: {
-    appName: "नवरात्रि मंडपम",
-    tagline: "एक क्यूआर. हर मंडप. भक्त के लिए सब कुछ.",
-    home: "होम",
-    explore: "खोजें",
-    know: "जानें",
-    nearMe: "मेरे पास",
-    following: "फॉलो किए गए",
-    services: "सेवाएं व पूजा",
-    activities: "कार्यक्रम व गतिविधियां",
-    annadanam: "अन्नदानम् / भंडारा",
-    pallakiSeva: "पालकी सेवा",
-    dheeksha: "भवानी दीक्षा",
-    nimarjanam: "विसर्जन / निमज्जनम्",
-    myBookings: "मेरी बुकिंग्स",
-    myReminders: "स्मरणपत्र",
-    askQuestion: "प्रश्न पूछें",
-    registerMandapam: "मंडप पंजीकृत करें",
-    mandapamLogin: "मंडप लॉगिन",
-    organizerPortal: "आयोजक पोर्टल",
-    adminPortal: "एडमिन मुख्यालय",
-    todayDarshan: "आज का माँ दर्शन",
-    today: "आज",
-    tomorrow: "कल",
-    tomorrowPrep: "कल की तैयारी",
-    poojaTimings: "पूजा का समय",
-    naivedhyam: "नैवेद्यम् / भोग",
-    prasadam: "प्रसाद",
-    itemsToBring: "भक्तों द्वारा लाई जाने वाली सामग्री",
-    nineDaySchedule: "नवरात्रि 9 दिवसीय कार्यक्रम",
-    verifiedMandapam: "सत्यापित मंडप",
-    directions: "दिशा-निर्देश",
-    share: "साझा करें",
-    follow: "फॉलो करें",
-    followingBtn: "फॉलो किया गया",
-    bookService: "सेवा बुक करें",
-    scanQr: "क्यूआर स्कैन करें",
-    exploreMandapams: "मंडप देखें",
-    searchPlaceholder: "मंडप का नाम, क्षेत्र, शहर या देवी रूप खोजें...",
-    filterBy: "फ़िल्टर",
-    allCities: "सभी शहर",
-    openToday: "आज खुला है",
-    annadanamToday: "आज अन्नदानम् / भंडारा",
-    pallakiLive: "पालकी सेवा लाइव स्थिति",
-    sponsored: "प्रायोजित स्थानीय खोज",
-    advertiseWithUs: "विज्ञापन दें",
-    supportLocal: "स्थानीय व्यवसायों का सहयोग करें",
-    walkInRegister: "वॉक-इन रजिस्टर",
-    addWalkIn: "वॉक-इन जोड़ें",
-    slotFull: "स्लॉट पूर्ण",
-    confirmed: "पुष्ट",
-    bookingSuccess: "बुकिंग सफलतापूर्वक संपन्न",
-    remindMe: "याद दिलाएं",
-    uploadAlankarana: "आज की श्रृंगार फोटो अपलोड करें",
-    publishAnnouncement: "घोषणा जारी करें"
-  },
-  ta: {
-    appName: "நவராத்திரி மண்டபம்", tagline: "ஒரே QR. எல்லா மண்டபங்களும். பக்தர்களுக்குத் தேவையான அனைத்தும்.",
-    home: "முகப்பு", explore: "தேடுங்கள்", know: "அறிந்துகொள்ளுங்கள்", nearMe: "அருகில்", following: "பின்தொடர்பவை", services: "சேவைகள் & பூஜைகள்",
-    activities: "நிகழ்ச்சிகள் & போட்டிகள்", annadanam: "அன்னதானம்", pallakiSeva: "பல்லக்கு சேவை", dheeksha: "தீட்சை", nimarjanam: "விசர்ஜனம்",
-    myBookings: "என் முன்பதிவுகள்", myReminders: "நினைவூட்டல்கள்", askQuestion: "கேள்வி கேளுங்கள்", registerMandapam: "மண்டபத்தைப் பதிவு செய்க",
-    mandapamLogin: "மண்டபம் உள்நுழைவு", organizerPortal: "நிர்வாகி தளம்", adminPortal: "நிர்வாக மையம்", todayDarshan: "இன்றைய அம்மன் தரிசனம்", today: "இன்று", tomorrow: "நாளை",
-    tomorrowPrep: "நாளைய தயாரிப்பு", poojaTimings: "பூஜை நேரங்கள்", naivedhyam: "நைவேத்தியம்", prasadam: "பிரசாதம்", itemsToBring: "கொண்டு வர வேண்டியவை",
-    nineDaySchedule: "9 நாள் நவராத்திரி அட்டவணை", verifiedMandapam: "சரிபார்க்கப்பட்ட மண்டபம்", directions: "வழிகாட்டி", share: "பகிரவும்",
-    follow: "பின்தொடரவும்", followingBtn: "பின்தொடர்கிறது", bookService: "சேவையைப் பதிவு செய்க", scanQr: "மண்டப QR-ஐ ஸ்கேன் செய்க",
-    exploreMandapams: "மண்டபங்களைப் பாருங்கள்", searchPlaceholder: "மண்டபம், பகுதி, நகரம் அல்லது அம்மனைத் தேடுங்கள்...", filterBy: "வடிகட்டி",
-    allCities: "அனைத்து நகரங்கள்", openToday: "இன்று திறந்திருக்கும்", annadanamToday: "இன்று அன்னதானம்", pallakiLive: "பல்லக்கு நேரலை",
-    sponsored: "விளம்பரம்", advertiseWithUs: "எங்களுடன் விளம்பரம் செய்க", supportLocal: "உள்ளூர் வணிகங்களை ஆதரிக்கவும்", walkInRegister: "நேரடி வருகைப் பதிவு",
-    addWalkIn: "வருகையைச் சேர்க்கவும்", slotFull: "இடங்கள் நிரம்பின", confirmed: "உறுதி செய்யப்பட்டது", bookingSuccess: "முன்பதிவு வெற்றிகரமாக உறுதி செய்யப்பட்டது",
-    remindMe: "நினைவூட்டவும்", uploadAlankarana: "தினசரி அலங்காரத்தைப் பதிவேற்றவும்", publishAnnouncement: "அறிவிப்பை வெளியிடவும்"
-  },
-  ml: {
-    appName: "നവരാത്രി മണ്ഡപം", tagline: "ഒരു QR. എല്ലാ മണ്ഡപങ്ങളും. ഭക്തർക്കാവശ്യമായ എല്ലാം.",
-    home: "ഹോം", explore: "കണ്ടെത്തുക", know: "അറിയുക", nearMe: "സമീപത്ത്", following: "പിന്തുടരുന്നവ", services: "സേവനങ്ങളും പൂജകളും",
-    activities: "പരിപാടികളും മത്സരങ്ങളും", annadanam: "അന്നദാനം", pallakiSeva: "പല്ലക്കി സേവ", dheeksha: "ദീക്ഷ", nimarjanam: "നിമജ്ജനം",
-    myBookings: "എന്റെ ബുക്കിങ്ങുകൾ", myReminders: "ഓർമ്മപ്പെടുത്തലുകൾ", askQuestion: "ചോദ്യം ചോദിക്കുക", registerMandapam: "മണ്ഡപം രജിസ്റ്റർ ചെയ്യുക",
-    mandapamLogin: "മണ്ഡപം ലോഗിൻ", organizerPortal: "സംഘാടക പോർട്ടൽ", adminPortal: "അഡ്മിൻ കേന്ദ്രം", todayDarshan: "ഇന്നത്തെ അമ്മ ദർശനം", today: "ഇന്ന്", tomorrow: "നാളെ",
-    tomorrowPrep: "നാളത്തെ ഒരുക്കം", poojaTimings: "പൂജാ സമയം", naivedhyam: "നൈവേദ്യം", prasadam: "പ്രസാദം", itemsToBring: "കൊണ്ടുവരേണ്ട സാധനങ്ങൾ",
-    nineDaySchedule: "9 ദിവസത്തെ നവരാത്രി ക്രമം", verifiedMandapam: "സ്ഥിരീകരിച്ച മണ്ഡപം", directions: "വഴി", share: "പങ്കിടുക",
-    follow: "പിന്തുടരുക", followingBtn: "പിന്തുടരുന്നു", bookService: "സേവനം ബുക്ക് ചെയ്യുക", scanQr: "മണ്ഡപ QR സ്കാൻ ചെയ്യുക",
-    exploreMandapams: "മണ്ഡപങ്ങൾ കാണുക", searchPlaceholder: "മണ്ഡപം, പ്രദേശം, നഗരം അല്ലെങ്കിൽ ദേവിയെ തിരയുക...", filterBy: "ഫിൽട്ടർ",
-    allCities: "എല്ലാ നഗരങ്ങളും", openToday: "ഇന്ന് തുറന്നിരിക്കുന്നു", annadanamToday: "ഇന്ന് അന്നദാനം", pallakiLive: "പല്ലക്കി തത്സമയം",
-    sponsored: "സ്പോൺസർ ചെയ്തത്", advertiseWithUs: "പരസ്യം നൽകുക", supportLocal: "പ്രാദേശിക വ്യാപാരങ്ങളെ പിന്തുണയ്ക്കുക", walkInRegister: "വാക്ക്-ഇൻ രജിസ്റ്റർ",
-    addWalkIn: "വരവ് ചേർക്കുക", slotFull: "സ്ലോട്ട് നിറഞ്ഞു", confirmed: "സ്ഥിരീകരിച്ചു", bookingSuccess: "ബുക്കിംഗ് വിജയകരമായി സ്ഥിരീകരിച്ചു",
-    remindMe: "ഓർമ്മിപ്പിക്കുക", uploadAlankarana: "ദൈനംദിന അലങ്കാരം അപ്‌ലോഡ് ചെയ്യുക", publishAnnouncement: "അറിയിപ്പ് പ്രസിദ്ധീകരിക്കുക"
-  },
-  kn: {
-    appName: "ನವರಾತ್ರಿ ಮಂಟಪ", tagline: "ಒಂದು QR. ಎಲ್ಲ ಮಂಟಪಗಳು. ಭಕ್ತರಿಗೆ ಬೇಕಾದ ಎಲ್ಲವೂ.",
-    home: "ಮುಖಪುಟ", explore: "ಹುಡುಕಿ", know: "ತಿಳಿಯಿರಿ", nearMe: "ನನ್ನ ಹತ್ತಿರ", following: "ಅನುಸರಿಸುವವು", services: "ಸೇವೆಗಳು ಮತ್ತು ಪೂಜೆಗಳು",
-    activities: "ಕಾರ್ಯಕ್ರಮಗಳು ಮತ್ತು ಸ್ಪರ್ಧೆಗಳು", annadanam: "ಅನ್ನದಾನ", pallakiSeva: "ಪಲ್ಲಕ್ಕಿ ಸೇವೆ", dheeksha: "ದೀಕ್ಷೆ", nimarjanam: "ವಿಸರ್ಜನೆ",
-    myBookings: "ನನ್ನ ಬುಕ್ಕಿಂಗ್‌ಗಳು", myReminders: "ಜ್ಞಾಪನೆಗಳು", askQuestion: "ಪ್ರಶ್ನೆ ಕೇಳಿ", registerMandapam: "ಮಂಟಪ ನೋಂದಾಯಿಸಿ",
-    mandapamLogin: "ಮಂಟಪ ಲಾಗಿನ್", organizerPortal: "ಆಯೋಜಕರ ಪೋರ್ಟಲ್", adminPortal: "ನಿರ್ವಾಹಕ ಕೇಂದ್ರ", todayDarshan: "ಇಂದಿನ ದೇವಿ ದರ್ಶನ", today: "ಇಂದು", tomorrow: "ನಾಳೆ",
-    tomorrowPrep: "ನಾಳೆಯ ಸಿದ್ಧತೆ", poojaTimings: "ಪೂಜೆಯ ಸಮಯ", naivedhyam: "ನೈವೇದ್ಯ", prasadam: "ಪ್ರಸಾದ", itemsToBring: "ತರಬೇಕಾದ ಸಾಮಗ್ರಿಗಳು",
-    nineDaySchedule: "9 ದಿನಗಳ ನವರಾತ್ರಿ ವೇಳಾಪಟ್ಟಿ", verifiedMandapam: "ಪರಿಶೀಲಿಸಿದ ಮಂಟಪ", directions: "ದಾರಿ", share: "ಹಂಚಿಕೊಳ್ಳಿ",
-    follow: "ಅನುಸರಿಸಿ", followingBtn: "ಅನುಸರಿಸಲಾಗುತ್ತಿದೆ", bookService: "ಸೇವೆ ಬುಕ್ ಮಾಡಿ", scanQr: "ಮಂಟಪ QR ಸ್ಕ್ಯಾನ್ ಮಾಡಿ",
-    exploreMandapams: "ಮಂಟಪಗಳನ್ನು ನೋಡಿ", searchPlaceholder: "ಮಂಟಪ, ಪ್ರದೇಶ, ನಗರ ಅಥವಾ ದೇವಿಯನ್ನು ಹುಡುಕಿ...", filterBy: "ಫಿಲ್ಟರ್",
-    allCities: "ಎಲ್ಲ ನಗರಗಳು", openToday: "ಇಂದು ತೆರೆದಿದೆ", annadanamToday: "ಇಂದು ಅನ್ನದಾನ", pallakiLive: "ಪಲ್ಲಕ್ಕಿ ನೇರ ಪ್ರಸಾರ",
-    sponsored: "ಪ್ರಾಯೋಜಿತ", advertiseWithUs: "ಜಾಹೀರಾತು ನೀಡಿ", supportLocal: "ಸ್ಥಳೀಯ ವ್ಯಾಪಾರಗಳನ್ನು ಬೆಂಬಲಿಸಿ", walkInRegister: "ನೇರ ಭೇಟಿ ನೋಂದಣಿ",
-    addWalkIn: "ಭೇಟಿ ಸೇರಿಸಿ", slotFull: "ಸ್ಲಾಟ್ ತುಂಬಿದೆ", confirmed: "ದೃಢೀಕರಿಸಲಾಗಿದೆ", bookingSuccess: "ಬುಕ್ಕಿಂಗ್ ಯಶಸ್ವಿಯಾಗಿ ದೃಢೀಕರಿಸಲಾಗಿದೆ",
-    remindMe: "ನೆನಪಿಸಿ", uploadAlankarana: "ದೈನಂದಿನ ಅಲಂಕಾರ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ", publishAnnouncement: "ಪ್ರಕಟಣೆ ಪ್ರಕಟಿಸಿ"
-  }
+const en: Translations = {
+  appName: "Navaratri Mandapam", tagline: "One QR. Every Mandapam. Everything a devotee needs.", home: "Home", explore: "Explore", know: "Know", nearMe: "Near Me", following: "Following", services: "Services", activities: "Activities & Events", annadanam: "Annadanam", pallakiSeva: "Pallaki Seva", dheeksha: "Dheeksha", nimarjanam: "Nimarjanam", myBookings: "My Bookings", myReminders: "My Reminders", askQuestion: "Ask a Question", registerMandapam: "Register Mandapam", mandapamLogin: "Login as Mandapam", organizerPortal: "Organizer Portal", adminPortal: "Admin HQ", todayDarshan: "Today's Maa Darshan", today: "Today", tomorrow: "Tomorrow", tomorrowPrep: "Tomorrow's Preparation", poojaTimings: "Pooja Timings", naivedhyam: "Naivedhyam", prasadam: "Prasadam", itemsToBring: "Items to Bring", nineDaySchedule: "9-Day Navaratri Schedule", verifiedMandapam: "Verified Mandapam", directions: "Directions", share: "Share", follow: "Follow", followingBtn: "Following", bookService: "Book Service", scanQr: "Scan Mandapam QR", exploreMandapams: "Explore Mandapams", searchPlaceholder: "Search Mandapam, area, city or Devi...", filterBy: "Filter by", allCities: "All Cities", openToday: "Open Today", annadanamToday: "Annadanam Today", pallakiLive: "Pallaki Live Tracking", sponsored: "Sponsored Discovery", advertiseWithUs: "Advertise With Us", supportLocal: "Support Local Businesses", walkInRegister: "Walk-In Register", addWalkIn: "Add Walk-In", slotFull: "Slot Full", confirmed: "Confirmed", bookingSuccess: "Booking Confirmed Successfully", remindMe: "Remind Me", uploadAlankarana: "Upload Daily Alankarana", publishAnnouncement: "Publish Announcement",
+  tenDivineSchedule: "10 Divine Days Schedule", tapDayInstruction: "Tap any day to view Maa Devi Avatharam, Pooja timings & Naivedhyam", tenDays: "10 Days", dayLabel: "Day",
+  mahaAnnadanam: "Maha Annadanam", freeForAll: "Free for All Devotees", devoteesServedDaily: "+ Devotees Served Daily", annadanamDatesLabel: "Annadanam Dates (Daily)", annadanamDatesValue: "11 October 2026 – 20 October 2026", annadanamDatesNote: "Conducted every day throughout all 10 Sacred Days", dailyAnnadanamTimings: "Daily Annadanam Timings", annadanamLocationPrefix: "Location:", satvikmenu: "Satvik Menu & Devotee Seva", annadanamDefaultNotes: "Pure satvik prasadam meals (Pulihora, Sambar Rice, Sweet Pongali & Buttermilk) served with devotion to all visiting devotees and families.",
+  activitiesTitle: "Mandapam Activities & Competitions", activitiesSubtitle: "Free public participation for youth, children & families", eventsLabel: "Events", freeEntry: "Free Entry", registerToParticipate: "Register to Participate", timeLabel: "Time:", locationLabel: "Location:",
+  poojasTitle: "Mandapam Poojas & Special Sevas", slotBookingNotice: "Slot booking is strictly for devotees, pairs (దంపతులు), and parties sitting for pooja sankalpam plates. Females and devotees attending Mangala Harathi have free walk-in darshan.", slotsAvailable: "Slots Available", bookSlot: "Book Slot →", minsLabel: "mins", itemsToBringLabel: "Items to bring:",
+  noticeBoard: "Mandapam Notice Board",
+  dualAlankaranaSessions: "Dual Alankarana Sessions", morningLabel: "Morning", eveningLabel: "Evening", poojaTimingsAt: "Pooja Timings at", suggestedNaivedhyam: "Suggested Naivedhyam (Bhog) & Prasadam", prasadamDistribution: "Prasadam Distribution:", suggestedPoojaItems: "Suggested Pooja Items for Devotees", sacredSloka: "Sacred Devi Sloka • పవిత్ర శ్లోకం", poojaSlotNoticeTitle: "Pooja Slot Booking Notice:", poojaSlotNoticeBody: "Bookings are only for devotees, parties, or pairs (దంపతులు) who sit for pooja sankalpam at the peetham. General devotees and females participating in Mangala Harathi (మంగళహారతి) have open entry with no booking needed.", bookPoojaSlotBtn: "Book Pooja Slot (Sitting Devotees / Pairs)", closeBtn: "Close", daySacredDarshan: "Sacred Darshan",
+  freeEventRegistration: "Free Event Registration", registrationConfirmed: "Registration Confirmed!", registrationConfirmedMsg: "Your spot is confirmed for", registrationIdLabel: "Registration ID", participantNameLabel: "Participant Name", eventDateTimeLabel: "Event Date & Time", totalParticipantsLabel: "Total Participants", arriveEarlyNotice: "Please arrive 15 minutes before the scheduled time and show your name/Registration ID at the mandapam reception.", doneBackBtn: "Done • Back to Mandapam", participantFullName: "Participant Full Name *", whatsappMobile: "WhatsApp / Mobile Number (10 Digits) *", categoryAge: "Category / Age", noOfParticipants: "No. of Participants", specialNotes: "Special Notes / Message (Optional)", confirmRegistration: "Confirm Registration (Free)", cancelBtn: "Cancel",
+  mandapamNotFound: "Mandapam Not Found", mandapamNotFoundMsg: "We couldn't locate this specific mandapam page. It may have been updated or you can browse other active mandapams.", exploreAllMandapams: "Explore All Mandapams",
+  annualCommunityUtsav: "Annual Community Navaratri Utsav",
 };
+
+const te: Translations = {
+  appName: "నవరాత్రి మండపం", tagline: "ఒకే QR. ప్రతి మండపం. భక్తులకు కావాల్సిన సర్వస్వం.", home: "హోమ్", explore: "అన్వేషణ", know: "తెలుసుకోండి", nearMe: "నా దగ్గరలో", following: "నేను ఫాలో అయ్యేవి", services: "సేవలు & పూజలు", activities: "కార్యక్రమాలు & వేడుకలు", annadanam: "అన్నదానం", pallakiSeva: "పల్లకీ సేవ", dheeksha: "భవాని దీక్ష", nimarjanam: "నిమజ్జనం", myBookings: "నా బుకింగ్స్", myReminders: "నా రిమైండర్స్", askQuestion: "ప్రశ్న అడగండి", registerMandapam: "మండపం నమోదు చేయండి", mandapamLogin: "మండపం లాగిన్", organizerPortal: "నిర్వాహకుల లాగిన్", adminPortal: "అడ్మిన్ హెచ్‌క్యూ", todayDarshan: "నేటి అమ్మవారి దర్శనం", today: "నేడు", tomorrow: "రేపు", tomorrowPrep: "రేపటి సన్నాహాలు", poojaTimings: "పూజా సమయాలు", naivedhyam: "నైవేద్యం", prasadam: "ప్రసాదం", itemsToBring: "భక్తులు తేవాల్సిన పూజా ద్రవ్యాలు", nineDaySchedule: "నవరాత్రి 9 రోజుల వివరాలు", verifiedMandapam: "ధృవీకరించబడిన మండపం", directions: "దారి / లొకేషన్", share: "షేర్ చేయండి", follow: "ఫాలో అవ్వండి", followingBtn: "ఫాలో అవుతున్నారు", bookService: "సేవ బుక్ చేయండి", scanQr: "QR కోడ్ స్కాన్ చేయండి", exploreMandapams: "మండపాలను చూడండి", searchPlaceholder: "మండపం పేరు, ప్రాంతం, ఊరు లేదా దేవి రూపం వెతకండి...", filterBy: "ఫిల్టర్", allCities: "అన్ని నగరాలు", openToday: "ఈరోజు తెరిచి ఉంది", annadanamToday: "నేడు అన్నదానం", pallakiLive: "పల్లకీ సేవ లైవ్ ట్రాకింగ్", sponsored: "స్థానిక ప్రకటన / స్పాన్సర్డ్", advertiseWithUs: "వ్యాపార ప్రకటన ఇవ్వండి", supportLocal: "స్థానిక వ్యాపారాలను ఆదరించండి", walkInRegister: "వాక్-ఇన్ రిజిస్టర్", addWalkIn: "వాక్-ఇన్ నమోదు", slotFull: "స్లాట్ నిండినది", confirmed: "ఖరారైనది", bookingSuccess: "బుకింగ్ విజయవంతంగా నమోదైనది", remindMe: "గుర్తుచేయండి (రిమైండర్)", uploadAlankarana: "నేటి అలంకరణ ఫోటో అప్‌లోడ్", publishAnnouncement: "ముఖ్య ప్రకటన జారీ చేయండి",
+  tenDivineSchedule: "🪔 10 దివ్య రోజుల కార్యక్రమం", tapDayInstruction: "ఏ రోజైనా నొక్కి అమ్మవారి అవతారం, పూజా సమయాలు & నైవేద్యం చూడండి", tenDays: "10 రోజులు", dayLabel: "రోజు",
+  mahaAnnadanam: "మహా అన్నదానం", freeForAll: "అన్ని భక్తులకు ఉచితం", devoteesServedDaily: "+ భక్తులకు నిత్యం సేవ", annadanamDatesLabel: "అన్నదానం తేదీలు (నిత్యం)", annadanamDatesValue: "11 అక్టోబర్ 2026 – 20 అక్టోబర్ 2026", annadanamDatesNote: "అన్ని 10 పవిత్ర రోజులు నిత్యం నిర్వహించబడుతుంది", dailyAnnadanamTimings: "రోజువారీ అన్నదానం సమయాలు", annadanamLocationPrefix: "స్థలం:", satvikmenu: "సాత్విక మెను & భక్త సేవ", annadanamDefaultNotes: "పులిహోర, సాంబార్ రైస్, మిఠాయి పొంగలి & మజ్జిగతో సాత్విక ప్రసాదం భక్తులకు భక్తిభావంతో అందించబడుతుంది.",
+  activitiesTitle: "మండపం కార్యక్రమాలు & పోటీలు", activitiesSubtitle: "యువత, పిల్లలు & కుటుంబాల ఉచిత భాగస్వామ్యం", eventsLabel: "ఈవెంట్లు", freeEntry: "ఉచిత ప్రవేశం", registerToParticipate: "పాల్గొనేందుకు నమోదు చేయండి", timeLabel: "సమయం:", locationLabel: "స్థలం:",
+  poojasTitle: "మండపం పూజలు & విశేష సేవలు", slotBookingNotice: "స్లాట్ బుకింగ్ కేవలం పూజా సంకల్ప పీఠంలో కూర్చునే భక్తులు, దంపతులు మరియు గ్రూపులకు మాత్రమే. మంగళహారతికి వచ్చే సాధారణ భక్తులు, మహిళలు స్వేచ్ఛగా వచ్చి దర్శనం పొందవచ్చు.", slotsAvailable: "స్లాట్లు అందుబాటులో ఉన్నాయి", bookSlot: "స్లాట్ బుక్ చేయండి →", minsLabel: "నిమిషాలు", itemsToBringLabel: "తేవలసినవి:",
+  noticeBoard: "మండపం నోటీసు బోర్డు",
+  dualAlankaranaSessions: "రెండు అలంకరణ సెషన్లు", morningLabel: "ఉదయం", eveningLabel: "సాయంత్రం", poojaTimingsAt: "పూజా సమయాలు –", suggestedNaivedhyam: "సూచించిన నైవేద్యం (భోగ్) & ప్రసాదం", prasadamDistribution: "ప్రసాద పంపిణీ:", suggestedPoojaItems: "భక్తులకు సూచించిన పూజా సామగ్రి", sacredSloka: "పవిత్ర దేవి శ్లోకం", poojaSlotNoticeTitle: "పూజా స్లాట్ బుకింగ్ నోటీసు:", poojaSlotNoticeBody: "బుకింగ్ కేవలం పూజా పీఠంలో కూర్చునే భక్తులు, దంపతులు మరియు పార్టీలకు మాత్రమే వర్తిస్తుంది. మంగళహారతిలో పాల్గొనే సాధారణ భక్తులకు, మహిళలకు బుకింగ్ అవసరం లేదు.", bookPoojaSlotBtn: "పూజా స్లాట్ బుక్ చేయండి (కూర్చునే భక్తులు / దంపతులు)", closeBtn: "మూసివేయండి", daySacredDarshan: "పవిత్ర దర్శనం",
+  freeEventRegistration: "ఉచిత ఈవెంట్ నమోదు", registrationConfirmed: "నమోదు ఖరారైనది!", registrationConfirmedMsg: "మీ స్థానం ఖరారు చేయబడింది", registrationIdLabel: "నమోదు ID", participantNameLabel: "పాల్గొనేవారి పేరు", eventDateTimeLabel: "ఈవెంట్ తేదీ & సమయం", totalParticipantsLabel: "మొత్తం పాల్గొనేవారు", arriveEarlyNotice: "నిర్ణీత సమయానికి 15 నిమిషాల ముందు రండి మరియు మండపం రిసెప్షన్‌లో మీ పేరు / నమోదు ID చూపించండి.", doneBackBtn: "పూర్తయింది • మండపానికి తిరిగి వెళ్ళండి", participantFullName: "పాల్గొనేవారి పూర్తి పేరు *", whatsappMobile: "WhatsApp / మొబైల్ నంబర్ (10 అంకెలు) *", categoryAge: "వర్గం / వయస్సు", noOfParticipants: "పాల్గొనేవారి సంఖ్య", specialNotes: "విశేష గమనికలు / సందేశం (ఐచ్ఛికం)", confirmRegistration: "నమోదు ఖరారు చేయండి (ఉచితం)", cancelBtn: "రద్దు చేయండి",
+  mandapamNotFound: "మండపం కనుగొనబడలేదు", mandapamNotFoundMsg: "ఈ మండపం పేజీని కనుగొనలేకపోయాం. అది నవీకరించబడి ఉండవచ్చు లేదా ఇతర మండపాలను బ్రౌజ్ చేయవచ్చు.", exploreAllMandapams: "అన్ని మండపాలను చూడండి",
+  annualCommunityUtsav: "వార్షిక సామాజిక నవరాత్రి ఉత్సవం",
+};
+
+const hi: Translations = {
+  appName: "नवरात्रि मंडपम", tagline: "एक क्यूआर. हर मंडप. भक्त के लिए सब कुछ.", home: "होम", explore: "खोजें", know: "जानें", nearMe: "मेरे पास", following: "फॉलो किए गए", services: "सेवाएं व पूजा", activities: "कार्यक्रम व गतिविधियां", annadanam: "अन्नदानम् / भंडारा", pallakiSeva: "पालकी सेवा", dheeksha: "भवानी दीक्षा", nimarjanam: "विसर्जन / निमज्जनम्", myBookings: "मेरी बुकिंग्स", myReminders: "स्मरणपत्र", askQuestion: "प्रश्न पूछें", registerMandapam: "मंडप पंजीकृत करें", mandapamLogin: "मंडप लॉगिन", organizerPortal: "आयोजक पोर्टल", adminPortal: "एडमिन मुख्यालय", todayDarshan: "आज का माँ दर्शन", today: "आज", tomorrow: "कल", tomorrowPrep: "कल की तैयारी", poojaTimings: "पूजा का समय", naivedhyam: "नैवेद्यम् / भोग", prasadam: "प्रसाद", itemsToBring: "भक्तों द्वारा लाई जाने वाली सामग्री", nineDaySchedule: "नवरात्रि 9 दिवसीय कार्यक्रम", verifiedMandapam: "सत्यापित मंडप", directions: "दिशा-निर्देश", share: "साझा करें", follow: "फॉलो करें", followingBtn: "फॉलो किया गया", bookService: "सेवा बुक करें", scanQr: "क्यूआर स्कैन करें", exploreMandapams: "मंडप देखें", searchPlaceholder: "मंडप का नाम, क्षेत्र, शहर या देवी रूप खोजें...", filterBy: "फ़िल्टर", allCities: "सभी शहर", openToday: "आज खुला है", annadanamToday: "आज अन्नदानम् / भंडारा", pallakiLive: "पालकी सेवा लाइव स्थिति", sponsored: "प्रायोजित स्थानीय खोज", advertiseWithUs: "विज्ञापन दें", supportLocal: "स्थानीय व्यवसायों का सहयोग करें", walkInRegister: "वॉक-इन रजिस्टर", addWalkIn: "वॉक-इन जोड़ें", slotFull: "स्लॉट पूर्ण", confirmed: "पुष्ट", bookingSuccess: "बुकिंग सफलतापूर्वक संपन्न", remindMe: "याद दिलाएं", uploadAlankarana: "आज की श्रृंगार फोटो अपलोड करें", publishAnnouncement: "घोषणा जारी करें",
+  tenDivineSchedule: "🪔 10 दिव्य दिनों का कार्यक्रम", tapDayInstruction: "किसी भी दिन पर टैप करें – माँ देवी अवतार, पूजा समय व नैवेद्यम् देखें", tenDays: "10 दिन", dayLabel: "दिन",
+  mahaAnnadanam: "महा अन्नदानम्", freeForAll: "सभी भक्तों के लिए निःशुल्क", devoteesServedDaily: "+ भक्तों को प्रतिदिन सेवा", annadanamDatesLabel: "अन्नदानम् तिथियाँ (प्रतिदिन)", annadanamDatesValue: "11 अक्टूबर 2026 – 20 अक्टूबर 2026", annadanamDatesNote: "सभी 10 पवित्र दिनों में प्रतिदिन आयोजित", dailyAnnadanamTimings: "दैनिक अन्नदानम् समय", annadanamLocationPrefix: "स्थान:", satvikmenu: "सात्विक मेनू व भक्त सेवा", annadanamDefaultNotes: "सभी भक्तों व परिवारों को पुलिहोरा, साँभर चावल, मीठा पोंगल एवं छाछ के रूप में शुद्ध सात्विक प्रसाद प्रेमपूर्वक परोसा जाता है।",
+  activitiesTitle: "मंडप कार्यक्रम व प्रतियोगिताएँ", activitiesSubtitle: "युवाओं, बच्चों व परिवारों के लिए निःशुल्क भागीदारी", eventsLabel: "इवेंट", freeEntry: "निःशुल्क प्रवेश", registerToParticipate: "भाग लेने के लिए पंजीकरण करें", timeLabel: "समय:", locationLabel: "स्थान:",
+  poojasTitle: "मंडप पूजा व विशेष सेवाएँ", slotBookingNotice: "स्लॉट बुकिंग केवल उन भक्तों, जोड़ों व समूहों के लिए है जो पूजा संकल्प पीठ पर बैठते हैं। मंगलहारती में शामिल होने वाली महिलाएँ और सामान्य भक्त बिना बुकिंग के दर्शन कर सकते हैं।", slotsAvailable: "स्लॉट उपलब्ध", bookSlot: "स्लॉट बुक करें →", minsLabel: "मिनट", itemsToBringLabel: "लाने की सामग्री:",
+  noticeBoard: "मंडप सूचना पट्ट",
+  dualAlankaranaSessions: "दोहरे अलंकार सत्र", morningLabel: "प्रातःकाल", eveningLabel: "सायंकाल", poojaTimingsAt: "पूजा समय –", suggestedNaivedhyam: "सुझावित नैवेद्यम् (भोग) व प्रसाद", prasadamDistribution: "प्रसाद वितरण:", suggestedPoojaItems: "भक्तों के लिए सुझावित पूजा सामग्री", sacredSloka: "पवित्र देवी श्लोक", poojaSlotNoticeTitle: "पूजा स्लॉट बुकिंग सूचना:", poojaSlotNoticeBody: "बुकिंग केवल उन भक्तों, जोड़ों या समूहों के लिए है जो पूजा पीठ पर बैठते हैं। मंगलहारती में भाग लेने वाली महिलाओं और सामान्य भक्तों को बुकिंग की आवश्यकता नहीं है।", bookPoojaSlotBtn: "पूजा स्लॉट बुक करें (बैठे भक्त / जोड़े)", closeBtn: "बंद करें", daySacredDarshan: "पवित्र दर्शन",
+  freeEventRegistration: "निःशुल्क इवेंट पंजीकरण", registrationConfirmed: "पंजीकरण पुष्ट!", registrationConfirmedMsg: "आपका स्थान पुष्ट हो गया", registrationIdLabel: "पंजीकरण ID", participantNameLabel: "प्रतिभागी का नाम", eventDateTimeLabel: "इवेंट तिथि व समय", totalParticipantsLabel: "कुल प्रतिभागी", arriveEarlyNotice: "कृपया निर्धारित समय से 15 मिनट पहले पहुँचें और मंडप स्वागत कक्ष में अपना नाम / पंजीकरण ID दिखाएँ।", doneBackBtn: "हो गया • मंडप पर वापस जाएँ", participantFullName: "प्रतिभागी का पूरा नाम *", whatsappMobile: "WhatsApp / मोबाइल नंबर (10 अंक) *", categoryAge: "वर्ग / आयु", noOfParticipants: "प्रतिभागियों की संख्या", specialNotes: "विशेष टिप्पणी / संदेश (वैकल्पिक)", confirmRegistration: "पंजीकरण पुष्ट करें (निःशुल्क)", cancelBtn: "रद्द करें",
+  mandapamNotFound: "मंडप नहीं मिला", mandapamNotFoundMsg: "यह मंडप पृष्ठ नहीं मिल सका। यह अपडेट हो सकता है या आप अन्य मंडपों को देख सकते हैं।", exploreAllMandapams: "सभी मंडप देखें",
+  annualCommunityUtsav: "वार्षिक सामुदायिक नवरात्रि उत्सव",
+};
+
+const ta: Translations = {
+  appName: "நவராத்திரி மண்டபம்", tagline: "ஒரே QR. எல்லா மண்டபங்களும். பக்தர்களுக்குத் தேவையான அனைத்தும்.", home: "முகப்பு", explore: "தேடுங்கள்", know: "அறிந்துகொள்ளுங்கள்", nearMe: "அருகில்", following: "பின்தொடர்பவை", services: "சேவைகள் & பூஜைகள்", activities: "நிகழ்ச்சிகள் & போட்டிகள்", annadanam: "அன்னதானம்", pallakiSeva: "பல்லக்கு சேவை", dheeksha: "தீட்சை", nimarjanam: "விசர்ஜனம்", myBookings: "என் முன்பதிவுகள்", myReminders: "நினைவூட்டல்கள்", askQuestion: "கேள்வி கேளுங்கள்", registerMandapam: "மண்டபத்தைப் பதிவு செய்க", mandapamLogin: "மண்டபம் உள்நுழைவு", organizerPortal: "நிர்வாகி தளம்", adminPortal: "நிர்வாக மையம்", todayDarshan: "இன்றைய அம்மன் தரிசனம்", today: "இன்று", tomorrow: "நாளை", tomorrowPrep: "நாளைய தயாரிப்பு", poojaTimings: "பூஜை நேரங்கள்", naivedhyam: "நைவேத்தியம்", prasadam: "பிரசாதம்", itemsToBring: "கொண்டு வர வேண்டியவை", nineDaySchedule: "9 நாள் நவராத்திரி அட்டவணை", verifiedMandapam: "சரிபார்க்கப்பட்ட மண்டபம்", directions: "வழிகாட்டி", share: "பகிரவும்", follow: "பின்தொடரவும்", followingBtn: "பின்தொடர்கிறது", bookService: "சேவையைப் பதிவு செய்க", scanQr: "மண்டப QR-ஐ ஸ்கேன் செய்க", exploreMandapams: "மண்டபங்களைப் பாருங்கள்", searchPlaceholder: "மண்டபம், பகுதி, நகரம் அல்லது அம்மனைத் தேடுங்கள்...", filterBy: "வடிகட்டி", allCities: "அனைத்து நகரங்கள்", openToday: "இன்று திறந்திருக்கும்", annadanamToday: "இன்று அன்னதானம்", pallakiLive: "பல்லக்கு நேரலை", sponsored: "விளம்பரம்", advertiseWithUs: "எங்களுடன் விளம்பரம் செய்க", supportLocal: "உள்ளூர் வணிகங்களை ஆதரிக்கவும்", walkInRegister: "நேரடி வருகைப் பதிவு", addWalkIn: "வருகையைச் சேர்க்கவும்", slotFull: "இடங்கள் நிரம்பின", confirmed: "உறுதி செய்யப்பட்டது", bookingSuccess: "முன்பதிவு வெற்றிகரமாக உறுதி செய்யப்பட்டது", remindMe: "நினைவூட்டவும்", uploadAlankarana: "தினசரி அலங்காரத்தைப் பதிவேற்றவும்", publishAnnouncement: "அறிவிப்பை வெளியிடவும்",
+  tenDivineSchedule: "🪔 10 தெய்வீக நாட்கள் அட்டவணை", tapDayInstruction: "எந்த நாளையும் தட்டி தேவி அவதாரம், பூஜை நேரங்கள் & நைவேத்தியம் காணுங்கள்", tenDays: "10 நாட்கள்", dayLabel: "நாள்",
+  mahaAnnadanam: "மஹா அன்னதானம்", freeForAll: "அனைத்து பக்தர்களுக்கும் இலவசம்", devoteesServedDaily: "+ பக்தர்களுக்கு தினமும் சேவை", annadanamDatesLabel: "அன்னதான தேதிகள் (தினமும்)", annadanamDatesValue: "11 அக்டோபர் 2026 – 20 அக்டோபர் 2026", annadanamDatesNote: "அனைத்து 10 புனித நாட்களிலும் தினமும் நடைபெறும்", dailyAnnadanamTimings: "தினசரி அன்னதான நேரங்கள்", annadanamLocationPrefix: "இடம்:", satvikmenu: "சாத்வீக மெனு & பக்தர் சேவை", annadanamDefaultNotes: "புலிஹோரா, சாம்பார் சாதம், இனிப்பு பொங்கல் & மோர் உட்பட தூய சாத்வீக பிரசாதம் அனைத்து பக்தர்களுக்கும் வழங்கப்படுகிறது.",
+  activitiesTitle: "மண்டப நிகழ்ச்சிகள் & போட்டிகள்", activitiesSubtitle: "இளைஞர்கள், குழந்தைகள் & குடும்பங்களுக்கு இலவச பங்கேற்பு", eventsLabel: "நிகழ்வுகள்", freeEntry: "இலவச நுழைவு", registerToParticipate: "பங்கேற்க பதிவு செய்யுங்கள்", timeLabel: "நேரம்:", locationLabel: "இடம்:",
+  poojasTitle: "மண்டப பூஜைகள் & சிறப்பு சேவைகள்", slotBookingNotice: "ஸ்லாட் பதிவு பூஜை பீடத்தில் அமரும் பக்தர்கள், தம்பதியர் மற்றும் குழுக்களுக்கு மட்டுமே. மங்கள ஆரத்திக்கு வரும் பொதுப் பக்தர்களுக்கும் பெண்களுக்கும் பதிவு தேவையில்லை.", slotsAvailable: "ஸ்லாட்கள் கிடைக்கின்றன", bookSlot: "ஸ்லாட் பதிவு செய்க →", minsLabel: "நிமிடங்கள்", itemsToBringLabel: "கொண்டு வர வேண்டியவை:",
+  noticeBoard: "மண்டப அறிவிப்பு பலகை",
+  dualAlankaranaSessions: "இரட்டை அலங்கார அமர்வுகள்", morningLabel: "காலை", eveningLabel: "மாலை", poojaTimingsAt: "பூஜை நேரங்கள் –", suggestedNaivedhyam: "பரிந்துரைக்கப்பட்ட நைவேத்தியம் & பிரசாதம்", prasadamDistribution: "பிரசாத விநியோகம்:", suggestedPoojaItems: "பக்தர்களுக்கு பரிந்துரைக்கப்பட்ட பூஜை பொருட்கள்", sacredSloka: "புனித தேவி ஸ்லோகம்", poojaSlotNoticeTitle: "பூஜை ஸ்லாட் பதிவு அறிவிப்பு:", poojaSlotNoticeBody: "பதிவு பூஜை பீடத்தில் அமரும் பக்தர்கள், தம்பதியர் அல்லது குழுக்களுக்கு மட்டுமே. மங்கள ஆரத்தியில் கலந்துகொள்ளும் பெண்கள் மற்றும் பொதுப் பக்தர்களுக்கு பதிவு தேவையில்லை.", bookPoojaSlotBtn: "பூஜை ஸ்லாட் பதிவு செய்க (அமரும் பக்தர்கள் / தம்பதியர்)", closeBtn: "மூடு", daySacredDarshan: "புனித தரிசனம்",
+  freeEventRegistration: "இலவச நிகழ்வு பதிவு", registrationConfirmed: "பதிவு உறுதி செய்யப்பட்டது!", registrationConfirmedMsg: "உங்கள் இடம் உறுதி செய்யப்பட்டது", registrationIdLabel: "பதிவு ID", participantNameLabel: "பங்கேற்பாளர் பெயர்", eventDateTimeLabel: "நிகழ்வு தேதி & நேரம்", totalParticipantsLabel: "மொத்த பங்கேற்பாளர்கள்", arriveEarlyNotice: "நிர்ணயிக்கப்பட்ட நேரத்திற்கு 15 நிமிடங்களுக்கு முன்பாக வாருங்கள் மற்றும் மண்டப வரவேற்பில் உங்கள் பெயர் / பதிவு ID காட்டுங்கள்.", doneBackBtn: "முடிந்தது • மண்டபத்திற்கு திரும்பு", participantFullName: "பங்கேற்பாளரின் முழு பெயர் *", whatsappMobile: "WhatsApp / மொபைல் எண் (10 இலக்கங்கள்) *", categoryAge: "வகை / வயது", noOfParticipants: "பங்கேற்பாளர்கள் எண்ணிக்கை", specialNotes: "சிறப்பு குறிப்புகள் / செய்தி (விருப்பமானால்)", confirmRegistration: "பதிவை உறுதி செய்க (இலவசம்)", cancelBtn: "ரத்து செய்க",
+  mandapamNotFound: "மண்டபம் கண்டுபிடிக்கவில்லை", mandapamNotFoundMsg: "இந்த மண்டபப் பக்கத்தைக் கண்டுபிடிக்க முடியவில்லை. அது புதுப்பிக்கப்பட்டிருக்கலாம் அல்லது மற்ற மண்டபங்களை உலவலாம்.", exploreAllMandapams: "அனைத்து மண்டபங்களையும் காணுங்கள்",
+  annualCommunityUtsav: "ஆண்டு சமூக நவராத்திரி விழா",
+};
+
+const ml: Translations = {
+  appName: "നവരാത്രി മണ്ഡപം", tagline: "ഒരു QR. എല്ലാ മണ്ഡപങ്ങളും. ഭക്തർക്കാവശ്യമായ എല്ലാം.", home: "ഹോം", explore: "കണ്ടെത്തുക", know: "അറിയുക", nearMe: "സമീപത്ത്", following: "പിന്തുടരുന്നവ", services: "സേവനങ്ങളും പൂജകളും", activities: "പരിപാടികളും മത്സരങ്ങളും", annadanam: "അന്നദാനം", pallakiSeva: "പല്ലക്കി സേവ", dheeksha: "ദീക്ഷ", nimarjanam: "നിമജ്ജനം", myBookings: "എന്റെ ബുക്കിങ്ങുകൾ", myReminders: "ഓർമ്മപ്പെടുത്തലുകൾ", askQuestion: "ചോദ്യം ചോദിക്കുക", registerMandapam: "മണ്ഡപം രജിസ്റ്റർ ചെയ്യുക", mandapamLogin: "മണ്ഡപം ലോഗിൻ", organizerPortal: "സംഘാടക പോർട്ടൽ", adminPortal: "അഡ്മിൻ കേന്ദ്രം", todayDarshan: "ഇന്നത്തെ അമ്മ ദർശനം", today: "ഇന്ന്", tomorrow: "നാളെ", tomorrowPrep: "നാളത്തെ ഒരുക്കം", poojaTimings: "പൂജാ സമയം", naivedhyam: "നൈവേദ്യം", prasadam: "പ്രസാദം", itemsToBring: "കൊണ്ടുവരേണ്ട സാധനങ്ങൾ", nineDaySchedule: "9 ദിവസത്തെ നവരാത്രി ക്രമം", verifiedMandapam: "സ്ഥിരീകരിച്ച മണ്ഡപം", directions: "വഴി", share: "പങ്കിടുക", follow: "പിന്തുടരുക", followingBtn: "പിന്തുടരുന്നു", bookService: "സേവനം ബുക്ക് ചെയ്യുക", scanQr: "മണ്ഡപ QR സ്കാൻ ചെയ്യുക", exploreMandapams: "മണ്ഡപങ്ങൾ കാണുക", searchPlaceholder: "മണ്ഡപം, പ്രദേശം, നഗരം അല്ലെങ്കിൽ ദേവിയെ തിരയുക...", filterBy: "ഫിൽട്ടർ", allCities: "എല്ലാ നഗരങ്ങളും", openToday: "ഇന്ന് തുറന്നിരിക്കുന്നു", annadanamToday: "ഇന്ന് അന്നദാനം", pallakiLive: "പല്ലക്കി തത്സമയം", sponsored: "സ്പോൺസർ ചെയ്തത്", advertiseWithUs: "പരസ്യം നൽകുക", supportLocal: "പ്രാദേശിക വ്യാപാരങ്ങളെ പിന്തുണയ്ക്കുക", walkInRegister: "വാക്ക്-ഇൻ രജിസ്റ്റർ", addWalkIn: "വരവ് ചേർക്കുക", slotFull: "സ്ലോട്ട് നിറഞ്ഞു", confirmed: "സ്ഥിരീകരിച്ചു", bookingSuccess: "ബുക്കിംഗ് വിജയകരമായി സ്ഥിരീകരിച്ചു", remindMe: "ഓർമ്മിപ്പിക്കുക", uploadAlankarana: "ദൈനംദിന അലങ്കാരം അപ്‌ലോഡ് ചെയ്യുക", publishAnnouncement: "അറിയിപ്പ് പ്രസിദ്ധീകരിക്കുക",
+  tenDivineSchedule: "🪔 10 ദിവ്യ ദിനങ്ങളുടെ ക്രമം", tapDayInstruction: "ഏതെങ്കിലും ദിനത്തിൽ ടാപ്പ് ചെയ്ത് ദേവി അവതാരം, പൂജ സമയം & നൈവേദ്യം കാണുക", tenDays: "10 ദിവസം", dayLabel: "ദിനം",
+  mahaAnnadanam: "മഹാ അന്നദാനം", freeForAll: "എല്ലാ ഭക്തർക്കും സൗജന്യം", devoteesServedDaily: "+ ഭക്തർക്ക് ദൈനംദിന സേവനം", annadanamDatesLabel: "അന്നദാന തീയതികൾ (ദൈനംദിനം)", annadanamDatesValue: "11 ഒക്‌ടോബർ 2026 – 20 ഒക്‌ടോബർ 2026", annadanamDatesNote: "എല്ലാ 10 പവിത്ര ദിനങ്ങളിലും ദൈനംദിനം നടത്തപ്പെടുന്നു", dailyAnnadanamTimings: "ദൈനംദിന അന്നദാന സമയം", annadanamLocationPrefix: "സ്ഥലം:", satvikmenu: "സാത്വിക മെനു & ഭക്ത സേവ", annadanamDefaultNotes: "പുളിഹോര, സാമ്പാർ ചോറ്, മധുര പൊങ്ങൽ & മോര് ഉൾപ്പെടെ ശുദ്ധ സാത്വിക പ്രസാദം എല്ലാ ഭക്തർക്കും ഭക്തിയോടെ നൽകുന്നു.",
+  activitiesTitle: "മണ്ഡപ പരിപാടികളും മത്സരങ്ങളും", activitiesSubtitle: "യുവജനങ്ങൾക്കും കുട്ടികൾക്കും കുടുംബങ്ങൾക്കും സൗജന്യ പങ്കാളിത്തം", eventsLabel: "ഇവന്റുകൾ", freeEntry: "സൗജന്യ പ്രവേശനം", registerToParticipate: "പങ്കെടുക്കാൻ രജിസ്റ്റർ ചെയ്യുക", timeLabel: "സമയം:", locationLabel: "സ്ഥലം:",
+  poojasTitle: "മണ്ഡപ പൂജകളും പ്രത്യേക സേവനങ്ങളും", slotBookingNotice: "സ്ലോട്ട് ബുക്കിംഗ് പൂജ പീഠത്തിൽ ഇരിക്കുന്ന ഭക്തർക്കും ദമ്പതികൾക്കും ഗ്രൂപ്പുകൾക്കും മാത്രം. മംഗള ഹാരതിക്ക് വരുന്ന സ്ത്രീകൾക്കും പൊതു ഭക്തർക്കും ബുക്കിംഗ് ആവശ്യമില്ല.", slotsAvailable: "സ്ലോട്ടുകൾ ലഭ്യമാണ്", bookSlot: "സ്ലോട്ട് ബുക്ക് ചെയ്യുക →", minsLabel: "മിനിറ്റ്", itemsToBringLabel: "കൊണ്ടുവരേണ്ടവ:",
+  noticeBoard: "മണ്ഡപ അറിയിപ്പ് ബോർഡ്",
+  dualAlankaranaSessions: "ഇരട്ട അലങ്കാര സെഷനുകൾ", morningLabel: "രാവിലെ", eveningLabel: "വൈകുന്നേരം", poojaTimingsAt: "പൂജ സമയം –", suggestedNaivedhyam: "നിർദ്ദേശിക്കപ്പെട്ട നൈവേദ്യം & പ്രസാദം", prasadamDistribution: "പ്രസാദ വിതരണം:", suggestedPoojaItems: "ഭക്തർക്ക് നിർദ്ദേശിക്കപ്പെട്ട പൂജ സാമഗ്രികൾ", sacredSloka: "പവിത്ര ദേവി ശ്ലോകം", poojaSlotNoticeTitle: "പൂജ സ്ലോട്ട് ബുക്കിംഗ് അറിയിപ്പ്:", poojaSlotNoticeBody: "ബുക്കിംഗ് പൂജ പീഠത്തിൽ ഇരിക്കുന്ന ഭക്തർക്കും ദമ്പതിമാർക്കും ഗ്രൂപ്പുകൾക്കും മാത്രം. മംഗള ഹാരതിയിൽ പങ്കെടുക്കുന്ന സ്ത്രീകൾക്കും പൊതു ഭക്തർക്കും ബുക്കിംഗ് ആവശ്യമില്ല.", bookPoojaSlotBtn: "പൂജ സ്ലോട്ട് ബുക്ക് ചെയ്യുക (ഇരിക്കുന്ന ഭക്തർ / ദമ്പതികൾ)", closeBtn: "അടയ്ക്കുക", daySacredDarshan: "പവിത്ര ദർശനം",
+  freeEventRegistration: "സൗജന്യ ഇവന്റ് രജിസ്ട്രേഷൻ", registrationConfirmed: "രജിസ്ട്രേഷൻ സ്ഥിരീകരിച്ചു!", registrationConfirmedMsg: "നിങ്ങളുടെ ഇടം സ്ഥിരീകരിച്ചു", registrationIdLabel: "രജിസ്ട്രേഷൻ ID", participantNameLabel: "പങ്കാളിയുടെ പേര്", eventDateTimeLabel: "ഇവന്റ് തീയതിയും സമയവും", totalParticipantsLabel: "ആകെ പങ്കാളികൾ", arriveEarlyNotice: "നിശ്ചിത സമയത്തിന് 15 മിനിറ്റ് മുൻപ് എത്തുക, മണ്ഡപ റിസപ്ഷനിൽ നിങ്ങളുടെ പേര് / രജിസ്ട്രേഷൻ ID കാണിക്കുക.", doneBackBtn: "ആയി • മണ്ഡപത്തിലേക്ക് തിരിക്കുക", participantFullName: "പങ്കാളിയുടെ മുഴുവൻ പേര് *", whatsappMobile: "WhatsApp / മൊബൈൽ നമ്പർ (10 അക്കങ്ങൾ) *", categoryAge: "വിഭാഗം / പ്രായം", noOfParticipants: "പങ്കാളികളുടെ എണ്ണം", specialNotes: "പ്രത്യേക കുറിപ്പുകൾ / സന്ദേശം (ഐച്ഛികം)", confirmRegistration: "രജിസ്ട്രേഷൻ സ്ഥിരീകരിക്കുക (സൗജന്യം)", cancelBtn: "റദ്ദാക്കുക",
+  mandapamNotFound: "മണ്ഡപം കണ്ടെത്തിയില്ല", mandapamNotFoundMsg: "ഈ മണ്ഡപ പേജ് കണ്ടെത്താൻ കഴിഞ്ഞില്ല. അത് അപ്‌ഡേറ്റ് ചെയ്തിരിക്കാം അല്ലെങ്കിൽ മറ്റ് മണ്ഡപങ്ങൾ ബ്രൗസ് ചെയ്യാം.", exploreAllMandapams: "എല്ലാ മണ്ഡപങ്ങളും കാണുക",
+  annualCommunityUtsav: "വാർഷിക സാമൂഹ്യ നവരാത്രി ഉത്സവം",
+};
+
+const kn: Translations = {
+  appName: "ನವರಾತ್ರಿ ಮಂಟಪ", tagline: "ಒಂದು QR. ಎಲ್ಲ ಮಂಟಪಗಳು. ಭಕ್ತರಿಗೆ ಬೇಕಾದ ಎಲ್ಲವೂ.", home: "ಮುಖಪುಟ", explore: "ಹುಡುಕಿ", know: "ತಿಳಿಯಿರಿ", nearMe: "ನನ್ನ ಹತ್ತಿರ", following: "ಅನುಸರಿಸುವವು", services: "ಸೇವೆಗಳು ಮತ್ತು ಪೂಜೆಗಳು", activities: "ಕಾರ್ಯಕ್ರಮಗಳು ಮತ್ತು ಸ್ಪರ್ಧೆಗಳು", annadanam: "ಅನ್ನದಾನ", pallakiSeva: "ಪಲ್ಲಕ್ಕಿ ಸೇವೆ", dheeksha: "ದೀಕ್ಷೆ", nimarjanam: "ವಿಸರ್ಜನೆ", myBookings: "ನನ್ನ ಬುಕ್ಕಿಂಗ್‌ಗಳು", myReminders: "ಜ್ಞಾಪನೆಗಳು", askQuestion: "ಪ್ರಶ್ನೆ ಕೇಳಿ", registerMandapam: "ಮಂಟಪ ನೋಂದಾಯಿಸಿ", mandapamLogin: "ಮಂಟಪ ಲಾಗಿನ್", organizerPortal: "ಆಯೋಜಕರ ಪೋರ್ಟಲ್", adminPortal: "ನಿರ್ವಾಹಕ ಕೇಂದ್ರ", todayDarshan: "ಇಂದಿನ ದೇವಿ ದರ್ಶನ", today: "ಇಂದು", tomorrow: "ನಾಳೆ", tomorrowPrep: "ನಾಳೆಯ ಸಿದ್ಧತೆ", poojaTimings: "ಪೂಜೆಯ ಸಮಯ", naivedhyam: "ನೈವೇದ್ಯ", prasadam: "ಪ್ರಸಾದ", itemsToBring: "ತರಬೇಕಾದ ಸಾಮಗ್ರಿಗಳು", nineDaySchedule: "9 ದಿನಗಳ ನವರಾತ್ರಿ ವೇಳಾಪಟ್ಟಿ", verifiedMandapam: "ಪರಿಶೀಲಿಸಿದ ಮಂಟಪ", directions: "ದಾರಿ", share: "ಹಂಚಿಕೊಳ್ಳಿ", follow: "ಅನುಸರಿಸಿ", followingBtn: "ಅನುಸರಿಸಲಾಗುತ್ತಿದೆ", bookService: "ಸೇವೆ ಬುಕ್ ಮಾಡಿ", scanQr: "ಮಂಟಪ QR ಸ್ಕ್ಯಾನ್ ಮಾಡಿ", exploreMandapams: "ಮಂಟಪಗಳನ್ನು ನೋಡಿ", searchPlaceholder: "ಮಂಟಪ, ಪ್ರದೇಶ, ನಗರ ಅಥವಾ ದೇವಿಯನ್ನು ಹುಡುಕಿ...", filterBy: "ಫಿಲ್ಟರ್", allCities: "ಎಲ್ಲ ನಗರಗಳು", openToday: "ಇಂದು ತೆರೆದಿದೆ", annadanamToday: "ಇಂದು ಅನ್ನದಾನ", pallakiLive: "ಪಲ್ಲಕ್ಕಿ ನೇರ ಪ್ರಸಾರ", sponsored: "ಪ್ರಾಯೋಜಿತ", advertiseWithUs: "ಜಾಹೀರಾತು ನೀಡಿ", supportLocal: "ಸ್ಥಳೀಯ ವ್ಯಾಪಾರಗಳನ್ನು ಬೆಂಬಲಿಸಿ", walkInRegister: "ನೇರ ಭೇಟಿ ನೋಂದಣಿ", addWalkIn: "ಭೇಟಿ ಸೇರಿಸಿ", slotFull: "ಸ್ಲಾಟ್ ತುಂಬಿದೆ", confirmed: "ದೃಢೀಕರಿಸಲಾಗಿದೆ", bookingSuccess: "ಬುಕ್ಕಿಂಗ್ ಯಶಸ್ವಿಯಾಗಿ ದೃಢೀಕರಿಸಲಾಗಿದೆ", remindMe: "ನೆನಪಿಸಿ", uploadAlankarana: "ದೈನಂದಿನ ಅಲಂಕಾರ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ", publishAnnouncement: "ಪ್ರಕಟಣೆ ಪ್ರಕಟಿಸಿ",
+  tenDivineSchedule: "🪔 10 ದಿವ್ಯ ದಿನಗಳ ವೇಳಾಪಟ್ಟಿ", tapDayInstruction: "ಯಾವುದೇ ದಿನ ಟ್ಯಾಪ್ ಮಾಡಿ – ದೇವಿ ಅವತಾರ, ಪೂಜೆಯ ಸಮಯ & ನೈವೇದ್ಯ ನೋಡಿ", tenDays: "10 ದಿನಗಳು", dayLabel: "ದಿನ",
+  mahaAnnadanam: "ಮಹಾ ಅನ್ನದಾನ", freeForAll: "ಎಲ್ಲಾ ಭಕ್ತರಿಗೂ ಉಚಿತ", devoteesServedDaily: "+ ಭಕ್ತರಿಗೆ ದಿನ ಪ್ರತಿ ಸೇವೆ", annadanamDatesLabel: "ಅನ್ನದಾನ ದಿನಾಂಕಗಳು (ದಿನ ಪ್ರತಿ)", annadanamDatesValue: "11 ಅಕ್ಟೋಬರ್ 2026 – 20 ಅಕ್ಟೋಬರ್ 2026", annadanamDatesNote: "ಎಲ್ಲಾ 10 ಪಾವನ ದಿನಗಳಲ್ಲೂ ದಿನ ಪ್ರತಿ ನಡೆಯುತ್ತದೆ", dailyAnnadanamTimings: "ದೈನಂದಿನ ಅನ್ನದಾನ ಸಮಯ", annadanamLocationPrefix: "ಸ್ಥಳ:", satvikmenu: "ಸಾತ್ವಿಕ ಮೆನು & ಭಕ್ತ ಸೇವೆ", annadanamDefaultNotes: "ಪುಳಿಹೋರ, ಸಾರು ಅನ್ನ, ಸಿಹಿ ಪೊಂಗಲ್ & ಮಜ್ಜಿಗೆ ಸೇರಿ ಶುದ್ಧ ಸಾತ್ವಿಕ ಪ್ರಸಾದ ಎಲ್ಲಾ ಭಕ್ತರಿಗೂ ಭಕ್ತಿಯಿಂದ ಬಡಿಸಲಾಗುತ್ತದೆ.",
+  activitiesTitle: "ಮಂಟಪ ಕಾರ್ಯಕ್ರಮಗಳು & ಸ್ಪರ್ಧೆಗಳು", activitiesSubtitle: "ಯುವಜನ, ಮಕ್ಕಳು & ಕುಟುಂಬಗಳಿಗೆ ಉಚಿತ ಭಾಗವಹಿಸುವಿಕೆ", eventsLabel: "ಈವೆಂಟ್‌ಗಳು", freeEntry: "ಉಚಿತ ಪ್ರವೇಶ", registerToParticipate: "ಭಾಗವಹಿಸಲು ನೋಂದಾಯಿಸಿ", timeLabel: "ಸಮಯ:", locationLabel: "ಸ್ಥಳ:",
+  poojasTitle: "ಮಂಟಪ ಪೂಜೆಗಳು & ವಿಶೇಷ ಸೇವೆಗಳು", slotBookingNotice: "ಸ್ಲಾಟ್ ಬುಕ್ಕಿಂಗ್ ಪೂಜಾ ಪೀಠದಲ್ಲಿ ಕುಳಿತುಕೊಳ್ಳುವ ಭಕ್ತರು, ದಂಪತಿಗಳು ಮತ್ತು ಗುಂಪುಗಳಿಗೆ ಮಾತ್ರ. ಮಂಗಳ ಹಾರತಿಗೆ ಬರುವ ಮಹಿಳೆಯರು ಮತ್ತು ಸಾಮಾನ್ಯ ಭಕ್ತರಿಗೆ ಬುಕ್ಕಿಂಗ್ ಅಗತ್ಯವಿಲ್ಲ.", slotsAvailable: "ಸ್ಲಾಟ್‌ಗಳು ಲಭ್ಯ", bookSlot: "ಸ್ಲಾಟ್ ಬುಕ್ ಮಾಡಿ →", minsLabel: "ನಿಮಿಷಗಳು", itemsToBringLabel: "ತರಬೇಕಾದವು:",
+  noticeBoard: "ಮಂಟಪ ಸೂಚನಾ ಫಲಕ",
+  dualAlankaranaSessions: "ದ್ವಿ ಅಲಂಕಾರ ಸೆಷನ್‌ಗಳು", morningLabel: "ಬೆಳಗ್ಗೆ", eveningLabel: "ಸಂಜೆ", poojaTimingsAt: "ಪೂಜೆಯ ಸಮಯ –", suggestedNaivedhyam: "ಸೂಚಿತ ನೈವೇದ್ಯ & ಪ್ರಸಾದ", prasadamDistribution: "ಪ್ರಸಾದ ವಿತರಣೆ:", suggestedPoojaItems: "ಭಕ್ತರಿಗೆ ಸೂಚಿತ ಪೂಜಾ ಸಾಮಗ್ರಿಗಳು", sacredSloka: "ಪವಿತ್ರ ದೇವಿ ಶ್ಲೋಕ", poojaSlotNoticeTitle: "ಪೂಜಾ ಸ್ಲಾಟ್ ಬುಕ್ಕಿಂಗ್ ಸೂಚನೆ:", poojaSlotNoticeBody: "ಬುಕ್ಕಿಂಗ್ ಪೂಜಾ ಪೀಠದಲ್ಲಿ ಕುಳಿತುಕೊಳ್ಳುವ ಭಕ್ತರು, ದಂಪತಿಗಳು ಅಥವಾ ಗುಂಪುಗಳಿಗೆ ಮಾತ್ರ ಅನ್ವಯಿಸುತ್ತದೆ. ಮಂಗಳ ಹಾರತಿಯಲ್ಲಿ ಪಾಲ್ಗೊಳ್ಳುವ ಮಹಿಳೆಯರು ಮತ್ತು ಸಾಮಾನ್ಯ ಭಕ್ತರಿಗೆ ಬುಕ್ಕಿಂಗ್ ಅಗತ್ಯವಿಲ್ಲ.", bookPoojaSlotBtn: "ಪೂಜಾ ಸ್ಲಾಟ್ ಬುಕ್ ಮಾಡಿ (ಕುಳಿತ ಭಕ್ತರು / ದಂಪತಿ)", closeBtn: "ಮುಚ್ಚಿ", daySacredDarshan: "ಪವಿತ್ರ ದರ್ಶನ",
+  freeEventRegistration: "ಉಚಿತ ಈವೆಂಟ್ ನೋಂದಣಿ", registrationConfirmed: "ನೋಂದಣಿ ದೃಢೀಕರಿಸಲಾಗಿದೆ!", registrationConfirmedMsg: "ನಿಮ್ಮ ಸ್ಥಾನ ದೃಢೀಕರಿಸಲಾಗಿದೆ", registrationIdLabel: "ನೋಂದಣಿ ID", participantNameLabel: "ಭಾಗವಹಿಸುವವರ ಹೆಸರು", eventDateTimeLabel: "ಈವೆಂಟ್ ದಿನಾಂಕ & ಸಮಯ", totalParticipantsLabel: "ಒಟ್ಟು ಭಾಗವಹಿಸುವವರು", arriveEarlyNotice: "ನಿಗದಿತ ಸಮಯಕ್ಕಿಂತ 15 ನಿಮಿಷ ಮೊದಲು ಬನ್ನಿ ಮತ್ತು ಮಂಟಪ ಸ್ವಾಗತ ಕಾರ್ಯಾಲಯದಲ್ಲಿ ನಿಮ್ಮ ಹೆಸರು / ನೋಂದಣಿ ID ತೋರಿಸಿ.", doneBackBtn: "ಮುಗಿಯಿತು • ಮಂಟಪಕ್ಕೆ ಹಿಂತಿರುಗಿ", participantFullName: "ಭಾಗವಹಿಸುವವರ ಪೂರ್ಣ ಹೆಸರು *", whatsappMobile: "WhatsApp / ಮೊಬೈಲ್ ಸಂಖ್ಯೆ (10 ಅಂಕಿಗಳು) *", categoryAge: "ವರ್ಗ / ವಯಸ್ಸು", noOfParticipants: "ಭಾಗವಹಿಸುವವರ ಸಂಖ್ಯೆ", specialNotes: "ವಿಶೇಷ ಟಿಪ್ಪಣಿಗಳು / ಸಂದೇಶ (ಐಚ್ಛಿಕ)", confirmRegistration: "ನೋಂದಣಿ ದೃಢೀಕರಿಸಿ (ಉಚಿತ)", cancelBtn: "ರದ್ದು ಮಾಡಿ",
+  mandapamNotFound: "ಮಂಟಪ ಕಂಡುಬಂದಿಲ್ಲ", mandapamNotFoundMsg: "ಈ ಮಂಟಪ ಪುಟ ಕಂಡುಹಿಡಿಯಲಾಗಲಿಲ್ಲ. ಅದು ನವೀಕರಿಸಲ್ಪಟ್ಟಿರಬಹುದು ಅಥವಾ ಇತರ ಮಂಟಪಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಬಹುದು.", exploreAllMandapams: "ಎಲ್ಲ ಮಂಟಪಗಳನ್ನು ನೋಡಿ",
+  annualCommunityUtsav: "ವಾರ್ಷಿಕ ಸಮುದಾಯ ನವರಾತ್ರಿ ಉತ್ಸವ",
+};
+
+const DICTIONARY: Record<LanguageCode, Translations> = { en, te, hi, ta, ml, kn };
 
 interface LanguageContextType {
   language: LanguageCode;
