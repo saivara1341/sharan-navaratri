@@ -729,21 +729,27 @@ export const NavaratriOrganizer: React.FC = () => {
               </button>
             </div>
 
-            {/* Download Credentials Slip */}
-            <button
-              type="button"
-              onClick={() => downloadMandapamCredentials(currentMandapam, sessionPasscode)}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-400 text-stone-900 font-bold hover:bg-amber-300 shadow-sm transition-all cursor-pointer"
-              title="Download Official Mandapam Access Slip"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Download Access Slip</span>
-            </button>
+            {/* Protected Passcode Indicator */}
+            <div className="flex items-center gap-1.5 bg-black/30 border border-emerald-400/40 px-2.5 py-1 rounded-xl text-emerald-200">
+              <Lock className="w-3.5 h-3.5 text-emerald-300" />
+              <span className="font-semibold text-[11px]">Passcode: Protected in Slip</span>
+            </div>
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="relative z-10 flex flex-wrap items-center gap-2">
+        {/* Control Center Actions */}
+        <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap md:justify-end items-stretch gap-2 md:max-w-[480px]">
+          {/* Download Access Slip */}
+          <button
+            type="button"
+            onClick={() => downloadMandapamCredentials(currentMandapam, sessionPasscode)}
+            className="px-3.5 py-2 rounded-xl bg-emerald-400 text-stone-900 text-xs font-bold hover:bg-emerald-300 shadow-md flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            title="Download Official Mandapam Access Slip"
+          >
+            <Download className="w-4 h-4 text-emerald-900" />
+            <span>Download Slip</span>
+          </button>
+
           {/* Mandapam Logo, Photos & Location Button */}
           <button
             type="button"
@@ -762,7 +768,7 @@ export const NavaratriOrganizer: React.FC = () => {
               setBrandingTab("logo");
               setBrandingModalOpen(true);
             }}
-            className="px-3.5 py-2 rounded-xl bg-amber-400 text-stone-900 text-xs font-bold hover:bg-amber-300 shadow-md flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-amber-400 text-stone-900 text-xs font-bold hover:bg-amber-300 shadow-md flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             title="Upload Logo, Mandapam Photos, Location & Committee Details"
           >
             <Camera className="w-4 h-4 text-[#8B1E1E]" />
@@ -771,7 +777,7 @@ export const NavaratriOrganizer: React.FC = () => {
 
           <button
             onClick={() => setQrModalOpen(true)}
-            className="px-3.5 py-2 rounded-xl bg-white text-stone-900 text-xs font-bold hover:bg-amber-50 shadow-md flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-white text-stone-900 text-xs font-bold hover:bg-amber-50 shadow-md flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
           >
             <QrCode className="w-4 h-4 text-[#8B1E1E]" />
             <span>Counter Standee</span>
@@ -779,19 +785,32 @@ export const NavaratriOrganizer: React.FC = () => {
 
           <Link
             to={`/navaratri/m/${currentMandapam.slug}`}
-            className="px-3.5 py-2 rounded-xl bg-amber-400/90 text-stone-900 text-xs font-bold hover:bg-amber-300 shadow-md flex items-center gap-1.5 transition-colors"
+            className="px-3.5 py-2 rounded-xl bg-white/90 text-stone-900 text-xs font-bold hover:bg-amber-50 shadow-md flex items-center justify-center gap-1.5 transition-colors"
           >
-            <ExternalLink className="w-4 h-4" />
+            <ExternalLink className="w-4 h-4 text-[#8B1E1E]" />
             <span>View Public Page</span>
           </Link>
 
           <button
             onClick={handleLogout}
-            className="px-3 py-2 rounded-xl bg-black/40 hover:bg-black/60 text-white text-xs font-bold border border-white/20 flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-black/40 hover:bg-black/60 text-white text-xs font-bold border border-white/20 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             title="Log out from organizer dashboard"
           >
-            <LogOut className="w-3.5 h-3.5" />
+            <LogOut className="w-4 h-4" />
             <span>Logout</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setDeleteStep(1);
+              setDeleteConfirmInput("");
+            }}
+            className="px-3.5 py-2 rounded-xl bg-red-950/60 hover:bg-red-700 text-red-100 hover:text-white text-xs font-bold border border-red-300/40 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            title="Permanently delete this mandapam profile, photos and schedules"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>Delete Account</span>
           </button>
         </div>
       </div>
@@ -1540,33 +1559,6 @@ export const NavaratriOrganizer: React.FC = () => {
         </div>
       )}
 
-      {/* DANGER ZONE: ACCOUNT DELETION */}
-      <div className="rounded-3xl border border-red-300 bg-gradient-to-r from-red-50/95 via-red-50/60 to-amber-50/30 p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-red-800">
-            <AlertTriangle className="w-3.5 h-3.5 text-red-600" />
-            <span>Danger Zone • Mandapam Account Management</span>
-          </div>
-          <h3 className="font-serif text-base sm:text-lg font-black text-red-950">
-            Delete Mandapam Account
-          </h3>
-          <p className="text-xs text-stone-600 max-w-xl leading-relaxed">
-            If your committee no longer requires this portal or festivities have ended, you can permanently delete your mandapam profile, photos, and pooja schedules.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => {
-            setDeleteStep(1);
-            setDeleteConfirmInput("");
-          }}
-          className="px-4 py-2.5 rounded-xl bg-red-700 hover:bg-red-800 text-white text-xs font-bold shadow-md hover:shadow-lg flex items-center justify-center gap-2 transition-all shrink-0 cursor-pointer"
-        >
-          <Trash2 className="w-4 h-4" />
-          <span>Delete Mandapam Account</span>
-        </button>
-      </div>
-
       {/* DRAWERS & MODALS */}
       {updateDrawerOpen && (
         <DailyUpdateDrawer
@@ -2153,14 +2145,13 @@ export const NavaratriOrganizer: React.FC = () => {
       )}
 
       {/* MANDAPAM BRANDING, MEDIA & LOCATION MODAL */}
-      {(brandingModalOpen || photoModalOpen) && (
+      {brandingModalOpen && (
         <div
           role="dialog"
           aria-modal="true"
           className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in"
           onClick={() => {
             setBrandingModalOpen(false);
-            setPhotoModalOpen(false);
           }}
         >
           <div

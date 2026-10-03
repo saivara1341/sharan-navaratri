@@ -589,9 +589,9 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       .replace(/(^-|-$)/g, "") + `-${data.city.toLowerCase()}`;
 
     const generatedPasscode =
-      data.passcode && /^\d{8}$/.test(data.passcode.trim())
+      data.passcode && /^\d{4,6}$/.test(data.passcode.trim())
         ? data.passcode.trim()
-        : Math.floor(10000000 + Math.random() * 90000000).toString();
+        : Math.floor(100000 + Math.random() * 900000).toString();
 
     const shortId = `mnp-${Math.floor(100000 + Math.random() * 900000)}`;
 

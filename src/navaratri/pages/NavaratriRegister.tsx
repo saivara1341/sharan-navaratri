@@ -20,7 +20,10 @@ import {
   EyeOff,
   RefreshCw,
   ExternalLink,
-  Sparkles
+  Sparkles,
+  LocateFixed,
+  Loader2,
+  Lock
 } from "lucide-react";
 import { generatePasscode, copyToClipboard, downloadMandapamCredentials, savePrivateCredentials } from "../utils/mandapamCredentials";
 import { Mandapam } from "../types";
@@ -44,12 +47,69 @@ export const NavaratriRegister: React.FC = () => {
   const [description, setDescription] = useState("");
   const [coverImageUrl, setCoverImageUrl] = useState(navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg"));
 
-  // 8-digit passcode state
-  const [passcode, setPasscode] = useState(() => generatePasscode());
+  // Passcode is entered by the organizer (or auto-generated on request)
+  const [passcode, setPasscode] = useState("");
   const [showPasscode, setShowPasscode] = useState(false);
+  const [showConfirmPasscode, setShowConfirmPasscode] = useState(false);
+
+  // Exact GPS location
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
+  const [gpsLoading, setGpsLoading] = useState(false);
 
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
   const [registeredMandapam, setRegisteredMandapam] = useState<Mandapam | null>(null);
+
+  const handleCaptureGps = () => {
+    if (!("geolocation" in navigator)) {
+      toast.error("GPS is not supported on this device/browser.");
+      return;
+    }
+    setGpsLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+        setLatitude(lat);
+        setLongitude(lng);
+        setGpsAccuracy(Math.round(accuracy));
+        toast.success(`Exact GPS location captured (±${Math.round(accuracy)} m)`);
+
+        // Reverse geocode to auto-fill empty address fields
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&addressdetails=1`,
+            { headers: { Accept: "application/json" } }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            const a = data.address || {};
+            const foundArea = a.suburb || a.neighbourhood || a.village || a.quarter || a.county || "";
+            const foundCity = a.city || a.town || a.city_district || a.state_district || "";
+            const foundStreet = [a.house_number, a.road].filter(Boolean).join(", ");
+            if (!address.trim() && foundStreet) setAddress(foundStreet);
+            if (!area.trim() && foundArea) setArea(foundArea);
+            if (!city.trim() && foundCity) setCity(foundCity);
+            if (!state.trim() && a.state) setState(a.state);
+            if (!pincode.trim() && a.postcode) setPincode(String(a.postcode).replace(/\s/g, ""));
+          }
+        } catch {
+          // Reverse geocoding is best-effort only
+        } finally {
+          setGpsLoading(false);
+        }
+      },
+      (err) => {
+        setGpsLoading(false);
+        toast.error(
+          err.code === err.PERMISSION_DENIED
+            ? "Location permission denied. Please allow location access and try again."
+            : "Could not fetch GPS location. Please try again outdoors or near a window."
+        );
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +121,7 @@ export const NavaratriRegister: React.FC = () => {
     }
 
     if (cleanMobile.length !== 10) {
-      toast.error("Please enter a valid 10-digit mobile number (e.g. 9876543210).");
+      toast.error("Please enter a valid 10-digit mobile number.");
       return;
     }
 
@@ -81,8 +141,8 @@ export const NavaratriRegister: React.FC = () => {
       city: city.trim(),
       state,
       pincode,
-      latitude: 18.6725,
-      longitude: 78.0941,
+      latitude: latitude ?? 18.6725,
+      longitude: longitude ?? 78.0941,
       description: description.trim() || "Annual Community Navaratri Utsav",
       contactPhone: cleanMobile,
       whatsappNumber: cleanMobile,
@@ -108,130 +168,147 @@ export const NavaratriRegister: React.FC = () => {
     }
   };
 
-  // If successfully registered, show the credentials slip and download modal
+  // If successfully registered, show the credentials and download slip
   if (registeredMandapam) {
+    const portalSteps = [
+      "Download your Access Slip and keep it with the committee",
+      "Open the Organizer Portal and add daily Alankarana & pooja timings",
+      "Print your Counter Standee QR for devotees to scan"
+    ];
     return (
-      <div className="max-w-2xl mx-auto space-y-6 pb-20 font-sans">
-        <div className="rounded-3xl border-2 border-emerald-400 bg-gradient-to-b from-emerald-50 via-white to-amber-50/50 p-6 sm:p-8 shadow-xl text-center space-y-6">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800 shadow-md">
-            <CheckCircle2 className="h-9 w-9" />
-          </div>
-
-          <div className="space-y-2">
-            <span className="inline-block rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-800">
+      <div className="max-w-2xl mx-auto px-4 sm:px-0 space-y-6 pb-20 font-sans">
+        <div className="relative overflow-hidden rounded-3xl border-2 border-amber-300 bg-white shadow-2xl">
+          {/* Celebratory header */}
+          <div className="relative bg-gradient-to-br from-[#9A241C] via-[#8B1E1E] to-[#B45309] px-6 pt-8 pb-14 text-center text-white">
+            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_20%,#fff_0,transparent_40%),radial-gradient(circle_at_80%_60%,#fde68a_0,transparent_35%)]" />
+            <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white/15 ring-4 ring-amber-300/50 shadow-lg animate-in zoom-in duration-500">
+              <CheckCircle2 className="h-9 w-9 text-amber-200" />
+            </div>
+            <span className="relative mt-4 inline-block rounded-full bg-emerald-400/20 border border-emerald-300/50 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-emerald-100">
               Registration Confirmed
             </span>
-            <h1 className="font-serif text-2xl sm:text-3xl font-black text-[#8B1E1E]">
+            <h1 className="relative mt-2 font-serif text-3xl sm:text-4xl font-black tracking-tight">
               {registeredMandapam.name}
             </h1>
-            <p className="text-xs sm:text-sm text-stone-600 max-w-lg mx-auto">
-              Your Mandapam has been published to the live Sharan Navaratri festival directory! Save your credentials below for logging in.
+            <p className="relative mt-1 text-xs text-amber-100">
+              {registeredMandapam.area}, {registeredMandapam.city}
+            </p>
+            <p className="relative mt-3 text-xs sm:text-sm text-white/85 max-w-md mx-auto">
+              Your Mandapam is now live on the Sharan Navaratri festival directory. Save your credentials below to log in.
             </p>
           </div>
 
-          {/* Credentials Highlight Card */}
-          <div className="rounded-2xl border-2 border-amber-300 bg-amber-50/90 p-5 sm:p-6 text-left space-y-4 shadow-sm">
-            <div className="flex items-center justify-between border-b border-amber-200 pb-2">
+          {/* Floating credentials card */}
+          <div className="relative -mt-9 mx-4 sm:mx-6 rounded-2xl border border-amber-200 bg-gradient-to-b from-[#FFFDF7] to-amber-50 p-5 shadow-xl space-y-4">
+            <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
                 <KeyRound className="w-4 h-4 text-[#8B1E1E]" />
                 Official Mandapam Login Credentials
               </span>
-              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3" />
                 Active & Verified
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Mandapam ID */}
-              <div className="rounded-xl bg-white border border-amber-200 p-3 shadow-sm">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
-                  Mandapam ID
-                </p>
-                <div className="flex items-center justify-between mt-1">
-                  <span className="font-mono text-base font-black text-[#8B1E1E]">
-                    {registeredMandapam.id}
-                  </span>
+              <div className="rounded-xl bg-white border-2 border-dashed border-amber-300 p-3.5">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-stone-500">Mandapam ID</p>
+                <div className="flex items-center justify-between mt-1 gap-2">
+                  <span className="font-mono text-lg font-black text-[#8B1E1E] break-all">{registeredMandapam.id}</span>
                   <button
                     type="button"
                     onClick={() => copyToClipboard(registeredMandapam.id, "Mandapam ID")}
-                    className="p-1.5 rounded-lg bg-amber-50 text-amber-800 hover:bg-amber-100 text-xs font-bold flex items-center gap-1 transition-all"
+                    className="p-2 rounded-lg bg-amber-100 text-amber-900 hover:bg-amber-200 transition-all cursor-pointer"
                     title="Copy Mandapam ID"
                   >
-                    <Copy className="w-3.5 h-3.5" />
-                    Copy
+                    <Copy className="w-4 h-4" />
                   </button>
                 </div>
               </div>
 
-              {/* Passcode */}
-              <div className="rounded-xl bg-white border border-amber-200 p-3 shadow-sm">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
-                  Passcode / PIN (4–6 Digits)
+              {/* Passcode (masked by default) */}
+              <div className="rounded-xl bg-white border-2 border-dashed border-emerald-300 p-3.5">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1">
+                  <Lock className="w-3 h-3" /> Passcode / PIN
                 </p>
-                <div className="flex items-center justify-between mt-1">
-                  <span className="font-mono text-base font-black tracking-widest text-emerald-800">
-                    {registeredMandapam.passcode}
+                <div className="flex items-center justify-between mt-1 gap-2">
+                  <span className="font-mono text-lg font-black tracking-[0.3em] text-emerald-800">
+                    {showConfirmPasscode ? registeredMandapam.passcode : "•".repeat(registeredMandapam.passcode?.length || 6)}
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => copyToClipboard(registeredMandapam.passcode || "", "Passcode")}
-                    className="p-1.5 rounded-lg bg-amber-50 text-amber-800 hover:bg-amber-100 text-xs font-bold flex items-center gap-1 transition-all"
-                    title="Copy Passcode"
-                  >
-                    <Copy className="w-3.5 h-3.5" />
-                    Copy
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPasscode(!showConfirmPasscode)}
+                      className="p-2 rounded-lg bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition-all cursor-pointer"
+                      title={showConfirmPasscode ? "Hide passcode" : "Show passcode"}
+                    >
+                      {showConfirmPasscode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => copyToClipboard(registeredMandapam.passcode || "", "Passcode")}
+                      className="p-2 rounded-lg bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition-all cursor-pointer"
+                      title="Copy Passcode"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="text-[11px] text-stone-600 bg-white/70 rounded-xl p-2.5 border border-amber-200 flex items-start gap-2">
-              <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-              <span>
-                Please store this Mandapam ID and passcode safely with your committee members. You can download the complete slip below.
-              </span>
-            </div>
-          </div>
-
-            {/* Primary Action Button to Enter Portal */}
             <button
               type="button"
-              onClick={() => navigate("/navaratri/organizer")}
-              className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#8B1E1E] via-[#A82828] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-black shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01]"
+              onClick={() => downloadMandapamCredentials(registeredMandapam, registeredMandapam.passcode)}
+              className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              <Sparkles className="w-4 h-4 text-amber-300" />
-              <span>Open Mandapam Organizer Portal (Add Day-to-Day Data & Events) →</span>
+              <Download className="w-4 h-4" />
+              <span>Download Access Slip</span>
             </button>
+            <p className="text-[11px] text-stone-500 text-center flex items-center justify-center gap-1">
+              <Lock className="w-3 h-3" /> Slip is generated on-demand and never stored in your browser.
+            </p>
+          </div>
+
+          {/* Next steps */}
+          <div className="px-4 sm:px-6 pt-5 pb-6 space-y-4">
+            <ol className="space-y-2">
+              {portalSteps.map((s, i) => (
+                <li key={s} className="flex items-start gap-3 text-xs text-stone-700">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-100 text-[10px] font-black text-[#8B1E1E]">
+                    {i + 1}
+                  </span>
+                  <span className="pt-0.5">{s}</span>
+                </li>
+              ))}
+            </ol>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <button
                 type="button"
-                onClick={() => downloadMandapamCredentials(registeredMandapam, registeredMandapam.passcode)}
-                className="py-3 rounded-xl border border-emerald-600 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                title="Download Official Mandapam Access Slip directly to your computer"
+                onClick={() => navigate("/navaratri/organizer")}
+                className="py-3 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs font-black shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01]"
               >
-                <Download className="w-4 h-4 text-emerald-700" />
-                <span>Download Access Slip</span>
+                <Sparkles className="w-4 h-4 text-amber-300" />
+                <span>Open Organizer Portal</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
-
               <button
                 type="button"
                 onClick={() => navigate(`/navaratri/m/${registeredMandapam.slug}`)}
                 className="py-3 rounded-xl border border-amber-300 bg-white hover:bg-amber-50 text-stone-800 text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <span>View Public Notice Board</span>
+                <span>View Public Page</span>
                 <ExternalLink className="w-3.5 h-3.5 text-amber-700" />
               </button>
             </div>
-
-            <p className="text-[11px] text-stone-500 text-center">
-              🔒 <strong>Zero Frontend Storage:</strong> Your access slip document is generated on-demand and downloaded directly to your device. It is never stored in browser storage.
-            </p>
+          </div>
         </div>
       </div>
     );
   }
-
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 space-y-6 pb-16 font-sans">
       {/* Decorative Border between Top Ad Space and Back Button */}
@@ -402,6 +479,46 @@ export const NavaratriRegister: React.FC = () => {
               />
             </div>
           </div>
+
+          {/* Exact GPS Location */}
+          <div className={`rounded-2xl border p-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 transition-colors ${latitude !== null ? "border-emerald-300 bg-emerald-50/70" : "border-amber-300 bg-amber-50/60"}`}>
+            <div className="flex items-start gap-2.5">
+              <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${latitude !== null ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-[#8B1E1E]"}`}>
+                <LocateFixed className="w-4 h-4" />
+              </div>
+              <div className="text-xs">
+                <p className="font-bold text-stone-800">Exact GPS Location</p>
+                {latitude !== null && longitude !== null ? (
+                  <p className="text-emerald-800 font-mono text-[11px] mt-0.5">
+                    {latitude.toFixed(6)}, {longitude.toFixed(6)}
+                    {gpsAccuracy !== null && <span className="text-stone-500 font-sans"> • ±{gpsAccuracy} m</span>}
+                    {" • "}
+                    <a
+                      href={`https://maps.google.com/?q=${latitude},${longitude}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-sans font-bold text-[#8B1E1E] hover:underline"
+                    >
+                      Verify on map
+                    </a>
+                  </p>
+                ) : (
+                  <p className="text-stone-600 text-[11px] mt-0.5">
+                    Stand at the mandapam and tap to capture its exact location so devotees get precise directions.
+                  </p>
+                )}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleCaptureGps}
+              disabled={gpsLoading}
+              className="shrink-0 px-3.5 py-2 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] disabled:opacity-60 text-white text-xs font-bold shadow-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+            >
+              {gpsLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <LocateFixed className="w-3.5 h-3.5" />}
+              <span>{gpsLoading ? "Locating..." : latitude !== null ? "Recapture GPS" : "Use Current GPS"}</span>
+            </button>
+          </div>
         </div>
 
         {/* Organizer Committee Details */}
@@ -442,7 +559,7 @@ export const NavaratriRegister: React.FC = () => {
                 pattern="[0-9]{10}"
                 value={organizerMobile}
                 onChange={(e) => setOrganizerMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                placeholder="e.g. 9876543210"
+                placeholder="Enter your mobile number"
                 className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
               />
             </div>
@@ -467,25 +584,26 @@ export const NavaratriRegister: React.FC = () => {
           <div className="flex items-center justify-between border-b border-amber-200 pb-1">
             <h3 className="font-bold text-xs uppercase tracking-wider text-[#8B1E1E] flex items-center gap-1.5">
               <KeyRound className="w-4 h-4" />
-              <span>4. Organizer Portal Passcode (6-Digits)</span>
+              <span>4. Organizer Portal Passcode</span>
             </h3>
             <button
               type="button"
               onClick={() => {
                 const fresh = generatePasscode();
                 setPasscode(fresh);
-                toast.info("Generated new 6-digit passcode!");
+                setShowPasscode(true);
+                toast.info("Secure 6-digit passcode auto-generated!");
               }}
-              className="text-[10px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2 py-0.5 rounded-lg flex items-center gap-1 transition-all"
+              className="text-[10px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2 py-0.5 rounded-lg flex items-center gap-1 transition-all cursor-pointer"
             >
               <RefreshCw className="w-3 h-3" />
-              Generate New
+              Auto Generate
             </button>
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-stone-800 mb-1">
-              6-Digit Security Passcode (or 4–6 digits) *
+              Create Security Passcode (4–6 digits) *
             </label>
             <div className="relative">
               <input
@@ -498,7 +616,7 @@ export const NavaratriRegister: React.FC = () => {
                   const val = e.target.value.replace(/\D/g, "").slice(0, 6);
                   setPasscode(val);
                 }}
-                placeholder="Enter 4 to 6-digit passcode"
+                placeholder="Enter your own 4–6 digit passcode"
                 className="w-full pl-3 pr-10 py-2.5 rounded-xl text-sm font-mono tracking-widest font-bold border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
               />
               <button
@@ -511,7 +629,7 @@ export const NavaratriRegister: React.FC = () => {
               </button>
             </div>
             <p className="text-[11px] text-stone-500 mt-1">
-              This passcode (4 to 6 digits) will be stored with your Mandapam ID. You will be able to download your access credentials slip right after registration.
+              Enter a passcode you can remember, or tap <strong>Auto Generate</strong>. You'll use it with your Mandapam ID to log in, and can download your Access Slip right after registration.
             </p>
           </div>
         </div>
