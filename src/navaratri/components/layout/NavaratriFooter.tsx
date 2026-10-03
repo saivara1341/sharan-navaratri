@@ -16,9 +16,14 @@ export const NavaratriFooter: React.FC = () => {
           ॥ ॐ శ్రీ మాత్రే నమః ॥ • सर्वमङ्गलमाङ्गल्ये शिवे सर्वार्थसाधिके
         </p>
 
-        <h3 className="font-['Cinzel',serif] text-xl sm:text-2xl font-black text-amber-200 tracking-wide">
-          {t.appName} 2026
-        </h3>
+        <div className="space-y-1">
+          <h3 className="font-['Cinzel',serif] text-xl sm:text-2xl font-black text-amber-200 tracking-wide">
+            {t.appName} {currentYear}
+          </h3>
+          <p className="text-sm font-bold text-amber-400/90 tracking-wider font-serif">
+            Sharan Navaratri 2026
+          </p>
+        </div>
 
         <p className="text-xs text-amber-100/75 max-w-xl mx-auto leading-relaxed">
           {t.tagline}
