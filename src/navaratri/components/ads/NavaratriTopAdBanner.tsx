@@ -3,8 +3,11 @@ import { useLocation } from "react-router-dom";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import { ImagePlus } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
+import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
+import { AD_PLACEHOLDER_TRANSLATIONS } from "../../utils/navaratriTranslations";
 
 export const NavaratriTopAdBanner: React.FC = () => {
+  const { language } = useNavaratriLanguage();
   const location = useLocation();
   const isHomePage =
     location.pathname === "/" ||
@@ -80,7 +83,7 @@ export const NavaratriTopAdBanner: React.FC = () => {
             <div className="flex items-center gap-2 text-stone-400 group-hover:text-amber-800 transition-colors">
               <ImagePlus className="w-5 h-5 text-amber-500/70 group-hover:text-amber-600 transition-colors" />
               <span className="text-xs sm:text-sm font-medium tracking-wide">
-                Ad Space Available (Tap to add image & run ad)
+                {AD_PLACEHOLDER_TRANSLATIONS[language] || "Ad Space Available (Tap to add image & run ad)"}
               </span>
             </div>
           </div>

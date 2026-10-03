@@ -13,6 +13,8 @@ export interface Translations {
   freeEventRegistration: string; registrationConfirmed: string; registrationConfirmedMsg: string; registrationIdLabel: string; participantNameLabel: string; eventDateTimeLabel: string; totalParticipantsLabel: string; arriveEarlyNotice: string; doneBackBtn: string; participantFullName: string; whatsappMobile: string; categoryAge: string; noOfParticipants: string; specialNotes: string; confirmRegistration: string; cancelBtn: string;
   mandapamNotFound: string; mandapamNotFoundMsg: string; exploreAllMandapams: string;
   annualCommunityUtsav: string;
+  allRightsReserved: string;
+  builtWithDevotionBy: string;
 }
 
 const en: Translations = {
@@ -26,6 +28,8 @@ const en: Translations = {
   freeEventRegistration: "Free Event Registration", registrationConfirmed: "Registration Confirmed!", registrationConfirmedMsg: "Your spot is confirmed for", registrationIdLabel: "Registration ID", participantNameLabel: "Participant Name", eventDateTimeLabel: "Event Date & Time", totalParticipantsLabel: "Total Participants", arriveEarlyNotice: "Please arrive 15 minutes before the scheduled time and show your name/Registration ID at the mandapam reception.", doneBackBtn: "Done • Back to Mandapam", participantFullName: "Participant Full Name *", whatsappMobile: "WhatsApp / Mobile Number (10 Digits) *", categoryAge: "Category / Age", noOfParticipants: "No. of Participants", specialNotes: "Special Notes / Message (Optional)", confirmRegistration: "Confirm Registration (Free)", cancelBtn: "Cancel",
   mandapamNotFound: "Mandapam Not Found", mandapamNotFoundMsg: "We couldn't locate this specific mandapam page. It may have been updated or you can browse other active mandapams.", exploreAllMandapams: "Explore All Mandapams",
   annualCommunityUtsav: "Annual Community Navaratri Utsav",
+  allRightsReserved: "All rights reserved.",
+  builtWithDevotionBy: "Built with devotion by",
 };
 
 const te: Translations = {
@@ -39,6 +43,8 @@ const te: Translations = {
   freeEventRegistration: "ఉచిత ఈవెంట్ నమోదు", registrationConfirmed: "నమోదు ఖరారైనది!", registrationConfirmedMsg: "మీ స్థానం ఖరారు చేయబడింది", registrationIdLabel: "నమోదు ID", participantNameLabel: "పాల్గొనేవారి పేరు", eventDateTimeLabel: "ఈవెంట్ తేదీ & సమయం", totalParticipantsLabel: "మొత్తం పాల్గొనేవారు", arriveEarlyNotice: "నిర్ణీత సమయానికి 15 నిమిషాల ముందు రండి మరియు మండపం రిసెప్షన్‌లో మీ పేరు / నమోదు ID చూపించండి.", doneBackBtn: "పూర్తయింది • మండపానికి తిరిగి వెళ్ళండి", participantFullName: "పాల్గొనేవారి పూర్తి పేరు *", whatsappMobile: "WhatsApp / మొబైల్ నంబర్ (10 అంకెలు) *", categoryAge: "వర్గం / వయస్సు", noOfParticipants: "పాల్గొనేవారి సంఖ్య", specialNotes: "విశేష గమనికలు / సందేశం (ఐచ్ఛికం)", confirmRegistration: "నమోదు ఖరారు చేయండి (ఉచితం)", cancelBtn: "రద్దు చేయండి",
   mandapamNotFound: "మండపం కనుగొనబడలేదు", mandapamNotFoundMsg: "ఈ మండపం పేజీని కనుగొనలేకపోయాం. అది నవీకరించబడి ఉండవచ్చు లేదా ఇతర మండపాలను బ్రౌజ్ చేయవచ్చు.", exploreAllMandapams: "అన్ని మండపాలను చూడండి",
   annualCommunityUtsav: "వార్షిక సామాజిక నవరాత్రి ఉత్సవం",
+  allRightsReserved: "అన్ని హక్కులు ప్రత్యేకించబడ్డాయి.",
+  builtWithDevotionBy: "భక్తితో రూపొందించబడింది:",
 };
 
 const hi: Translations = {
@@ -52,6 +58,8 @@ const hi: Translations = {
   freeEventRegistration: "निःशुल्क इवेंट पंजीकरण", registrationConfirmed: "पंजीकरण पुष्ट!", registrationConfirmedMsg: "आपका स्थान पुष्ट हो गया", registrationIdLabel: "पंजीकरण ID", participantNameLabel: "प्रतिभागी का नाम", eventDateTimeLabel: "इवेंट तिथि व समय", totalParticipantsLabel: "कुल प्रतिभागी", arriveEarlyNotice: "कृपया निर्धारित समय से 15 मिनट पहले पहुँचें और मंडप स्वागत कक्ष में अपना नाम / पंजीकरण ID दिखाएँ।", doneBackBtn: "हो गया • मंडप पर वापस जाएँ", participantFullName: "प्रतिभागी का पूरा नाम *", whatsappMobile: "WhatsApp / मोबाइल नंबर (10 अंक) *", categoryAge: "वर्ग / आयु", noOfParticipants: "प्रतिभागियों की संख्या", specialNotes: "विशेष टिप्पणी / संदेश (वैकल्पिक)", confirmRegistration: "पंजीकरण पुष्ट करें (निःशुल्क)", cancelBtn: "रद्द करें",
   mandapamNotFound: "मंडप नहीं मिला", mandapamNotFoundMsg: "यह मंडप पृष्ठ नहीं मिल सका। यह अपडेट हो सकता है या आप अन्य मंडपों को देख सकते हैं।", exploreAllMandapams: "सभी मंडप देखें",
   annualCommunityUtsav: "वार्षिक सामुदायिक नवरात्रि उत्सव",
+  allRightsReserved: "सर्वाधिकार सुरक्षित।",
+  builtWithDevotionBy: "भक्तिभाव से निर्मित:",
 };
 
 const ta: Translations = {
@@ -65,6 +73,8 @@ const ta: Translations = {
   freeEventRegistration: "இலவச நிகழ்வு பதிவு", registrationConfirmed: "பதிவு உறுதி செய்யப்பட்டது!", registrationConfirmedMsg: "உங்கள் இடம் உறுதி செய்யப்பட்டது", registrationIdLabel: "பதிவு ID", participantNameLabel: "பங்கேற்பாளர் பெயர்", eventDateTimeLabel: "நிகழ்வு தேதி & நேரம்", totalParticipantsLabel: "மொத்த பங்கேற்பாளர்கள்", arriveEarlyNotice: "நிர்ணயிக்கப்பட்ட நேரத்திற்கு 15 நிமிடங்களுக்கு முன்பாக வாருங்கள் மற்றும் மண்டப வரவேற்பில் உங்கள் பெயர் / பதிவு ID காட்டுங்கள்.", doneBackBtn: "முடிந்தது • மண்டபத்திற்கு திரும்பு", participantFullName: "பங்கேற்பாளரின் முழு பெயர் *", whatsappMobile: "WhatsApp / மொபைல் எண் (10 இலக்கங்கள்) *", categoryAge: "வகை / வயது", noOfParticipants: "பங்கேற்பாளர்கள் எண்ணிக்கை", specialNotes: "சிறப்பு குறிப்புகள் / செய்தி (விருப்பமானால்)", confirmRegistration: "பதிவை உறுதி செய்க (இலவசம்)", cancelBtn: "ரத்து செய்க",
   mandapamNotFound: "மண்டபம் கண்டுபிடிக்கவில்லை", mandapamNotFoundMsg: "இந்த மண்டபப் பக்கத்தைக் கண்டுபிடிக்க முடியவில்லை. அது புதுப்பிக்கப்பட்டிருக்கலாம் அல்லது மற்ற மண்டபங்களை உலவலாம்.", exploreAllMandapams: "அனைத்து மண்டபங்களையும் காணுங்கள்",
   annualCommunityUtsav: "ஆண்டு சமூக நவராத்திரி விழா",
+  allRightsReserved: "அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.",
+  builtWithDevotionBy: "பக்தியுடன் உருவாக்கப்பட்டது:",
 };
 
 const ml: Translations = {
@@ -78,6 +88,8 @@ const ml: Translations = {
   freeEventRegistration: "സൗജന്യ ഇവന്റ് രജിസ്ട്രേഷൻ", registrationConfirmed: "രജിസ്ട്രേഷൻ സ്ഥിരീകരിച്ചു!", registrationConfirmedMsg: "നിങ്ങളുടെ ഇടം സ്ഥിരീകരിച്ചു", registrationIdLabel: "രജിസ്ട്രേഷൻ ID", participantNameLabel: "പങ്കാളിയുടെ പേര്", eventDateTimeLabel: "ഇവന്റ് തീയതിയും സമയവും", totalParticipantsLabel: "ആകെ പങ്കാളികൾ", arriveEarlyNotice: "നിശ്ചിത സമയത്തിന് 15 മിനിറ്റ് മുൻപ് എത്തുക, മണ്ഡപ റിസപ്ഷനിൽ നിങ്ങളുടെ പേര് / രജിസ്ട്രേഷൻ ID കാണിക്കുക.", doneBackBtn: "ആയി • മണ്ഡപത്തിലേക്ക് തിരിക്കുക", participantFullName: "പങ്കാളിയുടെ മുഴുവൻ പേര് *", whatsappMobile: "WhatsApp / മൊബൈൽ നമ്പർ (10 അക്കങ്ങൾ) *", categoryAge: "വിഭാഗം / പ്രായം", noOfParticipants: "പങ്കാളികളുടെ എണ്ണം", specialNotes: "പ്രത്യേക കുറിപ്പുകൾ / സന്ദേശം (ഐച്ഛികം)", confirmRegistration: "രജിസ്ട്രേഷൻ സ്ഥിരീകരിക്കുക (സൗജന്യം)", cancelBtn: "റദ്ദാക്കുക",
   mandapamNotFound: "മണ്ഡപം കണ്ടെത്തിയില്ല", mandapamNotFoundMsg: "ഈ മണ്ഡപ പേജ് കണ്ടെത്താൻ കഴിഞ്ഞില്ല. അത് അപ്‌ഡേറ്റ് ചെയ്തിരിക്കാം അല്ലെങ്കിൽ മറ്റ് മണ്ഡപങ്ങൾ ബ്രൗസ് ചെയ്യാം.", exploreAllMandapams: "എല്ലാ മണ്ഡപങ്ങളും കാണുക",
   annualCommunityUtsav: "വാർഷിക സാമൂഹ്യ നവരാത്രി ഉത്സവം",
+  allRightsReserved: "എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്തം.",
+  builtWithDevotionBy: "ഭക്തിയോടെ നിർമ്മിച്ചത്:",
 };
 
 const kn: Translations = {
@@ -91,6 +103,8 @@ const kn: Translations = {
   freeEventRegistration: "ಉಚಿತ ಈವೆಂಟ್ ನೋಂದಣಿ", registrationConfirmed: "ನೋಂದಣಿ ದೃಢೀಕರಿಸಲಾಗಿದೆ!", registrationConfirmedMsg: "ನಿಮ್ಮ ಸ್ಥಾನ ದೃಢೀಕರಿಸಲಾಗಿದೆ", registrationIdLabel: "ನೋಂದಣಿ ID", participantNameLabel: "ಭಾಗವಹಿಸುವವರ ಹೆಸರು", eventDateTimeLabel: "ಈವೆಂಟ್ ದಿನಾಂಕ & ಸಮಯ", totalParticipantsLabel: "ಒಟ್ಟು ಭಾಗವಹಿಸುವವರು", arriveEarlyNotice: "ನಿಗದಿತ ಸಮಯಕ್ಕಿಂತ 15 ನಿಮಿಷ ಮೊದಲು ಬನ್ನಿ ಮತ್ತು ಮಂಟಪ ಸ್ವಾಗತ ಕಾರ್ಯಾಲಯದಲ್ಲಿ ನಿಮ್ಮ ಹೆಸರು / ನೋಂದಣಿ ID ತೋರಿಸಿ.", doneBackBtn: "ಮುಗಿಯಿತು • ಮಂಟಪಕ್ಕೆ ಹಿಂತಿರುಗಿ", participantFullName: "ಭಾಗವಹಿಸುವವರ ಪೂರ್ಣ ಹೆಸರು *", whatsappMobile: "WhatsApp / ಮೊಬೈಲ್ ಸಂಖ್ಯೆ (10 ಅಂಕಿಗಳು) *", categoryAge: "ವರ್ಗ / ವಯಸ್ಸು", noOfParticipants: "ಭಾಗವಹಿಸುವವರ ಸಂಖ್ಯೆ", specialNotes: "ವಿಶೇಷ ಟಿಪ್ಪಣಿಗಳು / ಸಂದೇಶ (ಐಚ್ಛಿಕ)", confirmRegistration: "ನೋಂದಣಿ ದೃಢೀಕರಿಸಿ (ಉಚಿತ)", cancelBtn: "ರದ್ದು ಮಾಡಿ",
   mandapamNotFound: "ಮಂಟಪ ಕಂಡುಬಂದಿಲ್ಲ", mandapamNotFoundMsg: "ಈ ಮಂಟಪ ಪುಟ ಕಂಡುಹಿಡಿಯಲಾಗಲಿಲ್ಲ. ಅದು ನವೀಕರಿಸಲ್ಪಟ್ಟಿರಬಹುದು ಅಥವಾ ಇತರ ಮಂಟಪಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಬಹುದು.", exploreAllMandapams: "ಎಲ್ಲ ಮಂಟಪಗಳನ್ನು ನೋಡಿ",
   annualCommunityUtsav: "ವಾರ್ಷಿಕ ಸಮುದಾಯ ನವರಾತ್ರಿ ಉತ್ಸವ",
+  allRightsReserved: "ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.",
+  builtWithDevotionBy: "ಭಕ್ತಿಯಿಂದ ರೂಪಿಸಲಾಗಿದೆ:",
 };
 
 const DICTIONARY: Record<LanguageCode, Translations> = { en, te, hi, ta, ml, kn };

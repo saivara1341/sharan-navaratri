@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import { ImagePlus } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
+import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
+import { AD_PLACEHOLDER_TRANSLATIONS } from "../../utils/navaratriTranslations";
 
 interface NavaratriAdsSpaceProps {
   currentCity?: string;
@@ -10,6 +12,7 @@ interface NavaratriAdsSpaceProps {
 export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
   currentCity = "Nizamabad"
 }) => {
+  const { language } = useNavaratriLanguage();
   const { advertisements, recordAdClick, recordAdImpression } = useNavaratriData();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,7 +81,7 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
           <div className="flex items-center gap-2 text-stone-400 group-hover:text-amber-800 transition-colors">
             <ImagePlus className="w-5 h-5 text-amber-500/70 group-hover:text-amber-600 transition-colors" />
             <span className="text-xs sm:text-sm font-medium tracking-wide">
-              Ad Space Available (Tap to add image & run ad)
+              {AD_PLACEHOLDER_TRANSLATIONS[language] || "Ad Space Available (Tap to add image & run ad)"}
             </span>
           </div>
         </div>

@@ -48,7 +48,7 @@ export const CitizenBottomNav: React.FC = () => {
           <QrCode className="w-6 h-6 animate-pulse" />
         </button>
         <span className="absolute -bottom-4 inset-x-0 text-center text-[9px] font-bold text-[#8B1E1E]">
-          Scan QR
+          {t.scanQr}
         </span>
       </div>
 

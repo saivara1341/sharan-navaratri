@@ -15,7 +15,7 @@ import {
   QrCode,
   KeyRound
 } from "lucide-react";
-import { TrishoolIcon } from "../devotional/SacredMotionGraphics";
+import { INVOCATION_TRANSLATIONS } from "../../utils/navaratriTranslations";
 
 export const NavaratriHeader: React.FC = () => {
   const { language, setLanguage, t } = useNavaratriLanguage();
@@ -50,7 +50,7 @@ export const NavaratriHeader: React.FC = () => {
       <div className="bg-gradient-to-r from-[#8B1E1E] via-[#9A241C] to-[#8B1E1E] text-white text-xs px-4 py-1.5 flex items-center justify-between shadow-inner">
         <div className="flex items-center gap-2">
           <span className="font-serif tracking-wider text-amber-200 font-bold text-xs sm:text-sm drop-shadow">
-            ॥ ॐ శ్రీ మాత్రే నమః ॥
+            {INVOCATION_TRANSLATIONS[language] || "॥ ॐ శ్రీ మాత్రే నమః ॥"}
           </span>
         </div>
 

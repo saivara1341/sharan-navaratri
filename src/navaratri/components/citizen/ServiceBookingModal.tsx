@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import { Service, ServiceSlot, Booking, Mandapam } from "../../types";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
+import {
+  getTranslatedMandapamName,
+  getTranslatedService,
+  getTranslatedSlotUI
+} from "../../utils/navaratriTranslations";
 import { QRCodeSVG } from "qrcode.react";
 import confetti from "canvas-confetti";
 import { X, CheckCircle2, Clock, Users, Calendar, Printer, Download } from "lucide-react";
@@ -21,7 +26,7 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
   preselectedServiceId
 }) => {
   const { services, slots, createBooking } = useNavaratriData();
-  const { t } = useNavaratriLanguage();
+  const { language, t } = useNavaratriLanguage();
 
   const mandapamServices = services.filter(s => s.mandapamId === mandapam.id && s.enabled && s.bookingEnabled);
 
@@ -140,54 +145,68 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
           <form onSubmit={handleProceedToOtp} className="space-y-4">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-100 text-[#8B1E1E] text-xs font-bold mb-1">
-                <span>🪔</span> {mandapam.name}
+                <span>🪔</span> {getTranslatedMandapamName(mandapam.name, language)}
               </div>
               <h3 className="font-serif font-black text-xl text-[#8B1E1E]">
                 {t.bookService}
               </h3>
               <p className="text-xs text-stone-600">
-                Reserve your devotional pooja slot. Free community booking (No payment required).
+                {language === "kn"
+                  ? "ನಿಮ್ಮ ಭಕ್ತಿಪೂರ್ವಕ ಪೂಜಾ ಸ್ಲಾಟ್ ಕಾಯ್ದಿರಿಸಿ. ಉಚಿತ ಸಮುದಾಯ ಬುಕ್ಕಿಂಗ್ (ಯಾವುದೇ ಶುಲ್ಕವಿಲ್ಲ)."
+                  : language === "te"
+                  ? "మీ భక్తిపూర్వక పూజా స్లాట్ నమోదు చేసుకోండి. ఉచిత కమ్యూనిటీ బుకింగ్ (ఎటువంటి రుసుము లేదు)."
+                  : language === "hi"
+                  ? "अपना भक्तिमय पूजा स्लॉट आरक्षित करें। निःशुल्क सामुदायिक बुकिंग (कोई शुल्क नहीं)।"
+                  : language === "ta"
+                  ? "உங்கள் பக்திப் பூஜா ஸ்லாட்டை முன்பதிவு செய்யுங்கள். இலவச சமுதாய முன்பதிவு."
+                  : language === "ml"
+                  ? "നിങ്ങളുടെ ഭക്തിപൂർവ്വമായ പൂജാ സ്ലോട്ട് ബുക്ക് ചെയ്യുക. സൗജന്യ കമ്മ്യൂണിറ്റി ബുക്കിംഗ്."
+                  : "Reserve your devotional pooja slot. Free community booking (No payment required)."}
               </p>
             </div>
 
             {/* Select Service */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold uppercase tracking-wider text-amber-900">
-                Select Pooja / Seva
+                {language === "kn" ? "ಪೂಜೆ / ಸೇವೆ ಆಯ್ಕೆಮಾಡಿ" : language === "te" ? "పూజ / సేవ ఎంచుకోండి" : language === "hi" ? "पूजा / सेवा चुनें" : "Select Pooja / Seva"}
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {mandapamServices.map((srv) => (
-                  <button
-                    key={srv.id}
-                    type="button"
-                    onClick={() => {
-                      setSelectedServiceId(srv.id);
-                      const matching = slots.find(s => s.serviceId === srv.id && s.mandapamId === mandapam.id);
-                      if (matching) setSelectedSlotId(matching.id);
-                    }}
-                    className={`p-3 rounded-xl text-left border transition-all text-xs ${
-                      selectedServiceId === srv.id
-                        ? "bg-amber-100 border-[#8B1E1E] font-bold text-[#8B1E1E] ring-1 ring-[#8B1E1E]"
-                        : "bg-white border-amber-200/80 text-stone-700 hover:bg-amber-50"
-                    }`}
-                  >
-                    <p className="truncate">{srv.name}</p>
-                    <p className="text-[10px] text-stone-500 font-normal">{srv.type} • {srv.durationMinutes} mins</p>
-                  </button>
-                ))}
+                {mandapamServices.map((srv) => {
+                  const transSrv = getTranslatedService(srv, language);
+                  return (
+                    <button
+                      key={srv.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedServiceId(srv.id);
+                        const matching = slots.find(s => s.serviceId === srv.id && s.mandapamId === mandapam.id);
+                        if (matching) setSelectedSlotId(matching.id);
+                      }}
+                      className={`p-3 rounded-xl text-left border transition-all text-xs ${
+                        selectedServiceId === srv.id
+                          ? "bg-amber-100 border-[#8B1E1E] font-bold text-[#8B1E1E] ring-1 ring-[#8B1E1E]"
+                          : "bg-white border-amber-200/80 text-stone-700 hover:bg-amber-50"
+                      }`}
+                    >
+                      <p className="truncate">{transSrv.name}</p>
+                      <p className="text-[10px] text-stone-500 font-normal">{transSrv.type} • {srv.durationMinutes} {t.minsLabel}</p>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             {/* Select Slot */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold uppercase tracking-wider text-amber-900">
-                Available Time Slots
+                {language === "kn" ? "ಲಭ್ಯವಿರುವ ಸಮಯ ಸ್ಲಾಟ್‌ಗಳು" : language === "te" ? "అందుబాటులో ఉన్న సమయ స్లాట్లు" : language === "hi" ? "उपलब्ध समय स्लॉट" : "Available Time Slots"}
               </label>
               <div className="space-y-2">
                 {availableSlots.length > 0 ? (
                   availableSlots.map((slot) => {
                     const free = Math.max(0, slot.capacity - (slot.bookedCount + slot.walkinCount));
                     const isFull = free === 0;
+                    const slotUI = getTranslatedSlotUI(language, free, slot.bookedCount + slot.walkinCount, slot.capacity);
 
                     return (
                       <button
@@ -211,14 +230,14 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
                         <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
                           isFull ? "bg-red-100 text-red-700" : "bg-emerald-100 text-emerald-800"
                         }`}>
-                          {isFull ? t.slotFull : `${free} Slots Left`}
+                          {isFull ? t.slotFull : slotUI.leftText}
                         </span>
                       </button>
                     );
                   })
                 ) : (
                   <p className="text-xs text-stone-500 italic p-3 bg-amber-50 rounded-xl">
-                    No active slots available for this service.
+                    {language === "kn" ? "ಈ ಸೇವೆಗೆ ಯಾವುದೇ ಸಕ್ರಿಯ ಸ್ಲಾಟ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ." : language === "te" ? "ఈ సేవకు క్రియాశీల స్లాట్లు అందుబాటులో లేవు." : "No active slots available for this service."}
                   </p>
                 )}
               </div>
@@ -304,7 +323,7 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
 
             {currentService?.itemsRequired && (
               <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-950">
-                <strong>Items Devotees should bring:</strong> {currentService.itemsRequired}
+                <strong>{t.itemsToBringLabel}</strong> {currentService.itemsRequired}
               </div>
             )}
 
@@ -313,7 +332,9 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
               disabled={remainingCapacity <= 0}
               className="w-full py-3 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs font-bold shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              {remainingCapacity <= 0 ? "🔒 Slots Filled - Housefull" : "Confirm Booking & Generate Pass →"}
+              {remainingCapacity <= 0
+                ? (language === "kn" ? "🔒 ಸ್ಲಾಟ್‌ಗಳು ಭರ್ತಿಯಾಗಿವೆ" : language === "te" ? "🔒 స్లాట్‌లు నిండినవి" : language === "hi" ? "🔒 स्लॉट पूर्ण" : "🔒 Slots Filled - Housefull")
+                : (language === "kn" ? "ಬುಕಿಂಗ್ ಖಚಿತಪಡಿಸಿ & ಪಾಸ್ ಪಡೆಯಿರಿ →" : language === "te" ? "బుకింగ్ నిర్ధారించండి & పాస్ పొందండి →" : language === "hi" ? "बुकिंग पुष्टि करें व पास प्राप्त करें →" : "Confirm Booking & Generate Pass →")}
             </button>
           </form>
         )}
@@ -326,13 +347,13 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
             </div>
             <div>
               <h3 className="font-serif font-black text-xl text-[#8B1E1E]">
-                Enter Verification Code
+                {language === "kn" ? "ದೃಢೀಕರಣ ಕೋಡ್ ನಮೂದಿಸಿ" : language === "te" ? "ధృవీకరణ కోడ్ నమోదు చేయండి" : language === "hi" ? "सत्यापन कोड दर्ज करें" : "Enter Verification Code"}
               </h3>
               <p className="text-xs text-stone-600 mt-1">
-                We sent a 4-digit verification code to <strong>{mobile}</strong>
+                {language === "kn" ? "ನಾವು 4-ಅಂಕಿಯ ಕೋಡ್ ಕಳುಹಿಸಿದ್ದೇವೆ:" : language === "te" ? "మేము 4-అంకెల కోడ్ పంపాము:" : "We sent a 4-digit verification code to"} <strong>{mobile}</strong>
               </p>
               <p className="text-[11px] text-amber-800 font-bold mt-1">
-                Demo Testing OTP: 1088
+                Demo OTP: 1088
               </p>
             </div>
 
@@ -354,13 +375,13 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
                 onClick={() => setStep("form")}
                 className="flex-1 py-2.5 rounded-xl border border-stone-300 text-stone-700 text-xs font-semibold hover:bg-stone-100"
               >
-                Back
+                {language === "kn" ? "ಹಿಂದೆ" : language === "te" ? "వెనుకకు" : "Back"}
               </button>
               <button
                 type="submit"
                 className="flex-1 py-2.5 rounded-xl bg-[#8B1E1E] text-white text-xs font-bold shadow hover:bg-[#9A241C]"
               >
-                Verify & Confirm
+                {language === "kn" ? "ಪರಿಶೀಲಿಸಿ & ಖಚಿತಪಡಿಸಿ" : language === "te" ? "ధృవీకరించి ఖరారు చేయండి" : "Verify & Confirm"}
               </button>
             </div>
           </form>
@@ -375,13 +396,13 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
 
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
-                Devotional Pooja Pass Confirmed
+                {language === "kn" ? "ಪೂಜಾ ಪಾಸ್ ದೃಢಪಟ್ಟಿದೆ" : language === "te" ? "భక్తిపూర్వక పూజా పాస్ ఖరారైనది" : language === "hi" ? "भक्ति पूजा पास स्वीकृत" : "Devotional Pooja Pass Confirmed"}
               </span>
               <h3 className="font-serif font-black text-xl text-[#8B1E1E]">
                 {confirmedBooking.serviceName}
               </h3>
               <p className="text-xs text-stone-600">
-                {mandapam.name} • {mandapam.area}, {mandapam.city}
+                {getTranslatedMandapamName(mandapam.name, language)} • {mandapam.area}, {mandapam.city}
               </p>
             </div>
 
@@ -389,33 +410,45 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
             <div className="p-4 rounded-2xl bg-gradient-to-b from-[#FFFDF9] to-[#FEF3C7] border-2 border-[#D97706] shadow-md text-left space-y-3">
               <div className="flex items-center justify-between border-b border-amber-200 pb-2">
                 <div>
-                  <span className="text-[10px] text-stone-500 uppercase tracking-wider">Pass ID</span>
+                  <span className="text-[10px] text-stone-500 uppercase tracking-wider">
+                    {language === "kn" ? "ಪಾಸ್ ಐಡಿ" : language === "te" ? "పాస్ ఐడీ" : "Pass ID"}
+                  </span>
                   <p className="text-base font-black text-[#8B1E1E] font-mono">
                     {confirmedBooking.bookingCode}
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-stone-500 uppercase tracking-wider">Status</span>
-                  <p className="text-xs font-bold text-emerald-700">CONFIRMED</p>
+                  <span className="text-[10px] text-stone-500 uppercase tracking-wider">
+                    {language === "kn" ? "ಸ್ಥಿತಿ" : language === "te" ? "స్థితి" : "Status"}
+                  </span>
+                  <p className="text-xs font-bold text-emerald-700">{t.confirmed}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
-                  <span className="text-stone-500 text-[10px]">Devotee:</span>
+                  <span className="text-stone-500 text-[10px]">
+                    {language === "kn" ? "ಭಕ್ತರು:" : language === "te" ? "భక్తుడు:" : "Devotee:"}
+                  </span>
                   <p className="font-bold text-stone-800">{confirmedBooking.name}</p>
                 </div>
                 <div>
-                  <span className="text-stone-500 text-[10px]">Mobile:</span>
+                  <span className="text-stone-500 text-[10px]">
+                    {language === "kn" ? "ಮೊಬೈಲ್:" : language === "te" ? "మొబైల్:" : "Mobile:"}
+                  </span>
                   <p className="font-semibold text-stone-800">{confirmedBooking.mobile}</p>
                 </div>
                 <div>
-                  <span className="text-stone-500 text-[10px]">Date & Time:</span>
+                  <span className="text-stone-500 text-[10px]">
+                    {language === "kn" ? "ದಿನಾಂಕ & ಸಮಯ:" : language === "te" ? "తేదీ & సమయం:" : "Date & Time:"}
+                  </span>
                   <p className="font-bold text-stone-800">{confirmedBooking.slotTime}</p>
                 </div>
                 <div>
-                  <span className="text-stone-500 text-[10px]">Participants:</span>
-                  <p className="font-bold text-stone-800">{confirmedBooking.quantity} Person(s)</p>
+                  <span className="text-stone-500 text-[10px]">
+                    {language === "kn" ? "ಭಾಗವಹಿಸುವವರು:" : language === "te" ? "భక్తులు:" : "Participants:"}
+                  </span>
+                  <p className="font-bold text-stone-800">{confirmedBooking.quantity}</p>
                 </div>
               </div>
 
@@ -428,7 +461,11 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
               {/* QR Verification at Mandapam Counter */}
               <div className="flex items-center justify-between pt-2 border-t border-amber-200">
                 <div className="text-[10px] text-stone-600 max-w-[190px]">
-                  Show this digital pass QR at the Mandapam reception counter for quick check-in.
+                  {language === "kn"
+                    ? "ತ್ವರಿತ ಪ್ರವೇಶಕ್ಕಾಗಿ ಈ ಡಿಜಿಟಲ್ ಪಾಸ್ ಕ್ಯೂಆರ್ ಅನ್ನು ಮಂಟಪ ಕೌಂಟರ್‌ನಲ್ಲಿ ತೋರಿಸಿ."
+                    : language === "te"
+                    ? "త్వరిత ప్రవేశం కోసం ఈ డిజిటల్ పాస్ QR కోడ్‌ను మండపం కౌంటర్‌లో చూపించండి."
+                    : "Show this digital pass QR at the Mandapam reception counter for quick check-in."}
                 </div>
                 <div className="p-1 bg-white rounded-lg shadow-sm border border-amber-300">
                   <QRCodeSVG value={`NM-PASS:${confirmedBooking.bookingCode}`} size={64} />
@@ -442,13 +479,13 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
                 className="flex-1 py-2.5 rounded-xl border border-amber-300 bg-amber-50 text-amber-900 text-xs font-bold hover:bg-amber-100 flex items-center justify-center gap-1.5"
               >
                 <Printer className="w-4 h-4" />
-                Print / Save Pass
+                {language === "kn" ? "ಪಾಸ್ ಮುದ್ರಿಸಿ / ಉಳಿಸಿ" : language === "te" ? "పాస్ ప్రింట్ / సేవ్ చేయండి" : "Print / Save Pass"}
               </button>
               <button
                 onClick={onClose}
                 className="flex-1 py-2.5 rounded-xl bg-[#8B1E1E] text-white text-xs font-bold hover:bg-[#9A241C]"
               >
-                Done
+                {t.doneBackBtn || "Done"}
               </button>
             </div>
           </div>

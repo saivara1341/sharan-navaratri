@@ -13,6 +13,19 @@ import { PrasadBowlIcon } from "../components/devotional/PrasadBowlIcon";
 import { MandapamIcon } from "../components/devotional/MandapamIcon";
 import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
 import {
+  getTranslatedMandapamName,
+  getTranslatedAddress,
+  getTranslatedOrganizerLabels,
+  getTranslatedActivity,
+  getTranslatedService,
+  getTranslatedSlotUI,
+  formatLocalizedDateShort,
+  DEVI_DAYS_LOCALIZED,
+  TITHI_LOCALIZED,
+  TABLE_HEADERS,
+  INVOCATION_TRANSLATIONS
+} from "../utils/navaratriTranslations";
+import {
   MapPin,
   Share2,
   Heart,
@@ -517,14 +530,14 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                     <h1 className="font-serif font-black text-xl sm:text-2xl text-[#8B1E1E] flex items-center gap-1.5 leading-snug drop-shadow-xs">
-                      <span>{mandapam.name}</span>
+                      <span>{getTranslatedMandapamName(mandapam.name, language)}</span>
                       <InstagramVerifiedBadge className="w-5 h-5 shrink-0 drop-shadow-xs" title="Official Verified Mandapam" />
                     </h1>
                   </div>
 
                   <p className="text-xs text-stone-700 font-semibold flex items-center gap-1">
                     <MapPin className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                    <span>{mandapam.address}, {mandapam.area}, {mandapam.city}</span>
+                    <span>{getTranslatedAddress(mandapam.address, language)}, {mandapam.area}, {mandapam.city}</span>
                   </p>
 
                   <p className="text-xs text-stone-800 font-medium pt-0.5 line-clamp-2 leading-relaxed">
@@ -584,53 +597,57 @@ export const NavaratriMandapamDetail: React.FC = () => {
             </div>
 
             {/* Organizer / Committee Details (If shared for public view) */}
-            {(mandapam.showOrganizerPublicly !== false) && (mandapam.organizerName || mandapam.organizerMobile || mandapam.contactPhone) && (
-              <div className="mt-4 pt-3.5 border-t border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-amber-50/85 p-3.5 rounded-2xl border border-amber-200 shadow-xs">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#8B1E1E] to-[#B45309] text-white flex items-center justify-center font-bold text-xs shadow-xs shrink-0">
-                    <Users className="w-4 h-4 text-amber-200" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900">
-                        Mandapam Organizer / Committee
-                      </span>
-                      <span className="px-2 py-0.2 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-300">
-                        Official Contact
-                      </span>
+            {(mandapam.showOrganizerPublicly !== false) && (mandapam.organizerName || mandapam.organizerMobile || mandapam.contactPhone) && (() => {
+              const orgLabels = getTranslatedOrganizerLabels(language);
+              const transName = getTranslatedMandapamName(mandapam.name, language);
+              return (
+                <div className="mt-4 pt-3.5 border-t border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-amber-50/85 p-3.5 rounded-2xl border border-amber-200 shadow-xs">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#8B1E1E] to-[#B45309] text-white flex items-center justify-center font-bold text-xs shadow-xs shrink-0">
+                      <Users className="w-4 h-4 text-amber-200" />
                     </div>
-                    <p className="font-serif font-bold text-xs sm:text-sm text-[#8B1E1E]">
-                      {mandapam.organizerName || "Youth Committee Lead"}
-                    </p>
+                    <div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900">
+                          {orgLabels.committee}
+                        </span>
+                        <span className="px-2 py-0.2 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-300">
+                          {orgLabels.contactBadge}
+                        </span>
+                      </div>
+                      <p className="font-serif font-bold text-xs sm:text-sm text-[#8B1E1E]">
+                        {mandapam.organizerName || orgLabels.leadRole}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+                    {(mandapam.organizerMobile || mandapam.contactPhone) && (
+                      <a
+                        href={`tel:${mandapam.organizerMobile || mandapam.contactPhone}`}
+                        className="px-3.5 py-1.5 rounded-xl bg-white hover:bg-amber-100 text-emerald-900 border border-emerald-300 text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
+                        title={orgLabels.callBtn}
+                      >
+                        <Phone className="w-3.5 h-3.5 text-emerald-700" />
+                        <span>{mandapam.organizerMobile || mandapam.contactPhone}</span>
+                      </a>
+                    )}
+
+                    {(mandapam.whatsappNumber || mandapam.organizerMobile) && (
+                      <a
+                        href={`https://wa.me/91${(mandapam.whatsappNumber || mandapam.organizerMobile).replace(/\D/g, "")}?text=${encodeURIComponent(`${orgLabels.greeting} (${transName})`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
+                        title={orgLabels.whatsappBtn}
+                      >
+                        <span>{orgLabels.whatsappBtn}</span>
+                      </a>
+                    )}
                   </div>
                 </div>
-
-                <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
-                  {(mandapam.organizerMobile || mandapam.contactPhone) && (
-                    <a
-                      href={`tel:${mandapam.organizerMobile || mandapam.contactPhone}`}
-                      className="px-3.5 py-1.5 rounded-xl bg-white hover:bg-amber-100 text-emerald-900 border border-emerald-300 text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
-                      title="Call Organizer"
-                    >
-                      <Phone className="w-3.5 h-3.5 text-emerald-700" />
-                      <span>{mandapam.organizerMobile || mandapam.contactPhone}</span>
-                    </a>
-                  )}
-
-                  {(mandapam.whatsappNumber || mandapam.organizerMobile) && (
-                    <a
-                      href={`https://wa.me/91${(mandapam.whatsappNumber || mandapam.organizerMobile).replace(/\D/g, "")}?text=${encodeURIComponent(`Namaste, visiting ${mandapam.name} Navaratri Mandapam.`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
-                      title="WhatsApp Mandapam Organizer"
-                    >
-                      <span>💬 WhatsApp</span>
-                    </a>
-                  )}
-                </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         </div>
       </div>
@@ -659,9 +676,13 @@ export const NavaratriMandapamDetail: React.FC = () => {
           {STANDARD_NAVARATRI_DAYS.map((day) => {
             const isToday = day.date === todayIso;
             const customSetting = mandapamDaySettings.find((s) => s.dayNumber === day.dayNumber);
+            const deviInfo = DEVI_DAYS_LOCALIZED[day.dayNumber]?.[language];
             const deviDisplayName = customSetting?.customDeviName || (
-              language === "te" ? day.teluguDeviName : language === "hi" ? day.hindiDeviName : day.deviName
+              deviInfo?.fullName || (language === "te" ? day.teluguDeviName : language === "hi" ? day.hindiDeviName : day.deviName)
             );
+            const shortDeviName = customSetting?.customDeviName
+              ? getShortAvatar(customSetting.customDeviName)
+              : (deviInfo?.shortName || getShortAvatar(deviDisplayName));
             const customAlankarana = alankaranas.find(
               (a) => a.mandapamId === mandapam?.id && a.date === day.date
             );
@@ -716,12 +737,12 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
                 {/* Date */}
                 <span className={`text-[8.5px] sm:text-[10px] font-bold leading-none ${isToday ? "text-white" : "text-stone-700"}`}>
-                  {formatDateShort(day.date)}
+                  {formatLocalizedDateShort(day.date, language)}
                 </span>
 
                 {/* Short Devi Name */}
                 <span className={`text-[7px] sm:text-[8.5px] truncate max-w-full font-medium leading-tight px-0.5 ${isToday ? "text-amber-100" : "text-stone-500"}`}>
-                  {getShortAvatar(deviDisplayName)}
+                  {shortDeviName}
                 </span>
               </button>
             );
@@ -734,11 +755,21 @@ export const NavaratriMandapamDetail: React.FC = () => {
             <div className="flex items-center gap-1.5">
               <span className="text-base">📜</span>
               <h4 className="font-serif font-black text-sm sm:text-base text-[#8B1E1E]">
-                Daily Tithi, Alankaram & Transition Schedule
+                {TABLE_HEADERS[language]?.title || "Daily Tithi, Alankaram & Transition Schedule"}
               </h4>
             </div>
             <span className="text-[10px] text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-300 font-semibold self-start sm:self-center">
-              11 Oct – 20 Oct 2026
+              {language === "kn"
+                ? "11 ಅಕ್ಟೋ – 20 ಅಕ್ಟೋ 2026"
+                : language === "te"
+                ? "11 అక్టో – 20 అక్టో 2026"
+                : language === "hi"
+                ? "11 अक्टू – 20 अक्टू 2026"
+                : language === "ta"
+                ? "11 அக் – 20 அக் 2026"
+                : language === "ml"
+                ? "11 ഒക്ടോ – 20 ഒക്ടോ 2026"
+                : "11 Oct – 20 Oct 2026"}
             </span>
           </div>
 
@@ -747,19 +778,23 @@ export const NavaratriMandapamDetail: React.FC = () => {
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="bg-gradient-to-r from-amber-200/90 via-amber-100 to-orange-100 text-amber-950 font-bold border-b border-amber-300">
-                  <th className="py-2.5 px-3 whitespace-nowrap">Date</th>
-                  <th className="py-2.5 px-3">Tithi</th>
-                  <th className="py-2.5 px-3">Morning Alankaram & Pooja</th>
-                  <th className="py-2.5 px-3">Evening Alankaram & Transition</th>
+                  <th className="py-2.5 px-3 whitespace-nowrap">{TABLE_HEADERS[language]?.date || "Date"}</th>
+                  <th className="py-2.5 px-3">{TABLE_HEADERS[language]?.tithi || "Tithi"}</th>
+                  <th className="py-2.5 px-3">{TABLE_HEADERS[language]?.morning || "Morning Alankaram & Pooja"}</th>
+                  <th className="py-2.5 px-3">{TABLE_HEADERS[language]?.evening || "Evening Alankaram & Transition"}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-amber-100 text-stone-800">
                 {STANDARD_NAVARATRI_DAYS.map((day) => {
                   const isToday = day.date === todayIso;
                   const customSetting = mandapamDaySettings.find((s) => s.dayNumber === day.dayNumber);
+                  const deviInfo = DEVI_DAYS_LOCALIZED[day.dayNumber]?.[language];
                   const deviDisplayName = customSetting?.customDeviName || (
-                    language === "te" ? day.teluguDeviName : language === "hi" ? day.hindiDeviName : day.deviName
+                    deviInfo?.fullName || (language === "te" ? day.teluguDeviName : language === "hi" ? day.hindiDeviName : day.deviName)
                   );
+                  const morningAlankaramName = customSetting?.morningDeviName || deviInfo?.morning || day.morningAlankaram || deviDisplayName;
+                  const eveningTransitionName = customSetting?.eveningDeviName || deviInfo?.evening || day.eveningTransition;
+                  const localizedTithi = TITHI_LOCALIZED[day.dayNumber]?.[language] || day.tithi;
 
                   return (
                     <tr
@@ -771,7 +806,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                       title="Tap to view Devi Darshan & Pooja timings"
                     >
                       <td className="py-2.5 px-3 whitespace-nowrap">
-                        <span className="font-bold text-[#8B1E1E]">{formatDateShort(day.date)}</span>
+                        <span className="font-bold text-[#8B1E1E]">{formatLocalizedDateShort(day.date, language)}</span>
                         {isToday && (
                           <span className="ml-1.5 px-1.5 py-0.5 rounded text-[8px] bg-amber-400 text-amber-950 font-black uppercase">
                             {t.today}
@@ -779,13 +814,13 @@ export const NavaratriMandapamDetail: React.FC = () => {
                         )}
                       </td>
                       <td className="py-2.5 px-3 text-stone-700 font-semibold">
-                        {day.tithi}
+                        {localizedTithi}
                       </td>
                       <td className="py-2.5 px-3 text-[#8B1E1E] font-bold">
-                        {day.morningAlankaram || deviDisplayName}
+                        {morningAlankaramName}
                       </td>
                       <td className="py-2.5 px-3 text-amber-900 font-medium">
-                        {day.eveningTransition}
+                        {eveningTransitionName}
                       </td>
                     </tr>
                   );
@@ -799,9 +834,13 @@ export const NavaratriMandapamDetail: React.FC = () => {
             {STANDARD_NAVARATRI_DAYS.map((day) => {
               const isToday = day.date === todayIso;
               const customSetting = mandapamDaySettings.find((s) => s.dayNumber === day.dayNumber);
+              const deviInfo = DEVI_DAYS_LOCALIZED[day.dayNumber]?.[language];
               const deviDisplayName = customSetting?.customDeviName || (
-                language === "te" ? day.teluguDeviName : language === "hi" ? day.hindiDeviName : day.deviName
+                deviInfo?.fullName || (language === "te" ? day.teluguDeviName : language === "hi" ? day.hindiDeviName : day.deviName)
               );
+              const morningAlankaramName = customSetting?.morningDeviName || deviInfo?.morning || day.morningAlankaram || deviDisplayName;
+              const eveningTransitionName = customSetting?.eveningDeviName || deviInfo?.evening || day.eveningTransition;
+              const localizedTithi = TITHI_LOCALIZED[day.dayNumber]?.[language] || day.tithi;
 
               return (
                 <div
@@ -816,7 +855,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                   <div className="flex items-center justify-between border-b border-amber-100 pb-1.5 mb-1.5">
                     <div className="flex items-center gap-1.5">
                       <span className="font-serif font-black text-[#8B1E1E] text-xs">
-                        {t.dayLabel} {day.dayNumber} • {formatDateShort(day.date)}
+                        {t.dayLabel} {day.dayNumber} • {formatLocalizedDateShort(day.date, language)}
                       </span>
                       {isToday && (
                         <span className="px-1.5 py-0.2 rounded text-[7.5px] bg-amber-400 text-amber-950 font-black uppercase">
@@ -825,26 +864,26 @@ export const NavaratriMandapamDetail: React.FC = () => {
                       )}
                     </div>
                     <span className="text-[10px] font-bold text-amber-950 bg-amber-100/80 px-2 py-0.5 rounded-full border border-amber-300">
-                      {day.tithi}
+                      {localizedTithi}
                     </span>
                   </div>
 
                   <div className="space-y-1">
                     <div className="flex items-start gap-1.5">
                       <span className="text-[10px] font-bold text-stone-500 uppercase shrink-0 mt-0.5">
-                        Morning:
+                        {TABLE_HEADERS[language]?.morningPrefix || "Morning:"}
                       </span>
                       <span className="font-bold text-[#8B1E1E] leading-snug">
-                        {day.morningAlankaram || deviDisplayName}
+                        {morningAlankaramName}
                       </span>
                     </div>
 
                     <div className="flex items-start gap-1.5">
                       <span className="text-[10px] font-bold text-amber-800 uppercase shrink-0 mt-0.5">
-                        Evening:
+                        {TABLE_HEADERS[language]?.eveningPrefix || "Evening:"}
                       </span>
                       <span className="text-stone-700 leading-snug">
-                        {day.eveningTransition}
+                        {eveningTransitionName}
                       </span>
                     </div>
                   </div>
@@ -866,7 +905,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
               </h3>
             </div>
             <p className="text-xs text-stone-600 mt-0.5">
-              {mandapam.name} • {t.activitiesSubtitle}
+              {getTranslatedMandapamName(mandapam.name, language)} • {t.activitiesSubtitle}
             </p>
           </div>
           <span className="text-xs font-bold text-amber-900 bg-amber-100 px-3 py-1 rounded-full border border-amber-300 self-start sm:self-center">
@@ -875,67 +914,70 @@ export const NavaratriMandapamDetail: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {mandapamActivities.map((act) => (
-            <div
-              key={act.id}
-              className="p-4 sm:p-5 rounded-2xl bg-[#FFFDF9] border border-amber-300 shadow-sm flex flex-col justify-between space-y-3"
-            >
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200 uppercase">
-                    {act.category}
-                  </span>
-                  <span className="text-xs font-semibold text-stone-600 flex items-center gap-1">
-                    <Calendar className="w-3 h-3 text-[#8B1E1E]" />
-                    {act.date}
-                  </span>
-                </div>
-
-                <h4 className="font-serif font-bold text-base text-[#8B1E1E] leading-snug">
-                  {act.title}
-                </h4>
-
-                <p className="text-xs text-stone-700 leading-relaxed">
-                  {act.description}
-                </p>
-
-                <div className="space-y-1 pt-1 text-[11px] text-stone-600">
-                  <div className="flex items-center gap-1.5 font-medium text-stone-800">
-                    <Clock className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                    <span>{t.timeLabel} {act.startTime} {act.endTime ? `– ${act.endTime}` : ""}</span>
+          {mandapamActivities.map((act) => {
+            const transAct = getTranslatedActivity(act, language);
+            return (
+              <div
+                key={act.id}
+                className="p-4 sm:p-5 rounded-2xl bg-[#FFFDF9] border border-amber-300 shadow-sm flex flex-col justify-between space-y-3"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200 uppercase">
+                      {transAct.category}
+                    </span>
+                    <span className="text-xs font-semibold text-stone-600 flex items-center gap-1">
+                      <Calendar className="w-3 h-3 text-[#8B1E1E]" />
+                      {transAct.date}
+                    </span>
                   </div>
-                  {act.location && (
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                      <span>{t.locationLabel} {act.location}</span>
+
+                  <h4 className="font-serif font-bold text-base text-[#8B1E1E] leading-snug">
+                    {transAct.title}
+                  </h4>
+
+                  <p className="text-xs text-stone-700 leading-relaxed">
+                    {transAct.description}
+                  </p>
+
+                  <div className="space-y-1 pt-1 text-[11px] text-stone-600">
+                    <div className="flex items-center gap-1.5 font-medium text-stone-800">
+                      <Clock className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                      <span>{t.timeLabel} {transAct.startTime} {transAct.endTime ? `– ${transAct.endTime}` : ""}</span>
                     </div>
-                  )}
-                  {act.instructions && (
-                    <div className="flex items-start gap-1.5 text-amber-900 bg-amber-50/80 p-2 rounded-xl border border-amber-200/60 mt-1.5">
-                      <Info className="w-3.5 h-3.5 text-amber-700 shrink-0 mt-0.5" />
-                      <span>{act.instructions}</span>
-                    </div>
-                  )}
+                    {transAct.location && (
+                      <div className="flex items-center gap-1.5">
+                        <MapPin className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                        <span>{t.locationLabel} {transAct.location}</span>
+                      </div>
+                    )}
+                    {transAct.instructions && (
+                      <div className="flex items-start gap-1.5 text-amber-900 bg-amber-50/80 p-2 rounded-xl border border-amber-200/60 mt-1.5">
+                        <Info className="w-3.5 h-3.5 text-amber-700 shrink-0 mt-0.5" />
+                        <span>{transAct.instructions}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Registration Action Button */}
+                <div className="pt-2 border-t border-amber-200/60 flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-emerald-800 flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    {t.freeEntry}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenActivityReg(act)}
+                    className="px-4 py-2 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5"
+                  >
+                    <span>{t.registerToParticipate}</span>
+                    <span>→</span>
+                  </button>
                 </div>
               </div>
-
-              {/* Registration Action Button */}
-              <div className="pt-2 border-t border-amber-200/60 flex items-center justify-between">
-                <span className="text-[11px] font-bold text-emerald-800 flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" />
-                  {t.freeEntry}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleOpenActivityReg(act)}
-                  className="px-4 py-2 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5"
-                >
-                  <span>{t.registerToParticipate}</span>
-                  <span>→</span>
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -957,84 +999,88 @@ export const NavaratriMandapamDetail: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {mandapamServices.map((srv) => (
-              <div
-                key={srv.id}
-                className="p-4 sm:p-5 rounded-2xl bg-[#FFFDF9] border border-amber-300 shadow-sm flex flex-col justify-between space-y-3"
-              >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-[#8B1E1E] uppercase">
-                      {srv.type}
-                    </span>
-                    <span className="text-xs text-stone-500 font-medium">
-                      {srv.durationMinutes} {t.minsLabel}
-                    </span>
-                  </div>
-                  <h4 className="font-serif font-bold text-base text-[#8B1E1E]">
-                    {srv.name}
-                  </h4>
-                  <p className="text-xs text-stone-700 leading-relaxed">
-                    {srv.description}
-                  </p>
-                  {srv.itemsRequired && (
-                    <p className="text-[11px] text-amber-900 bg-amber-50 p-2 rounded-xl border border-amber-200/60">
-                      <strong>{t.itemsToBringLabel}</strong> {srv.itemsRequired}
-                    </p>
-                  )}
-                </div>
-
-                {(() => {
-                  const srvSlots = slots.filter((s) => s.serviceId === srv.id && s.mandapamId === mandapam.id);
-                  const totalCap = srvSlots.reduce((acc, s) => acc + s.capacity, 0);
-                  const totalBooked = srvSlots.reduce((acc, s) => acc + s.bookedCount + s.walkinCount, 0);
-                  const isFull = totalCap > 0 && totalBooked >= totalCap;
-                  const remainingSlots = Math.max(0, totalCap - totalBooked);
-
-                  return (
-                    <div className="pt-2 border-t border-amber-200/60 flex flex-wrap items-center justify-between gap-2">
-                      {isFull ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 border border-red-300 text-red-800 text-[11px] font-black uppercase tracking-wide">
-                          <Lock className="w-3.5 h-3.5 text-red-700" />
-                          <span>FILLED SLOTS ({totalBooked}/{totalCap} FULL)</span>
-                        </span>
-                      ) : totalCap > 0 ? (
-                        <span className="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                          <span>{remainingSlots} Slots Left ({totalBooked}/{totalCap} Booked)</span>
-                        </span>
-                      ) : (
-                        <span className="text-xs font-bold text-emerald-800">
-                          {t.slotsAvailable}
-                        </span>
-                      )}
-
-                      {isFull ? (
-                        <button
-                          type="button"
-                          disabled
-                          className="px-4 py-2 rounded-xl bg-stone-200 text-stone-500 text-xs font-bold cursor-not-allowed border border-stone-300 shadow-none flex items-center gap-1.5"
-                        >
-                          <Lock className="w-3.5 h-3.5 text-stone-400" />
-                          <span>Slots Filled</span>
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedServiceId(srv.id);
-                            setBookingModalOpen(true);
-                          }}
-                          className="px-4 py-2 rounded-xl bg-[#8B1E1E] text-white text-xs font-bold hover:bg-[#9A241C] shadow-sm transition-colors cursor-pointer"
-                        >
-                          {t.bookSlot} →
-                        </button>
-                      )}
+            {mandapamServices.map((srv) => {
+              const transSrv = getTranslatedService(srv, language);
+              return (
+                <div
+                  key={srv.id}
+                  className="p-4 sm:p-5 rounded-2xl bg-[#FFFDF9] border border-amber-300 shadow-sm flex flex-col justify-between space-y-3"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-[#8B1E1E] uppercase">
+                        {transSrv.type}
+                      </span>
+                      <span className="text-xs text-stone-500 font-medium">
+                        {srv.durationMinutes} {t.minsLabel}
+                      </span>
                     </div>
-                  );
-                })()}
-              </div>
-            ))}
+                    <h4 className="font-serif font-bold text-base text-[#8B1E1E]">
+                      {transSrv.name}
+                    </h4>
+                    <p className="text-xs text-stone-700 leading-relaxed">
+                      {transSrv.description}
+                    </p>
+                    {transSrv.itemsRequired && (
+                      <p className="text-[11px] text-amber-900 bg-amber-50 p-2 rounded-xl border border-amber-200/60">
+                        <strong>{t.itemsToBringLabel}</strong> {transSrv.itemsRequired}
+                      </p>
+                    )}
+                  </div>
+
+                  {(() => {
+                    const srvSlots = slots.filter((s) => s.serviceId === srv.id && s.mandapamId === mandapam.id);
+                    const totalCap = srvSlots.reduce((acc, s) => acc + s.capacity, 0);
+                    const totalBooked = srvSlots.reduce((acc, s) => acc + s.bookedCount + s.walkinCount, 0);
+                    const isFull = totalCap > 0 && totalBooked >= totalCap;
+                    const remainingSlots = Math.max(0, totalCap - totalBooked);
+                    const slotUI = getTranslatedSlotUI(language, remainingSlots, totalBooked, totalCap);
+
+                    return (
+                      <div className="pt-2 border-t border-amber-200/60 flex flex-wrap items-center justify-between gap-2">
+                        {isFull ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 border border-red-300 text-red-800 text-[11px] font-black uppercase tracking-wide">
+                            <Lock className="w-3.5 h-3.5 text-red-700" />
+                            <span>{slotUI.badge}</span>
+                          </span>
+                        ) : totalCap > 0 ? (
+                          <span className="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span>{slotUI.leftText}</span>
+                          </span>
+                        ) : (
+                          <span className="text-xs font-bold text-emerald-800">
+                            {t.slotsAvailable}
+                          </span>
+                        )}
+
+                        {isFull ? (
+                          <button
+                            type="button"
+                            disabled
+                            className="px-4 py-2 rounded-xl bg-stone-200 text-stone-500 text-xs font-bold cursor-not-allowed border border-stone-300 shadow-none flex items-center gap-1.5"
+                          >
+                            <Lock className="w-3.5 h-3.5 text-stone-400" />
+                            <span>{slotUI.buttonFull}</span>
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedServiceId(srv.id);
+                              setBookingModalOpen(true);
+                            }}
+                            className="px-4 py-2 rounded-xl bg-[#8B1E1E] text-white text-xs font-bold hover:bg-[#9A241C] shadow-sm transition-colors cursor-pointer"
+                          >
+                            {slotUI.bookBtn}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
@@ -1100,8 +1146,9 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
             {/* Devi Avatharam & Consecrated Darshan */}
             {(() => {
+              const deviInfo = DEVI_DAYS_LOCALIZED[selectedDay.dayNumber]?.[language];
               const selectedDayDeviName = mandapamDaySettings.find(s => s.dayNumber === selectedDay.dayNumber)?.customDeviName || (
-                language === "te" ? selectedDay.teluguDeviName : language === "hi" ? selectedDay.hindiDeviName : selectedDay.deviName
+                deviInfo?.fullName || (language === "te" ? selectedDay.teluguDeviName : language === "hi" ? selectedDay.hindiDeviName : selectedDay.deviName)
               );
 
               return (
@@ -1128,7 +1175,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                       {selectedDayDeviName}
                     </h3>
                     <p className="text-sm font-serif font-semibold text-amber-900 mt-0.5">
-                      {language === "te" ? selectedDay.deviName : selectedDay.teluguDeviName}
+                      {language === "en" ? selectedDay.teluguDeviName : selectedDay.deviName}
                     </p>
                     <p className="text-xs text-stone-600 mt-1 leading-relaxed">
                       {selectedDay.description}
@@ -1143,8 +1190,9 @@ export const NavaratriMandapamDetail: React.FC = () => {
               const customSetting = mandapamDaySettings.find(s => s.dayNumber === selectedDay.dayNumber);
               const isDual = customSetting?.isDualAlankarana ?? !!selectedDay.dualSessionNote;
               if (!isDual) return null;
-              const morning = customSetting?.morningDeviName || selectedDay.dualSessionNote?.morningAlankarana;
-              const evening = customSetting?.eveningDeviName || selectedDay.dualSessionNote?.eveningAlankarana;
+              const deviInfo = DEVI_DAYS_LOCALIZED[selectedDay.dayNumber]?.[language];
+              const morning = customSetting?.morningDeviName || deviInfo?.morning || selectedDay.dualSessionNote?.morningAlankarana;
+              const evening = customSetting?.eveningDeviName || deviInfo?.evening || selectedDay.dualSessionNote?.eveningAlankarana;
 
               return (
                 <div className="p-3 rounded-2xl bg-amber-50 border border-amber-300/80 text-xs space-y-1">
@@ -1171,8 +1219,18 @@ export const NavaratriMandapamDetail: React.FC = () => {
               const poojaTimings = customSetting?.useStandardPooja === false && customSetting.customPoojaTimings
                 ? customSetting.customPoojaTimings
                 : selectedDay.dayNumber === 1
-                ? "Morning 07:30 AM (Kalash & Ganapathi Sthapana) | Evening 06:30 PM (Maha Harathi)"
-                : "Morning 08:00 AM (Sahasranama Archana) | Evening 06:30 PM (Maha Deeparadhana)";
+                ? (language === "kn" ? "ಬೆಳಗ್ಗೆ 07:30 AM (ಕಲಶ ಮತ್ತು ಗಣಪತಿ ಸ್ಥಾಪನೆ) | ಸಂಜೆ 06:30 PM (ಮಹಾ ಹಾರತಿ)" :
+                   language === "te" ? "ఉదయం 07:30 AM (కలశ & గణపతి స్థాపన) | సాయంత్రం 06:30 PM (మహా హారతి)" :
+                   language === "hi" ? "प्रातः 07:30 AM (कलश व गणपति स्थापना) | सायं 06:30 PM (महा आरती)" :
+                   language === "ta" ? "காலை 07:30 AM (கலச & கணபதி ஸ்தாபனம்) | மாலை 06:30 PM (மஹா ஆரத்தி)" :
+                   language === "ml" ? "രാവിലെ 07:30 AM (കലശ & ഗണപതി സ്ഥാപനം) | വൈകുന്നേരം 06:30 PM (മഹാ ആരതി)" :
+                   "Morning 07:30 AM (Kalash & Ganapathi Sthapana) | Evening 06:30 PM (Maha Harathi)")
+                : (language === "kn" ? "ಬೆಳಗ್ಗೆ 08:00 AM (ಸಹಸ್ರನಾಮ ಅರ್ಚನೆ) | ಸಂಜೆ 06:30 PM (ಮಹಾ ದೀಪಾರಾಧನೆ)" :
+                   language === "te" ? "ఉదయం 08:00 AM (సహస్రనామ అర్చన) | సాయంత్రం 06:30 PM (మహా దీపారాధన)" :
+                   language === "hi" ? "प्रातः 08:00 AM (सहस्रनाम अर्चना) | सायं 06:30 PM (महा दीपाराधना)" :
+                   language === "ta" ? "காலை 08:00 AM (சஹஸ்ரநாம அர்ச்சனை) | மாலை 06:30 PM (மகா தீபாராதனை)" :
+                   language === "ml" ? "രാവിലെ 08:00 AM (സഹസ്രനാമ അർച്ചന) | വൈകുന്നേരം 06:30 PM (മഹാ ദീപാരാധന)" :
+                   "Morning 08:00 AM (Sahasranama Archana) | Evening 06:30 PM (Maha Deeparadhana)");
 
               const naivedhyam = customSetting?.useStandardNaivedhyam === false && customSetting.customNaivedhyam
                 ? customSetting.customNaivedhyam
@@ -1180,11 +1238,19 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
               const prasadam = customSetting?.useStandardPrasadam === false && customSetting.customPrasadam
                 ? customSetting.customPrasadam
-                : "Sacred Pongali & Theertha Prasadam distributed to all visiting devotees";
+                : (language === "kn" ? "ಮಂಟಪಕ್ಕೆ ಭೇಟಿ ನೀಡುವ ಎಲ್ಲಾ ಭಕ್ತರಿಗೂ ಪಾವನ ಪೊಂಗಲ್ ಮತ್ತು ತೀರ್ಥ ಪ್ರಸಾದ ವಿತರಿಸಲಾಗುತ್ತದೆ" :
+                   language === "te" ? "దర్శనానికి విచ్చేసిన భక్తులందరికీ పవిత్ర పొంగలి మరియు తీర్థ ప్రసాద వితరణ" :
+                   language === "hi" ? "दर्शन हेतु पधारने वाले सभी भक्तों को पवित्र पोंगल व तीर्थ प्रसाद वितरण" :
+                   language === "ta" ? "தரிசனத்திற்கு வரும் அனைத்து பக்தர்களுக்கும் புனித பொங்கல் மற்றும் தீர்த்த பிரசாதம் வழங்கப்படும்" :
+                   language === "ml" ? "ദർശനത്തിനെത്തുന്ന എല്ലാ ഭക്തർക്കും പവിത്ര പൊങ്കലും തീർത്ഥ പ്രസാദവും വിതരണം ചെയ്യുന്നു" :
+                   "Sacred Pongali & Theertha Prasadam distributed to all visiting devotees");
 
               const itemsToBring = customSetting?.useStandardItems === false && customSetting.customItemsToBring
                 ? customSetting.customItemsToBring
                 : selectedDay.suggestedItems;
+
+              const naivedhyamTag = language === "te" ? "భోగ్ నైవేద్యం" : language === "hi" ? "भोग नैवेद्यम्" : language === "kn" ? "ಭೋಗ ನೈವೇದ್ಯ" : language === "ta" ? "போக் நைவேத்யம்" : language === "ml" ? "ഭോഗ് നൈവേദ്യം" : "Bhog Naivedhyam";
+              const itemsTag = language === "te" ? "భక్తులు తేవలసినవి" : language === "hi" ? "भक्तों द्वारा सामग्री" : language === "kn" ? "ಭಕ್ತರು ತರಬೇಕಾದವು" : language === "ta" ? "பக்தர்கள் கொண்டுவர வேண்டியவை" : language === "ml" ? "ഭക്തർ കൊണ്ടുവരേണ്ടവ" : "Items to Bring";
 
               return (
                 <div className="space-y-2.5 text-xs">
@@ -1192,7 +1258,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                   <div className="p-3 rounded-2xl bg-white border border-amber-200 shadow-xs space-y-1">
                     <span className="font-bold text-amber-900 flex items-center gap-1.5 uppercase text-[10px] tracking-wider">
                       <Clock className="w-3.5 h-3.5 text-[#8B1E1E]" />
-                      {t.poojaTimingsAt} {mandapam.name}
+                      {t.poojaTimingsAt} {getTranslatedMandapamName(mandapam.name, language)}
                     </span>
                     <p className="text-stone-800 font-semibold leading-relaxed">
                       {renderHighlightedTiming(poojaTimings)}
@@ -1207,7 +1273,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                         {t.suggestedNaivedhyam}
                       </span>
                       <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200">
-                        భోగ్ నైవేద్యం
+                        {naivedhyamTag}
                       </span>
                     </div>
 
@@ -1236,7 +1302,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                         {t.suggestedPoojaItems}
                       </span>
                       <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-[#8B1E1E] border border-rose-200">
-                        భక్తులు తేవలసినవి
+                        {itemsTag}
                       </span>
                     </div>
 
@@ -1326,13 +1392,13 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs font-serif font-bold text-amber-900">
-                    ॥ శ్రీ మాత్రే నమః ॥
+                    {INVOCATION_TRANSLATIONS[language]}
                   </span>
                   <h3 className="font-serif font-black text-2xl text-[#8B1E1E]">
                     {t.registrationConfirmed}
                   </h3>
                   <p className="text-xs text-stone-600">
-                    {t.registrationConfirmedMsg} {regActivity.title} at {mandapam.name}.
+                    {t.registrationConfirmedMsg} {getTranslatedActivity(regActivity, language).title} at {getTranslatedMandapamName(mandapam.name, language)}.
                   </p>
                 </div>
 
@@ -1357,7 +1423,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                   {regActivity.location && (
                     <div className="flex justify-between">
                       <span className="text-stone-500 font-medium">{t.locationLabel}</span>
-                      <span className="font-bold text-stone-900">{regActivity.location}</span>
+                      <span className="font-bold text-stone-900">{getTranslatedActivity(regActivity, language).location || regActivity.location}</span>
                     </div>
                   )}
                 </div>
@@ -1383,10 +1449,10 @@ export const NavaratriMandapamDetail: React.FC = () => {
                     <span>{t.freeEventRegistration}</span>
                   </div>
                   <h3 className="font-serif font-black text-xl text-[#8B1E1E] mt-0.5">
-                    {regActivity.title}
+                    {getTranslatedActivity(regActivity, language).title}
                   </h3>
                   <p className="text-xs text-stone-600 mt-1">
-                    {regActivity.date} • {regActivity.startTime} at {mandapam.name}
+                    {regActivity.date} • {regActivity.startTime} at {getTranslatedMandapamName(mandapam.name, language)}
                   </p>
                 </div>
 
