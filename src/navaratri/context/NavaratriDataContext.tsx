@@ -187,7 +187,8 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   });
   const [services, setServices] = useState<Service[]>(() => {
     const loaded = loadStorage<Service[]>("services", INITIAL_SERVICES);
-    const merged = [...loaded];
+    const cleaned = (loaded || []).filter(s => !(s.type === "Annadanam" || s.name.toLowerCase().includes("annadanam") || s.id === "srv-annadanam-seva"));
+    const merged = [...cleaned];
     for (const initS of INITIAL_SERVICES) {
       if (!merged.some(s => s.id === initS.id)) {
         merged.push(initS);

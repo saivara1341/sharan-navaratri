@@ -180,27 +180,7 @@ export const TodayTomorrowView: React.FC<TodayTomorrowViewProps> = ({
               </p>
             </div>
 
-            {/* Annadanam Card */}
-            <div className="p-4 rounded-2xl bg-[#FFFDF9] border border-amber-200/80 shadow-sm space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-2">
-                  <img
-                    src={navaratriAsset("/navaratri/assets/maha-annadanam-logo.png")}
-                    alt="Maha Annadanam"
-                    className="w-5 h-5 rounded-md object-cover border border-amber-300"
-                  />
-                  {t.annadanam} Today
-                </span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">
-                  Satvik Bhojanam
-                </span>
-              </div>
-              <p className="text-xs text-stone-800 leading-relaxed">
-                <span className="font-semibold text-stone-900">Timing:</span> 12:30 PM - 03:30 PM
-                <br />
-                <span className="font-semibold text-stone-900">Venue:</span> {todaySetting?.annadanamLocation || "Mandapam Kalyana Hall Ground Floor"}
-              </p>
-            </div>
+
 
             {/* Naivedhyam & Prasadam */}
             <div className="p-4 rounded-2xl bg-[#FFFDF9] border border-amber-200/80 shadow-sm space-y-2">
@@ -303,20 +283,7 @@ export const TodayTomorrowView: React.FC<TodayTomorrowViewProps> = ({
               </div>
             </div>
 
-            {/* Tomorrow Annadanam */}
-            <div className="p-4 rounded-2xl bg-[#FFFDF9] border border-amber-200/80 shadow-sm space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-2">
-                <img
-                  src={navaratriAsset("/navaratri/assets/maha-annadanam-logo.png")}
-                  alt="Maha Annadanam"
-                  className="w-5 h-5 rounded-md object-cover border border-amber-300"
-                />
-                Tomorrow's Annadanam Plan
-              </span>
-              <p className="text-xs text-stone-800 leading-relaxed">
-                Expected capacity: 1,000+ devotees. Timings: 12:30 PM - 03:00 PM in the Dining Hall.
-              </p>
-            </div>
+
           </div>
         </div>
       )}

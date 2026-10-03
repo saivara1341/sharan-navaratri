@@ -334,19 +334,6 @@ export const INITIAL_SERVICES: Service[] = [
     itemsRequired: "White angavastram, Chamara/Fan seva (optional)",
     durationMinutes: 90,
     capacityPerSlot: 30
-  },
-  {
-    id: "srv-annadanam-seva",
-    mandapamId: "m-rr-nizamabad",
-    type: "Annadanam",
-    name: "Annadanam Volunteer & Anna Seva",
-    description: "Serve satvik bhojanam to fellow devotees or register family sponsorship (Nithya Annadanam Seva).",
-    instructions: "Clean hands, cap/cloth for head covering provided at venue.",
-    enabled: true,
-    bookingEnabled: true,
-    itemsRequired: "Voluntary enthusiasm to serve",
-    durationMinutes: 120,
-    capacityPerSlot: 20
   }
 ];
 
