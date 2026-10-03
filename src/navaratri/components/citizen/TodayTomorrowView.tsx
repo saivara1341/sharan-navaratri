@@ -3,6 +3,7 @@ import { Mandapam, MandapamDaySetting, Alankarana, Service } from "../../types";
 import { STANDARD_NAVARATRI_DAYS } from "../../data/standardNavaratriDays";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { PrasadBowlIcon } from "../devotional/PrasadBowlIcon";
+import { navaratriAsset } from "../../utils/navaratriAssets";
 import {
   Calendar,
   Clock,
@@ -162,8 +163,12 @@ export const TodayTomorrowView: React.FC<TodayTomorrowViewProps> = ({
             {/* Annadanam Card */}
             <div className="p-4 rounded-2xl bg-[#FFFDF9] border border-amber-200/80 shadow-sm space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
-                  <Utensils className="w-4 h-4 text-[#B45309]" />
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-2">
+                  <img
+                    src={navaratriAsset("/navaratri/assets/maha-annadanam-logo.png")}
+                    alt="Maha Annadanam"
+                    className="w-5 h-5 rounded-md object-cover border border-amber-300"
+                  />
                   {t.annadanam} Today
                 </span>
                 <span className="text-[10px] px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">
@@ -280,8 +285,12 @@ export const TodayTomorrowView: React.FC<TodayTomorrowViewProps> = ({
 
             {/* Tomorrow Annadanam */}
             <div className="p-4 rounded-2xl bg-[#FFFDF9] border border-amber-200/80 shadow-sm space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
-                <Utensils className="w-4 h-4 text-[#B45309]" />
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-2">
+                <img
+                  src={navaratriAsset("/navaratri/assets/maha-annadanam-logo.png")}
+                  alt="Maha Annadanam"
+                  className="w-5 h-5 rounded-md object-cover border border-amber-300"
+                />
                 Tomorrow's Annadanam Plan
               </span>
               <p className="text-xs text-stone-800 leading-relaxed">

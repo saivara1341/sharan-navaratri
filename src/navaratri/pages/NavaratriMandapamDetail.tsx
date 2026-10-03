@@ -400,12 +400,16 @@ export const NavaratriMandapamDetail: React.FC = () => {
       {/* 3. MAHA ANNADANAM CARD (Directly below 10-day buttons) */}
       <section className="rounded-3xl border-2 border-amber-400 bg-gradient-to-br from-[#FFFBEB] via-[#FFFDF9] to-[#FEF3C7] p-5 sm:p-6 shadow-lg relative overflow-hidden space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-300/80 pb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border-2 border-amber-400 flex items-center justify-center p-2 text-amber-800 shrink-0">
-              <PrasadBowlIcon className="w-8 h-8 text-[#B45309]" />
+          <div className="flex items-center gap-3.5">
+            <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border-2 border-amber-400 bg-white shadow-sm overflow-hidden shrink-0 flex items-center justify-center p-0.5">
+              <img
+                src={navaratriAsset("/navaratri/assets/maha-annadanam-logo.png")}
+                alt="Maha Annadanam Official Logo"
+                className="w-full h-full object-cover rounded-xl"
+              />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <h3 className="font-serif font-black text-xl sm:text-2xl text-[#8B1E1E]">
                   Maha Annadanam
                 </h3>
@@ -414,7 +418,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                   <span>Free for All Devotees</span>
                 </span>
               </div>
-              <p className="text-xs text-amber-950 font-serif font-semibold">
+              <p className="text-xs text-amber-950 font-serif font-semibold mt-0.5">
                 నిత్యాన్నదాన సేవ • Sacred Prasadam Bhojanam
               </p>
             </div>
@@ -460,16 +464,25 @@ export const NavaratriMandapamDetail: React.FC = () => {
           </div>
         </div>
 
-        {/* Menu & Notes */}
-        <div className="p-3.5 rounded-2xl bg-amber-50/90 border border-amber-200/80 text-xs text-stone-800 space-y-1">
-          <span className="font-bold text-amber-950 flex items-center gap-1.5">
-            <Utensils className="w-3.5 h-3.5 text-[#8B1E1E]" />
-            Satvik Menu & Devotee Seva
-          </span>
-          <p className="leading-relaxed text-stone-700">
-            {todaySetting?.annadanamNotes ||
-              "Pure satvik prasadam meals (Pulihora, Sambar Rice, Sweet Pongali & Buttermilk) served with devotion to all visiting devotees and families."}
-          </p>
+        {/* Menu & Notes with Visual Logo Banner */}
+        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-50/95 via-amber-100/40 to-orange-50/95 border border-amber-300/80 text-xs text-stone-800 flex flex-col sm:flex-row items-center gap-4">
+          <div className="w-full sm:w-36 h-28 sm:h-22 rounded-xl overflow-hidden border border-amber-300/80 shadow-xs shrink-0 bg-white">
+            <img
+              src={navaratriAsset("/navaratri/assets/maha-annadanam-logo.png")}
+              alt="Maha Annadanam - Serving Devotees with Reverence"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="space-y-1 w-full text-center sm:text-left">
+            <span className="font-bold text-amber-950 flex items-center justify-center sm:justify-start gap-1.5">
+              <Utensils className="w-3.5 h-3.5 text-[#8B1E1E]" />
+              Satvik Menu & Devotee Seva
+            </span>
+            <p className="leading-relaxed text-stone-700">
+              {todaySetting?.annadanamNotes ||
+                "Pure satvik prasadam meals (Pulihora, Sambar Rice, Sweet Pongali & Buttermilk) served with devotion to all visiting devotees and families."}
+            </p>
+          </div>
         </div>
       </section>
 
