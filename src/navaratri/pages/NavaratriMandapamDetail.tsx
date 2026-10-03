@@ -352,7 +352,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
       </div>
 
       {/* 2. 10-DAY FESTIVAL BUTTONS (2 ROWS ON MOBILE, NO SCROLL) */}
-      <section className="bg-gradient-to-br from-[#FFFDF9] via-[#FAF6ED] to-[#FEF3C7] border-2 border-amber-300 rounded-3xl p-4 sm:p-5 shadow-lg space-y-3.5">
+      <section className="bg-gradient-to-br from-[#FFFDF9] via-[#FAF6ED] to-[#FEF3C7] border-2 border-amber-400 rounded-3xl p-4 sm:p-5 shadow-xl shadow-amber-200/60 ring-2 ring-amber-200/40 space-y-3.5" style={{boxShadow: '0 0 0 2px #fbbf24, 0 8px 32px -4px rgba(180,83,9,0.18)'}}>
         <div className="flex items-center justify-between border-b border-amber-200/80 pb-2">
           <div className="flex items-center gap-2">
             <span className="text-xl">🪔</span>
@@ -391,44 +391,52 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 key={day.dayNumber}
                 type="button"
                 onClick={() => setSelectedDay(day)}
-                className={`p-1 sm:p-2 rounded-xl sm:rounded-2xl border transition-all flex flex-col items-center justify-between text-center relative group active:scale-95 cursor-pointer min-h-[96px] sm:min-h-[114px] ${
+                className={`pb-1.5 pt-1.5 px-0.5 sm:pb-2 sm:pt-2 sm:px-1 rounded-xl sm:rounded-2xl border transition-all flex flex-col items-center gap-0.5 text-center relative group active:scale-95 cursor-pointer overflow-hidden min-h-[100px] sm:min-h-[120px] ${
                   isToday
-                    ? "bg-gradient-to-b from-[#8B1E1E] to-[#9A241C] text-white border-amber-400 shadow-md ring-2 ring-amber-400/50"
-                    : "bg-white hover:bg-amber-50 text-stone-900 border-amber-300/80 shadow-xs hover:border-amber-400"
+                    ? "bg-gradient-to-b from-[#8B1E1E] to-[#9A241C] text-white border-amber-400 shadow-lg ring-2 ring-amber-400/60"
+                    : "bg-white hover:bg-amber-50 text-stone-900 border-amber-300/80 shadow-sm hover:border-amber-400 hover:shadow-amber-200/50"
                 }`}
               >
                 {isToday && (
-                  <span className="absolute -top-1.5 right-1 px-1 py-0.2 rounded-full bg-amber-400 text-amber-950 text-[7px] sm:text-[8px] font-black uppercase tracking-wider shadow-xs">
-                    {t.today}
-                  </span>
+                  <>
+                    <span className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400" />
+                    <span className="absolute top-1 right-0.5 px-1 rounded-full bg-amber-400 text-amber-950 text-[6px] font-black uppercase tracking-wider leading-tight">{t.today}</span>
+                  </>
                 )}
 
+                {/* Sacred Color Indicator Bar at bottom */}
+                <span
+                  className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl"
+                  style={{ backgroundColor: day.colorHex, opacity: isToday ? 0.7 : 0.5 }}
+                />
+
                 {/* Day Number */}
-                <span className={`text-[10px] sm:text-xs font-black font-serif ${isToday ? "text-amber-200" : "text-[#8B1E1E]"}`}>
+                <span className={`text-[10px] sm:text-[11px] font-black font-serif leading-none ${isToday ? "text-amber-200" : "text-[#8B1E1E]"}`}>
                   {t.dayLabel} {day.dayNumber}
                 </span>
 
-                {/* Respected Avatharam / Durga Matha Idol Image */}
-                <div className="relative my-0.5 sm:my-1 w-9 h-9 sm:w-12 sm:h-12 rounded-full p-0.5 border-2 border-amber-400 bg-amber-50 shadow-xs overflow-hidden flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                {/* Devi Idol Image — properly contained, face-focused */}
+                <div className="relative mt-0.5 w-10 h-10 sm:w-13 sm:h-13 rounded-full border-2 border-amber-400 overflow-hidden shrink-0 group-hover:scale-105 transition-transform shadow-sm" style={{ minWidth: 40, minHeight: 40 }}>
                   <img
                     src={avatarImg}
                     alt={deviDisplayName}
-                    className="w-full h-full object-cover rounded-full"
+                    className="absolute inset-0 w-full h-full object-cover object-top"
                     loading="lazy"
                     onError={(e) => {
                       (e.currentTarget as HTMLImageElement).src = navaratriAsset("/navaratri/assets/maa-durga-icon.png");
                     }}
                   />
-                  <div className="absolute inset-0 rounded-full ring-1 ring-amber-500/30 pointer-events-none" />
+                  {/* golden glow ring overlay */}
+                  <div className="absolute inset-0 rounded-full ring-1 ring-inset ring-amber-300/60 pointer-events-none" />
                 </div>
 
                 {/* Date */}
-                <span className={`text-[8.5px] sm:text-[10.5px] font-bold ${isToday ? "text-white" : "text-stone-700"}`}>
+                <span className={`text-[8.5px] sm:text-[10px] font-bold leading-none ${isToday ? "text-white" : "text-stone-700"}`}>
                   {formatDateShort(day.date)}
                 </span>
 
-                {/* Avatar Preview */}
-                <span className={`text-[7.5px] sm:text-[9.5px] truncate max-w-full font-medium leading-tight px-0.5 ${isToday ? "text-amber-100" : "text-stone-600"}`}>
+                {/* Short Devi Name */}
+                <span className={`text-[7px] sm:text-[8.5px] truncate max-w-full font-medium leading-tight px-0.5 ${isToday ? "text-amber-100" : "text-stone-500"}`}>
                   {getShortAvatar(deviDisplayName)}
                 </span>
               </button>
