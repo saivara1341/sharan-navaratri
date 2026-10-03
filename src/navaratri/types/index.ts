@@ -37,6 +37,7 @@ export interface Mandapam {
   organizerEmail?: string;
   logoUrl?: string;
   coverImageUrl?: string;
+  cardBgImageUrl?: string;
   contactPhone: string;
   whatsappNumber?: string;
   passcode?: string;

@@ -115,6 +115,7 @@ interface NavaratriDataContextType {
   createActivity: (data: Omit<Activity, "id">) => Activity;
   updateActivity: (id: string, data: Partial<Activity>) => void;
   deleteActivity: (id: string) => void;
+  updateMandapam: (mandapamId: string, data: Partial<Mandapam>) => void;
   deleteMandapam: (mandapamId: string) => boolean;
 }
 
@@ -761,6 +762,12 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     return true;
   };
 
+  const updateMandapam = (mandapamId: string, data: Partial<Mandapam>) => {
+    setMandapams(prev =>
+      prev.map(m => (m.id === mandapamId ? { ...m, ...data, updatedAt: new Date().toISOString() } : m))
+    );
+  };
+
   return (
     <NavaratriDataContext.Provider
       value={{
@@ -817,6 +824,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
         createActivity,
         updateActivity,
         deleteActivity,
+        updateMandapam,
         deleteMandapam
       }}
     >

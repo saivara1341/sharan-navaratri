@@ -31,7 +31,13 @@ import {
   MessageCircle,
   ShoppingBag,
   Flower2,
-  Gift
+  Gift,
+  Camera,
+  Upload,
+  Trash2,
+  Check,
+  RefreshCw,
+  Image as ImageIcon
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -48,6 +54,34 @@ interface ActivityRegistrationRecord {
   registeredAt: string;
 }
 
+const PRESET_MANDAPAM_BACKGROUNDS = [
+  {
+    id: "preset-terracotta",
+    name: "Terracotta Kolam Utsav",
+    url: navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg"),
+  },
+  {
+    id: "preset-golden",
+    name: "Golden Lotus Sanctum",
+    url: navaratriAsset("/navaratri/assets/golden-lotus-bg.jpg"),
+  },
+  {
+    id: "preset-ivory",
+    name: "Ivory Lotus Sanctum",
+    url: navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"),
+  },
+  {
+    id: "preset-sage",
+    name: "Sage Floral Utsav",
+    url: navaratriAsset("/navaratri/assets/sage-floral-bg.jpg"),
+  },
+  {
+    id: "preset-royal",
+    name: "Royal Mandir Sanctum",
+    url: navaratriAsset("/navaratri/assets/royal-maroon-arch.jpg"),
+  }
+];
+
 export const NavaratriMandapamDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const {
@@ -59,13 +93,22 @@ export const NavaratriMandapamDetail: React.FC = () => {
     announcements,
     toggleFollow,
     isFollowing,
-    markScanned
+    markScanned,
+    updateMandapam
   } = useNavaratriData();
   const { t, language } = useNavaratriLanguage();
 
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [selectedServiceId, setSelectedServiceId] = useState<string | undefined>(undefined);
   const [qrModalOpen, setQrModalOpen] = useState(false);
+
+  // Mandapam Background Customization State
+  const [bgModalOpen, setBgModalOpen] = useState(false);
+  const [customCardBg, setCustomCardBg] = useState<string>("");
+  const [bgInputUrl, setBgInputUrl] = useState("");
+  const [bgPreviewUrl, setBgPreviewUrl] = useState("");
+  const [alsoApplyToCover, setAlsoApplyToCover] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   // 10-Day Pop-up State
   const [selectedDay, setSelectedDay] = useState<StandardFestivalDay | null>(null);
@@ -159,6 +202,109 @@ export const NavaratriMandapamDetail: React.FC = () => {
       navigator.clipboard.writeText(url);
       toast.success("Mandapam link copied to clipboard!");
     }
+  };
+
+  // Synchronize custom card background from localStorage or mandapam record
+  useEffect(() => {
+    if (mandapam?.id) {
+      const stored = localStorage.getItem(`mandapam_card_bg_${mandapam.id}`) || mandapam.cardBgImageUrl || "";
+      setCustomCardBg(stored);
+      setBgPreviewUrl(stored);
+    }
+  }, [mandapam?.id, mandapam?.cardBgImageUrl]);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file (JPG, PNG, WebP).");
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const maxWidth = 1200;
+          let width = img.width;
+          let height = img.height;
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressed = canvas.toDataURL("image/jpeg", 0.85);
+            setBgPreviewUrl(compressed);
+            toast.success("Image loaded! Click 'Apply Background' to save.");
+          } else {
+            setBgPreviewUrl(event.target?.result as string);
+          }
+          setIsUploading(false);
+        };
+        img.onerror = () => {
+          setIsUploading(false);
+          toast.error("Failed to process image.");
+        };
+        img.src = event.target?.result as string;
+      };
+      reader.onerror = () => {
+        setIsUploading(false);
+        toast.error("Failed to read image file.");
+      };
+      reader.readAsDataURL(file);
+    } catch {
+      setIsUploading(false);
+      toast.error("Error reading image file.");
+    }
+  };
+
+  const handleApplyBg = (imageToApply?: string) => {
+    const targetUrl = (imageToApply !== undefined ? imageToApply : (bgPreviewUrl || bgInputUrl)).trim();
+    if (!targetUrl) {
+      toast.error("Please select an image or enter a photo URL.");
+      return;
+    }
+
+    try {
+      localStorage.setItem(`mandapam_card_bg_${mandapam.id}`, targetUrl);
+    } catch (err) {
+      console.warn("Storage quota warning", err);
+    }
+
+    setCustomCardBg(targetUrl);
+
+    // Update mandapam in context & persistence
+    const updates: Partial<typeof mandapam> = { cardBgImageUrl: targetUrl };
+    if (alsoApplyToCover) {
+      updates.coverImageUrl = targetUrl;
+      try {
+        localStorage.setItem(`mandapam_cover_${mandapam.id}`, targetUrl);
+      } catch {}
+    }
+    updateMandapam(mandapam.id, updates);
+
+    setBgModalOpen(false);
+    toast.success(`Mandapam background updated for ${mandapam.name}! 🪔`);
+  };
+
+  const handleResetBg = () => {
+    try {
+      localStorage.removeItem(`mandapam_card_bg_${mandapam.id}`);
+    } catch {}
+    setCustomCardBg("");
+    setBgPreviewUrl("");
+    setBgInputUrl("");
+    updateMandapam(mandapam.id, { cardBgImageUrl: "" });
+    setBgModalOpen(false);
+    toast.success("Card background reset to default devotional theme.");
   };
 
   // Helper for short dates (e.g., "11 Oct")
@@ -255,7 +401,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
         {/* Cover Photo */}
         <div className="h-44 sm:h-60 w-full relative bg-[#8B1E1E]">
           <img
-            src={mandapam.coverImageUrl || navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg")}
+            src={mandapam.coverImageUrl || customCardBg || navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg")}
             alt={mandapam.name}
             className="w-full h-full object-cover opacity-85"
           />
@@ -283,69 +429,125 @@ export const NavaratriMandapamDetail: React.FC = () => {
         </div>
 
         {/* Profile Card */}
-        <div className="p-4 sm:p-6 bg-[#FDFBF7] relative -mt-10 mx-3 sm:mx-5 rounded-2xl border border-amber-200/90 shadow-md mb-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-start sm:items-center gap-3.5">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-100 border-2 border-amber-400 p-0.5 shadow-md shrink-0 overflow-hidden">
-                <img
-                  src={mandapam.logoUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg")}
-                  alt="Logo"
-                  className="w-full h-full object-cover rounded-[14px]"
-                />
+        <div className="relative -mt-10 mx-3 sm:mx-5 rounded-2xl border-2 border-amber-300/90 shadow-lg mb-3 overflow-hidden p-4 sm:p-6 transition-all bg-[#FDFBF7]">
+          {/* Card Background Image (Custom Mandapam Photo or Default) */}
+          {customCardBg ? (
+            <div className="absolute inset-0 pointer-events-none z-0">
+              <img
+                src={customCardBg}
+                alt={`${mandapam.name} Background`}
+                className="w-full h-full object-cover"
+              />
+              {/* Devotional Warm Glassmorphism Overlay guaranteeing 100% crisp readability */}
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-50/96 via-amber-50/92 to-amber-50/88 backdrop-blur-[1px]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-amber-100/40" />
+            </div>
+          ) : (
+            <div className="absolute inset-0 pointer-events-none z-0 bg-gradient-to-br from-[#FFFDF9] via-[#FDFBF7] to-amber-50/60" />
+          )}
+
+          <div className="relative z-10">
+            {/* Top row with "Add/Change Mandapam Image" trigger */}
+            <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-amber-200/60">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[11px] font-bold text-amber-900 uppercase tracking-wider">
+                  Mandapam Profile
+                </span>
               </div>
 
-              <div className="space-y-1">
-                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                  <h1 className="font-serif font-black text-xl sm:text-2xl text-[#8B1E1E] flex items-center gap-1.5 leading-snug">
-                    <span>{mandapam.name}</span>
-                    <InstagramVerifiedBadge className="w-5 h-5 shrink-0 drop-shadow-xs" title="Official Verified Mandapam" />
-                  </h1>
-                </div>
-
-                <p className="text-xs text-stone-600 font-medium flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                  <span>{mandapam.address}, {mandapam.area}, {mandapam.city}</span>
-                </p>
-
-                <p className="text-xs text-stone-700 pt-0.5 line-clamp-2 leading-relaxed">
-                  {mandapam.description === "Annual Community Navaratri Utsav" ? t.annualCommunityUtsav : (mandapam.description || t.annualCommunityUtsav)}
-                </p>
-              </div>
+              {/* Add/Change Mandapam Image in background */}
+              <button
+                type="button"
+                onClick={() => {
+                  setBgPreviewUrl(customCardBg);
+                  setBgModalOpen(true);
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 hover:bg-white text-stone-800 hover:text-[#8B1E1E] border border-amber-300/90 text-xs font-bold shadow-xs hover:shadow transition-all backdrop-blur-xs active:scale-95 cursor-pointer"
+                title="Add or change mandapam photo in background of this card"
+              >
+                <Camera className="w-3.5 h-3.5 text-[#8B1E1E]" />
+                <span>{customCardBg ? "Change Card Background" : "Add Mandapam Image"}</span>
+              </button>
             </div>
 
-            {/* Direct Action Buttons */}
-            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 pt-1 sm:pt-0">
-              <button
-                onClick={handleFollowToggle}
-                className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 ${
-                  following
-                    ? "bg-amber-100 text-[#8B1E1E] border border-amber-400"
-                    : "bg-[#8B1E1E] text-white hover:bg-[#9A241C]"
-                }`}
-              >
-                <Heart className={`w-3.5 h-3.5 ${following ? "fill-current text-[#8B1E1E]" : ""}`} />
-                <span>{following ? t.followingBtn : t.follow}</span>
-              </button>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start sm:items-center gap-3.5">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-100 border-2 border-amber-400 p-0.5 shadow-md shrink-0 overflow-hidden relative group">
+                  <img
+                    src={mandapam.logoUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg")}
+                    alt="Logo"
+                    className="w-full h-full object-cover rounded-[14px]"
+                  />
+                </div>
 
-              <a
-                href={`https://maps.google.com/?q=${encodeURIComponent(`${mandapam.name}, ${mandapam.address}, ${mandapam.city}`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-white hover:bg-amber-50 text-stone-800 border border-amber-300 text-xs font-bold shadow-sm transition-colors flex items-center justify-center gap-1.5"
-              >
-                <MapPin className="w-3.5 h-3.5 text-[#8B1E1E]" />
-                <span>{t.directions}</span>
-              </a>
+                <div className="space-y-1">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <h1 className="font-serif font-black text-xl sm:text-2xl text-[#8B1E1E] flex items-center gap-1.5 leading-snug drop-shadow-xs">
+                      <span>{mandapam.name}</span>
+                      <InstagramVerifiedBadge className="w-5 h-5 shrink-0 drop-shadow-xs" title="Official Verified Mandapam" />
+                    </h1>
+                  </div>
 
-              {mandapam.contactPhone && (
-                <a
-                  href={`tel:${mandapam.contactPhone}`}
-                  className="p-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs font-bold transition-colors flex items-center justify-center"
-                  title="Call Mandapam Organizer"
+                  <p className="text-xs text-stone-700 font-semibold flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                    <span>{mandapam.address}, {mandapam.area}, {mandapam.city}</span>
+                  </p>
+
+                  <p className="text-xs text-stone-800 font-medium pt-0.5 line-clamp-2 leading-relaxed">
+                    {mandapam.description === "Annual Community Navaratri Utsav" ? t.annualCommunityUtsav : (mandapam.description || t.annualCommunityUtsav)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Direct Action Buttons */}
+              <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 pt-1 sm:pt-0">
+                <button
+                  onClick={handleFollowToggle}
+                  className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 ${
+                    following
+                      ? "bg-amber-100 text-[#8B1E1E] border border-amber-400"
+                      : "bg-[#8B1E1E] text-white hover:bg-[#9A241C]"
+                  }`}
                 >
-                  <Phone className="w-4 h-4 text-[#8B1E1E]" />
+                  <Heart className={`w-3.5 h-3.5 ${following ? "fill-current text-[#8B1E1E]" : ""}`} />
+                  <span>{following ? t.followingBtn : t.follow}</span>
+                </button>
+
+                <a
+                  href={`https://maps.google.com/?q=${encodeURIComponent(`${mandapam.name}, ${mandapam.address}, ${mandapam.city}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-white hover:bg-amber-50 text-stone-800 border border-amber-300 text-xs font-bold shadow-sm transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <MapPin className="w-3.5 h-3.5 text-[#8B1E1E]" />
+                  <span>{t.directions}</span>
                 </a>
-              )}
+
+                {/* Quick Add/Change Background Photo button beside Directions */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBgPreviewUrl(customCardBg);
+                    setBgModalOpen(true);
+                  }}
+                  className="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl bg-amber-100/90 hover:bg-amber-200 text-[#8B1E1E] border border-amber-300 text-xs font-bold shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  title="Add or Change Mandapam Image in background"
+                >
+                  <Camera className="w-3.5 h-3.5 text-[#8B1E1E]" />
+                  <span>{customCardBg ? "Change Photo" : "Add Photo"}</span>
+                </button>
+
+                {mandapam.contactPhone && (
+                  <a
+                    href={`tel:${mandapam.contactPhone}`}
+                    className="p-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs font-bold transition-colors flex items-center justify-center"
+                    title="Call Mandapam Organizer"
+                  >
+                    <Phone className="w-4 h-4 text-[#8B1E1E]" />
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -1271,6 +1473,235 @@ export const NavaratriMandapamDetail: React.FC = () => {
         isOpen={qrModalOpen}
         onClose={() => setQrModalOpen(false)}
       />
+
+      {/* MANDAPAM BACKGROUND CUSTOMIZATION MODAL */}
+      {bgModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200">
+          <div className="relative w-full max-w-lg bg-[#FFFDF9] rounded-3xl border-2 border-amber-400 shadow-2xl p-5 sm:p-6 space-y-4 my-8 max-h-[92vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-amber-200 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-[#8B1E1E]">
+                  <Camera className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-black text-lg text-[#8B1E1E]">
+                    Mandapam Card Background
+                  </h3>
+                  <p className="text-[11px] text-stone-600 font-medium">
+                    Add your mandapam photo or select a sacred backdrop
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setBgModalOpen(false)}
+                className="p-1.5 rounded-full hover:bg-stone-200 text-stone-500 hover:text-stone-800 transition-colors cursor-pointer"
+                title="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Live Interactive Preview */}
+            <div>
+              <label className="block text-xs font-bold text-amber-950 mb-1.5 flex items-center justify-between">
+                <span>Card Live Preview</span>
+                {bgPreviewUrl && (
+                  <span className="text-[10px] text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded-full">
+                    Preview Active
+                  </span>
+                )}
+              </label>
+              <div className="relative rounded-2xl border-2 border-amber-300 overflow-hidden shadow-inner p-4 bg-[#FDFBF7] min-h-[110px] flex flex-col justify-center">
+                {bgPreviewUrl ? (
+                  <div className="absolute inset-0 pointer-events-none">
+                    <img
+                      src={bgPreviewUrl}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-amber-50/96 via-amber-50/90 to-amber-50/85 backdrop-blur-[1px]" />
+                  </div>
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-50/90 to-amber-100/40" />
+                )}
+                <div className="relative z-10 flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-amber-100 border-2 border-amber-400 p-0.5 shrink-0 overflow-hidden shadow-sm">
+                    <img
+                      src={mandapam.logoUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg")}
+                      alt="Logo"
+                      className="w-full h-full object-cover rounded-[10px]"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <h4 className="font-serif font-black text-base text-[#8B1E1E] truncate">
+                      {mandapam.name}
+                    </h4>
+                    <p className="text-[11px] text-stone-600 truncate">
+                      {mandapam.address}, {mandapam.city}
+                    </p>
+                    <span className="inline-block text-[10px] font-bold text-amber-900 bg-amber-200/80 px-2 py-0.5 rounded-md mt-0.5">
+                      Annual Community Navaratri Utsav
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Option 1: Upload from Phone / Computer */}
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-amber-950 flex items-center justify-between">
+                <span>1. Upload from Device or Camera</span>
+                <span className="text-[10px] text-amber-700 font-normal">JPG, PNG, WebP</span>
+              </label>
+
+              <label className="cursor-pointer border-2 border-dashed border-amber-300 hover:border-amber-500 bg-amber-50/50 hover:bg-amber-100/50 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-all group">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <div className="w-10 h-10 rounded-full bg-amber-200/80 group-hover:scale-110 flex items-center justify-center text-[#8B1E1E] mb-1.5 transition-transform shadow-xs">
+                  {isUploading ? (
+                    <RefreshCw className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Upload className="w-5 h-5" />
+                  )}
+                </div>
+                <span className="text-xs font-bold text-amber-950 group-hover:text-[#8B1E1E]">
+                  {isUploading ? "Optimizing image..." : "Tap to Choose Mandapam Photo or Camera"}
+                </span>
+                <span className="text-[10px] text-stone-500 mt-0.5">
+                  Takes photos directly from your phone camera or gallery
+                </span>
+              </label>
+            </div>
+
+            {/* Option 2: Image URL */}
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-amber-950">
+                2. Or Enter Image Web Link (URL)
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  placeholder="https://example.com/mandapam-photo.jpg"
+                  value={bgInputUrl}
+                  onChange={(e) => {
+                    setBgInputUrl(e.target.value);
+                    if (e.target.value.trim()) {
+                      setBgPreviewUrl(e.target.value.trim());
+                    }
+                  }}
+                  className="flex-1 px-3 py-2 text-xs rounded-xl bg-white border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 text-stone-900"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (bgInputUrl.trim()) {
+                      setBgPreviewUrl(bgInputUrl.trim());
+                      toast.info("Preview loaded!");
+                    } else {
+                      toast.error("Please enter a valid image URL");
+                    }
+                  }}
+                  className="px-3 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Preview
+                </button>
+              </div>
+            </div>
+
+            {/* Option 3: Curated Sacred Presets */}
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-amber-950">
+                3. Or Choose a Sacred Devotional Backdrop
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {PRESET_MANDAPAM_BACKGROUNDS.map((preset) => {
+                  const isSelected = bgPreviewUrl === preset.url;
+                  return (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => setBgPreviewUrl(preset.url)}
+                      className={`relative rounded-xl overflow-hidden border-2 p-1 text-left transition-all group cursor-pointer ${
+                        isSelected
+                          ? "border-[#8B1E1E] ring-2 ring-amber-400 bg-amber-100"
+                          : "border-amber-200 hover:border-amber-400 bg-white"
+                      }`}
+                    >
+                      <div className="h-12 w-full rounded-lg overflow-hidden bg-stone-100 relative">
+                        <img
+                          src={preset.url}
+                          alt={preset.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                        {isSelected && (
+                          <div className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[#8B1E1E] text-white flex items-center justify-center text-[9px] shadow">
+                            <Check className="w-2.5 h-2.5" />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-[10px] font-bold text-stone-800 truncate mt-1">
+                        {preset.name}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Also apply to cover banner checkbox */}
+            <label className="flex items-center gap-2 cursor-pointer pt-1 text-xs text-stone-700 font-medium select-none">
+              <input
+                type="checkbox"
+                checked={alsoApplyToCover}
+                onChange={(e) => setAlsoApplyToCover(e.target.checked)}
+                className="rounded border-amber-300 text-[#8B1E1E] focus:ring-amber-500 w-4 h-4"
+              />
+              <span>Also apply to the Hero Banner on top</span>
+            </label>
+
+            {/* Modal Actions */}
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-amber-200">
+              {customCardBg ? (
+                <button
+                  type="button"
+                  onClick={handleResetBg}
+                  className="px-3.5 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Reset to Default</span>
+                </button>
+              ) : (
+                <div />
+              )}
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setBgModalOpen(false)}
+                  className="px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleApplyBg()}
+                  disabled={!bgPreviewUrl && !bgInputUrl}
+                  className="px-5 py-2.5 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Apply Background</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
