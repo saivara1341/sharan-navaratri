@@ -34,10 +34,11 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
       {/* ── Header ── */}
       <div className="border-b-2 sm:border-b-4 border-amber-300 pb-4">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <h2 className="font-serif font-black text-2xl md:text-3xl text-[#8B1E1E] leading-tight">
-            {mandapam
-              ? `${mandapam.name} • 10-Day Festival Schedule`
-              : "Sharad Navaratri 2026 Schedule"}
+          <h2 className="font-serif font-black text-2xl md:text-3xl text-[#8B1E1E] leading-tight flex items-baseline gap-2 flex-wrap">
+            <span>{mandapam ? `${mandapam.name} • 10 Sacred Alankaranas` : "Sharad Navaratri"}</span>
+            <span className="font-['Cinzel_Decorative',serif] text-2xl md:text-3xl font-black text-[#A02222] tracking-wider drop-shadow-xs">
+              2026
+            </span>
           </h2>
           <span className="text-xs font-sans font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 shrink-0">
             10 Divine Days
@@ -434,31 +435,81 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                 </div>
               )}
 
-              {/* Offerings & Samagri */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div className="bg-amber-50/80 p-4 rounded-2xl border border-amber-300 space-y-1.5 shadow-xs">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#8B1E1E] uppercase">
-                    <PrasadBowlIcon className="w-4.5 h-4.5 text-amber-700 shrink-0" />
-                    <span>Suggested Naivedhyam (Bhog)</span>
+              {/* Sacred Offerings (Naivedhyam) & Pooja Samagri */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* ── ELEVATED NAIVEDHYAM (BHOG) SECTION ── */}
+                <div className="bg-gradient-to-br from-[#FFFDF7] via-[#FEF3C7]/50 to-[#FDF0CD]/70 p-4 sm:p-5 rounded-2xl border-2 border-amber-400 shadow-md space-y-3 relative overflow-hidden">
+                  <div className="absolute -top-6 -right-6 w-20 h-20 bg-amber-400/20 rounded-full blur-xl pointer-events-none" />
+
+                  {/* Header with authentic temple Naivedhyam medallion */}
+                  <div className="flex items-center justify-between gap-2 relative z-10">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#F59E0B] via-[#D97706] to-[#92400E] p-1 shadow-md border border-amber-300/80 flex items-center justify-center shrink-0">
+                        <PrasadBowlIcon className="w-6 h-6 text-white drop-shadow-xs" />
+                      </div>
+                      <div>
+                        <h4 className="font-serif font-black text-xs sm:text-sm text-[#8B1E1E] uppercase tracking-wide">
+                          Suggested Naivedhyam (Bhog)
+                        </h4>
+                        <span className="text-[10px] font-bold text-amber-900/80 block">
+                          పవిత్ర నైవేద్య సమర్పణ
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-[9px] uppercase font-black tracking-wider px-2 py-0.5 rounded-full bg-amber-200/80 text-amber-950 border border-amber-300/90 shadow-2xs shrink-0">
+                      Maha Prasad
+                    </span>
                   </div>
-                  <p className="text-xs text-stone-800 leading-relaxed font-semibold">
-                    {selectedDay.suggestedOfferings}
-                  </p>
-                  <p className="text-[11px] text-amber-900/80 italic pt-1">
-                    ✨ Preparing Naivedhyam with pure devotion and offering fresh warm prasad brings manifold blessings.
-                  </p>
+
+                  {/* Offerings list presentation */}
+                  <div className="relative z-10 bg-white/95 rounded-xl border border-amber-300/80 p-3 shadow-2xs">
+                    <p className="text-xs sm:text-sm text-stone-900 leading-relaxed font-bold font-serif">
+                      {selectedDay.suggestedOfferings}
+                    </p>
+                  </div>
+
+                  {/* Devotional note (No sparkles) */}
+                  <div className="relative z-10 flex items-start gap-1.5 text-[11px] text-amber-950/90 font-medium bg-amber-100/60 p-2 rounded-lg border border-amber-200/70">
+                    <span className="text-xs shrink-0 select-none">🪔</span>
+                    <p className="leading-snug">
+                      Preparing Naivedhyam with pure devotion and offering fresh warm prasad brings manifold divine blessings.
+                    </p>
+                  </div>
                 </div>
-                <div className="bg-amber-50/80 p-4 rounded-2xl border border-amber-300 space-y-1.5 shadow-xs">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#8B1E1E] uppercase">
-                    <ShoppingBag className="w-4.5 h-4.5 text-amber-700 shrink-0" />
-                    <span>Devotee Pooja Samagri</span>
+
+                {/* Devotee Pooja Samagri */}
+                <div className="bg-gradient-to-br from-[#FFFDF7] via-[#FFF8EB] to-[#FEF3C7]/40 p-4 sm:p-5 rounded-2xl border-2 border-amber-300/90 space-y-3 shadow-sm relative overflow-hidden">
+                  <div className="flex items-center justify-between gap-2 relative z-10">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 p-1 shadow-md border border-amber-300/80 flex items-center justify-center shrink-0">
+                        <ShoppingBag className="w-4.5 h-4.5 text-white drop-shadow-xs" />
+                      </div>
+                      <div>
+                        <h4 className="font-serif font-black text-xs sm:text-sm text-[#8B1E1E] uppercase tracking-wide">
+                          Devotee Pooja Samagri
+                        </h4>
+                        <span className="text-[10px] font-bold text-amber-900/80 block">
+                          పూజా ద్రవ్యాలు & పుష్పాలు
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-[9px] uppercase font-black tracking-wider px-2 py-0.5 rounded-full bg-stone-100 text-stone-800 border border-stone-300/80 shadow-2xs shrink-0">
+                      Samagri
+                    </span>
                   </div>
-                  <p className="text-xs text-stone-800 leading-relaxed font-semibold">
-                    {selectedDay.suggestedItems}
-                  </p>
-                  <p className="text-[11px] text-amber-900/80 italic pt-1">
-                    🌿 Devotees may bring fresh flowers of the sacred day's color to offer during community archana.
-                  </p>
+
+                  <div className="relative z-10 bg-white/95 rounded-xl border border-amber-200/80 p-3 shadow-2xs">
+                    <p className="text-xs sm:text-sm text-stone-800 leading-relaxed font-semibold">
+                      {selectedDay.suggestedItems}
+                    </p>
+                  </div>
+
+                  <div className="relative z-10 flex items-start gap-1.5 text-[11px] text-stone-700 font-medium bg-amber-50/70 p-2 rounded-lg border border-amber-200/60">
+                    <span className="text-xs shrink-0 select-none">🌿</span>
+                    <p className="leading-snug">
+                      Devotees may bring fresh flowers of the sacred day's color to offer during community archana.
+                    </p>
+                  </div>
                 </div>
               </div>
 
