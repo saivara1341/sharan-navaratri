@@ -147,14 +147,27 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
         </div>
       )}
 
-      {/* Run Your Ads link below the ad frame */}
-      <div className="flex items-center justify-center pt-2.5 pb-1">
+      {/* Run Your Ads button below the ad frame */}
+      <div className="flex items-center justify-center pt-3 pb-1">
         <Link
           to="/navaratri/advertise"
-          className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 border border-amber-300/80 text-xs sm:text-sm font-bold text-amber-900 shadow-2xs hover:shadow-xs transition-all group"
+          className="relative inline-flex items-center justify-center px-8 py-2.5 sm:px-10 sm:py-3 font-sans font-bold text-xs sm:text-sm tracking-wide text-white transition-all transform hover:scale-105 active:scale-95 group drop-shadow-md hover:drop-shadow-lg"
+          title="Run Your Ads on Sharan Navaratri"
         >
-          <span>Run Your Ads</span>
-          <span className="text-amber-700 group-hover:translate-x-1 transition-transform">→</span>
+          {/* Pointed pill / leaf shape background matching reference design */}
+          <svg
+            viewBox="0 0 160 40"
+            preserveAspectRatio="none"
+            className="absolute inset-0 w-full h-full text-[#C12535] group-hover:text-[#A81B2B] transition-colors"
+          >
+            <path
+              d="M 18 0 L 142 0 C 151 0, 157 12, 160 20 C 157 28, 151 40, 142 40 L 18 40 C 9 40, 3 28, 0 20 C 3 12, 9 0, 18 0 Z"
+              fill="currentColor"
+            />
+          </svg>
+          <span className="relative z-10 font-bold text-white select-none">
+            Run Your Ads
+          </span>
         </Link>
       </div>
       {/* Modal to upload image, enter URL/phone, and make payment */}
