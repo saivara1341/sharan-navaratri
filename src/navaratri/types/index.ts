@@ -193,6 +193,7 @@ export interface Activity {
   bookingEnabled: boolean;
   instructions?: string;
   published: boolean;
+  fee?: string;
 }
 
 export interface PallakiSeva {

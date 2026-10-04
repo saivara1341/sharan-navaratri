@@ -964,7 +964,9 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 <div className="pt-2 border-t border-amber-200/60 flex items-center justify-between">
                   <span className="text-[11px] font-bold text-emerald-800 flex items-center gap-1">
                     <CheckCircle2 className="w-3 h-3" />
-                    {t.freeEntry}
+                    {act.fee && act.fee.trim() && act.fee.toLowerCase() !== "free" && act.fee !== "0"
+                      ? (act.fee.startsWith("₹") ? `Entry Fee: ${act.fee}` : `Entry Fee: ₹${act.fee}`)
+                      : t.freeEntry}
                   </span>
                   <button
                     type="button"

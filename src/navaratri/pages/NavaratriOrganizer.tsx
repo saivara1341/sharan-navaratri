@@ -141,6 +141,7 @@ export const NavaratriOrganizer: React.FC = () => {
   const [eventEndTime, setEventEndTime] = useState("09:30 PM");
   const [eventLocation, setEventLocation] = useState("Mandapam Main Stage");
   const [eventDescription, setEventDescription] = useState("");
+  const [eventFee, setEventFee] = useState("");
   const [eventBookingEnabled, setEventBookingEnabled] = useState(false);
 
   // Two-Step Delete Account Modal State
@@ -470,12 +471,14 @@ export const NavaratriOrganizer: React.FC = () => {
       endTime: eventEndTime.trim(),
       location: eventLocation.trim() || "Mandapam Main Stage",
       description: eventDescription.trim(),
+      fee: eventFee.trim() || undefined,
       bookingEnabled: eventBookingEnabled,
       published: true
     });
 
     setEventTitle("");
     setEventDescription("");
+    setEventFee("");
     setCustomCategory("");
     setEventModalOpen(false);
     toast.success("Festival event added and published successfully!");
@@ -922,113 +925,75 @@ export const NavaratriOrganizer: React.FC = () => {
         </button>
       </div>
 
-      {/* TAB 1: 10-DAY FESTIVAL SCHEDULE MANAGER */}
+      {/* TAB 1: 10-DAY FESTIVAL SCHEDULE & QUICK EVENT CREATOR */}
       {activeTab === "days" && (
         <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-amber-50/80 p-4 rounded-2xl border border-amber-300">
-            <div>
-              <h2 className="font-serif font-black text-xl text-[#8B1E1E]">
-                Day-to-Day Festival Data (All 10 Divine Days)
-              </h2>
-              <p className="text-xs text-stone-600 mt-0.5">
-                Click "Edit Day Data" on any day to customize Alankaranas, dual morning/evening sessions, pooja timings, Bhog (Naivedhyam), and Annadanam.
+          {/* Action Card: Add Events (Dandiya, Pooja, Archanas, etc.) */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 rounded-3xl bg-gradient-to-r from-amber-50 via-orange-50 to-amber-100/70 border-2 border-amber-300 shadow-sm">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <DandiyaIcon className="w-5 h-5 text-[#8B1E1E]" />
+                <h2 className="font-serif font-black text-lg sm:text-xl text-[#8B1E1E]">
+                  Add Mandapam Events (Dandiya, Pooja, Archana)
+                </h2>
+              </div>
+              <p className="text-xs text-stone-700 leading-relaxed max-w-2xl">
+                Quickly add special events like Dandiya nights, Homams, Archanas, or cultural programs with title, date, time, and entry fee so devotees visiting your page see them on their respective dates.
               </p>
             </div>
             <button
               type="button"
-              onClick={() => handleOpenDrawerForDay(1)}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs font-bold shadow-md transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+              onClick={() => setEventModalOpen(true)}
+              className="px-5 py-3 rounded-2xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer active:scale-95"
             >
-              <Upload className="w-3.5 h-3.5" />
-              <span>Quick Update Today (Day 1)</span>
+              <Plus className="w-4 h-4" />
+              <span>+ Add Event (Dandiya, Pooja, Archana)</span>
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {STANDARD_NAVARATRI_DAYS.map((day) => {
-              const setting = daySettings.find((s) => s.mandapamId === currentMandapam.id && s.dayNumber === day.dayNumber);
-              const customAlankarana = alankaranas.find((a) => a.mandapamId === currentMandapam.id && a.date === day.date);
+          {/* Clean Day 1 to Day 10 Buttons */}
+          <div className="p-5 rounded-3xl bg-white border-2 border-amber-200/90 shadow-xs space-y-3">
+            <div className="flex items-center justify-between border-b border-amber-100 pb-2">
+              <span className="text-xs font-black text-[#8B1E1E] uppercase tracking-wider">
+                Select Festival Day to Edit Details & Alankarana:
+              </span>
+              <span className="text-[11px] font-bold text-stone-500">
+                Day 1 to Day 10
+              </span>
+            </div>
 
-              const deviTitle = setting?.isDualAlankarana 
-                ? `${setting.morningDeviName || day.deviName} (Morning) / ${setting.eveningDeviName || day.deviName} (Evening)`
-                : (setting?.useStandardDevi === false && setting?.customDeviName ? setting.customDeviName : day.deviName);
+            <div className="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-2.5">
+              {STANDARD_NAVARATRI_DAYS.map((day) => {
+                const setting = daySettings.find((s) => s.mandapamId === currentMandapam.id && s.dayNumber === day.dayNumber);
+                const isCustomized = Boolean(setting);
 
-              const poojaTimings = setting?.useStandardPooja === false && setting?.customPoojaTimings
-                ? setting.customPoojaTimings
-                : "Morning: 07:30 AM | Evening: 06:30 PM (Maha Harathi)";
-
-              const naivedhyam = setting?.useStandardNaivedhyam === false && setting?.customNaivedhyam
-                ? setting.customNaivedhyam
-                : day.suggestedOfferings;
-
-              const isAnnadanam = setting?.annadanamEnabled ?? true;
-
-              return (
-                <div
-                  key={day.dayNumber}
-                  className="p-4 sm:p-5 rounded-3xl bg-white border-2 border-amber-200/90 hover:border-amber-400 shadow-sm hover:shadow-md transition-all space-y-3"
-                >
-                  <div className="flex items-center justify-between border-b border-amber-100 pb-2.5">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shadow-xs text-white"
-                        style={{ backgroundColor: day.colorHex }}
-                      >
-                        D{day.dayNumber}
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-bold text-amber-900 uppercase">Day {day.dayNumber} • {day.date}</span>
-                        <h3 className="font-serif font-black text-base text-stone-900 leading-tight">
-                          {deviTitle}
-                        </h3>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => handleOpenDrawerForDay(day.dayNumber)}
-                      className="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-[#8B1E1E] text-xs font-bold transition-colors cursor-pointer"
+                return (
+                  <button
+                    key={day.dayNumber}
+                    type="button"
+                    onClick={() => handleOpenDrawerForDay(day.dayNumber)}
+                    className="relative p-3 rounded-2xl bg-stone-50 hover:bg-amber-50 border-2 border-amber-200 hover:border-[#8B1E1E] shadow-2xs hover:shadow-md transition-all flex flex-col items-center justify-center text-center group cursor-pointer active:scale-95"
+                    title={`Day ${day.dayNumber} • ${day.date} (Click to Edit)`}
+                  >
+                    <div
+                      className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs text-white shadow-xs mb-1.5 transition-transform group-hover:scale-110"
+                      style={{ backgroundColor: day.colorHex || "#8B1E1E" }}
                     >
-                      Edit Day {day.dayNumber}
-                    </button>
-                  </div>
-
-                  {/* Dual Session Badge if applicable */}
-                  {setting?.isDualAlankarana && (
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-50 border border-amber-300 text-[11px] font-semibold text-[#8B1E1E]">
-                      <Sun className="w-3.5 h-3.5 text-amber-600" />
-                      <span>Morning: {setting.morningDeviName}</span>
-                      <span className="text-stone-400">|</span>
-                      <Moon className="w-3.5 h-3.5 text-indigo-600" />
-                      <span>Evening: {setting.eveningDeviName}</span>
+                      D{day.dayNumber}
                     </div>
-                  )}
-
-                  {/* Timings, Bhog, and Annadanam */}
-                  <div className="space-y-1.5 text-xs text-stone-700 pt-1">
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                      <span className="truncate">{poojaTimings}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <PrasadBowlIcon className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                      <span className="truncate"><strong className="text-amber-950">Bhog:</strong> {naivedhyam}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Utensils className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                      <span>
-                        <strong className="text-amber-950">Annadanam:</strong>{" "}
-                        {isAnnadanam ? (
-                          <span className="text-emerald-800 font-bold">Active (12:30 PM - 03:30 PM)</span>
-                        ) : (
-                          <span className="text-stone-500">Not active today</span>
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+                    <span className="font-serif font-black text-xs text-stone-900 group-hover:text-[#8B1E1E]">
+                      Day {day.dayNumber}
+                    </span>
+                    <span className="text-[10px] text-stone-500 font-medium">
+                      {day.date.slice(5)}
+                    </span>
+                    {isCustomized && (
+                      <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white" title="Customized" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
@@ -1882,6 +1847,34 @@ export const NavaratriOrganizer: React.FC = () => {
             </div>
 
             <form onSubmit={handleCreateEvent} className="p-5 sm:p-6 space-y-4 text-xs font-medium text-stone-800">
+              {/* Quick Preset Templates */}
+              <div className="space-y-1 bg-amber-50/70 p-3 rounded-2xl border border-amber-200">
+                <span className="text-[10px] text-amber-900 font-bold uppercase tracking-wider block">
+                  Quick Event Suggestions (Tap to Auto-Fill):
+                </span>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {[
+                    { label: "Dandiya Raas", cat: "Game", title: "Dandiya Raas & Garba Utsav" },
+                    { label: "Chandi Homam", cat: "Pooja", title: "Maha Chandi Yagam & Purnahuthi" },
+                    { label: "Kumkumarchana", cat: "Pooja", title: "Sri Lalitha Kumkumarchana Seva" },
+                    { label: "Bhajan Sandhya", cat: "Bhajan", title: "Devotional Bhajan Sandhya" },
+                    { label: "Bathukamma", cat: "Cultural Program", title: "Maha Bathukamma Celebrations" }
+                  ].map((preset) => (
+                    <button
+                      key={preset.label}
+                      type="button"
+                      onClick={() => {
+                        setEventTitle(preset.title);
+                        setEventCategory(preset.cat);
+                      }}
+                      className="text-[10px] px-2.5 py-1 rounded-xl bg-white hover:bg-amber-100 text-[#8B1E1E] border border-amber-300 font-semibold transition-all cursor-pointer shadow-2xs"
+                    >
+                      + {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div>
                 <label className="block text-stone-700 font-bold mb-1">
                   Event Title *
@@ -1906,7 +1899,7 @@ export const NavaratriOrganizer: React.FC = () => {
                     onChange={(e) => setEventCategory(e.target.value as Activity["category"])}
                     className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
                   >
-                    <option value="Pooja">Pooja / Homam</option>
+                    <option value="Pooja">Pooja / Homam / Archana</option>
                     <option value="Game">Dandiya / Garba</option>
                     <option value="Cultural Program">Cultural Program</option>
                     <option value="Bhajan">Bhajan Sandhya</option>
@@ -1928,8 +1921,7 @@ export const NavaratriOrganizer: React.FC = () => {
                     value={eventDate}
                     onChange={(e) => setEventDate(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
-                  >
-                  </input>
+                  />
                 </div>
 
                 {eventCategory === "Other" && (
@@ -1977,41 +1969,55 @@ export const NavaratriOrganizer: React.FC = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-stone-700 font-bold mb-1">
-                  Location / Venue *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={eventLocation}
-                  onChange={(e) => setEventLocation(e.target.value)}
-                  placeholder="e.g. Mandapam Main Stage / Community Ground"
-                  className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
-                />
-                <div className="flex flex-wrap gap-1.5 pt-1.5">
-                  <span className="text-[10px] text-stone-500 font-semibold self-center">Choose Location:</span>
-                  {[
-                    "Mandapam Main Stage",
-                    "Mandapam Sanctum (Garbhalayam)",
-                    "Community Festival Ground",
-                    "Annadanam Dining Pandal",
-                    "Temple Street Main Arch",
-                    "Cultural Stage"
-                  ].map((locPreset) => (
-                    <button
-                      key={locPreset}
-                      type="button"
-                      onClick={() => setEventLocation(locPreset)}
-                      className={`text-[10px] px-2 py-0.5 rounded-lg border transition-colors cursor-pointer ${
-                        eventLocation === locPreset
-                          ? "bg-amber-500 text-white border-amber-600 font-bold"
-                          : "bg-stone-100 hover:bg-amber-100 text-stone-700 border-stone-200"
-                      }`}
-                    >
-                      {locPreset}
-                    </button>
-                  ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-bold mb-1">
+                    Location / Venue *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={eventLocation}
+                    onChange={(e) => setEventLocation(e.target.value)}
+                    placeholder="e.g. Mandapam Main Stage"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
+                  />
+                  <div className="flex flex-wrap gap-1 pt-1.5">
+                    {[
+                      "Mandapam Main Stage",
+                      "Garbhalayam Sanctum",
+                      "Festival Ground",
+                      "Dining Pandal"
+                    ].map((locPreset) => (
+                      <button
+                        key={locPreset}
+                        type="button"
+                        onClick={() => setEventLocation(locPreset)}
+                        className={`text-[10px] px-2 py-0.5 rounded-lg border transition-colors cursor-pointer ${
+                          eventLocation === locPreset
+                            ? "bg-amber-500 text-white border-amber-600 font-bold"
+                            : "bg-stone-100 hover:bg-amber-100 text-stone-700 border-stone-200"
+                        }`}
+                      >
+                        {locPreset}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-bold mb-1">
+                    Entry Fee / Ticket Charge (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={eventFee}
+                    onChange={(e) => setEventFee(e.target.value)}
+                    placeholder="Free or amount (e.g. ₹50)"
+                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
+                  />
+                  <p className="text-[10px] text-stone-500 pt-1">
+                    Leave blank or type Free for free devotee entry.
+                  </p>
                 </div>
               </div>
 
