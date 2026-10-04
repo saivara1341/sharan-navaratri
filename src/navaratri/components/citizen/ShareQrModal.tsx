@@ -13,7 +13,8 @@ import {
   Camera, 
   Sparkles, 
   Layers, 
-  Image as ImageIcon 
+  Image as ImageIcon,
+  ChevronDown
 } from "lucide-react";
 import { toast } from "sonner";
 import { navaratriAsset } from "../../utils/navaratriAssets";
@@ -562,12 +563,12 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
 
           {/* 2. BIG DEITY / MANDAPAM PHOTO SELECTOR */}
           <div className="space-y-2 pt-1">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
               <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
-                <Sparkles className="w-4 h-4 text-amber-700" />
+                <Sparkles className="w-4 h-4 text-amber-700 shrink-0" />
                 <span>2. Select Deity or Upload Mandapam Photo (Big Size)</span>
               </div>
-              <label className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-[11px] font-bold cursor-pointer shadow-xs active:scale-95 transition-all">
+              <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-[11px] font-bold cursor-pointer shadow-xs active:scale-95 transition-all shrink-0">
                 <Upload className="w-3.5 h-3.5" />
                 <span>Upload Idol Photo</span>
                 <input
@@ -579,7 +580,35 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
               </label>
             </div>
 
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
+            {/* Mobile View Dropdown (block sm:hidden) */}
+            <div className="block sm:hidden">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                  <img
+                    src={activeDeity.url}
+                    alt={activeDeity.name}
+                    className="w-6 h-6 rounded-md object-cover border border-amber-300 shadow-2xs"
+                  />
+                </div>
+                <select
+                  value={selectedDeityId}
+                  onChange={(e) => setSelectedDeityId(e.target.value)}
+                  className="w-full pl-11 pr-9 py-2.5 rounded-xl border-2 border-amber-300 bg-white text-xs font-bold text-stone-800 shadow-xs focus:outline-none focus:ring-2 focus:ring-[#8B1E1E] focus:border-[#8B1E1E] appearance-none cursor-pointer"
+                >
+                  {deityOptions.map((deity) => (
+                    <option key={deity.id} value={deity.id}>
+                      {deity.name} {deity.subtitle ? `• ${deity.subtitle}` : ""}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-stone-500">
+                  <ChevronDown className="w-4 h-4 text-[#8B1E1E]" />
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop / Tablet View Pills (hidden sm:flex) */}
+            <div className="hidden sm:flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
               {deityOptions.map((deity) => {
                 const isSelected = selectedDeityId === deity.id;
                 return (
