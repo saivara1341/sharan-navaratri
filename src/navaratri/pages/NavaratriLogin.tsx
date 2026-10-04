@@ -230,22 +230,18 @@ export const NavaratriLogin: React.FC = () => {
       {/* Subtle vignette / overlay for optimal contrast */}
       <div className="absolute inset-0 bg-black/10 pointer-events-none" />
 
-      {/* Content Layout — Diagonal arrangement on desktop: Top-Left Ad ↘ Center Card ↘ Bottom-Right Ad */}
-      <div className="relative z-10 w-full flex items-center justify-center gap-6 lg:gap-8 max-w-6xl mx-auto">
-        {/* Desktop Left Ad: Diagonal Top Left */}
-        <div className="hidden md:block w-52 xl:w-64 shrink-0 self-start pt-2">
-          <NavaratriFlankingAdBox position="left" />
-        </div>
+      {/* Desktop sponsor cards are pinned to opposite wallpaper corners. */}
+      <div className="hidden md:block absolute z-10 left-4 lg:left-7 xl:left-10 top-4 lg:top-7 xl:top-10 w-52 xl:w-64">
+        <NavaratriFlankingAdBox position="left" />
+      </div>
 
-        {/* Center Auth Card */}
-        <div className="w-full max-w-sm flex items-center justify-center self-center">
-          {authCard}
-        </div>
+      <div className="hidden md:block absolute z-10 right-4 lg:right-7 xl:right-10 bottom-4 lg:bottom-7 xl:bottom-10 w-52 xl:w-64">
+        <NavaratriFlankingAdBox position="right" />
+      </div>
 
-        {/* Desktop Right Ad: Diagonal Bottom Right */}
-        <div className="hidden md:block w-52 xl:w-64 shrink-0 self-end pb-2">
-          <NavaratriFlankingAdBox position="right" />
-        </div>
+      {/* Center Auth Card */}
+      <div className="relative z-20 w-full max-w-sm flex items-center justify-center">
+        {authCard}
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ export const NavaratriQrScannerModal: React.FC = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
+  const [cameraStarting, setCameraStarting] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [facingMode, setFacingMode] = useState<"environment" | "user">("environment");
   const [scanSuccess, setScanSuccess] = useState<string | null>(null);
@@ -21,18 +22,6 @@ export const NavaratriQrScannerModal: React.FC = () => {
   const animationFrameRef = useRef<number | null>(null);
   const isScanningRef = useRef<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  // Listen for open-scanner event
-  useEffect(() => {
-    const handleOpen = () => {
-      setIsOpen(true);
-      setScanSuccess(null);
-      setCameraError(null);
-      setManualInput("");
-    };
-    window.addEventListener("navaratri:open-scanner", handleOpen);
-    return () => window.removeEventListener("navaratri:open-scanner", handleOpen);
-  }, []);
 
   // Stop camera tracks cleanly
   const stopCamera = useCallback(() => {
@@ -49,6 +38,7 @@ export const NavaratriQrScannerModal: React.FC = () => {
       videoRef.current.srcObject = null;
     }
     setCameraActive(false);
+    setCameraStarting(false);
   }, []);
 
   const closeModal = useCallback(() => {
@@ -172,36 +162,59 @@ export const NavaratriQrScannerModal: React.FC = () => {
   }, [handleDetectedCode]);
 
   // Start video stream
-  const startCamera = useCallback(async () => {
+  const startCamera = useCallback(async (requestedFacingMode?: "environment" | "user") => {
     stopCamera();
     setCameraError(null);
+    setCameraStarting(true);
     isScanningRef.current = false;
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       setCameraError("Camera access is not supported by your browser. You can upload a QR image or select a mandapam below.");
+      setCameraStarting(false);
       return;
     }
 
     try {
+      const activeFacingMode = requestedFacingMode || facingMode;
       const constraints: MediaStreamConstraints = {
         video: {
-          facingMode: { ideal: facingMode },
+          facingMode: { ideal: activeFacingMode },
           width: { ideal: 1280 },
           height: { ideal: 720 }
         },
         audio: false
       };
 
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (primaryError: unknown) {
+        const primary = primaryError as { name?: string };
+        if (primary.name === "OverconstrainedError" || primary.name === "ConstraintNotSatisfiedError") {
+          stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        } else {
+          throw primaryError;
+        }
+      }
       streamRef.current = stream;
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.setAttribute("playsinline", "true");
-        await videoRef.current.play();
-        setCameraActive(true);
-        animationFrameRef.current = requestAnimationFrame(scanFrame);
+      // The camera request is initiated from the Scan QR click. Give React a few
+      // frames to mount the modal's video element before attaching the stream.
+      for (let attempt = 0; attempt < 12 && !videoRef.current; attempt += 1) {
+        await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
       }
+      if (!videoRef.current) {
+        stream.getTracks().forEach((track) => track.stop());
+        streamRef.current = null;
+        throw new Error("Camera preview could not be mounted");
+      }
+
+      videoRef.current.srcObject = stream;
+      videoRef.current.setAttribute("playsinline", "true");
+      await videoRef.current.play();
+      setCameraActive(true);
+      setCameraStarting(false);
+      animationFrameRef.current = requestAnimationFrame(scanFrame);
     } catch (err: unknown) {
       const e = err as { name?: string; message?: string };
       if (e.name === "NotAllowedError" || e.name === "PermissionDeniedError") {
@@ -212,24 +225,34 @@ export const NavaratriQrScannerModal: React.FC = () => {
         setCameraError("Unable to access camera. Please upload a photo of the QR code or enter mandapam code.");
       }
       setCameraActive(false);
+      setCameraStarting(false);
     }
   }, [facingMode, scanFrame, stopCamera]);
 
+  // Request the camera directly inside the original Scan QR user interaction.
+  // This preserves the user gesture required by iOS Safari and some Android browsers.
+  useEffect(() => {
+    const handleOpen = () => {
+      setIsOpen(true);
+      setScanSuccess(null);
+      setCameraError(null);
+      setManualInput("");
+      void startCamera();
+    };
+    window.addEventListener("navaratri:open-scanner", handleOpen);
+    return () => window.removeEventListener("navaratri:open-scanner", handleOpen);
+  }, [startCamera]);
+
   // Toggle Camera Facing Mode (back/front)
   const toggleFacingMode = () => {
-    setFacingMode((prev) => (prev === "environment" ? "user" : "environment"));
+    const nextFacingMode = facingMode === "environment" ? "user" : "environment";
+    setFacingMode(nextFacingMode);
+    void startCamera(nextFacingMode);
   };
 
   useEffect(() => {
-    if (isOpen) {
-      startCamera();
-    } else {
-      stopCamera();
-    }
-    return () => {
-      stopCamera();
-    };
-  }, [isOpen, facingMode, startCamera, stopCamera]);
+    return () => stopCamera();
+  }, [stopCamera]);
 
   // Handle uploaded image file scanning
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -314,6 +337,19 @@ export const NavaratriQrScannerModal: React.FC = () => {
             autoPlay
             muted
           />
+
+          {/* Camera startup / permission prompt state */}
+          {cameraStarting && !cameraActive && !cameraError && !scanSuccess && (
+            <div className="absolute inset-0 bg-stone-950 flex flex-col items-center justify-center gap-3 px-6 text-center text-white">
+              <RefreshCw className="w-9 h-9 text-amber-400 animate-spin" />
+              <div>
+                <p className="text-sm font-bold text-amber-100">Starting camera...</p>
+                <p className="mt-1 text-[11px] leading-relaxed text-stone-300">
+                  Allow camera access when your browser asks, then point the rear camera at the Mandapam QR code.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Scanner Overlay Graphics */}
           {cameraActive && !scanSuccess && (
@@ -445,15 +481,12 @@ export const NavaratriQrScannerModal: React.FC = () => {
               }}
               className="p-3 rounded-2xl bg-amber-50 hover:bg-amber-100/70 border border-amber-300 hover:border-amber-400 transition-all cursor-pointer flex items-center justify-between group shadow-xs"
             >
-              <div className="space-y-0.5 pr-2">
-                <span className="text-[10px] font-bold text-amber-900 uppercase tracking-wider block">
+              <div className="w-full flex items-center justify-between gap-3">
+                <span className="text-[10px] font-bold text-amber-900 uppercase tracking-wider">
                   📋 Organizer Onboarding
                 </span>
-                <p className="text-xs font-serif font-black text-[#8B1E1E] group-hover:text-amber-900 transition-colors">
+                <p className="shrink-0 text-right text-xs font-serif font-black text-[#8B1E1E] group-hover:text-amber-900 transition-colors">
                   Register Mandapam →
-                </p>
-                <p className="text-[10px] text-stone-600 leading-tight">
-                  Create an official digital notice board, receive permanent QR standee, and manage citizen bookings
                 </p>
               </div>
             </div>
