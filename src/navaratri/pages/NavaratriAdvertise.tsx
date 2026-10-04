@@ -192,20 +192,26 @@ export const NavaratriAdvertise: React.FC = () => {
     <>
       <div className="max-w-4xl mx-auto px-3 sm:px-6 space-y-5 sm:space-y-8 pb-24 font-sans">
       {/* Hero Banner */}
-      <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-gradient-to-r from-[#9A241C] via-[#8B1E1E] to-[#B45309] text-white p-4 sm:p-8 shadow-xl border-2 sm:border-4 border-amber-400/40">
-        <div
-          className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-30 pointer-events-none"
-          style={{ backgroundImage: `url("${navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg")}")` }}
+      <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#7A1515] text-white p-5 sm:p-8 md:p-10 shadow-2xl border-2 sm:border-4 border-amber-400/60">
+        {/* Full-bleed complete container background image */}
+        <img
+          src={navaratriAsset("/navaratri/assets/advertise-hero-banner-bg.jpg")}
+          alt="Navaratri Festive Background"
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover object-right sm:object-center pointer-events-none select-none"
         />
-        <div className="relative z-10 space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-400/20 text-amber-200 text-[10px] sm:text-xs font-bold border border-amber-300/40 backdrop-blur-sm">
+        {/* Subtle dark gradient overlay to ensure perfect text contrast across all screen sizes */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/35 to-black/20 pointer-events-none" />
+
+        <div className="relative z-10 space-y-2 sm:space-y-3 max-w-2xl">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/25 text-amber-200 text-[10px] sm:text-xs font-bold border border-amber-300/50 backdrop-blur-md shadow-xs">
             <Store className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300 shrink-0" />
             <span className="truncate">Hyper-Local Advertising • 15,000+ Devotees</span>
           </div>
-          <h1 className="font-['Cinzel',serif] font-black text-lg sm:text-3xl md:text-4xl text-white drop-shadow leading-tight">
+          <h1 className="font-['Cinzel',serif] font-black text-xl sm:text-3xl md:text-4xl text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] leading-tight">
             Promote Your Business from ₹49/day
           </h1>
-          <p className="text-[11px] sm:text-sm text-amber-100/90 max-w-2xl font-medium leading-snug">
+          <p className="text-xs sm:text-sm md:text-base text-amber-100/95 font-medium leading-relaxed drop-shadow-sm">
             Reach devotees discovering Mandapams in your zone — sweet stalls, flowers, pooja items, silks &amp; more.
           </p>
         </div>
