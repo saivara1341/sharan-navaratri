@@ -307,7 +307,7 @@ export const NavaratriHome: React.FC = () => {
 
           {/* Center Design: Scan QR + Swastika + Register Durga Mandapam + Mandapam Login */}
           <div className="flex-1 flex flex-col items-center justify-center max-w-2xl w-full">
-            <div className="flex flex-row flex-nowrap items-center justify-center gap-1.5 min-[360px]:gap-2.5 sm:gap-8 pt-1 pb-1 w-full px-2">
+            <div className="flex flex-row flex-nowrap items-center justify-center gap-1.5 min-[360px]:gap-2.5 sm:gap-8 pt-0.5 sm:pt-1 pb-0 sm:pb-1 w-full px-2">
               <button
                 type="button"
                 onClick={handleOpenScanner}
@@ -362,7 +362,7 @@ export const NavaratriHome: React.FC = () => {
             </div>
 
             {/* Organizer Quick Access: Login for Registered Mandapams vs Register New */}
-            <div className="w-full flex items-center justify-center px-4 -mt-1 mb-2">
+            <div className="w-full flex items-center justify-center px-2 sm:px-4 mt-2 sm:-mt-1 mb-0.5 sm:mb-2">
               <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 px-3.5 py-1.5 rounded-2xl bg-gradient-to-r from-amber-50 via-white to-orange-50 border border-amber-300 shadow-xs text-xs text-stone-700">
                 <span className="font-semibold text-stone-800 flex items-center gap-1.5">
                   <span>🚩</span>
