@@ -710,9 +710,13 @@ export const NavaratriOrganizer: React.FC = () => {
                 <span>{currentMandapam.name}</span>
                 <InstagramVerifiedBadge className="w-6 h-6 shrink-0 drop-shadow" title="Official Verified Mandapam" />
               </h1>
-              <p className="text-xs text-amber-100">
-                {currentMandapam.area}, {currentMandapam.city} • Organizer: {currentMandapam.organizerName} ({currentMandapam.organizerMobile})
-              </p>
+              <div className="text-xs text-amber-100 flex flex-col sm:flex-row sm:items-center sm:gap-1.5 leading-snug">
+                <span>{currentMandapam.area}, {currentMandapam.city}</span>
+                <span className="hidden sm:inline opacity-70">•</span>
+                <span className="text-amber-200/95 sm:text-amber-100 font-medium sm:font-normal">
+                  Organizer: {currentMandapam.organizerName} ({currentMandapam.organizerMobile})
+                </span>
+              </div>
             </div>
           </div>
 
