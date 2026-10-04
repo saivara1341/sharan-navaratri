@@ -336,5 +336,10 @@ export interface Advertisement {
   utrNumber?: string;
   paymentScreenshotUrl?: string;
   pricePaid?: number;
+  format?: "BANNER" | "BUSINESS_CARD" | "TEXT_BULLETIN";
+  contactPerson?: string;
+  tagline?: string;
+  bulletPoints?: string[];
+  cardTheme?: "terracotta" | "maroon" | "gold" | "royal";
   createdAt: string;
 }

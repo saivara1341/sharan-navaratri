@@ -23,10 +23,24 @@ import {
   X,
   Play,
   Clock,
-  Utensils
+  Utensils,
+  CreditCard,
+  FileText,
+  Sparkles,
+  Smartphone,
+  Monitor,
+  RefreshCw,
+  Info,
+  CheckCheck
 } from "lucide-react";
 import { toast } from "sonner";
 import { getDefaultCtaForCategory } from "../utils/adButtonHelpers";
+import {
+  inspectImageAspectRatio,
+  convertImageToLandscapeCanvas,
+  generateVisitingCardCanvas,
+  generateTextBulletinCanvas
+} from "../utils/adCreativeHelper";
 
 export const NavaratriAdvertise: React.FC = () => {
   const { adPackages, advertisements, createAdvertisement } = useNavaratriData();
@@ -35,8 +49,11 @@ export const NavaratriAdvertise: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const paymentRef = useRef<HTMLDivElement>(null);
 
-  // Form State
+  // Package & Format State
   const [selectedPkgId, setSelectedPkgId] = useState(adPackages[0]?.id || "pkg-starter");
+  const [adFormat, setAdFormat] = useState<"BANNER" | "BUSINESS_CARD" | "TEXT_BULLETIN">("BANNER");
+
+  // General Business State
   const [businessName, setBusinessName] = useState("");
   const [category, setCategory] = useState("Sweets & Upvas Food");
   const [ctaButton, setCtaButton] = useState("Order Now");
@@ -51,6 +68,26 @@ export const NavaratriAdvertise: React.FC = () => {
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState(navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"));
   const [imagePreview, setImagePreview] = useState<string>(navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"));
+
+  // Digital Visiting Card State
+  const [contactPerson, setContactPerson] = useState("");
+  const [tagline, setTagline] = useState("");
+  const [cardTheme, setCardTheme] = useState<"terracotta" | "maroon" | "gold" | "royal">("terracotta");
+
+  // Text & Offer Bulletin State
+  const [discountTag, setDiscountTag] = useState("Special Festive Offer");
+  const [bulletPoint1, setBulletPoint1] = useState("100% Satvik & Fresh Ingredients Daily");
+  const [bulletPoint2, setBulletPoint2] = useState("Fast Delivery to All Mandapams Across Zone");
+  const [bulletPoint3, setBulletPoint3] = useState("Special Discounts for Bulk Mandapam Orders");
+
+  // Aspect Ratio & Auto-Fit State for Banner Photos
+  const [uploadedOrientation, setUploadedOrientation] = useState<"landscape" | "portrait" | "square" | null>(null);
+  const [originalUploadUrl, setOriginalUploadUrl] = useState<string>("");
+  const [aspectRatioMode, setAspectRatioMode] = useState<"festive-wings" | "crop-center" | "raw">("festive-wings");
+  const [isConvertingImage, setIsConvertingImage] = useState(false);
+
+  // In-Page Interactive Preview Tab
+  const [inPagePreviewDevice, setInPagePreviewDevice] = useState<"mobile" | "desktop">("mobile");
 
   // Payment Step State
   const [paymentStep, setPaymentStep] = useState(false);
@@ -89,6 +126,44 @@ export const NavaratriAdvertise: React.FC = () => {
     description: "Ideal for daily festive offers and sweet stall promos."
   };
 
+  const effectiveDisplayZone = targetZone === "Custom" ? (customZone || "Custom Zone") : targetZone;
+
+  // Auto-generate canvas image when in Visiting Card or Text Bulletin format
+  React.useEffect(() => {
+    if (adFormat === "BUSINESS_CARD") {
+      const card = generateVisitingCardCanvas({
+        businessName: businessName.trim() || "Your Business Name",
+        contactPerson: contactPerson.trim() || "Proprietor / Owner",
+        tagline: tagline.trim() || "Quality Products & Festive Specials",
+        category,
+        phone: phone.trim() || "9848012345",
+        whatsapp: whatsapp.trim() || phone.trim() || "9848012345",
+        address: address.trim() || `${effectiveDisplayZone}, ${city}`,
+        city,
+        targetZone: effectiveDisplayZone,
+        theme: cardTheme
+      });
+      if (card) {
+        setImagePreview(card);
+        setImageUrl(card);
+      }
+    } else if (adFormat === "TEXT_BULLETIN") {
+      const bulletin = generateTextBulletinCanvas({
+        businessName: businessName.trim() || "Your Business / Store",
+        headline: title.trim() || "Festival Special Offers & Discounts",
+        discountTag: discountTag.trim() || "SPECIAL FESTIVE OFFER",
+        bulletPoints: [bulletPoint1, bulletPoint2, bulletPoint3].filter(Boolean),
+        phone: phone.trim() || "9848012345",
+        city,
+        ctaText: ctaButton || "Order Now"
+      });
+      if (bulletin) {
+        setImagePreview(bulletin);
+        setImageUrl(bulletin);
+      }
+    }
+  }, [adFormat, businessName, contactPerson, tagline, category, phone, whatsapp, address, city, effectiveDisplayZone, cardTheme, title, discountTag, bulletPoint1, bulletPoint2, bulletPoint3, ctaButton]);
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -97,11 +172,34 @@ export const NavaratriAdvertise: React.FC = () => {
         return;
       }
       const reader = new FileReader();
-      reader.onload = () => {
+      reader.onload = async () => {
         if (typeof reader.result === "string") {
-          setImagePreview(reader.result);
-          setImageUrl(reader.result);
-          toast.success("Image uploaded successfully!");
+          const rawUrl = reader.result;
+          setOriginalUploadUrl(rawUrl);
+          setIsConvertingImage(true);
+
+          try {
+            const dims = await inspectImageAspectRatio(rawUrl);
+            if (dims.isPortrait) {
+              setUploadedOrientation("portrait");
+              setAspectRatioMode("festive-wings");
+              const converted = await convertImageToLandscapeCanvas(rawUrl, "festive-wings");
+              setImagePreview(converted);
+              setImageUrl(converted);
+              toast.info("Mobile portrait photo detected! Auto-formatted into a 16:9 widescreen festive banner.");
+            } else {
+              setUploadedOrientation("landscape");
+              setAspectRatioMode("raw");
+              setImagePreview(rawUrl);
+              setImageUrl(rawUrl);
+              toast.success("Landscape banner image uploaded! Perfect fit for website banners.");
+            }
+          } catch {
+            setImagePreview(rawUrl);
+            setImageUrl(rawUrl);
+          } finally {
+            setIsConvertingImage(false);
+          }
         }
       };
       reader.readAsDataURL(file);
@@ -111,7 +209,31 @@ export const NavaratriAdvertise: React.FC = () => {
   const handlePresetSelect = (url: string) => {
     setImagePreview(url);
     setImageUrl(url);
+    setUploadedOrientation("landscape");
+    setAspectRatioMode("raw");
     toast.info("Festive preset applied to your ad banner.");
+  };
+
+  const applyAspectRatioMode = async (mode: "festive-wings" | "crop-center" | "raw") => {
+    if (!originalUploadUrl) return;
+    setAspectRatioMode(mode);
+    setIsConvertingImage(true);
+    try {
+      if (mode === "raw") {
+        setImagePreview(originalUploadUrl);
+        setImageUrl(originalUploadUrl);
+        toast.info("Showing original raw image.");
+      } else {
+        const converted = await convertImageToLandscapeCanvas(originalUploadUrl, mode);
+        setImagePreview(converted);
+        setImageUrl(converted);
+        toast.success(mode === "festive-wings" ? "Applied festive 16:9 wings." : "Cropped to 16:9 landscape.");
+      }
+    } catch {
+      toast.error("Could not convert image");
+    } finally {
+      setIsConvertingImage(false);
+    }
   };
 
 
@@ -126,8 +248,16 @@ export const NavaratriAdvertise: React.FC = () => {
   const handleProceedToPayment = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanPhone = phone.replace(/\D/g, "").slice(0, 10);
-    if (!businessName.trim() || !cleanPhone || !title.trim()) {
-      toast.error("Please fill in business name, 10-digit contact phone, and advertisement title.");
+    if (!businessName.trim() || !cleanPhone) {
+      toast.error("Please fill in your business name and 10-digit contact phone.");
+      return;
+    }
+    if (adFormat === "BANNER" && !title.trim()) {
+      toast.error("Please enter an ad headline or title.");
+      return;
+    }
+    if (adFormat === "TEXT_BULLETIN" && !title.trim()) {
+      toast.error("Please enter your promotional offer headline.");
       return;
     }
     if (cleanPhone.length !== 10) {
@@ -155,6 +285,7 @@ export const NavaratriAdvertise: React.FC = () => {
     setIsProcessingPayment(true);
 
     const effectiveZone = targetZone === "Custom" ? (customZone.trim() || "Local Mandapam Belt") : targetZone;
+    const effectiveTitle = title.trim() || (adFormat === "BUSINESS_CARD" ? (tagline.trim() || `${businessName.trim()} Digital Card`) : `${businessName.trim()} Festive Offer`);
 
     setTimeout(() => {
       const newAd = createAdvertisement({
@@ -169,10 +300,15 @@ export const NavaratriAdvertise: React.FC = () => {
         targetArea: effectiveZone,
         targetZone: effectiveZone,
         packageId: selectedPkg.id,
-        title: title.trim(),
-        description: description.trim() || "Navaratri festive discounts and special offers. Satvik preparations.",
+        title: effectiveTitle,
+        description: description.trim() || (adFormat === "BUSINESS_CARD" ? (tagline.trim() || "Verified local festival business & vendor.") : "Special Navaratri festive offers and discounts."),
         imageUrl: imagePreview,
-        ctaText: ctaButton.trim() || getDefaultCtaForCategory(category),
+        format: adFormat,
+        contactPerson: contactPerson.trim() || undefined,
+        tagline: tagline.trim() || undefined,
+        bulletPoints: adFormat === "TEXT_BULLETIN" ? [bulletPoint1, bulletPoint2, bulletPoint3].filter(Boolean) : undefined,
+        cardTheme: adFormat === "BUSINESS_CARD" ? cardTheme : undefined,
+        ctaText: ctaButton.trim() || (adFormat === "BUSINESS_CARD" ? "Call Store" : getDefaultCtaForCategory(category)),
         ctaUrl: website.trim() || `tel:${phone.trim()}`,
         startDate: "2026-10-11",
         endDate: "2026-10-21",
@@ -185,8 +321,6 @@ export const NavaratriAdvertise: React.FC = () => {
       toast.success(`Payment submitted! Your ad will go live after our team verifies your payment.`);
     }, 1200);
   };
-
-  const effectiveDisplayZone = targetZone === "Custom" ? (customZone || "Custom Zone") : targetZone;
 
   return (
     <>
@@ -372,295 +506,664 @@ export const NavaratriAdvertise: React.FC = () => {
           {/* MAIN FORM & PAYMENT FLOW */}
           <div className="space-y-6">
             {/* Form Column */}
-            <form onSubmit={handleProceedToPayment} className="p-4 sm:p-7 rounded-3xl bg-[#FFFDF9] border-2 border-amber-300/80 shadow-md space-y-5">
+            <form onSubmit={handleProceedToPayment} className="p-4 sm:p-7 rounded-3xl bg-[#FFFDF9] border-2 border-amber-300/80 shadow-md space-y-6">
               <div className="border-b border-amber-200 pb-3">
                 <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#8B1E1E]">
                   <Tag className="w-3.5 h-3.5" />
-                  <span>STEP 2: BUSINESS DETAILS & ZONE TARGETING</span>
+                  <span>STEP 2: AD CREATIVE FORMAT & DETAILS</span>
                 </div>
                 <h3 className="font-['Cinzel',serif] font-black text-xl text-[#8B1E1E] mt-0.5">
-                  Advertisement Details
+                  Design Your Advertisement
                 </h3>
+                <p className="text-xs text-stone-600 mt-1">
+                  Choose the format that works best for your business — photo banner, digital visiting card, or text offer bulletin.
+                </p>
               </div>
 
-              {/* Business Name & Category */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div>
-                  <label className="block font-bold mb-1 text-stone-800">Business / Store Name *</label>
-                  <input
-                    type="text"
-                    required
-                    value={businessName}
-                    onChange={(e) => setBusinessName(e.target.value)}
-                    placeholder="e.g. Your Business Name"
-                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1E1E]/30"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold mb-1 text-stone-800">Category *</label>
-                  <select
-                    value={category}
-                    onChange={(e) => {
-                      const newCat = e.target.value;
-                      setCategory(newCat);
-                      setCtaButton(getDefaultCtaForCategory(newCat));
-                    }}
-                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-[#8B1E1E]/30"
+              {/* 1. AD FORMAT SELECTOR TABS */}
+              <div className="space-y-2">
+                <label className="block font-bold text-xs text-stone-800 uppercase tracking-wider">
+                  Choose Ad Format *
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  {/* Option 1: Photo / Banner */}
+                  <div
+                    onClick={() => setAdFormat("BANNER")}
+                    className={`cursor-pointer p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between space-y-2 ${
+                      adFormat === "BANNER"
+                        ? "bg-amber-50/80 border-[#8B1E1E] shadow-sm ring-1 ring-[#8B1E1E]/20"
+                        : "bg-white border-amber-200 hover:border-amber-300 hover:bg-stone-50/50"
+                    }`}
                   >
-                    <option value="Sweets & Upvas Food">Sweets & Upvas Food</option>
-                    <option value="Pooja Samagri">Pooja Items & Camphor</option>
-                    <option value="Flowers & Garlands">Flowers & Garlands</option>
-                    <option value="Clothing & Silks">Festive Silks & Sarees</option>
-                    <option value="Catering & Prasadam">Catering & Prasadam</option>
-                    <option value="Decorations & Sound">Decorations & Lighting</option>
-                    <option value="Jewelry & Gold">Jewelry & Gold</option>
-                    <option value="Other Local Business">Other Local Business</option>
-                  </select>
+                    <div className="flex items-center justify-between">
+                      <div className="w-8 h-8 rounded-xl bg-amber-100 text-[#8B1E1E] flex items-center justify-center font-bold">
+                        <ImageIcon className="w-4 h-4" />
+                      </div>
+                      {adFormat === "BANNER" && (
+                        <span className="text-[10px] font-bold text-[#8B1E1E] bg-amber-200/80 px-2 py-0.5 rounded-full">
+                          Selected ✓
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-xs text-stone-900">Photo / Banner Ad</h4>
+                      <p className="text-[11px] text-stone-500 leading-snug mt-0.5">
+                        Upload shop photo or banner. Auto-fit to 16:9 landscape.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Option 2: Digital Visiting Card */}
+                  <div
+                    onClick={() => setAdFormat("BUSINESS_CARD")}
+                    className={`cursor-pointer p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between space-y-2 ${
+                      adFormat === "BUSINESS_CARD"
+                        ? "bg-amber-50/80 border-[#8B1E1E] shadow-sm ring-1 ring-[#8B1E1E]/20"
+                        : "bg-white border-amber-200 hover:border-amber-300 hover:bg-stone-50/50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="w-8 h-8 rounded-xl bg-amber-100 text-[#8B1E1E] flex items-center justify-center font-bold">
+                        <CreditCard className="w-4 h-4" />
+                      </div>
+                      <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
+                        No Image Needed
+                      </span>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-xs text-stone-900">Digital Visiting Card</h4>
+                      <p className="text-[11px] text-stone-500 leading-snug mt-0.5">
+                        Gold-embossed card with owner name, phone, WhatsApp &amp; address.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Option 3: Text & Offer Bulletin */}
+                  <div
+                    onClick={() => setAdFormat("TEXT_BULLETIN")}
+                    className={`cursor-pointer p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between space-y-2 ${
+                      adFormat === "TEXT_BULLETIN"
+                        ? "bg-amber-50/80 border-[#8B1E1E] shadow-sm ring-1 ring-[#8B1E1E]/20"
+                        : "bg-white border-amber-200 hover:border-amber-300 hover:bg-stone-50/50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="w-8 h-8 rounded-xl bg-amber-100 text-[#8B1E1E] flex items-center justify-center font-bold">
+                        <FileText className="w-4 h-4" />
+                      </div>
+                      <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
+                        No Image Needed
+                      </span>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-xs text-stone-900">Text &amp; Offer Bulletin</h4>
+                      <p className="text-[11px] text-stone-500 leading-snug mt-0.5">
+                        Catchy headline, special discount tag &amp; bullet points.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* City and Target Zone Selection */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div>
-                  <label className="block font-bold mb-1 text-stone-800">City *</label>
-                  <select
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-medium"
-                  >
-                    <option value="Nizamabad">Nizamabad</option>
-                    <option value="Hyderabad">Hyderabad</option>
-                    <option value="Karimnagar">Karimnagar</option>
-                    <option value="Warangal">Warangal</option>
-                  </select>
+              {/* 2. STORE GENERAL DETAILS (Common to all formats) */}
+              <div className="space-y-4 pt-2 border-t border-amber-200">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="block font-bold mb-1 text-stone-800">Business / Store Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={businessName}
+                      onChange={(e) => setBusinessName(e.target.value)}
+                      placeholder="e.g. Sri Lakshmi Sweets &amp; Bakers"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1E1E]/30 font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold mb-1 text-stone-800">Category *</label>
+                    <select
+                      value={category}
+                      onChange={(e) => {
+                        const newCat = e.target.value;
+                        setCategory(newCat);
+                        setCtaButton(getDefaultCtaForCategory(newCat));
+                      }}
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-[#8B1E1E]/30"
+                    >
+                      <option value="Sweets & Upvas Food">Sweets & Upvas Food</option>
+                      <option value="Pooja Samagri">Pooja Items & Camphor</option>
+                      <option value="Flowers & Garlands">Flowers & Garlands</option>
+                      <option value="Clothing & Silks">Festive Silks & Sarees</option>
+                      <option value="Catering & Prasadam">Catering & Prasadam</option>
+                      <option value="Decorations & Sound">Decorations & Lighting</option>
+                      <option value="Jewelry & Gold">Jewelry & Gold</option>
+                      <option value="Other Local Business">Other Local Business</option>
+                    </select>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block font-bold mb-1 text-stone-800">Target Region / Zone *</label>
-                  <select
-                    value={targetZone}
-                    onChange={(e) => setTargetZone(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-medium text-stone-900"
-                  >
-                    <option value="All Zones">All Zones in {city} (Entire City)</option>
-                    <option value="Subhash Nagar">Subhash Nagar & Mandapam Belt</option>
-                    <option value="Khaleelwadi">Khaleelwadi Commercial Area</option>
-                    <option value="Gandhi Chowk">Gandhi Chowk & Temple Street</option>
-                    <option value="Vinayak Nagar">Vinayak Nagar & Bypass</option>
-                    <option value="Dilsukhnagar">Dilsukhnagar & Kothapet</option>
-                    <option value="Ameerpet">Ameerpet & SR Nagar</option>
-                    <option value="Custom">Custom Area / Street</option>
-                  </select>
-                </div>
-              </div>
+                {/* City and Target Zone Selection */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="block font-bold mb-1 text-stone-800">City *</label>
+                    <select
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-medium"
+                    >
+                      <option value="Nizamabad">Nizamabad</option>
+                      <option value="Hyderabad">Hyderabad</option>
+                      <option value="Karimnagar">Karimnagar</option>
+                      <option value="Warangal">Warangal</option>
+                    </select>
+                  </div>
 
-              {targetZone === "Custom" && (
+                  <div>
+                    <label className="block font-bold mb-1 text-stone-800">Target Region / Zone *</label>
+                    <select
+                      value={targetZone}
+                      onChange={(e) => setTargetZone(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-medium text-stone-900"
+                    >
+                      <option value="All Zones">All Zones in {city} (Entire City)</option>
+                      <option value="Subhash Nagar">Subhash Nagar &amp; Mandapam Belt</option>
+                      <option value="Khaleelwadi">Khaleelwadi Commercial Area</option>
+                      <option value="Gandhi Chowk">Gandhi Chowk &amp; Temple Street</option>
+                      <option value="Vinayak Nagar">Vinayak Nagar &amp; Bypass</option>
+                      <option value="Dilsukhnagar">Dilsukhnagar &amp; Kothapet</option>
+                      <option value="Ameerpet">Ameerpet &amp; SR Nagar</option>
+                      <option value="Custom">Custom Area / Street</option>
+                    </select>
+                  </div>
+                </div>
+
+                {targetZone === "Custom" && (
+                  <div className="text-xs">
+                    <label className="block font-bold mb-1 text-stone-800">Specify Custom Zone or Street Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={customZone}
+                      onChange={(e) => setCustomZone(e.target.value)}
+                      placeholder="e.g. Your Area or Street Name"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
+                    />
+                  </div>
+                )}
+
+                {/* Contact Information */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="block font-bold mb-1 text-stone-800">
+                      Phone for Devotees to Call (10 Digits) *
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="tel"
+                        required
+                        maxLength={10}
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                        placeholder="e.g. 9848012345"
+                        className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-mono"
+                      />
+                      <span className="absolute right-3 top-2.5 text-[10px] font-bold text-stone-400">
+                        {phone.length}/10
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold mb-1 text-stone-800">
+                      WhatsApp Number (10 Digits, Optional)
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="tel"
+                        maxLength={10}
+                        value={whatsapp}
+                        onChange={(e) => setWhatsapp(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                        placeholder="WhatsApp number (if different)"
+                        className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-mono"
+                      />
+                      <span className="absolute right-3 top-2.5 text-[10px] font-bold text-stone-400">
+                        {whatsapp.length}/10
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Shop Physical Address */}
                 <div className="text-xs">
-                  <label className="block font-bold mb-1 text-stone-800">Specify Custom Zone or Street Name *</label>
+                  <label className="block font-bold mb-1 text-stone-800">Store Address / Landmark</label>
                   <input
                     type="text"
-                    required
-                    value={customZone}
-                    onChange={(e) => setCustomZone(e.target.value)}
-                    placeholder="e.g. Your Area or Street Name"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="e.g. Near Durga Mandapam, Main Road, Subhash Nagar"
                     className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
                   />
+                </div>
+              </div>
+
+              {/* 3A. FORMAT: PHOTO / BANNER AD FIELDS */}
+              {adFormat === "BANNER" && (
+                <div className="space-y-4 pt-3 border-t border-amber-200 text-xs">
+                  {/* Recommended Ratio Guidance Callout */}
+                  <div className="p-3 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300 flex items-start gap-2.5">
+                    <Info className="w-4 h-4 text-amber-800 shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <p className="font-bold text-amber-950">
+                        Recommended Aspect Ratio: Landscape 16:9 (~1200×630 or 1376×768)
+                      </p>
+                      <p className="text-[11px] text-stone-600 leading-relaxed">
+                        Website ads on both mobile phones and desktop computers display in horizontal landscape banners. If you upload a mobile portrait photo (vertical), our system automatically wraps it with ambient festive wings so your photo is never cropped!
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Upload Area */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="block font-bold text-stone-800">Upload Shop Photo or Banner *</label>
+                      <span className="text-[11px] text-stone-500">JPG, PNG (Max 5MB)</span>
+                    </div>
+
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className="cursor-pointer border-2 border-dashed border-amber-400 rounded-2xl p-4 bg-amber-50/40 hover:bg-amber-100/40 transition-colors text-center space-y-2"
+                    >
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                      <div className="w-10 h-10 mx-auto rounded-full bg-amber-200 text-[#8B1E1E] flex items-center justify-center shadow-sm">
+                        <Upload className="w-5 h-5" />
+                      </div>
+                      <p className="font-bold text-stone-800">Click or tap to upload photo from mobile/computer</p>
+                      <p className="text-[11px] text-stone-500">Supports direct camera photos of your shop, products, or signboard</p>
+                    </div>
+                  </div>
+
+                  {/* Aspect Ratio Detection & Converter Controls */}
+                  {uploadedOrientation === "portrait" && (
+                    <div className="p-3.5 rounded-2xl bg-amber-100/60 border border-amber-400/80 space-y-2 animate-in fade-in duration-300">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-[#8B1E1E] flex items-center gap-1.5 text-xs">
+                          <Smartphone className="w-4 h-4 text-amber-800" />
+                          Mobile Portrait Photo Detected
+                        </span>
+                        <span className="text-[10px] font-bold text-amber-900 bg-amber-200 px-2 py-0.5 rounded-full">
+                          Auto-Ratio Adapter
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-stone-700">
+                        Since website banners display horizontally, choose how you would like your photo formatted:
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => applyAspectRatioMode("festive-wings")}
+                          disabled={isConvertingImage}
+                          className={`p-2.5 rounded-xl text-left border text-xs font-bold transition-all cursor-pointer ${
+                            aspectRatioMode === "festive-wings"
+                              ? "bg-[#8B1E1E] text-white border-[#8B1E1E] shadow-sm ring-1 ring-amber-300"
+                              : "bg-white text-stone-800 border-amber-300 hover:bg-amber-50"
+                          }`}
+                        >
+                          <span className="flex items-center gap-1">✨ Auto-Fit (Festive Wings)</span>
+                          <span className="block text-[10px] font-normal opacity-90 mt-0.5">100% in-frame, no cropping</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => applyAspectRatioMode("crop-center")}
+                          disabled={isConvertingImage}
+                          className={`p-2.5 rounded-xl text-left border text-xs font-bold transition-all cursor-pointer ${
+                            aspectRatioMode === "crop-center"
+                              ? "bg-[#8B1E1E] text-white border-[#8B1E1E] shadow-sm ring-1 ring-amber-300"
+                              : "bg-white text-stone-800 border-amber-300 hover:bg-amber-50"
+                          }`}
+                        >
+                          <span className="flex items-center gap-1">✂️ 16:9 Center Crop</span>
+                          <span className="block text-[10px] font-normal opacity-90 mt-0.5">Full widescreen fill</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => applyAspectRatioMode("raw")}
+                          disabled={isConvertingImage}
+                          className={`p-2.5 rounded-xl text-left border text-xs font-bold transition-all cursor-pointer ${
+                            aspectRatioMode === "raw"
+                              ? "bg-[#8B1E1E] text-white border-[#8B1E1E] shadow-sm ring-1 ring-amber-300"
+                              : "bg-white text-stone-800 border-amber-300 hover:bg-amber-50"
+                          }`}
+                        >
+                          <span className="flex items-center gap-1">🖼️ Raw Centered</span>
+                          <span className="block text-[10px] font-normal opacity-90 mt-0.5">Keep original vertical shape</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Or pick from festive presets */}
+                  <div className="space-y-1.5">
+                    <label className="block font-bold text-stone-700">Or Select a Ready-Made Festive Preset:</label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {festivePresets.map((preset) => (
+                        <button
+                          type="button"
+                          key={preset.label}
+                          onClick={() => handlePresetSelect(preset.url)}
+                          className="px-2.5 py-1 rounded-xl bg-white border border-amber-300 hover:bg-amber-100 text-[11px] font-medium text-stone-800 transition-colors"
+                        >
+                          🎨 {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Ad Headline & Description */}
+                  <div className="space-y-3 pt-2 border-t border-amber-200">
+                    <div>
+                      <label className="block font-bold mb-1 text-stone-800">Ad Headline / Title *</label>
+                      <input
+                        type="text"
+                        required
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="e.g. Navaratri Special Pure Ghee Sweets &amp; Savories"
+                        className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-semibold text-stone-900"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold mb-1 text-stone-800">Promotional Description / Offer Details</label>
+                      <textarea
+                        rows={2}
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="e.g. Get 20% off on all sweets. Fresh daily satvik preparations. Free home delivery in zone..."
+                        className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
+                      />
+                    </div>
+
+                    {/* CTA Button */}
+                    <div>
+                      <label className="block font-bold mb-1 text-stone-800">Clickable Action Button (CTA) *</label>
+                      <input
+                        type="text"
+                        value={ctaButton}
+                        onChange={(e) => setCtaButton(e.target.value)}
+                        placeholder="Order Now, Call Store, WhatsApp Us..."
+                        className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-semibold text-stone-900"
+                      />
+                      <div className="flex flex-wrap gap-1.5 mt-1.5">
+                        {["Order Now", "Call Store", "WhatsApp Us", "Shop Now", "Visit Store"].map((preset) => (
+                          <button
+                            type="button"
+                            key={preset}
+                            onClick={() => setCtaButton(preset)}
+                            className={`text-[10px] px-2.5 py-1 rounded-lg font-semibold transition-all border ${
+                              ctaButton === preset
+                                ? "bg-[#8B1E1E] text-white border-[#8B1E1E] shadow-xs"
+                                : "bg-white text-stone-700 border-amber-300 hover:bg-amber-50"
+                            }`}
+                          >
+                            {preset}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
-              {/* Contact Information */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div>
-                  <label className="block font-bold mb-1 text-stone-800">
-                    Phone for Devotees to Call (10 Digits) *
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="tel"
-                      required
-                      maxLength={10}
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                      placeholder="Your 10-digit contact number"
-                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-mono"
-                    />
-                    <span className="absolute right-3 top-2.5 text-[10px] font-bold text-stone-400">
-                      {phone.length}/10
-                    </span>
+              {/* 3B. FORMAT: DIGITAL VISITING CARD FIELDS */}
+              {adFormat === "BUSINESS_CARD" && (
+                <div className="space-y-4 pt-3 border-t border-amber-200 text-xs">
+                  <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 text-amber-950 flex items-start gap-2.5">
+                    <CreditCard className="w-4 h-4 text-amber-800 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold">Digital Visiting Card Generator (No Photo Required)</p>
+                      <p className="text-[11px] text-stone-600 mt-0.5">
+                        We generate a high-resolution, gold-embossed digital business card with your store details and clickable Call &amp; WhatsApp buttons for devotees.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block font-bold mb-1 text-stone-800">Proprietor / Owner Name</label>
+                      <input
+                        type="text"
+                        value={contactPerson}
+                        onChange={(e) => setContactPerson(e.target.value)}
+                        placeholder="e.g. Sri Ramesh Sharma"
+                        className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold mb-1 text-stone-800">Speciality / Tagline</label>
+                      <input
+                        type="text"
+                        value={tagline}
+                        onChange={(e) => setTagline(e.target.value)}
+                        placeholder="e.g. Pure Desi Ghee Sweets &amp; Savories"
+                        className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Card Theme Picker */}
+                  <div>
+                    <label className="block font-bold mb-1 text-stone-800">Visiting Card Devotional Theme</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {[
+                        { id: "terracotta" as const, label: "🏛️ Terracotta Gold", bg: "bg-[#6B1414] text-amber-200" },
+                        { id: "maroon" as const, label: "👑 Royal Maroon", bg: "bg-[#450A0A] text-amber-300" },
+                        { id: "gold" as const, label: "🌟 Sacred Amber", bg: "bg-[#78350F] text-yellow-200" },
+                        { id: "royal" as const, label: "🌌 Royal Indigo", bg: "bg-[#1E1B4B] text-amber-200" }
+                      ].map((t) => (
+                        <button
+                          type="button"
+                          key={t.id}
+                          onClick={() => setCardTheme(t.id)}
+                          className={`p-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                            cardTheme === t.id
+                              ? `${t.bg} border-amber-400 shadow-md ring-2 ring-amber-400/40`
+                              : "bg-white text-stone-700 border-amber-200 hover:border-amber-300"
+                          }`}
+                        >
+                          {t.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
+              )}
 
-                <div>
-                  <label className="block font-bold mb-1 text-stone-800">
-                    WhatsApp Number (10 Digits, Optional)
-                  </label>
-                  <div className="relative">
+              {/* 3C. FORMAT: TEXT & OFFER BULLETIN FIELDS */}
+              {adFormat === "TEXT_BULLETIN" && (
+                <div className="space-y-4 pt-3 border-t border-amber-200 text-xs">
+                  <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 text-amber-950 flex items-start gap-2.5">
+                    <FileText className="w-4 h-4 text-amber-800 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold">Text &amp; Offer Bulletin (No Photo Required)</p>
+                      <p className="text-[11px] text-stone-600 mt-0.5">
+                        Perfect for festive announcements, discounts, and puja bookings. We format it into a bold, eye-catching festive announcement bulletin card.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block font-bold mb-1 text-stone-800">Offer Headline / Title *</label>
+                      <input
+                        type="text"
+                        required
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="e.g. Navaratri Maha Offer — Flat 25% Off on All Orders!"
+                        className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-bold text-stone-900"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold mb-1 text-stone-800">Offer Badge / Tag</label>
+                      <input
+                        type="text"
+                        value={discountTag}
+                        onChange={(e) => setDiscountTag(e.target.value)}
+                        placeholder="e.g. SPECIAL FESTIVE OFFER, 25% OFF, LIMITED TIME"
+                        className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-semibold text-amber-900"
+                      />
+                    </div>
+                  </div>
+
+                  {/* 3 Key Highlights */}
+                  <div className="space-y-2">
+                    <label className="block font-bold text-stone-800">Key Offer Highlights / Bullet Points (3 Points)</label>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px] shrink-0">1</span>
+                        <input
+                          type="text"
+                          value={bulletPoint1}
+                          onChange={(e) => setBulletPoint1(e.target.value)}
+                          placeholder="Point 1: e.g. 100% Satvik & Fresh Ingredients Daily"
+                          className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px] shrink-0">2</span>
+                        <input
+                          type="text"
+                          value={bulletPoint2}
+                          onChange={(e) => setBulletPoint2(e.target.value)}
+                          placeholder="Point 2: e.g. Fast Free Delivery to All Mandapams"
+                          className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px] shrink-0">3</span>
+                        <input
+                          type="text"
+                          value={bulletPoint3}
+                          onChange={(e) => setBulletPoint3(e.target.value)}
+                          placeholder="Point 3: e.g. Special Discounts for Durga Mandapam Bulk Orders"
+                          className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action CTA Button */}
+                  <div>
+                    <label className="block font-bold mb-1 text-stone-800">Call to Action Button Label</label>
                     <input
-                      type="tel"
-                      maxLength={10}
-                      value={whatsapp}
-                      onChange={(e) => setWhatsapp(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                      placeholder="WhatsApp number (if different)"
-                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-mono"
+                      type="text"
+                      value={ctaButton}
+                      onChange={(e) => setCtaButton(e.target.value)}
+                      placeholder="Order Now / Call Store"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-semibold"
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] font-bold text-stone-400">
-                      {whatsapp.length}/10
-                    </span>
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* Website or Maps URL */}
-              <div className="text-xs">
-                <label className="block font-bold mb-1 text-stone-800">Website or Google Maps Location URL (Optional)</label>
-                <input
-                  type="url"
-                  value={website}
-                  onChange={(e) => setWebsite(e.target.value)}
-                  placeholder="e.g. https://your-website.com or Google Maps URL"
-                  className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
-                />
-              </div>
-
-              {/* Shop Physical Address */}
-              <div className="text-xs">
-                <label className="block font-bold mb-1 text-stone-800">Physical Address / Landmark</label>
-                <input
-                  type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="e.g. Your Store Landmark / Street Address, Area, City"
-                  className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
-                />
-              </div>
-
-              {/* Ad Headline & Description */}
-              <div className="text-xs space-y-3 pt-1 border-t border-amber-200">
-                <div>
-                  <label className="block font-bold mb-1 text-stone-800">Ad Headline / Title *</label>
-                  <input
-                    type="text"
-                    required
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="e.g. Your Offer Headline / Title (e.g. Festive Special Offer)"
-                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-semibold text-stone-900"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold mb-1 text-stone-800">Promotional Description / Offer Details</label>
-                  <textarea
-                    rows={2}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="e.g. Get 20% off on Navaratri special sweets. Pure ghee, fresh daily. Available till stock lasts..."
-                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white"
-                  />
-                </div>
-              </div>
-
-              {/* Clickable Action Button (CTA) Selection */}
-              <div className="text-xs pt-2 border-t border-amber-200">
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block font-bold text-stone-800">Clickable Action Button (CTA) *</label>
-                  <span className="text-[10px] text-stone-500 font-semibold">e.g. Order Now for food, Open for companies</span>
-                </div>
-                <input
-                  type="text"
-                  value={ctaButton}
-                  onChange={(e) => setCtaButton(e.target.value)}
-                  placeholder="Order Now, Open, More Details, Shop Now..."
-                  className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-semibold text-stone-900"
-                />
-                {/* Preset Quick CTA Options */}
-                <div className="flex flex-wrap gap-1.5 mt-1.5">
-                  {["Order Now", "Open / More Details", "Shop Now", "View Details", "Call Store", "WhatsApp Us"].map((preset) => (
+              {/* 4. IN-PAGE LIVE DEVOTEE PREVIEW WITH MOBILE/DESKTOP SWITCHER */}
+              <div className="space-y-3 pt-3 border-t-2 border-amber-300/80">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#8B1E1E]">
+                    <Eye className="w-4 h-4 text-amber-700" />
+                    <span>LIVE IN-FRAME DEVOTEE PREVIEW</span>
+                  </div>
+                  {/* Mobile / Desktop view switcher */}
+                  <div className="flex items-center bg-amber-100 p-0.5 rounded-xl text-[11px] font-bold">
                     <button
                       type="button"
-                      key={preset}
-                      onClick={() => setCtaButton(preset)}
-                      className={`text-[10px] px-2.5 py-1 rounded-lg font-semibold transition-all border ${
-                        ctaButton === preset
-                          ? "bg-[#8B1E1E] text-white border-[#8B1E1E] shadow-xs"
-                          : "bg-white text-stone-700 border-amber-300 hover:bg-amber-50"
+                      onClick={() => setInPagePreviewDevice("mobile")}
+                      className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                        inPagePreviewDevice === "mobile"
+                          ? "bg-[#8B1E1E] text-white shadow-xs"
+                          : "text-amber-900 hover:text-stone-900"
                       }`}
                     >
-                      {preset}
+                      <Smartphone className="w-3 h-3" />
+                      <span>Mobile View</span>
                     </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* IMAGE UPLOAD SECTION */}
-              <div className="text-xs space-y-3 pt-2 border-t border-amber-200">
-                <div className="flex items-center justify-between">
-                  <label className="block font-bold text-stone-800">Ad Banner Image Upload *</label>
-                  <span className="text-[11px] text-stone-500">JPG, PNG (Max 5MB)</span>
-                </div>
-
-                {/* Upload Button & Drag Area */}
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="cursor-pointer border-2 border-dashed border-amber-400 rounded-2xl p-4 bg-amber-50/50 hover:bg-amber-100/50 transition-colors text-center space-y-2"
-                >
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                  />
-                  <div className="w-10 h-10 mx-auto rounded-full bg-amber-200 text-[#8B1E1E] flex items-center justify-center shadow-sm">
-                    <Upload className="w-5 h-5" />
+                    <button
+                      type="button"
+                      onClick={() => setInPagePreviewDevice("desktop")}
+                      className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                        inPagePreviewDevice === "desktop"
+                          ? "bg-[#8B1E1E] text-white shadow-xs"
+                          : "text-amber-900 hover:text-stone-900"
+                      }`}
+                    >
+                      <Monitor className="w-3 h-3" />
+                      <span>Desktop View</span>
+                    </button>
                   </div>
-                  <p className="font-bold text-stone-800">Click to upload shop banner photo</p>
-                  <p className="text-[11px] text-stone-500">Supports direct mobile photos of your storefront or products</p>
                 </div>
 
-                {/* In-Frame Live Banner Preview */}
-                {imagePreview && (
-                  <div className="space-y-1.5 pt-1">
-                    <div className="flex items-center justify-between text-[11px] font-bold text-stone-700">
-                      <span>Live Banner Frame Preview:</span>
-                      <span className="text-emerald-700 font-semibold">✓ 100% In-Frame (Never cropped)</span>
+                {/* Preview Frame */}
+                <div className="rounded-2xl border-2 border-amber-400/80 bg-[#1e130e] p-3 sm:p-4 shadow-inner">
+                  {/* Widescreen Landscape Banner Display */}
+                  <div className={`relative mx-auto overflow-hidden rounded-2xl border border-amber-400/60 bg-[#120a06] flex items-center justify-center shadow-lg transition-all ${
+                    inPagePreviewDevice === "mobile" ? "w-full max-w-sm h-40 sm:h-44" : "w-full h-48 sm:h-56"
+                  }`}>
+                    {/* Background */}
+                    <div
+                      className="absolute inset-0 bg-cover bg-center blur-md opacity-30 scale-110 pointer-events-none"
+                      style={{ backgroundImage: `url("${imagePreview}")` }}
+                    />
+                    <img
+                      src={imagePreview}
+                      alt="Banner Preview"
+                      className="w-full h-full object-contain relative z-10 mx-auto"
+                    />
+                    {/* Top sponsored tag */}
+                    <div className="absolute top-2.5 left-2.5 z-20 px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-md text-[9px] sm:text-[10px] font-bold text-amber-200 border border-amber-300/40 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                      <span>Sponsored • {businessName || "Your Business"}</span>
                     </div>
-                    <div className="relative w-full h-32 sm:h-36 rounded-2xl overflow-hidden border-2 border-amber-400 bg-[#1e130e] flex items-center justify-center shadow-md">
-                      <div
-                        className="absolute inset-0 bg-cover bg-center blur-md opacity-30 scale-110 pointer-events-none"
-                        style={{ backgroundImage: `url("${imagePreview}")` }}
-                      />
-                      <div className="absolute top-2 left-2 z-20 px-2 py-0.5 rounded-full bg-black/60 text-[9px] font-bold text-amber-200 border border-white/20">
-                        Sponsored
-                      </div>
-                      <img
-                        src={imagePreview}
-                        alt="Banner Preview"
-                        className="w-full h-full object-contain relative z-10 mx-auto"
-                      />
-                      <div className="absolute bottom-2 right-2 z-20">
-                        <span className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[11px] font-bold shadow-md flex items-center gap-1 border border-amber-300/60">
-                          {ctaButton || "Order Now"} ↗
-                        </span>
-                      </div>
+                    {/* CTA button */}
+                    <div className="absolute bottom-2.5 right-2.5 z-20">
+                      <span className="px-3 py-1 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[10px] sm:text-xs font-bold shadow-md flex items-center gap-1 border border-amber-300/60">
+                        {ctaButton || "Order Now"} ↗
+                      </span>
                     </div>
                   </div>
-                )}
-              </div>
 
-              {/* Preview Ad Button — appears after image is selected */}
-              <div className="pt-2">
+                  {/* Summary Bar below preview */}
+                  <div className="flex items-center justify-between pt-2 px-1 text-[11px] text-amber-200/90 font-medium">
+                    <span className="truncate">
+                      📍 Target: {effectiveDisplayZone}, {city} • {category}
+                    </span>
+                    <span className="text-emerald-300 font-bold shrink-0">
+                      ✓ 100% In-Frame
+                    </span>
+                  </div>
+                </div>
+
                 <button
                   type="button"
                   onClick={() => setShowAdPreview(true)}
-                  className="w-full py-2.5 rounded-xl border-2 border-[#8B1E1E] text-[#8B1E1E] text-xs font-bold hover:bg-[#8B1E1E]/5 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="w-full py-2 rounded-xl border border-[#8B1E1E] text-[#8B1E1E] text-xs font-bold hover:bg-[#8B1E1E]/5 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <Play className="w-3.5 h-3.5" />
-                  Preview My Ad
+                  <span>Open Full Phone &amp; Desktop Simulator</span>
                 </button>
               </div>
 
+              {/* 5. SUMMARY & PROCEED TO PAY */}
               <div className="pt-3 border-t border-amber-200 space-y-3">
                 {/* Payment Due Summary */}
                 <div className="p-3.5 rounded-2xl bg-gradient-to-r from-[#8B1E1E]/8 via-amber-50 to-amber-100/50 border border-amber-300">

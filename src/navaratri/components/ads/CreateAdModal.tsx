@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import {
   Store,
@@ -15,6 +15,15 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  inspectImageAspectRatio,
+  convertImageToLandscapeCanvas,
+  generateVisitingCardCanvas,
+  generateTextBulletinCanvas
+} from "../../utils/adCreativeHelper";
+
+type AdFormat = "BANNER" | "BUSINESS_CARD" | "TEXT_BULLETIN";
+type FitMode = "festive-wings" | "crop-center" | "raw";
 
 interface CreateAdModalProps {
   isOpen: boolean;
@@ -47,7 +56,75 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
   const [showBigQr, setShowBigQr] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Multi-format support
+  const [adFormat, setAdFormat] = useState<AdFormat>("BANNER");
+  const [originalUpload, setOriginalUpload] = useState("");
+  const [isPortraitUpload, setIsPortraitUpload] = useState(false);
+  const [fitMode, setFitMode] = useState<FitMode>("festive-wings");
+  const [contactPerson, setContactPerson] = useState("");
+  const [tagline, setTagline] = useState("");
+  const [address, setAddress] = useState("");
+  const [cardTheme, setCardTheme] = useState<"terracotta" | "maroon" | "gold" | "royal">("maroon");
+  const [discountTag, setDiscountTag] = useState("");
+  const [bullets, setBullets] = useState<string[]>(["", "", ""]);
+
   const price = selectedDays === 1 ? 49 : selectedDays === 3 ? 129 : 349;
+  const zoneLabel = targetZone === "All Zones" ? "Nizamabad" : targetZone;
+
+  // Auto-generate creative for no-photo formats
+  useEffect(() => {
+    if (!isOpen) return;
+    if (adFormat === "BUSINESS_CARD") {
+      const card = generateVisitingCardCanvas({
+        businessName: businessName.trim() || "Your Business Name",
+        contactPerson: contactPerson.trim() || undefined,
+        tagline: tagline.trim() || "Quality Products & Festive Specials",
+        category: "Festive Store",
+        phone: phone.trim() || "9XXXXXXXXX",
+        whatsapp: phone.trim() || undefined,
+        address: address.trim() || zoneLabel,
+        city: "Nizamabad",
+        targetZone: zoneLabel,
+        theme: cardTheme
+      });
+      if (card) setUploadedImage(card);
+    } else if (adFormat === "TEXT_BULLETIN") {
+      const bulletin = generateTextBulletinCanvas({
+        businessName: businessName.trim() || "Your Business / Store",
+        headline: title.trim() || "Festival Special Offers",
+        discountTag: discountTag.trim() || "SPECIAL FESTIVE OFFER",
+        bulletPoints: bullets.map(b => b.trim()).filter(Boolean),
+        phone: phone.trim() || "9XXXXXXXXX",
+        city: "Nizamabad",
+        ctaText: buttonLabel || "Order Now"
+      });
+      if (bulletin) setUploadedImage(bulletin);
+    }
+  }, [isOpen, adFormat, businessName, contactPerson, tagline, phone, address, zoneLabel, cardTheme, title, discountTag, bullets, buttonLabel]);
+
+  const switchFormat = (f: AdFormat) => {
+    setAdFormat(f);
+    if (f === "BANNER") {
+      setUploadedImage("");
+      setOriginalUpload("");
+      setIsPortraitUpload(false);
+    }
+  };
+
+  const applyFit = async (mode: FitMode, src = originalUpload) => {
+    if (!src) return;
+    setFitMode(mode);
+    if (mode === "raw") {
+      setUploadedImage(src);
+      return;
+    }
+    try {
+      const converted = await convertImageToLandscapeCanvas(src, mode);
+      setUploadedImage(converted || src);
+    } catch {
+      setUploadedImage(src);
+    }
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -57,10 +134,26 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
         return;
       }
       const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === "string") {
-          setUploadedImage(reader.result);
-          toast.success("Image selected! Check the live website preview below.");
+      reader.onload = async () => {
+        if (typeof reader.result !== "string") return;
+        const raw = reader.result;
+        setOriginalUpload(raw);
+        try {
+          const dims = await inspectImageAspectRatio(raw);
+          // Website banners are widescreen (~16:9). Anything narrower than ~4:3 needs fitting.
+          const needsFit = dims.ratio < 1.3;
+          setIsPortraitUpload(needsFit);
+          if (needsFit) {
+            await applyFit("festive-wings", raw);
+            toast.info("Portrait/square photo detected — auto-fitted to landscape so nothing gets cut. You can change the fit below.");
+          } else {
+            setFitMode("raw");
+            setUploadedImage(raw);
+            toast.success("Perfect landscape image! Check the live preview below.");
+          }
+        } catch {
+          setIsPortraitUpload(false);
+          setUploadedImage(raw);
         }
       };
       reader.readAsDataURL(file);
@@ -91,7 +184,11 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
       return;
     }
     if (!uploadedImage) {
-      toast.error("Please upload a banner image for your advertisement");
+      toast.error(
+        adFormat === "BANNER"
+          ? "Please upload a banner image — or choose Visiting Card / Text Offer if you don't have a photo"
+          : "Preparing your ad creative, please try again"
+      );
       return;
     }
     if (!transactionId.trim() || transactionId.trim().length < 6) {
@@ -118,7 +215,13 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
         ctaText: buttonLabel.trim() || "Order Now",
         ctaUrl: actionUrl.trim() || `tel:${phone.trim()}`,
         startDate: "2026-10-11",
-        endDate: "2026-10-21"
+        endDate: "2026-10-21",
+        format: adFormat,
+        contactPerson: contactPerson.trim() || undefined,
+        tagline: tagline.trim() || undefined,
+        bulletPoints: adFormat === "TEXT_BULLETIN" ? bullets.map(b => b.trim()).filter(Boolean) : undefined,
+        cardTheme: adFormat === "BUSINESS_CARD" ? cardTheme : undefined,
+        address: address.trim() || undefined
       });
 
       setIsSubmitting(false);
@@ -133,7 +236,15 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
       setPhone("");
       setActionUrl("");
       setUploadedImage("");
+      setOriginalUpload("");
+      setIsPortraitUpload(false);
       setTransactionId("");
+      setContactPerson("");
+      setTagline("");
+      setAddress("");
+      setDiscountTag("");
+      setBullets(["", "", ""]);
+      setAdFormat("BANNER");
     }, 1000);
   };
 
@@ -320,32 +431,162 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
                 />
               </div>
 
-              {/* Banner Image Upload */}
-              <div className="space-y-2 pt-2 border-t border-amber-200">
-                <div className="flex items-center justify-between">
-                  <label className="block font-bold text-stone-800">Upload Banner Image *</label>
-                  <span className="text-[10px] text-stone-500 font-medium">Max 5MB (JPG, PNG)</span>
+              {/* Ad Creative: choose format */}
+              <div className="space-y-3 pt-2 border-t border-amber-200">
+                <div>
+                  <label className="block font-bold text-stone-800">How do you want your ad to look? *</label>
+                  <p className="text-[10px] text-stone-500 mt-0.5">No photo? No problem — pick Visiting Card or Text Offer and we design it for you.</p>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {([
+                    { id: "BANNER", icon: "🖼️", label: "Photo Banner", sub: "I have an image" },
+                    { id: "BUSINESS_CARD", icon: "📇", label: "Visiting Card", sub: "No photo needed" },
+                    { id: "TEXT_BULLETIN", icon: "📝", label: "Text Offer", sub: "Only text" }
+                  ] as const).map(opt => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => switchFormat(opt.id)}
+                      className={`p-2.5 rounded-xl border text-center transition-all ${
+                        adFormat === opt.id
+                          ? "bg-[#8B1E1E] text-white border-[#8B1E1E] shadow-md"
+                          : "bg-white text-stone-800 border-amber-200 hover:bg-amber-50"
+                      }`}
+                    >
+                      <div className="text-lg leading-none">{opt.icon}</div>
+                      <p className="text-[11px] font-bold mt-1 leading-tight">{opt.label}</p>
+                      <p className={`text-[9px] mt-0.5 ${adFormat === opt.id ? "text-amber-100" : "text-stone-500"}`}>{opt.sub}</p>
+                    </button>
+                  ))}
                 </div>
 
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="cursor-pointer p-4 rounded-2xl border-2 border-dashed border-amber-400 bg-amber-50/40 hover:bg-amber-100/50 transition-all text-center flex flex-col items-center justify-center gap-2 group"
-                >
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                  />
-                  <div className="w-10 h-10 rounded-full bg-amber-100 text-[#8B1E1E] flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform">
-                    <Upload className="w-5 h-5 text-[#8B1E1E]" />
+                {adFormat === "BANNER" && (
+                  <>
+                    <div className="flex items-start gap-2 p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-[10px] text-stone-700">
+                      <span className="text-base leading-none">📐</span>
+                      <span>
+                        <b>Best size: landscape 16:9</b> (e.g. 1280×720). Most devotees view on mobile where ads show as a wide banner.
+                        Uploading a <b>portrait/vertical</b> photo? We'll auto-fit it so nothing gets cut.
+                      </span>
+                    </div>
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className="cursor-pointer p-4 rounded-2xl border-2 border-dashed border-amber-400 bg-amber-50/40 hover:bg-amber-100/50 transition-all text-center flex flex-col items-center justify-center gap-2 group"
+                    >
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                      <div className="w-10 h-10 rounded-full bg-amber-100 text-[#8B1E1E] flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform">
+                        <Upload className="w-5 h-5 text-[#8B1E1E]" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-[#8B1E1E]">{originalUpload ? "Change Photo" : "Choose Photo / Upload Ad Image"}</span>
+                        <p className="text-[10px] text-stone-500 mt-0.5">JPG or PNG, max 5MB</p>
+                      </div>
+                    </div>
+                    {isPortraitUpload && originalUpload && (
+                      <div className="space-y-1.5">
+                        <p className="text-[10px] font-bold text-amber-800">Portrait photo detected — choose how it fits the wide banner:</p>
+                        <div className="grid grid-cols-3 gap-1.5">
+                          {([
+                            { id: "festive-wings", label: "✨ Auto-Fit", sub: "Full photo" },
+                            { id: "crop-center", label: "✂️ Crop 16:9", sub: "Fill banner" },
+                            { id: "raw", label: "🖼️ Original", sub: "As uploaded" }
+                          ] as const).map(m => (
+                            <button
+                              key={m.id}
+                              type="button"
+                              onClick={() => applyFit(m.id)}
+                              className={`p-1.5 rounded-lg border text-center ${
+                                fitMode === m.id
+                                  ? "bg-amber-500 text-white border-amber-500"
+                                  : "bg-white text-stone-700 border-amber-200 hover:bg-amber-50"
+                              }`}
+                            >
+                              <p className="text-[10px] font-bold">{m.label}</p>
+                              <p className="text-[9px] opacity-80">{m.sub}</p>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {adFormat === "BUSINESS_CARD" && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <input
+                      type="text"
+                      value={contactPerson}
+                      onChange={(e) => setContactPerson(e.target.value)}
+                      placeholder="Owner / Proprietor name (optional)"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white text-stone-900"
+                    />
+                    <input
+                      type="text"
+                      value={tagline}
+                      onChange={(e) => setTagline(e.target.value)}
+                      placeholder="Tagline e.g. Pure Ghee Sweets since 1985"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white text-stone-900"
+                    />
+                    <input
+                      type="text"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      placeholder="Shop address / landmark"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white text-stone-900 sm:col-span-2"
+                    />
+                    <div className="sm:col-span-2 flex items-center gap-2 flex-wrap">
+                      <span className="text-[10px] font-bold text-stone-700">Card colour:</span>
+                      {([
+                        { id: "maroon", c: "#7A1F14" },
+                        { id: "terracotta", c: "#B4532A" },
+                        { id: "gold", c: "#C99A2E" },
+                        { id: "royal", c: "#2B2A6B" }
+                      ] as const).map(t => (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => setCardTheme(t.id)}
+                          title={t.id}
+                          aria-label={`${t.id} theme`}
+                          className={`w-7 h-7 rounded-full border-2 transition-transform ${cardTheme === t.id ? "border-stone-900 scale-110" : "border-white shadow"}`}
+                          style={{ backgroundColor: t.c }}
+                        />
+                      ))}
+                    </div>
+                    <p className="sm:col-span-2 text-[10px] text-stone-500">Devotees get 1-tap <b>Call</b> &amp; <b>WhatsApp</b> buttons on your card.</p>
                   </div>
-                  <div>
-                    <span className="text-xs font-bold text-[#8B1E1E]">Choose Photo / Upload Ad Image</span>
-                    <p className="text-[10px] text-stone-500 mt-0.5">Click to browse JPG or PNG image from your device</p>
+                )}
+
+                {adFormat === "TEXT_BULLETIN" && (
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={discountTag}
+                      onChange={(e) => setDiscountTag(e.target.value)}
+                      placeholder="Offer badge e.g. FLAT 20% OFF"
+                      maxLength={28}
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white text-stone-900 font-semibold"
+                    />
+                    {bullets.map((b, i) => (
+                      <input
+                        key={i}
+                        type="text"
+                        value={b}
+                        maxLength={60}
+                        onChange={(e) => setBullets(prev => prev.map((x, j) => (j === i ? e.target.value : x)))}
+                        placeholder={["e.g. Fresh flowers & garlands daily", "e.g. Free home delivery in 2 km", "e.g. Open 6 AM – 11 PM"][i]}
+                        className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white text-stone-900"
+                      />
+                    ))}
+                    <p className="text-[10px] text-stone-500">Your headline above becomes the main title of the offer.</p>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* LIVE WEBSITE PREVIEW & ROTATION TIMING */}

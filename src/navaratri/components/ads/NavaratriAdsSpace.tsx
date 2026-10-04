@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
-import { ImagePlus, ExternalLink } from "lucide-react";
+import { ImagePlus, ExternalLink, Phone, MessageCircle } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { AD_PLACEHOLDER_TRANSLATIONS } from "../../utils/navaratriTranslations";
@@ -27,6 +27,24 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
 
   const currentAd = activeAdsWithImages[activeIndex];
   const ctaInfo = getAdCtaDetails(currentAd);
+  const isBusinessCard = currentAd?.format === "BUSINESS_CARD";
+  const cardPhone = (currentAd?.phone || "").replace(/\D/g, "");
+  const cardWhatsapp = (currentAd?.whatsapp || currentAd?.phone || "").replace(/\D/g, "");
+
+  const handleCall = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!currentAd || !cardPhone) return;
+    recordAdClick(currentAd.id);
+    window.location.href = `tel:${cardPhone}`;
+  };
+
+  const handleWhatsapp = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!currentAd || !cardWhatsapp) return;
+    recordAdClick(currentAd.id);
+    const num = cardWhatsapp.length === 10 ? `91${cardWhatsapp}` : cardWhatsapp;
+    window.open(`https://wa.me/${num}`, "_blank", "noopener,noreferrer");
+  };
 
   // Track impression if active ad exists
   useEffect(() => {
@@ -97,8 +115,26 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
           </div>
 
           {/* Bottom-Right Clickable Dynamic Button (desktop only so it NEVER covers the image on mobile) */}
-          <div className="hidden sm:block absolute bottom-3 right-3 z-20">
-            <button
+          <div className="hidden sm:flex absolute bottom-3 right-3 z-20 items-center gap-2">
+            {isBusinessCard && cardPhone && (
+              <button
+                type="button"
+                onClick={handleCall}
+                className="px-3.5 py-2 rounded-xl bg-white/95 text-[#7A1F14] text-sm font-bold shadow-lg flex items-center gap-1.5 border border-amber-300 active:scale-95 cursor-pointer"
+              >
+                <Phone className="w-3.5 h-3.5" /> Call
+              </button>
+            )}
+            {isBusinessCard && cardWhatsapp && (
+              <button
+                type="button"
+                onClick={handleWhatsapp}
+                className="px-3.5 py-2 rounded-xl bg-[#1FAF5A] text-white text-sm font-bold shadow-lg flex items-center gap-1.5 border border-emerald-300 active:scale-95 cursor-pointer"
+              >
+                <MessageCircle className="w-3.5 h-3.5" /> WhatsApp
+              </button>
+            )}
+            {!isBusinessCard && <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -108,7 +144,7 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
             >
               <span>{ctaInfo.label}</span>
               <ExternalLink className="w-3.5 h-3.5" />
-            </button>
+            </button>}
           </div>
         </div>
 
@@ -121,14 +157,37 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
               <span className="text-stone-800 font-bold text-xs whitespace-normal">• {currentAd.businessName}</span>
             )}
           </div>
-          <button
-            type="button"
-            onClick={handleContainerClick}
-            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-xs font-bold shadow-xs flex items-center gap-1.5 active:scale-95 cursor-pointer whitespace-nowrap"
-          >
-            <span>{ctaInfo.label}</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </button>
+          {isBusinessCard ? (
+            <div className="flex items-center gap-1.5">
+              {cardPhone && (
+                <button
+                  type="button"
+                  onClick={handleCall}
+                  className="px-3 py-1.5 rounded-xl bg-white text-[#7A1F14] text-xs font-bold border border-amber-300 flex items-center gap-1 active:scale-95 cursor-pointer whitespace-nowrap"
+                >
+                  <Phone className="w-3.5 h-3.5" /> Call
+                </button>
+              )}
+              {cardWhatsapp && (
+                <button
+                  type="button"
+                  onClick={handleWhatsapp}
+                  className="px-3 py-1.5 rounded-xl bg-[#1FAF5A] text-white text-xs font-bold flex items-center gap-1 active:scale-95 cursor-pointer whitespace-nowrap"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" /> WhatsApp
+                </button>
+              )}
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={handleContainerClick}
+              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-xs font-bold shadow-xs flex items-center gap-1.5 active:scale-95 cursor-pointer whitespace-nowrap"
+            >
+              <span>{ctaInfo.label}</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
         </>
       ) : (
