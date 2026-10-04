@@ -65,39 +65,69 @@ export const NavaratriTopAdBanner: React.FC = () => {
       <div className={`w-full max-w-7xl mx-auto px-3 sm:px-6 pt-2 sm:pt-3 pb-1 ${isHomePage ? "lg:hidden" : ""}`}>
         {currentAd?.imageUrl ? (
           /* Framed Ad Banner: 100% of user banner fits cleanly inside frame with dynamic CTA button */
-          <div
-            onClick={handleContainerClick}
-            className="relative w-full h-28 sm:h-36 md:h-40 rounded-2xl overflow-hidden border-2 border-amber-400/80 shadow-md hover:shadow-lg transition-all cursor-pointer bg-[#1e130e] flex items-center justify-center group"
-            title={`Advertisement: ${currentAd.businessName || "Special Festive Offer"}`}
-          >
-            {/* Ambient Blurred Backdrop */}
+          <div className="flex flex-col">
             <div
-              className="absolute inset-0 bg-cover bg-center blur-lg opacity-30 scale-110 pointer-events-none"
-              style={{ backgroundImage: `url("${navaratriAsset(currentAd.imageUrl)}")` }}
-            />
+              onClick={handleContainerClick}
+              className="relative w-full h-28 sm:h-36 md:h-40 rounded-2xl overflow-hidden border-2 border-amber-400/80 shadow-md hover:shadow-lg transition-all cursor-pointer bg-[#1e130e] flex items-center justify-center group"
+              title={`Advertisement: ${currentAd.businessName || "Special Festive Offer"}`}
+            >
+              {/* Ambient Blurred Backdrop */}
+              <div
+                className="absolute inset-0 bg-cover bg-center blur-lg opacity-30 scale-110 pointer-events-none"
+                style={{ backgroundImage: `url("${navaratriAsset(currentAd.imageUrl)}")` }}
+              />
 
-            {/* User Uploaded Image - object-contain ensures 0% cropping, stays centered in frame */}
-            <img
-              src={navaratriAsset(currentAd.imageUrl)}
-              alt={currentAd.businessName || "Advertisement"}
-              className="w-full h-full object-contain relative z-10 mx-auto"
-            />
+              {/* User Uploaded Image - object-contain ensures 0% cropping, stays centered in frame */}
+              <img
+                src={navaratriAsset(currentAd.imageUrl)}
+                alt={currentAd.businessName || "Advertisement"}
+                className="w-full h-full object-contain relative z-10 mx-auto"
+              />
 
-            {/* Top-Left Sponsor Pill (desktop only so it doesn't cover the image on mobile) */}
-            <div className="hidden sm:flex absolute top-2 left-2 z-20 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 text-[9px] font-bold text-amber-200 uppercase tracking-wider items-center gap-1 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-              <span>Sponsored</span>
+              {/* Top-Left Sponsor Pill (desktop only so it doesn't cover the image on mobile) */}
+              <div className="hidden sm:flex absolute top-2 left-2 z-20 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 text-[9px] font-bold text-amber-200 uppercase tracking-wider items-center gap-1 shadow-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                <span>Sponsored</span>
+              </div>
+
+              {/* Dynamic Clickable Action Button (desktop only so it doesn't cover the image on mobile) */}
+              <div className="hidden sm:block absolute bottom-2 right-2 z-20">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleContainerClick();
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] hover:from-[#F59E0B] hover:to-[#B45309] text-white text-[11px] sm:text-xs font-bold shadow-md hover:shadow-xl transition-all transform active:scale-95 flex items-center gap-1.5 border border-amber-300/60 cursor-pointer"
+                >
+                  <span>{ctaInfo.label}</span>
+                  <ExternalLink className="w-3 h-3" />
+                </button>
+              </div>
             </div>
 
-            {/* Dynamic Clickable Action Button (desktop only so it doesn't cover the image on mobile) */}
-            <div className="hidden sm:block absolute bottom-2 right-2 z-20">
+            {/* Mobile View: Sponsored badge and redirect button placed cleanly BELOW the ad frame (NEVER on the image) */}
+            <div className="flex sm:hidden items-center justify-between gap-2 pt-2 px-1 text-xs">
+              <div className="flex items-center gap-1.5 font-medium text-amber-900/90">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                <span className="font-bold text-[11px] uppercase tracking-wider text-amber-800">
+                  Sponsored
+                </span>
+                {currentAd.businessName && (
+                  <span className="text-stone-700 truncate max-w-[130px] font-semibold">
+                    • {currentAd.businessName}
+                  </span>
+                )}
+              </div>
+
+              {/* Button to redirect to advertiser page */}
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleContainerClick();
                 }}
-                className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] hover:from-[#F59E0B] hover:to-[#B45309] text-white text-[11px] sm:text-xs font-bold shadow-md hover:shadow-xl transition-all transform active:scale-95 flex items-center gap-1.5 border border-amber-300/60 cursor-pointer"
+                className="px-3 py-1 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[11px] font-bold shadow-xs flex items-center gap-1 active:scale-95 border border-amber-300/60 cursor-pointer shrink-0"
               >
                 <span>{ctaInfo.label}</span>
                 <ExternalLink className="w-3 h-3" />
