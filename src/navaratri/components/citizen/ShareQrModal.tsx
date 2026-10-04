@@ -113,6 +113,12 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
       url: navaratriAsset("/navaratri/assets/maa-durga-hero-darshan-nobg.png")
     },
     {
+      id: "durga-temple-darshan",
+      name: "Sri Durga Darshan",
+      subtitle: "Sanctum Simhavahana",
+      url: navaratriAsset("/navaratri/assets/maa-durga-temple-darshan.jpg")
+    },
+    {
       id: "durga-alankarana",
       name: "Sri Swarna Durga",
       subtitle: "Divine Alankarana",
