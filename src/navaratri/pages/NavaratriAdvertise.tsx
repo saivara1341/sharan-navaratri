@@ -136,8 +136,8 @@ export const NavaratriAdvertise: React.FC = () => {
         contactPerson: contactPerson.trim() || "Proprietor / Owner",
         tagline: tagline.trim() || "Quality Products & Festive Specials",
         category,
-        phone: phone.trim() || "9848012345",
-        whatsapp: whatsapp.trim() || phone.trim() || "9848012345",
+        phone: phone.trim() || "XXXXXXXXXX",
+        whatsapp: whatsapp.trim() || phone.trim() || "XXXXXXXXXX",
         address: address.trim() || `${effectiveDisplayZone}, ${city}`,
         city,
         targetZone: effectiveDisplayZone,
@@ -153,7 +153,7 @@ export const NavaratriAdvertise: React.FC = () => {
         headline: title.trim() || "Festival Special Offers & Discounts",
         discountTag: discountTag.trim() || "SPECIAL FESTIVE OFFER",
         bulletPoints: [bulletPoint1, bulletPoint2, bulletPoint3].filter(Boolean),
-        phone: phone.trim() || "9848012345",
+        phone: phone.trim() || "XXXXXXXXXX",
         city,
         ctaText: ctaButton || "Order Now"
       });
@@ -261,7 +261,7 @@ export const NavaratriAdvertise: React.FC = () => {
       return;
     }
     if (cleanPhone.length !== 10) {
-      toast.error("Please enter a valid 10-digit mobile number (e.g. 9848012345).");
+      toast.error("Please enter a valid 10-digit mobile number.");
       return;
     }
     if (whatsapp) {
@@ -834,7 +834,7 @@ export const NavaratriAdvertise: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                   <div>
                     <label className="block font-bold mb-1 text-stone-800">
-                      Phone for Devotees to Call (10 Digits) *
+                      Mobile No *
                     </label>
                     <div className="relative">
                       <input
@@ -843,7 +843,7 @@ export const NavaratriAdvertise: React.FC = () => {
                         maxLength={10}
                         value={phone}
                         onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                        placeholder="e.g. 9848012345"
+                        placeholder="10-digit mobile number"
                         className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-mono"
                       />
                       <span className="absolute right-3 top-2.5 text-[10px] font-bold text-stone-400">
@@ -854,7 +854,7 @@ export const NavaratriAdvertise: React.FC = () => {
 
                   <div>
                     <label className="block font-bold mb-1 text-stone-800">
-                      WhatsApp Number (10 Digits, Optional)
+                      WhatsApp No (Optional)
                     </label>
                     <div className="relative">
                       <input
@@ -862,7 +862,7 @@ export const NavaratriAdvertise: React.FC = () => {
                         maxLength={10}
                         value={whatsapp}
                         onChange={(e) => setWhatsapp(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                        placeholder="WhatsApp number (if different)"
+                        placeholder="If different from mobile no"
                         className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-mono"
                       />
                       <span className="absolute right-3 top-2.5 text-[10px] font-bold text-stone-400">
