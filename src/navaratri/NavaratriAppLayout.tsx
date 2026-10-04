@@ -46,6 +46,23 @@ export const NavaratriAppLayout: React.FC<NavaratriAppLayoutProps> = ({ children
     } catch (e) {}
   }, [location.pathname]);
 
+  // Pages that are self-contained single-screen views — skip all layout chrome
+  const isBarePage =
+    location.pathname === "/navaratri/login" ||
+    location.pathname === "/login" ||
+    location.pathname === "/navaratri/register" ||
+    location.pathname === "/register";
+
+  if (isBarePage) {
+    return (
+      <NavaratriLanguageProvider>
+        <NavaratriDataProvider>
+          {children || <Outlet />}
+        </NavaratriDataProvider>
+      </NavaratriLanguageProvider>
+    );
+  }
+
   return (
     <NavaratriLanguageProvider>
       <NavaratriDataProvider>
