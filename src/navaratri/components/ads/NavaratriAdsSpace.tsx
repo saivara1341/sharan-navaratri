@@ -207,7 +207,7 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
       )}
 
       {/* Run Your Ads button below the ad frame */}
-      <div className="flex items-center justify-center pt-3 pb-1">
+      <div className="flex items-center justify-center pt-3 pb-1 mt-2 sm:mt-0">
         <Link
           to="/navaratri/advertise"
           className="relative inline-flex items-center justify-center px-8 py-2.5 sm:px-10 sm:py-3 font-sans font-bold text-xs sm:text-sm tracking-wide text-white transition-all transform hover:scale-105 active:scale-95 group drop-shadow-md hover:drop-shadow-lg"
