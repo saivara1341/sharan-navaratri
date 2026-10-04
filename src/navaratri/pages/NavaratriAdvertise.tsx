@@ -107,14 +107,6 @@ export const NavaratriAdvertise: React.FC = () => {
   const goLiveLabel = goLiveTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
   const goLiveDate = goLiveTime.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 
-  // Curated festive image presets
-  const festivePresets = [
-    { label: "Pure Ghee Sweets", url: navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg") },
-    { label: "Pooja Samagri", url: navaratriAsset("/navaratri/assets/golden-lotus-bg.jpg") },
-    { label: "Festive Silks", url: navaratriAsset("/navaratri/assets/sage-floral-bg.jpg") },
-    { label: "Temple Arch Frame", url: navaratriAsset("/navaratri/assets/temple-arch-frame.jpg") },
-    { label: "Terracotta Kolam", url: navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg") }
-  ];
 
   // Selected package details
   const selectedPkg = adPackages.find(p => p.id === selectedPkgId) || {
@@ -206,13 +198,7 @@ export const NavaratriAdvertise: React.FC = () => {
     }
   };
 
-  const handlePresetSelect = (url: string) => {
-    setImagePreview(url);
-    setImageUrl(url);
-    setUploadedOrientation("landscape");
-    setAspectRatioMode("raw");
-    toast.info("Festive preset applied to your ad banner.");
-  };
+
 
   const applyAspectRatioMode = async (mode: "festive-wings" | "crop-center" | "raw") => {
     if (!originalUploadUrl) return;
@@ -988,22 +974,6 @@ export const NavaratriAdvertise: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Or pick from festive presets */}
-                  <div className="space-y-1.5">
-                    <label className="block font-bold text-stone-700">Or Select a Ready-Made Festive Preset:</label>
-                    <div className="flex flex-wrap gap-1.5">
-                      {festivePresets.map((preset) => (
-                        <button
-                          type="button"
-                          key={preset.label}
-                          onClick={() => handlePresetSelect(preset.url)}
-                          className="px-2.5 py-1 rounded-xl bg-white border border-amber-300 hover:bg-amber-100 text-[11px] font-medium text-stone-800 transition-colors"
-                        >
-                          🎨 {preset.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
 
                   {/* Ad Headline & Description */}
                   <div className="space-y-3 pt-2 border-t border-amber-200">
