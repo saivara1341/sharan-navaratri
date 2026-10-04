@@ -163,10 +163,8 @@ export const NavaratriMandapamDetail: React.FC = () => {
     if (mandapam?.id) {
       markScanned(mandapam.id);
     }
-    if (mandapam?.name) {
-      document.title = `${mandapam.name} • Sharan Navaratri 2026`;
-    }
-  }, [mandapam?.id, mandapam?.name, markScanned]);
+    document.title = "Sharan Navaratri";
+  }, [mandapam?.id, markScanned]);
 
   if (!mandapam) {
     return (

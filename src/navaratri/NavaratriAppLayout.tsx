@@ -21,25 +21,8 @@ export const NavaratriAppLayout: React.FC<NavaratriAppLayoutProps> = ({ children
   const location = useLocation();
 
   useEffect(() => {
-    // 1. Dynamic Browser Tab Title
-    const path = location.pathname;
-    if (path.includes("/know")) {
-      document.title = "10 Sacred Alankaranas & Pooja Guide • Sharan Navaratri 2026";
-    } else if (path.includes("/near-me")) {
-      document.title = "Find Mandapams Near Me • Sharan Navaratri 2026";
-    } else if (path.includes("/following")) {
-      document.title = "Saved Mandapams • Sharan Navaratri 2026";
-    } else if (path.includes("/register")) {
-      document.title = "Register Mandapam • Sharan Navaratri 2026";
-    } else if (path.includes("/login")) {
-      document.title = "Mandapam Organizer Login • Sharan Navaratri 2026";
-    } else if (path.includes("/advertise")) {
-      document.title = "Promote & Run Ads • Sharan Navaratri 2026";
-    } else if (path.includes("/organizer") || path.includes("/admin")) {
-      document.title = "Mandapam Dashboard • Sharan Navaratri 2026";
-    } else if (!path.includes("/m/")) {
-      document.title = "Sharan Navaratri 2026 | 10 Sacred Devi Alankaranas & Mandapam Guide";
-    }
+    // 1. Keep browser tab title strictly as "Sharan Navaratri" (no "Promote & Run Ads")
+    document.title = "Sharan Navaratri";
 
     // 2. Set Browser Tab Favicon to the same Header Logo (Sacred Trishula)
     try {
