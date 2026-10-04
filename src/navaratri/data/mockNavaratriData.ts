@@ -72,6 +72,7 @@ export const INITIAL_QUESTIONS: CommunityQuestion[] = [];
 
 // ── Ad Packages (real pricing — used on /advertise page) ─────────────────────
 export const INITIAL_AD_PACKAGES: AdPackage[] = [
+  // ── Combinational / Shared Ads (Rotates every 6s with other business ads) ────
   {
     id: "pkg-starter",
     name: "1 Day Daily Booster",
@@ -79,7 +80,9 @@ export const INITIAL_AD_PACKAGES: AdPackage[] = [
     durationDays: 1,
     impressionLimit: 1500,
     placementType: "HOME_NEAR_ME",
-    description: "Ideal for flash offers, special pooja day rush, or 1-day sweet stall promo."
+    description: "Ideal for flash offers & single-day pooja rush. Rotates every 6 seconds with other local business ads.",
+    spaceType: "ROTATING",
+    rotationSeconds: 6
   },
   {
     id: "pkg-growth",
@@ -88,8 +91,10 @@ export const INITIAL_AD_PACKAGES: AdPackage[] = [
     durationDays: 3,
     impressionLimit: 5000,
     placementType: "HOME_EXPLORE_NEARBY",
-    description: "Perfect for Moola Nakshatram, Durgashtami, and weekend devotee peaks.",
-    popular: true
+    description: "Peak Moola Nakshatram & weekend devotee crowds. Rotates every 6 seconds with other local business ads.",
+    popular: true,
+    spaceType: "ROTATING",
+    rotationSeconds: 6
   },
   {
     id: "pkg-festival",
@@ -98,7 +103,44 @@ export const INITIAL_AD_PACKAGES: AdPackage[] = [
     durationDays: 9,
     impressionLimit: 18000,
     placementType: "ALL_CITIZEN_PAGES",
-    description: "Complete 9-day coverage throughout Navaratri and Vijaya Dashami festival."
+    description: "Complete festival coverage through Vijaya Dashami. Rotates every 6 seconds with other local business ads.",
+    bestValue: true,
+    spaceType: "ROTATING",
+    rotationSeconds: 6
+  },
+
+  // ── Exclusive 24/7 Solo Ad Space (Run their ad ONLY, 24/7 without other ads) ──
+  {
+    id: "pkg-solo-1",
+    name: "1 Day Solo 24/7 Booster",
+    priceInr: 149,
+    durationDays: 1,
+    impressionLimit: 4500,
+    placementType: "EXCLUSIVE_FRAME_24_7",
+    description: "100% Dedicated to your business only. Shows 24/7 continuously with zero competing ads in your frame.",
+    spaceType: "EXCLUSIVE"
+  },
+  {
+    id: "pkg-solo-3",
+    name: "3 Days Weekend Solo 24/7",
+    priceInr: 399,
+    durationDays: 3,
+    impressionLimit: 15000,
+    placementType: "EXCLUSIVE_FRAME_24_7",
+    description: "Peak festival crowds with undivided attention. Your ad runs non-stop 24/7 without other businesses in your frame.",
+    popular: true,
+    spaceType: "EXCLUSIVE"
+  },
+  {
+    id: "pkg-solo-9",
+    name: "9 Days Maha Utsav Solo VIP",
+    priceInr: 999,
+    durationDays: 9,
+    impressionLimit: 55000,
+    placementType: "EXCLUSIVE_FRAME_24_7",
+    description: "Ultimate VIP spotlight for all 9 sacred days. 24/7 dedicated banner ownership with zero competition.",
+    bestValue: true,
+    spaceType: "EXCLUSIVE"
   }
 ];
 

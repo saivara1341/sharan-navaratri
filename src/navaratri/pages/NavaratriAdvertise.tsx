@@ -31,7 +31,11 @@ import {
   Monitor,
   RefreshCw,
   Info,
-  CheckCheck
+  CheckCheck,
+  Crown,
+  Lock,
+  Layers,
+  Zap
 } from "lucide-react";
 import { toast } from "sonner";
 import { getDefaultCtaForCategory } from "../utils/adButtonHelpers";
@@ -49,9 +53,28 @@ export const NavaratriAdvertise: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const paymentRef = useRef<HTMLDivElement>(null);
 
+  // Ad Space Ownership State: Combinational (Shared 6s Rotation) vs Exclusive 24/7 Solo (No other ads in frame)
+  const [adSpaceType, setAdSpaceType] = useState<"ROTATING" | "EXCLUSIVE">("ROTATING");
+
   // Package & Format State
   const [selectedPkgId, setSelectedPkgId] = useState(adPackages[0]?.id || "pkg-starter");
   const [adFormat, setAdFormat] = useState<"BANNER" | "BUSINESS_CARD" | "TEXT_BULLETIN">("BANNER");
+
+  const handleSelectSpaceType = (newType: "ROTATING" | "EXCLUSIVE") => {
+    setAdSpaceType(newType);
+    const currentPkg = adPackages.find((p) => p.id === selectedPkgId);
+    const currentDays = currentPkg?.durationDays || 1;
+    // Map to equivalent duration in the chosen space type
+    const matching = adPackages.find(
+      (p) => (p.spaceType || "ROTATING") === newType && p.durationDays === currentDays
+    );
+    if (matching) {
+      setSelectedPkgId(matching.id);
+    } else {
+      const fallback = adPackages.find((p) => (p.spaceType || "ROTATING") === newType);
+      if (fallback) setSelectedPkgId(fallback.id);
+    }
+  };
 
   // General Business State
   const [businessName, setBusinessName] = useState("");
@@ -109,14 +132,19 @@ export const NavaratriAdvertise: React.FC = () => {
 
 
   // Selected package details
-  const selectedPkg = adPackages.find(p => p.id === selectedPkgId) || {
-    id: "pkg-starter",
-    name: "1 Day Daily Booster",
-    priceInr: 49,
-    durationDays: 1,
-    impressionLimit: 1500,
-    description: "Ideal for daily festive offers and sweet stall promos."
-  };
+  const selectedPkg =
+    adPackages.find((p) => p.id === selectedPkgId) ||
+    adPackages.find((p) => (p.spaceType || "ROTATING") === adSpaceType) || {
+      id: "pkg-starter",
+      name: "1 Day Daily Booster",
+      priceInr: 49,
+      durationDays: 1,
+      impressionLimit: 1500,
+      description: "Ideal for daily festive offers and sweet stall promos.",
+      spaceType: "ROTATING" as const
+    };
+
+  const isExclusive = (selectedPkg.spaceType || adSpaceType) === "EXCLUSIVE";
 
   const effectiveDisplayZone = targetZone === "Custom" ? (customZone || "Custom Zone") : targetZone;
 
@@ -294,6 +322,7 @@ export const NavaratriAdvertise: React.FC = () => {
         tagline: tagline.trim() || undefined,
         bulletPoints: adFormat === "TEXT_BULLETIN" ? [bulletPoint1, bulletPoint2, bulletPoint3].filter(Boolean) : undefined,
         cardTheme: adFormat === "BUSINESS_CARD" ? cardTheme : undefined,
+        spaceType: selectedPkg.spaceType || adSpaceType,
         ctaText: ctaButton.trim() || (adFormat === "BUSINESS_CARD" ? "Call Store" : getDefaultCtaForCategory(category)),
         ctaUrl: website.trim() || `tel:${phone.trim()}`,
         startDate: "2026-10-11",
@@ -315,8 +344,12 @@ export const NavaratriAdvertise: React.FC = () => {
 
   const renderYourAdTag = (label: string) => (
     <div className="flex items-center gap-1 mb-1">
-      <span className="px-1.5 py-[1px] rounded-full bg-emerald-600 text-white text-[7px] font-black uppercase tracking-wider shadow-sm">▼ Your Ad</span>
-      <span className="text-[7px] font-bold text-emerald-800">{label}</span>
+      <span className={`px-1.5 py-[1px] rounded-full text-white text-[7px] font-black uppercase tracking-wider shadow-sm ${
+        isExclusive ? "bg-amber-600" : "bg-emerald-600"
+      }`}>
+        {isExclusive ? "👑 24/7 Solo" : "🔄 Rotates 6s"}
+      </span>
+      <span className="text-[7px] font-bold text-stone-700">{label}</span>
     </div>
   );
 
@@ -502,7 +535,12 @@ export const NavaratriAdvertise: React.FC = () => {
             </div>
             <p className="text-xs font-bold text-stone-900">{title}</p>
             <p className="text-[11px] text-stone-600">Target Zone: 📍 {effectiveDisplayZone}</p>
-            <p className="text-[11px] text-stone-600">Package: {selectedPkg.name} (₹{selectedPkg.priceInr})</p>
+            <p className="text-[11px] text-stone-600">
+              Package: {selectedPkg.name} (₹{selectedPkg.priceInr}) •{" "}
+              <span className="font-semibold text-[#8B1E1E]">
+                {isExclusive ? "👑 24/7 Exclusive Solo (No Other Ads)" : "🔄 Combinational (6s Rotation)"}
+              </span>
+            </p>
             <div className="pt-1 border-t border-amber-100 flex items-center gap-2 text-[11px]">
               <span className="font-bold text-stone-700">UTR Ref:</span>
               <span className="font-mono text-stone-900">{utrNumber}</span>
@@ -533,91 +571,309 @@ export const NavaratriAdvertise: React.FC = () => {
         </div>
       ) : (
         <div className="space-y-8">
-          {/* STEP 1: SELECT PACKAGE */}
-          <div className="space-y-4">
+          {/* STEP 1: SELECT AD SPACE & DURATION */}
+          <div className="space-y-5">
             <div className="space-y-1">
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#8B1E1E]">
                 <Tag className="w-3.5 h-3.5" />
-                <span>STEP 1: SELECT DURATION & PRICING</span>
+                <span>STEP 1: SELECT AD SPACE &amp; DURATION</span>
               </div>
               <h2 className="font-['Cinzel',serif] font-bold text-lg sm:text-xl text-stone-900">
-                Transparent & Affordable Daily Pricing
+                Choose Your Ad Space Visibility &amp; Duration
               </h2>
+              <p className="text-xs text-stone-600">
+                Select between budget-friendly combinational ads (shared frame rotating every 6s) or dedicated 24/7 exclusive solo banner space (your ad only, zero competing ads).
+              </p>
             </div>
 
-            {/* Unified responsive plan selector: stacked on mobile, 3-col on desktop */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4">
-              {adPackages.map((pkg) => {
-                const isSelected = selectedPkgId === pkg.id;
-                return (
-                  <div
-                    key={pkg.id}
-                    onClick={() => setSelectedPkgId(pkg.id)}
-                    className={`cursor-pointer rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 border-2 transition-all relative overflow-hidden flex flex-col justify-between ${
-                      isSelected
-                        ? "bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-white border-[#8B1E1E] shadow-md ring-2 ring-[#8B1E1E]/20"
-                        : "bg-white border-amber-200 hover:border-amber-300 hover:bg-stone-50/40 shadow-xs"
-                    }`}
-                  >
-                    {/* Badge */}
-                    {pkg.popular && (
-                      <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-[#8B1E1E] text-white text-[9px] font-black tracking-wider shadow">
-                        POPULAR
-                      </span>
-                    )}
-                    {pkg.durationDays === 9 && (
-                      <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-600 to-amber-700 text-white text-[9px] font-black tracking-wider shadow">
-                        BEST VALUE
-                      </span>
-                    )}
+            {/* AD SPACE OWNERSHIP CHOICE (Combinational vs Exclusive 24/7 Solo) */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-[#8B1E1E]" />
+                <span>Choose Ad Space Visibility Type *</span>
+              </label>
 
-                    <div>
-                      {/* Plan title & radio */}
-                      <div className="flex items-center gap-2 mb-1.5 pr-14">
-                        <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
-                          isSelected ? "bg-[#8B1E1E] text-white" : "border-2 border-stone-300"
-                        }`}>
-                          {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                {/* Option 1: Combinational / Shared Ads */}
+                <div
+                  onClick={() => handleSelectSpaceType("ROTATING")}
+                  className={`cursor-pointer rounded-2xl p-4 sm:p-5 border-2 transition-all relative overflow-hidden flex flex-col justify-between ${
+                    adSpaceType === "ROTATING"
+                      ? "bg-gradient-to-br from-amber-50/90 via-orange-50/40 to-white border-[#8B1E1E] shadow-md ring-2 ring-[#8B1E1E]/20"
+                      : "bg-white border-amber-200/90 hover:border-amber-300 hover:bg-stone-50/40 shadow-xs"
+                  }`}
+                >
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                            adSpaceType === "ROTATING"
+                              ? "bg-[#8B1E1E] text-white shadow-xs"
+                              : "bg-amber-100 text-[#8B1E1E]"
+                          }`}
+                        >
+                          <RefreshCw
+                            className={`w-4 h-4 ${
+                              adSpaceType === "ROTATING" ? "animate-spin [animation-duration:8s]" : ""
+                            }`}
+                          />
                         </div>
-                        <h3 className="font-serif font-black text-xs sm:text-sm text-stone-900 tracking-wide">
-                          {pkg.name}
-                        </h3>
+                        <div>
+                          <h3 className="font-serif font-black text-sm sm:text-base text-stone-900">
+                            Combinational Ads
+                          </h3>
+                          <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">
+                            Shared Frame • Changes Every 6s
+                          </span>
+                        </div>
                       </div>
-
-                      {/* Price */}
-                      <div className="flex items-baseline gap-1 my-1.5 pl-6">
-                        <span className="font-['Cinzel',serif] text-2xl sm:text-3xl font-black text-[#8B1E1E]">
-                          ₹{pkg.priceInr}
-                        </span>
-                        <span className="text-[11px] text-stone-500 font-semibold">
-                          / {pkg.durationDays} day{pkg.durationDays > 1 ? "s" : ""}
-                        </span>
-                      </div>
-
-                      {/* Benefit points: compact on mobile, clean on desktop */}
-                      <p className="text-[11px] text-stone-600 leading-snug pl-6 mb-2">
-                        {pkg.durationDays === 1 && "Ideal for flash offers & single-day pooja rush"}
-                        {pkg.durationDays === 3 && "Peak Moola Nakshatram & weekend devotee crowds"}
-                        {pkg.durationDays === 9 && "Complete festival coverage through Vijaya Dashami"}
-                      </p>
-
-                      <div className="text-[10px] sm:text-[11px] text-stone-600 space-y-0.5 pl-6 pt-1.5 border-t border-amber-100">
-                        <p className="font-medium text-stone-700">✓ ~{pkg.impressionLimit?.toLocaleString()} Devotee Impressions</p>
-                        <p className="font-medium text-stone-700">✓ Zone-targeted • Call & WhatsApp</p>
+                      <div
+                        className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
+                          adSpaceType === "ROTATING" ? "bg-[#8B1E1E] text-white" : "border-2 border-stone-300"
+                        }`}
+                      >
+                        {adSpaceType === "ROTATING" && <Check className="w-3 h-3 stroke-[3]" />}
                       </div>
                     </div>
 
-                    {/* Button footer */}
-                    <div className="mt-3 pl-6">
-                      <div className={`w-full py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold text-center transition-all ${
-                        isSelected ? "bg-[#8B1E1E] text-white shadow-xs" : "bg-amber-100/80 text-stone-700 group-hover:bg-amber-200"
-                      }`}>
-                        {isSelected ? "Selected ✓" : "Tap to Choose"}
+                    <p className="text-xs text-stone-600 leading-relaxed">
+                      Your ad shares the banner frame with other local business sponsors and{" "}
+                      <span className="font-bold text-stone-800">
+                        smoothly rotates / changes every 6 seconds
+                      </span>{" "}
+                      for continuous equal impressions.
+                    </p>
+
+                    <div className="space-y-1.5 pt-2 border-t border-amber-100 text-[11px]">
+                      <div className="flex items-center gap-2 text-stone-700">
+                        <Clock className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                        <span>Rotates with other local business ads every 6s</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-stone-700">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>Maximum devotee impressions at our lowest budget rate</span>
                       </div>
                     </div>
                   </div>
-                );
-              })}
+
+                  <div className="mt-3.5 pt-2.5 border-t border-amber-100 flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-semibold text-stone-500 uppercase tracking-wider block">
+                        Budget Pricing
+                      </span>
+                      <span className="font-['Cinzel',serif] font-black text-xl text-[#8B1E1E]">
+                        From ₹49{" "}
+                        <span className="text-xs font-sans font-medium text-stone-600">/ 1 day</span>
+                      </span>
+                    </div>
+                    <span
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                        adSpaceType === "ROTATING"
+                          ? "bg-[#8B1E1E] text-white shadow-xs"
+                          : "bg-amber-100/90 text-stone-700 hover:bg-amber-200"
+                      }`}
+                    >
+                      {adSpaceType === "ROTATING" ? "Selected ✓" : "Choose Shared"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Option 2: Exclusive 24/7 Solo Ad Space */}
+                <div
+                  onClick={() => handleSelectSpaceType("EXCLUSIVE")}
+                  className={`cursor-pointer rounded-2xl p-4 sm:p-5 border-2 transition-all relative overflow-hidden flex flex-col justify-between ${
+                    adSpaceType === "EXCLUSIVE"
+                      ? "bg-gradient-to-br from-amber-100/70 via-amber-50 to-orange-50/50 border-[#8B1E1E] shadow-md ring-2 ring-[#8B1E1E]/20"
+                      : "bg-white border-amber-200/90 hover:border-amber-300 hover:bg-stone-50/40 shadow-xs"
+                  }`}
+                >
+                  <div className="absolute top-0 right-0 bg-gradient-to-l from-amber-600 to-[#8B1E1E] text-white text-[9px] font-black px-2.5 py-0.5 rounded-bl-xl tracking-wider shadow">
+                    VIP 24/7 EXCLUSIVE
+                  </div>
+
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between pr-24 sm:pr-28">
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                            adSpaceType === "EXCLUSIVE"
+                              ? "bg-[#8B1E1E] text-white shadow-xs"
+                              : "bg-amber-100 text-amber-800"
+                          }`}
+                        >
+                          <Crown className="w-4 h-4 text-amber-300" />
+                        </div>
+                        <div>
+                          <h3 className="font-serif font-black text-sm sm:text-base text-stone-900">
+                            Exclusive 24/7 Solo Space
+                          </h3>
+                          <span className="text-[10px] font-bold text-amber-900 uppercase tracking-wider">
+                            Your Ad ONLY • No Other Ads
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
+                          adSpaceType === "EXCLUSIVE" ? "bg-[#8B1E1E] text-white" : "border-2 border-stone-300"
+                        }`}
+                      >
+                        {adSpaceType === "EXCLUSIVE" && <Check className="w-3 h-3 stroke-[3]" />}
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-stone-600 leading-relaxed">
+                      Run <span className="font-bold text-stone-900">your ad ONLY</span> without any other business ads in that frame. Continuous{" "}
+                      <span className="font-bold text-[#8B1E1E]">24/7 non-stop solo presence</span> with zero competition.
+                    </p>
+
+                    <div className="space-y-1.5 pt-2 border-t border-amber-100 text-[11px]">
+                      <div className="flex items-center gap-2 text-stone-700">
+                        <Lock className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                        <span>Dedicated 100% solo frame — zero other business ads</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-stone-700">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                        <span>Shows 24/7 continuously without 6-second rotation</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-3.5 pt-2.5 border-t border-amber-100 flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-semibold text-stone-500 uppercase tracking-wider block">
+                        VIP Solo Pricing
+                      </span>
+                      <span className="font-['Cinzel',serif] font-black text-xl text-[#8B1E1E]">
+                        From ₹149{" "}
+                        <span className="text-xs font-sans font-medium text-stone-600">/ 1 day</span>
+                      </span>
+                    </div>
+                    <span
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                        adSpaceType === "EXCLUSIVE"
+                          ? "bg-[#8B1E1E] text-white shadow-xs"
+                          : "bg-amber-100/90 text-stone-700 hover:bg-amber-200"
+                      }`}
+                    >
+                      {adSpaceType === "EXCLUSIVE" ? "Selected ✓" : "Choose 24/7 Solo"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* DURATION SELECTION (1 Day, 3 Days, 9 Days) */}
+            <div className="pt-2 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-stone-800">
+                  Select Duration for {adSpaceType === "ROTATING" ? "Combinational / Shared Ads" : "Exclusive 24/7 Solo Ad"}
+                </span>
+                <span className="text-[11px] font-bold text-amber-900">
+                  {adSpaceType === "ROTATING" ? "🔄 Changes every 6s" : "👑 24/7 Solo Display"}
+                </span>
+              </div>
+
+              {/* Responsive duration cards: stacked on mobile, 3-col on desktop */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4">
+                {(adPackages.filter((p) => (p.spaceType || "ROTATING") === adSpaceType).length > 0
+                  ? adPackages.filter((p) => (p.spaceType || "ROTATING") === adSpaceType)
+                  : adPackages
+                ).map((pkg) => {
+                  const isSelected = selectedPkgId === pkg.id;
+                  return (
+                    <div
+                      key={pkg.id}
+                      onClick={() => setSelectedPkgId(pkg.id)}
+                      className={`cursor-pointer rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 border-2 transition-all relative overflow-hidden flex flex-col justify-between ${
+                        isSelected
+                          ? "bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-white border-[#8B1E1E] shadow-md ring-2 ring-[#8B1E1E]/20"
+                          : "bg-white border-amber-200 hover:border-amber-300 hover:bg-stone-50/40 shadow-xs"
+                      }`}
+                    >
+                      {/* Badges */}
+                      {pkg.popular && (
+                        <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-[#8B1E1E] text-white text-[9px] font-black tracking-wider shadow">
+                          POPULAR
+                        </span>
+                      )}
+                      {(pkg.bestValue || pkg.durationDays === 9) && (
+                        <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-600 to-amber-700 text-white text-[9px] font-black tracking-wider shadow">
+                          BEST VALUE
+                        </span>
+                      )}
+
+                      <div>
+                        {/* Plan title & radio */}
+                        <div className="flex items-center gap-2 mb-1.5 pr-14">
+                          <div
+                            className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
+                              isSelected ? "bg-[#8B1E1E] text-white" : "border-2 border-stone-300"
+                            }`}
+                          >
+                            {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                          </div>
+                          <h3 className="font-serif font-black text-xs sm:text-sm text-stone-900 tracking-wide">
+                            {pkg.name}
+                          </h3>
+                        </div>
+
+                        {/* Price */}
+                        <div className="flex items-baseline gap-1 my-1.5 pl-6">
+                          <span className="font-['Cinzel',serif] text-2xl sm:text-3xl font-black text-[#8B1E1E]">
+                            ₹{pkg.priceInr}
+                          </span>
+                          <span className="text-[11px] text-stone-500 font-semibold">
+                            / {pkg.durationDays} day{pkg.durationDays > 1 ? "s" : ""}
+                          </span>
+                        </div>
+
+                        {/* Benefit points */}
+                        <p className="text-[11px] text-stone-600 leading-snug pl-6 mb-2">
+                          {adSpaceType === "EXCLUSIVE" ? (
+                            pkg.durationDays === 1
+                              ? "Dedicated 24/7 frame for single-day rush with zero other ads"
+                              : pkg.durationDays === 3
+                              ? "Peak weekend devotee crowds with non-stop 24/7 solo attention"
+                              : "Complete festival coverage with your ad running 24/7 in prime frame"
+                          ) : (
+                            pkg.durationDays === 1
+                              ? "Ideal for flash offers & single-day pooja rush"
+                              : pkg.durationDays === 3
+                              ? "Peak Moola Nakshatram & weekend devotee crowds"
+                              : "Complete festival coverage through Vijaya Dashami"
+                          )}
+                        </p>
+
+                        <div className="text-[10px] sm:text-[11px] text-stone-600 space-y-0.5 pl-6 pt-1.5 border-t border-amber-100">
+                          <p className="font-medium text-stone-700">
+                            ✓ ~{pkg.impressionLimit?.toLocaleString()} Devotee Impressions
+                          </p>
+                          <p className="font-medium text-stone-700">✓ Zone-targeted • Call &amp; WhatsApp</p>
+                          <p className={`font-semibold ${adSpaceType === 'EXCLUSIVE' ? 'text-amber-800' : 'text-stone-600'}`}>
+                            {adSpaceType === "EXCLUSIVE"
+                              ? "👑 24/7 Showing your ad only (No other ads)"
+                              : "⏱️ Changes every 6s with other business ads"}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Button footer */}
+                      <div className="mt-3 pl-6">
+                        <div
+                          className={`w-full py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold text-center transition-all ${
+                            isSelected
+                              ? "bg-[#8B1E1E] text-white shadow-xs"
+                              : "bg-amber-100/80 text-stone-700 group-hover:bg-amber-200"
+                          }`}
+                        >
+                          {isSelected ? "Selected ✓" : "Tap to Choose"}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
@@ -1253,9 +1509,9 @@ export const NavaratriAdvertise: React.FC = () => {
                       className="w-full h-full object-contain relative z-10 mx-auto"
                     />
                     {/* Top sponsored tag */}
-                    <div className="absolute top-2.5 left-2.5 z-20 px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-md text-[9px] sm:text-[10px] font-bold text-amber-200 border border-amber-300/40 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                      <span>Sponsored • {businessName || "Your Business"}</span>
+                    <div className="absolute top-2.5 left-2.5 z-20 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md text-[9px] sm:text-[10px] font-bold text-amber-200 border border-amber-300/40 flex items-center gap-1.5 shadow">
+                      <span className={`w-1.5 h-1.5 rounded-full ${isExclusive ? 'bg-amber-400 ring-2 ring-amber-300/60' : 'bg-emerald-400 animate-pulse'}`} />
+                      <span>{isExclusive ? "👑 24/7 Solo Spotlight" : "🔄 6s Rotation"} • {businessName || "Your Business"}</span>
                     </div>
                     {/* CTA button */}
                     <div className="absolute bottom-2.5 right-2.5 z-20">
@@ -1266,13 +1522,20 @@ export const NavaratriAdvertise: React.FC = () => {
                   </div>
 
                   {/* Summary Bar below preview */}
-                  <div className="flex items-center justify-between pt-2 px-1 text-[11px] text-amber-200/90 font-medium">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pt-2 px-1 text-[11px] text-amber-200/90 font-medium">
                     <span className="truncate">
                       📍 Target: {effectiveDisplayZone}, {city} • {category}
                     </span>
-                    <span className="text-emerald-300 font-bold shrink-0">
-                      ✓ 100% In-Frame
-                    </span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        isExclusive ? "bg-amber-500/20 text-amber-300 border border-amber-400/40" : "bg-emerald-500/20 text-emerald-300 border border-emerald-400/40"
+                      }`}>
+                        {isExclusive ? "👑 100% Solo (No Other Ads)" : "🔄 Changes Every 6s"}
+                      </span>
+                      <span className="text-emerald-300 font-bold">
+                        ✓ 100% In-Frame
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -1289,18 +1552,29 @@ export const NavaratriAdvertise: React.FC = () => {
               {/* 5. SUMMARY & PROCEED TO PAY */}
               <div className="pt-3 border-t border-amber-200 space-y-3">
                 {/* Payment Due Summary */}
-                <div className="p-3.5 rounded-2xl bg-gradient-to-r from-[#8B1E1E]/8 via-amber-50 to-amber-100/50 border border-amber-300">
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-[#8B1E1E]/8 via-amber-50 to-amber-100/50 border border-amber-300 space-y-1.5">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-amber-900 font-sans block">Selected Plan</span>
-                      <span className="text-xs sm:text-sm font-bold text-stone-800 font-serif">{selectedPkg.name}</span>
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-amber-900 font-sans block">Selected Plan</span>
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                          isExclusive ? "bg-[#8B1E1E] text-white" : "bg-amber-200 text-amber-900"
+                        }`}>
+                          {isExclusive ? "👑 24/7 Solo Dedicated" : "🔄 Combinational (6s Rotation)"}
+                        </span>
+                      </div>
+                      <span className="text-xs sm:text-sm font-bold text-stone-900 font-serif">{selectedPkg.name}</span>
                     </div>
                     <div className="flex items-baseline gap-1">
                       <span className="font-['Cinzel',serif] font-black text-2xl sm:text-3xl text-[#8B1E1E]">₹{selectedPkg.priceInr}</span>
                       <span className="text-[10px] sm:text-xs text-stone-600 font-semibold">/ {selectedPkg.durationDays} day{selectedPkg.durationDays > 1 ? 's' : ''}</span>
                     </div>
                   </div>
-                  <p className="text-[10px] sm:text-[11px] text-stone-600 mt-1">Includes ~{selectedPkg.impressionLimit?.toLocaleString()} devotee impressions across your zone</p>
+                  <p className="text-[10px] sm:text-[11px] text-stone-600">
+                    {isExclusive
+                      ? `Includes ~${selectedPkg.impressionLimit?.toLocaleString()} guaranteed devotee impressions • Non-stop 24/7 solo frame with zero other ads`
+                      : `Includes ~${selectedPkg.impressionLimit?.toLocaleString()} devotee impressions • Rotates every 6s across your zone`}
+                  </p>
                 </div>
 
                 <button
@@ -1318,14 +1592,21 @@ export const NavaratriAdvertise: React.FC = () => {
                 {/* Header */}
                 <div className="border-b border-amber-200 pb-3 flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800">STEP 3: PAY & CONFIRM</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800">STEP 3: PAY &amp; CONFIRM</span>
                     <h4 className="font-['Cinzel',serif] font-black text-xl text-[#8B1E1E]">
                       Total Due: ₹{selectedPkg.priceInr}
                     </h4>
                   </div>
-                  <span className="px-3 py-1 rounded-full bg-amber-100 text-[#8B1E1E] font-bold text-xs border border-amber-200">
-                    {selectedPkg.name}
-                  </span>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="px-3 py-1 rounded-full bg-amber-100 text-[#8B1E1E] font-bold text-xs border border-amber-200">
+                      {selectedPkg.name}
+                    </span>
+                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                      isExclusive ? "bg-[#8B1E1E] text-white" : "bg-stone-100 text-stone-700 border border-stone-200"
+                    }`}>
+                      {isExclusive ? "👑 24/7 Solo Dedicated" : "🔄 Combinational (6s Rotation)"}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Direct 1-Tap Mobile UPI link */}

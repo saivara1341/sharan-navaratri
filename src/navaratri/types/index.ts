@@ -302,6 +302,9 @@ export interface AdPackage {
   placementType: string;
   description: string;
   popular?: boolean;
+  bestValue?: boolean;
+  spaceType?: "ROTATING" | "EXCLUSIVE";
+  rotationSeconds?: number;
 }
 
 export interface Advertisement {
@@ -341,5 +344,6 @@ export interface Advertisement {
   tagline?: string;
   bulletPoints?: string[];
   cardTheme?: "terracotta" | "maroon" | "gold" | "royal";
+  spaceType?: "ROTATING" | "EXCLUSIVE";
   createdAt: string;
 }
