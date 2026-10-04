@@ -46,25 +46,25 @@ const KEY_PILLARS = [
     icon: Award,
     title: "100% IP Ownership",
     description: "Custom code, software architectures, and production assets transfer fully to you upon final milestone settlement.",
-    accent: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+    accent: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
   },
   {
     icon: Coins,
     title: "Milestone Transparency",
     description: "Work progresses through defined deliverables with client approval before each phase unlocks. No hidden fees.",
-    accent: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+    accent: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
   },
   {
     icon: Wrench,
     title: "30-Day Hypercare Warranty",
     description: "Every custom build includes 30 days of post-deployment bug fixing and performance stabilization at zero extra cost.",
-    accent: "text-blue-400 bg-blue-500/10 border-blue-500/20",
+    accent: "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20",
   },
   {
     icon: Lock,
     title: "Strict Confidentiality",
     description: "Your business models, proprietary data, customer records, and source repositories remain protected under mutual NDA.",
-    accent: "text-purple-400 bg-purple-500/10 border-purple-500/20",
+    accent: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20",
   },
 ];
 
@@ -100,23 +100,30 @@ const TermsOfService = () => {
         <div className="flex items-center justify-between gap-4 mb-8">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group py-1.5 px-3 rounded-full hover:bg-white/5 border border-transparent hover:border-white/10 w-fit"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group py-1.5 px-3 rounded-full hover:bg-muted border border-border w-fit shadow-2xs"
           >
-            <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform text-primary" />
             <span>Back to Home</span>
           </Link>
 
           <div className="flex items-center gap-2 text-xs">
             <Link
               to="/privacy"
-              className="text-muted-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
+              className="text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
             >
               Privacy Policy
             </Link>
-            <span className="text-white/20">•</span>
+            <span className="text-border">•</span>
+            <Link
+              to="/pricing"
+              className="text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
+            >
+              Pricing (INR)
+            </Link>
+            <span className="text-border">•</span>
             <Link
               to="/submit"
-              className="text-primary hover:text-primary/80 font-medium transition-colors underline-offset-4 hover:underline flex items-center gap-1"
+              className="text-primary hover:text-primary/80 font-semibold transition-colors underline-offset-4 hover:underline flex items-center gap-1"
             >
               Submit Requirement <ArrowRight className="w-3 h-3" />
             </Link>
@@ -130,29 +137,29 @@ const TermsOfService = () => {
             <span>Master Service Agreement &amp; Terms of Engagement</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4 text-foreground">
             Terms of <span className="gradient-text">Service</span>
           </h1>
 
-          <p className="text-base sm:text-lg text-muted-foreground max-w-3xl leading-relaxed mb-6">
-            These terms govern the engagement between <strong>Siddhi Dynamics LLP</strong> and clients, partners, and users accessing our platforms, submitting project requirements, or utilizing our deep-tech AI and custom software solutions.
+          <p className="text-base sm:text-lg text-foreground/80 max-w-3xl leading-relaxed mb-6 font-normal">
+            These terms govern the engagement between <strong className="text-foreground font-semibold">Siddhi Dynamics LLP</strong> and clients, partners, and users accessing our platforms, submitting project requirements, or utilizing our deep-tech AI and custom software solutions.
           </p>
 
-          <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-xs text-muted-foreground pt-4 border-t border-white/10">
+          <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-xs text-muted-foreground pt-4 border-t border-border">
             <div>
-              <span className="text-white/40">Entity:</span>{" "}
-              <strong className="text-foreground">Siddhi Dynamics LLP</strong>
+              <span className="text-muted-foreground/80">Entity:</span>{" "}
+              <strong className="text-foreground font-semibold">Siddhi Dynamics LLP</strong>
             </div>
             <div>
-              <span className="text-white/40">Effective Date:</span>{" "}
-              <strong className="text-foreground">Updated July 30, 2026</strong>
+              <span className="text-muted-foreground/80">Effective Date:</span>{" "}
+              <strong className="text-foreground font-semibold">Updated July 30, 2026</strong>
             </div>
             <div>
-              <span className="text-white/40">Registered:</span>{" "}
+              <span className="text-muted-foreground/80">Registered:</span>{" "}
               <span className="text-foreground">Nizamabad &amp; Hyderabad, Telangana, India</span>
             </div>
             <div>
-              <span className="text-white/40">Estimated Read:</span>{" "}
+              <span className="text-muted-foreground/80">Estimated Read:</span>{" "}
               <span className="text-foreground">8 minutes</span>
             </div>
           </div>
@@ -169,12 +176,12 @@ const TermsOfService = () => {
               return (
                 <div
                   key={pillar.title}
-                  className="glass-card rounded-2xl p-5 border border-white/10 bg-white/[0.03] hover:bg-white/[0.05] transition-all relative overflow-hidden group"
+                  className="rounded-2xl p-5 border border-border bg-card shadow-sm hover:border-primary/40 hover:shadow-md transition-all relative overflow-hidden group"
                 >
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 border ${pillar.accent}`}>
                     <Icon className="w-5 h-5" />
                   </div>
-                  <h3 className="text-base font-bold text-white mb-1 group-hover:text-primary transition-colors">
+                  <h3 className="text-base font-bold text-foreground mb-1 group-hover:text-primary transition-colors">
                     {pillar.title}
                   </h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">
@@ -190,10 +197,10 @@ const TermsOfService = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Sticky Sidebar Navigation */}
           <aside className="lg:col-span-4 lg:sticky lg:top-28 space-y-4">
-            <div className="glass-card rounded-2xl p-5 border border-white/10 bg-white/[0.03]">
-              <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+            <div className="rounded-2xl p-5 border border-border bg-card shadow-sm">
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-border">
                 <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Table of Contents</span>
-                <span className="text-[11px] text-primary font-mono">{SECTIONS.length} Sections</span>
+                <span className="text-[11px] text-primary font-mono font-bold">{SECTIONS.length} Sections</span>
               </div>
               <nav className="space-y-1 max-h-[60vh] overflow-y-auto pr-1 text-xs">
                 {SECTIONS.map((sec) => {
@@ -205,8 +212,8 @@ const TermsOfService = () => {
                       onClick={() => scrollTo(sec.id)}
                       className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left transition-all ${
                         isActive
-                          ? "bg-primary text-primary-foreground font-semibold shadow-sm"
-                          : "text-muted-foreground hover:text-white hover:bg-white/5"
+                          ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                       }`}
                     >
                       <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-primary-foreground" : "text-primary"}`} />
@@ -216,20 +223,20 @@ const TermsOfService = () => {
                 })}
               </nav>
 
-              <div className="mt-5 pt-4 border-t border-white/10 space-y-2">
+              <div className="mt-5 pt-4 border-t border-border space-y-2">
                 <a
                   href="#contact"
                   onClick={(e) => {
                     e.preventDefault();
                     scrollTo("contact");
                   }}
-                  className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-white border border-white/10 transition-colors"
+                  className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-muted hover:bg-muted/80 text-xs font-semibold text-foreground border border-border transition-colors shadow-2xs"
                 >
                   <Mail className="w-3.5 h-3.5 text-primary" /> Contact Legal &amp; Founders
                 </a>
                 <Link
                   to="/submit"
-                  className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold transition-colors"
+                  className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold transition-colors shadow-xs"
                 >
                   <Send className="w-3.5 h-3.5" /> Submit a Requirement
                 </Link>
@@ -240,24 +247,24 @@ const TermsOfService = () => {
           {/* Main Legal Clauses */}
           <div className="lg:col-span-8 space-y-6">
             {/* 1. Agreement & Acceptance */}
-            <section id="agreement" className="scroll-mt-28 glass-card rounded-2xl p-6 md:p-8 border border-white/10 bg-white/[0.03]">
+            <section id="agreement" className="scroll-mt-28 rounded-2xl p-6 md:p-8 border border-border bg-card shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
                   <Scale className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono text-primary font-semibold">SECTION 01</span>
-                  <h2 className="text-xl md:text-2xl font-bold text-white">Agreement &amp; Acceptance</h2>
+                  <span className="text-xs font-mono text-primary font-bold">SECTION 01</span>
+                  <h2 className="text-xl md:text-2xl font-extrabold text-foreground">Agreement &amp; Acceptance</h2>
                 </div>
               </div>
-              <div className="space-y-4 text-sm text-slate-300 leading-relaxed">
+              <div className="space-y-4 text-sm text-foreground/85 leading-relaxed">
                 <p>
-                  These Terms of Service ("Terms") constitute a legally binding agreement between you ("Client", "User", "You") and <strong>Siddhi Dynamics LLP</strong> ("Siddhi Dynamics", "Company", "We", "Us", or "Our"), a Limited Liability Partnership registered in Telangana, India.
+                  These Terms of Service ("Terms") constitute a legally binding agreement between you ("Client", "User", "You") and <strong className="text-foreground">Siddhi Dynamics LLP</strong> ("Siddhi Dynamics", "Company", "We", "Us", or "Our"), a Limited Liability Partnership registered in Telangana, India.
                 </p>
                 <p>
-                  By accessing <a href="https://siddhidynamics.in" className="text-primary hover:underline">https://siddhidynamics.in</a>, submitting a project requirement via our intake forms, creating an account, accessing any portal (Client, Agency, Investor, Employee), or signing a Scope of Work (SOW), you confirm that you have read, understood, and agreed to be bound by these Terms.
+                  By accessing <a href="https://siddhidynamics.in" className="text-primary hover:underline font-semibold">https://siddhidynamics.in</a>, submitting a project requirement via our intake forms, creating an account, accessing any portal (Client, Agency, Investor, Employee), or signing a Scope of Work (SOW), you confirm that you have read, understood, and agreed to be bound by these Terms.
                 </p>
-                <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 text-xs text-primary/90 flex gap-3 items-start">
+                <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 text-xs text-foreground/90 flex gap-3 items-start">
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-primary" />
                   <span>
                     If you represent an enterprise or organisation, you represent and warrant that you possess full corporate authority to bind that entity to these Terms.
@@ -267,17 +274,17 @@ const TermsOfService = () => {
             </section>
 
             {/* 2. Scope of Services */}
-            <section id="services" className="scroll-mt-28 glass-card rounded-2xl p-6 md:p-8 border border-white/10 bg-white/[0.03]">
+            <section id="services" className="scroll-mt-28 rounded-2xl p-6 md:p-8 border border-border bg-card shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
                   <Zap className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono text-primary font-semibold">SECTION 02</span>
-                  <h2 className="text-xl md:text-2xl font-bold text-white">Scope of Services</h2>
+                  <span className="text-xs font-mono text-primary font-bold">SECTION 02</span>
+                  <h2 className="text-xl md:text-2xl font-extrabold text-foreground">Scope of Services</h2>
                 </div>
               </div>
-              <div className="space-y-4 text-sm text-slate-300 leading-relaxed">
+              <div className="space-y-4 text-sm text-foreground/85 leading-relaxed">
                 <p>
                   Siddhi Dynamics provides deep-tech software engineering, artificial intelligence implementation, and digital growth services, including but not limited to:
                 </p>
@@ -292,9 +299,9 @@ const TermsOfService = () => {
                     "Generative Engine Optimization (GEO & AI Search)",
                     "Google Business Profile (GBP) Optimization & Analytics",
                   ].map((srv) => (
-                    <li key={srv} className="flex items-center gap-2 p-2.5 rounded-lg bg-white/5 border border-white/5">
+                    <li key={srv} className="flex items-center gap-2 p-2.5 rounded-lg bg-muted/50 border border-border">
                       <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                      <span className="text-slate-200">{srv}</span>
+                      <span className="text-foreground font-medium">{srv}</span>
                     </li>
                   ))}
                 </ul>
@@ -305,19 +312,19 @@ const TermsOfService = () => {
             </section>
 
             {/* 3. Requirements & Scopes of Work */}
-            <section id="submissions" className="scroll-mt-28 glass-card rounded-2xl p-6 md:p-8 border border-white/10 bg-white/[0.03]">
+            <section id="submissions" className="scroll-mt-28 rounded-2xl p-6 md:p-8 border border-border bg-card shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
                   <Send className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono text-primary font-semibold">SECTION 03</span>
-                  <h2 className="text-xl md:text-2xl font-bold text-white">Requirements Submission &amp; SOWs</h2>
+                  <span className="text-xs font-mono text-primary font-bold">SECTION 03</span>
+                  <h2 className="text-xl md:text-2xl font-extrabold text-foreground">Requirements Submission &amp; SOWs</h2>
                 </div>
               </div>
-              <div className="space-y-4 text-sm text-slate-300 leading-relaxed">
+              <div className="space-y-4 text-sm text-foreground/85 leading-relaxed">
                 <p>
-                  When submitting a requirement via <a href="/submit" className="text-primary hover:underline font-medium">siddhidynamics.in/submit</a> or during client onboarding:
+                  When submitting a requirement via <a href="/submit" className="text-primary hover:underline font-semibold">siddhidynamics.in/submit</a> or during client onboarding:
                 </p>
                 <ul className="space-y-2 text-xs pl-4 list-disc text-muted-foreground">
                   <li>You warrant that all information, business descriptions, specifications, and files you provide are accurate and lawful.</li>
@@ -328,18 +335,18 @@ const TermsOfService = () => {
             </section>
 
             {/* 4. Intellectual Property */}
-            <section id="ip" className="scroll-mt-28 glass-card rounded-2xl p-6 md:p-8 border border-white/10 bg-white/[0.03]">
+            <section id="ip" className="scroll-mt-28 rounded-2xl p-6 md:p-8 border border-border bg-card shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
                   <Award className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono text-primary font-semibold">SECTION 04</span>
-                  <h2 className="text-xl md:text-2xl font-bold text-white">Intellectual Property &amp; Ownership</h2>
+                  <span className="text-xs font-mono text-primary font-bold">SECTION 04</span>
+                  <h2 className="text-xl md:text-2xl font-extrabold text-foreground">Intellectual Property &amp; Ownership</h2>
                 </div>
               </div>
-              <div className="space-y-4 text-sm text-slate-300 leading-relaxed">
-                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-200/90 leading-relaxed">
+              <div className="space-y-4 text-sm text-foreground/85 leading-relaxed">
+                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-xs text-emerald-900 dark:text-emerald-200 leading-relaxed font-medium">
                   <strong>Clear Ownership Principle:</strong> Upon full and final settlement of all agreed fees for a project milestone or deliverable, all custom source code, bespoke application designs, and deliverables created uniquely for the Client are assigned and transferred entirely to the Client.
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -352,40 +359,40 @@ const TermsOfService = () => {
             </section>
 
             {/* 5. Client Obligations & Approvals */}
-            <section id="client-duties" className="scroll-mt-28 glass-card rounded-2xl p-6 md:p-8 border border-white/10 bg-white/[0.03]">
+            <section id="client-duties" className="scroll-mt-28 rounded-2xl p-6 md:p-8 border border-border bg-card shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
                   <UserCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono text-primary font-semibold">SECTION 05</span>
-                  <h2 className="text-xl md:text-2xl font-bold text-white">Client Obligations &amp; Approvals</h2>
+                  <span className="text-xs font-mono text-primary font-bold">SECTION 05</span>
+                  <h2 className="text-xl md:text-2xl font-extrabold text-foreground">Client Obligations &amp; Approvals</h2>
                 </div>
               </div>
-              <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
-                <p>To ensure timely execution, the Client agrees to:</p>
-                <ol className="list-decimal pl-5 space-y-2 text-muted-foreground">
-                  <li><strong>Provide Necessary Access:</strong> Furnish credentials, API tokens, brand guidelines, content, and environment permissions in a timely manner.</li>
-                  <li><strong>Designated Point of Contact:</strong> Designate a single decision-maker for design sign-offs, milestone reviews, and technical clarifications.</li>
-                  <li><strong>Timely Feedback:</strong> Review submitted prototypes, staging links, or milestones within five (5) business days of notification. Delays in review may adjust the downstream delivery calendar.</li>
-                </ol>
+              <div className="space-y-3 text-xs text-foreground/85 leading-relaxed">
+                <p>To ensure high engineering velocity and adherence to project deadlines, the Client agrees to:</p>
+                <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
+                  <li><strong>Provide Necessary Access:</strong> Furnish credentials, API tokens, brand assets, copy, and server environments promptly.</li>
+                  <li><strong>Designated Point of Contact:</strong> Appoint a designated Project Lead with authority to approve milestones and design deliverables.</li>
+                  <li><strong>Timely Milestone Reviews:</strong> Review staging builds and feature deliverables within five (5) business days of submission. If no feedback is received within seven (7) days, deliverables are deemed approved.</li>
+                </ul>
               </div>
             </section>
 
             {/* 6. Production AI & Third-Party APIs */}
-            <section id="ai-systems" className="scroll-mt-28 glass-card rounded-2xl p-6 md:p-8 border border-white/10 bg-white/[0.03]">
+            <section id="ai-systems" className="scroll-mt-28 rounded-2xl p-6 md:p-8 border border-border bg-card shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono text-primary font-semibold">SECTION 06</span>
-                  <h2 className="text-xl md:text-2xl font-bold text-white">Production AI &amp; Third-Party Services</h2>
+                  <span className="text-xs font-mono text-primary font-bold">SECTION 06</span>
+                  <h2 className="text-xl md:text-2xl font-extrabold text-foreground">Production AI &amp; Third-Party Services</h2>
                 </div>
               </div>
-              <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
+              <div className="space-y-3 text-xs text-foreground/85 leading-relaxed">
                 <p>
-                  Where solutions incorporate Generative AI models, Large Language Models (LLMs), or third-party cloud infrastructure (e.g. OpenAI, Anthropic, Google Cloud, Cloudflare, Supabase, Vercel, Resend):
+                  Where custom solutions incorporate Generative AI models, Large Language Models (LLMs), or third-party cloud infrastructure (e.g. OpenAI, Anthropic, Google Cloud, Cloudflare, Supabase, Vercel, Resend):
                 </p>
                 <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
                   <li><strong>Probabilistic Nature of AI:</strong> While we build robust guardrails, validation pipelines, and automated fallbacks, AI-generated outputs are probabilistic. Clients must ensure human oversight for mission-critical legal, medical, or financial decisions.</li>
@@ -396,58 +403,58 @@ const TermsOfService = () => {
             </section>
 
             {/* 7. Fees, Milestones & Taxes */}
-            <section id="payments" className="scroll-mt-28 glass-card rounded-2xl p-6 md:p-8 border border-white/10 bg-white/[0.03]">
+            <section id="payments" className="scroll-mt-28 rounded-2xl p-6 md:p-8 border border-border bg-card shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
                   <Coins className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono text-primary font-semibold">SECTION 07</span>
-                  <h2 className="text-xl md:text-2xl font-bold text-white">Fees, Invoicing &amp; Milestones</h2>
+                  <span className="text-xs font-mono text-primary font-bold">SECTION 07</span>
+                  <h2 className="text-xl md:text-2xl font-extrabold text-foreground">Fees, Invoicing &amp; Milestones</h2>
                 </div>
               </div>
-              <div className="space-y-4 text-xs text-slate-300 leading-relaxed">
+              <div className="space-y-4 text-xs text-foreground/85 leading-relaxed">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
-                    <span className="text-[10px] font-mono text-primary uppercase">Stage 1</span>
-                    <h4 className="font-bold text-white text-sm mt-1">Kickoff Deposit</h4>
+                  <div className="p-3.5 rounded-xl bg-muted/50 border border-border">
+                    <span className="text-[10px] font-mono text-primary font-bold uppercase">Stage 1</span>
+                    <h4 className="font-bold text-foreground text-sm mt-1">Kickoff Deposit</h4>
                     <p className="text-[11px] text-muted-foreground mt-1">Mobilizes sprint kickoff, architecture specs, and environment setup.</p>
                   </div>
-                  <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
-                    <span className="text-[10px] font-mono text-primary uppercase">Stage 2</span>
-                    <h4 className="font-bold text-white text-sm mt-1">Sprint Milestones</h4>
+                  <div className="p-3.5 rounded-xl bg-muted/50 border border-border">
+                    <span className="text-[10px] font-mono text-primary font-bold uppercase">Stage 2</span>
+                    <h4 className="font-bold text-foreground text-sm mt-1">Sprint Milestones</h4>
                     <p className="text-[11px] text-muted-foreground mt-1">Released upon staging demo review and client verification of agreed features.</p>
                   </div>
-                  <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
-                    <span className="text-[10px] font-mono text-primary uppercase">Stage 3</span>
-                    <h4 className="font-bold text-white text-sm mt-1">Production Go-Live</h4>
+                  <div className="p-3.5 rounded-xl bg-muted/50 border border-border">
+                    <span className="text-[10px] font-mono text-primary font-bold uppercase">Stage 3</span>
+                    <h4 className="font-bold text-foreground text-sm mt-1">Production Go-Live</h4>
                     <p className="text-[11px] text-muted-foreground mt-1">Final balance settled upon production deployment and source code transfer.</p>
                   </div>
                 </div>
                 <p className="text-muted-foreground">
                   Invoices are payable within seven (7) days of issuance. All fees for domestic services and digital advertising packages are denominated and billed strictly in <strong>Indian Rupees (INR / ₹)</strong>, exclusive of applicable statutory Goods and Services Tax (GST) unless explicitly indicated.
                 </p>
-                <div className="p-3.5 rounded-xl bg-primary/10 border border-primary/20 text-xs text-slate-300 space-y-1.5">
-                  <h5 className="font-bold text-white text-xs">Payment Gateway &amp; Online Transactions:</h5>
-                  <p>
-                    Online transactions on our platforms (including advertising bookings on <em>sharan-navratri.vercel.app</em> and software subscriptions) are processed through <strong>Cashfree Payment Gateway</strong> (Cashfree Payments India Private Limited). Users agree to comply with all banking and authentication rules stipulated by RBI and Cashfree. All transactions are governed by our <a href="/refund-cancellation-policy" className="text-primary hover:underline font-bold">Refund &amp; Cancellation Policy</a> and <a href="/pricing" className="text-primary hover:underline font-bold">Products &amp; Pricing Schedule</a>.
+                <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/20 text-xs text-foreground/90 space-y-1.5">
+                  <h5 className="font-bold text-foreground text-xs">Payment Gateway &amp; Online Transactions:</h5>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Online transactions on our platforms (including advertising bookings on <em>sharan-navratri.vercel.app</em> and software subscriptions) are processed through <strong>Cashfree Payment Gateway</strong> (Cashfree Payments India Private Limited). Users agree to comply with all banking and authentication rules stipulated by RBI and Cashfree. All transactions are governed by our <Link to="/refund-cancellation-policy" className="text-primary hover:underline font-bold">Refund &amp; Cancellation Policy</Link> and <Link to="/pricing" className="text-primary hover:underline font-bold">Products &amp; Pricing Schedule</Link>.
                   </p>
                 </div>
               </div>
             </section>
 
             {/* 8. Confidentiality */}
-            <section id="confidentiality" className="scroll-mt-28 glass-card rounded-2xl p-6 md:p-8 border border-white/10 bg-white/[0.03]">
+            <section id="confidentiality" className="scroll-mt-28 rounded-2xl p-6 md:p-8 border border-border bg-card shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
                   <Lock className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono text-primary font-semibold">SECTION 08</span>
-                  <h2 className="text-xl md:text-2xl font-bold text-white">Confidentiality &amp; Non-Disclosure</h2>
+                  <span className="text-xs font-mono text-primary font-bold">SECTION 08</span>
+                  <h2 className="text-xl md:text-2xl font-extrabold text-foreground">Confidentiality &amp; Non-Disclosure</h2>
                 </div>
               </div>
-              <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
+              <div className="space-y-3 text-xs text-foreground/85 leading-relaxed">
                 <p>
                   "Confidential Information" encompasses all proprietary data, product architecture, client customer lists, financial figures, trade secrets, and non-public materials exchanged between parties.
                 </p>
@@ -457,21 +464,21 @@ const TermsOfService = () => {
               </div>
             </section>
 
-            {/* 9. 30-Day Hypercare & Support */}
-            <section id="warranty" className="scroll-mt-28 glass-card rounded-2xl p-6 md:p-8 border border-white/10 bg-white/[0.03]">
+            {/* 9. Warranty & Hypercare */}
+            <section id="warranty" className="scroll-mt-28 rounded-2xl p-6 md:p-8 border border-border bg-card shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
                   <Wrench className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono text-primary font-semibold">SECTION 09</span>
-                  <h2 className="text-xl md:text-2xl font-bold text-white">30-Day Hypercare Warranty</h2>
+                  <span className="text-xs font-mono text-primary font-bold">SECTION 09</span>
+                  <h2 className="text-xl md:text-2xl font-extrabold text-foreground">30-Day Hypercare Warranty</h2>
                 </div>
               </div>
-              <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
-                <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-200">
-                  <p className="font-semibold mb-1">Complimentary Post-Launch Stabilization</p>
-                  <p className="text-[11px] text-blue-200/80">
+              <div className="space-y-3 text-xs text-foreground/85 leading-relaxed">
+                <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/20">
+                  <span className="font-bold text-foreground text-xs block mb-1">Complimentary Post-Launch Stabilization</span>
+                  <p className="text-muted-foreground">
                     Siddhi Dynamics provides a thirty (30) day hypercare warranty starting from the date of initial production deployment.
                   </p>
                 </div>
@@ -482,17 +489,17 @@ const TermsOfService = () => {
             </section>
 
             {/* 10. Limitation of Liability */}
-            <section id="liability" className="scroll-mt-28 glass-card rounded-2xl p-6 md:p-8 border border-white/10 bg-white/[0.03]">
+            <section id="liability" className="scroll-mt-28 rounded-2xl p-6 md:p-8 border border-border bg-card shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
                   <AlertCircle className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono text-primary font-semibold">SECTION 10</span>
-                  <h2 className="text-xl md:text-2xl font-bold text-white">Limitation of Liability</h2>
+                  <span className="text-xs font-mono text-primary font-bold">SECTION 10</span>
+                  <h2 className="text-xl md:text-2xl font-extrabold text-foreground">Limitation of Liability</h2>
                 </div>
               </div>
-              <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
+              <div className="space-y-3 text-xs text-foreground/85 leading-relaxed">
                 <p className="text-muted-foreground">
                   To the maximum extent permitted by applicable Indian Law, neither party shall be liable for indirect, incidental, special, exemplary, or consequential damages, including loss of profits, business interruption, or data corruption.
                 </p>
@@ -503,17 +510,17 @@ const TermsOfService = () => {
             </section>
 
             {/* 11. Term & Termination */}
-            <section id="termination" className="scroll-mt-28 glass-card rounded-2xl p-6 md:p-8 border border-white/10 bg-white/[0.03]">
+            <section id="termination" className="scroll-mt-28 rounded-2xl p-6 md:p-8 border border-border bg-card shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
                   <FileText className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono text-primary font-semibold">SECTION 11</span>
-                  <h2 className="text-xl md:text-2xl font-bold text-white">Term &amp; Termination</h2>
+                  <span className="text-xs font-mono text-primary font-bold">SECTION 11</span>
+                  <h2 className="text-xl md:text-2xl font-extrabold text-foreground">Term &amp; Termination</h2>
                 </div>
               </div>
-              <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
+              <div className="space-y-3 text-xs text-foreground/85 leading-relaxed">
                 <p className="text-muted-foreground">
                   Either party may terminate an engagement upon fourteen (14) days written notice if the other party breaches any material term and fails to cure such breach within fourteen (14) days.
                 </p>
@@ -524,17 +531,17 @@ const TermsOfService = () => {
             </section>
 
             {/* 12. Governing Law */}
-            <section id="governing-law" className="scroll-mt-28 glass-card rounded-2xl p-6 md:p-8 border border-white/10 bg-white/[0.03]">
+            <section id="governing-law" className="scroll-mt-28 rounded-2xl p-6 md:p-8 border border-border bg-card shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
                   <Building2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono text-primary font-semibold">SECTION 12</span>
-                  <h2 className="text-xl md:text-2xl font-bold text-white">Governing Law &amp; Jurisdiction</h2>
+                  <span className="text-xs font-mono text-primary font-bold">SECTION 12</span>
+                  <h2 className="text-xl md:text-2xl font-extrabold text-foreground">Governing Law &amp; Jurisdiction</h2>
                 </div>
               </div>
-              <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
+              <div className="space-y-3 text-xs text-foreground/85 leading-relaxed">
                 <p className="text-muted-foreground">
                   These Terms and any project dispute shall be governed by, interpreted, and construed in accordance with the laws of the Republic of India, without regard to conflict of law principles.
                 </p>
@@ -545,52 +552,52 @@ const TermsOfService = () => {
             </section>
 
             {/* 13. Contact & Grievance Details */}
-            <section id="contact" className="scroll-mt-28 glass-card rounded-2xl p-6 md:p-8 border border-primary/30 bg-primary/[0.02]">
+            <section id="contact" className="scroll-mt-28 rounded-2xl p-6 md:p-8 border border-primary/30 bg-card shadow-sm">
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2.5 rounded-xl bg-primary/20 text-primary border border-primary/30">
+                <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/30">
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono text-primary font-semibold">SECTION 13</span>
-                  <h2 className="text-xl md:text-2xl font-bold text-white">Legal &amp; Grievance Contact</h2>
+                  <span className="text-xs font-mono text-primary font-bold">SECTION 13</span>
+                  <h2 className="text-xl md:text-2xl font-extrabold text-foreground">Legal &amp; Grievance Contact</h2>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-6">
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                <div className="p-4 rounded-xl bg-muted/50 border border-border">
                   <span className="text-muted-foreground block mb-1">Company Registered Name</span>
-                  <strong className="text-white text-sm block">Siddhi Dynamics LLP</strong>
-                  <span className="text-slate-400 mt-2 block">
+                  <strong className="text-foreground text-sm block">Siddhi Dynamics LLP</strong>
+                  <span className="text-muted-foreground mt-2 block leading-relaxed">
                     3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001, India
                   </span>
                 </div>
 
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                <div className="p-4 rounded-xl bg-muted/50 border border-border">
                   <span className="text-muted-foreground block mb-1">Designated Partners &amp; Counsel</span>
-                  <strong className="text-white text-sm block">Sarugu Sai Vara Prasad</strong>
-                  <span className="text-slate-400 mt-2 block">
+                  <strong className="text-foreground text-sm block">Sarugu Sai Vara Prasad</strong>
+                  <span className="text-muted-foreground mt-1 block">
                     Founder &amp; Designated Partner
                   </span>
-                  <div className="mt-3 space-y-1.5 pt-2 border-t border-white/10">
-                    <a href="mailto:saivaraprasad@siddhidynamics.in" className="flex items-center gap-1.5 text-primary hover:underline">
+                  <div className="mt-3 space-y-1.5 pt-2 border-t border-border">
+                    <a href="mailto:saivaraprasad@siddhidynamics.in" className="flex items-center gap-1.5 text-primary hover:underline font-medium">
                       <Mail className="w-3.5 h-3.5" /> saivaraprasad@siddhidynamics.in
                     </a>
-                    <a href="tel:+916303602743" className="flex items-center gap-1.5 text-slate-300 hover:text-white">
+                    <a href="tel:+916303602743" className="flex items-center gap-1.5 text-foreground/85 hover:text-primary font-medium">
                       <Phone className="w-3.5 h-3.5" /> +91 63036 02743
                     </a>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
+              <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-muted/50 border border-border">
                 <div>
-                  <p className="text-xs text-white font-medium">Have a specific question about your project agreement?</p>
+                  <p className="text-xs text-foreground font-semibold">Have a specific question about your project agreement?</p>
                   <p className="text-[11px] text-muted-foreground">Our founders review all custom requirements directly.</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Link
                     to="/submit"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold transition-all shadow-sm"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold transition-all shadow-xs"
                   >
                     <Send className="w-3.5 h-3.5" /> Submit Requirement
                   </Link>
