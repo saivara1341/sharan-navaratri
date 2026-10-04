@@ -322,6 +322,144 @@ export const NavaratriAdvertise: React.FC = () => {
     }, 1200);
   };
 
+  // ---- Live preview helpers: replicate exactly how ads render on the landing page ----
+  const previewIsCard = adFormat === "BUSINESS_CARD";
+  const previewName = businessName.trim() || "Your Business Name";
+  const previewCta = ctaButton || "Order Now";
+
+  const renderYourAdTag = (label: string) => (
+    <div className="flex items-center gap-1 mb-1">
+      <span className="px-1.5 py-[1px] rounded-full bg-emerald-600 text-white text-[7px] font-black uppercase tracking-wider shadow-sm">▼ Your Ad</span>
+      <span className="text-[7px] font-bold text-emerald-800">{label}</span>
+    </div>
+  );
+
+  const renderPreviewFrame = (heightClass: string, rounded = "rounded-2xl") => (
+    <div className={`relative w-full ${heightClass} ${rounded} overflow-hidden border-2 border-amber-400 shadow-md bg-[#1e130e] flex items-center justify-center ring-2 ring-emerald-500/70 ring-offset-1`}>
+      {imagePreview ? (
+        <>
+          <div
+            className="absolute inset-0 bg-cover bg-center blur-lg opacity-30 scale-110 pointer-events-none"
+            style={{ backgroundImage: `url("${imagePreview}")` }}
+          />
+          <img src={imagePreview} alt="Your ad" className="w-full h-full object-contain relative z-10 mx-auto" />
+        </>
+      ) : (
+        <span className="text-[9px] text-amber-200/80 font-semibold">Your ad image appears here</span>
+      )}
+    </div>
+  );
+
+  const renderPreviewActions = (size: "xs" | "sm", fullWidth = false) =>
+    previewIsCard ? (
+      <div className={`flex items-center gap-1 ${fullWidth ? "w-full" : ""}`}>
+        <span className={`${fullWidth ? "flex-1 justify-center" : ""} ${size === "xs" ? "px-1.5 py-0.5 text-[7px]" : "px-2.5 py-1 text-[9px]"} rounded-lg bg-white text-[#7A1F14] font-bold border border-amber-300 flex items-center gap-0.5 whitespace-nowrap`}>
+          <Phone className="w-2.5 h-2.5" /> Call
+        </span>
+        <span className={`${fullWidth ? "flex-1 justify-center" : ""} ${size === "xs" ? "px-1.5 py-0.5 text-[7px]" : "px-2.5 py-1 text-[9px]"} rounded-lg bg-[#1FAF5A] text-white font-bold flex items-center gap-0.5 whitespace-nowrap`}>
+          <MessageCircle className="w-2.5 h-2.5" /> WhatsApp
+        </span>
+      </div>
+    ) : (
+      <span className={`${fullWidth ? "w-full justify-center" : ""} ${size === "xs" ? "px-2 py-0.5 text-[7px]" : "px-3 py-1 text-[9px]"} rounded-lg bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white font-bold flex items-center gap-1 border border-amber-300/60 shadow-sm whitespace-nowrap`}>
+        {previewCta} <ExternalLink className="w-2.5 h-2.5" />
+      </span>
+    );
+
+  const renderMobileSponsorBar = () => (
+    <div className="flex items-center justify-between gap-1.5 pt-1.5 px-0.5">
+      <div className="flex items-center gap-1 min-w-0 flex-wrap">
+        <span className="w-1 h-1 rounded-full bg-amber-500 animate-pulse shrink-0" />
+        <span className="font-bold text-[7px] uppercase tracking-wider text-amber-800 shrink-0">Sponsored</span>
+        <span className="text-stone-800 font-bold text-[8px] whitespace-normal">• {previewName}</span>
+      </div>
+      {renderPreviewActions("xs")}
+    </div>
+  );
+
+  const renderCtaTiles = (tileClass: string, textClass: string) => (
+    <div className="flex items-center justify-center gap-1.5">
+      <div className={`${tileClass} rounded-2xl bg-gradient-to-b from-blue-50 to-blue-100 border-2 border-blue-300 flex flex-col items-center justify-center text-center gap-0.5 shadow-sm`}>
+        <QrCode className="w-3.5 h-3.5 text-[#1E3A8A]" />
+        <span className={`font-serif font-black leading-tight text-[#1E3A8A] ${textClass}`}>Scan Mandapam<br />QR (Camera)</span>
+      </div>
+      <span className="w-5 h-5 rounded-full bg-amber-100 border border-amber-400 flex items-center justify-center text-[9px] font-black text-[#8B1E1E]">卐</span>
+      <div className={`${tileClass} rounded-2xl bg-gradient-to-b from-[#FFFDF5] to-amber-100 border-2 border-amber-300 flex flex-col items-center justify-center text-center gap-0.5 shadow-sm`}>
+        <span className="text-sm leading-none">🏛</span>
+        <span className={`font-serif font-black leading-tight text-[#8B1E1E] ${textClass}`}>Register Your<br />Durga Mandapam</span>
+      </div>
+    </div>
+  );
+
+  const renderLoginStrip = (textClass: string) => (
+    <div className={`mx-auto w-fit flex items-center gap-1 px-2 py-1 rounded-xl bg-gradient-to-r from-amber-50 via-white to-orange-50 border border-amber-300 ${textClass} text-stone-700`}>
+      <span>🚩 Already registered your Durga Mandapam?</span>
+      <span className="font-bold text-[#8B1E1E] bg-amber-100 px-1.5 py-0.5 rounded-lg border border-amber-300">Login as Mandapam →</span>
+    </div>
+  );
+
+  const renderHeroMini = (desktop: boolean) => (
+    <div className={`bg-gradient-to-br from-[#5A0E0E] via-[#8B1E1E] to-[#6B1414] ${desktop ? "px-5 py-4 flex items-center gap-4" : "px-3 py-3"}`}>
+      <div className="flex-1 space-y-1.5">
+        <p className={`${desktop ? "text-[8px]" : "text-[6.5px]"} font-bold text-amber-300 tracking-wider`}>SHARAN NAVARATRI 2026 • 9 DAYS OF DIVINE BLISS</p>
+        <p className={`font-['Cinzel',serif] font-black ${desktop ? "text-[15px]" : "text-[11px]"} text-[#FFFBEB] leading-snug`}>
+          Celebrate Sharan Navaratri <span className="text-amber-300">2026</span> with Maa Durga's Divine Blessings
+        </p>
+        <div className="flex items-center gap-1 bg-[#FAF7F0] rounded-full p-1 border border-amber-400">
+          <span className={`flex-1 ${desktop ? "text-[8px]" : "text-[7px]"} text-stone-400 px-1.5`}>Search Mandapam by name, colony or area...</span>
+          <span className={`px-2 py-0.5 rounded-full bg-gradient-to-r from-[#8B1E1E] to-[#B45309] text-white ${desktop ? "text-[8px]" : "text-[7px]"} font-bold`}>Find My Mandapam</span>
+        </div>
+      </div>
+      {desktop && (
+        <img
+          src={navaratriAsset("/navaratri/assets/maa-durga-hero-darshan.png")}
+          alt=""
+          aria-hidden="true"
+          className="h-24 w-auto object-contain drop-shadow-lg shrink-0"
+        />
+      )}
+    </div>
+  );
+
+  const renderScheduleGhost = (desktop: boolean) => (
+    <div className="space-y-1">
+      <p className={`${desktop ? "text-[9px]" : "text-[8px]"} font-bold uppercase tracking-widest text-stone-400`}>9 Days • Sacred Alankaranas</p>
+      <div className="flex gap-1.5 overflow-hidden">
+        {Array.from({ length: desktop ? 6 : 3 }).map((_, i) => (
+          <div key={i} className={`${desktop ? "w-20 h-14" : "w-20 h-14"} shrink-0 rounded-lg bg-gradient-to-b from-amber-100 to-amber-50 border border-amber-200`} />
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderFlankBox = (label: string) => (
+    <div className="h-full">
+      {renderYourAdTag(label)}
+      <div className="h-[170px] rounded-2xl overflow-hidden border-2 border-amber-400 bg-[#1e130e] p-2 relative flex flex-col justify-between ring-2 ring-emerald-500/70 ring-offset-1 shadow-md">
+        {imagePreview && (
+          <div
+            className="absolute inset-0 bg-cover bg-center blur-lg opacity-30 scale-110 pointer-events-none"
+            style={{ backgroundImage: `url("${imagePreview}")` }}
+          />
+        )}
+        <div className="relative z-10 flex items-center justify-between gap-1">
+          <span className="px-1.5 py-[1px] rounded-full bg-black/70 border border-amber-300/40 text-[7px] font-bold tracking-wider text-amber-200 uppercase flex items-center gap-1">
+            <span className="w-1 h-1 rounded-full bg-amber-400" /> Sponsored
+          </span>
+          <span className="text-[7px] font-semibold text-amber-100/90 truncate max-w-[60px] px-1 bg-black/40 rounded-full">{previewName}</span>
+        </div>
+        <div className="relative z-10 flex-1 flex items-center justify-center my-1.5 overflow-hidden">
+          {imagePreview ? (
+            <img src={imagePreview} alt="Your ad" className="max-h-[90px] w-auto max-w-full object-contain rounded" />
+          ) : (
+            <span className="text-[8px] text-amber-200/70">Your ad</span>
+          )}
+        </div>
+        <div className="relative z-10">{renderPreviewActions("xs", true)}</div>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <div className="max-w-4xl mx-auto px-3 sm:px-6 space-y-5 sm:space-y-8 pb-24 font-sans">
@@ -1409,54 +1547,36 @@ export const NavaratriAdvertise: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Scrollable page content */}
-                    <div className="flex-1 overflow-y-auto bg-[#FDFBF7] px-2.5 py-2.5 space-y-2">
-                      <p className="text-[8px] font-bold uppercase tracking-widest text-stone-400 flex items-center gap-1">
-                        <Store className="w-2.5 h-2.5" /> Sponsored · Local Business
-                      </p>
-
-                      {/* Exact SponsoredCard replica — mobile */}
-                      <div className="p-3 rounded-xl bg-gradient-to-r from-[#FFFDF9] via-[#FAF6ED] to-[#FEF3C7] border border-amber-300 shadow-sm space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-full bg-amber-200 text-amber-950 flex items-center gap-1">
-                            <Store className="w-2.5 h-2.5 text-amber-800" /> Sponsored
-                          </span>
-                          <span className="text-[9px] text-stone-500">{city} • {category}</span>
-                        </div>
-                        <div className="space-y-0.5">
-                          <h4 className="font-serif font-bold text-[12px] text-[#8B1E1E]">{businessName || "Your Business Name"}</h4>
-                          <p className="text-[10px] text-stone-800 font-medium">{title || "Your Festive Offer Headline"}</p>
-                          <p className="text-[9px] text-stone-600 line-clamp-2">{description || "Your promotional details and festive offers will appear here for all devotees browsing this Mandapam zone."}</p>
-                        </div>
-                        <div className="relative rounded-lg overflow-hidden aspect-[16/7] bg-[#1e130e] flex items-center justify-center border border-amber-400/40">
-                          <div
-                            className="absolute inset-0 bg-cover bg-center blur-md opacity-30 scale-110 pointer-events-none"
-                            style={{ backgroundImage: `url("${imagePreview}")` }}
-                          />
-                          <img src={imagePreview} alt="Ad" className="w-full h-full object-contain relative z-10 mx-auto" />
-                        </div>
-                        <div className="pt-1 border-t border-amber-200/60 flex items-center justify-between">
-                          <span className="flex items-center gap-1 text-[9px] text-stone-500 truncate max-w-[55%]">
-                            <MapPin className="w-2.5 h-2.5 text-amber-700 shrink-0" />
-                            {address || `${effectiveDisplayZone}, ${city}`}
-                          </span>
-                          <button className="shrink-0 px-2.5 py-1 rounded-lg bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[9px] font-bold flex items-center gap-1 shadow-sm">
-                            <ExternalLink className="w-2.5 h-2.5" /> {ctaButton || "Order Now"}
-                          </button>
-                        </div>
+                    {/* Scrollable page content — exact landing page order on mobile */}
+                    <div className="flex-1 overflow-y-auto bg-[#FDFBF7]">
+                      {/* 1. Top ad banner (shown right under the header on mobile) */}
+                      <div className="px-2.5 pt-2 pb-1.5">
+                        {renderYourAdTag("Top banner • below header")}
+                        {renderPreviewFrame("h-[92px]")}
+                        {renderMobileSponsorBar()}
                       </div>
 
-                      {/* Ghost context cards */}
-                      <p className="text-[8px] font-bold uppercase tracking-widest text-stone-400 mt-1">Nearby Mandapams</p>
-                      {["Sri Durga Mandapam", "Lalitha Mata Mandapam"].map(name => (
-                        <div key={name} className="p-2 rounded-xl bg-white border border-amber-200 shadow-xs flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-lg bg-amber-100 shrink-0" />
-                          <div className="space-y-1 flex-1">
-                            <div className="h-2 w-24 bg-stone-200 rounded" />
-                            <div className="h-1.5 w-16 bg-stone-100 rounded" />
-                          </div>
+                      {/* 2. Hero */}
+                      {renderHeroMini(false)}
+
+                      {/* 3. Scan QR + Register */}
+                      <div className="px-2 pt-2.5 pb-1.5 space-y-1.5">
+                        {renderCtaTiles("w-[104px] h-[84px]", "text-[7.5px]")}
+                        {renderLoginStrip("text-[6.5px]")}
+                      </div>
+
+                      {/* 4. 9-day schedule */}
+                      <div className="px-2.5 pt-2">{renderScheduleGhost(false)}</div>
+
+                      {/* 5. Festival ads space (bottom of home page) */}
+                      <div className="px-2.5 pt-3 pb-2.5">
+                        {renderYourAdTag("Festival ads space • home page")}
+                        {renderPreviewFrame("h-[120px]", "rounded-3xl")}
+                        {renderMobileSponsorBar()}
+                        <div className="flex justify-center pt-2">
+                          <span className="px-6 py-1 rounded-full bg-[#C12535] text-white text-[8px] font-bold shadow">Run Your Ads</span>
                         </div>
-                      ))}
+                      </div>
                     </div>
 
                     {/* Real Bottom Nav Bar */}
@@ -1552,75 +1672,36 @@ export const NavaratriAdvertise: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Page body */}
-                  <div className="px-4 py-3 grid grid-cols-3 gap-3">
-                    {/* Main feed */}
-                    <div className="col-span-2 space-y-2.5">
-                      <p className="text-[9px] font-bold uppercase tracking-widest text-stone-400 flex items-center gap-1">
-                        <Store className="w-2.5 h-2.5" /> Sponsored
-                      </p>
-                      {/* Exact SponsoredCard replica — desktop */}
-                      <div className="p-3.5 rounded-2xl bg-gradient-to-r from-[#FFFDF9] via-[#FAF6ED] to-[#FEF3C7] border border-amber-300 shadow-sm space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[9px] font-bold uppercase px-2 py-0.5 rounded-full bg-amber-200 text-amber-950 flex items-center gap-1">
-                            <Store className="w-2.5 h-2.5 text-amber-800" /> Sponsored
-                          </span>
-                          <span className="text-[10px] text-stone-500">{city} • {category}</span>
-                        </div>
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="space-y-0.5 flex-1 min-w-0">
-                            <h4 className="font-serif font-bold text-sm text-[#8B1E1E] truncate">{businessName || "Your Business Name"}</h4>
-                            <p className="text-[11px] text-stone-800 font-medium truncate">{title || "Your Festive Offer Headline"}</p>
-                            <p className="text-[10px] text-stone-600 line-clamp-1">{description || "Your promotional details and festive offers will appear here for all devotees browsing this Mandapam zone."}</p>
-                          </div>
-                          <button className="shrink-0 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[10px] font-bold flex items-center gap-1 shadow-sm">
-                            <ExternalLink className="w-3 h-3" /> {ctaButton || "Order Now"}
-                          </button>
-                        </div>
-                        {/* Framed Image Banner inside desktop card */}
-                        <div className="relative w-full h-32 rounded-xl overflow-hidden bg-[#1e130e] flex items-center justify-center border border-amber-400/40">
-                          <div
-                            className="absolute inset-0 bg-cover bg-center blur-md opacity-30 scale-110 pointer-events-none"
-                            style={{ backgroundImage: `url("${imagePreview}")` }}
-                          />
-                          <img src={imagePreview} alt="Ad Preview" className="w-full h-full object-contain relative z-10 mx-auto" />
-                        </div>
-                        <div className="pt-1.5 border-t border-amber-200/60 flex items-center justify-between text-[9px] text-stone-500">
-                          <span className="flex items-center gap-1">
-                            <MapPin className="w-2.5 h-2.5 text-amber-700" />
-                            {address || `${effectiveDisplayZone}, ${city}`}
-                          </span>
-                          <span className="italic text-amber-800">Festival Verified Store</span>
-                        </div>
-                      </div>
+                  {/* Page body — exact landing page order on desktop */}
+                  {renderHeroMini(true)}
 
-                      {/* Ghost mandapam cards */}
-                      <p className="text-[9px] font-bold uppercase tracking-widest text-stone-400">Nearby Mandapams</p>
-                      {["Sri Durga Mandapam · Subhash Nagar", "Lalitha Mata Mandapam · Gandhi Chowk"].map(name => (
-                        <div key={name} className="p-2.5 rounded-xl bg-white border border-amber-200 flex items-center gap-2.5">
-                          <div className="w-10 h-10 rounded-xl bg-amber-100 shrink-0" />
-                          <div className="space-y-1 flex-1">
-                            <div className="h-2 w-36 bg-stone-200 rounded" />
-                            <div className="h-1.5 w-20 bg-stone-100 rounded" />
-                          </div>
-                          <div className="h-6 w-14 rounded-lg bg-amber-100 border border-amber-200" />
-                        </div>
-                      ))}
+                  {/* Quick actions row flanked by LEFT & RIGHT ad boxes (desktop only) */}
+                  <div className="px-4 pt-3 pb-2 flex items-stretch gap-3">
+                    <div className="w-[150px] shrink-0">{renderFlankBox("Left side box")}</div>
+                    <div className="flex-1 flex flex-col items-center justify-center gap-2">
+                      {renderCtaTiles("w-[120px] h-[100px]", "text-[9px]")}
+                      {renderLoginStrip("text-[8px]")}
                     </div>
+                    <div className="w-[150px] shrink-0">{renderFlankBox("Right side box")}</div>
+                  </div>
 
-                    {/* Sidebar */}
-                    <div className="space-y-2.5">
-                      <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 space-y-1.5">
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-stone-400">Festival Info</p>
-                        <div className="h-2 w-20 bg-stone-200 rounded" />
-                        <div className="h-1.5 w-28 bg-stone-100 rounded" />
-                        <div className="h-1.5 w-16 bg-stone-100 rounded" />
+                  <div className="px-4 pt-2">{renderScheduleGhost(true)}</div>
+
+                  {/* Festival ads space — desktop: Sponsored pill + name top-left, CTA bottom-right ON the banner */}
+                  <div className="px-4 pt-3 pb-3">
+                    {renderYourAdTag("Festival ads space • home page")}
+                    <div className="relative">
+                      {renderPreviewFrame("h-48", "rounded-3xl")}
+                      <div className="absolute top-2.5 left-2.5 z-20 flex items-center gap-1.5">
+                        <span className="px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-md border border-amber-400/40 text-[8px] font-bold text-amber-200 uppercase tracking-wider flex items-center gap-1">
+                          <span className="w-1 h-1 rounded-full bg-amber-400 animate-pulse" /> Sponsored
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-md text-[8px] font-semibold text-white/90">{previewName}</span>
                       </div>
-                      <div className="p-3 rounded-xl bg-[#8B1E1E]/5 border border-[#8B1E1E]/20 space-y-1.5">
-                        <p className="text-[9px] font-bold text-[#8B1E1E] uppercase tracking-wider">Advertise Here</p>
-                        <div className="h-1.5 w-20 bg-[#8B1E1E]/20 rounded" />
-                        <div className="h-6 w-full rounded-lg bg-[#8B1E1E]/30" />
-                      </div>
+                      <div className="absolute bottom-2.5 right-2.5 z-20">{renderPreviewActions("sm")}</div>
+                    </div>
+                    <div className="flex justify-center pt-2.5">
+                      <span className="px-8 py-1.5 rounded-full bg-[#C12535] text-white text-[10px] font-bold shadow">Run Your Ads</span>
                     </div>
                   </div>
 
