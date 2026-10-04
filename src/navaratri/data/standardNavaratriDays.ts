@@ -27,7 +27,11 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     colorHex: "#EAB308",
     imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-1-bala-tripura-sundari.jpg"),
     description: "The youthful child manifestation of the Divine Mother Tripura Sundari, personifying innocence, spiritual wisdom, memory power, and divine protection.",
-    whyWeCelebrate: "Morning starts with Ghatasthapana and Suprabhatha Seva to invoke the young, divine motherly form. In the evening, as the Padyami tithi transitions into Vidiya, the dress/decoration shifts to Gayatri Devi.",
+    whyWeCelebrate: `శ్రీ బాలా త్రిపుర సుందరి దేవి లలితా పరమేశ్వరి యొక్క 9 ఏళ్ల బాల్య స్వరూపం. బ్రహ్మాండ పురాణ లలితోపాఖ్యానం ప్రకారం, భండాసురుని సైన్యం లోకాలను పీడిస్తున్నప్పుడు, బాలాత్రిపుర సుందరి దేవి అమ్మవారి అనుజ్ఞ పొంది 'కర్ణీరథం' పై రణరంగంలోకి ప్రవేశించి, భండాసురుని 30 మంది కుమారులను (భండపుత్రులను) సంహరించి జగత్తును రక్షించింది.
+
+నవరాత్రుల ప్రథమ దినాన ఘటస్థాపనతో ఈ అవతారాన్ని ఆరాధించడం వల్ల అజ్ఞానం, భయం మరియు మానసిక చంచలత్వం సమసిపోతాయి. అమ్మవారు బాల్యంలో ఉండాల్సిన స్వచ్ఛమైన అమాయకత్వం, తీక్షణమైన మేధాశక్తి (జ్ఞాపకశక్తి), వాక్శుద్ధి మరియు ఆధ్యాత్మిక జ్ఞానాన్ని ప్రసాదిస్తుంది. ఈ పవిత్ర దినాన 2 నుండి 9 సంవత్సరాల బాలికలను సాక్షాత్తు బాలా దేవిగా భావించి 'కన్యా పూజ' (కుమారి పూజ) నిర్వహించడం వల్ల వంశాభివృద్ధి, సమస్త శుభాలు చేకూరుతాయి.
+
+Sri Bala Tripura Sundari Devi is the 9-year-old child manifestation of Supreme Mother Lalitha Tripura Sundari. According to the Brahmanda Purana, when the demon king Bhandasura threatened cosmic balance, Bala Devi sought Mother Lalitha's blessings, rode Her divine chariot into battle, and single-handedly eliminated Bhandasura's thirty demonic sons (Bhandaputras). Celebrated on Day 1 with Ghatasthapana, She personifies pure innocence, wisdom, and divine valor. Worshipping Bala Devi blesses devotees—especially children and students—with razor-sharp intellect (Medha Shakti), speech eloquence, fearlessness, and academic excellence. Devotees perform Kanya Pooja (Kumari Pooja) on this sacred day to invoke Mother's eternal grace.`,
     sacredChanting: {
       moolaMantra: "ఓం ఐం క్లీం సౌః సౌః క్లీం ఐం బాలాయై నమః (Om Aim Kleem Sauh Sauh Kleem Aim Balayai Namah)",
       sloka: "అరుణకిరణజాలై రంజితాశావకాశా | విధురజపపటీకా పుస్తకాభీష్టహస్తా ||",
@@ -37,7 +41,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     suggestedOfferings: "Payasam, Ravva Kesari, Sugar candy (Kalkandu), Sweet milk, and Vadappappu (soaked moong dal with jaggery).",
     suggestedItems: "Jasmine flowers (Mallepulu), White Lotus, White/Yellow vastram, Sugarcane pieces, and Panchamrutham.",
     standardActivities: "Ghatasthapana, Suprabhatha Seva, Sri Bala Tripura Sundari Pooja, Kumkumarchana, and Kanya Pooja.",
-    significance: "Invokes the young, divine motherly form with Ghatasthapana; evening transitions into Sri Gayatri Devi.",
+    significance: "Invokes pure childhood innocence, photographic memory, and fearlessness; marks the auspicious beginning with Ghatasthapana and Kanya Pooja.",
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Bala Tripura Sundari Devi",
@@ -58,7 +62,11 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     colorHex: "#EA580C",
     imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-2-gayatri-devi.jpg"),
     description: "The Vedamatha and supreme source of spiritual illumination, adorned with sacred faces, bestowing Vedic intellect, wisdom, and inner light.",
-    whyWeCelebrate: "Morning worship is dedicated to the Goddess of Vedic wisdom and light. Evening worship switches to Annapurna Devi, the giver of sustenance and food.",
+    whyWeCelebrate: `శ్రీ గాయత్రీ దేవి సమస్త సనాతన ధర్మానికి మూలమైన నాలుగు వేదాలకు తల్లిగా పూజించబడే 'వేదమాత'. అమ్మవారి పంచముఖాలు పంచప్రాణాలు (ప్రాణ, అపాన, వ్యాన, ఉదాన, సమాన) మరియు పంచభూతాలకు ప్రతీకలు. 'గాయంతం త్రాయతే ఇతి గాయత్రీ' — అనగా భక్తిశ్రద్ధలతో తనను జపించే వారిని సర్వ ఆపదల నుంచి కాపాడే జగద్రక్షకి.
+
+గాయత్రీ దేవి ఆరాధనతో సాధకులలోని అజ్ఞానపు చీకట్లు తొలగి బ్రహ్మతేజస్సు, మేధస్సు మరియు సద్బుద్ధి మేల్కొంటాయి. జన్మజన్మాంతరాల పాపాలు ప్రక్షాళనమై మానసిక ప్రశాంతత, ఉజ్వలమైన జ్ఞానం, ఆయురారోగ్యాలు చేకూరుతాయి. ఈ పవిత్ర దినాన గాయత్రీ మహామంత్ర జపం, గాయత్రీ హోమం మరియు వేద పారాయణ చేయడం ద్వారా ఆత్మశుద్ధి, ఏకాగ్రత మరియు కుటుంబ సౌభాగ్యం లభిస్తాయి.
+
+Sri Gayatri Devi is revered across Sanatana Dharma as 'Vedamatha'—the primordial Mother of the Vedas and the embodiment of the sacred Gayatri Maha Mantra. Her five divine faces symbolize the Pancha Pranas (five vital life forces) and the Pancha Tattvas (five cosmic elements). The sacred scripture affirms: 'Gāyantaṁ trāyate iti Gāyatrī' (She who protects those who chant Her name). Worshipping Gayatri Devi purifies the mind, dispels ignorance (avidya), ignites spiritual intellect (Brahma Tejas), and neutralizes past karmas. Reciting the Gayatri Mantra 108 times at sunrise on this day bestows radiant clarity, longevity, physical vitality, and supreme inner peace.`,
     sacredChanting: {
       moolaMantra: "ఓం భూర్భువస్సువః | తత్సవితుర్వరేణ్యం భర్గో దేవస్య ధీమహి | ధియో యో నః ప్రచోదయాత్ || (Gayatri Maha Mantra)",
       sloka: "ముక్తావిద్రుమ హేమనీల ధవళచ్ఛాయైర్ముఖైస్త్రీక్షణైః | యుక్తామిందునిబద్ధరత్నమకుటాం తత్త్వార్థవర్ణాత్మికామ్ ||",
@@ -68,7 +76,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     suggestedOfferings: "Allam Garelu (Medu Vada), Coconut Rice, Sweet Boorelu, and Pulihora.",
     suggestedItems: "Red lotus, Hibiscus (Mandara), Sandalwood paste, Akshata, and pure cow ghee for deepam.",
     standardActivities: "Sri Gayatri Devi Veda Parayanam, Gayatri Japa, Gayatri Homa, and Sahasranama Deeparadhana.",
-    significance: "Worship of the Goddess of Vedic wisdom and light; evening switches to Sri Annapurna Devi.",
+    significance: "Awakens Vedic intellect, mental clarity, and spiritual brilliance through Gayatri Maha Mantra, purifying past karmas.",
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Gayatri Devi",
@@ -89,7 +97,11 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     colorHex: "#D97706",
     imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-3-annapurna-devi.jpg"),
     description: "The eternal provider of nourishment and mother of Kasi Kshetram, seated with a golden ladle and bowl of nectarous food, sustaining all living beings.",
-    whyWeCelebrate: "Morning focuses on nourishment and grace. Evening shifts to the more protective, formidable form of Maha Chandi Devi to destroy negativity.",
+    whyWeCelebrate: `శ్రీ అన్నపూర్ణా దేవి సకల జీవకోటికి అన్నాన్ని ప్రసాదించి పోషించే జగన్మాత. పౌరాణిక గాథ ప్రకారం, ఒకసారి కైలాసంలో పరమశివుడు 'జగత్తు మాయ' అని పలికినప్పుడు, ప్రకృతి సమతుల్యత దెబ్బతిని భూమిపై భయంకరమైన కరువు ఏర్పడింది. అప్పుడు పార్వతీదేవి కాశీ క్షేత్రంలో అన్నపూర్ణగా అవతరించి సర్వజీవులకు అమృతాన్నాన్ని ప్రసాదించింది. సాక్షాత్తు పరమశివుడే 'భిక్షాం దేహి కృపావలంబనకరీ' అంటూ జోలె పట్టి అమ్మవారి వద్ద భిక్షను స్వీకరించాడు.
+
+ఆధ్యాత్మిక ముక్తికి ప్రాణాధారమైన శరీర పోషణ ఎంత ప్రాముఖ్యమైనదో ఈ అవతారం తెలియజేస్తుంది. అన్నపూర్ణా దేవిని ఆరాధించడం వల్ల ఇళ్లలో ఎన్నటికీ అన్నవస్త్రాలకు లోటు ఉండదు (అక్షయ పాత్ర సిద్ధిస్తుంది). ఈ రోజున అమ్మవారికి పాయసం, క్షీరాన్నం సమర్పించి, పేదలకు మరియు భక్తులకు స్వచ్ఛందంగా అన్నదానం చేయడం వల్ల సమస్త పాపాలు హరించి అక్షయ పుణ్యం లభిస్తుంది.
+
+Sri Annapurna Devi is the eternal mother of Kasi Kshetram and the supreme provider of nourishment holding a golden ladle and bowl filled with ambrosial food. When Lord Shiva playfully declared the material world to be maya, nature withdrew its nourishment, causing famine across the earth. Parvati Devi then manifested in Kasi as Annapurna to feed every living being. Lord Shiva Himself approached Her as a mendicant with a begging bowl, affirming that physical nourishment is sacred and essential for spiritual pursuit. Worshipping Annapurna Devi ensures perpetual food abundance (Akshaya Patra), banishes poverty and hunger, and fosters inner contentment. Organizing Maha Annadanam on this day bestows boundless merit.`,
     sacredChanting: {
       moolaMantra: "ఓం హ్రీం శ్రీం క్లీం భగవత్యై అన్నపూర్ణాయై నమః (Om Hreem Shreem Kleem Bhagavatyai Annapurnayai Namah)",
       sloka: "నిత్యానందకరీ వరాభయకరీ సౌందర్యరత్నాకరీ | నిర్ధూతాఖిలఘోరపావనకరీ ప్రత్యక్షమాహేశ్వరీ ||",
@@ -99,7 +111,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     suggestedOfferings: "Ksheerannam (Paramannam), Sweet Pongali, Dal Vadas, and Maha Annadanam meal distribution.",
     suggestedItems: "Navadhanyalu (nine sacred grains), Rice grains, Fresh harvest fruits, and Yellow flowers.",
     standardActivities: "Sri Annapurna Devi Golden Ladle Pooja, Maha Annadanam, and Ksheerannam Bhog Distribution.",
-    significance: "Focuses on nourishment and divine grace; evening shifts to Maha Chandi Devi to vanquish negative energies.",
+    significance: "Bestows boundless sustenance, food abundance (Akshaya Patra), and family fulfillment; celebrated with Maha Annadanam.",
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Annapurna Devi",
@@ -120,7 +132,11 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     colorHex: "#DC2626",
     imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-4-maha-chandi-devi.jpg"),
     description: "The fierce, invincible warrior form of the Divine Mother mounted to vanquish negative energies, fear, and adversities, establishing cosmic righteousness.",
-    whyWeCelebrate: "Morning continues with the fierce Chandi form and sacred Chandi Parayanam. Evening transitions to the royal, benevolent Lalitha Tripura Sundari Devi.",
+    whyWeCelebrate: `శ్రీ మహా చండీ దేవి దుష్టశిక్షణ, శిష్టరక్షణ కోసం త్రిమూర్తులు మరియు సకల దేవతల దివ్య తేజస్సుల కలయికతో ఆవిర్భవించిన అత్యంత శక్తివంతమైన రణదేవత. దేవీ మాహాత్మ్యం (దుర్గా సప్తశతి) ప్రకారం, చండ, ముండ, రక్తాక్షాది భయంకర రాక్షసులను సంహరించడానికి జగన్మాత ఈ ఉగ్రరూపాన్ని ధరించింది. అమ్మవారు చేతిలో పదునైన ఖడ్గం, శూలం, చక్రం ధరించి అధర్మాన్ని కూకటివేళ్ళతో పెకలించివేస్తుంది.
+
+చండీ దేవి కేవలం బాహ్య శత్రువులనే కాక, మన అంతరంగంలో దాగి ఉన్న కామ, క్రోధ, లోభ, మోహ, మద, మాత్సర్యాలనే అరిషడ్వర్గాలను సంహరిస్తుంది. ఈ దినాన చండీ నవాక్షరీ మంత్ర జపం, చండీ పారాయణం మరియు చండీ హోమం నిర్వహించడం వల్ల శత్రు బాధలు, రాహు-కేతు గ్రహ దోషాలు, నరదిష్టి, ప్రమాద భయాలు తొలగిపోయి అద్భుతమైన ఆత్మవిశ్వాసం, విజయం మరియు దివ్య రక్షణ లభిస్తాయి.
+
+Sri Maha Chandi Devi is the invincible warrior embodiment of the Supreme Mother, forged from the concentrated effulgence of Brahma, Vishnu, Shiva, and all the celestial devas. In the Devi Mahatmyam (Durga Saptashati), She arose to annihilate formidable demon generals including Chanda, Munda, and Raktabija. Armed with celestial weaponry, She ruthlessly eradicates darkness and re-establishes cosmic righteousness. Beyond external battles, Maha Chandi conquers the internal demons of ego, anger, lust, greed, and envy. Chanting the Chandi Navakshari Mantra, reading the Saptashati, and performing Chandi Homa on this day dissolves malefic planetary influences (Rahu-Ketu doshas), eliminates negative energies, and instills unshakeable moral courage.`,
     sacredChanting: {
       moolaMantra: "ఓం ఐం హ్రీం క్లీం చాముండాయై విచ్చే (Chandi Navakshari Mantra)",
       sloka: "సర్వమంగళమాంగళ్యే శివే సర్వార్థసాధికే | శరణ్యే త్ర్యంబకే గౌరి నారాయణి నమోస్తుతే ||",
@@ -130,7 +146,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     suggestedOfferings: "Garelu (Vada with ginger), Kadambam, Bellam Appalu, and Lemon Naivedhyam.",
     suggestedItems: "Red silk vastram, Red oleander (Ganneru), Bilva patra, Kumkum, and Lemon garland.",
     standardActivities: "Sri Maha Chandi Pooja, Chandi Parayanam, Kumkumarchana, and Rahu Kala Deeparadhana.",
-    significance: "Destroys negativity, fear, and obstacles; evening transitions to royal, benevolent Sri Lalitha Tripura Sundari.",
+    significance: "Vanquishes negative energies, Rahu-Ketu doshas, and internal foes (Arishadvargas); grants courage and protection.",
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Maha Chandi Devi",
@@ -151,7 +167,11 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     colorHex: "#CA8A04",
     imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-5-lalitha-tripura-sundari.jpg"),
     description: "The supreme empress of the Sri Chakra (Sri Yantra), seated on a divine lotus throne, personifying royal splendor, universal bliss, compassion, and sovereign grace.",
-    whyWeCelebrate: "Morning centers on royal splendor and harmony with Sri Chakra Navavarana Pooja. Evening transitions into the sacred Saraswati Alankaram ahead of Moola Nakshatram.",
+    whyWeCelebrate: `శ్రీ లలితా త్రిపుర సుందరి దేవి సమస్త జగత్తులను పాలించే పరాభట్టారిక మరియు శ్రీచక్ర అధిష్ఠాన దేవత. లలితోపాఖ్యానం ప్రకారం, సకల లోకాలను అల్లకల్లోలం చేసిన భండాసురుని సంహరించడానికి దేవతలు చేసిన 'మహా చిదగ్ని' యజ్ఞ కుండం నుంచి సాక్షాత్తు పరమేశ్వరిగా అమ్మవారు ఆవిర్భవించింది. చెరకుగడ ధనుస్సు (మనస్సు), పంచ పుష్పబాణాలు (పంచతన్మాత్రలు), పాశం (రాగం), అంకుశం (క్రోధం) ధరించి కామేశ్వర సమేతంగా శ్రీచక్ర సింహాసనంపై కొలువై ఉంటుంది.
+
+లలితా పంచమి నాడు అమ్మవారిని శ్రీచక్ర నవావరణ పూజ, లలితా సహస్రనామ కుంకుమార్చనలతో పూజించడం వల్ల గృహంలో కలహాలు తొలగిపోయి దాంపత్య సౌఖ్యం, వంశాభివృద్ధి, సంపూర్ణ మానసిక శాంతి లభిస్తాయి. సాధకులకు కుండలినీ శక్తి జాగృతమై ఉన్నతమైన ఆధ్యాత్మిక స్థితి చేకూరుతుంది. ఈ పూజ సమస్త వాస్తు దోషాలను నివారించి ఐశ్వర్యాన్ని, రాజయోగాలను ప్రసాదిస్తుంది.
+
+Sri Lalitha Tripura Sundari Devi is the Sovereign Empress of the Universe (Raja Rajeshwari) and the presiding deity of the sacred Sri Yantra (Sri Chakra). According to the Lalitopakhyana, when the demon Bhandasura conquered the realms of gods, the devas performed the supreme sacrifice, from whose 'Chidagni Kunda' (sacrificial altar of Pure Consciousness) Mother Lalitha manifested in radiant majesty. Seated on the Sri Chakra, She holds the sugarcane bow (the mind), five floral arrows (the senses), the noose (love), and the goad (discernment). Worshipping Her on Lalitha Panchami with Sri Chakra Navavarana Pooja and Lalitha Sahasranama Kumkumarchana brings deep marital harmony, peace, prosperity, and spiritual awakening.`,
     sacredChanting: {
       moolaMantra: "ఓం శ్రీం హ్రీం క్లీం ఐం సౌః శ్రీ లలితా పరమేశ్వర్యై నమః",
       sloka: "సింధూరారుణ విగ్రహాం త్రినయనాం మాణిక్యమౌళిస్ఫురత్ | తారానాయక శేఖరాం స్మితముఖీం ఆపీనవక్షోరుహామ్ ||",
@@ -161,7 +181,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     suggestedOfferings: "Pesara Boorelu, Sweet Pongali, Pulihora, and Panchamrutham.",
     suggestedItems: "Red Kumkum, Turmeric roots, Lotus flowers, and Yellow/Red silk vastram.",
     standardActivities: "Sri Chakra Navavarana Pooja, Lalitha Sahasranama Kumkumarchana, Suvasini Pooja, and Harathi.",
-    significance: "Royal splendor, family harmony, and sovereign spiritual grace; evening transitions into sacred Saraswati Alankaram.",
+    significance: "Confers royal grace, marital harmony, and spiritual elevation through Sri Chakra Navavarana Pooja on Lalitha Panchami.",
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Lalitha Tripura Sundari Devi",
@@ -182,7 +202,11 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     colorHex: "#16A34A",
     imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-6-saraswati-devi.jpg"),
     description: "Celebrated on sacred Moola Nakshatram holding the veena, book, and crystal rosary; the supreme goddess of wisdom, education, and fine arts.",
-    whyWeCelebrate: "Moola Nakshatram is the most auspicious day for students and scholars seeking wisdom (Aksharabhyasam). In the evening/night, the form changes to Maha Lakshmi Devi for wealth and prosperity.",
+    whyWeCelebrate: `శ్రీ సరస్వతీ దేవి జ్ఞానానికి, విద్యకు, వాక్కుకు మరియు సకల లలిత కళలకు అధిదేవత. శరన్నవరాత్రులలో 'మూలా నక్షత్రం' ఇంద్రకీలాద్రి కనకదుర్గమ్మ జన్మ నక్షత్రం కావడంతో ఈ రోజుకు అత్యంత విశిష్టమైన ప్రాధాన్యత ఉంది. తెల్లటి పద్మాసనంపై ఆసీనురాలై చేతిలో వీణ (నాదబ్రహ్మ ప్రతీక), పుస్తకం (వేద విజ్ఞానం), స్పటిక మాల (ఏకాగ్రత) ధరించి బ్రహ్మజ్ఞాన ప్రదాయినిగా దర్శనమిస్తుంది.
+
+ఈ పవిత్ర దినాన చిన్నారులకు విద్యాభ్యాసాన్ని ప్రారంభించే 'అక్షరాభ్యాసం' చేయించడం తరతరాల సంప్రదాయం. విద్యార్థులు, ఉపాధ్యాయులు, కళాకారులు తమ పుస్తకాలను, సంగీత వాయిద్యాలను అమ్మవారి పాదాల వద్ద ఉంచి 'పుస్తక పూజ' నిర్వహిస్తారు. సరస్వతీ దేవిని ఆరాధించడం వల్ల అజ్ఞానమనే చీకటి తొలగిపోయి అమోఘమైన జ్ఞాపకశక్తి, వాక్శుద్ధి, విద్యా రంగంలో అత్యున్నత విజయాలు, వివేకం లభిస్తాయి.
+
+Sri Saraswati Devi is the divine goddess of supreme learning, intellect, music, and the fine arts. In the Vijayawada Dasara tradition, 'Moola Nakshatram' is celebrated as the sacred birth star (Janma Nakshatram) of Mother Kanaka Durga, attracting lakhs of devotees. Clad in spotless white seated on a white lotus, She holds the sacred scriptures, the crystal Japamala, and strums the divine Veena symbolizing cosmic harmony (Nada Brahma). This day is auspicious for 'Aksharabhyasam' (initiating children into the alphabet and education) and 'Pustaka Pooja' (blessing of books and academic tools). Worshipping Saraswati Devi removes ignorance, bestows photographic memory, eloquence, and paves the path to academic and scholarly distinction.`,
     sacredChanting: {
       moolaMantra: "ఓం ఐం వాగ్దేవ్యై చ విద్మహే కామరాజాయ ధీమహి | తన్నో దేవీ ప్రచోదయాత్ || (Saraswathi Gayatri)",
       sloka: "యా కుందేందు తుషారహారధవళా యా శుభ్రవస్త్రావృతా | యా వీణావరదండమండితకరా యా శ్వేతపద్మాసనా ||",
@@ -192,7 +216,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     suggestedOfferings: "Daddojanam (Curd Rice), Bellam Payasam, White Laddu, and Honey with milk.",
     suggestedItems: "White/Yellow flowers, Slates, Notebooks, Pens for Aksharabhyasam, and White lotus.",
     standardActivities: "Aksharabhyasam, Pustaka Pooja, Sri Saraswati Sangeetha Seva, and Classical Bhajans.",
-    significance: "Moola Nakshatram Aksharabhyasam for students and scholars; evening changes to Maha Lakshmi Devi for wealth and prosperity.",
+    significance: "Sacred birth star of Kanaka Durga; grants academic excellence, speech eloquence (Vak Siddhi), and wisdom with Aksharabhyasam.",
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Saraswati Devi",
@@ -213,7 +237,11 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     colorHex: "#6B7280",
     imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-7-maha-lakshmi-devi.jpg"),
     description: "The auspicious embodiment of Ashta Lakshmi, bestowing prosperity, agricultural abundance, wealth, and auspicious fortune.",
-    whyWeCelebrate: "Morning honors abundance and auspiciousness with Sri Maha Lakshmi Sahasra Deeparadhana. Evening shifts to Durga Devi as Durgashtami approaches.",
+    whyWeCelebrate: `శ్రీ మహా లక్ష్మీ దేవి సకల జగత్తుల పోషకుడైన శ్రీమహావిష్ణువు దేవేరి మరియు సమస్త సంపదలకు, సౌభాగ్యానికి అధిదేవత. దేవాసురులు క్షీరసాగరాన్ని మథించినప్పుడు అమృతం కంటే ముందుగా స్వచ్ఛమైన బంగారు పద్మంలో జగన్మాత ఆవిర్భవించింది. లక్ష్మీదేవి కేవలం ధన ప్రదాత మాత్రమే కాదు; ధన, ధాన్య, ధైర్య, శౌర్య, విజయ, విద్య, సంతాన, గజలక్ష్మి అనే 'అష్టలక్ష్మి' రూపాలతో సర్వ సంపదలను ప్రసాదిస్తుంది.
+
+శరన్నవరాత్రుల సప్తమి నాడు శ్రీ మహాలక్ష్మిని సహస్ర దీపారాధనతో, శ్రీసూక్తం మరియు కనకధారా స్తోత్రాలతో అర్చించడం వల్ల అప్పుల బాధలు, దారిద్య్రం, వ్యాపార నష్టాలు సమసిపోతాయి. ఇళ్లలో మరియు కార్యాలయాలలో శాశ్వత లక్ష్మీ కటాక్షం, ధనధాన్యాల సమృద్ధి, మానసిక సంతృప్తి మరియు మంగళకరమైన వాతావరణం సిద్ధిస్తాయి.
+
+Sri Maha Lakshmi Devi is the divine consort of Lord Maha Vishnu and the eternal embodiment of cosmic wealth, auspiciousness, and abundance. She manifested from the cosmic churning of the Ocean of Milk (Ksheera Sagara Mathanam), seated majestically on a blooming lotus. As Ashta Lakshmi, She governs eight cosmic facets of prosperity: food grains, spiritual wealth, moral courage, lineage, triumph, knowledge, royalty, and material fortune. Worshipping Maha Lakshmi on Saptami with Sahasra Deeparadhana (lighting thousands of ghee lamps) and reciting Sri Suktam or Kanakadhara Stotram banishes poverty, debt, and misfortune, filling homes and enterprises with lasting peace, financial stability, and divine grace.`,
     sacredChanting: {
       moolaMantra: "ఓం శ్రీం హ్రీం శ్రీం కమలే కమలాలయే ప్రసీద ప్రసీద శ్రీం హ్రీం శ్రీం ఓం మహాలక్ష్మ్యై నమః",
       sloka: "నమస్తేస్తు మహామాయే శ్రీపీఠే సురపూజితే | శంఖచక్ర గదాహస్తే మహాలక్ష్మి నమోస్తుతే ||",
@@ -223,7 +251,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     suggestedOfferings: "Chakkara Pongali, Purnam Boorelu, Ksheerannam, and Dry Fruits Laddu.",
     suggestedItems: "Pink Lotus, Bilva leaves, Gold/Silver coins, Betel leaves, and Red vastram.",
     standardActivities: "Sri Maha Lakshmi Sahasra Deeparadhana, Dhana Lakshmi & Dhanya Lakshmi Archana, and Kumkumarchana.",
-    significance: "Honors abundance, prosperity, and financial peace; evening shifts to Durga Devi as Durgashtami approaches.",
+    significance: "Eradicates financial distress and debts; invites Ashta Lakshmi blessings, prosperity, and peace through Sahasra Deeparadhana.",
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Maha Lakshmi Devi",
@@ -244,7 +272,11 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     colorHex: "#7E22CE",
     imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-8-durga-devi.jpg"),
     description: "Worshipped on sacred Durgashtami as the mighty lion-rider; the universal warrior mother who protects righteousness and eliminates all hardships.",
-    whyWeCelebrate: "Morning is dedicated to the warrior form mounted on a lion. Evening transitions into the fiercest form, Mahishasura Mardhini, preparing for the final battle against evil.",
+    whyWeCelebrate: `శ్రీ దుర్గా దేవి 'దుర్గతి నాశిని' — అంటే భక్తుల సమస్త కష్టాలను, ఆపదలను, దుఃఖాలను సమూలంగా రూపుమాపే సాక్షాత్తు పరాశక్తి. దుర్గాష్టమి నాడు అమ్మవారు సింహవాహనారూఢురాలై, దేవతలందరూ సమర్పించిన దివ్యాయుధాలను ధరించి వీరరస స్వరూపిణిగా దర్శనమిస్తుంది. అష్టమి మరియు నవమి తిథుల కలయికగా వచ్చే పవిత్ర 'సంధికాలం' లో జగన్మాత చాముండా దేవిగా ఆవిర్భవించి చండ, ముండులనే రాక్షస నాయకులను సంహరించింది.
+
+గ్రహదోషాలు, దీర్ఘకాలిక అనారోగ్యాలు, కోర్టు వివాదాలు, శత్రుపీడల నుంచి విముక్తి పొందడానికి దుర్గాష్టమి పూజ అత్యంత ఫలప్రదమైనది. ఈ పుణ్యదినాన దుర్గా సప్తశతి పారాయణం, దుర్గా కవచ జపం చేసి, అమ్మవారికి ఎర్రటి పుష్పాలు మరియు నిమ్మకాయల దండలు సమర్పించడం వల్ల ఇళ్లకు అభేద్యమైన రక్షా కవచం ఏర్పడి, భయాలు తొలగి అద్భుతమైన విజయం లభిస్తుంది.
+
+Sri Durga Devi is the cosmic vanquisher of hardships and distress ('Durgati Nashini'). Worshipped on holy Maha Durgashtami mounted upon a golden lion, She holds celestial weapons gifted by the Trimurtis and all Gods. During the climactic 'Sandhi Kala'—the auspicious intersection between Ashtami and Navami—the Mother manifested as Chamunda to annihilate the dreaded demons Chanda and Munda. Worshipping Durga Devi on this day dissolves stubborn planetary afflictions, dispels fears of premature adversity, and breaks chronic obstacles. Chanting Sri Durga Kavacham and offering bilva leaves and lemon garlands establishes a powerful spiritual shield of divine protection (Raksha) over one's family and home.`,
     sacredChanting: {
       moolaMantra: "ఓం దుం దుర్గాయై నమః (Om Dum Durgayai Namah)",
       sloka: "దుర్గే స్మృతా హరసి భీతిమశేషజంతోః | స్వస్థైః స్మృతా మతిమతీవ శుభాం దదాసి ||",
@@ -254,7 +286,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     suggestedOfferings: "Kadambam, Garelu (Vada with ginger), Bellam Kudumulu, and Coconuts.",
     suggestedItems: "Red Oleander (Ganneru), Lemon garlands, Trishulam decor, and Red silk vastram.",
     standardActivities: "Maha Durgashtami Special Pooja, Chandi Parayanam, and Sandhi Pooja (Midnight Sandhya).",
-    significance: "Warrior form mounted on lion; evening transitions into Mahishasura Mardhini preparing for final victory.",
+    significance: "Invincible warrior protection mounted on lion; dissolves chronic obstacles and shields families through Durga Kavacham.",
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Durga Devi",
@@ -275,7 +307,11 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     colorHex: "#0F766E",
     imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-9-mahishasura-mardhini.jpg"),
     description: "Celebrated on Maha Navami as the victorious warrior goddess who vanquished the demon Mahishasura, restoring peace and cosmic Dharma.",
-    whyWeCelebrate: "Morning honors the slaying of the demon Mahishasura. Evening shifts to the triumphant, peaceful queen of the universe, Sri Raja Rajeshwari Devi.",
+    whyWeCelebrate: `శ్రీ మహిషాసుర మర్దిని దేవి అధర్మంపై ధర్మం సాధించిన అమోఘ విజయానికి ప్రతీక. బ్రహ్మదేవుని వరాలతో గర్వించి ముల్లోకాలను అతలాకుతలం చేసిన మహిషాసురుడనే రాక్షస రాజును సంహరించడానికి జగన్మాత ఈ రౌద్ర వీర రూపంలో అవతరించింది. తొమ్మిది రోజుల అహోరాత్రుల తీవ్ర యుద్ధం అనంతరం, మహార్నవమి నాడు అమ్మవారు తన దివ్య త్రిశూలంతో మహిషాసురుని వక్షస్థలాన్ని చీల్చి లోకకళ్యాణాన్ని సాధించింది.
+
+ఈ రోజున సనాతన సంప్రదాయంలో 'ఆయుధ పూజ' (శస్త్ర పూజ) అత్యంత వైభవంగా నిర్వహిస్తారు. మానవ జీవనోపాధికి మరియు దేశ రక్షణకు తోడ్పడే వాహనాలు, యంత్రాలు, కంప్యూటర్లు, పనిముట్లను దైవత్వంతో పూజిస్తారు. మహిషాసుర మర్దిని స్తోత్ర పారాయణం చేయడం వల్ల ఆత్మన్యూనత, బద్ధకం, అంతర్గత భయాలు నశించి, జీవితంలోని క్లిష్టమైన సవాళ్లపై సంపూర్ణ విజయం లభిస్తుంది.
+
+Sri Mahishasura Mardhini Devi personifies the supreme victory of cosmic righteousness (Dharma) over tyranny and injustice. Empowered by divine boons, the buffalo-demon king Mahishasura drove the devas from heaven and terrorized creation. The Divine Mother manifested as an 18-armed warrior, armed with the weapons of all divinities. After nine days of relentless battle, on Maha Navami, She pinned Mahishasura beneath Her foot and vanquished him with Her divine trident (Trishulam). This day is revered with 'Ayudha Pooja'—worshipping machines, tools, vehicles, books, and implements of livelihood. Chanting the Mahishasura Mardhini Stotram dispels inertia, fear, and negativity, assuring victory in all righteous struggles.`,
     sacredChanting: {
       moolaMantra: "ఓం క్లీం కాళికాయై నమః | ఓం ఐం హ్రీం క్లీం చాముండాయై విచ్చే",
       sloka: "అయి గిరినందిని నందితమేదిని విశ్వవినోదిని నందినుతే | గిరివరవింధ్య శిరోధినివాసిని విష్ణువిలాసిని జిష్ణునుతే ||",
@@ -285,7 +321,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     suggestedOfferings: "Allam Garelu, Tamarind Pulihora, Jaggery Sweet Pongali, and Whole Tender Coconut.",
     suggestedItems: "Kumkum, Red flowers, Lime garlands, Sandalwood, and Ayudha Pooja flowers.",
     standardActivities: "Sri Mahishasura Mardhini Devi Alankarana, Ayudha Pooja, Maha Harathi, and Maha Navami Chandi Homa.",
-    significance: "Honors the slaying of Mahishasura; evening shifts to triumphant, peaceful queen Sri Raja Rajeshwari Devi.",
+    significance: "Celebrates the cosmic victory over Mahishasura; grants indomitable willpower and success in livelihood through Ayudha Pooja.",
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Mahishasura Mardhini Devi",
@@ -306,7 +342,11 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     colorHex: "#B45309",
     imageUrl: navaratriAsset("/navaratri/assets/alankaranas/day-10-raja-rajeshwari.jpg"),
     description: "The supreme empress and victorious queen of the universe, conferring peace, fulfillment, nobility, and ultimate victory on Vijayadashami.",
-    whyWeCelebrate: "Full Day Alankaram: Sri Raja Rajeshwari Devi. At 3:30 PM: Nagarotsavam (City Procession). From 5:00 PM – 6:00 PM: Teppotsavam (Float Festival in Krishna River) where the deities (Utsava Vigrahams) are taken on the decorated Hamsa Vahanam (swan boat) at Durga Ghat, marking official conclusion and Nimarjanam.",
+    whyWeCelebrate: `శ్రీ రాజరాజేశ్వరి దేవి సమస్త బ్రహ్మాండాలను పరిపాలించే శాంత స్వరూపిణి, పరాభట్టారిక మరియు విజయదశమి నాటి సర్వోన్నత దివ్య రూపం. దుష్టరాక్షస సంహారం ముగిసిన అనంతరం, జగన్మాత మధురమైన మందహాసంతో, కరుణామృత దృష్టితో సకల జీవులకు అభయాన్ని, సర్వార్థ సిద్ధిని అనుగ్రహిస్తుంది. అలాగే అధర్మరూపుడైన రావణాసురునిపై శ్రీరామచంద్రుడు విజయం సాధించిన పుణ్యదినం కూడా విజయదశమి.
+
+ఈ రోజున ప్రారంభించే విద్య, వ్యాపారం లేదా ఏదైనా కొత్త ప్రయత్నం అప్రతిహత విజయాన్ని సాధిస్తుంది. సాయంత్రం జమ్మి చెట్టు (శమీ వృక్షం) వద్ద పూజ నిర్వహించి 'శమీ శమయతే పాపం' అంటూ జమ్మి ఆకులను పెద్దలకు ఇచ్చి ఆశీర్వాదం తీసుకోవడం విశిష్ట సంప్రదాయం. ఇంద్రకీలాద్రిపై మధ్యాహ్నం 3:30 గంటలకు జరిగే నగర ఉత్సవం, సాయంత్రం 5:00 నుండి 6:00 గంటల వరకు కృష్ణా నదిలో హంస వాహనంపై కనులపండువగా సాగే 'తెప్పోత్సవం'తో నవరాత్రుల ఉత్సవాలు సంపూర్ణ మంగళప్రదంగా ముగుస్తాయి.
+
+Sri Raja Rajeshwari Devi is the Supreme Empress of all universes (Para Bhattarika), reigning in serene regal splendor after the eradication of evil. Vijayadashami celebrates the ultimate triumph of Good over Evil—commemorating both Goddess Durga's conquest over Mahishasura and Lord Sri Rama's vanquishing of Ravana. Any new business, educational endeavor, or auspicious journey launched on Vijayadashami is blessed with boundless success. Devotees perform Shami (Jammi) Pooja and exchange sacred Jammi leaves with elders with the prayer 'Shamī shamayate pāpaṁ' for lifelong prosperity. At Vijayawada Indrakeeladri, Dasara concludes with the 3:30 PM Nagarotsavam and the sunset Teppotsavam (swan boat float festival on the Krishna River at Durga Ghat).`,
     sacredChanting: {
       moolaMantra: "ఓం శ్రీం హ్రీం క్లీం ఐం సౌః శ్రీ రాజరాజేశ్వర్యై నమః",
       sloka: "అంబా శాంభవి చంద్రమౌళి రబలా పర్ణా ఉమా పార్వతీ | కాళీ హైమవతీ శివా త్రినయనీ కాత్యాయనీ భైరవీ ||",
@@ -316,7 +356,7 @@ export const STANDARD_NAVARATRI_DAYS: StandardFestivalDay[] = [
     suggestedOfferings: "Jalebi, Bellam Appalu, Laddu, Chakkara Pongali, and Grand Maha Prasadam.",
     suggestedItems: "Jammi (Shami) leaves, Golden Yellow/Red silk vastram, Lotus flowers, and Sweets for distribution.",
     standardActivities: "Sri Raja Rajeshwari Devi Rajabhishekam, Aparajita Pooja, Shami Pooja, 3:30 PM Nagarotsavam, and 5:00 PM Teppotsavam on Hamsa Vahanam (Krishna River).",
-    significance: "Full Day Sri Raja Rajeshwari Devi (Victorious Form). 3:30 PM Nagarotsavam; 5:00 PM – 6:00 PM Teppotsavam on Krishna River at Durga Ghat & Nimarjanam.",
+    significance: "Universal triumph on Vijayadashami; guarantees victory for new beginnings, blessed by Shami Pooja, Nagarotsavam & Krishna River Teppotsavam.",
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Raja Rajeshwari Devi (Full Day)",

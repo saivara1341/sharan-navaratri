@@ -278,6 +278,16 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                       </div>
                     )}
 
+                    {/* Avathara Visishtatha (Why We Celebrate) preview */}
+                    <div className="bg-amber-50/80 p-2.5 rounded-2xl border border-amber-200/80 space-y-1">
+                      <div className="text-[10px] font-black text-[#8B1E1E] uppercase tracking-wide">
+                        అవతార విశిష్టత • Why We Celebrate
+                      </div>
+                      <p className="text-[11px] text-stone-700 leading-relaxed font-normal line-clamp-3">
+                        {day.whyWeCelebrate}
+                      </p>
+                    </div>
+
                     {/* Short description */}
                     <p className="text-[11px] text-stone-600 leading-relaxed px-0.5">
                       {day.description}
@@ -397,7 +407,7 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                 <h4 className="font-serif font-black text-sm sm:text-base text-[#8B1E1E] flex items-center gap-2 tracking-wide">
                   <span>Why We Celebrate This Avatharam • అవతార విశిష్టత</span>
                 </h4>
-                <p className="text-xs sm:text-sm text-stone-800 leading-relaxed font-normal">
+                <p className="text-xs sm:text-sm text-stone-800 leading-relaxed font-normal whitespace-pre-line">
                   {selectedDay.whyWeCelebrate}
                 </p>
               </div>
