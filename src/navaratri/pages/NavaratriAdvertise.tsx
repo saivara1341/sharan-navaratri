@@ -270,22 +270,31 @@ export const NavaratriAdvertise: React.FC = () => {
   const handleProceedToPayment = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanPhone = phone.replace(/\D/g, "").slice(0, 10);
-    if (!businessName.trim() || !cleanPhone) {
-      toast.error("Please enter your business name and 10-digit contact mobile number.");
-      return;
+
+    if (adFormat === "BANNER") {
+      if (!originalUploadUrl && !imagePreview) {
+        toast.error("Please upload your banner photo or graphic poster.");
+        return;
+      }
+      if (!cleanPhone || cleanPhone.length !== 10) {
+        toast.error("Please enter a valid 10-digit contact mobile number for order confirmation.");
+        return;
+      }
+    } else {
+      if (!businessName.trim() || !cleanPhone) {
+        toast.error("Please enter your business name and 10-digit contact mobile number.");
+        return;
+      }
+      if (cleanPhone.length !== 10) {
+        toast.error("Please enter a valid 10-digit mobile number.");
+        return;
+      }
+      if (!title.trim()) {
+        toast.error("Please enter your promotional offer headline.");
+        return;
+      }
     }
-    if (cleanPhone.length !== 10) {
-      toast.error("Please enter a valid 10-digit mobile number.");
-      return;
-    }
-    if (adFormat === "BANNER" && !originalUploadUrl && !imagePreview) {
-      toast.error("Please upload your shop photo or banner poster.");
-      return;
-    }
-    if (adFormat === "TEXT_BULLETIN" && !title.trim()) {
-      toast.error("Please enter your promotional offer headline.");
-      return;
-    }
+
     if (whatsapp) {
       const cleanWa = whatsapp.replace(/\D/g, "").slice(0, 10);
       if (cleanWa.length > 0 && cleanWa.length !== 10) {
@@ -307,13 +316,15 @@ export const NavaratriAdvertise: React.FC = () => {
     setIsProcessingPayment(true);
 
     const effectiveZone = targetZone === "Custom" ? (customZone.trim() || "Local Mandapam Belt") : targetZone;
-    const effectiveTitle = title.trim() || (adFormat === "BANNER" ? `${businessName.trim()} Banner Ad` : `${businessName.trim()} Festive Offer`);
-    const effectiveDescription = description.trim() || (adFormat === "BANNER" ? `Festive advertisement from ${businessName.trim()}` : [bulletPoint1, bulletPoint2, bulletPoint3].filter(Boolean).join(" • ") || "Special Navaratri festival offers and discounts.");
+    const effectiveBusinessName = businessName.trim() || (adFormat === "BANNER" ? "Festive Banner Ad" : "Local Business");
+    const effectiveCategory = adFormat === "BANNER" ? "Banner Advertisement" : category;
+    const effectiveTitle = title.trim() || (adFormat === "BANNER" ? `${effectiveBusinessName}` : `${effectiveBusinessName} Festive Offer`);
+    const effectiveDescription = description.trim() || (adFormat === "BANNER" ? `Festive advertisement from ${effectiveBusinessName}` : [bulletPoint1, bulletPoint2, bulletPoint3].filter(Boolean).join(" • ") || "Special Navaratri festival offers and discounts.");
 
     setTimeout(() => {
       const newAd = createAdvertisement({
-        businessName: businessName.trim(),
-        category,
+        businessName: effectiveBusinessName,
+        category: effectiveCategory,
         phone: phone.trim(),
         whatsapp: whatsapp.trim() || phone.trim(),
         website: website.trim() || undefined,
@@ -1213,46 +1224,15 @@ export const NavaratriAdvertise: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Business Details & Action Button */}
+                  {/* Target Location & Contact for Banner */}
                   <div className="space-y-4 pt-3 border-t border-amber-200">
-                    <label className="block font-bold text-xs text-stone-800 uppercase tracking-wider">
-                      2. Business Identity &amp; Contact Details
-                    </label>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                      <div>
-                        <label className="block font-bold mb-1 text-stone-800">Business / Store Name *</label>
-                        <input
-                          type="text"
-                          required
-                          value={businessName}
-                          onChange={(e) => setBusinessName(e.target.value)}
-                          placeholder="e.g. Sri Lakshmi Sweets &amp; Bakers"
-                          className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1E1E]/30 font-medium"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block font-bold mb-1 text-stone-800">Category *</label>
-                        <select
-                          value={category}
-                          onChange={(e) => {
-                            const newCat = e.target.value;
-                            setCategory(newCat);
-                            setCtaButton(getDefaultCtaForCategory(newCat));
-                          }}
-                          className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-[#8B1E1E]/30"
-                        >
-                          <option value="Sweets & Upvas Food">Sweets &amp; Upvas Food</option>
-                          <option value="Pooja Samagri">Pooja Items &amp; Camphor</option>
-                          <option value="Flowers & Garlands">Flowers &amp; Garlands</option>
-                          <option value="Clothing & Silks">Festive Silks &amp; Sarees</option>
-                          <option value="Catering & Prasadam">Catering &amp; Prasadam</option>
-                          <option value="Decorations & Sound">Decorations &amp; Lighting</option>
-                          <option value="Jewelry & Gold">Jewelry &amp; Gold</option>
-                          <option value="Other Local Business">Other Local Business</option>
-                        </select>
-                      </div>
+                    <div className="flex items-center justify-between">
+                      <label className="block font-bold text-xs text-stone-800 uppercase tracking-wider">
+                        2. Target Zone &amp; Contact Mobile
+                      </label>
+                      <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
+                        ✓ Fast 1-Minute Setup
+                      </span>
                     </div>
 
                     {/* City and Target Zone Selection */}
@@ -1308,7 +1288,7 @@ export const NavaratriAdvertise: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                       <div>
                         <label className="block font-bold mb-1 text-stone-800">
-                          Mobile No * (For Calls / Orders)
+                          Mobile No * (For Payment Receipt &amp; Approval)
                         </label>
                         <div className="relative">
                           <input
@@ -1317,7 +1297,7 @@ export const NavaratriAdvertise: React.FC = () => {
                             maxLength={10}
                             value={phone}
                             onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                            placeholder="10-digit mobile number"
+                            placeholder="10-digit contact mobile number"
                             className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-mono"
                           />
                           <span className="absolute right-3 top-2.5 text-[10px] font-bold text-stone-400">
@@ -1328,49 +1308,15 @@ export const NavaratriAdvertise: React.FC = () => {
 
                       <div>
                         <label className="block font-bold mb-1 text-stone-800">
-                          WhatsApp No (Optional)
+                          WhatsApp / Tap Destination URL (Optional)
                         </label>
-                        <div className="relative">
-                          <input
-                            type="tel"
-                            maxLength={10}
-                            value={whatsapp}
-                            onChange={(e) => setWhatsapp(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                            placeholder="If different from mobile no"
-                            className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-mono"
-                          />
-                          <span className="absolute right-3 top-2.5 text-[10px] font-bold text-stone-400">
-                            {whatsapp.length}/10
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* CTA Button */}
-                    <div className="text-xs">
-                      <label className="block font-bold mb-1 text-stone-800">Clickable Action Button (CTA) *</label>
-                      <input
-                        type="text"
-                        value={ctaButton}
-                        onChange={(e) => setCtaButton(e.target.value)}
-                        placeholder="Order Now, Call Store, WhatsApp Us..."
-                        className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-semibold text-stone-900"
-                      />
-                      <div className="flex flex-wrap gap-1.5 mt-1.5">
-                        {["Order Now", "Call Store", "WhatsApp Us", "Shop Now", "Visit Store"].map((preset) => (
-                          <button
-                            type="button"
-                            key={preset}
-                            onClick={() => setCtaButton(preset)}
-                            className={`text-[10px] px-2.5 py-1 rounded-lg font-semibold transition-all border ${
-                              ctaButton === preset
-                                ? "bg-[#8B1E1E] text-white border-[#8B1E1E] shadow-xs"
-                                : "bg-white text-stone-700 border-amber-300 hover:bg-amber-50"
-                            }`}
-                          >
-                            {preset}
-                          </button>
-                        ))}
+                        <input
+                          type="text"
+                          value={website}
+                          onChange={(e) => setWebsite(e.target.value)}
+                          placeholder="https://... or wa.me/91... (When devotees tap banner)"
+                          className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-mono"
+                        />
                       </div>
                     </div>
                   </div>
@@ -1807,20 +1753,26 @@ export const NavaratriAdvertise: React.FC = () => {
                     {/* Top sponsored tag */}
                     <div className="absolute top-2.5 left-2.5 z-20 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md text-[9px] sm:text-[10px] font-bold text-amber-200 border border-amber-300/40 flex items-center gap-1.5 shadow">
                       <span className={`w-1.5 h-1.5 rounded-full ${isExclusive ? 'bg-amber-400 ring-2 ring-amber-300/60' : 'bg-emerald-400 animate-pulse'}`} />
-                      <span>{isExclusive ? `👑 24/7 Solo (${preferredFrame === "BOTH" ? "Both Frames" : preferredFrame === "TOP" ? "Top Frame" : "Bottom Frame"})` : "🔄 6s Rotation"} • {businessName || "Your Business"}</span>
-                    </div>
-                    {/* CTA button */}
-                    <div className="absolute bottom-2.5 right-2.5 z-20">
-                      <span className="px-3 py-1 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[10px] sm:text-xs font-bold shadow-md flex items-center gap-1 border border-amber-300/60">
-                        {ctaButton || "Order Now"} ↗
+                      <span>
+                        {isExclusive ? `👑 24/7 Solo (${preferredFrame === "BOTH" ? "Both Frames" : preferredFrame === "TOP" ? "Top Frame" : "Bottom Frame"})` : "🔄 6s Rotation"}
+                        {adFormat === "TEXT_BULLETIN" && businessName ? ` • ${businessName}` : ""}
                       </span>
                     </div>
+
+                    {/* CTA button (only for Text Bulletin where user configured an action button) */}
+                    {adFormat === "TEXT_BULLETIN" && ctaButton && (
+                      <div className="absolute bottom-2.5 right-2.5 z-20">
+                        <span className="px-3 py-1 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[10px] sm:text-xs font-bold shadow-md flex items-center gap-1 border border-amber-300/60">
+                          {ctaButton} ↗
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Summary Bar below preview */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pt-2 px-1 text-[11px] text-amber-200/90 font-medium">
                     <span className="truncate">
-                      📍 Target: {effectiveDisplayZone}, {city} • {category}
+                      📍 Target: {effectiveDisplayZone}, {city}{adFormat === "TEXT_BULLETIN" && category ? ` • ${category}` : ""}
                     </span>
                     <div className="flex items-center gap-2 shrink-0">
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
