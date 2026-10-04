@@ -1038,7 +1038,7 @@ export const NavaratriAdvertise: React.FC = () => {
                         <span className="w-px h-3 bg-amber-200" />
                         <span className="px-2 py-1 rounded-lg bg-[#8B1E1E] text-white">+ Register</span>
                         <span className="w-px h-3 bg-amber-200" />
-                        <span className="px-2 py-1 rounded-lg text-amber-900">🏪</span>
+                        <span className="px-2 py-1 rounded-lg text-amber-900">Run Ads</span>
                       </div>
                     </div>
                   </div>

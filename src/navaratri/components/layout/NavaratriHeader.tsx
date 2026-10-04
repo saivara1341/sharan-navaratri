@@ -93,7 +93,7 @@ export const NavaratriHeader: React.FC = () => {
           </div>
         </Link>
 
-        {/* Unified 1-Button: [Login as Mandapam (Organizers)] [+Register Mandapam] [🏪] */}
+        {/* Unified 1-Button: [Login as Mandapam (Organizers)] [+Register Mandapam] [Run Ads] */}
         <div className="hidden lg:flex items-center p-1 rounded-2xl bg-white border-2 border-amber-300 shadow-xs hover:shadow-md transition-all">
           <Link
             to="/navaratri/login"
@@ -119,10 +119,10 @@ export const NavaratriHeader: React.FC = () => {
 
           <Link
             to="/navaratri/advertise"
-            className="px-2.5 py-1.5 rounded-xl text-amber-900 hover:bg-amber-100 transition-colors flex items-center justify-center text-sm"
-            title={t.advertiseWithUs || "Advertise With Us"}
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-amber-900 hover:text-amber-950 hover:bg-amber-100 text-xs font-bold transition-all"
+            title={t.advertiseWithUs || "Run Ads"}
           >
-            <span role="img" aria-label="Advertise">🏪</span>
+            <span>Run Ads</span>
           </Link>
         </div>
 
@@ -171,7 +171,7 @@ export const NavaratriHeader: React.FC = () => {
               <span>Scan Mandapam QR (Camera)</span>
             </button>
 
-            {/* Unified 1-Button for Mobile: [Login as Mandapam (Organizers) | + Register Mandapam | 🏪] */}
+            {/* Unified 1-Button for Mobile: [Login as Mandapam (Organizers) | + Register Mandapam | Run Ads] */}
             <div className="p-1 rounded-2xl bg-white border-2 border-amber-300 shadow-xs flex items-center justify-between gap-1">
               <Link
                 to="/navaratri/login"
@@ -199,10 +199,10 @@ export const NavaratriHeader: React.FC = () => {
               <Link
                 to="/navaratri/advertise"
                 onClick={() => setMobileMenuOpen(false)}
-                className="p-2 rounded-xl hover:bg-amber-100 text-stone-700 flex items-center justify-center text-base"
-                title={t.advertiseWithUs || "Advertise With Us"}
+                className="flex-1 py-2 px-1.5 rounded-xl hover:bg-amber-100 text-amber-900 text-xs font-bold text-center flex items-center justify-center gap-1 transition-all"
+                title={t.advertiseWithUs || "Run Ads"}
               >
-                <span role="img" aria-label="Advertise">🏪</span>
+                <span className="truncate">Run Ads</span>
               </Link>
             </div>
           </div>
