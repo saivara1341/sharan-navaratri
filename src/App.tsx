@@ -144,16 +144,16 @@ const PageLoadingFallback = () => (
   <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4" aria-busy="true" aria-label="Loading page">
     <div className="relative flex flex-col items-center justify-center space-y-5">
       <div className="relative w-16 h-16 flex items-center justify-center">
-        <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping" />
-        <div className="w-16 h-16 rounded-full border-2 border-transparent border-t-primary border-r-primary animate-spin" />
-        <div className="absolute inset-2 rounded-full border-2 border-transparent border-b-secondary border-l-secondary animate-spin [animation-duration:1.2s]" />
+        <div className="absolute inset-0 rounded-full border-2 border-amber-400/30 animate-ping" />
+        <div className="w-16 h-16 rounded-full border-2 border-transparent border-t-[#8B1E1E] border-r-amber-500 animate-spin" />
+        <div className="absolute inset-2 rounded-full border-2 border-transparent border-b-amber-600 border-l-[#8B1E1E] animate-spin [animation-duration:1.2s]" />
       </div>
       <div className="flex flex-col items-center space-y-1 text-center">
-        <span className="text-sm font-semibold tracking-wider uppercase bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-secondary">
-          Siddhi Dynamics
+        <span className="text-sm font-semibold tracking-wider uppercase font-serif font-black text-[#8B1E1E]">
+          {isNavaratriSubdomain ? "Sharan Navaratri 2026" : "Siddhi Dynamics"}
         </span>
         <span className="text-xs text-muted-foreground animate-pulse">
-          Loading interface...
+          {isNavaratriSubdomain ? "Loading sacred mandapams..." : "Loading interface..."}
         </span>
       </div>
     </div>
