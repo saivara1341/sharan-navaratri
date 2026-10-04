@@ -442,61 +442,50 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
             </h3>
           </div>
           <p className="text-xs text-stone-600 leading-relaxed">
-            Choose your standee theme and Matha image, then download as high-res PNG or print directly on A4 paper for your mandapam counter.
+            Choose your standee theme, then download as high-res PNG or print directly on A4 paper for your mandapam counter.
           </p>
 
-          {/* Standee Template Selector */}
-          <div className="space-y-1.5 pt-1">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
+          {/* Standee Template Selector — aesthetic colour-swatch picker */}
+          <div className="space-y-2 pt-1">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-stone-700">
               <Palette className="w-3.5 h-3.5 text-amber-600" />
-              <span>Standee Template Style:</span>
+              <span>Standee Template Style</span>
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              {TEMPLATES.map((tmpl) => (
-                <button
-                  key={tmpl.id}
-                  type="button"
-                  onClick={() => setSelectedTemplate(tmpl.id)}
-                  className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all border text-center cursor-pointer ${
-                    selectedTemplate === tmpl.id
-                      ? "bg-[#8B1E1E] text-white border-[#8B1E1E] shadow-sm ring-2 ring-amber-400"
-                      : "bg-white text-stone-700 border-amber-200 hover:bg-amber-50"
-                  }`}
-                >
-                  <span className="truncate block">{tmpl.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Matha Image Selector */}
-          <div className="space-y-1.5 pt-1">
-            <span className="text-xs font-bold text-stone-800 block">
-              Sacred Matha Image on Standee:
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {mathaImages.map((img) => (
-                <button
-                  key={img.id}
-                  type="button"
-                  onClick={() => setSelectedImageId(img.id)}
-                  className={`flex items-center gap-2 px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                    selectedImageId === img.id
-                      ? "bg-amber-100 border-amber-500 text-amber-950 ring-2 ring-amber-400/50"
-                      : "bg-white border-stone-200 text-stone-700 hover:bg-stone-50"
-                  }`}
-                >
-                  <img
-                    src={img.url}
-                    alt={img.name}
-                    className="w-5 h-5 rounded-full object-cover border border-amber-400"
-                  />
-                  <span>{img.name}</span>
-                </button>
-              ))}
+            <div className="grid grid-cols-3 gap-2.5">
+              {TEMPLATES.map((tmpl) => {
+                const isSelected = selectedTemplate === tmpl.id;
+                return (
+                  <button
+                    key={tmpl.id}
+                    type="button"
+                    onClick={() => setSelectedTemplate(tmpl.id)}
+                    className={`group relative flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border-2 transition-all cursor-pointer ${
+                      isSelected
+                        ? "border-amber-500 ring-2 ring-amber-400/50 shadow-md bg-amber-50"
+                        : "border-stone-200 hover:border-amber-300 bg-white hover:shadow-sm"
+                    }`}
+                  >
+                    {/* Colour swatch */}
+                    <div className={`w-full h-8 rounded-xl bg-gradient-to-r ${tmpl.headerGrad} shadow-sm`} />
+                    {/* Name */}
+                    <span className={`text-[10px] font-bold leading-tight text-center ${isSelected ? "text-amber-900" : "text-stone-600"}`}>
+                      {tmpl.name}
+                    </span>
+                    {/* Selected tick */}
+                    {isSelected && (
+                      <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center shadow">
+                        <svg viewBox="0 0 12 10" className="w-3 h-2.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="1,5 4.5,8.5 11,1" />
+                        </svg>
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
+
 
         {/* ----------------- PRINTABLE STANDEE CARD ----------------- */}
         <div
