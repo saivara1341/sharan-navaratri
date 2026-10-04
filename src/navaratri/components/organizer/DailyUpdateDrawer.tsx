@@ -16,7 +16,8 @@ import {
   Sun,
   Moon,
   Calendar,
-  Flame
+  Flame,
+  Camera,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -33,7 +34,7 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
   onClose,
   dayNumber: initialDayNumber = 1
 }) => {
-  const { getDaySetting, updateDaySetting, uploadAlankarana } = useNavaratriData();
+  const { getDaySetting, updateDaySetting, uploadAlankarana, alankaranas } = useNavaratriData();
   const { t } = useNavaratriLanguage();
 
   const [selectedDayNum, setSelectedDayNum] = useState(initialDayNumber);
@@ -78,11 +79,13 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
   const [alankaranaImage, setAlankaranaImage] = useState(stdDay.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"));
   const [alankaranaTitle, setAlankaranaTitle] = useState(`${stdDay.deviName} Alankarana`);
   const [alankaranaDesc, setAlankaranaDesc] = useState("Adorned in royal silk with fragrant floral garlands and traditional ornaments.");
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
   // When selectedDayNum changes, load that day's data
   useEffect(() => {
     const s = getDaySetting(mandapam.id, selectedDayNum);
     const d = STANDARD_NAVARATRI_DAYS.find(item => item.dayNumber === selectedDayNum) || STANDARD_NAVARATRI_DAYS[0];
+    const existingAlankarana = alankaranas?.find(a => a.mandapamId === mandapam.id && a.date === d.date);
     
     setUseStdDevi(s?.useStandardDevi ?? true);
     setCustomDevi(s?.customDeviName || "");
@@ -102,9 +105,63 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
     setAnnadanamEnd(s?.annadanamEndTime || "03:30 PM");
     setAnnadanamLocation(s?.annadanamLocation || "Mandapam Kalyana Hall");
     setAnnadanamCount(s?.annadanamExpectedCount || 1200);
-    setAlankaranaImage(d.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"));
-    setAlankaranaTitle(`${d.deviName} Alankarana`);
-  }, [selectedDayNum, mandapam.id]);
+
+    const initialImg = existingAlankarana?.imageUrl || d.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg");
+    setAlankaranaImage(initialImg);
+    setAlankaranaTitle(existingAlankarana?.title || `${d.deviName} Alankarana`);
+    if (existingAlankarana?.description) {
+      setAlankaranaDesc(existingAlankarana.description);
+    }
+  }, [selectedDayNum, mandapam.id, alankaranas]);
+
+  const handleAlankaranaPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file (JPG, PNG, WebP).");
+      return;
+    }
+
+    try {
+      setIsUploadingPhoto(true);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const maxWidth = 1200;
+          let width = img.width;
+          let height = img.height;
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressed = canvas.toDataURL("image/jpeg", 0.85);
+            setAlankaranaImage(compressed);
+            toast.success("Mandapam idol photo loaded! Save day to publish.");
+          } else {
+            setAlankaranaImage(event.target?.result as string);
+          }
+          setIsUploadingPhoto(false);
+        };
+        img.onerror = () => {
+          setIsUploadingPhoto(false);
+          toast.error("Failed to parse image file.");
+        };
+        img.src = event.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    } catch {
+      setIsUploadingPhoto(false);
+      toast.error("Failed to read image file.");
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -210,44 +267,72 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
 
         <form onSubmit={handleSave} className="space-y-6 pb-12">
           {/* SECTION 1: PHYSICAL ALANKARANA UPLOAD */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-[#FFFDF9] border border-amber-300 shadow-sm space-y-3">
-            <h4 className="font-bold text-xs uppercase tracking-wider text-[#8B1E1E] flex items-center gap-1.5">
-              <Upload className="w-4 h-4 text-amber-700" />
-              <span>1. Day {selectedDayNum} Idol Darshan & Alankarana Photo</span>
-            </h4>
-            <p className="text-xs text-stone-600">
-              Upload the real photograph of the mandapam idol for Day {selectedDayNum} so citizens see today's live darshan.
-            </p>
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#FFFDF9] border border-amber-300 shadow-sm space-y-4">
+            <div>
+              <h4 className="font-bold text-xs uppercase tracking-wider text-[#8B1E1E] flex items-center gap-1.5">
+                <Upload className="w-4 h-4 text-amber-700" />
+                <span>1. Day {selectedDayNum} Idol Darshan & Alankarana Photo</span>
+              </h4>
+              <p className="text-xs text-stone-600 mt-0.5">
+                Upload the real photograph of the mandapam idol for Day {selectedDayNum} so citizens see today's live darshan.
+              </p>
+            </div>
 
-            <div className="flex items-center gap-4">
-              <img
-                src={alankaranaImage}
-                alt="Alankarana Preview"
-                className="w-20 h-20 rounded-xl object-cover border-2 border-amber-400 shadow-sm shrink-0 bg-stone-900"
-              />
-              <div className="space-y-1.5 flex-1">
-                <input
-                  type="text"
-                  value={alankaranaImage}
-                  onChange={(e) => setAlankaranaImage(e.target.value)}
-                  placeholder="Paste image URL or /navaratri/assets/..."
-                  className="w-full px-3 py-1.5 rounded-xl text-xs border border-amber-300 bg-white"
+            {/* Photo Preview & Direct Upload Action */}
+            <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-4 p-3.5 bg-amber-50/70 rounded-2xl border border-amber-200">
+              <div className="relative group w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border-2 border-amber-400 shadow-md bg-stone-900 shrink-0">
+                <img
+                  src={alankaranaImage || (stdDay.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"))}
+                  alt="Alankarana Preview"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
-                <div className="flex flex-wrap gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => setAlankaranaImage(stdDay.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"))}
-                    className="px-2 py-0.5 rounded text-[10px] bg-amber-100 text-amber-900 border border-amber-300 font-semibold cursor-pointer"
-                  >
-                    Default Deity Photo
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setAlankaranaImage(navaratriAsset("/navaratri/assets/golden-lotus-bg.jpg"))}
-                    className="px-2 py-0.5 rounded text-[10px] bg-amber-100 text-amber-900 border border-amber-300 font-semibold cursor-pointer"
-                  >
-                    Golden Mandir
-                  </button>
+                <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white cursor-pointer transition-opacity">
+                  <Camera className="w-5 h-5 mb-0.5 text-amber-300" />
+                  <span className="text-[10px] font-bold">Change Photo</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAlankaranaPhotoUpload}
+                    className="hidden"
+                    disabled={isUploadingPhoto}
+                  />
+                </label>
+              </div>
+
+              <div className="flex-1 flex flex-col justify-between space-y-2 text-center sm:text-left">
+                <div>
+                  <div className="text-xs font-serif font-black text-[#8B1E1E]">
+                    {stdDay.deviName} Darshan
+                  </div>
+                  <p className="text-[11px] text-stone-600 mt-0.5">
+                    {alankaranaImage && alankaranaImage !== (stdDay.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"))
+                      ? "Custom mandapam idol photograph active for devotees."
+                      : "Currently showing default auspicious deity photo. Tap upload to show your mandapam's real idol darshan."}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+                  <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs font-bold shadow-xs hover:shadow transition-all cursor-pointer active:scale-95">
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>{isUploadingPhoto ? "Uploading..." : (alankaranaImage && alankaranaImage !== (stdDay.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg")) ? "Change Idol Photo" : "Upload Idol Photo")}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAlankaranaPhotoUpload}
+                      className="hidden"
+                      disabled={isUploadingPhoto}
+                    />
+                  </label>
+
+                  {alankaranaImage && alankaranaImage !== (stdDay.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg")) && (
+                    <button
+                      type="button"
+                      onClick={() => setAlankaranaImage(stdDay.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"))}
+                      className="px-3 py-1.5 rounded-xl bg-white hover:bg-stone-100 text-stone-700 border border-stone-300 text-xs font-semibold transition-colors cursor-pointer"
+                    >
+                      Reset to Default
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
