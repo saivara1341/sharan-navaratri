@@ -63,7 +63,8 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
   return (
     <section className="pt-2 font-sans">
       {currentAd?.imageUrl ? (
-        /* Framed Active Image Banner: perfectly centered, not too below or out of frame */
+        <>
+        {/* Framed Active Image Banner: perfectly centered, not too below or out of frame */}
         <div
           onClick={handleContainerClick}
           className="relative w-full h-40 sm:h-56 md:h-64 rounded-3xl overflow-hidden border-2 border-amber-400 shadow-md hover:shadow-xl transition-all cursor-pointer bg-[#1e130e] flex items-center justify-center group"
@@ -82,8 +83,8 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
             className="w-full h-full object-contain relative z-10 mx-auto"
           />
 
-          {/* Top Info Bar */}
-          <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
+          {/* Top Info Bar (desktop only so it NEVER covers the image on mobile) */}
+          <div className="hidden sm:flex absolute top-3 left-3 z-20 items-center gap-2">
             <span className="px-2.5 py-0.5 rounded-full bg-black/65 backdrop-blur-md border border-amber-400/40 text-[10px] font-bold text-amber-200 uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
               Sponsored
@@ -95,8 +96,8 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
             )}
           </div>
 
-          {/* Bottom-Right Clickable Dynamic Button */}
-          <div className="absolute bottom-3 right-3 z-20">
+          {/* Bottom-Right Clickable Dynamic Button (desktop only so it NEVER covers the image on mobile) */}
+          <div className="hidden sm:block absolute bottom-3 right-3 z-20">
             <button
               type="button"
               onClick={(e) => {
@@ -110,6 +111,26 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
             </button>
           </div>
         </div>
+
+        {/* Mobile: Clean Sponsor & Action Bar below the image (NEVER covers the image) */}
+        <div className="flex sm:hidden items-center justify-between gap-2 pt-2 px-1 text-xs">
+          <div className="flex items-center gap-1.5 font-medium text-amber-900/80">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+            <span className="font-bold text-[11px] uppercase tracking-wider text-amber-800">Sponsored</span>
+            {currentAd.businessName && (
+              <span className="text-stone-600 truncate max-w-[150px]">• {currentAd.businessName}</span>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={handleContainerClick}
+            className="px-3 py-1 rounded-lg bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-xs font-bold shadow-xs flex items-center gap-1 active:scale-95 cursor-pointer"
+          >
+            <span>{ctaInfo.label}</span>
+            <ExternalLink className="w-3 h-3" />
+          </button>
+        </div>
+        </>
       ) : (
         /* Clean Empty Ad Container Slot */
         <div

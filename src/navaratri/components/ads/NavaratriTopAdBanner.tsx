@@ -83,14 +83,14 @@ export const NavaratriTopAdBanner: React.FC = () => {
               className="w-full h-full object-contain relative z-10 mx-auto"
             />
 
-            {/* Top-Left Sponsor Pill */}
-            <div className="absolute top-2 left-2 z-20 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 text-[9px] font-bold text-amber-200 uppercase tracking-wider flex items-center gap-1 shadow-sm">
+            {/* Top-Left Sponsor Pill (desktop only so it doesn't cover the image on mobile) */}
+            <div className="hidden sm:flex absolute top-2 left-2 z-20 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 text-[9px] font-bold text-amber-200 uppercase tracking-wider items-center gap-1 shadow-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
               <span>Sponsored</span>
             </div>
 
-            {/* Dynamic Clickable Action Button (Order Now / Open / More Details / etc.) */}
-            <div className="absolute bottom-2 right-2 z-20">
+            {/* Dynamic Clickable Action Button (desktop only so it doesn't cover the image on mobile) */}
+            <div className="hidden sm:block absolute bottom-2 right-2 z-20">
               <button
                 type="button"
                 onClick={(e) => {
