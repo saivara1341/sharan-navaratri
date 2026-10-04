@@ -727,12 +727,6 @@ export const NavaratriOrganizer: React.FC = () => {
                 <Copy className="w-3 h-3" />
               </button>
             </div>
-
-            {/* Protected Passcode Indicator */}
-            <div className="flex items-center gap-1.5 bg-black/30 border border-emerald-400/40 px-2.5 py-1 rounded-xl text-emerald-200">
-              <Lock className="w-3.5 h-3.5 text-emerald-300" />
-              <span className="font-semibold text-[11px]">Passcode: Protected in Slip</span>
-            </div>
           </div>
         </div>
 
