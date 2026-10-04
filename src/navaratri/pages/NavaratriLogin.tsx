@@ -230,20 +230,20 @@ export const NavaratriLogin: React.FC = () => {
       {/* Subtle vignette / overlay for optimal contrast */}
       <div className="absolute inset-0 bg-black/10 pointer-events-none" />
 
-      {/* Content Layout */}
-      <div className="relative z-10 w-full flex items-center justify-center gap-6 max-w-6xl mx-auto">
-        {/* Desktop Left Ad */}
-        <div className="hidden md:block w-52 xl:w-64 shrink-0 self-center">
+      {/* Content Layout — Diagonal arrangement on desktop: Top-Left Ad ↘ Center Card ↘ Bottom-Right Ad */}
+      <div className="relative z-10 w-full flex items-center justify-center gap-6 lg:gap-8 max-w-6xl mx-auto">
+        {/* Desktop Left Ad: Diagonal Top Left */}
+        <div className="hidden md:block w-52 xl:w-64 shrink-0 self-start pt-2">
           <NavaratriFlankingAdBox position="left" />
         </div>
 
         {/* Center Auth Card */}
-        <div className="w-full max-w-sm flex items-center justify-center">
+        <div className="w-full max-w-sm flex items-center justify-center self-center">
           {authCard}
         </div>
 
-        {/* Desktop Right Ad */}
-        <div className="hidden md:block w-52 xl:w-64 shrink-0 self-center">
+        {/* Desktop Right Ad: Diagonal Bottom Right */}
+        <div className="hidden md:block w-52 xl:w-64 shrink-0 self-end pb-2">
           <NavaratriFlankingAdBox position="right" />
         </div>
       </div>
