@@ -686,8 +686,8 @@ export const NavaratriOrganizer: React.FC = () => {
           </div>
         )}
 
-        <div className="relative z-10 space-y-2 pr-28 sm:pr-32 md:pr-0">
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="relative z-10 space-y-2.5 w-full">
+          <div className="flex flex-wrap items-center gap-2 pr-24 sm:pr-28">
             <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-400/20 text-amber-200 text-xs font-bold">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Mandapam Control Center</span>
@@ -698,9 +698,9 @@ export const NavaratriOrganizer: React.FC = () => {
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0 pt-0.5">
             {(currentMandapam.logoUrl || (typeof window !== "undefined" && localStorage.getItem(`mandapam_logo_${currentMandapam.id}`))) && (
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden border-2 border-amber-300 shadow-md bg-white p-1 shrink-0">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl overflow-hidden border-2 border-amber-300 shadow-md bg-white p-1 shrink-0">
                 <img
                   src={currentMandapam.logoUrl || localStorage.getItem(`mandapam_logo_${currentMandapam.id}`) || ""}
                   alt="Mandapam Logo"
@@ -708,12 +708,14 @@ export const NavaratriOrganizer: React.FC = () => {
                 />
               </div>
             )}
-            <div>
-              <h1 className="font-serif font-black text-2xl sm:text-3xl text-white flex items-center gap-2">
-                <span>{currentMandapam.name}</span>
-                <InstagramVerifiedBadge className="w-6 h-6 shrink-0 drop-shadow" title="Official Verified Mandapam" />
+            <div className="min-w-0 flex-1">
+              <h1 className="font-serif font-black text-xl sm:text-2xl md:text-3xl text-white leading-tight">
+                <span className="line-clamp-2 break-words">
+                  {currentMandapam.name}
+                  <InstagramVerifiedBadge className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 inline-block ml-1.5 align-middle shrink-0 drop-shadow" title="Official Verified Mandapam" />
+                </span>
               </h1>
-              <div className="text-xs text-amber-100 flex flex-col sm:flex-row sm:items-center sm:gap-1.5 leading-snug">
+              <div className="text-xs text-amber-100 flex flex-col sm:flex-row sm:items-center sm:gap-1.5 leading-snug pt-0.5">
                 <span>{currentMandapam.area}, {currentMandapam.city}</span>
                 <span className="hidden sm:inline opacity-70">•</span>
                 <span className="text-amber-200/95 sm:text-amber-100 font-medium sm:font-normal">
@@ -2316,7 +2318,7 @@ export const NavaratriOrganizer: React.FC = () => {
                       </div>
 
                       <div className="space-y-1 min-w-0">
-                        <div className="font-serif font-black text-sm text-[#8B1E1E] truncate">
+                        <div className="font-serif font-black text-sm text-[#8B1E1E] line-clamp-2 break-words">
                           {currentMandapam.name}
                         </div>
                         <p className="text-[11px] text-stone-500 leading-snug">
