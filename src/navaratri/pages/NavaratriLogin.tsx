@@ -104,10 +104,6 @@ export const NavaratriLogin: React.FC = () => {
           </div>
         </div>
 
-        <p className="text-[11px] text-stone-600 leading-relaxed">
-          Log in with your official Mandapam ID or Registered Mobile number and passcode to manage daily darshan, pooja timings &amp; devotee passes.
-        </p>
-
         {authenticatedId && activeMandapam ? (
           <div className="bg-gradient-to-br from-emerald-50 via-white to-amber-50 p-4 rounded-2xl border-2 border-emerald-400 shadow-md space-y-3">
             <div className="flex items-center gap-2 text-emerald-800 text-xs font-bold">
