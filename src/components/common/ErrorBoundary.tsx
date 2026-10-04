@@ -10,32 +10,79 @@ interface Props {
 interface State {
   hasError: boolean;
   error: Error | null;
+  chunkReloading: boolean;
 }
+
+/** Detects dynamic import / chunk load failures after a new deployment */
+function isChunkLoadError(error: Error): boolean {
+  const msg = error?.message ?? '';
+  const name = error?.name ?? '';
+  return (
+    msg.includes('Failed to fetch dynamically imported module') ||
+    msg.includes('Importing a module script failed') ||
+    msg.includes('error loading dynamically imported module') ||
+    name === 'ChunkLoadError'
+  );
+}
+
+const CHUNK_RELOAD_KEY = 'chunk_reload_attempt';
 
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
     error: null,
+    chunkReloading: false,
   };
 
   public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    // Auto-reload once on chunk failures — clears stale cached chunk references
+    if (isChunkLoadError(error)) {
+      const alreadyAttempted = sessionStorage.getItem(CHUNK_RELOAD_KEY);
+      if (!alreadyAttempted) {
+        sessionStorage.setItem(CHUNK_RELOAD_KEY, '1');
+        // Hard reload to bypass service worker / browser cache
+        window.location.reload();
+        return { hasError: true, error, chunkReloading: true };
+      }
+    }
+    return { hasError: true, error, chunkReloading: false };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('[ErrorBoundary caught error]:', error, errorInfo);
   }
 
+  public componentDidMount() {
+    // Clear the reload attempt flag on successful mount (fresh load worked)
+    if (!this.state.hasError) {
+      sessionStorage.removeItem(CHUNK_RELOAD_KEY);
+    }
+  }
+
   private handleReload = () => {
+    sessionStorage.removeItem(CHUNK_RELOAD_KEY);
     window.location.reload();
   };
 
   private handleGoHome = () => {
+    sessionStorage.removeItem(CHUNK_RELOAD_KEY);
     window.location.href = '/';
   };
 
   public render() {
     if (this.state.hasError) {
+      // If we're auto-reloading for a chunk error, show a brief loading state
+      if (this.state.chunkReloading) {
+        return (
+          <div className="min-h-screen bg-background flex items-center justify-center text-foreground">
+            <div className="text-center space-y-3">
+              <RefreshCw className="w-8 h-8 animate-spin mx-auto text-primary" />
+              <p className="text-sm text-muted-foreground">Refreshing page with latest version…</p>
+            </div>
+          </div>
+        );
+      }
+
       if (this.props.fallback) {
         return this.props.fallback;
       }
