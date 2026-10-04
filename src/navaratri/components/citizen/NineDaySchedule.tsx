@@ -138,7 +138,7 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
       </div>
 
       {/* ── Card Grid ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 pb-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 pb-2 justify-items-center sm:justify-items-stretch">
         {STANDARD_NAVARATRI_DAYS.map((day, index) => {
           const isToday = day.date === todayIso;
           const customSetting = mandapamDaySettings.find(
@@ -188,6 +188,7 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                 "group rounded-3xl overflow-hidden cursor-pointer text-left relative",
                 "transition-all duration-300",
                 "border-2",
+                "w-full max-w-[295px] sm:max-w-none mx-auto",
                 cardTheme.bg,
                 isToday
                   ? "border-amber-500 ring-2 ring-amber-400/70 shadow-2xl shadow-amber-300/30"
@@ -196,9 +197,8 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
             >
               {/* ── IMAGE FRAME — object-contain, full deity visible ── */}
               <div
-                className="relative w-full overflow-hidden"
+                className="relative w-full overflow-hidden h-[220px] sm:h-[260px]"
                 style={{
-                  height: "260px",
                   background: `radial-gradient(ellipse at center, ${day.colorHex}55 0%, ${day.colorHex}22 55%, #18080088 100%)`,
                 }}
               >
