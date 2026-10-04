@@ -64,26 +64,26 @@ const STANDEE_FRAMES: StandeeFrame[] = [
     sampleColor: "from-[#1B4332] via-[#2D6A4F] to-[#D97706]"
   },
   {
-    id: "royal-maroon-arch",
-    name: "Royal Temple Arch",
-    subtitle: "Sanctum Gold Filigree",
-    frameBgUrl: navaratriAsset("/navaratri/assets/royal-maroon-arch.jpg"),
+    id: "royal-gold-sanctum",
+    name: "Golden Temple Sanctum",
+    subtitle: "Sanctum Pillars & Deepams",
+    frameBgUrl: navaratriAsset("/navaratri/assets/royal-temple-gold-sanctum.jpg"),
     cardBg: "bg-[#FFFDF9]",
-    borderClass: "border-4 border-[#8B1E1E]/80 ring-4 ring-amber-500/30",
-    badgeBg: "bg-gradient-to-r from-[#781B1B] to-[#B45309]",
+    borderClass: "border-4 border-amber-500/90 ring-4 ring-amber-400/40",
+    badgeBg: "bg-gradient-to-r from-[#781B1B] via-[#B45309] to-[#781B1B]",
     accentColor: "#8B1E1E",
-    sampleColor: "from-[#781B1B] via-[#991B1B] to-[#B45309]"
+    sampleColor: "from-[#781B1B] via-[#D97706] to-[#781B1B]"
   },
   {
-    id: "terracotta-scalloped",
-    name: "Terracotta Scalloped",
-    subtitle: "Festive Crimson Arch",
-    frameBgUrl: navaratriAsset("/navaratri/assets/terracotta-scalloped-card.png"),
-    cardBg: "bg-[#FFF9F5]",
-    borderClass: "border-4 border-[#C2410C]/80 ring-4 ring-orange-400/30",
-    badgeBg: "bg-gradient-to-r from-[#9A3412] to-[#EA580C]",
-    accentColor: "#9A3412",
-    sampleColor: "from-[#9A3412] via-[#EA580C] to-[#F59E0B]"
+    id: "saffron-gold-mandapam",
+    name: "Saffron Gold Mandapam",
+    subtitle: "24K Filigree & Sacred Bells",
+    frameBgUrl: navaratriAsset("/navaratri/assets/saffron-gold-mandapam-frame.jpg"),
+    cardBg: "bg-[#FFF9F2]",
+    borderClass: "border-4 border-amber-600/90 ring-4 ring-amber-500/40",
+    badgeBg: "bg-gradient-to-r from-[#C2410C] via-[#B45309] to-[#781B1B]",
+    accentColor: "#C2410C",
+    sampleColor: "from-[#C2410C] via-[#EA580C] to-[#D97706]"
   }
 ];
 
@@ -94,7 +94,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
 }) => {
   const { t } = useNavaratriLanguage();
   const [copied, setCopied] = useState(false);
-  const [selectedFrameId, setSelectedFrameId] = useState<string>("parchment-lotus");
+  const [selectedFrameId, setSelectedFrameId] = useState<string>("royal-gold-sanctum");
   const [selectedDeityId, setSelectedDeityId] = useState<string>("durga-simhavahana");
   const [isDownloading, setIsDownloading] = useState(false);
 
