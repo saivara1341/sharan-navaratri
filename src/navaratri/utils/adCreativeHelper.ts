@@ -281,6 +281,16 @@ export function generateVisitingCardCanvas(data: {
 /**
  * Generate a Text & Festive Offer Bulletin canvas image
  */
+export type FestiveBulletinThemeId =
+  | "swarna-gold"
+  | "shakthi-crimson"
+  | "peacock-sapphire"
+  | "emerald-vrindavan"
+  | "maroon"
+  | "crimson"
+  | "gold"
+  | "royal";
+
 export function generateTextBulletinCanvas(data: {
   businessName: string;
   headline: string;
@@ -290,7 +300,7 @@ export function generateTextBulletinCanvas(data: {
   city: string;
   targetZone?: string;
   ctaText?: string;
-  theme?: "maroon" | "crimson" | "gold" | "royal";
+  theme?: FestiveBulletinThemeId;
 }): string {
   const canvas = document.createElement("canvas");
   canvas.width = 1200;
@@ -298,50 +308,164 @@ export function generateTextBulletinCanvas(data: {
   const ctx = canvas.getContext("2d");
   if (!ctx) return "";
 
-  const themeColors = {
-    maroon: { bg1: "#450A0A", bg2: "#781B1B", bg3: "#B45309", border: "#FCD34D", badgeBg: "#F59E0B", badgeText: "#781B1B" },
-    crimson: { bg1: "#7A1515", bg2: "#9A241C", bg3: "#B45309", border: "#FCD34D", badgeBg: "#F59E0B", badgeText: "#781B1B" },
-    gold: { bg1: "#582806", bg2: "#853708", bg3: "#B45309", border: "#FEF08A", badgeBg: "#FBBF24", badgeText: "#451A03" },
-    royal: { bg1: "#1E1B4B", bg2: "#312E81", bg3: "#4338CA", border: "#FCD34D", badgeBg: "#FCD34D", badgeText: "#1E1B4B" }
+  // Canonical theme map
+  const themeMap: Record<string, {
+    bg1: string;
+    bg2: string;
+    bg3: string;
+    glow: string;
+    borderGold: string;
+    borderInner: string;
+    badgeBg: string;
+    badgeText: string;
+    ctaBg1: string;
+    ctaBg2: string;
+    tagIcon: string;
+  }> = {
+    "swarna-gold": {
+      bg1: "#381403",
+      bg2: "#78350F",
+      bg3: "#B45309",
+      glow: "rgba(251, 191, 36, 0.22)",
+      borderGold: "#F59E0B",
+      borderInner: "#FEF08A",
+      badgeBg: "#FEF3C7",
+      badgeText: "#78350F",
+      ctaBg1: "#D97706",
+      ctaBg2: "#78350F",
+      tagIcon: "🔱"
+    },
+    "shakthi-crimson": {
+      bg1: "#3B0505",
+      bg2: "#781B1B",
+      bg3: "#991B1B",
+      glow: "rgba(239, 68, 68, 0.20)",
+      borderGold: "#FBBF24",
+      borderInner: "#FDE68A",
+      badgeBg: "#FDE68A",
+      badgeText: "#781B1B",
+      ctaBg1: "#DC2626",
+      ctaBg2: "#781B1B",
+      tagIcon: "🌺"
+    },
+    "peacock-sapphire": {
+      bg1: "#050B1A",
+      bg2: "#0F172A",
+      bg3: "#164E63",
+      glow: "rgba(56, 189, 248, 0.22)",
+      borderGold: "#FACC15",
+      borderInner: "#BAE6FD",
+      badgeBg: "#FDE047",
+      badgeText: "#0F172A",
+      ctaBg1: "#0284C7",
+      ctaBg2: "#0F172A",
+      tagIcon: "🦚"
+    },
+    "emerald-vrindavan": {
+      bg1: "#022013",
+      bg2: "#064E3B",
+      bg3: "#065F46",
+      glow: "rgba(52, 211, 153, 0.20)",
+      borderGold: "#FBBF24",
+      borderInner: "#A7F3D0",
+      badgeBg: "#FEF3C7",
+      badgeText: "#064E3B",
+      ctaBg1: "#059669",
+      ctaBg2: "#064E3B",
+      tagIcon: "🌿"
+    }
   };
-  const currentTheme = themeColors[data.theme || "crimson"];
 
-  // 1. Festive gradient
-  const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
+  // Map legacy IDs to new rich themes
+  let rawTheme = data.theme || "swarna-gold";
+  if (rawTheme === "gold") rawTheme = "swarna-gold";
+  else if (rawTheme === "crimson" || rawTheme === "maroon") rawTheme = "shakthi-crimson";
+  else if (rawTheme === "royal") rawTheme = "peacock-sapphire";
+
+  const currentTheme = themeMap[rawTheme] || themeMap["swarna-gold"];
+
+  // 1. Festive base gradient
+  const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
   grad.addColorStop(0, currentTheme.bg1);
   grad.addColorStop(0.5, currentTheme.bg2);
   grad.addColorStop(1, currentTheme.bg3);
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // 2. Gold border frame
-  ctx.strokeStyle = currentTheme.border;
-  ctx.lineWidth = 6;
-  ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+  // Radial ambient golden glow in center
+  const radial = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 80, canvas.width / 2, canvas.height / 2, canvas.width / 1.5);
+  radial.addColorStop(0, currentTheme.glow);
+  radial.addColorStop(1, "transparent");
+  ctx.fillStyle = radial;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // 2. Ornate 24K Gold Outer & Inner Frame
+  ctx.strokeStyle = currentTheme.borderGold;
+  ctx.lineWidth = 5;
+  ctx.strokeRect(18, 18, canvas.width - 36, canvas.height - 36);
+
+  ctx.strokeStyle = currentTheme.borderInner;
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(26, 26, canvas.width - 52, canvas.height - 52);
+
+  // Decorative Corner Flourishes
+  const corners = [
+    [32, 32],
+    [canvas.width - 32, 32],
+    [32, canvas.height - 32],
+    [canvas.width - 32, canvas.height - 32]
+  ];
+  ctx.fillStyle = currentTheme.borderGold;
+  corners.forEach(([cx, cy]) => {
+    ctx.beginPath();
+    ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Top Auspicious Invocation Bar
+  ctx.font = "bold 13px 'Cinzel', Georgia, serif";
+  ctx.fillStyle = "rgba(254, 243, 199, 0.75)";
+  ctx.textAlign = "center";
+  ctx.fillText("॥ ॐ శ్రీ మాత్రే నమః ॥ • SHARAN NAVARATRI 2026 UTSAV SPECIAL", canvas.width / 2, 45);
 
   // 3. Discount / Announcement Badge
   const tag = (data.discountTag || "FESTIVE SPECIAL OFFER").toUpperCase();
   ctx.fillStyle = currentTheme.badgeBg;
-  ctx.roundRect ? ctx.roundRect(60, 50, 360, 44, 22) : ctx.fillRect(60, 50, 360, 44);
-  ctx.fill();
-  ctx.fillStyle = currentTheme.badgeText;
-  ctx.font = "bold 20px sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText(`★ ${tag} ★`, 240, 80);
+  if (ctx.roundRect) {
+    ctx.beginPath();
+    ctx.roundRect(56, 60, 380, 46, 23);
+    ctx.fill();
+    ctx.strokeStyle = currentTheme.borderGold;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  } else {
+    ctx.fillRect(56, 60, 380, 46);
+  }
 
-  // Top Right Business Name
+  ctx.fillStyle = currentTheme.badgeText;
+  ctx.font = "bold 19px sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText(`${currentTheme.tagIcon} ${tag} ${currentTheme.tagIcon}`, 246, 90);
+
+  // Top Right Business Name with Gold Underline
   ctx.textAlign = "right";
-  ctx.fillStyle = "#FEF3C7";
-  ctx.font = "bold 26px 'Cinzel', Georgia, serif";
-  ctx.fillText(data.businessName || "Local Business", canvas.width - 60, 80);
+  ctx.fillStyle = "#FFFBEB";
+  ctx.font = "bold 28px 'Cinzel', Georgia, serif";
+  ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
+  ctx.shadowBlur = 8;
+  ctx.fillText(data.businessName || "Local Business", canvas.width - 56, 92);
+  ctx.shadowBlur = 0;
 
   // 4. Headline
   ctx.textAlign = "left";
   ctx.fillStyle = "#FFFFFF";
   ctx.font = "bold 44px 'Cinzel', Georgia, serif";
-  ctx.fillText(data.headline || "Special Festive Offers & Discounts", 60, 175);
+  ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+  ctx.shadowBlur = 10;
+  ctx.fillText(data.headline || "Special Festive Offers & Discounts", 56, 185);
+  ctx.shadowBlur = 0;
 
-  // 5. Bullet Points
+  // 5. Bullet Points with Auspicious Check Marks
   const points = data.bulletPoints && data.bulletPoints.length > 0
     ? data.bulletPoints
     : [
@@ -350,49 +474,83 @@ export function generateTextBulletinCanvas(data: {
         "Special Festive Discounts on Advance Bookings"
       ];
 
-  let startY = 250;
+  let startY = 265;
   points.forEach((pt) => {
     // Check circle
-    ctx.fillStyle = "#34D399";
+    ctx.fillStyle = "#10B981";
     ctx.beginPath();
-    ctx.arc(80, startY - 8, 14, 0, Math.PI * 2);
+    ctx.arc(78, startY - 8, 14, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = "#064E3B";
+    ctx.strokeStyle = "#FEF3C7";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.fillStyle = "#FFFFFF";
     ctx.font = "bold 16px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("✓", 80, startY - 2);
+    ctx.fillText("✓", 78, startY - 3);
 
-    // Text
+    // Text with slight shadow
     ctx.textAlign = "left";
     ctx.fillStyle = "#FEF9C3";
-    ctx.font = "bold 24px sans-serif";
-    ctx.fillText(pt, 115, startY);
-    startY += 60;
+    ctx.font = "bold 23px sans-serif";
+    ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+    ctx.shadowBlur = 6;
+    ctx.fillText(pt, 110, startY);
+    ctx.shadowBlur = 0;
+    startY += 62;
   });
 
-  // 6. Action Button Bar at bottom
-  ctx.fillStyle = "rgba(0,0,0,0.45)";
-  ctx.fillRect(40, canvas.height - 130, canvas.width - 80, 90);
+  // 6. Modern Glassmorphic Action Bar at bottom
+  const barY = canvas.height - 128;
+  const barH = 88;
+  ctx.fillStyle = "rgba(0, 0, 0, 0.55)";
+  if (ctx.roundRect) {
+    ctx.beginPath();
+    ctx.roundRect(42, barY, canvas.width - 84, barH, 20);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(254, 243, 199, 0.35)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  } else {
+    ctx.fillRect(42, barY, canvas.width - 84, barH);
+  }
 
-  ctx.fillStyle = "#FBBF24";
-  ctx.font = "bold 22px sans-serif";
-  ctx.fillText(`📍 ${data.targetZone || "Local Zone"}, ${data.city} • 📞 ${data.phone}`, 60, canvas.height - 75);
+  // Location & Contact info
+  ctx.fillStyle = "#FDE68A";
+  ctx.font = "bold 21px sans-serif";
+  ctx.fillText(`📍 ${data.targetZone || "Local Zone"}, ${data.city}   •   📞 ${data.phone}`, 68, barY + 52);
 
-  // CTA button
+  // Modern CTA Button
   const cta = (data.ctaText || "Order Now / Call").toUpperCase();
-  const ctaW = 340;
-  const ctaX = canvas.width - ctaW - 60;
-  ctx.fillStyle = "#D97706";
-  ctx.roundRect ? ctx.roundRect(ctaX, canvas.height - 115, ctaW, 60, 16) : ctx.fillRect(ctaX, canvas.height - 115, ctaW, 60);
-  ctx.fill();
-  ctx.strokeStyle = "#FEF08A";
-  ctx.lineWidth = 2;
-  ctx.stroke();
+  const ctaW = 320;
+  const ctaH = 58;
+  const ctaX = canvas.width - ctaW - 64;
+  const ctaY = barY + 15;
+
+  const ctaGrad = ctx.createLinearGradient(ctaX, 0, ctaX + ctaW, 0);
+  ctaGrad.addColorStop(0, currentTheme.ctaBg1);
+  ctaGrad.addColorStop(1, currentTheme.ctaBg2);
+  ctx.fillStyle = ctaGrad;
+
+  if (ctx.roundRect) {
+    ctx.beginPath();
+    ctx.roundRect(ctaX, ctaY, ctaW, ctaH, 16);
+    ctx.fill();
+    ctx.strokeStyle = currentTheme.borderInner;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  } else {
+    ctx.fillRect(ctaX, ctaY, ctaW, ctaH);
+  }
 
   ctx.fillStyle = "#FFFFFF";
-  ctx.font = "bold 22px sans-serif";
+  ctx.font = "bold 21px sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText(`${cta} ↗`, ctaX + ctaW / 2, canvas.height - 78);
+  ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
+  ctx.shadowBlur = 6;
+  ctx.fillText(`${cta} ↗`, ctaX + ctaW / 2, ctaY + 36);
+  ctx.shadowBlur = 0;
 
   return canvas.toDataURL("image/jpeg", 0.92);
 }

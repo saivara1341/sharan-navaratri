@@ -43,7 +43,8 @@ import {
   inspectImageAspectRatio,
   convertImageToLandscapeCanvas,
   generateVisitingCardCanvas,
-  generateTextBulletinCanvas
+  generateTextBulletinCanvas,
+  FestiveBulletinThemeId
 } from "../utils/adCreativeHelper";
 
 export const NavaratriAdvertise: React.FC = () => {
@@ -96,7 +97,7 @@ export const NavaratriAdvertise: React.FC = () => {
   const [imagePreview, setImagePreview] = useState<string>(navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"));
 
   // Inbuilt Text Bulletin Template Theme
-  const [templateTheme, setTemplateTheme] = useState<"crimson" | "maroon" | "gold" | "royal">("crimson");
+  const [templateTheme, setTemplateTheme] = useState<FestiveBulletinThemeId>("swarna-gold");
 
   // Text & Offer Bulletin State
   const [discountTag, setDiscountTag] = useState("Special Festive Offer");
@@ -1380,37 +1381,140 @@ export const NavaratriAdvertise: React.FC = () => {
               {adFormat === "TEXT_BULLETIN" && (
                 <div className="space-y-5 pt-3 border-t border-amber-200 text-xs">
                   {/* Inbuilt Festive Template Themes */}
-                  <div className="space-y-2">
-                    <label className="block font-bold text-stone-800 uppercase tracking-wider">
-                      1. Choose Inbuilt Festive Template Theme *
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="block font-bold text-stone-800 uppercase tracking-wider text-xs">
+                        1. Choose Inbuilt Festive Template Theme *
+                      </label>
+                      <span className="text-[11px] font-semibold text-amber-800 bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-300">
+                        ✨ Live Visual Previews
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                       {[
-                        { id: "crimson" as const, label: "👑 Royal Crimson", desc: "Red & Gold gradient" },
-                        { id: "maroon" as const, label: "🏛️ Classic Maroon", desc: "Traditional dark temple" },
-                        { id: "gold" as const, label: "🌟 Sacred Amber", desc: "Warm gold & amber" },
-                        { id: "royal" as const, label: "🌌 Midnight Indigo", desc: "Royal deep blue" }
-                      ].map((tmpl) => (
-                        <button
-                          type="button"
-                          key={tmpl.id}
-                          onClick={() => setTemplateTheme(tmpl.id)}
-                          className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-                            templateTheme === tmpl.id
-                              ? "bg-gradient-to-br from-[#8B1E1E] to-[#B45309] text-white border-amber-400 shadow-md ring-2 ring-[#8B1E1E]/30"
-                              : "bg-white text-stone-800 border-amber-300 hover:bg-amber-50/60"
-                          }`}
-                        >
-                          <span className="font-bold text-xs block">{tmpl.label}</span>
-                          <span
-                            className={`text-[10px] block mt-0.5 ${
-                              templateTheme === tmpl.id ? "text-amber-200" : "text-stone-500"
+                        {
+                          id: "swarna-gold" as const,
+                          label: "🔱 Swarna Mandir Gold",
+                          desc: "24K Temple Gold & Saffron",
+                          previewGrad: "from-[#381403] via-[#78350F] to-[#B45309]",
+                          borderGold: "border-amber-400",
+                          badgeBg: "bg-amber-100 text-amber-900",
+                          ctaBg: "bg-gradient-to-r from-amber-600 to-amber-800",
+                          tag: "🔱 25% OFF",
+                          highlight: "Warm golden glow & temple arches"
+                        },
+                        {
+                          id: "shakthi-crimson" as const,
+                          label: "🌺 Maha Shakthi Crimson",
+                          desc: "Royal Sindhoor & Gold Zari",
+                          previewGrad: "from-[#3B0505] via-[#781B1B] to-[#991B1B]",
+                          borderGold: "border-amber-300",
+                          badgeBg: "bg-amber-200 text-rose-950",
+                          ctaBg: "bg-gradient-to-r from-red-600 to-red-900",
+                          tag: "🌺 SPECIAL",
+                          highlight: "Opulent Devi vermilion & filigree"
+                        },
+                        {
+                          id: "peacock-sapphire" as const,
+                          label: "🦚 Peacock Sapphire",
+                          desc: "Midnight Navy & 24K Gold",
+                          previewGrad: "from-[#050B1A] via-[#0F172A] to-[#164E63]",
+                          borderGold: "border-yellow-400",
+                          badgeBg: "bg-yellow-300 text-slate-900",
+                          ctaBg: "bg-gradient-to-r from-sky-600 to-slate-900",
+                          tag: "🦚 EXCLUSIVE",
+                          highlight: "Deep celestial blue with gold mandala"
+                        },
+                        {
+                          id: "emerald-vrindavan" as const,
+                          label: "🌿 Vrindavan Emerald",
+                          desc: "Sacred Pattu Silk & 24K Gold",
+                          previewGrad: "from-[#022013] via-[#064E3B] to-[#065F46]",
+                          borderGold: "border-amber-300",
+                          badgeBg: "bg-emerald-100 text-emerald-950",
+                          ctaBg: "bg-gradient-to-r from-emerald-600 to-emerald-900",
+                          tag: "🌿 SATVIK",
+                          highlight: "Temple green silk & radiant zari"
+                        }
+                      ].map((tmpl) => {
+                        const isSelected = templateTheme === tmpl.id;
+                        return (
+                          <button
+                            type="button"
+                            key={tmpl.id}
+                            onClick={() => setTemplateTheme(tmpl.id)}
+                            className={`p-3 rounded-2xl border-2 text-left transition-all cursor-pointer flex flex-col gap-2.5 relative group ${
+                              isSelected
+                                ? "bg-white border-[#8B1E1E] shadow-lg ring-3 ring-amber-400/60 scale-[1.02]"
+                                : "bg-white border-amber-200 hover:border-amber-400 shadow-2xs hover:shadow-md"
                             }`}
                           >
-                            {tmpl.desc}
-                          </span>
-                        </button>
-                      ))}
+                            {/* Selected Badge */}
+                            {isSelected && (
+                              <span className="absolute -top-2 -right-2 bg-[#8B1E1E] text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow border border-amber-300 flex items-center gap-1 z-20">
+                                <span>✓</span> ACTIVE
+                              </span>
+                            )}
+
+                            {/* Header details */}
+                            <div>
+                              <span className="font-bold text-xs text-stone-900 block group-hover:text-[#8B1E1E] transition-colors">
+                                {tmpl.label}
+                              </span>
+                              <span className="text-[10px] text-stone-500 font-medium block">
+                                {tmpl.desc}
+                              </span>
+                            </div>
+
+                            {/* Live Visual Preview Tile */}
+                            <div
+                              className={`w-full h-22 rounded-xl bg-gradient-to-r ${tmpl.previewGrad} p-2 relative border-2 ${tmpl.borderGold} shadow-inner flex flex-col justify-between overflow-hidden select-none`}
+                            >
+                              {/* Corner gold dots */}
+                              <div className="absolute top-1 left-1 w-1.5 h-1.5 rounded-full bg-amber-300 shadow-2xs" />
+                              <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-300 shadow-2xs" />
+                              <div className="absolute bottom-1 left-1 w-1.5 h-1.5 rounded-full bg-amber-300 shadow-2xs" />
+                              <div className="absolute bottom-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-300 shadow-2xs" />
+
+                              {/* Top row */}
+                              <div className="flex items-center justify-between gap-1 z-10">
+                                <span className={`px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider ${tmpl.badgeBg} shadow-2xs`}>
+                                  {discountTag?.slice(0, 16) || tmpl.tag}
+                                </span>
+                                <span className="text-[9px] font-serif font-black text-amber-100 truncate max-w-[80px]">
+                                  {businessName || "Your Store"}
+                                </span>
+                              </div>
+
+                              {/* Center snippet */}
+                              <div className="z-10 px-0.5">
+                                <div className="text-[10px] font-serif font-black text-white leading-tight truncate drop-shadow">
+                                  {title || "Special Festive Offer"}
+                                </div>
+                                <div className="flex items-center gap-1 text-[8px] text-amber-200/90 font-medium truncate mt-0.5">
+                                  <span className="text-emerald-400 font-bold">✓</span>
+                                  <span className="truncate">{bulletPoint1 || "100% Satvik & Fresh"}</span>
+                                </div>
+                              </div>
+
+                              {/* Bottom row */}
+                              <div className="flex items-center justify-between pt-0.5 border-t border-white/15 z-10">
+                                <span className="text-[7.5px] text-amber-200 font-semibold truncate">
+                                  📍 {city}
+                                </span>
+                                <span className={`px-1.5 py-0.5 rounded text-[7.5px] font-bold text-white shadow-2xs ${tmpl.ctaBg}`}>
+                                  {ctaButton || "Order"} ↗
+                                </span>
+                              </div>
+                            </div>
+
+                            <span className="text-[9.5px] text-stone-500 font-medium leading-tight">
+                              {tmpl.highlight}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
