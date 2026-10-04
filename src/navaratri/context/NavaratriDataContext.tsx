@@ -78,14 +78,22 @@ interface NavaratriDataContextType {
   updateDaySetting: (setting: Partial<MandapamDaySetting> & { mandapamId: string; dayNumber: number }) => void;
   uploadAlankarana: (data: Omit<Alankarana, "id" | "createdAt">) => Alankarana;
   createBooking: (data: {
-    slotId: string;
+    slotId?: string;
     serviceId: string;
     mandapamId: string;
     name: string;
     mobile: string;
     quantity: number;
     notes?: string;
+    gotram?: string;
+    devoteeType?: "COUPLE" | "FEMALE" | "INDIVIDUAL" | "FAMILY" | "ALL";
   }) => { success: boolean; booking?: Booking; error?: string };
+  verifyBookingPass: (bookingIdOrCode: string, mandapamId?: string) => {
+    success: boolean;
+    booking?: Booking;
+    alreadyVerified?: boolean;
+    error?: string;
+  };
   addWalkIn: (data: {
     slotId: string;
     serviceId: string;
@@ -307,15 +315,17 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const createBooking = (data: {
-    slotId: string;
+    slotId?: string;
     serviceId: string;
     mandapamId: string;
     name: string;
     mobile: string;
     quantity: number;
     notes?: string;
+    gotram?: string;
+    devoteeType?: "COUPLE" | "FEMALE" | "INDIVIDUAL" | "FAMILY" | "ALL";
   }) => {
-    let slot = slots.find(s => s.id === data.slotId);
+    let slot = data.slotId ? slots.find(s => s.id === data.slotId) : undefined;
     if (!slot && data.serviceId) {
       slot = slots.find(s => s.serviceId === data.serviceId && s.mandapamId === data.mandapamId);
     }
@@ -324,7 +334,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const service = services.find(s => s.id === data.serviceId);
-    const capacityLimit = slot?.capacity || service?.capacityPerSlot || 4;
+    const capacityLimit = slot?.capacity || service?.capacityPerSlot || 150;
 
     if (!slot) {
       const autoSlot: ServiceSlot = {
@@ -332,8 +342,8 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
         serviceId: data.serviceId,
         mandapamId: data.mandapamId,
         date: new Date().toISOString().split("T")[0],
-        startTime: "09:00 AM",
-        endTime: "09:00 PM",
+        startTime: "08:00 AM",
+        endTime: "10:30 AM",
         capacity: capacityLimit,
         bookedCount: 0,
         walkinCount: 0,
@@ -351,7 +361,9 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       };
     }
 
-    const bookingCode = `NM-${Math.floor(1000 + Math.random() * 9000)}`;
+    const bookingCode = `PJA-${Math.floor(10000 + Math.random() * 90000)}`;
+    const existingCountForSrv = bookings.filter(b => b.serviceId === data.serviceId && b.mandapamId === data.mandapamId).length;
+    const tokenNumber = existingCountForSrv + 1;
 
     const newBooking: Booking = {
       id: `bk-${Date.now()}`,
@@ -368,7 +380,11 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       serviceName: service ? service.name : (slot.serviceId ? (services.find(s => s.id === slot?.serviceId)?.name || "Devi Pooja Seva") : "Devi Pooja Seva"),
       slotTime: `${slot.startTime} - ${slot.endTime}`,
       date: slot.date,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      gotram: data.gotram,
+      devoteeType: data.devoteeType || (service?.targetAudience as any) || "ALL",
+      tokenNumber,
+      isVerified: false
     };
 
     // Update slot counts atomically
@@ -384,8 +400,65 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       return s;
     }));
 
-    setBookings(prev => [newBooking, ...prev]);
+    setBookings(prev => {
+      const updated = [newBooking, ...prev];
+      saveStorage("bookings", updated);
+      return updated;
+    });
     return { success: true, booking: newBooking };
+  };
+
+  const verifyBookingPass = (bookingIdOrCode: string, mandapamId?: string) => {
+    const clean = bookingIdOrCode.trim().toLowerCase();
+    if (!clean) {
+      return { success: false, error: "Please enter a valid Pass ID, QR Code, or Mobile number." };
+    }
+
+    const bookingIndex = bookings.findIndex(b => {
+      const matchMandapam = !mandapamId || b.mandapamId === mandapamId;
+      if (!matchMandapam) return false;
+      const matchId = b.id.toLowerCase() === clean;
+      const matchCode = b.bookingCode.toLowerCase() === clean;
+      const cleanDigits = clean.replace(/\D/g, "");
+      const matchMobile = cleanDigits.length >= 10 && b.mobile.replace(/\D/g, "") === cleanDigits;
+      return matchId || matchCode || matchMobile;
+    });
+
+    if (bookingIndex === -1) {
+      return {
+        success: false,
+        error: `No pooja registration found for "${bookingIdOrCode}". Please check the ID or mobile number.`
+      };
+    }
+
+    const matched = bookings[bookingIndex];
+    if (matched.isVerified || matched.status === "ATTENDED") {
+      return {
+        success: true,
+        alreadyVerified: true,
+        booking: matched,
+        error: `Pass already verified earlier (${matched.verifiedAt ? new Date(matched.verifiedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Verified"}).`
+      };
+    }
+
+    const updatedBooking: Booking = {
+      ...matched,
+      isVerified: true,
+      status: "ATTENDED",
+      verifiedAt: new Date().toISOString()
+    };
+
+    setBookings(prev => {
+      const copy = [...prev];
+      copy[bookingIndex] = updatedBooking;
+      saveStorage("bookings", copy);
+      return copy;
+    });
+
+    return {
+      success: true,
+      booking: updatedBooking
+    };
   };
 
   const addWalkIn = (data: {
@@ -892,6 +965,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
         updateDaySetting,
         uploadAlankarana,
         createBooking,
+        verifyBookingPass,
         addWalkIn,
         updateBookingStatus,
         toggleFollow,

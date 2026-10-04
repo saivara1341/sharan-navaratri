@@ -9,7 +9,7 @@ import {
 } from "../../utils/navaratriTranslations";
 import { QRCodeSVG } from "qrcode.react";
 import confetti from "canvas-confetti";
-import { X, CheckCircle2, Clock, Users, Calendar, Printer, Download } from "lucide-react";
+import { X, CheckCircle2, Clock, Users, Calendar, Printer } from "lucide-react";
 import { toast } from "sonner";
 
 interface ServiceBookingModalProps {
@@ -40,6 +40,7 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
 
   const [selectedSlotId, setSelectedSlotId] = useState<string>(availableSlots[0]?.id || "");
   const [name, setName] = useState("");
+  const [gotram, setGotram] = useState("");
   const [mobile, setMobile] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState("");
@@ -62,24 +63,23 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
 
   const currentSlot = slots.find(s => s.id === selectedSlotId);
   const currentService = services.find(s => s.id === selectedServiceId);
+  const isCoupleService = currentService?.targetAudience === "COUPLES" || currentService?.name?.toLowerCase().includes("sahasranama") || currentService?.name?.toLowerCase().includes("homa");
+  const isFemaleService = currentService?.targetAudience === "FEMALES_ONLY" || currentService?.name?.toLowerCase().includes("kumkum");
+
   const remainingCapacity = currentSlot
     ? Math.max(0, currentSlot.capacity - (currentSlot.bookedCount + currentSlot.walkinCount))
-    : 0;
+    : (currentService?.capacityPerSlot || 150);
   const isSlotFull = currentSlot ? (currentSlot.bookedCount + currentSlot.walkinCount) >= currentSlot.capacity : false;
 
   const handleProceedToOtp = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanMobile = mobile.replace(/\D/g, "");
     if (!name.trim() || !cleanMobile) {
-      toast.error("Please enter your Name and Mobile number.");
+      toast.error("Please enter Name and Mobile number.");
       return;
     }
     if (cleanMobile.length !== 10) {
       toast.error("Please enter a valid 10-digit mobile number (e.g. 9876543210).");
-      return;
-    }
-    if (!selectedSlotId) {
-      toast.error("Please select a pooja time slot.");
       return;
     }
     if (isSlotFull || remainingCapacity === 0) {
@@ -102,11 +102,15 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
       return;
     }
 
+    const devoteeType = isCoupleService ? "COUPLES" : isFemaleService ? "FEMALE" : "INDIVIDUAL";
+
     const res = createBooking({
-      slotId: selectedSlotId,
+      slotId: selectedSlotId || (availableSlots[0]?.id || `slot-${selectedServiceId || "default"}`),
       serviceId: selectedServiceId,
       mandapamId: mandapam.id,
       name,
+      gotram: gotram.trim() || undefined,
+      devoteeType,
       mobile,
       quantity,
       notes
@@ -247,16 +251,36 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
               <div>
                 <label className="block text-xs font-semibold text-stone-700 mb-1">
-                  Devotee Name *
+                  {isCoupleService
+                    ? (language === "te" ? "దంపతుల పేర్లు (Couple Names) *" : "Couple Names (భార్యాభర్తల పేర్లు) *")
+                    : isFemaleService
+                    ? (language === "te" ? "మహిళ / సువాసిని పేరు (Female Devotee Name) *" : "Female / Suhasini Devotee Name *")
+                    : (language === "te" ? "భక్తుని పేరు (Devotee Name) *" : "Devotee Name *")}
                 </label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter devotee full name"
+                  placeholder={
+                    isCoupleService
+                      ? "e.g. Ramesh & Sunitha (రమేష్ & సునీత)"
+                      : isFemaleService
+                      ? "e.g. Lakshmi Devi (లక్ష్మి దేవి)"
+                      : "e.g. Rajesh Kumar"
+                  }
                   className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
+                {isCoupleService && (
+                  <p className="text-[10px] text-amber-800 font-medium mt-1">
+                    * Pooja plate & sankalpam will be conducted for the couple together.
+                  </p>
+                )}
+                {isFemaleService && (
+                  <p className="text-[10px] text-amber-800 font-medium mt-1">
+                    * Special Sri Lalitha Kumkumarchana reserved for women & suhasinis.
+                  </p>
+                )}
               </div>
 
               <div>
@@ -279,6 +303,19 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-stone-700 mb-1">
+                  {language === "te" ? "గోత్రం (Gotram - ఐచ్ఛికం)" : "Gotram (గోత్రం - Optional)"}
+                </label>
+                <input
+                  type="text"
+                  value={gotram}
+                  onChange={(e) => setGotram(e.target.value)}
+                  placeholder="e.g. Kashyapa / Bharadwaja / Shiva"
+                  className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
                   Number of Devotees {remainingCapacity > 0 && <span className="text-stone-400 font-normal">(Max: {Math.min(6, remainingCapacity)})</span>}
                 </label>
                 <input
@@ -292,19 +329,6 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
                     setQuantity(Math.min(maxAllowed, Math.max(1, parseInt(e.target.value) || 1)));
                   }}
                   className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none disabled:bg-stone-100 disabled:text-stone-400"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-stone-700 mb-1">
-                  Gotram / Family Names (Optional)
-                </label>
-                <input
-                  type="text"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Enter family gotram (optional)"
-                  className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -350,9 +374,13 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
                 {language === "kn" ? "ದೃಢೀಕರಣ ಕೋಡ್ ನಮೂದಿಸಿ" : language === "te" ? "ధృవీకరణ కోడ్ నమోదు చేయండి" : language === "hi" ? "सत्यापन कोड दर्ज करें" : "Enter Verification Code"}
               </h3>
               <p className="text-xs text-stone-600 mt-1">
-                {language === "kn" ? "ನಾವು 4-ಅಂಕಿಯ ಕೋಡ್ ಕಳುಹಿಸಿದ್ದೇವೆ:" : language === "te" ? "మేము 4-అంకెల కోడ్ పంపాము:" : "We sent a 4-digit verification code to"} <strong>{mobile}</strong>
+                {language === "kn"
+                  ? `${mobile} ಸಂಖ್ಯೆಗೆ 4-ಅಂಕಿಯ ಕೋಡ್ ಕಳುಹಿಸಲಾಗಿದೆ.`
+                  : language === "te"
+                  ? `${mobile} నంబరుకు 4-అంకెల కోడ్ పంపబడింది.`
+                  : `4-digit verification code sent to ${mobile}.`}
               </p>
-              <p className="text-[11px] text-amber-800 font-bold mt-1">
+              <p className="text-[11px] font-semibold text-amber-800 bg-amber-100 inline-block px-2.5 py-0.5 rounded-full mt-1.5">
                 Demo OTP: 1088
               </p>
             </div>
@@ -428,15 +456,19 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
                   <span className="text-stone-500 text-[10px]">
-                    {language === "kn" ? "ಭಕ್ತರು:" : language === "te" ? "భక్తుడు:" : "Devotee:"}
+                    {confirmedBooking.devoteeType === "COUPLES"
+                      ? (language === "te" ? "దంపతులు:" : "Couples:")
+                      : confirmedBooking.devoteeType === "FEMALE"
+                      ? (language === "te" ? "మహిళా భక్తురాలు:" : "Female Devotee:")
+                      : (language === "te" ? "భక్తుడు:" : "Devotee:")}
                   </span>
                   <p className="font-bold text-stone-800">{confirmedBooking.name}</p>
                 </div>
                 <div>
                   <span className="text-stone-500 text-[10px]">
-                    {language === "kn" ? "ಮೊಬೈಲ್:" : language === "te" ? "మొబైల్:" : "Mobile:"}
+                    {language === "te" ? "గోత్రం:" : "Gotram:"}
                   </span>
-                  <p className="font-semibold text-stone-800">{confirmedBooking.mobile}</p>
+                  <p className="font-semibold text-stone-800">{confirmedBooking.gotram || "Shiva Gotram (Default)"}</p>
                 </div>
                 <div>
                   <span className="text-stone-500 text-[10px]">
@@ -446,9 +478,9 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
                 </div>
                 <div>
                   <span className="text-stone-500 text-[10px]">
-                    {language === "kn" ? "ಭಾಗವಹಿಸುವವರು:" : language === "te" ? "భక్తులు:" : "Participants:"}
+                    {language === "te" ? "సంకల్ప పళ్ళెం / టోకెన్ #:" : "Plate / Token #:"}
                   </span>
-                  <p className="font-bold text-stone-800">{confirmedBooking.quantity}</p>
+                  <p className="font-black text-[#8B1E1E]">#{confirmedBooking.tokenNumber || 1}</p>
                 </div>
               </div>
 
@@ -460,15 +492,28 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
 
               {/* QR Verification at Mandapam Counter */}
               <div className="flex items-center justify-between pt-2 border-t border-amber-200">
-                <div className="text-[10px] text-stone-600 max-w-[190px]">
-                  {language === "kn"
-                    ? "ತ್ವರಿತ ಪ್ರವೇಶಕ್ಕಾಗಿ ಈ ಡಿಜಿಟಲ್ ಪಾಸ್ ಕ್ಯೂಆರ್ ಅನ್ನು ಮಂಟಪ ಕೌಂಟರ್‌ನಲ್ಲಿ ತೋರಿಸಿ."
-                    : language === "te"
-                    ? "త్వరిత ప్రవేశం కోసం ఈ డిజిటల్ పాస్ QR కోడ్‌ను మండపం కౌంటర్‌లో చూపించండి."
-                    : "Show this digital pass QR at the Mandapam reception counter for quick check-in."}
+                <div className="text-[10px] text-stone-600 max-w-[200px] space-y-0.5">
+                  <p className="font-bold text-amber-900">
+                    {language === "te" ? "మండపం వద్ద స్కానింగ్ కొరకు:" : "Scan at Mandapam Counter:"}
+                  </p>
+                  <p>
+                    {language === "te"
+                      ? "నిర్వాహకులు ఈ QR కోడ్‌ను స్కాన్ చేసి పూజా ప్రవేశం మరియు సంకల్ప పళ్ళెం కేటాయిస్తారు."
+                      : "The organizer will scan this QR code to verify your pass and allocate your pooja plate."}
+                  </p>
                 </div>
-                <div className="p-1 bg-white rounded-lg shadow-sm border border-amber-300">
-                  <QRCodeSVG value={`NM-PASS:${confirmedBooking.bookingCode}`} size={64} />
+                <div className="p-1.5 bg-white rounded-xl shadow-xs border-2 border-amber-300">
+                  <QRCodeSVG
+                    value={JSON.stringify({
+                      passId: confirmedBooking.bookingCode,
+                      mandapamId: mandapam.id,
+                      name: confirmedBooking.name,
+                      service: confirmedBooking.serviceName,
+                      token: confirmedBooking.tokenNumber,
+                      gotram: confirmedBooking.gotram
+                    })}
+                    size={76}
+                  />
                 </div>
               </div>
             </div>

@@ -146,6 +146,8 @@ export interface Service {
   price?: number;
   date?: string;
   timeSlot?: string;
+  targetAudience?: "ALL" | "COUPLES" | "FEMALES_ONLY" | "INDIVIDUALS" | "FAMILY";
+  targetAudienceLabel?: string;
 }
 
 export interface ServiceSlot {
@@ -177,6 +179,11 @@ export interface Booking {
   slotTime?: string;
   date: string;
   createdAt: string;
+  gotram?: string;
+  devoteeType?: "COUPLE" | "FEMALE" | "INDIVIDUAL" | "FAMILY" | "ALL";
+  tokenNumber?: number;
+  isVerified?: boolean;
+  verifiedAt?: string;
 }
 
 export interface Activity {
