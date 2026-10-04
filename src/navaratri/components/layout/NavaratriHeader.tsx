@@ -15,7 +15,7 @@ import {
   QrCode,
   KeyRound
 } from "lucide-react";
-import { INVOCATION_TRANSLATIONS } from "../../utils/navaratriTranslations";
+import { INVOCATION_TRANSLATIONS, FOOTER_SLOKA_TRANSLATIONS } from "../../utils/navaratriTranslations";
 
 export const NavaratriHeader: React.FC = () => {
   const { language, setLanguage, t } = useNavaratriLanguage();
@@ -47,16 +47,22 @@ export const NavaratriHeader: React.FC = () => {
   return (
     <header className="sticky top-0 z-50 bg-[#FDFBF7]/95 backdrop-blur-md border-b-2 border-[#D97706]/30 shadow-md">
       {/* Top Sacred Saffron & Maroon Invocation Ribbon */}
-      <div className="bg-gradient-to-r from-[#8B1E1E] via-[#9A241C] to-[#8B1E1E] text-white text-xs px-4 py-1.5 flex items-center justify-between shadow-inner">
-        <div className="flex items-center gap-2">
-          <span className="font-serif tracking-wider text-amber-200 font-bold text-xs sm:text-sm drop-shadow">
-            {INVOCATION_TRANSLATIONS[language] || "॥ ॐ శ్రీ మాత్రే నమః ॥"}
+      <div className="bg-gradient-to-r from-[#8B1E1E] via-[#9A241C] to-[#8B1E1E] text-white text-xs px-4 sm:px-6 py-1.5 flex items-center justify-between shadow-inner">
+        {/* Left Corner: ॥ Om Sri Matre Namaha ॥ */}
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="font-serif tracking-wider text-amber-200 font-bold text-xs sm:text-sm drop-shadow whitespace-nowrap">
+            {language === "en" ? "॥ Om Sri Matre Namaha ॥" : (INVOCATION_TRANSLATIONS[language] || "॥ Om Sri Matre Namaha ॥")}
           </span>
         </div>
 
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        {/* Right Corner (Same Line): Sarva Mangala Mangalye Shive Sarvartha Sadhike + Language Switcher */}
+        <div className="flex items-center gap-3 sm:gap-4 ml-auto">
+          <span className="hidden md:inline-block font-serif tracking-wide text-amber-200 font-semibold text-xs sm:text-sm drop-shadow whitespace-nowrap">
+            {language === "en" ? "Sarva Mangala Mangalye Shive Sarvartha Sadhike" : (FOOTER_SLOKA_TRANSLATIONS[language]?.split(" • ")[1] || "Sarva Mangala Mangalye Shive Sarvartha Sadhike")}
+          </span>
+
           {/* Multilingual Switcher */}
-          <div className="flex items-center gap-1 rounded-full bg-black/30 px-2 py-0.5 border border-amber-400/40 text-[11px] font-bold">
+          <div className="flex items-center gap-1 rounded-full bg-black/30 px-2 py-0.5 border border-amber-400/40 text-[11px] font-bold shrink-0">
             <Globe className="h-3.5 w-3.5 text-amber-300" aria-hidden="true" />
             <select
               value={language}

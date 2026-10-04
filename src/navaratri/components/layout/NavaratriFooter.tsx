@@ -24,16 +24,27 @@ export const NavaratriFooter: React.FC = () => {
 
       <div className="max-w-4xl mx-auto text-center space-y-6 relative z-10">
 
-        {/* Sacred Sloka in 2 Lines */}
-        <div className="space-y-1 pt-1">
-          {/* Line 1: ॥ Om Sri Matre Namaha ॥ */}
-          <p className="text-xs sm:text-sm font-bold text-amber-300 tracking-widest uppercase font-serif">
-            {slokaPart1}
-          </p>
-          {/* Line 2: Sarva Mangala Mangalye Shive Sarvartha Sadhike */}
-          <p className="text-xs sm:text-sm font-semibold text-amber-300/85 tracking-wider font-serif">
-            {slokaPart2}
-          </p>
+        {/* Sacred Sloka */}
+        <div className="pt-1">
+          {/* Mobile view: 2 lines */}
+          <div className="md:hidden space-y-1">
+            <p className="text-xs font-bold text-amber-300 tracking-widest uppercase font-serif">
+              {slokaPart1}
+            </p>
+            <p className="text-xs font-semibold text-amber-300/85 tracking-wider font-serif">
+              {slokaPart2}
+            </p>
+          </div>
+
+          {/* Desktop view: Left Corner and Right Corner in same line */}
+          <div className="hidden md:flex items-center justify-between px-6 py-2.5 rounded-2xl bg-amber-950/40 border border-amber-500/20 text-xs sm:text-sm font-serif">
+            <span className="font-bold text-amber-300 tracking-wider">
+              {slokaPart1}
+            </span>
+            <span className="font-semibold text-amber-300/90 tracking-wide">
+              {slokaPart2}
+            </span>
+          </div>
         </div>
 
         {/* Festival Branding in 2 Lines */}
