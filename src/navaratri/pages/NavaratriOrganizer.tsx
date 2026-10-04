@@ -740,6 +740,17 @@ export const NavaratriOrganizer: React.FC = () => {
                 <Copy className="w-3 h-3" />
               </button>
             </div>
+
+            {/* QR Code Button */}
+            <button
+              type="button"
+              onClick={() => setQrModalOpen(true)}
+              className="flex items-center gap-1.5 bg-black/30 hover:bg-black/50 border border-white/20 hover:border-amber-300/60 px-3 py-1 rounded-xl text-amber-200 hover:text-white font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+              title="View & Download Mandapam QR Code"
+            >
+              <QrCode className="w-3.5 h-3.5 text-amber-300" />
+              <span>QR Code</span>
+            </button>
           </div>
         </div>
 
@@ -887,7 +898,7 @@ export const NavaratriOrganizer: React.FC = () => {
           }`}
         >
           <CalendarDays className="w-4 h-4 text-amber-500 shrink-0" />
-          <span className="leading-tight">10-Day Festival Schedule Manager</span>
+          <span className="leading-tight">10-Day Festival Schedule</span>
         </button>
 
         <button

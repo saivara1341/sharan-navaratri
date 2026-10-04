@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { Mandapam } from "../../types";
 import { QRCodeSVG, QRCodeCanvas } from "qrcode.react";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
-import { X, Download, Printer, Share2, Copy, Check, Palette } from "lucide-react";
+import { X, Download, Printer, Share2, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { navaratriAsset } from "../../utils/navaratriAssets";
 import { InstagramVerifiedBadge } from "../devotional/InstagramVerifiedBadge";
@@ -159,10 +159,10 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
         return;
       }
 
-      // High-resolution canvas (A4 ratio: 1000 x 1450)
+      // High-resolution canvas (proportional layout without slogan box)
       const canvas = document.createElement("canvas");
       canvas.width = 1000;
-      canvas.height = 1450;
+      canvas.height = 1040;
       const ctx = canvas.getContext("2d");
 
       if (!ctx) {
@@ -317,38 +317,10 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
       ctx.font = "bold 21px sans-serif";
       ctx.fillText("📱 Scan for Today's Darshan & Pooja", canvas.width / 2, qrBoxY + qrSize + 64);
 
-      // 8. Platform Devotional Message Box
-      const msgBoxY = 965;
-      const msgBoxWidth = 860;
-      const msgBoxHeight = 115;
-      const msgBoxX = (canvas.width - msgBoxWidth) / 2;
-
-      ctx.fillStyle = isGold ? "#FEF3C7" : isSaffron ? "#FFEDD5" : "#FEE2E2";
-      ctx.beginPath();
-      ctx.roundRect(msgBoxX, msgBoxY, msgBoxWidth, msgBoxHeight, 20);
-      ctx.fill();
-
-      ctx.strokeStyle = isGold ? "#FDE68A" : isSaffron ? "#FED7AA" : "#FECACA";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      ctx.fillStyle = isGold ? "#8B1E1E" : isSaffron ? "#9A3412" : "#781B1B";
-      ctx.font = "bold 22px serif";
-      ctx.fillText("“One QR. Every Mandapam. Everything a devotee needs.”", canvas.width / 2, msgBoxY + 42);
-
-      ctx.fillStyle = "#57534E";
-      ctx.font = "bold 16px sans-serif";
-      ctx.fillText("Daily Alankaram • Pooja Timings • Devotee Seva • Devotee Bookings", canvas.width / 2, msgBoxY + 74);
-
-      // 9. Public URL text
-      ctx.fillStyle = "#78716C";
-      ctx.font = "14px monospace";
-      ctx.fillText(publicUrl, canvas.width / 2, 1115);
-
-      // 10. Footer Attribution
+      // 8. Footer Attribution
       ctx.fillStyle = isGold ? "#8B1E1E" : isSaffron ? "#9A3412" : "#781B1B";
       ctx.font = "bold 15px serif";
-      ctx.fillText("Sharan Navaratri 2026 • Siddhi Dynamics LLP", canvas.width / 2, 1395);
+      ctx.fillText("Sharan Navaratri 2026 • Siddhi Dynamics LLP", canvas.width / 2, canvas.height - 45);
 
       // Export canvas to PNG Blob
       canvas.toBlob((blob) => {
@@ -442,48 +414,8 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
             </h3>
           </div>
           <p className="text-xs text-stone-600 leading-relaxed">
-            Choose your standee theme, then download as high-res PNG or print directly on A4 paper for your mandapam counter.
+            Download your official mandapam QR poster as high-res PNG or print directly on A4 paper for your mandapam counter.
           </p>
-
-          {/* Standee Template Selector — aesthetic colour-swatch picker */}
-          <div className="space-y-2 pt-1">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-stone-700">
-              <Palette className="w-3.5 h-3.5 text-amber-600" />
-              <span>Standee Template Style</span>
-            </div>
-            <div className="grid grid-cols-3 gap-2.5">
-              {TEMPLATES.map((tmpl) => {
-                const isSelected = selectedTemplate === tmpl.id;
-                return (
-                  <button
-                    key={tmpl.id}
-                    type="button"
-                    onClick={() => setSelectedTemplate(tmpl.id)}
-                    className={`group relative flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border-2 transition-all cursor-pointer ${
-                      isSelected
-                        ? "border-amber-500 ring-2 ring-amber-400/50 shadow-md bg-amber-50"
-                        : "border-stone-200 hover:border-amber-300 bg-white hover:shadow-sm"
-                    }`}
-                  >
-                    {/* Colour swatch */}
-                    <div className={`w-full h-8 rounded-xl bg-gradient-to-r ${tmpl.headerGrad} shadow-sm`} />
-                    {/* Name */}
-                    <span className={`text-[10px] font-bold leading-tight text-center ${isSelected ? "text-amber-900" : "text-stone-600"}`}>
-                      {tmpl.name}
-                    </span>
-                    {/* Selected tick */}
-                    {isSelected && (
-                      <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center shadow">
-                        <svg viewBox="0 0 12 10" className="w-3 h-2.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="1,5 4.5,8.5 11,1" />
-                        </svg>
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
         </div>
 
 
@@ -547,19 +479,6 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
               <span>📱</span>
               <span>Scan for Today's Darshan & Pooja</span>
             </div>
-          </div>
-
-          {/* Devotional Slogan & Details */}
-          <div className="p-3.5 rounded-2xl bg-amber-50/90 border border-amber-200 text-xs text-stone-700 space-y-1">
-            <p className="font-serif font-bold text-sm sm:text-base text-[#8B1E1E]">
-              “One QR. Every Mandapam. Everything a devotee needs.”
-            </p>
-            <p className="text-[11px] text-stone-600 font-medium">
-              Daily Alankaram • Pooja Timings • Devotee Seva • Devotee Bookings
-            </p>
-            <p className="text-[11px] text-stone-500 font-mono break-all pt-0.5">
-              {publicUrl}
-            </p>
           </div>
 
           {/* Sacred Footer */}
