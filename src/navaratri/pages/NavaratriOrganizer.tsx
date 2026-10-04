@@ -51,7 +51,8 @@ import {
   Check,
   Search,
   Ticket,
-  Filter
+  Filter,
+  Settings,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -150,6 +151,9 @@ export const NavaratriOrganizer: React.FC = () => {
   const [annTitle, setAnnTitle] = useState("");
   const [annMessage, setAnnMessage] = useState("");
   const [annPriority, setAnnPriority] = useState<"NORMAL" | "HIGH">("NORMAL");
+
+  // Mandapam Settings Dropdown State
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Mandapam Branding, Media & Location State
   const [brandingModalOpen, setBrandingModalOpen] = useState(false);
@@ -667,9 +671,9 @@ export const NavaratriOrganizer: React.FC = () => {
   return (
     <div className="space-y-8 pb-16 font-sans max-w-7xl mx-auto px-4 sm:px-6">
       {/* Top Banner with Mandapam ID, Passcode, Download Slip, Photo & Logout */}
-      <div className="relative overflow-hidden p-6 rounded-3xl bg-gradient-to-r from-[#9A241C] via-[#8B1E1E] to-[#781B1B] text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="relative p-6 rounded-3xl bg-gradient-to-r from-[#9A241C] via-[#8B1E1E] to-[#781B1B] text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         {(currentMandapam.coverImageUrl || currentMandapam.cardBgImageUrl) && (
-          <div className="absolute inset-0 pointer-events-none opacity-20 z-0">
+          <div className="absolute inset-0 pointer-events-none opacity-20 z-0 overflow-hidden rounded-3xl">
             <img
               src={currentMandapam.coverImageUrl || currentMandapam.cardBgImageUrl}
               alt={currentMandapam.name}
@@ -679,7 +683,7 @@ export const NavaratriOrganizer: React.FC = () => {
           </div>
         )}
 
-        <div className="relative z-10 space-y-2">
+        <div className="relative z-10 space-y-2 pr-28 sm:pr-32 md:pr-0">
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-400/20 text-amber-200 text-xs font-bold">
               <ShieldCheck className="w-3.5 h-3.5" />
@@ -730,81 +734,136 @@ export const NavaratriOrganizer: React.FC = () => {
           </div>
         </div>
 
-        {/* Control Center Actions */}
-        <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap md:justify-end items-stretch gap-2 md:max-w-[480px]">
-          {/* Download Access Slip */}
+        {/* Top-Right Settings Menu */}
+        <div className="absolute top-4 right-4 sm:top-5 sm:right-6 z-20">
           <button
             type="button"
-            onClick={() => downloadMandapamCredentials(currentMandapam, sessionPasscode)}
-            className="px-3.5 py-2 rounded-xl bg-emerald-400 text-stone-900 text-xs font-bold hover:bg-emerald-300 shadow-md flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-            title="Download Official Mandapam Access Slip"
+            onClick={() => setSettingsOpen((prev) => !prev)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-black/40 hover:bg-black/60 text-amber-200 hover:text-white border border-white/25 shadow-lg backdrop-blur-xs transition-all active:scale-95 cursor-pointer"
+            title="Mandapam Settings & Options"
           >
-            <Download className="w-4 h-4 text-emerald-900" />
-            <span>Download Access Slip</span>
+            <Settings className="w-4 h-4 text-amber-300" />
+            <span className="text-xs font-bold">Settings</span>
           </button>
 
-          {/* Mandapam Logo, Photos & Location Button */}
-          <button
-            type="button"
-            onClick={() => {
-              setLogoPreview(currentMandapam.logoUrl || (typeof window !== "undefined" ? localStorage.getItem(`mandapam_logo_${currentMandapam.id}`) : null) || "");
-              setLogoInputUrl("");
-              setPhotoPreview(currentMandapam.coverImageUrl || currentMandapam.cardBgImageUrl || (typeof window !== "undefined" ? localStorage.getItem(`mandapam_cover_${currentMandapam.id}`) : null) || "");
-              setPhotoInputUrl("");
-              setEditAddress(currentMandapam.address || "");
-              setEditArea(currentMandapam.area || "");
-              setEditCity(currentMandapam.city || "");
-              setEditOrganizerName(currentMandapam.organizerName || "");
-              setEditOrganizerMobile(currentMandapam.organizerMobile || currentMandapam.contactPhone || "");
-              setEditWhatsappNumber(currentMandapam.whatsappNumber || "");
-              setShowOrganizerPublicly(currentMandapam.showOrganizerPublicly !== false);
-              setBrandingTab("logo");
-              setBrandingModalOpen(true);
-            }}
-            className="px-3.5 py-2 rounded-xl bg-amber-400 text-stone-900 text-xs font-bold hover:bg-amber-300 shadow-md flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-            title="Upload Logo, Location & Committee Details"
-          >
-            <Camera className="w-4 h-4 text-[#8B1E1E]" />
-            <span>Branding & Location</span>
-          </button>
+          {settingsOpen && (
+            <>
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 z-40 bg-black/30 backdrop-blur-2xs"
+                onClick={() => setSettingsOpen(false)}
+              />
 
-          <button
-            onClick={() => setQrModalOpen(true)}
-            className="px-3.5 py-2 rounded-xl bg-white text-stone-900 text-xs font-bold hover:bg-amber-50 shadow-md flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <QrCode className="w-4 h-4 text-[#8B1E1E]" />
-            <span>Counter Standee</span>
-          </button>
+              {/* Dropdown Menu */}
+              <div className="absolute right-0 top-full mt-2 w-64 bg-white text-stone-900 rounded-2xl shadow-2xl border border-amber-200 p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="px-3 py-2 border-b border-amber-100 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-black text-[#8B1E1E] uppercase tracking-wider">
+                    <Settings className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Mandapam Settings</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSettingsOpen(false)}
+                    className="p-1 text-stone-400 hover:text-stone-700 rounded-lg hover:bg-stone-100 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
 
-          <Link
-            to={`/navaratri/m/${currentMandapam.slug}`}
-            className="px-3.5 py-2 rounded-xl bg-white/90 text-stone-900 text-xs font-bold hover:bg-amber-50 shadow-md flex items-center justify-center gap-1.5 transition-colors"
-          >
-            <ExternalLink className="w-4 h-4 text-[#8B1E1E]" />
-            <span>View Public Page</span>
-          </Link>
+                <div className="py-1 space-y-0.5">
+                  {/* 1. Download Access Slip */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSettingsOpen(false);
+                      downloadMandapamCredentials(currentMandapam, sessionPasscode);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:text-[#8B1E1E] rounded-xl transition-colors text-left cursor-pointer"
+                  >
+                    <Download className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Download Access Slip</span>
+                  </button>
 
-          <button
-            onClick={handleLogout}
-            className="px-3.5 py-2 rounded-xl bg-black/40 hover:bg-black/60 text-white text-xs font-bold border border-white/20 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-            title="Log out from organizer dashboard"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Logout</span>
-          </button>
+                  {/* 2. Branding & Location */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSettingsOpen(false);
+                      setLogoPreview(currentMandapam.logoUrl || (typeof window !== "undefined" ? localStorage.getItem(`mandapam_logo_${currentMandapam.id}`) : null) || "");
+                      setLogoInputUrl("");
+                      setPhotoPreview(currentMandapam.coverImageUrl || currentMandapam.cardBgImageUrl || (typeof window !== "undefined" ? localStorage.getItem(`mandapam_cover_${currentMandapam.id}`) : null) || "");
+                      setPhotoInputUrl("");
+                      setEditAddress(currentMandapam.address || "");
+                      setEditArea(currentMandapam.area || "");
+                      setEditCity(currentMandapam.city || "");
+                      setEditOrganizerName(currentMandapam.organizerName || "");
+                      setEditOrganizerMobile(currentMandapam.organizerMobile || currentMandapam.contactPhone || "");
+                      setEditWhatsappNumber(currentMandapam.whatsappNumber || "");
+                      setShowOrganizerPublicly(currentMandapam.showOrganizerPublicly !== false);
+                      setBrandingTab("logo");
+                      setBrandingModalOpen(true);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:text-[#8B1E1E] rounded-xl transition-colors text-left cursor-pointer"
+                  >
+                    <Camera className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>Branding & Location</span>
+                  </button>
 
-          <button
-            type="button"
-            onClick={() => {
-              setDeleteStep(1);
-              setDeleteConfirmInput("");
-            }}
-            className="px-3.5 py-2 rounded-xl bg-red-950/60 hover:bg-red-700 text-red-100 hover:text-white text-xs font-bold border border-red-300/40 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-            title="Permanently delete this mandapam profile, photos and schedules"
-          >
-            <Trash2 className="w-4 h-4" />
-            <span>Delete Account</span>
-          </button>
+                  {/* 3. Counter Standee */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSettingsOpen(false);
+                      setQrModalOpen(true);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:text-[#8B1E1E] rounded-xl transition-colors text-left cursor-pointer"
+                  >
+                    <QrCode className="w-4 h-4 text-[#8B1E1E] shrink-0" />
+                    <span>Counter Standee</span>
+                  </button>
+
+                  {/* 4. View Public Page */}
+                  <Link
+                    to={`/navaratri/m/${currentMandapam.slug}`}
+                    onClick={() => setSettingsOpen(false)}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:text-[#8B1E1E] rounded-xl transition-colors text-left cursor-pointer"
+                  >
+                    <ExternalLink className="w-4 h-4 text-blue-600 shrink-0" />
+                    <span>View Public Page</span>
+                  </Link>
+
+                  <div className="my-1 border-t border-stone-200" />
+
+                  {/* 5. Logout */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSettingsOpen(false);
+                      handleLogout();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-stone-700 hover:bg-stone-100 rounded-xl transition-colors text-left cursor-pointer"
+                  >
+                    <LogOut className="w-4 h-4 text-stone-500 shrink-0" />
+                    <span>Logout</span>
+                  </button>
+
+                  {/* 6. Delete Account */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSettingsOpen(false);
+                      setDeleteStep(1);
+                      setDeleteConfirmInput("");
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-xl transition-colors text-left cursor-pointer"
+                  >
+                    <Trash2 className="w-4 h-4 text-red-500 shrink-0" />
+                    <span>Delete Account</span>
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
