@@ -113,21 +113,21 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
         </div>
 
         {/* Mobile: Clean Sponsor & Action Bar below the image (NEVER covers the image) */}
-        <div className="flex sm:hidden items-center justify-between gap-2 pt-2 px-1 text-xs">
-          <div className="flex items-center gap-1.5 font-medium text-amber-900/80">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-            <span className="font-bold text-[11px] uppercase tracking-wider text-amber-800">Sponsored</span>
+        <div className="flex sm:hidden items-center justify-between gap-2.5 pt-2 px-1 text-xs flex-wrap">
+          <div className="flex items-center gap-1.5 font-medium text-amber-900/80 flex-wrap min-w-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
+            <span className="font-bold text-[11px] uppercase tracking-wider text-amber-800 shrink-0">Sponsored</span>
             {currentAd.businessName && (
-              <span className="text-stone-600 truncate max-w-[150px]">• {currentAd.businessName}</span>
+              <span className="text-stone-800 font-bold text-xs whitespace-normal">• {currentAd.businessName}</span>
             )}
           </div>
           <button
             type="button"
             onClick={handleContainerClick}
-            className="px-3 py-1 rounded-lg bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-xs font-bold shadow-xs flex items-center gap-1 active:scale-95 cursor-pointer"
+            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-xs font-bold shadow-xs flex items-center gap-1.5 active:scale-95 cursor-pointer whitespace-nowrap"
           >
             <span>{ctaInfo.label}</span>
-            <ExternalLink className="w-3 h-3" />
+            <ExternalLink className="w-3.5 h-3.5" />
           </button>
         </div>
         </>

@@ -107,14 +107,14 @@ export const NavaratriTopAdBanner: React.FC = () => {
             </div>
 
             {/* Mobile View: Sponsored badge and redirect button placed cleanly BELOW the ad frame (NEVER on the image) */}
-            <div className="flex sm:hidden items-center justify-between gap-2 pt-2 px-1 text-xs">
-              <div className="flex items-center gap-1.5 font-medium text-amber-900/90">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                <span className="font-bold text-[11px] uppercase tracking-wider text-amber-800">
+            <div className="flex sm:hidden items-center justify-between gap-2.5 pt-2 px-1 text-xs flex-wrap">
+              <div className="flex items-center gap-1.5 font-medium text-amber-900/90 flex-wrap min-w-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
+                <span className="font-bold text-[11px] uppercase tracking-wider text-amber-800 shrink-0">
                   Sponsored
                 </span>
                 {currentAd.businessName && (
-                  <span className="text-stone-700 truncate max-w-[130px] font-semibold">
+                  <span className="text-stone-800 font-bold text-xs whitespace-normal">
                     • {currentAd.businessName}
                   </span>
                 )}
@@ -127,7 +127,7 @@ export const NavaratriTopAdBanner: React.FC = () => {
                   e.stopPropagation();
                   handleContainerClick();
                 }}
-                className="px-3 py-1 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[11px] font-bold shadow-xs flex items-center gap-1 active:scale-95 border border-amber-300/60 cursor-pointer shrink-0"
+                className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-xs font-bold shadow-xs flex items-center gap-1.5 active:scale-95 border border-amber-300/60 cursor-pointer shrink-0 whitespace-nowrap"
               >
                 <span>{ctaInfo.label}</span>
                 <ExternalLink className="w-3 h-3" />
