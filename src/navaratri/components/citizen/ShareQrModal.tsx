@@ -2,7 +2,19 @@ import React, { useRef, useState } from "react";
 import { Mandapam } from "../../types";
 import { QRCodeSVG, QRCodeCanvas } from "qrcode.react";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
-import { X, Download, Printer, Share2, Copy, Check } from "lucide-react";
+import { 
+  X, 
+  Download, 
+  Printer, 
+  Share2, 
+  Copy, 
+  Check, 
+  Upload, 
+  Camera, 
+  Sparkles, 
+  Layers, 
+  Image as ImageIcon 
+} from "lucide-react";
 import { toast } from "sonner";
 import { navaratriAsset } from "../../utils/navaratriAssets";
 import { InstagramVerifiedBadge } from "../devotional/InstagramVerifiedBadge";
@@ -15,45 +27,62 @@ interface ShareQrModalProps {
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
 
-type StandeeTemplateId = "temple-gold" | "sacred-saffron" | "vedic-maroon";
-
-interface StandeeTemplate {
-  id: StandeeTemplateId;
+export interface StandeeFrame {
+  id: string;
   name: string;
-  badgeBg: string;
+  subtitle: string;
+  frameBgUrl: string;
   cardBg: string;
   borderClass: string;
+  badgeBg: string;
   accentColor: string;
-  headerGrad: string;
+  sampleColor: string;
 }
 
-const TEMPLATES: StandeeTemplate[] = [
+const STANDEE_FRAMES: StandeeFrame[] = [
   {
-    id: "temple-gold",
-    name: "Royal Mandir Gold",
-    badgeBg: "bg-gradient-to-r from-[#8B1E1E] to-[#B45309]",
-    cardBg: "bg-[#FFFDF9]",
-    borderClass: "border-4 border-[#D97706]/80 ring-4 ring-amber-400/20",
-    accentColor: "#8B1E1E",
-    headerGrad: "from-[#8B1E1E] via-[#B45309] to-[#8B1E1E]"
-  },
-  {
-    id: "sacred-saffron",
-    name: "Sacred Saffron Utsav",
-    badgeBg: "bg-gradient-to-r from-[#C2410C] to-[#EA580C]",
-    cardBg: "bg-[#FFFBEB]",
-    borderClass: "border-4 border-[#EA580C]/80 ring-4 ring-orange-400/20",
-    accentColor: "#C2410C",
-    headerGrad: "from-[#C2410C] via-[#EA580C] to-[#C2410C]"
-  },
-  {
-    id: "vedic-maroon",
-    name: "Vedic Kumkum Sanctum",
-    badgeBg: "bg-gradient-to-r from-[#781B1B] to-[#991B1B]",
+    id: "parchment-lotus",
+    name: "Vedic Parchment",
+    subtitle: "Ivory Lotus & Kolam",
+    frameBgUrl: navaratriAsset("/navaratri/assets/parchment-lotus-frame.jpg"),
     cardBg: "bg-[#FDFBF7]",
-    borderClass: "border-4 border-[#991B1B]/80 ring-4 ring-red-400/20",
-    accentColor: "#781B1B",
-    headerGrad: "from-[#781B1B] via-[#991B1B] to-[#781B1B]"
+    borderClass: "border-4 border-[#D97706]/80 ring-4 ring-amber-400/30",
+    badgeBg: "bg-gradient-to-r from-[#8B1E1E] to-[#B45309]",
+    accentColor: "#8B1E1E",
+    sampleColor: "from-[#8B1E1E] via-[#D97706] to-[#8B1E1E]"
+  },
+  {
+    id: "sage-lotus",
+    name: "Sage Lotus Garden",
+    subtitle: "Sacred Emerald & Gold",
+    frameBgUrl: navaratriAsset("/navaratri/assets/sage-lotus-border.jpg"),
+    cardBg: "bg-[#F4F7F4]",
+    borderClass: "border-4 border-emerald-700/80 ring-4 ring-emerald-500/30",
+    badgeBg: "bg-gradient-to-r from-emerald-800 to-amber-700",
+    accentColor: "#1B4332",
+    sampleColor: "from-[#1B4332] via-[#2D6A4F] to-[#D97706]"
+  },
+  {
+    id: "royal-maroon-arch",
+    name: "Royal Temple Arch",
+    subtitle: "Sanctum Gold Filigree",
+    frameBgUrl: navaratriAsset("/navaratri/assets/royal-maroon-arch.jpg"),
+    cardBg: "bg-[#FFFDF9]",
+    borderClass: "border-4 border-[#8B1E1E]/80 ring-4 ring-amber-500/30",
+    badgeBg: "bg-gradient-to-r from-[#781B1B] to-[#B45309]",
+    accentColor: "#8B1E1E",
+    sampleColor: "from-[#781B1B] via-[#991B1B] to-[#B45309]"
+  },
+  {
+    id: "terracotta-scalloped",
+    name: "Terracotta Scalloped",
+    subtitle: "Festive Crimson Arch",
+    frameBgUrl: navaratriAsset("/navaratri/assets/terracotta-scalloped-card.png"),
+    cardBg: "bg-[#FFF9F5]",
+    borderClass: "border-4 border-[#C2410C]/80 ring-4 ring-orange-400/30",
+    badgeBg: "bg-gradient-to-r from-[#9A3412] to-[#EA580C]",
+    accentColor: "#9A3412",
+    sampleColor: "from-[#9A3412] via-[#EA580C] to-[#F59E0B]"
   }
 ];
 
@@ -64,64 +93,62 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
 }) => {
   const { t } = useNavaratriLanguage();
   const [copied, setCopied] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<StandeeTemplateId>("temple-gold");
+  const [selectedFrameId, setSelectedFrameId] = useState<string>("parchment-lotus");
+  const [selectedDeityId, setSelectedDeityId] = useState<string>("durga-simhavahana");
   const [isDownloading, setIsDownloading] = useState(false);
 
-  const storedLogo = typeof window !== "undefined" ? localStorage.getItem(`mandapam_logo_${mandapam.id}`) : null;
   const storedCover = typeof window !== "undefined" ? localStorage.getItem(`mandapam_cover_${mandapam.id}`) : null;
+  const [customDeityUrl, setCustomDeityUrl] = useState<string>(
+    mandapam.coverImageUrl || mandapam.cardBgImageUrl || storedCover || ""
+  );
 
-  // Available Matha / Devi images & Committee branding
-  const mathaImages = [
+  const printRef = useRef<HTMLDivElement>(null);
+
+  // Sacred Deity Presets from our Navaratri assets
+  const deityOptions = [
     {
-      id: "maa-durga",
+      id: "durga-simhavahana",
       name: "Maa Durga",
-      subtitle: "Divine Mahishasuramardini",
-      url: navaratriAsset("/navaratri/assets/maa-durga-icon.png")
+      subtitle: "Simhavahana Swaroopam",
+      url: navaratriAsset("/navaratri/assets/maa-durga-hero-darshan-nobg.png")
     },
     {
-      id: "maa-durga-darshan",
-      name: "Maa Durga Darshan",
-      subtitle: "Golden Simhavahana",
-      url: navaratriAsset("/navaratri/assets/maa-durga-hero-darshan.png")
-    },
-    {
-      id: "durga-devi-alankarana",
+      id: "durga-alankarana",
       name: "Sri Swarna Durga",
-      subtitle: "Indrakeeladri Alankarana",
+      subtitle: "Divine Alankarana",
       url: navaratriAsset("/navaratri/assets/durga-devi-alankarana.jpg")
     },
-    ...(mandapam.logoUrl || storedLogo
-      ? [
-          {
-            id: "mandapam-logo",
-            name: "Committee Logo",
-            subtitle: mandapam.name,
-            url: mandapam.logoUrl || storedLogo || ""
-          }
-        ]
-      : []),
-    ...(mandapam.coverImageUrl || mandapam.cardBgImageUrl || storedCover
+    {
+      id: "mahishasura-mardhini",
+      name: "Mahishasura Mardhini",
+      subtitle: "Maha Shakthi Vijayam",
+      url: navaratriAsset("/navaratri/assets/alankaranas/day-9-mahishasura-mardhini.jpg")
+    },
+    {
+      id: "bala-tripura-sundari",
+      name: "Bala Tripura Sundari",
+      subtitle: "Sacred First Alankarana",
+      url: navaratriAsset("/navaratri/assets/alankaranas/day-1-bala-tripura-sundari.jpg")
+    },
+    ...(customDeityUrl
       ? [
           {
             id: "mandapam-custom",
-            name: "Mandapam Photo",
-            subtitle: mandapam.name,
-            url: mandapam.coverImageUrl || mandapam.cardBgImageUrl || storedCover || ""
+            name: `${mandapam.name} Matha`,
+            subtitle: "Mandapam Idol Photo",
+            url: customDeityUrl
           }
         ]
       : [])
   ];
-
-  const [selectedImageId, setSelectedImageId] = useState<string>("maa-durga");
-  const printRef = useRef<HTMLDivElement>(null);
 
   if (!isOpen) return null;
 
   // Build correct public URL matching the /navaratri/m/:slug route
   const publicUrl = `${window.location.origin}${base}/navaratri/m/${mandapam.slug}`;
 
-  const currentTemplate = TEMPLATES.find((t) => t.id === selectedTemplate) || TEMPLATES[0];
-  const currentMatha = mathaImages.find((img) => img.id === selectedImageId) || mathaImages[0];
+  const currentFrame = STANDEE_FRAMES.find((f) => f.id === selectedFrameId) || STANDEE_FRAMES[0];
+  const activeDeity = deityOptions.find((d) => d.id === selectedDeityId) || deityOptions[0];
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(publicUrl);
@@ -146,11 +173,49 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
     window.print();
   };
 
+  // Upload custom Mandapam / Matha photo with automatic canvas optimization
+  const handleCustomPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file (JPG, PNG, WebP).");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const maxWidth = 1200;
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressed = canvas.toDataURL("image/jpeg", 0.9);
+          setCustomDeityUrl(compressed);
+          setSelectedDeityId("mandapam-custom");
+          toast.success("Mandapam idol photo loaded into standee in big size!");
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   // High-Resolution Standee PNG Generation & Download
   const handleDownloadStandee = async () => {
     try {
       setIsDownloading(true);
-      toast.info("Generating high-resolution A4 standee image...");
+      toast.info("Generating high-resolution A4 standee image with selected frame...");
 
       const qrCanvas = document.getElementById("mandapam-qr-canvas") as HTMLCanvasElement;
       if (!qrCanvas) {
@@ -159,10 +224,10 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
         return;
       }
 
-      // High-resolution canvas (proportional layout without slogan box)
+      // High-resolution canvas (A4 ratio: 1000 x 1480)
       const canvas = document.createElement("canvas");
       canvas.width = 1000;
-      canvas.height = 1040;
+      canvas.height = 1480;
       const ctx = canvas.getContext("2d");
 
       if (!ctx) {
@@ -171,60 +236,64 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
         return;
       }
 
-      // 1. Background Fill & Inner Border based on selected template
-      const isGold = selectedTemplate === "temple-gold";
-      const isSaffron = selectedTemplate === "sacred-saffron";
+      // 1. Draw Selected Frame Background
+      await new Promise<void>((resolve) => {
+        const frameImg = new Image();
+        frameImg.crossOrigin = "anonymous";
+        frameImg.onload = () => {
+          ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+          resolve();
+        };
+        frameImg.onerror = () => {
+          ctx.fillStyle = "#FDFBF7";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          resolve();
+        };
+        frameImg.src = currentFrame.frameBgUrl;
+      });
 
-      // Card Background
-      ctx.fillStyle = isGold ? "#FFFDF9" : isSaffron ? "#FFFBEB" : "#FDFBF7";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // 2. Draw Translucent Inner Parchment Panel for Pristine Readability
+      const cardMargin = 45;
+      const cardX = cardMargin;
+      const cardY = cardMargin;
+      const cardW = canvas.width - (cardMargin * 2);
+      const cardH = canvas.height - (cardMargin * 2);
 
-      // Outer Decorative Double Border
-      ctx.strokeStyle = isGold ? "#D97706" : isSaffron ? "#EA580C" : "#991B1B";
-      ctx.lineWidth = 10;
-      ctx.strokeRect(30, 30, canvas.width - 60, canvas.height - 60);
+      ctx.fillStyle = "rgba(255, 253, 249, 0.94)";
+      ctx.beginPath();
+      ctx.roundRect(cardX, cardY, cardW, cardH, 32);
+      ctx.fill();
 
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = isGold ? "#F59E0B" : isSaffron ? "#F97316" : "#DC2626";
-      ctx.strokeRect(42, 42, canvas.width - 84, canvas.height - 84);
+      ctx.strokeStyle = "#D97706";
+      ctx.lineWidth = 4;
+      ctx.stroke();
 
-      // Corner Accents
-      const drawCorner = (x: number, y: number) => {
-        ctx.fillStyle = isGold ? "#B45309" : isSaffron ? "#C2410C" : "#781B1B";
-        ctx.beginPath();
-        ctx.arc(x, y, 10, 0, Math.PI * 2);
-        ctx.fill();
-      };
-      drawCorner(42, 42);
-      drawCorner(canvas.width - 42, 42);
-      drawCorner(42, canvas.height - 42);
-      drawCorner(canvas.width - 42, canvas.height - 42);
+      ctx.strokeStyle = "#F59E0B";
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(cardX + 8, cardY + 8, cardW - 16, cardH - 16);
 
-      // 2. Top Invocations
-      ctx.fillStyle = isGold ? "#8B1E1E" : isSaffron ? "#9A3412" : "#781B1B";
+      // 3. Top Invocations
+      ctx.fillStyle = "#8B1E1E";
       ctx.font = "bold 20px serif";
       ctx.textAlign = "center";
-      ctx.fillText("॥ ॐ శ్రీ మాత్రే నమః ॥ • सर्वमङ्गलमाङ्गल्ये शिवे सर्वार्थसाधिके", canvas.width / 2, 85);
+      ctx.fillText("॥ ॐ శ్రీ మాత్రే నమః ॥ • सर्वमङ्गलమాङ्गल्ये शिवे सर्वार्थसाधिके", canvas.width / 2, cardY + 45);
 
-      // 3. Sacred Diya & Platform Badge
-      ctx.font = "24px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("🪔", canvas.width / 2, 114);
+      // 4. Sacred Diya & Platform Badge
+      ctx.font = "26px sans-serif";
+      ctx.fillText("🪔", canvas.width / 2, cardY + 80);
 
       const badgeText = "NAVARATRI MANDAPAM PLATFORM";
       ctx.font = "bold 15px sans-serif";
       const badgeWidth = ctx.measureText(badgeText).width + 48;
       const badgeHeight = 34;
       const badgeX = (canvas.width - badgeWidth) / 2;
-      const badgeY = 126;
+      const badgeY = cardY + 95;
 
-      // Rounded Pill
-      ctx.fillStyle = isGold ? "#8B1E1E" : isSaffron ? "#C2410C" : "#781B1B";
+      ctx.fillStyle = "#8B1E1E";
       ctx.beginPath();
       ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 17);
       ctx.fill();
 
-      // Border for pill
       ctx.strokeStyle = "#FDE68A";
       ctx.lineWidth = 2;
       ctx.stroke();
@@ -232,95 +301,122 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
       ctx.fillStyle = "#FFFFFF";
       ctx.fillText(badgeText, canvas.width / 2, badgeY + 23);
 
-      // 4. Draw Matha Image in Ornate Circular Halo
-      await new Promise<void>((resolve) => {
-        const mathaImg = new Image();
-        mathaImg.crossOrigin = "anonymous";
-        mathaImg.onload = () => {
-          const centerX = canvas.width / 2;
-          const centerY = 245;
-          const radius = 70;
+      // 5. Draw BIG DEITY / MANDAPAM PHOTO
+      const deityW = 340;
+      const deityH = 400;
+      const deityX = (canvas.width - deityW) / 2;
+      const deityY = badgeY + badgeHeight + 25;
 
-          // Golden outer halo ring
+      await new Promise<void>((resolve) => {
+        const deityImg = new Image();
+        deityImg.crossOrigin = "anonymous";
+        deityImg.onload = () => {
           ctx.save();
           ctx.beginPath();
-          ctx.arc(centerX, centerY, radius + 8, 0, Math.PI * 2);
-          ctx.fillStyle = "#FBBF24";
-          ctx.fill();
-
-          ctx.beginPath();
-          ctx.arc(centerX, centerY, radius + 4, 0, Math.PI * 2);
-          ctx.fillStyle = isGold ? "#8B1E1E" : isSaffron ? "#C2410C" : "#781B1B";
-          ctx.fill();
-
-          // Circular clip for image
-          ctx.beginPath();
-          ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+          ctx.roundRect(deityX, deityY, deityW, deityH, 26);
           ctx.clip();
-          ctx.drawImage(mathaImg, centerX - radius, centerY - radius, radius * 2, radius * 2);
+          ctx.drawImage(deityImg, deityX, deityY, deityW, deityH);
           ctx.restore();
 
-          // Subtitle tag below image
-          ctx.fillStyle = isGold ? "#B45309" : isSaffron ? "#C2410C" : "#781B1B";
-          ctx.font = "bold 14px sans-serif";
-          ctx.textAlign = "center";
-          ctx.fillText("Maa Durga", centerX, centerY + radius + 22);
+          // Gold border for big deity portrait
+          ctx.strokeStyle = "#F59E0B";
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.roundRect(deityX, deityY, deityW, deityH, 26);
+          ctx.stroke();
+
+          // Deity name pill
+          const tagText = activeDeity.name;
+          ctx.font = "bold 15px sans-serif";
+          const tagW = ctx.measureText(tagText).width + 36;
+          const tagH = 30;
+          const tagX = (canvas.width - tagW) / 2;
+          const tagY = deityY + deityH - 15;
+
+          ctx.fillStyle = "#F59E0B";
+          ctx.beginPath();
+          ctx.roundRect(tagX, tagY, tagW, tagH, 15);
+          ctx.fill();
+
+          ctx.fillStyle = "#8B1E1E";
+          ctx.fillText(tagText, canvas.width / 2, tagY + 20);
 
           resolve();
         };
-        mathaImg.onerror = () => {
-          // If image fails, continue drawing canvas
-          resolve();
-        };
-        mathaImg.src = currentMatha.url;
+        deityImg.onerror = () => resolve();
+        deityImg.src = activeDeity.url;
       });
 
-      // 5. Youth Name / Mandapam Name
-      ctx.fillStyle = isGold ? "#8B1E1E" : isSaffron ? "#9A3412" : "#781B1B";
-      ctx.font = "bold 38px serif";
-      ctx.textAlign = "center";
-      ctx.fillText(mandapam.name, canvas.width / 2, 400);
+      // 6. Mandapam / Youth Name & Address
+      const nameY = deityY + deityH + 48;
+      ctx.fillStyle = "#8B1E1E";
+      ctx.font = "bold 34px serif";
+      ctx.fillText(mandapam.name, canvas.width / 2, nameY);
 
-      // 6. Address & Location & Verified Badge
       ctx.fillStyle = "#44403C";
-      ctx.font = "bold 20px sans-serif";
-      const locationText = `${mandapam.address ? mandapam.address + ", " : ""}${mandapam.area}, ${mandapam.city}`;
-      ctx.fillText(locationText, canvas.width / 2, 435);
+      ctx.font = "15px sans-serif";
+      const fullAddress = `${mandapam.address ? `${mandapam.address}, ` : ""}${mandapam.area}, ${mandapam.city}`;
+      ctx.fillText(fullAddress, canvas.width / 2, nameY + 28);
 
       ctx.fillStyle = "#0369A1";
-      ctx.font = "bold 16px sans-serif";
-      ctx.fillText("✓ Official Verified Mandapam", canvas.width / 2, 465);
+      ctx.font = "bold 14px sans-serif";
+      ctx.fillText("✓ Official Verified Mandapam", canvas.width / 2, nameY + 50);
 
-      // 7. QR Code Card Container
-      const qrBoxWidth = 420;
-      const qrBoxHeight = 440;
+      // 7. High-Contrast Scannable QR Code Box
+      const qrBoxWidth = 350;
+      const qrBoxHeight = 360;
       const qrBoxX = (canvas.width - qrBoxWidth) / 2;
-      const qrBoxY = 495;
+      const qrBoxY = nameY + 68;
 
       ctx.fillStyle = "#FFFFFF";
       ctx.beginPath();
-      ctx.roundRect(qrBoxX, qrBoxY, qrBoxWidth, qrBoxHeight, 32);
+      ctx.roundRect(qrBoxX, qrBoxY, qrBoxWidth, qrBoxHeight, 26);
       ctx.fill();
 
-      ctx.strokeStyle = isGold ? "#D97706" : isSaffron ? "#EA580C" : "#991B1B";
-      ctx.lineWidth = 5;
+      ctx.strokeStyle = "#D97706";
+      ctx.lineWidth = 4;
       ctx.stroke();
 
-      // Draw QR Code
-      const qrSize = 310;
+      const qrSize = 250;
       const qrX = (canvas.width - qrSize) / 2;
-      const qrY = qrBoxY + 30;
+      const qrY = qrBoxY + 24;
       ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
 
-      // Scan Call to Action
-      ctx.fillStyle = isGold ? "#8B1E1E" : isSaffron ? "#C2410C" : "#781B1B";
-      ctx.font = "bold 21px sans-serif";
-      ctx.fillText("📱 Scan for Today's Darshan & Pooja", canvas.width / 2, qrBoxY + qrSize + 64);
+      ctx.fillStyle = "#8B1E1E";
+      ctx.font = "bold 18px sans-serif";
+      ctx.fillText("📱 Scan for Today's Darshan & Pooja", canvas.width / 2, qrBoxY + qrSize + 56);
 
-      // 8. Footer Attribution
-      ctx.fillStyle = isGold ? "#8B1E1E" : isSaffron ? "#9A3412" : "#781B1B";
-      ctx.font = "bold 15px serif";
-      ctx.fillText("Sharan Navaratri 2026 • Siddhi Dynamics LLP", canvas.width / 2, canvas.height - 45);
+      // 8. Slogan & Details Box
+      const msgBoxY = qrBoxY + qrBoxHeight + 20;
+      const msgBoxWidth = 820;
+      const msgBoxHeight = 105;
+      const msgBoxX = (canvas.width - msgBoxWidth) / 2;
+
+      ctx.fillStyle = "#FEF3C7";
+      ctx.beginPath();
+      ctx.roundRect(msgBoxX, msgBoxY, msgBoxWidth, msgBoxHeight, 18);
+      ctx.fill();
+
+      ctx.strokeStyle = "#FDE68A";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = "#8B1E1E";
+      ctx.font = "bold 20px serif";
+      ctx.fillText("“One QR. Every Mandapam. Everything a devotee needs.”", canvas.width / 2, msgBoxY + 36);
+
+      ctx.fillStyle = "#57534E";
+      ctx.font = "bold 14px sans-serif";
+      ctx.fillText("Daily Alankaram • Pooja Timings • Devotee Seva • Devotee Bookings", canvas.width / 2, msgBoxY + 64);
+
+      ctx.fillStyle = "#78716C";
+      ctx.font = "12px monospace";
+      ctx.fillText(publicUrl, canvas.width / 2, msgBoxY + 88);
+
+      // 9. Sacred Footer
+      ctx.fillStyle = "#8B1E1E";
+      ctx.font = "bold 14px serif";
+      ctx.fillText("Sharan Navaratri 2026 • Siddhi Dynamics LLP", canvas.width / 2, canvas.height - 35);
 
       // Export canvas to PNG Blob
       canvas.toBlob((blob) => {
@@ -340,7 +436,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
         URL.revokeObjectURL(url);
 
         setIsDownloading(false);
-        toast.success("Standee image downloaded successfully! Ready for printing or sharing.");
+        toast.success("High-resolution Standee PNG downloaded! Ready to print for your mandapam counter.");
       }, "image/png");
     } catch (err) {
       console.error(err);
@@ -378,7 +474,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
             width: 100vw !important;
             min-height: 100vh !important;
             margin: 0 !important;
-            padding: 2.5cm 2cm !important;
+            padding: 1.5cm 1.5cm !important;
             background: white !important;
             border: 6px double #D97706 !important;
             border-radius: 0 !important;
@@ -395,18 +491,18 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
         }
       `}</style>
 
-      <div className="bg-[#FDFBF7] text-[#221A14] w-full max-w-xl rounded-3xl p-4 sm:p-6 shadow-2xl border-2 border-[#D97706] relative my-6 max-h-[92vh] overflow-y-auto">
+      <div className="bg-[#FDFBF7] text-[#221A14] w-full max-w-2xl rounded-3xl p-4 sm:p-6 shadow-2xl border-2 border-[#D97706] relative my-6 max-h-[92vh] overflow-y-auto font-sans">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="no-print absolute top-4 right-4 p-1.5 rounded-full bg-stone-200 text-stone-700 hover:bg-stone-300 transition-colors z-20 cursor-pointer"
+          className="no-print absolute top-4 right-4 p-2 rounded-full bg-stone-200 text-stone-700 hover:bg-stone-300 transition-colors z-20 cursor-pointer"
           aria-label="Close"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Modal Top Header (no-print) */}
-        <div className="no-print space-y-3 pb-3 border-b border-amber-200">
+        <div className="no-print space-y-4 pb-4 border-b border-amber-200">
           <div className="flex items-center gap-2">
             <Printer className="w-5 h-5 text-amber-600" />
             <h3 className="font-serif font-black text-lg sm:text-xl text-[#8B1E1E]">
@@ -414,76 +510,180 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
             </h3>
           </div>
           <p className="text-xs text-stone-600 leading-relaxed">
-            Download your official mandapam QR poster as high-res PNG or print directly on A4 paper for your mandapam counter.
+            Select an auspicious frame design, choose a sacred Maa Durga portrait or upload your mandapam idol photo in big size, then download or print directly.
           </p>
-        </div>
 
+          {/* 1. FRAME DESIGNS SELECTOR */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
+              <Layers className="w-4 h-4 text-amber-700" />
+              <span>1. Choose Frame Design</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {STANDEE_FRAMES.map((frame) => {
+                const isSelected = selectedFrameId === frame.id;
+                return (
+                  <button
+                    key={frame.id}
+                    type="button"
+                    onClick={() => setSelectedFrameId(frame.id)}
+                    className={`relative p-2 rounded-2xl border-2 transition-all flex flex-col items-center gap-1.5 text-center cursor-pointer ${
+                      isSelected
+                        ? "border-[#8B1E1E] bg-amber-50 shadow-md ring-2 ring-amber-400/50 scale-102"
+                        : "border-stone-200 hover:border-amber-300 bg-white hover:shadow-xs"
+                    }`}
+                  >
+                    <div className="w-full h-12 rounded-xl overflow-hidden border border-amber-300 shadow-2xs bg-stone-100">
+                      <img
+                        src={frame.frameBgUrl}
+                        alt={frame.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <span className="text-[11px] font-black text-stone-800 leading-tight">
+                      {frame.name}
+                    </span>
+                    {isSelected && (
+                      <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#8B1E1E] text-white flex items-center justify-center text-[10px] font-bold shadow">
+                        ✓
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 2. BIG DEITY / MANDAPAM PHOTO SELECTOR */}
+          <div className="space-y-2 pt-1">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
+                <Sparkles className="w-4 h-4 text-amber-700" />
+                <span>2. Select Deity or Upload Mandapam Photo (Big Size)</span>
+              </div>
+              <label className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-[11px] font-bold cursor-pointer shadow-xs active:scale-95 transition-all">
+                <Upload className="w-3.5 h-3.5" />
+                <span>Upload Idol Photo</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCustomPhotoUpload}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
+              {deityOptions.map((deity) => {
+                const isSelected = selectedDeityId === deity.id;
+                return (
+                  <button
+                    key={deity.id}
+                    type="button"
+                    onClick={() => setSelectedDeityId(deity.id)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                      isSelected
+                        ? "bg-[#8B1E1E] text-white border-[#8B1E1E] shadow-sm"
+                        : "bg-white text-stone-700 border-amber-300 hover:bg-amber-50"
+                    }`}
+                  >
+                    <img
+                      src={deity.url}
+                      alt={deity.name}
+                      className="w-5 h-5 rounded-md object-cover border border-white/50"
+                    />
+                    <span>{deity.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
 
         {/* ----------------- PRINTABLE STANDEE CARD ----------------- */}
         <div
           id="printable-standee"
           ref={printRef}
-          className={`text-center space-y-3.5 sm:space-y-4 p-5 sm:p-7 rounded-3xl mt-4 transition-all shadow-inner ${currentTemplate.cardBg} ${currentTemplate.borderClass}`}
+          className="relative text-center p-5 sm:p-7 rounded-3xl mt-4 transition-all shadow-2xl border-4 border-amber-400 overflow-hidden bg-cover bg-center"
+          style={{ backgroundImage: `url(${currentFrame.frameBgUrl})` }}
         >
-          {/* Top Sanskrit & Telugu Invocations */}
-          <div className="text-[11px] sm:text-xs font-serif font-bold text-[#8B1E1E] tracking-wide">
-            ॥ ॐ శ్రీ మాత్రే నమః ॥ • सर्वमङ्गलమాङ्गल्ये शिवे सर्वार्थसाधिके
-          </div>
+          {/* Translucent Backdrop Veil for Crisp Devotional Contrast */}
+          <div className="relative z-10 bg-white/92 backdrop-blur-[3px] p-5 sm:p-7 rounded-2xl border-2 border-amber-300/80 shadow-md space-y-4">
+            {/* Top Sanskrit & Telugu Invocations */}
+            <div className="text-[11px] sm:text-xs font-serif font-bold text-[#8B1E1E] tracking-wide">
+              ॥ ॐ శ్రీ మాత్రే నమః ॥ • सर्वमङ्गलమాङ्गल्ये शिवे सर्वार्थसाधिके
+            </div>
 
-          {/* Sacred Maa Durga Avatar Badge */}
-          <div className="flex flex-col items-center justify-center -mb-1">
-            <div className="relative group">
-              <img
-                src={currentMatha.url}
-                alt="Maa Durga"
-                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-amber-400 shadow-xl ring-4 ring-amber-500/30"
+            {/* Sacred Diya & Top Platform Arch Badge */}
+            <div className="pt-1 flex flex-col items-center gap-1">
+              <span className="text-xl sm:text-2xl leading-none select-none">🪔</span>
+              <div
+                className={`inline-flex items-center px-4 py-1.5 rounded-full ${currentFrame.badgeBg} text-white text-xs font-bold shadow-md tracking-wider border border-amber-300/40`}
+              >
+                <span>NAVARATRI MANDAPAM PLATFORM</span>
+              </div>
+            </div>
+
+            {/* BIG LORD DURGA MAA / MANDAPAM IDOL PHOTO */}
+            <div className="flex flex-col items-center justify-center my-3">
+              <div className="relative group max-w-xs sm:max-w-sm w-full mx-auto">
+                <div className="w-52 h-64 sm:w-64 sm:h-76 mx-auto rounded-3xl overflow-hidden border-4 border-amber-400 shadow-2xl ring-4 ring-amber-500/30 bg-amber-50/70 flex items-center justify-center">
+                  <img
+                    src={activeDeity.url}
+                    alt={activeDeity.name}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+                <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 text-[#8B1E1E] text-xs font-black uppercase tracking-wider shadow-md whitespace-nowrap border border-white/60">
+                  {activeDeity.name}
+                </span>
+              </div>
+            </div>
+
+            {/* Mandapam / Youth Name & Verified Status */}
+            <div className="space-y-1 pt-1">
+              <h2 className="font-serif font-black text-2xl sm:text-3xl text-[#8B1E1E] flex items-center justify-center gap-1.5 leading-snug">
+                <span>{mandapam.name}</span>
+                <InstagramVerifiedBadge className="w-5 h-5 shrink-0 drop-shadow" title="Official Verified Mandapam" />
+              </h2>
+              <p className="text-xs text-stone-700 font-semibold">
+                {mandapam.address ? `${mandapam.address}, ` : ""}
+                {mandapam.area}, {mandapam.city} • <span className="text-emerald-700 font-bold">{t.verifiedMandapam}</span>
+              </p>
+            </div>
+
+            {/* High-Contrast Scannable QR Code Container */}
+            <div className="mx-auto w-64 sm:w-72 p-5 sm:p-6 rounded-3xl bg-white border-4 border-[#D97706]/80 shadow-2xl flex flex-col items-center justify-center relative">
+              <QRCodeSVG
+                id="mandapam-qr-svg"
+                value={publicUrl}
+                size={210}
+                level="H"
+                includeMargin={false}
               />
-              <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-amber-400 text-[#8B1E1E] text-[10px] font-black uppercase tracking-wider shadow-sm whitespace-nowrap">
-                Maa Durga
-              </span>
+              <div className="mt-3.5 flex items-center gap-1.5 text-xs font-black text-[#8B1E1E]">
+                <span>📱</span>
+                <span>Scan for Today's Darshan & Pooja</span>
+              </div>
             </div>
-          </div>
 
-          {/* Sacred Diya & Top Platform Arch Badge */}
-          <div className="pt-2 flex flex-col items-center gap-1">
-            <span className="text-xl sm:text-2xl leading-none select-none">🪔</span>
-            <div
-              className={`inline-flex items-center px-4 py-1.5 rounded-full ${currentTemplate.badgeBg} text-white text-xs font-bold shadow-md tracking-wider border border-amber-300/40`}
-            >
-              <span>NAVARATRI MANDAPAM PLATFORM</span>
+            {/* Devotional Slogan & Details */}
+            <div className="p-3.5 rounded-2xl bg-amber-50/95 border border-amber-300 text-xs text-stone-700 space-y-1">
+              <p className="font-serif font-bold text-sm sm:text-base text-[#8B1E1E]">
+                “One QR. Every Mandapam. Everything a devotee needs.”
+              </p>
+              <p className="text-[11px] text-stone-600 font-medium">
+                Daily Alankaram • Pooja Timings • Devotee Seva • Devotee Bookings
+              </p>
+              <p className="text-[11px] text-stone-500 font-mono break-all pt-0.5">
+                {publicUrl}
+              </p>
             </div>
-          </div>
 
-          {/* Mandapam / Youth Name & Verified Status */}
-          <div className="space-y-1">
-            <h2 className="font-serif font-black text-2xl sm:text-3xl text-[#8B1E1E] flex items-center justify-center gap-1.5 leading-snug">
-              <span>{mandapam.name}</span>
-              <InstagramVerifiedBadge className="w-5 h-5 shrink-0 drop-shadow" title="Official Verified Mandapam" />
-            </h2>
-            <p className="text-xs text-stone-700 font-semibold">
-              {mandapam.address ? `${mandapam.address}, ` : ""}
-              {mandapam.area}, {mandapam.city} • <span className="text-emerald-700 font-bold">{t.verifiedMandapam}</span>
-            </p>
-          </div>
-
-          {/* High-Contrast Scannable QR Code Container */}
-          <div className="mx-auto w-64 sm:w-72 p-5 sm:p-6 rounded-3xl bg-white border-4 border-[#D97706]/80 shadow-2xl flex flex-col items-center justify-center relative">
-            <QRCodeSVG
-              id="mandapam-qr-svg"
-              value={publicUrl}
-              size={200}
-              level="H"
-              includeMargin={false}
-            />
-            <div className="mt-3.5 flex items-center gap-1.5 text-xs font-black text-[#8B1E1E]">
-              <span>📱</span>
-              <span>Scan for Today's Darshan & Pooja</span>
+            {/* Sacred Footer */}
+            <div className="text-[10px] text-stone-500 font-medium pt-1">
+              Sharan Navaratri 2026 • Siddhi Dynamics LLP
             </div>
-          </div>
-
-          {/* Sacred Footer */}
-          <div className="text-[10px] text-stone-500 font-medium pt-1">
-            Sharan Navaratri 2026 • Siddhi Dynamics LLP
           </div>
         </div>
 
@@ -497,34 +697,34 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
               className="py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 disabled:opacity-50 text-stone-950 font-black text-xs shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
               <Download className="w-4 h-4 text-stone-900" />
-              <span>{isDownloading ? "Generating Standee..." : "Download Standee Image (PNG)"}</span>
+              <span>{isDownloading ? "Generating Standee..." : "Download High-Res Standee PNG"}</span>
             </button>
 
-            {/* Print Mandapam A4 Counter Poster Button */}
+            {/* Print Directly on A4 */}
             <button
               onClick={handlePrint}
-              className="py-3 px-4 rounded-xl bg-[#8B1E1E] text-white text-xs font-bold hover:bg-[#9A241C] flex items-center justify-center gap-2 shadow-md transition-colors cursor-pointer"
+              className="py-3 px-4 rounded-xl bg-white hover:bg-amber-50 text-stone-900 border-2 border-amber-400 font-black text-xs shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
-              <Printer className="w-4 h-4 text-amber-200" />
+              <Printer className="w-4 h-4 text-amber-700" />
               <span>Print Mandapam A4 Counter Poster</span>
             </button>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="flex items-center gap-2 pt-1">
             <button
               onClick={handleCopyLink}
-              className="py-2.5 px-3 rounded-xl border border-amber-300 bg-amber-50 text-amber-900 text-xs font-bold hover:bg-amber-100 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              className="flex-1 py-2.5 px-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-              <span>{copied ? "Copied!" : "Copy Link"}</span>
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{copied ? "Link Copied!" : "Copy Page Link"}</span>
             </button>
 
             <button
               onClick={handleShare}
-              className="py-2.5 px-3 rounded-xl border border-stone-300 bg-white text-stone-800 text-xs font-bold hover:bg-stone-50 flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+              className="flex-1 py-2.5 px-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <Share2 className="w-4 h-4 text-stone-700" />
-              <span>Share QR</span>
+              <Share2 className="w-3.5 h-3.5 text-amber-700" />
+              <span>Share Poster Link</span>
             </button>
           </div>
         </div>
