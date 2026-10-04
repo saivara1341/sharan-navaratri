@@ -15,7 +15,7 @@ import {
   QrCode,
   KeyRound
 } from "lucide-react";
-import { INVOCATION_TRANSLATIONS, FOOTER_SLOKA_TRANSLATIONS } from "../../utils/navaratriTranslations";
+import { INVOCATION_TRANSLATIONS } from "../../utils/navaratriTranslations";
 
 export const NavaratriHeader: React.FC = () => {
   const { language, setLanguage, t } = useNavaratriLanguage();
@@ -55,11 +55,8 @@ export const NavaratriHeader: React.FC = () => {
           </span>
         </div>
 
-        {/* Right Corner (Same Line): Sarva Mangala Mangalye Shive Sarvartha Sadhike + Language Switcher */}
+        {/* Right Corner: Language Switcher */}
         <div className="flex items-center gap-3 sm:gap-4 ml-auto">
-          <span className="hidden md:inline-block font-serif tracking-wide text-amber-200 font-semibold text-xs sm:text-sm drop-shadow whitespace-nowrap">
-            {language === "en" ? "Sarva Mangala Mangalye Shive Sarvartha Sadhike" : (FOOTER_SLOKA_TRANSLATIONS[language]?.split(" • ")[1] || "Sarva Mangala Mangalye Shive Sarvartha Sadhike")}
-          </span>
 
           {/* Multilingual Switcher */}
           <div className="flex items-center gap-1 rounded-full bg-black/30 px-2 py-0.5 border border-amber-400/40 text-[11px] font-bold shrink-0">
