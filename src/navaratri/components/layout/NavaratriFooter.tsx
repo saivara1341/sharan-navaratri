@@ -16,35 +16,29 @@ export const NavaratriFooter: React.FC = () => {
     : ["॥ Om Sri Matre Namaha ॥", fullSloka];
 
   return (
-    <footer className="w-full bg-gradient-to-b from-[#2D0B0B] via-[#200606] to-[#120303] text-amber-50 border-t border-amber-500/20 pt-8 pb-24 sm:pb-8 px-4 sm:px-6 relative overflow-hidden">
+    <footer className="w-full bg-gradient-to-b from-[#2D0B0B] via-[#200606] to-[#120303] text-amber-50 border-t border-amber-500/20 pt-6 pb-24 sm:pb-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Subtle divine background glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-28 bg-amber-500/10 blur-3xl pointer-events-none" />
 
-
+      {/* Desktop view: Extreme Left End and Extreme Right End without any border */}
+      <div className="hidden md:flex items-center justify-between w-full px-2 sm:px-4 lg:px-6 pb-4 relative z-10 text-xs sm:text-sm font-serif">
+        <span className="font-bold text-amber-300 tracking-wider">
+          {slokaPart1}
+        </span>
+        <span className="font-semibold text-amber-300/90 tracking-wide">
+          {slokaPart2}
+        </span>
+      </div>
 
       <div className="max-w-4xl mx-auto text-center space-y-6 relative z-10">
-
-        {/* Sacred Sloka */}
-        <div className="pt-1">
-          {/* Mobile view: 2 lines */}
-          <div className="md:hidden space-y-1">
-            <p className="text-xs font-bold text-amber-300 tracking-widest uppercase font-serif">
-              {slokaPart1}
-            </p>
-            <p className="text-xs font-semibold text-amber-300/85 tracking-wider font-serif">
-              {slokaPart2}
-            </p>
-          </div>
-
-          {/* Desktop view: Left Corner and Right Corner in same line */}
-          <div className="hidden md:flex items-center justify-between px-6 py-2.5 rounded-2xl bg-amber-950/40 border border-amber-500/20 text-xs sm:text-sm font-serif">
-            <span className="font-bold text-amber-300 tracking-wider">
-              {slokaPart1}
-            </span>
-            <span className="font-semibold text-amber-300/90 tracking-wide">
-              {slokaPart2}
-            </span>
-          </div>
+        {/* Mobile view: 2 lines */}
+        <div className="md:hidden space-y-1 pt-1">
+          <p className="text-xs font-bold text-amber-300 tracking-widest uppercase font-serif">
+            {slokaPart1}
+          </p>
+          <p className="text-xs font-semibold text-amber-300/85 tracking-wider font-serif">
+            {slokaPart2}
+          </p>
         </div>
 
         {/* Festival Branding in 2 Lines */}

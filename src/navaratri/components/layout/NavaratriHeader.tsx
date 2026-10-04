@@ -47,7 +47,7 @@ export const NavaratriHeader: React.FC = () => {
   return (
     <header className="sticky top-0 z-50 bg-[#FDFBF7]/95 backdrop-blur-md border-b-2 border-[#D97706]/30 shadow-md">
       {/* Top Sacred Saffron & Maroon Invocation Ribbon */}
-      <div className="bg-gradient-to-r from-[#8B1E1E] via-[#9A241C] to-[#8B1E1E] text-white text-xs px-4 sm:px-6 py-1.5 flex items-center justify-between shadow-inner">
+      <div className="bg-gradient-to-r from-[#8B1E1E] via-[#9A241C] to-[#8B1E1E] text-white text-xs px-2 sm:px-4 lg:px-6 py-1.5 flex items-center justify-between shadow-inner">
         {/* Left Corner: ॥ Om Sri Matre Namaha ॥ */}
         <div className="flex items-center gap-2 min-w-0">
           <span className="font-serif tracking-wider text-amber-200 font-bold text-xs sm:text-sm drop-shadow whitespace-nowrap">
