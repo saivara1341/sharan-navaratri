@@ -21,6 +21,87 @@ interface NineDayScheduleProps {
   mandapamDaySettings?: MandapamDaySetting[];
 }
 
+const DAY_CARD_THEMES: Record<
+  number,
+  {
+    bg: string;
+    border: string;
+    hoverBorder: string;
+    shadow: string;
+  }
+> = {
+  1: {
+    // Day 1: Bright Yellow (Sri Bala Tripura Sundari)
+    bg: "bg-gradient-to-b from-[#FEFCE8] via-[#FFFDF5] to-[#FEF9C3]/80",
+    border: "border-amber-300",
+    hoverBorder: "hover:border-amber-500",
+    shadow: "hover:shadow-amber-200/50",
+  },
+  2: {
+    // Day 2: Auspicious Orange (Sri Gayatri Devi)
+    bg: "bg-gradient-to-b from-[#FFF7ED] via-[#FFFAF0] to-[#FFEDD5]/80",
+    border: "border-orange-300",
+    hoverBorder: "hover:border-orange-500",
+    shadow: "hover:shadow-orange-200/50",
+  },
+  3: {
+    // Day 3: Golden Saffron (Sri Annapurna Devi)
+    bg: "bg-gradient-to-b from-[#FFFBEB] via-[#FFFDF5] to-[#FEF3C7]/80",
+    border: "border-amber-400",
+    hoverBorder: "hover:border-amber-600",
+    shadow: "hover:shadow-amber-300/50",
+  },
+  4: {
+    // Day 4: Fiery Crimson Red (Sri Maha Chandi Devi)
+    bg: "bg-gradient-to-b from-[#FFF1F2] via-[#FFF8F8] to-[#FFE4E6]/80",
+    border: "border-rose-300",
+    hoverBorder: "hover:border-rose-500",
+    shadow: "hover:shadow-rose-200/50",
+  },
+  5: {
+    // Day 5: Royal Gold (Sri Lalitha Tripura Sundari Devi)
+    bg: "bg-gradient-to-b from-[#FEFCE8] via-[#FFFBEB] to-[#FEF08A]/70",
+    border: "border-yellow-400",
+    hoverBorder: "hover:border-yellow-600",
+    shadow: "hover:shadow-yellow-300/50",
+  },
+  6: {
+    // Day 6: Pure White & Vedic Green (Sri Saraswati Devi)
+    bg: "bg-gradient-to-b from-[#F0FDF4] via-[#F8FDF9] to-[#DCFCE7]/80",
+    border: "border-emerald-300",
+    hoverBorder: "hover:border-emerald-500",
+    shadow: "hover:shadow-emerald-200/50",
+  },
+  7: {
+    // Day 7: Sacred Ash / Grey (Sri Maha Lakshmi Devi)
+    bg: "bg-gradient-to-b from-[#F8FAFC] via-[#FFFFFF] to-[#E2E8F0]/80",
+    border: "border-slate-300",
+    hoverBorder: "hover:border-slate-500",
+    shadow: "hover:shadow-slate-300/50",
+  },
+  8: {
+    // Day 8: Royal Purple & Red (Sri Durga Devi)
+    bg: "bg-gradient-to-b from-[#FAF5FF] via-[#FCF8FE] to-[#F3E8FF]/80",
+    border: "border-purple-300",
+    hoverBorder: "hover:border-purple-500",
+    shadow: "hover:shadow-purple-200/50",
+  },
+  9: {
+    // Day 9: Peacock Green (Sri Mahishasura Mardhini Devi)
+    bg: "bg-gradient-to-b from-[#F0FDFA] via-[#F6FCFA] to-[#CCFBF1]/80",
+    border: "border-teal-300",
+    hoverBorder: "hover:border-teal-500",
+    shadow: "hover:shadow-teal-200/50",
+  },
+  10: {
+    // Day 10: Royal Saffron (Sri Raja Rajeshwari Devi)
+    bg: "bg-gradient-to-b from-[#FFF7ED] via-[#FFFDF7] to-[#FED7AA]/80",
+    border: "border-orange-400",
+    hoverBorder: "hover:border-orange-600",
+    shadow: "hover:shadow-orange-300/50",
+  },
+};
+
 export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
   mandapam,
   mandapamDaySettings = [],
@@ -30,9 +111,12 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
   const todayIso = new Date().toLocaleDateString("en-CA");
 
   return (
-    <div className="space-y-6">
+    <section className="relative rounded-3xl overflow-hidden border-2 border-amber-300/90 shadow-xl bg-gradient-to-b from-[#FFFDF7] via-[#FFF9EE] to-[#FFF3DE] p-4 sm:p-6 md:p-8 space-y-6">
+      {/* Sacred Temple Filigree Top Bar Accent */}
+      <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-amber-400 via-[#8B1E1E] to-amber-400 pointer-events-none" />
+
       {/* ── Header ── */}
-      <div className="border-b-2 sm:border-b-4 border-amber-300 pb-4">
+      <div className="border-b-2 sm:border-b-4 border-amber-300/80 pb-4">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <h2 className="font-serif font-black text-2xl md:text-3xl text-[#8B1E1E] leading-tight flex items-baseline gap-2 flex-wrap">
             <span>{mandapam ? `${mandapam.name} • 10 Sacred Alankaranas` : "Sharad Navaratri"}</span>
@@ -40,11 +124,11 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
               2026
             </span>
           </h2>
-          <span className="text-xs font-sans font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 shrink-0">
+          <span className="text-xs font-sans font-bold px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white font-black shadow-xs shrink-0 tracking-wide">
             10 Divine Days
           </span>
         </div>
-        <p className="text-xs sm:text-sm text-stone-600 mt-1.5 leading-relaxed">
+        <p className="text-xs sm:text-sm text-stone-700 mt-1.5 leading-relaxed font-medium">
           {mandapam
             ? `Official daily Maa Alankaranas, Pooja timings, Naivedhyam (Bhog), and Annadanam schedule organized at ${mandapam.name}.`
             : language === "te"
@@ -54,7 +138,7 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
       </div>
 
       {/* ── Card Grid ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 pb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 pb-2">
         {STANDARD_NAVARATRI_DAYS.map((day, index) => {
           const isToday = day.date === todayIso;
           const customSetting = mandapamDaySettings.find(
@@ -89,6 +173,13 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
           const lightDays = [2, 6]; // orange and green - use dark text
           const badgeTextColor = lightDays.includes(day.dayNumber) ? "#1C1917" : "#FFFFFF";
 
+          const cardTheme = DAY_CARD_THEMES[day.dayNumber] || {
+            bg: "bg-gradient-to-b from-[#FFFDF9] via-white to-[#FFF9F0]",
+            border: "border-amber-200",
+            hoverBorder: "hover:border-amber-400",
+            shadow: "hover:shadow-amber-200/50",
+          };
+
           return (
             <div
               key={day.dayNumber}
@@ -97,9 +188,10 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                 "group rounded-3xl overflow-hidden cursor-pointer text-left relative",
                 "transition-all duration-300",
                 "border-2",
+                cardTheme.bg,
                 isToday
-                  ? "bg-gradient-to-b from-[#FFFBEB] via-[#FFFDF9] to-[#FEF3C7] border-amber-400 ring-2 ring-amber-400/50 shadow-2xl shadow-amber-300/30"
-                  : "bg-gradient-to-b from-[#FFFDF9] via-white to-[#FFF9F0] border-amber-200 hover:border-amber-400 shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-xl sm:hover:-translate-y-1.5",
+                  ? "border-amber-500 ring-2 ring-amber-400/70 shadow-2xl shadow-amber-300/30"
+                  : `${cardTheme.border} ${cardTheme.hoverBorder} shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-xl sm:hover:-translate-y-1.5`,
               ].join(" ")}
             >
               {/* ── IMAGE FRAME — object-contain, full deity visible ── */}
@@ -637,7 +729,7 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 };
 
