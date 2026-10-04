@@ -24,6 +24,7 @@ import { NineDaySchedule } from "../components/citizen/NineDaySchedule";
 import { NavaratriAdsSpace } from "../components/ads/NavaratriAdsSpace";
 import { AuspiciousRibbonBorder } from "../components/devotional/AuspiciousRibbonBorder";
 import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifiedBadge";
+import { NavaratriFlankingAdBox } from "../components/ads/NavaratriFlankingAdBox";
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
 
@@ -296,78 +297,95 @@ export const NavaratriHome: React.FC = () => {
         />
       </section>
 
-      {/* QUICK ACTIONS: 2 DESIGNS (SCAN QR AND REGISTER MANDAPAM) UNDER CONTAINER */}
-      <section className="flex flex-row flex-nowrap items-center justify-center gap-1.5 min-[360px]:gap-2.5 sm:gap-8 pt-1 pb-1 w-full max-w-2xl mx-auto px-2">
-        <button
-          type="button"
-          onClick={handleOpenScanner}
-          className="group relative w-36 min-[360px]:w-[152px] min-[400px]:w-44 sm:w-52 h-36 min-[360px]:h-[152px] min-[400px]:h-44 sm:h-52 p-2 sm:p-4 flex flex-col items-center justify-center text-[#1E3A8A] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E3A8A] focus-visible:ring-offset-2 cursor-pointer shrink"
-        >
-          <img
-            src={navaratriAsset("/navaratri/assets/blue-scalloped-cta-frame.png")}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-contain drop-shadow-md transition-all group-hover:drop-shadow-xl pointer-events-none"
-          />
-          <div className="relative z-10 flex flex-col items-center justify-center text-center px-1.5 max-w-[108px] min-[360px]:max-w-[120px] sm:max-w-none space-y-0.5 sm:space-y-1">
-            <div className="w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-10 sm:h-10 rounded-full bg-blue-100/90 border border-blue-300 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-              <QrCode className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 text-[#1E3A8A]" />
-            </div>
-            <span className="font-serif text-[10px] min-[360px]:text-[11px] sm:text-sm font-black leading-tight text-[#1E3A8A] tracking-tight">
-              Scan Mandapam<br />QR (Camera)
-            </span>
+      {/* QUICK ACTIONS ROW: FLANKED BY AD SPACE BOXES IN DESKTOP VIEW */}
+      <section className="w-full max-w-7xl mx-auto px-2 sm:px-4 pt-1 pb-1">
+        <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-3 lg:gap-4 xl:gap-6">
+          {/* Left Ad Space Box (Before this design - Desktop View Only) */}
+          <div className="hidden lg:flex w-52 xl:w-60 2xl:w-64 shrink-0 self-stretch min-h-[250px] max-h-[300px]">
+            <NavaratriFlankingAdBox position="left" />
           </div>
-        </button>
 
-        {/* Sacred Swastika Divider between Scan QR and Register Mandapam */}
-        <div className="flex items-center justify-center gap-0.5 min-[360px]:gap-1 sm:gap-2.5 px-0.5 sm:px-1 select-none pointer-events-none self-center shrink-0" aria-hidden="true">
-          <span className="w-1.5 min-[360px]:w-2.5 sm:w-6 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-amber-500 rounded-full" />
-          <div className="relative w-6 h-6 min-[360px]:w-7 min-[360px]:h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-[#FFFBEB] via-[#FEF3C7] to-[#FDE68A] border-2 border-amber-400/90 shadow-md flex items-center justify-center">
-            <span className="text-xs min-[360px]:text-sm sm:text-base font-black text-[#8B1E1E] leading-none drop-shadow-[0_1px_2px_rgba(245,158,11,0.5)]">
-              卐
-            </span>
+          {/* Center Design: Scan QR + Swastika + Register Durga Mandapam + Mandapam Login */}
+          <div className="flex-1 flex flex-col items-center justify-center max-w-2xl w-full">
+            <div className="flex flex-row flex-nowrap items-center justify-center gap-1.5 min-[360px]:gap-2.5 sm:gap-8 pt-1 pb-1 w-full px-2">
+              <button
+                type="button"
+                onClick={handleOpenScanner}
+                className="group relative w-36 min-[360px]:w-[152px] min-[400px]:w-44 sm:w-52 h-36 min-[360px]:h-[152px] min-[400px]:h-44 sm:h-52 p-2 sm:p-4 flex flex-col items-center justify-center text-[#1E3A8A] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E3A8A] focus-visible:ring-offset-2 cursor-pointer shrink"
+              >
+                <img
+                  src={navaratriAsset("/navaratri/assets/blue-scalloped-cta-frame.png")}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 h-full w-full object-contain drop-shadow-md transition-all group-hover:drop-shadow-xl pointer-events-none"
+                />
+                <div className="relative z-10 flex flex-col items-center justify-center text-center px-1.5 max-w-[108px] min-[360px]:max-w-[120px] sm:max-w-none space-y-0.5 sm:space-y-1">
+                  <div className="w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-10 sm:h-10 rounded-full bg-blue-100/90 border border-blue-300 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                    <QrCode className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 text-[#1E3A8A]" />
+                  </div>
+                  <span className="font-serif text-[10px] min-[360px]:text-[11px] sm:text-sm font-black leading-tight text-[#1E3A8A] tracking-tight">
+                    Scan Mandapam<br />QR (Camera)
+                  </span>
+                </div>
+              </button>
+
+              {/* Sacred Swastika Divider between Scan QR and Register Mandapam */}
+              <div className="flex items-center justify-center gap-0.5 min-[360px]:gap-1 sm:gap-2.5 px-0.5 sm:px-1 select-none pointer-events-none self-center shrink-0" aria-hidden="true">
+                <span className="w-1.5 min-[360px]:w-2.5 sm:w-6 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-amber-500 rounded-full" />
+                <div className="relative w-6 h-6 min-[360px]:w-7 min-[360px]:h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-[#FFFBEB] via-[#FEF3C7] to-[#FDE68A] border-2 border-amber-400/90 shadow-md flex items-center justify-center">
+                  <span className="text-xs min-[360px]:text-sm sm:text-base font-black text-[#8B1E1E] leading-none drop-shadow-[0_1px_2px_rgba(245,158,11,0.5)]">
+                    卐
+                  </span>
+                </div>
+                <span className="w-1.5 min-[360px]:w-2.5 sm:w-6 h-0.5 bg-gradient-to-l from-transparent via-amber-400 to-amber-500 rounded-full" />
+              </div>
+
+              <Link
+                to="/navaratri/register"
+                className="group relative w-36 min-[360px]:w-[152px] min-[400px]:w-44 sm:w-52 h-36 min-[360px]:h-[152px] min-[400px]:h-44 sm:h-52 p-2 sm:p-4 flex flex-col items-center justify-center text-[#8B1E1E] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B1E1E] focus-visible:ring-offset-2 shrink"
+              >
+                <img
+                  src={navaratriAsset("/navaratri/assets/ivory-scalloped-cta-frame.png")}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 h-full w-full object-contain drop-shadow-md transition-all group-hover:drop-shadow-xl pointer-events-none"
+                />
+                <div className="relative z-10 flex flex-col items-center justify-center text-center px-1.5 max-w-[108px] min-[360px]:max-w-[120px] sm:max-w-none space-y-0.5 sm:space-y-1">
+                  <div className="w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-10 sm:h-10 rounded-full bg-amber-100/90 border border-amber-300 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                    <Building className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 text-[#8B1E1E]" />
+                  </div>
+                  <span className="font-serif text-[10px] min-[360px]:text-[11px] sm:text-sm font-black leading-tight text-[#8B1E1E] tracking-tight">
+                    Register Your<br />Durga Mandapam
+                  </span>
+                </div>
+              </Link>
+            </div>
+
+            {/* Organizer Quick Access: Login for Registered Mandapams vs Register New */}
+            <div className="w-full flex items-center justify-center px-4 -mt-1 mb-2">
+              <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 px-3.5 py-1.5 rounded-2xl bg-gradient-to-r from-amber-50 via-white to-orange-50 border border-amber-300 shadow-xs text-xs text-stone-700">
+                <span className="font-semibold text-stone-800 flex items-center gap-1.5">
+                  <span>🚩</span>
+                  <span>Already registered your Durga Mandapam?</span>
+                </span>
+                <Link
+                  to="/navaratri/login"
+                  className="font-bold text-[#8B1E1E] hover:text-[#781B1B] inline-flex items-center gap-1 bg-amber-100/80 hover:bg-amber-200/90 px-2.5 py-1 rounded-xl transition-all border border-amber-300/80 shadow-2xs hover:shadow-xs active:scale-95"
+                >
+                  <KeyRound className="w-3.5 h-3.5 text-[#8B1E1E]" />
+                  <span>Login as Mandapam</span>
+                  <ArrowRight className="w-3 h-3 text-[#8B1E1E]" />
+                </Link>
+              </div>
+            </div>
           </div>
-          <span className="w-1.5 min-[360px]:w-2.5 sm:w-6 h-0.5 bg-gradient-to-l from-transparent via-amber-400 to-amber-500 rounded-full" />
+
+          {/* Right Ad Space Box (After this design - Desktop View Only) */}
+          <div className="hidden lg:flex w-52 xl:w-60 2xl:w-64 shrink-0 self-stretch min-h-[250px] max-h-[300px]">
+            <NavaratriFlankingAdBox position="right" />
+          </div>
         </div>
-
-        <Link
-          to="/navaratri/register"
-          className="group relative w-36 min-[360px]:w-[152px] min-[400px]:w-44 sm:w-52 h-36 min-[360px]:h-[152px] min-[400px]:h-44 sm:h-52 p-2 sm:p-4 flex flex-col items-center justify-center text-[#8B1E1E] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B1E1E] focus-visible:ring-offset-2 shrink"
-        >
-          <img
-            src={navaratriAsset("/navaratri/assets/ivory-scalloped-cta-frame.png")}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-contain drop-shadow-md transition-all group-hover:drop-shadow-xl pointer-events-none"
-          />
-          <div className="relative z-10 flex flex-col items-center justify-center text-center px-1.5 max-w-[108px] min-[360px]:max-w-[120px] sm:max-w-none space-y-0.5 sm:space-y-1">
-            <div className="w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-10 sm:h-10 rounded-full bg-amber-100/90 border border-amber-300 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-              <Building className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 text-[#8B1E1E]" />
-            </div>
-            <span className="font-serif text-[10px] min-[360px]:text-[11px] sm:text-sm font-black leading-tight text-[#8B1E1E] tracking-tight">
-              Register Your<br />Durga Mandapam
-            </span>
-          </div>
-        </Link>
       </section>
-
-      {/* Organizer Quick Access: Login for Registered Mandapams vs Register New */}
-      <div className="w-full flex items-center justify-center px-4 -mt-1 mb-2">
-        <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 px-3.5 py-1.5 rounded-2xl bg-gradient-to-r from-amber-50 via-white to-orange-50 border border-amber-300 shadow-xs text-xs text-stone-700">
-          <span className="font-semibold text-stone-800 flex items-center gap-1.5">
-            <span>🚩</span>
-            <span>Already registered your Durga Mandapam?</span>
-          </span>
-          <Link
-            to="/navaratri/login"
-            className="font-bold text-[#8B1E1E] hover:text-[#781B1B] inline-flex items-center gap-1 bg-amber-100/80 hover:bg-amber-200/90 px-2.5 py-1 rounded-xl transition-all border border-amber-300/80 shadow-2xs hover:shadow-xs active:scale-95"
-          >
-            <KeyRound className="w-3.5 h-3.5 text-[#8B1E1E]" />
-            <span>Login as Mandapam</span>
-            <ArrowRight className="w-3 h-3 text-[#8B1E1E]" />
-          </Link>
-        </div>
-      </div>
 
       {/* Sacred Emerald Vine Ribbon Divider below 2 CTA Designs */}
       <AuspiciousRibbonBorder
