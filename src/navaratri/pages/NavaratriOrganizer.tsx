@@ -978,31 +978,43 @@ export const NavaratriOrganizer: React.FC = () => {
             <div className="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-2.5">
               {STANDARD_NAVARATRI_DAYS.map((day) => {
                 const setting = daySettings.find((s) => s.mandapamId === currentMandapam.id && s.dayNumber === day.dayNumber);
-                const isCustomized = Boolean(setting);
+                const mathaImage = setting?.coverImageUrl || setting?.alankaranaPhotoUrl || day.imageUrl;
 
                 return (
                   <button
                     key={day.dayNumber}
                     type="button"
                     onClick={() => handleOpenDrawerForDay(day.dayNumber)}
-                    className="relative p-3 rounded-2xl bg-stone-50 hover:bg-amber-50 border-2 border-amber-200 hover:border-[#8B1E1E] shadow-2xs hover:shadow-md transition-all flex flex-col items-center justify-center text-center group cursor-pointer active:scale-95"
-                    title={`Day ${day.dayNumber} • ${day.date} (Click to Edit)`}
+                    className="relative p-2.5 sm:p-3 rounded-2xl bg-white hover:bg-amber-50/80 border-2 border-amber-200 hover:border-[#8B1E1E] shadow-2xs hover:shadow-md transition-all flex flex-col items-center justify-center text-center group cursor-pointer active:scale-95"
+                    title={`Day ${day.dayNumber} • ${day.deviName} (${day.date})`}
                   >
-                    <div
-                      className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs text-white shadow-xs mb-1.5 transition-transform group-hover:scale-110"
-                      style={{ backgroundColor: day.colorHex || "#8B1E1E" }}
-                    >
-                      D{day.dayNumber}
+                    {/* Matha Image Icon with Day Badge */}
+                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden border-2 border-amber-300 shadow-sm group-hover:scale-105 transition-transform bg-[#FDFBF7] shrink-0">
+                      <img
+                        src={navaratriAsset(mathaImage)}
+                        alt={day.deviName}
+                        className="w-full h-full object-cover object-top"
+                        onError={(e) => {
+                          if (e.currentTarget.src !== navaratriAsset(day.imageUrl)) {
+                            e.currentTarget.src = navaratriAsset(day.imageUrl);
+                          }
+                        }}
+                      />
+                      {/* Day Number Badge */}
+                      <span className="absolute bottom-0 right-0 bg-[#8B1E1E]/95 text-white text-[8px] sm:text-[9px] font-black px-1.5 py-0.5 rounded-tl-lg shadow-xs leading-none">
+                        D{day.dayNumber}
+                      </span>
                     </div>
-                    <span className="font-serif font-black text-xs text-stone-900 group-hover:text-[#8B1E1E]">
+
+                    <span className="font-serif font-black text-xs text-stone-900 group-hover:text-[#8B1E1E] mt-1.5">
                       Day {day.dayNumber}
                     </span>
-                    <span className="text-[10px] text-stone-500 font-medium">
+                    <span className="text-[10px] text-stone-500 font-semibold">
                       {day.date.slice(5)}
                     </span>
-                    {isCustomized && (
-                      <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white" title="Customized" />
-                    )}
+                    <span className="text-[9px] text-[#8B1E1E] font-medium truncate w-full px-0.5">
+                      {day.deviName.replace(/^Sri\s+/, "").replace(/\s+Devi$/, "")}
+                    </span>
                   </button>
                 );
               })}
