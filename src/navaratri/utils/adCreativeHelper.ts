@@ -288,7 +288,9 @@ export function generateTextBulletinCanvas(data: {
   bulletPoints?: string[];
   phone: string;
   city: string;
+  targetZone?: string;
   ctaText?: string;
+  theme?: "maroon" | "crimson" | "gold" | "royal";
 }): string {
   const canvas = document.createElement("canvas");
   canvas.width = 1200;
@@ -296,25 +298,33 @@ export function generateTextBulletinCanvas(data: {
   const ctx = canvas.getContext("2d");
   if (!ctx) return "";
 
+  const themeColors = {
+    maroon: { bg1: "#450A0A", bg2: "#781B1B", bg3: "#B45309", border: "#FCD34D", badgeBg: "#F59E0B", badgeText: "#781B1B" },
+    crimson: { bg1: "#7A1515", bg2: "#9A241C", bg3: "#B45309", border: "#FCD34D", badgeBg: "#F59E0B", badgeText: "#781B1B" },
+    gold: { bg1: "#582806", bg2: "#853708", bg3: "#B45309", border: "#FEF08A", badgeBg: "#FBBF24", badgeText: "#451A03" },
+    royal: { bg1: "#1E1B4B", bg2: "#312E81", bg3: "#4338CA", border: "#FCD34D", badgeBg: "#FCD34D", badgeText: "#1E1B4B" }
+  };
+  const currentTheme = themeColors[data.theme || "crimson"];
+
   // 1. Festive gradient
   const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
-  grad.addColorStop(0, "#7A1515");
-  grad.addColorStop(0.6, "#9A241C");
-  grad.addColorStop(1, "#B45309");
+  grad.addColorStop(0, currentTheme.bg1);
+  grad.addColorStop(0.5, currentTheme.bg2);
+  grad.addColorStop(1, currentTheme.bg3);
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // 2. Gold border frame
-  ctx.strokeStyle = "#FCD34D";
+  ctx.strokeStyle = currentTheme.border;
   ctx.lineWidth = 6;
   ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
 
   // 3. Discount / Announcement Badge
   const tag = (data.discountTag || "FESTIVE SPECIAL OFFER").toUpperCase();
-  ctx.fillStyle = "#F59E0B";
+  ctx.fillStyle = currentTheme.badgeBg;
   ctx.roundRect ? ctx.roundRect(60, 50, 360, 44, 22) : ctx.fillRect(60, 50, 360, 44);
   ctx.fill();
-  ctx.fillStyle = "#781B1B";
+  ctx.fillStyle = currentTheme.badgeText;
   ctx.font = "bold 20px sans-serif";
   ctx.textAlign = "center";
   ctx.fillText(`★ ${tag} ★`, 240, 80);
@@ -361,12 +371,12 @@ export function generateTextBulletinCanvas(data: {
   });
 
   // 6. Action Button Bar at bottom
-  ctx.fillStyle = "rgba(0,0,0,0.4)";
+  ctx.fillStyle = "rgba(0,0,0,0.45)";
   ctx.fillRect(40, canvas.height - 130, canvas.width - 80, 90);
 
   ctx.fillStyle = "#FBBF24";
-  ctx.font = "bold 24px sans-serif";
-  ctx.fillText(`📍 Available Across ${data.city}`, 60, canvas.height - 75);
+  ctx.font = "bold 22px sans-serif";
+  ctx.fillText(`📍 ${data.targetZone || "Local Zone"}, ${data.city} • 📞 ${data.phone}`, 60, canvas.height - 75);
 
   // CTA button
   const cta = (data.ctaText || "Order Now / Call").toUpperCase();
