@@ -2234,83 +2234,65 @@ export const NavaratriOrganizer: React.FC = () => {
                     💡 <strong>Visitor Visibility:</strong> Devotees who scan your standee QR code will see this official emblem / logo proudly on your mandapam hero banner and devotee pass slip!
                   </div>
 
-                  {/* Logo Preview */}
-                  <div className="flex items-center gap-4 p-3.5 rounded-2xl bg-stone-50 border border-amber-200">
-                    <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-amber-400 bg-white shadow-md flex items-center justify-center p-1 shrink-0">
-                      {logoPreview || logoInputUrl ? (
-                        <img
-                          src={logoPreview || logoInputUrl}
-                          alt="Mandapam Logo Preview"
-                          className="w-full h-full object-contain rounded-xl"
-                          onError={() => toast.error("Could not load logo preview.")}
-                        />
-                      ) : (
-                        <div className="text-center p-2 text-[10px] text-stone-600 font-bold">
-                          No Logo Set
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="space-y-1 flex-1">
-                      <div className="font-serif font-black text-sm text-[#8B1E1E]">
-                        {currentMandapam.name}
+                  {/* Logo Preview & Quick Upload Beside It */}
+                  <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-stone-50 border border-amber-200">
+                    <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-amber-400 bg-white shadow-md flex items-center justify-center p-1 shrink-0">
+                        {logoPreview || logoInputUrl ? (
+                          <img
+                            src={logoPreview || logoInputUrl}
+                            alt="Mandapam Logo Preview"
+                            className="w-full h-full object-contain rounded-xl"
+                            onError={() => toast.error("Could not load logo preview.")}
+                          />
+                        ) : (
+                          <div className="text-center p-1 text-[10px] text-stone-600 font-bold leading-tight">
+                            No Logo Set
+                          </div>
+                        )}
                       </div>
-                      <p className="text-[11px] text-stone-500">
-                        {logoPreview || logoInputUrl ? "Custom committee emblem active" : "Using default auspicious kolam icon"}
-                      </p>
-                      {(logoPreview || logoInputUrl) && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setLogoPreview("");
-                            setLogoInputUrl("");
-                          }}
-                          className="text-[11px] font-bold text-red-600 hover:text-red-700 underline cursor-pointer"
-                        >
-                          Remove Logo
-                        </button>
-                      )}
+
+                      <div className="space-y-1 min-w-0">
+                        <div className="font-serif font-black text-sm text-[#8B1E1E] truncate">
+                          {currentMandapam.name}
+                        </div>
+                        <p className="text-[11px] text-stone-500 leading-snug">
+                          {logoPreview || logoInputUrl ? "Custom committee emblem active" : "Using default auspicious kolam icon"}
+                        </p>
+                        {(logoPreview || logoInputUrl) && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setLogoPreview("");
+                              setLogoInputUrl("");
+                            }}
+                            className="text-[11px] font-bold text-red-600 hover:text-red-700 underline cursor-pointer"
+                          >
+                            Remove Logo
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Upload Logo Option 1: File from Phone / Device */}
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-bold text-stone-800">
-                      Upload Logo from Device
-                    </label>
-                    <label className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-amber-300 hover:border-amber-500 rounded-2xl bg-amber-50/50 hover:bg-amber-50 cursor-pointer transition-colors group">
-                      <Upload className="w-6 h-6 text-[#8B1E1E] group-hover:scale-110 transition-transform mb-1" />
-                      <span className="text-xs font-bold text-stone-800">
-                        {isUploadingLogo ? "Optimizing logo..." : "Tap to Select Committee Logo"}
-                      </span>
-                      <span className="text-[10px] text-stone-600 font-medium">
-                        Supports PNG, JPG, WebP (auto-scaled square)
-                      </span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleLogoFileUpload}
-                        className="hidden"
-                        disabled={isUploadingLogo}
-                      />
-                    </label>
-                  </div>
-
-                  {/* Upload Logo Option 2: Online URL */}
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-bold text-stone-800">
-                      Or Paste Logo Web URL
-                    </label>
-                    <input
-                      type="url"
-                      value={logoInputUrl}
-                      onChange={(e) => {
-                        setLogoInputUrl(e.target.value);
-                        setLogoPreview(e.target.value);
-                      }}
-                      placeholder="https://example.com/youth-logo.png"
-                      className="w-full px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
-                    />
+                    {/* Upload Icon & Action beside this */}
+                    <div className="shrink-0">
+                      <label className="flex items-center gap-2 px-3.5 py-2.5 bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white font-bold text-xs rounded-xl shadow-xs hover:shadow-md cursor-pointer transition-all active:scale-95">
+                        <Upload className="w-4 h-4 shrink-0" />
+                        <span className="hidden sm:inline">
+                          {isUploadingLogo ? "Uploading..." : (logoPreview || logoInputUrl ? "Change Logo" : "Upload Logo")}
+                        </span>
+                        <span className="sm:hidden">
+                          {isUploadingLogo ? "..." : (logoPreview || logoInputUrl ? "Change" : "Upload")}
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleLogoFileUpload}
+                          className="hidden"
+                          disabled={isUploadingLogo}
+                        />
+                      </label>
+                    </div>
                   </div>
                 </div>
               )}
