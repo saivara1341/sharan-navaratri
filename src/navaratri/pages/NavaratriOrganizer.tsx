@@ -2498,14 +2498,51 @@ export const NavaratriOrganizer: React.FC = () => {
                       </div>
                     </div>
 
+                    {/* GPS coordinates from onboarding — read-only */}
+                    {(currentMandapam.latitude && currentMandapam.longitude) ? (
+                      <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-start justify-between gap-3">
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider block">
+                            📡 GPS — Captured at Onboarding
+                          </span>
+                          <p className="text-xs font-mono text-stone-700">
+                            {currentMandapam.latitude.toFixed(6)}, {currentMandapam.longitude.toFixed(6)}
+                          </p>
+                          <p className="text-[10px] text-stone-500">This was recorded when you registered. It is used for "Near Me" searches.</p>
+                        </div>
+                        <a
+                          href={`https://www.google.com/maps?q=${currentMandapam.latitude},${currentMandapam.longitude}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="shrink-0 px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold transition-colors"
+                        >
+                          Open Maps
+                        </a>
+                      </div>
+                    ) : (
+                      <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-[11px] text-amber-700">
+                        ⚠️ No GPS coordinates recorded. Re-register or contact support to update your location pin.
+                      </div>
+                    )}
+
                     {/* Preview of Directions Card */}
-                    <div className="p-3 rounded-2xl bg-stone-50 border border-stone-200 text-xs space-y-1">
+                    <div className="p-3 rounded-2xl bg-stone-50 border border-stone-200 text-xs space-y-2">
                       <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block">
                         Devotee Directions Preview
                       </span>
                       <p className="font-semibold text-stone-800">
                         📍 {editAddress ? `${editAddress}, ` : ""}{editArea}, {editCity}
                       </p>
+                      {currentMandapam.latitude && currentMandapam.longitude && (
+                        <a
+                          href={`https://www.google.com/maps/dir/?api=1&destination=${currentMandapam.latitude},${currentMandapam.longitude}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-900 underline underline-offset-2 transition-colors"
+                        >
+                          🗺️ Get Directions on Google Maps
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>
