@@ -14,6 +14,7 @@ import {
   Sun,
   Moon,
   Clock,
+  ChevronDown,
 } from "lucide-react";
 
 interface NineDayScheduleProps {
@@ -27,7 +28,16 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
 }) => {
   const { language } = useNavaratriLanguage();
   const [selectedDay, setSelectedDay] = useState<StandardFestivalDay | null>(null);
+  const [expandedDays, setExpandedDays] = useState<Record<number, boolean>>({});
   const todayIso = new Date().toLocaleDateString("en-CA");
+
+  const toggleCardExpand = (dayNumber: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedDays((prev) => ({
+      ...prev,
+      [dayNumber]: !prev[dayNumber],
+    }));
+  };
 
   return (
     <div className="space-y-6">
@@ -188,57 +198,92 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                   </div>
                 </div>
 
-                {/* Dual session badge */}
-                {isDual && morningDevi && eveningDevi && (
-                  <div className="text-[11px] font-semibold text-amber-900 bg-amber-100/80 px-3 py-2 rounded-2xl border border-amber-300/80 flex items-start gap-1.5">
-                    <span className="leading-snug">
-                      <span className="block font-black text-[10px] uppercase tracking-wide text-amber-800 mb-0.5">
-                        Special Alankaranas
-                      </span>
-                      {morningDevi} & {eveningDevi}
+                {/* Action Row: Pointed Leaf "Know More" Button (Run Ads Design) + Dropdown Toggle */}
+                <div className="flex items-center justify-between gap-2 pt-0.5">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedDay(day);
+                    }}
+                    className="relative flex-1 inline-flex items-center justify-center px-4 py-2.5 font-sans font-bold text-xs tracking-wide text-white transition-all transform hover:scale-105 active:scale-95 group/btn drop-shadow-md hover:drop-shadow-lg cursor-pointer"
+                    title="Know More / వివరాలు"
+                  >
+                    {/* Pointed pill / leaf shape background matching Run Ads design */}
+                    <svg
+                      viewBox="0 0 160 40"
+                      preserveAspectRatio="none"
+                      className="absolute inset-0 w-full h-full text-[#C12535] group-hover/btn:text-[#A81B2B] transition-colors"
+                    >
+                      <path
+                        d="M 18 0 L 142 0 C 151 0, 157 12, 160 20 C 157 28, 151 40, 142 40 L 18 40 C 9 40, 3 28, 0 20 C 3 12, 9 0, 18 0 Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    <span className="relative z-10 font-bold text-white select-none text-xs">
+                      Know More
                     </span>
-                  </div>
-                )}
+                  </button>
 
-                {/* Naivedhyam preview */}
-                <div className="bg-gradient-to-r from-amber-50 to-orange-50/60 px-3 py-2.5 rounded-2xl border border-amber-200/80">
-                  <div className="flex items-center gap-1.5 text-[10px] font-black text-[#8B1E1E] uppercase tracking-wide mb-1">
-                    <PrasadBowlIcon className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                    <span>Naivedhyam (Bhog)</span>
-                  </div>
-                  <p className="text-[11px] text-stone-700 line-clamp-2 font-medium leading-relaxed">
-                    {dayNaivedhyam}
-                  </p>
+                  {/* Dropdown toggle to expand/collapse remaining data */}
+                  <button
+                    type="button"
+                    onClick={(e) => toggleCardExpand(day.dayNumber, e)}
+                    className="h-9 px-2.5 rounded-xl border border-amber-300/80 bg-amber-50 hover:bg-amber-100 text-[#8B1E1E] text-xs font-semibold flex items-center gap-1 transition-all shadow-2xs hover:shadow-xs active:scale-95 cursor-pointer shrink-0"
+                    title={expandedDays[day.dayNumber] ? "Hide Details" : "Show Details"}
+                    aria-expanded={expandedDays[day.dayNumber]}
+                  >
+                    <span className="text-[11px] font-bold hidden min-[360px]:inline">
+                      {expandedDays[day.dayNumber] ? "Less" : "Details"}
+                    </span>
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                        expandedDays[day.dayNumber] ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
                 </div>
 
-                {/* Pooja timing */}
-                {dayPooja && (
-                  <div className="text-[11px] text-stone-600 bg-white px-3 py-2 rounded-2xl border border-amber-200/60 flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-[#8B1E1E] shrink-0" />
-                    <span className="truncate font-semibold">{dayPooja}</span>
+                {/* Remaining data inside dropdown (collapsible) */}
+                {expandedDays[day.dayNumber] && (
+                  <div className="flex flex-col gap-2.5 pt-2 border-t border-amber-200/60 animate-fadeIn">
+                    {/* Dual session badge */}
+                    {isDual && morningDevi && eveningDevi && (
+                      <div className="text-[11px] font-semibold text-amber-900 bg-amber-100/80 px-3 py-2 rounded-2xl border border-amber-300/80 flex items-start gap-1.5">
+                        <span className="leading-snug">
+                          <span className="block font-black text-[10px] uppercase tracking-wide text-amber-800 mb-0.5">
+                            Special Alankaranas
+                          </span>
+                          {morningDevi} & {eveningDevi}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Naivedhyam preview */}
+                    <div className="bg-gradient-to-r from-amber-50 to-orange-50/60 px-3 py-2.5 rounded-2xl border border-amber-200/80">
+                      <div className="flex items-center gap-1.5 text-[10px] font-black text-[#8B1E1E] uppercase tracking-wide mb-1">
+                        <PrasadBowlIcon className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                        <span>Naivedhyam (Bhog)</span>
+                      </div>
+                      <p className="text-[11px] text-stone-700 line-clamp-2 font-medium leading-relaxed">
+                        {dayNaivedhyam}
+                      </p>
+                    </div>
+
+                    {/* Pooja timing */}
+                    {dayPooja && (
+                      <div className="text-[11px] text-stone-600 bg-white px-3 py-2 rounded-2xl border border-amber-200/60 flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-[#8B1E1E] shrink-0" />
+                        <span className="truncate font-semibold">{dayPooja}</span>
+                      </div>
+                    )}
+
+                    {/* Short description */}
+                    <p className="text-[11px] text-stone-600 leading-relaxed px-0.5">
+                      {day.description}
+                    </p>
                   </div>
                 )}
-
-                {/* Short description */}
-                <p className="text-[11px] text-stone-600 line-clamp-2 leading-relaxed px-0.5">
-                  {day.description}
-                </p>
-
-                {/* CTA button — color-matched to the day */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedDay(day);
-                  }}
-                  className="w-full mt-1 py-2.5 px-4 rounded-2xl text-white text-xs font-bold shadow flex items-center justify-center gap-2 transition-all group-hover:shadow-lg active:scale-95"
-                  style={{
-                    background: `linear-gradient(135deg, ${day.colorHex}dd 0%, #8B1E1E 100%)`,
-                  }}
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  <span>View Details / పూజా విధానం</span>
-                </button>
               </div>
             </div>
           );
