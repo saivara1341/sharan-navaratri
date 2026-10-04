@@ -79,7 +79,7 @@ export const NavaratriHome: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1440px] mx-auto px-4 sm:px-6 space-y-8 pb-8 sm:pb-12 pt-3 sm:pt-6 font-sans">
+    <div className="max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1440px] mx-auto px-4 sm:px-6 space-y-4 sm:space-y-5 lg:space-y-6 pb-8 sm:pb-12 pt-2 sm:pt-4 font-sans">
       {/* 0. CONNECTED / SCANNED MANDAPAM BANNER (SHOWN UPON SCANNING & OPENING LANDING PAGE) */}
       {primaryConnectedMandapam && (
         <div
@@ -187,8 +187,8 @@ export const NavaratriHome: React.FC = () => {
 
         <FloatingAuspiciousParticles />
 
-        <div className="relative z-10 p-6 sm:p-8 md:p-9 lg:p-9 xl:p-11 flex flex-col md:flex-row md:items-center md:justify-between gap-6 lg:gap-8 text-white flex-1">
-          <div className="max-w-2xl space-y-4 sm:space-y-4.5 flex-1">
+        <div className="relative z-10 p-5 sm:p-6 md:p-6 lg:p-7 xl:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-5 lg:gap-6 text-white flex-1">
+          <div className="max-w-2xl space-y-3 sm:space-y-3.5 flex-1">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-200 border border-amber-300/40 text-xs font-bold tracking-wide backdrop-blur-sm shadow-sm">
               <img
                 src={navaratriAsset("/navaratri/assets/sacred-lotus-flower.png")}
@@ -277,7 +277,7 @@ export const NavaratriHome: React.FC = () => {
               <img
                 src={navaratriAsset("/navaratri/assets/maa-durga-hero-darshan.png")}
                 alt="Maa Durga Simhavahana Darshan"
-                className="relative z-10 w-52 sm:w-60 md:w-64 lg:w-72 xl:w-84 max-h-[380px] h-auto object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.65)] hover:scale-105 transition-transform duration-500 pointer-events-none select-none"
+                className="relative z-10 w-44 sm:w-52 md:w-56 lg:w-60 xl:w-68 max-h-[260px] md:max-h-[280px] lg:max-h-[300px] h-auto object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.65)] hover:scale-105 transition-transform duration-500 pointer-events-none select-none"
               />
             </div>
           </div>
@@ -297,10 +297,10 @@ export const NavaratriHome: React.FC = () => {
       </section>
 
       {/* QUICK ACTIONS ROW: FLANKED BY AD SPACE BOXES IN DESKTOP VIEW */}
-      <section className="w-full max-w-7xl mx-auto px-2 sm:px-4 pt-1 pb-1">
+      <section className="w-full max-w-7xl mx-auto px-2 sm:px-4 -mt-2 sm:-mt-4 md:-mt-6 lg:-mt-8 xl:-mt-10 pt-0 pb-1 relative z-20">
         <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-3 lg:gap-4 xl:gap-6">
           {/* Left Ad Space Box (Before this design - Desktop View Only) */}
-          <div className="hidden lg:flex w-52 xl:w-60 2xl:w-64 shrink-0 self-stretch min-h-[250px] max-h-[300px]">
+          <div className="hidden lg:flex w-48 xl:w-56 2xl:w-60 shrink-0 self-stretch min-h-[190px] max-h-[240px]">
             <NavaratriFlankingAdBox position="left" />
           </div>
 
@@ -361,7 +361,7 @@ export const NavaratriHome: React.FC = () => {
             </div>
 
             {/* Organizer Quick Access: Login for Registered Mandapams vs Register New */}
-            <div className="w-full flex items-center justify-center px-2 sm:px-4 mt-2 sm:mt-4 md:mt-5 mb-0.5 sm:mb-3">
+            <div className="w-full flex items-center justify-center px-2 sm:px-4 mt-2 sm:mt-3 mb-0 sm:mb-1">
               <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 px-3.5 py-1.5 rounded-2xl bg-gradient-to-r from-amber-50 via-white to-orange-50 border border-amber-300 shadow-xs text-xs text-stone-700">
                 <span className="font-semibold text-stone-800 flex items-center gap-1.5">
                   <span>🚩</span>
@@ -380,7 +380,7 @@ export const NavaratriHome: React.FC = () => {
           </div>
 
           {/* Right Ad Space Box (After this design - Desktop View Only) */}
-          <div className="hidden lg:flex w-52 xl:w-60 2xl:w-64 shrink-0 self-stretch min-h-[250px] max-h-[300px]">
+          <div className="hidden lg:flex w-48 xl:w-56 2xl:w-60 shrink-0 self-stretch min-h-[190px] max-h-[240px]">
             <NavaratriFlankingAdBox position="right" />
           </div>
         </div>
