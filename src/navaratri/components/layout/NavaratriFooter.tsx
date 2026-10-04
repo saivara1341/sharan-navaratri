@@ -42,61 +42,30 @@ export const NavaratriFooter: React.FC = () => {
           </p>
         </div>
 
-        {/* Festival Branding */}
-        <div className="space-y-1">
+        {/* Festival Branding + Tagline — no gap between them */}
+        <div className="space-y-0.5">
           <h3 className="font-['Cinzel',serif] text-xl sm:text-2xl font-black text-amber-200 tracking-wide">
             Sharan Navaratri 2026
           </h3>
+          <p className="text-xs text-amber-100/75 max-w-xl mx-auto leading-relaxed">
+            {t.tagline}
+          </p>
         </div>
 
-        <p className="text-xs text-amber-100/75 max-w-xl mx-auto leading-relaxed">
-          {t.tagline}
-        </p>
-
-        {/* Cashfree Whitelisting Policy Links */}
+        {/* Policy Links — grey */}
         <div className="pt-2 border-t border-amber-500/20">
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-semibold text-amber-200/90 max-w-2xl mx-auto">
-            <Link
-              to="/contact-us"
-              className="hover:text-amber-100 underline-offset-4 hover:underline transition-colors px-1"
-            >
-              Contact Us
-            </Link>
-            <span className="text-amber-500/40 text-[10px]">•</span>
-            <Link
-              to="/terms-and-conditions"
-              className="hover:text-amber-100 underline-offset-4 hover:underline transition-colors px-1"
-            >
-              Terms &amp; Conditions
-            </Link>
-            <span className="text-amber-500/40 text-[10px]">•</span>
-            <Link
-              to="/refund-cancellation-policy"
-              className="hover:text-amber-100 underline-offset-4 hover:underline transition-colors px-1"
-            >
-              Refunds &amp; Cancellations
-            </Link>
-            <span className="text-amber-500/40 text-[10px]">•</span>
-            <Link
-              to="/shipping-delivery-policy"
-              className="hover:text-amber-100 underline-offset-4 hover:underline transition-colors px-1"
-            >
-              Shipping &amp; Delivery
-            </Link>
-            <span className="text-amber-500/40 text-[10px]">•</span>
-            <Link
-              to="/pricing"
-              className="hover:text-amber-100 underline-offset-4 hover:underline transition-colors px-1"
-            >
-              Products &amp; Pricing (INR)
-            </Link>
-            <span className="text-amber-500/40 text-[10px]">•</span>
-            <Link
-              to="/privacy"
-              className="hover:text-amber-100 underline-offset-4 hover:underline transition-colors px-1"
-            >
-              Privacy Policy
-            </Link>
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-medium text-stone-400 max-w-2xl mx-auto">
+            <Link to="/contact-us" className="hover:text-stone-200 transition-colors px-1">Contact Us</Link>
+            <span className="text-stone-600 text-[10px]">•</span>
+            <Link to="/terms-and-conditions" className="hover:text-stone-200 transition-colors px-1">Terms &amp; Conditions</Link>
+            <span className="text-stone-600 text-[10px]">•</span>
+            <Link to="/refund-cancellation-policy" className="hover:text-stone-200 transition-colors px-1">Refunds &amp; Cancellations</Link>
+            <span className="text-stone-600 text-[10px]">•</span>
+            <Link to="/shipping-delivery-policy" className="hover:text-stone-200 transition-colors px-1">Shipping &amp; Delivery</Link>
+            <span className="text-stone-600 text-[10px]">•</span>
+            <Link to="/pricing" className="hover:text-stone-200 transition-colors px-1">Products &amp; Pricing (INR)</Link>
+            <span className="text-stone-600 text-[10px]">•</span>
+            <Link to="/privacy" className="hover:text-stone-200 transition-colors px-1">Privacy Policy</Link>
           </div>
         </div>
 
