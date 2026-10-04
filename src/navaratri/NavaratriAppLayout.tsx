@@ -4,6 +4,7 @@ import { NavaratriLanguageProvider } from "./context/NavaratriLanguageContext";
 import { NavaratriDataProvider } from "./context/NavaratriDataContext";
 import { NavaratriHeader } from "./components/layout/NavaratriHeader";
 import { NavaratriTopAdBanner } from "./components/ads/NavaratriTopAdBanner";
+import { NavaratriBottomAdBanner } from "./components/ads/NavaratriBottomAdBanner";
 import { CitizenBottomNav } from "./components/layout/CitizenBottomNav";
 
 import { AuspiciousRibbonBorder } from "./components/devotional/AuspiciousRibbonBorder";
@@ -74,9 +75,12 @@ export const NavaratriAppLayout: React.FC<NavaratriAppLayoutProps> = ({ children
           <NavaratriTopAdBanner />
 
           {/* Main Body */}
-          <main className="flex-1 w-full mx-auto pb-10">
+          <main className="flex-1 w-full mx-auto pb-6">
             {children || <Outlet />}
           </main>
+
+          {/* Bottom Ad Frame (Above Footer) — Visible on Desktop & Mobile */}
+          <NavaratriBottomAdBanner />
 
           {/* Sacred Border Ribbon above Footer */}
           <AuspiciousRibbonBorder variant="maroon-gold" heightClass="h-4 sm:h-5.5" />

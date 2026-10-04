@@ -29,17 +29,20 @@ interface CreateAdModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  defaultFrame?: "TOP" | "BOTTOM" | "BOTH";
 }
 
 export const CreateAdModal: React.FC<CreateAdModalProps> = ({
   isOpen,
   onClose,
-  onSuccess
+  onSuccess,
+  defaultFrame = "TOP"
 }) => {
   const { createAdvertisement } = useNavaratriData();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form State
+  const [preferredFrame, setPreferredFrame] = useState<"TOP" | "BOTTOM" | "BOTH">(defaultFrame);
   const [businessName, setBusinessName] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -55,6 +58,12 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
   const [isCopied2, setIsCopied2] = useState(false);
   const [showBigQr, setShowBigQr] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (defaultFrame) {
+      setPreferredFrame(defaultFrame);
+    }
+  }, [defaultFrame, isOpen]);
 
   // Multi-format support
   const [adFormat, setAdFormat] = useState<AdFormat>("BANNER");
@@ -212,6 +221,8 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
         paymentStatus: "PENDING_VERIFICATION",
         transactionId: transactionId.trim(),
         status: "PENDING",
+        spaceType: "EXCLUSIVE",
+        preferredFrame: preferredFrame,
         ctaText: buttonLabel.trim() || "Order Now",
         ctaUrl: actionUrl.trim() || `tel:${phone.trim()}`,
         startDate: "2026-10-11",
@@ -307,6 +318,56 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
                       <p className="text-sm font-black mt-0.5">₹{p.cost}</p>
                     </button>
                   ))}
+                </div>
+              </div>
+
+              {/* Choose Placement Frame (Top Below Header vs Bottom Above Footer vs Both) */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block font-bold text-stone-800 text-xs">
+                    Ad Placement Frame *
+                  </label>
+                  <span className="text-[10px] text-amber-800 font-semibold bg-amber-100 px-2 py-0.5 rounded-full">
+                    Mobile &amp; Desktop
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPreferredFrame("TOP")}
+                    className={`p-2 rounded-xl border text-center transition-all ${
+                      preferredFrame === "TOP"
+                        ? "bg-[#8B1E1E] text-white border-[#8B1E1E] shadow-sm font-bold"
+                        : "bg-white text-stone-700 border-amber-200 hover:bg-amber-50"
+                    }`}
+                  >
+                    <p className="text-[11px] leading-tight font-bold">Top Frame</p>
+                    <p className="text-[9px] opacity-90 mt-0.5">Below Header</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPreferredFrame("BOTTOM")}
+                    className={`p-2 rounded-xl border text-center transition-all ${
+                      preferredFrame === "BOTTOM"
+                        ? "bg-[#8B1E1E] text-white border-[#8B1E1E] shadow-sm font-bold"
+                        : "bg-white text-stone-700 border-amber-200 hover:bg-amber-50"
+                    }`}
+                  >
+                    <p className="text-[11px] leading-tight font-bold">Bottom Frame</p>
+                    <p className="text-[9px] opacity-90 mt-0.5">Above Footer</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPreferredFrame("BOTH")}
+                    className={`p-2 rounded-xl border text-center transition-all ${
+                      preferredFrame === "BOTH"
+                        ? "bg-gradient-to-r from-[#8B1E1E] to-[#B45309] text-white border-[#8B1E1E] shadow-sm font-bold"
+                        : "bg-white text-stone-700 border-amber-200 hover:bg-amber-50"
+                    }`}
+                  >
+                    <p className="text-[11px] leading-tight font-bold">Both Frames</p>
+                    <p className="text-[9px] opacity-90 mt-0.5">Top &amp; Bottom</p>
+                  </button>
                 </div>
               </div>
 

@@ -21,7 +21,6 @@ import { FloatingAuspiciousParticles } from "../components/devotional/SacredMoti
 import { useNavaratriData } from "../context/NavaratriDataContext";
 import { useNavaratriLanguage } from "../context/NavaratriLanguageContext";
 import { NineDaySchedule } from "../components/citizen/NineDaySchedule";
-import { NavaratriAdsSpace } from "../components/ads/NavaratriAdsSpace";
 import { AuspiciousRibbonBorder } from "../components/devotional/AuspiciousRibbonBorder";
 import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifiedBadge";
 import { NavaratriFlankingAdBox } from "../components/ads/NavaratriFlankingAdBox";
@@ -481,16 +480,6 @@ export const NavaratriHome: React.FC = () => {
       <section className="space-y-4 -mt-2 sm:-mt-3">
         <NineDaySchedule />
       </section>
-
-      {/* Traditional Maroon & Gold Kolam Lace Ribbon Divider */}
-      <AuspiciousRibbonBorder
-        variant="kolam-lace"
-        heightClass="h-9 sm:h-12 md:h-15 lg:h-18"
-        className="rounded-none my-5 sm:my-7"
-      />
-
-      {/* 4. LOCAL FESTIVAL SPONSORED ADS SPACE & MARKETPLACE */}
-      <NavaratriAdsSpace currentCity={userLocation?.city || "Nizamabad"} />
     </div>
   );
 };

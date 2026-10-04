@@ -168,6 +168,8 @@ export const INITIAL_ADVERTISEMENTS: Advertisement[] = [
     impressions: 0,
     clicks: 0,
     paymentStatus: "PAID",
+    spaceType: "EXCLUSIVE",
+    preferredFrame: "TOP",
   },
   {
     id: "sponsor-siddhidynamics-2026",
@@ -191,5 +193,7 @@ export const INITIAL_ADVERTISEMENTS: Advertisement[] = [
     impressions: 0,
     clicks: 0,
     paymentStatus: "PAID",
+    spaceType: "EXCLUSIVE",
+    preferredFrame: "BOTTOM",
   },
 ];

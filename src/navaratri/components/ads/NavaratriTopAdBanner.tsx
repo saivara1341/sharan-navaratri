@@ -19,9 +19,12 @@ export const NavaratriTopAdBanner: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Only real active ads that have an image and are paid/approved (no mock text ads)
+  // Only real active ads that have an image and are assigned to TOP frame (or BOTH, or unspecified)
   const activeAdsWithImages = advertisements.filter(
-    a => (a.status === "ACTIVE" || a.status === "APPROVED") && Boolean(a.imageUrl) && !a.id?.startsWith("ad-")
+    a =>
+      (a.status === "ACTIVE" || a.status === "APPROVED") &&
+      Boolean(a.imageUrl) &&
+      (!a.preferredFrame || a.preferredFrame === "TOP" || a.preferredFrame === "BOTH")
   );
 
   const currentAd = activeAdsWithImages[activeIndex];
@@ -62,7 +65,8 @@ export const NavaratriTopAdBanner: React.FC = () => {
 
   return (
     <>
-      <div className={`w-full max-w-7xl mx-auto px-3 sm:px-6 pt-2 sm:pt-3 pb-1 ${isHomePage ? "lg:hidden" : ""}`}>
+      {/* Top Ad Frame (Below Header): Displayed across both Mobile and Desktop views */}
+      <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 pt-2 sm:pt-3 pb-1">
         {currentAd?.imageUrl ? (
           /* Framed Ad Banner: 100% of user banner fits cleanly inside frame with dynamic CTA button */
           <div className="flex flex-col">
@@ -84,7 +88,7 @@ export const NavaratriTopAdBanner: React.FC = () => {
                 className="w-full h-full object-contain relative z-10 mx-auto"
               />
 
-              {/* Top-Left Sponsor Pill — shown on ALL screen sizes inside the frame, never on top of image pixels */}
+              {/* Top-Left Sponsor Pill — shown on ALL screen sizes inside the frame */}
               <div className="absolute top-2 left-2 z-20 flex px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 text-[9px] font-bold text-amber-200 uppercase tracking-wider items-center gap-1 shadow-sm pointer-events-none">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                 <span>Sponsored</span>
@@ -125,16 +129,16 @@ export const NavaratriTopAdBanner: React.FC = () => {
             </div>
           </div>
         ) : (
-          /* Empty container slot: clean, ready for user / advertiser to add image */
+          /* Empty container slot: clean, ready for user / advertiser to add image in top frame */
           <div
             onClick={() => setIsModalOpen(true)}
             className="w-full h-20 sm:h-24 md:h-28 rounded-2xl border-2 border-dashed border-amber-300/80 bg-amber-50/30 hover:bg-amber-100/40 hover:border-amber-400 transition-all cursor-pointer flex items-center justify-center p-3 shadow-xs group"
-            title="Click to add image & run ad"
+            title="Click to place ad in top frame below header"
           >
             <div className="flex items-center gap-2 text-stone-400 group-hover:text-amber-800 transition-colors">
               <ImagePlus className="w-5 h-5 text-amber-500/70 group-hover:text-amber-600 transition-colors" />
               <span className="text-xs sm:text-sm font-medium tracking-wide">
-                {AD_PLACEHOLDER_TRANSLATIONS[language] || "Ad Space Available (Tap to add image & run ad)"}
+                {AD_PLACEHOLDER_TRANSLATIONS[language] || "Top Ad Frame Available (Tap to place ad below header)"}
               </span>
             </div>
           </div>
@@ -146,6 +150,7 @@ export const NavaratriTopAdBanner: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSuccess={() => setActiveIndex(0)}
+        defaultFrame="TOP"
       />
     </>
   );

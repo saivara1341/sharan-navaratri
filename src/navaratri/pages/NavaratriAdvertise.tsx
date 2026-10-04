@@ -56,6 +56,9 @@ export const NavaratriAdvertise: React.FC = () => {
   // Ad Space Ownership State: Combinational (Shared 6s Rotation) vs Exclusive 24/7 Solo (No other ads in frame)
   const [adSpaceType, setAdSpaceType] = useState<"ROTATING" | "EXCLUSIVE">("ROTATING");
 
+  // Ad Placement Frame State (For Permanent / Exclusive ads): Top Below Header, Bottom Above Footer, or Both
+  const [preferredFrame, setPreferredFrame] = useState<"TOP" | "BOTTOM" | "BOTH">("TOP");
+
   // Package & Format State
   const [selectedPkgId, setSelectedPkgId] = useState(adPackages[0]?.id || "pkg-starter");
   const [adFormat, setAdFormat] = useState<"BANNER" | "TEXT_BULLETIN">("BANNER");
@@ -143,6 +146,8 @@ export const NavaratriAdvertise: React.FC = () => {
     };
 
   const isExclusive = (selectedPkg.spaceType || adSpaceType) === "EXCLUSIVE";
+  const frameMultiplier = (isExclusive && preferredFrame === "BOTH") ? 1.6 : 1;
+  const effectivePrice = Math.round(selectedPkg.priceInr * frameMultiplier);
 
   const effectiveDisplayZone = targetZone === "Custom" ? (customZone || "Custom Zone") : targetZone;
 
@@ -323,12 +328,13 @@ export const NavaratriAdvertise: React.FC = () => {
         format: adFormat,
         bulletPoints: adFormat === "TEXT_BULLETIN" ? [bulletPoint1, bulletPoint2, bulletPoint3].filter(Boolean) : undefined,
         spaceType: selectedPkg.spaceType || adSpaceType,
+        preferredFrame: isExclusive ? preferredFrame : "TOP",
         ctaText: ctaButton.trim() || getDefaultCtaForCategory(category),
         ctaUrl: website.trim() || `tel:${phone.trim()}`,
         startDate: "2026-10-11",
         endDate: "2026-10-21",
         utrNumber: utrNumber.trim(),
-        pricePaid: selectedPkg.priceInr
+        pricePaid: effectivePrice
       });
 
       setCreatedAdId(newAd.id);
@@ -875,6 +881,138 @@ export const NavaratriAdvertise: React.FC = () => {
                 })}
               </div>
             </div>
+
+            {/* FRAME SELECTION FOR PERMANENT / EXCLUSIVE AD RUN */}
+            {adSpaceType === "EXCLUSIVE" && (
+              <div className="pt-3 space-y-3 animate-in fade-in duration-300">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div>
+                    <span className="text-xs font-bold text-stone-900 flex items-center gap-1.5">
+                      <Layers className="w-4 h-4 text-amber-700" />
+                      Choose Frame for Permanent 24/7 Run
+                    </span>
+                    <p className="text-[11px] text-stone-600">
+                      Mobile &amp; Desktop have 2 frames: Top below header and Bottom above footer. Choose your permanent frame:
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+                    2 Dedicated Frames
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {/* Top Frame */}
+                  <div
+                    onClick={() => setPreferredFrame("TOP")}
+                    className={`cursor-pointer rounded-2xl p-4 border-2 transition-all relative flex flex-col justify-between ${
+                      preferredFrame === "TOP"
+                        ? "bg-gradient-to-br from-amber-50 to-orange-50/50 border-[#8B1E1E] shadow-md ring-2 ring-[#8B1E1E]/20"
+                        : "bg-white border-amber-200/90 hover:border-amber-300 shadow-xs"
+                    }`}
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-bold">
+                          Top Frame
+                        </span>
+                        <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                          preferredFrame === "TOP" ? "bg-[#8B1E1E] text-white" : "border border-stone-300"
+                        }`}>
+                          {preferredFrame === "TOP" && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                        </div>
+                      </div>
+                      <h4 className="font-serif font-black text-sm text-stone-900">
+                        Top Frame (Below Header)
+                      </h4>
+                      <p className="text-[11px] text-stone-600 leading-snug">
+                        Immediate first impression! Sits right below the header on both mobile and desktop views.
+                      </p>
+                    </div>
+                    <div className="mt-3 pt-2 border-t border-amber-100 flex items-center justify-between text-xs">
+                      <span className="font-mono font-bold text-[#8B1E1E]">₹{selectedPkg.priceInr}</span>
+                      <span className="text-[10px] font-bold text-stone-500">
+                        {preferredFrame === "TOP" ? "Selected ✓" : "Choose Top"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Bottom Frame */}
+                  <div
+                    onClick={() => setPreferredFrame("BOTTOM")}
+                    className={`cursor-pointer rounded-2xl p-4 border-2 transition-all relative flex flex-col justify-between ${
+                      preferredFrame === "BOTTOM"
+                        ? "bg-gradient-to-br from-amber-50 to-orange-50/50 border-[#8B1E1E] shadow-md ring-2 ring-[#8B1E1E]/20"
+                        : "bg-white border-amber-200/90 hover:border-amber-300 shadow-xs"
+                    }`}
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-bold">
+                          Bottom Frame
+                        </span>
+                        <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                          preferredFrame === "BOTTOM" ? "bg-[#8B1E1E] text-white" : "border border-stone-300"
+                        }`}>
+                          {preferredFrame === "BOTTOM" && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                        </div>
+                      </div>
+                      <h4 className="font-serif font-black text-sm text-stone-900">
+                        Bottom Frame (Above Footer)
+                      </h4>
+                      <p className="text-[11px] text-stone-600 leading-snug">
+                        High action conversion! Sits right above the footer on both mobile and desktop views.
+                      </p>
+                    </div>
+                    <div className="mt-3 pt-2 border-t border-amber-100 flex items-center justify-between text-xs">
+                      <span className="font-mono font-bold text-[#8B1E1E]">₹{selectedPkg.priceInr}</span>
+                      <span className="text-[10px] font-bold text-stone-500">
+                        {preferredFrame === "BOTTOM" ? "Selected ✓" : "Choose Bottom"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Both Frames */}
+                  <div
+                    onClick={() => setPreferredFrame("BOTH")}
+                    className={`cursor-pointer rounded-2xl p-4 border-2 transition-all relative flex flex-col justify-between ${
+                      preferredFrame === "BOTH"
+                        ? "bg-gradient-to-br from-amber-100/90 via-orange-50 to-amber-50 border-[#8B1E1E] shadow-md ring-2 ring-[#8B1E1E]/20"
+                        : "bg-white border-amber-200/90 hover:border-amber-300 shadow-xs"
+                    }`}
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-600 to-[#8B1E1E] text-white text-[10px] font-black uppercase tracking-wider shadow-xs">
+                          👑 Both Frames
+                        </span>
+                        <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                          preferredFrame === "BOTH" ? "bg-[#8B1E1E] text-white" : "border border-stone-300"
+                        }`}>
+                          {preferredFrame === "BOTH" && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                        </div>
+                      </div>
+                      <h4 className="font-serif font-black text-sm text-stone-900">
+                        Both Frames (Top &amp; Bottom)
+                      </h4>
+                      <p className="text-[11px] text-stone-600 leading-snug">
+                        Maximum reach! Permanent 24/7 solo presence in BOTH Top &amp; Bottom frames.
+                      </p>
+                    </div>
+                    <div className="mt-3 pt-2 border-t border-amber-100 flex items-center justify-between text-xs">
+                      <div>
+                        <span className="font-mono font-bold text-[#8B1E1E]">
+                          ₹{Math.round(selectedPkg.priceInr * 1.6)}
+                        </span>
+                        <span className="text-[9px] text-emerald-700 font-bold ml-1">Combo Save 20%</span>
+                      </div>
+                      <span className="text-[10px] font-bold text-stone-500">
+                        {preferredFrame === "BOTH" ? "Selected ✓" : "Choose Both"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* MAIN FORM & PAYMENT FLOW */}
@@ -1565,7 +1703,7 @@ export const NavaratriAdvertise: React.FC = () => {
                     {/* Top sponsored tag */}
                     <div className="absolute top-2.5 left-2.5 z-20 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md text-[9px] sm:text-[10px] font-bold text-amber-200 border border-amber-300/40 flex items-center gap-1.5 shadow">
                       <span className={`w-1.5 h-1.5 rounded-full ${isExclusive ? 'bg-amber-400 ring-2 ring-amber-300/60' : 'bg-emerald-400 animate-pulse'}`} />
-                      <span>{isExclusive ? "👑 24/7 Solo Spotlight" : "🔄 6s Rotation"} • {businessName || "Your Business"}</span>
+                      <span>{isExclusive ? `👑 24/7 Solo (${preferredFrame === "BOTH" ? "Both Frames" : preferredFrame === "TOP" ? "Top Frame" : "Bottom Frame"})` : "🔄 6s Rotation"} • {businessName || "Your Business"}</span>
                     </div>
                     {/* CTA button */}
                     <div className="absolute bottom-2.5 right-2.5 z-20">
@@ -1584,7 +1722,7 @@ export const NavaratriAdvertise: React.FC = () => {
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                         isExclusive ? "bg-amber-500/20 text-amber-300 border border-amber-400/40" : "bg-emerald-500/20 text-emerald-300 border border-emerald-400/40"
                       }`}>
-                        {isExclusive ? "👑 100% Solo (No Other Ads)" : "🔄 Changes Every 6s"}
+                        {isExclusive ? `👑 100% Solo • ${preferredFrame === "BOTH" ? "Top & Bottom Frames" : preferredFrame === "TOP" ? "Top Frame (Below Header)" : "Bottom Frame (Above Footer)"}` : "🔄 Changes Every 6s"}
                       </span>
                       <span className="text-emerald-300 font-bold">
                         ✓ 100% In-Frame
@@ -1620,13 +1758,13 @@ export const NavaratriAdvertise: React.FC = () => {
                       <span className="text-xs sm:text-sm font-bold text-stone-900 font-serif">{selectedPkg.name}</span>
                     </div>
                     <div className="flex items-baseline gap-1">
-                      <span className="font-['Cinzel',serif] font-black text-2xl sm:text-3xl text-[#8B1E1E]">₹{selectedPkg.priceInr}</span>
+                      <span className="font-['Cinzel',serif] font-black text-2xl sm:text-3xl text-[#8B1E1E]">₹{effectivePrice}</span>
                       <span className="text-[10px] sm:text-xs text-stone-600 font-semibold">/ {selectedPkg.durationDays} day{selectedPkg.durationDays > 1 ? 's' : ''}</span>
                     </div>
                   </div>
                   <p className="text-[10px] sm:text-[11px] text-stone-600">
                     {isExclusive
-                      ? `Includes ~${selectedPkg.impressionLimit?.toLocaleString()} guaranteed devotee impressions • Non-stop 24/7 solo frame with zero other ads`
+                      ? `Includes ~${selectedPkg.impressionLimit?.toLocaleString()} guaranteed devotee impressions • Non-stop 24/7 solo in ${preferredFrame === "BOTH" ? "BOTH frames (Top & Bottom)" : preferredFrame === "TOP" ? "Top Frame" : "Bottom Frame"}`
                       : `Includes ~${selectedPkg.impressionLimit?.toLocaleString()} devotee impressions • Rotates every 6s across your zone`}
                   </p>
                 </div>
@@ -1635,7 +1773,7 @@ export const NavaratriAdvertise: React.FC = () => {
                   type="submit"
                   className="w-full py-3.5 sm:py-4 rounded-2xl bg-gradient-to-r from-[#8B1E1E] via-[#9A241C] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-sm sm:text-base font-bold shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span>Proceed to Pay ₹{selectedPkg.priceInr} via UPI →</span>
+                  <span>Proceed to Pay ₹{effectivePrice} via UPI →</span>
                 </button>
               </div>
             </form>
@@ -1648,7 +1786,7 @@ export const NavaratriAdvertise: React.FC = () => {
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800">STEP 3: PAY &amp; CONFIRM</span>
                     <h4 className="font-['Cinzel',serif] font-black text-xl text-[#8B1E1E]">
-                      Total Due: ₹{selectedPkg.priceInr}
+                      Total Due: ₹{effectivePrice}
                     </h4>
                   </div>
                   <div className="flex flex-col items-end gap-1">
@@ -1658,20 +1796,20 @@ export const NavaratriAdvertise: React.FC = () => {
                     <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
                       isExclusive ? "bg-[#8B1E1E] text-white" : "bg-stone-100 text-stone-700 border border-stone-200"
                     }`}>
-                      {isExclusive ? "👑 24/7 Solo Dedicated" : "🔄 Combinational (6s Rotation)"}
+                      {isExclusive ? `👑 24/7 Solo (${preferredFrame === "BOTH" ? "Both Frames" : preferredFrame === "TOP" ? "Top Frame" : "Bottom Frame"})` : "🔄 Combinational (6s Rotation)"}
                     </span>
                   </div>
                 </div>
 
                 {/* Direct 1-Tap Mobile UPI link */}
                 <a
-                  href={`upi://pay?pa=6303602743@upi&pn=NavaratriMandapamAds&am=${selectedPkg.priceInr}&cu=INR&tn=${encodeURIComponent((businessName || "FestivalAd").slice(0, 20))}`}
+                  href={`upi://pay?pa=6303602743@upi&pn=NavaratriMandapamAds&am=${effectivePrice}&cu=INR&tn=${encodeURIComponent((businessName || "FestivalAd").slice(0, 20))}`}
                   className="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-800 text-white text-sm font-bold shadow-md flex items-center justify-center gap-2.5 text-center active:scale-95 transition-all cursor-pointer"
                 >
                   <span className="text-xl">📱</span>
                   <div className="flex flex-col items-start">
                     <span className="text-xs text-emerald-200 font-semibold">One-tap Payment</span>
-                    <span>Pay ₹{selectedPkg.priceInr} via GPay / PhonePe / Paytm</span>
+                    <span>Pay ₹{effectivePrice} via GPay / PhonePe / Paytm</span>
                   </div>
                 </a>
 
@@ -1691,7 +1829,7 @@ export const NavaratriAdvertise: React.FC = () => {
                   <div className={`mx-auto rounded-2xl bg-white p-3 border-2 border-amber-400 shadow-md flex items-center justify-center transition-all duration-200 ${showBigQr ? "w-64 h-64 sm:w-72 sm:h-72" : "w-44 h-44"}`}>
                     <img
                       src={`https://api.qrserver.com/v1/create-qr-code/?size=${showBigQr ? "280x280" : "180x180"}&data=${encodeURIComponent(
-                        `upi://pay?pa=6303602743@upi&pn=NavaratriMandapamAds&am=${selectedPkg.priceInr}&cu=INR&tn=${encodeURIComponent(businessName || "LocalAd")}`
+                        `upi://pay?pa=6303602743@upi&pn=NavaratriMandapamAds&am=${effectivePrice}&cu=INR&tn=${encodeURIComponent(businessName || "LocalAd")}`
                       )}`}
                       alt="UPI Payment QR Code"
                       className="w-full h-full object-contain"
@@ -1749,7 +1887,7 @@ export const NavaratriAdvertise: React.FC = () => {
                     ) : (
                       <>
                         <CheckCircle2 className="w-4 h-4 text-amber-300" />
-                        <span>I Have Paid ₹{selectedPkg.priceInr} — Submit for Approval</span>
+                        <span>I Have Paid ₹{effectivePrice} — Submit for Approval</span>
                       </>
                     )}
                   </button>
@@ -1869,11 +2007,20 @@ export const NavaratriAdvertise: React.FC = () => {
 
                     {/* Scrollable page content — exact landing page order on mobile */}
                     <div className="flex-1 overflow-y-auto bg-[#FDFBF7]">
-                      {/* 1. Top ad banner (shown right under the header on mobile) */}
+                      {/* 1. Top ad banner (below header) */}
                       <div className="px-2.5 pt-2 pb-1.5">
-                        {renderYourAdTag("Top banner • below header")}
-                        {renderPreviewFrame("h-[92px]")}
-                        {renderMobileSponsorBar()}
+                        {preferredFrame === "TOP" || preferredFrame === "BOTH" ? (
+                          <>
+                            {renderYourAdTag("Top Frame • Below Header (Your Ad)")}
+                            {renderPreviewFrame("h-[92px]")}
+                            {renderMobileSponsorBar()}
+                          </>
+                        ) : (
+                          <div className="rounded-xl border border-dashed border-amber-300 bg-amber-50/50 p-2 text-center">
+                            <span className="text-[8px] font-bold text-amber-800 uppercase tracking-wider block">Top Frame • Below Header</span>
+                            <span className="text-[7.5px] text-stone-500">Reserved for Top Frame Ads</span>
+                          </div>
+                        )}
                       </div>
 
                       {/* 2. Hero */}
@@ -1888,11 +2035,20 @@ export const NavaratriAdvertise: React.FC = () => {
                       {/* 4. 9-day schedule */}
                       <div className="px-2.5 pt-2">{renderScheduleGhost(false)}</div>
 
-                      {/* 5. Festival ads space (bottom of home page) */}
+                      {/* 5. Bottom ad banner (above footer) */}
                       <div className="px-2.5 pt-3 pb-2.5">
-                        {renderYourAdTag("Festival ads space • home page")}
-                        {renderPreviewFrame("h-[120px]", "rounded-3xl")}
-                        {renderMobileSponsorBar()}
+                        {preferredFrame === "BOTTOM" || preferredFrame === "BOTH" ? (
+                          <>
+                            {renderYourAdTag("Bottom Frame • Above Footer (Your Ad)")}
+                            {renderPreviewFrame("h-[110px]", "rounded-2xl")}
+                            {renderMobileSponsorBar()}
+                          </>
+                        ) : (
+                          <div className="rounded-2xl border border-dashed border-amber-300 bg-amber-50/50 p-3 text-center">
+                            <span className="text-[8px] font-bold text-amber-800 uppercase tracking-wider block">Bottom Frame • Above Footer</span>
+                            <span className="text-[7.5px] text-stone-500">Reserved for Bottom Frame Ads</span>
+                          </div>
+                        )}
                         <div className="flex justify-center pt-2">
                           <span className="px-6 py-1 rounded-full bg-[#C12535] text-white text-[8px] font-bold shadow">Run Your Ads</span>
                         </div>
@@ -1992,36 +2148,67 @@ export const NavaratriAdvertise: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Page body — exact landing page order on desktop */}
+                  {/* 1. Desktop Top Frame (Below Header) — Repeating same as Mobile view */}
+                  <div className="px-4 pt-3 pb-1">
+                    {preferredFrame === "TOP" || preferredFrame === "BOTH" ? (
+                      <div>
+                        {renderYourAdTag("Top Frame • Below Header (Your Ad on Desktop)")}
+                        <div className="relative">
+                          {renderPreviewFrame("h-28 sm:h-32", "rounded-2xl")}
+                          <div className="absolute top-2.5 left-2.5 z-20 flex items-center gap-1.5">
+                            <span className="px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-md border border-amber-400/40 text-[8px] font-bold text-amber-200 uppercase tracking-wider flex items-center gap-1">
+                              <span className="w-1 h-1 rounded-full bg-amber-400 animate-pulse" /> Sponsored
+                            </span>
+                            <span className="px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-md text-[8px] font-semibold text-white/90">{previewName}</span>
+                          </div>
+                          <div className="absolute bottom-2.5 right-2.5 z-20">{renderPreviewActions("sm")}</div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="rounded-2xl border border-dashed border-amber-300 bg-amber-50/50 p-2.5 text-center">
+                        <span className="text-[9px] font-bold text-amber-800 uppercase tracking-wider block">Desktop Top Frame • Below Header</span>
+                        <span className="text-[8px] text-stone-500">Reserved for Top Frame Ads</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 2. Hero */}
                   {renderHeroMini(true)}
 
-                  {/* Quick actions row flanked by LEFT & RIGHT ad boxes (desktop only) */}
-                  <div className="px-4 pt-3 pb-2 flex items-stretch gap-3">
-                    <div className="w-[150px] shrink-0">{renderFlankBox("Left side box")}</div>
-                    <div className="flex-1 flex flex-col items-center justify-center gap-2">
-                      {renderCtaTiles("w-[120px] h-[100px]", "text-[9px]")}
-                      <div className="pt-1.5">
+                  {/* 3. Quick Actions */}
+                  <div className="px-4 pt-3 pb-2 flex items-center justify-center gap-3">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      {renderCtaTiles("w-[140px] h-[95px]", "text-[9px]")}
+                      <div className="pt-1">
                         {renderLoginStrip("text-[8px]")}
                       </div>
                     </div>
-                    <div className="w-[150px] shrink-0">{renderFlankBox("Right side box")}</div>
                   </div>
 
                   <div className="px-4 pt-2">{renderScheduleGhost(true)}</div>
 
-                  {/* Festival ads space — desktop: Sponsored pill + name top-left, CTA bottom-right ON the banner */}
+                  {/* 4. Desktop Bottom Frame (Above Footer) — Repeating same as Mobile view */}
                   <div className="px-4 pt-3 pb-3">
-                    {renderYourAdTag("Festival ads space • home page")}
-                    <div className="relative">
-                      {renderPreviewFrame("h-48", "rounded-3xl")}
-                      <div className="absolute top-2.5 left-2.5 z-20 flex items-center gap-1.5">
-                        <span className="px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-md border border-amber-400/40 text-[8px] font-bold text-amber-200 uppercase tracking-wider flex items-center gap-1">
-                          <span className="w-1 h-1 rounded-full bg-amber-400 animate-pulse" /> Sponsored
-                        </span>
-                        <span className="px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-md text-[8px] font-semibold text-white/90">{previewName}</span>
+                    {preferredFrame === "BOTTOM" || preferredFrame === "BOTH" ? (
+                      <div>
+                        {renderYourAdTag("Bottom Frame • Above Footer (Your Ad on Desktop)")}
+                        <div className="relative">
+                          {renderPreviewFrame("h-36 sm:h-40", "rounded-2xl")}
+                          <div className="absolute top-2.5 left-2.5 z-20 flex items-center gap-1.5">
+                            <span className="px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-md border border-amber-400/40 text-[8px] font-bold text-amber-200 uppercase tracking-wider flex items-center gap-1">
+                              <span className="w-1 h-1 rounded-full bg-amber-400 animate-pulse" /> Sponsored
+                            </span>
+                            <span className="px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-md text-[8px] font-semibold text-white/90">{previewName}</span>
+                          </div>
+                          <div className="absolute bottom-2.5 right-2.5 z-20">{renderPreviewActions("sm")}</div>
+                        </div>
                       </div>
-                      <div className="absolute bottom-2.5 right-2.5 z-20">{renderPreviewActions("sm")}</div>
-                    </div>
+                    ) : (
+                      <div className="rounded-2xl border border-dashed border-amber-300 bg-amber-50/50 p-3 text-center">
+                        <span className="text-[9px] font-bold text-amber-800 uppercase tracking-wider block">Desktop Bottom Frame • Above Footer</span>
+                        <span className="text-[8px] text-stone-500">Reserved for Bottom Frame Ads</span>
+                      </div>
+                    )}
                     <div className="flex justify-center pt-2.5">
                       <span className="px-8 py-1.5 rounded-full bg-[#C12535] text-white text-[10px] font-bold shadow">Run Your Ads</span>
                     </div>

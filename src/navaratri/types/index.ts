@@ -346,5 +346,6 @@ export interface Advertisement {
   bulletPoints?: string[];
   cardTheme?: "terracotta" | "maroon" | "gold" | "royal";
   spaceType?: "ROTATING" | "EXCLUSIVE";
+  preferredFrame?: "TOP" | "BOTTOM" | "BOTH";
   createdAt: string;
 }

@@ -20,9 +20,12 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
   const [activeIndex, setActiveIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Filter real active ads with images (no mock text ads)
+  // Filter real active ads with images for BOTTOM frame (or BOTH, or unspecified)
   const activeAdsWithImages = advertisements.filter(
-    a => (a.status === "ACTIVE" || a.status === "APPROVED") && Boolean(a.imageUrl) && !a.id?.startsWith("ad-")
+    a =>
+      (a.status === "ACTIVE" || a.status === "APPROVED") &&
+      Boolean(a.imageUrl) &&
+      (!a.preferredFrame || a.preferredFrame === "BOTTOM" || a.preferredFrame === "BOTH")
   );
 
   const currentAd = activeAdsWithImages[activeIndex];
@@ -234,6 +237,7 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSuccess={() => setActiveIndex(0)}
+        defaultFrame="BOTTOM"
       />
     </section>
   );
