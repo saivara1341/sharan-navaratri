@@ -545,82 +545,76 @@ export const NavaratriAdvertise: React.FC = () => {
               </h2>
             </div>
 
-            {/* Mobile: Horizontal scroll chips — Desktop: 3-col grid */}
-            <div className="sm:hidden flex gap-3 overflow-x-auto pb-1 -mx-1 px-1 snap-x snap-mandatory">
+            {/* Unified responsive plan selector: stacked on mobile, 3-col on desktop */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4">
               {adPackages.map((pkg) => {
                 const isSelected = selectedPkgId === pkg.id;
                 return (
                   <div
                     key={pkg.id}
                     onClick={() => setSelectedPkgId(pkg.id)}
-                    className={`cursor-pointer rounded-2xl p-3.5 border-2 transition-all flex-shrink-0 w-[72vw] max-w-[260px] snap-start relative overflow-hidden ${
+                    className={`cursor-pointer rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 border-2 transition-all relative overflow-hidden flex flex-col justify-between ${
                       isSelected
-                        ? "bg-gradient-to-b from-[#FFFDF9] to-[#FAF5EC] border-[#8B1E1E] shadow-lg ring-2 ring-[#8B1E1E]/20"
-                        : "bg-white border-amber-200"
+                        ? "bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-white border-[#8B1E1E] shadow-md ring-2 ring-[#8B1E1E]/20"
+                        : "bg-white border-amber-200 hover:border-amber-300 hover:bg-stone-50/40 shadow-xs"
                     }`}
                   >
+                    {/* Badge */}
                     {pkg.popular && (
-                      <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-[#8B1E1E] text-white text-[9px] font-bold shadow">
+                      <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-[#8B1E1E] text-white text-[9px] font-black tracking-wider shadow">
                         POPULAR
                       </span>
                     )}
-                    <p className="font-bold text-[10px] uppercase tracking-wider text-amber-900 font-serif mb-1.5">{pkg.name}</p>
-                    <div className="flex items-baseline gap-1 mb-1">
-                      <span className="text-2xl font-black text-[#8B1E1E]">₹{pkg.priceInr}</span>
-                      <span className="text-[10px] text-stone-500 font-semibold">/ {pkg.durationDays} day(s)</span>
-                    </div>
-                    <p className="text-[11px] text-stone-600 leading-snug mb-2">{pkg.description}</p>
-                    <div className="text-[10px] text-stone-600 space-y-0.5 mb-3">
-                      <p>✓ ~{pkg.impressionLimit?.toLocaleString()} Impressions</p>
-                      <p>✓ Zone-targeted · Call & WhatsApp</p>
-                    </div>
-                    <div className={`w-full py-2 rounded-xl text-[11px] font-bold text-center ${
-                      isSelected ? "bg-[#8B1E1E] text-white" : "bg-amber-100 text-stone-800"
-                    }`}>
-                      {isSelected ? "Selected ✓" : "Tap to Choose"}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                    {pkg.durationDays === 9 && (
+                      <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-600 to-amber-700 text-white text-[9px] font-black tracking-wider shadow">
+                        BEST VALUE
+                      </span>
+                    )}
 
-            {/* Desktop: 3-col grid */}
-            <div className="hidden sm:grid grid-cols-3 gap-4">
-              {adPackages.map((pkg) => {
-                const isSelected = selectedPkgId === pkg.id;
-                return (
-                  <div
-                    key={pkg.id}
-                    onClick={() => setSelectedPkgId(pkg.id)}
-                    className={`cursor-pointer rounded-3xl p-5 border-2 transition-all flex flex-col justify-between space-y-4 relative overflow-hidden ${
-                      isSelected
-                        ? "bg-gradient-to-b from-[#FFFDF9] to-[#FAF5EC] border-[#8B1E1E] shadow-lg ring-2 ring-[#8B1E1E]/20"
-                        : "bg-white border-amber-200 hover:border-amber-400 shadow-xs"
-                    }`}
-                  >
-                    {pkg.popular && (
-                      <span className="absolute top-3 right-3 px-2 py-0.5 rounded-full bg-[#8B1E1E] text-white text-[9px] font-bold shadow">
-                        POPULAR
-                      </span>
-                    )}
-                    <div className="space-y-2">
-                      <p className="font-bold text-xs uppercase tracking-wider text-amber-900 font-serif">{pkg.name}</p>
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-3xl font-black text-[#8B1E1E]">₹{pkg.priceInr}</span>
-                        <span className="text-xs text-stone-500 font-semibold">/ {pkg.durationDays} day(s)</span>
+                    <div>
+                      {/* Plan title & radio */}
+                      <div className="flex items-center gap-2 mb-1.5 pr-14">
+                        <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
+                          isSelected ? "bg-[#8B1E1E] text-white" : "border-2 border-stone-300"
+                        }`}>
+                          {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                        </div>
+                        <h3 className="font-serif font-black text-xs sm:text-sm text-stone-900 tracking-wide">
+                          {pkg.name}
+                        </h3>
                       </div>
-                      <p className="text-xs text-stone-600 leading-relaxed">{pkg.description}</p>
-                      <div className="pt-2 border-t border-amber-100 text-[11px] text-stone-600 space-y-1">
-                        <p>✓ ~{pkg.impressionLimit?.toLocaleString()} Devotee Impressions</p>
-                        <p>✓ Zone-targeted display</p>
-                        <p>✓ Call & WhatsApp integration</p>
+
+                      {/* Price */}
+                      <div className="flex items-baseline gap-1 my-1.5 pl-6">
+                        <span className="font-['Cinzel',serif] text-2xl sm:text-3xl font-black text-[#8B1E1E]">
+                          ₹{pkg.priceInr}
+                        </span>
+                        <span className="text-[11px] text-stone-500 font-semibold">
+                          / {pkg.durationDays} day{pkg.durationDays > 1 ? "s" : ""}
+                        </span>
+                      </div>
+
+                      {/* Benefit points: compact on mobile, clean on desktop */}
+                      <p className="text-[11px] text-stone-600 leading-snug pl-6 mb-2">
+                        {pkg.durationDays === 1 && "Ideal for flash offers & single-day pooja rush"}
+                        {pkg.durationDays === 3 && "Peak Moola Nakshatram & weekend devotee crowds"}
+                        {pkg.durationDays === 9 && "Complete festival coverage through Vijaya Dashami"}
+                      </p>
+
+                      <div className="text-[10px] sm:text-[11px] text-stone-600 space-y-0.5 pl-6 pt-1.5 border-t border-amber-100">
+                        <p className="font-medium text-stone-700">✓ ~{pkg.impressionLimit?.toLocaleString()} Devotee Impressions</p>
+                        <p className="font-medium text-stone-700">✓ Zone-targeted • Call & WhatsApp</p>
                       </div>
                     </div>
-                    <button type="button" className={`w-full py-2 rounded-xl text-xs font-bold transition-all ${
-                      isSelected ? "bg-[#8B1E1E] text-white shadow" : "bg-amber-100 text-stone-800 hover:bg-amber-200"
-                    }`}>
-                      {isSelected ? "Selected ✓" : "Choose Package"}
-                    </button>
+
+                    {/* Button footer */}
+                    <div className="mt-3 pl-6">
+                      <div className={`w-full py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold text-center transition-all ${
+                        isSelected ? "bg-[#8B1E1E] text-white shadow-xs" : "bg-amber-100/80 text-stone-700 group-hover:bg-amber-200"
+                      }`}>
+                        {isSelected ? "Selected ✓" : "Tap to Choose"}
+                      </div>
+                    </div>
                   </div>
                 );
               })}
@@ -649,82 +643,98 @@ export const NavaratriAdvertise: React.FC = () => {
                 <label className="block font-bold text-xs text-stone-800 uppercase tracking-wider">
                   Choose Ad Format *
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
                   {/* Option 1: Photo / Banner */}
                   <div
                     onClick={() => setAdFormat("BANNER")}
-                    className={`cursor-pointer p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between space-y-2 ${
+                    className={`cursor-pointer p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex items-center sm:flex-col sm:items-start justify-between sm:justify-start gap-2.5 ${
                       adFormat === "BANNER"
-                        ? "bg-amber-50/80 border-[#8B1E1E] shadow-sm ring-1 ring-[#8B1E1E]/20"
+                        ? "bg-amber-50/90 border-[#8B1E1E] shadow-sm ring-2 ring-[#8B1E1E]/20"
                         : "bg-white border-amber-200 hover:border-amber-300 hover:bg-stone-50/50"
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="w-8 h-8 rounded-xl bg-amber-100 text-[#8B1E1E] flex items-center justify-center font-bold">
+                    <div className="flex items-center sm:items-start gap-2.5 min-w-0">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        adFormat === "BANNER" ? "bg-[#8B1E1E] text-white" : "bg-amber-100 text-[#8B1E1E]"
+                      }`}>
                         <ImageIcon className="w-4 h-4" />
                       </div>
-                      {adFormat === "BANNER" && (
-                        <span className="text-[10px] font-bold text-[#8B1E1E] bg-amber-200/80 px-2 py-0.5 rounded-full">
-                          Selected ✓
-                        </span>
-                      )}
+                      <div className="min-w-0">
+                        <h4 className="font-bold text-xs text-stone-900 truncate">Photo / Banner Ad</h4>
+                        <p className="text-[11px] text-stone-500 leading-snug">Upload shop photo or poster</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-xs text-stone-900">Photo / Banner Ad</h4>
-                      <p className="text-[11px] text-stone-500 leading-snug mt-0.5">
-                        Upload shop photo or banner. Auto-fit to 16:9 landscape.
-                      </p>
-                    </div>
+                    {adFormat === "BANNER" && (
+                      <span className="text-[10px] font-bold text-[#8B1E1E] bg-amber-200/80 px-2 py-0.5 rounded-full shrink-0">
+                        Selected ✓
+                      </span>
+                    )}
                   </div>
 
                   {/* Option 2: Digital Visiting Card */}
                   <div
                     onClick={() => setAdFormat("BUSINESS_CARD")}
-                    className={`cursor-pointer p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between space-y-2 ${
+                    className={`cursor-pointer p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex items-center sm:flex-col sm:items-start justify-between sm:justify-start gap-2.5 ${
                       adFormat === "BUSINESS_CARD"
-                        ? "bg-amber-50/80 border-[#8B1E1E] shadow-sm ring-1 ring-[#8B1E1E]/20"
+                        ? "bg-amber-50/90 border-[#8B1E1E] shadow-sm ring-2 ring-[#8B1E1E]/20"
                         : "bg-white border-amber-200 hover:border-amber-300 hover:bg-stone-50/50"
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="w-8 h-8 rounded-xl bg-amber-100 text-[#8B1E1E] flex items-center justify-center font-bold">
+                    <div className="flex items-center sm:items-start gap-2.5 min-w-0">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        adFormat === "BUSINESS_CARD" ? "bg-[#8B1E1E] text-white" : "bg-amber-100 text-[#8B1E1E]"
+                      }`}>
                         <CreditCard className="w-4 h-4" />
                       </div>
-                      <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
-                        No Image Needed
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="font-bold text-xs text-stone-900 truncate">Digital Visiting Card</h4>
+                        </div>
+                        <p className="text-[11px] text-stone-500 leading-snug">Gold card • No photo needed</p>
+                      </div>
+                    </div>
+                    {adFormat === "BUSINESS_CARD" ? (
+                      <span className="text-[10px] font-bold text-[#8B1E1E] bg-amber-200/80 px-2 py-0.5 rounded-full shrink-0">
+                        Selected ✓
                       </span>
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-xs text-stone-900">Digital Visiting Card</h4>
-                      <p className="text-[11px] text-stone-500 leading-snug mt-0.5">
-                        Gold-embossed card with owner name, phone, WhatsApp &amp; address.
-                      </p>
-                    </div>
+                    ) : (
+                      <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full shrink-0">
+                        No Photo Needed
+                      </span>
+                    )}
                   </div>
 
                   {/* Option 3: Text & Offer Bulletin */}
                   <div
                     onClick={() => setAdFormat("TEXT_BULLETIN")}
-                    className={`cursor-pointer p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between space-y-2 ${
+                    className={`cursor-pointer p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex items-center sm:flex-col sm:items-start justify-between sm:justify-start gap-2.5 ${
                       adFormat === "TEXT_BULLETIN"
-                        ? "bg-amber-50/80 border-[#8B1E1E] shadow-sm ring-1 ring-[#8B1E1E]/20"
+                        ? "bg-amber-50/90 border-[#8B1E1E] shadow-sm ring-2 ring-[#8B1E1E]/20"
                         : "bg-white border-amber-200 hover:border-amber-300 hover:bg-stone-50/50"
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="w-8 h-8 rounded-xl bg-amber-100 text-[#8B1E1E] flex items-center justify-center font-bold">
+                    <div className="flex items-center sm:items-start gap-2.5 min-w-0">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        adFormat === "TEXT_BULLETIN" ? "bg-[#8B1E1E] text-white" : "bg-amber-100 text-[#8B1E1E]"
+                      }`}>
                         <FileText className="w-4 h-4" />
                       </div>
-                      <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
-                        No Image Needed
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="font-bold text-xs text-stone-900 truncate">Text & Offer Bulletin</h4>
+                        </div>
+                        <p className="text-[11px] text-stone-500 leading-snug">Offer headline & bullet points</p>
+                      </div>
+                    </div>
+                    {adFormat === "TEXT_BULLETIN" ? (
+                      <span className="text-[10px] font-bold text-[#8B1E1E] bg-amber-200/80 px-2 py-0.5 rounded-full shrink-0">
+                        Selected ✓
                       </span>
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-xs text-stone-900">Text &amp; Offer Bulletin</h4>
-                      <p className="text-[11px] text-stone-500 leading-snug mt-0.5">
-                        Catchy headline, special discount tag &amp; bullet points.
-                      </p>
-                    </div>
+                    ) : (
+                      <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full shrink-0">
+                        No Photo Needed
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -873,22 +883,17 @@ export const NavaratriAdvertise: React.FC = () => {
 
               {/* 3A. FORMAT: PHOTO / BANNER AD FIELDS */}
               {adFormat === "BANNER" && (
-                <div className="space-y-4 pt-3 border-t border-amber-200 text-xs">
-                  {/* Recommended Ratio Guidance Callout */}
-                  <div className="p-3 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300 flex items-start gap-2.5">
-                    <Info className="w-4 h-4 text-amber-800 shrink-0 mt-0.5" />
-                    <div className="space-y-1">
-                      <p className="font-bold text-amber-950">
-                        Recommended Aspect Ratio: Landscape 16:9 (~1200×630 or 1376×768)
-                      </p>
-                      <p className="text-[11px] text-stone-600 leading-relaxed">
-                        Website ads on both mobile phones and desktop computers display in horizontal landscape banners. If you upload a mobile portrait photo (vertical), our system automatically wraps it with ambient festive wings so your photo is never cropped!
-                      </p>
-                    </div>
+                <div className="space-y-3 pt-3 border-t border-amber-200 text-xs">
+                  {/* Ratio Guidance Tip */}
+                  <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-stone-700 flex items-center gap-2">
+                    <Info className="w-4 h-4 text-amber-800 shrink-0" />
+                    <p className="text-[11px] leading-relaxed">
+                      <strong>Photo Tip:</strong> Landscape banners or camera photos work best. Vertical phone photos are automatically framed with festive borders so they never get cropped!
+                    </p>
                   </div>
 
                   {/* Upload Area */}
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <label className="block font-bold text-stone-800">Upload Shop Photo or Banner *</label>
                       <span className="text-[11px] text-stone-500">JPG, PNG (Max 5MB)</span>
@@ -896,7 +901,7 @@ export const NavaratriAdvertise: React.FC = () => {
 
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className="cursor-pointer border-2 border-dashed border-amber-400 rounded-2xl p-4 bg-amber-50/40 hover:bg-amber-100/40 transition-colors text-center space-y-2"
+                      className="cursor-pointer border-2 border-dashed border-amber-400 rounded-2xl p-4 bg-amber-50/40 hover:bg-amber-100/50 transition-colors text-center space-y-1.5"
                     >
                       <input
                         ref={fileInputRef}
@@ -905,11 +910,11 @@ export const NavaratriAdvertise: React.FC = () => {
                         onChange={handleFileUpload}
                         className="hidden"
                       />
-                      <div className="w-10 h-10 mx-auto rounded-full bg-amber-200 text-[#8B1E1E] flex items-center justify-center shadow-sm">
+                      <div className="w-10 h-10 mx-auto rounded-full bg-amber-200 text-[#8B1E1E] flex items-center justify-center shadow-xs">
                         <Upload className="w-5 h-5" />
                       </div>
-                      <p className="font-bold text-stone-800">Click or tap to upload photo from mobile/computer</p>
-                      <p className="text-[11px] text-stone-500">Supports direct camera photos of your shop, products, or signboard</p>
+                      <p className="font-bold text-stone-800 text-xs">Tap to upload photo from your phone or computer</p>
+                      <p className="text-[11px] text-stone-500">Direct camera photos of shop, sweets, samagri, or banner</p>
                     </div>
                   </div>
 
@@ -1034,14 +1039,11 @@ export const NavaratriAdvertise: React.FC = () => {
               {/* 3B. FORMAT: DIGITAL VISITING CARD FIELDS */}
               {adFormat === "BUSINESS_CARD" && (
                 <div className="space-y-4 pt-3 border-t border-amber-200 text-xs">
-                  <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 text-amber-950 flex items-start gap-2.5">
-                    <CreditCard className="w-4 h-4 text-amber-800 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-bold">Digital Visiting Card Generator (No Photo Required)</p>
-                      <p className="text-[11px] text-stone-600 mt-0.5">
-                        We generate a high-resolution, gold-embossed digital business card with your store details and clickable Call &amp; WhatsApp buttons for devotees.
-                      </p>
-                    </div>
+                  <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950 flex items-center gap-2">
+                    <CreditCard className="w-4 h-4 text-amber-800 shrink-0" />
+                    <p className="text-[11px] text-stone-700">
+                      <strong>Visiting Card:</strong> We generate a high-res gold digital business card with your store details and one-tap Call &amp; WhatsApp buttons.
+                    </p>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1098,18 +1100,15 @@ export const NavaratriAdvertise: React.FC = () => {
 
               {/* 3C. FORMAT: TEXT & OFFER BULLETIN FIELDS */}
               {adFormat === "TEXT_BULLETIN" && (
-                <div className="space-y-4 pt-3 border-t border-amber-200 text-xs">
-                  <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 text-amber-950 flex items-start gap-2.5">
-                    <FileText className="w-4 h-4 text-amber-800 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-bold">Text &amp; Offer Bulletin (No Photo Required)</p>
-                      <p className="text-[11px] text-stone-600 mt-0.5">
-                        Perfect for festive announcements, discounts, and puja bookings. We format it into a bold, eye-catching festive announcement bulletin card.
-                      </p>
-                    </div>
+                <div className="space-y-3 pt-3 border-t border-amber-200 text-xs">
+                  <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-amber-800 shrink-0" />
+                    <p className="text-[11px] text-stone-700">
+                      <strong>Offer Bulletin:</strong> We automatically turn your offer headline and highlights into an eye-catching festive announcement card.
+                    </p>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block font-bold mb-1 text-stone-800">Offer Headline / Title *</label>
                       <input
@@ -1128,50 +1127,50 @@ export const NavaratriAdvertise: React.FC = () => {
                         type="text"
                         value={discountTag}
                         onChange={(e) => setDiscountTag(e.target.value)}
-                        placeholder="e.g. SPECIAL FESTIVE OFFER, 25% OFF, LIMITED TIME"
+                        placeholder="e.g. SPECIAL FESTIVE OFFER or 25% OFF"
                         className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-semibold text-amber-900"
                       />
                     </div>
                   </div>
 
                   {/* 3 Key Highlights */}
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <label className="block font-bold text-stone-800">Key Offer Highlights / Bullet Points (3 Points)</label>
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px] shrink-0">1</span>
+                        <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-[10px] shrink-0">1</span>
                         <input
                           type="text"
                           value={bulletPoint1}
                           onChange={(e) => setBulletPoint1(e.target.value)}
-                          placeholder="Point 1: e.g. 100% Satvik & Fresh Ingredients Daily"
-                          className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white"
+                          placeholder="e.g. 100% Satvik & Fresh Ingredients Daily"
+                          className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white text-xs"
                         />
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px] shrink-0">2</span>
+                        <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-[10px] shrink-0">2</span>
                         <input
                           type="text"
                           value={bulletPoint2}
                           onChange={(e) => setBulletPoint2(e.target.value)}
-                          placeholder="Point 2: e.g. Fast Free Delivery to All Mandapams"
-                          className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white"
+                          placeholder="e.g. Fast Free Delivery to All Mandapams Across Zone"
+                          className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white text-xs"
                         />
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px] shrink-0">3</span>
+                        <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-[10px] shrink-0">3</span>
                         <input
                           type="text"
                           value={bulletPoint3}
                           onChange={(e) => setBulletPoint3(e.target.value)}
-                          placeholder="Point 3: e.g. Special Discounts for Durga Mandapam Bulk Orders"
-                          className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white"
+                          placeholder="e.g. Special Discounts for Bulk Mandapam Orders"
+                          className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white text-xs"
                         />
                       </div>
                     </div>
                   </div>
 
-                  {/* Action CTA Button */}
+                  {/* Action CTA Button with quick chips */}
                   <div>
                     <label className="block font-bold mb-1 text-stone-800">Call to Action Button Label</label>
                     <input
@@ -1181,6 +1180,22 @@ export const NavaratriAdvertise: React.FC = () => {
                       placeholder="Order Now / Call Store"
                       className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-semibold"
                     />
+                    <div className="flex flex-wrap gap-1.5 mt-1.5">
+                      {["Order Now", "Call Store", "WhatsApp Us", "Book Pooja", "Visit Shop"].map((preset) => (
+                        <button
+                          type="button"
+                          key={preset}
+                          onClick={() => setCtaButton(preset)}
+                          className={`text-[10px] px-2.5 py-0.5 rounded-lg font-semibold transition-all border ${
+                            ctaButton === preset
+                              ? "bg-[#8B1E1E] text-white border-[#8B1E1E] shadow-xs"
+                              : "bg-white text-stone-700 border-amber-300 hover:bg-amber-50"
+                          }`}
+                        >
+                          {preset}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
