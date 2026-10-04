@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Heart, ShieldCheck, Mail, Phone, MapPin } from "lucide-react";
+import { Heart } from "lucide-react";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { FOOTER_SLOKA_TRANSLATIONS } from "../../utils/navaratriTranslations";
 
@@ -98,24 +98,6 @@ export const NavaratriFooter: React.FC = () => {
               Privacy Policy
             </Link>
           </div>
-        </div>
-
-        {/* Merchant & Payment Gateway Compliance Box for Cashfree */}
-        <div className="p-3.5 rounded-2xl bg-black/40 border border-amber-500/20 text-[11px] text-amber-200/75 space-y-1.5 max-w-2xl mx-auto text-center leading-relaxed">
-          <p className="flex items-center justify-center gap-1.5 font-bold text-amber-300">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span>Official Merchant Entity: Siddhi Dynamics LLP</span>
-          </p>
-          <p className="text-[10px] text-amber-100/70">
-            Regd. Office: 3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001, India
-          </p>
-          <p className="text-[10px] text-amber-200/80 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
-            <span>Support: <a href="tel:+916303602743" className="text-amber-200 underline">+91 63036 02743</a></span>
-            <span>•</span>
-            <span>Email: <a href="mailto:hello@siddhidynamics.in" className="text-amber-200 underline">hello@siddhidynamics.in</a></span>
-            <span>•</span>
-            <span>Online payments processed securely via <strong>Cashfree Payment Gateway</strong></span>
-          </p>
         </div>
 
         <div className="pt-2 border-t border-amber-500/15 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-amber-200/80">
