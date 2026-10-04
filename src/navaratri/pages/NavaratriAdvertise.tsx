@@ -113,6 +113,7 @@ export const NavaratriAdvertise: React.FC = () => {
 
   // In-Page Interactive Preview Tab
   const [inPagePreviewDevice, setInPagePreviewDevice] = useState<"mobile" | "desktop">("mobile");
+  const [inPageFrameTab, setInPageFrameTab] = useState<"BOTH" | "TOP" | "BOTTOM">("BOTH");
 
   // Payment Step State
   const [paymentStep, setPaymentStep] = useState(false);
@@ -1700,88 +1701,335 @@ export const NavaratriAdvertise: React.FC = () => {
 
               {/* 4. IN-PAGE LIVE DEVOTEE PREVIEW WITH MOBILE/DESKTOP SWITCHER */}
               <div className="space-y-3 pt-3 border-t-2 border-amber-300/80">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-[#8B1E1E]">
                     <Eye className="w-4 h-4 text-amber-700" />
                     <span>LIVE IN-FRAME DEVOTEE PREVIEW</span>
                   </div>
-                  {/* Mobile / Desktop view switcher */}
-                  <div className="flex items-center bg-amber-100 p-0.5 rounded-xl text-[11px] font-bold">
-                    <button
-                      type="button"
-                      onClick={() => setInPagePreviewDevice("mobile")}
-                      className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1 ${
-                        inPagePreviewDevice === "mobile"
-                          ? "bg-[#8B1E1E] text-white shadow-xs"
-                          : "text-amber-900 hover:text-stone-900"
-                      }`}
-                    >
-                      <Smartphone className="w-3 h-3" />
-                      <span>Mobile View</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setInPagePreviewDevice("desktop")}
-                      className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1 ${
-                        inPagePreviewDevice === "desktop"
-                          ? "bg-[#8B1E1E] text-white shadow-xs"
-                          : "text-amber-900 hover:text-stone-900"
-                      }`}
-                    >
-                      <Monitor className="w-3 h-3" />
-                      <span>Desktop View</span>
-                    </button>
+
+                  {/* Frame selector & Device switcher */}
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {/* Frame Tab Switcher */}
+                    <div className="flex items-center bg-amber-100/90 p-0.5 rounded-xl text-[10px] sm:text-[11px] font-bold border border-amber-300">
+                      <button
+                        type="button"
+                        onClick={() => setInPageFrameTab("BOTH")}
+                        className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                          inPageFrameTab === "BOTH"
+                            ? "bg-[#8B1E1E] text-white shadow-xs"
+                            : "text-amber-900 hover:text-stone-900"
+                        }`}
+                      >
+                        <span>🌟 Both Frames (1 &amp; 2)</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setInPageFrameTab("TOP")}
+                        className={`px-2 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                          inPageFrameTab === "TOP"
+                            ? "bg-[#8B1E1E] text-white shadow-xs"
+                            : "text-amber-900 hover:text-stone-900"
+                        }`}
+                      >
+                        <span>🔝 Frame 1 (Top)</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setInPageFrameTab("BOTTOM")}
+                        className={`px-2 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                          inPageFrameTab === "BOTTOM"
+                            ? "bg-[#8B1E1E] text-white shadow-xs"
+                            : "text-amber-900 hover:text-stone-900"
+                        }`}
+                      >
+                        <span>🔻 Frame 2 (Bottom)</span>
+                      </button>
+                    </div>
+
+                    {/* Mobile / Desktop view switcher */}
+                    <div className="flex items-center bg-amber-100/90 p-0.5 rounded-xl text-[10px] sm:text-[11px] font-bold border border-amber-300">
+                      <button
+                        type="button"
+                        onClick={() => setInPagePreviewDevice("mobile")}
+                        className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                          inPagePreviewDevice === "mobile"
+                            ? "bg-[#8B1E1E] text-white shadow-xs"
+                            : "text-amber-900 hover:text-stone-900"
+                        }`}
+                      >
+                        <Smartphone className="w-3 h-3" />
+                        <span>Mobile View</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setInPagePreviewDevice("desktop")}
+                        className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                          inPagePreviewDevice === "desktop"
+                            ? "bg-[#8B1E1E] text-white shadow-xs"
+                            : "text-amber-900 hover:text-stone-900"
+                        }`}
+                      >
+                        <Monitor className="w-3 h-3" />
+                        <span>Desktop View</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
 
-                {/* Preview Frame */}
-                <div className="rounded-2xl border-2 border-amber-400/80 bg-[#1e130e] p-3 sm:p-4 shadow-inner">
-                  {/* Widescreen Landscape Banner Display */}
-                  <div className={`relative mx-auto overflow-hidden rounded-2xl border border-amber-400/60 bg-[#120a06] flex items-center justify-center shadow-lg transition-all ${
-                    inPagePreviewDevice === "mobile" ? "w-full max-w-sm h-40 sm:h-44" : "w-full h-48 sm:h-56"
-                  }`}>
-                    {/* Background */}
-                    <div
-                      className="absolute inset-0 bg-cover bg-center blur-md opacity-30 scale-110 pointer-events-none"
-                      style={{ backgroundImage: `url("${imagePreview}")` }}
-                    />
-                    <img
-                      src={imagePreview}
-                      alt="Banner Preview"
-                      className="w-full h-full object-contain relative z-10 mx-auto"
-                    />
-                    {/* Top sponsored tag */}
-                    <div className="absolute top-2.5 left-2.5 z-20 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md text-[9px] sm:text-[10px] font-bold text-amber-200 border border-amber-300/40 flex items-center gap-1.5 shadow">
-                      <span className={`w-1.5 h-1.5 rounded-full ${isExclusive ? 'bg-amber-400 ring-2 ring-amber-300/60' : 'bg-emerald-400 animate-pulse'}`} />
-                      <span>
-                        {isExclusive ? `👑 24/7 Solo (${preferredFrame === "BOTH" ? "Both Frames" : preferredFrame === "TOP" ? "Top Frame" : "Bottom Frame"})` : "🔄 6s Rotation"}
-                        {adFormat === "TEXT_BULLETIN" && businessName ? ` • ${businessName}` : ""}
-                      </span>
-                    </div>
-
-                    {/* CTA button (only for Text Bulletin where user configured an action button) */}
-                    {adFormat === "TEXT_BULLETIN" && ctaButton && (
-                      <div className="absolute bottom-2.5 right-2.5 z-20">
-                        <span className="px-3 py-1 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[10px] sm:text-xs font-bold shadow-md flex items-center gap-1 border border-amber-300/60">
-                          {ctaButton} ↗
-                        </span>
+                {/* Main Preview Container */}
+                <div className="rounded-2xl border-2 border-amber-400/80 bg-[#1e130e] p-3 sm:p-5 shadow-xl space-y-4">
+                  {/* DESKTOP VIEW CONTAINER */}
+                  {inPagePreviewDevice === "desktop" ? (
+                    <div className="space-y-4">
+                      {/* Webpage Chrome Bar Mockup */}
+                      <div className="rounded-xl overflow-hidden border border-amber-400/40 bg-[#2A160E] shadow-sm">
+                        <div className="bg-[#8B1E1E] text-white px-3 py-1 text-[9px] flex items-center justify-between font-serif">
+                          <span className="text-amber-200">॥ Om Sri Matre Namaha ॥ • Sharan Navaratri Nizamabad 2026</span>
+                          <span className="text-amber-300 font-sans font-bold">108 Durga Mandapams Live</span>
+                        </div>
+                        <div className="px-3 py-1.5 bg-[#FAF7F0] border-b border-amber-300 flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5 font-['Cinzel',serif] font-black text-xs text-[#8B1E1E]">
+                            <span>🔱</span>
+                            <span>SHARAN NAVARATRI</span>
+                          </div>
+                          <div className="flex-1 max-w-xs h-6 rounded-full bg-white border border-amber-300 px-2.5 text-[9px] text-stone-400 flex items-center">
+                            🔍 Search Mandapam, colony or city...
+                          </div>
+                          <div className="flex items-center gap-1 text-[9px] font-bold text-[#8B1E1E]">
+                            <span>🏛 Mandapam Login</span>
+                          </div>
+                        </div>
                       </div>
-                    )}
-                  </div>
+
+                      {/* FRAME 1: TOP AD FRAME (Below Header) */}
+                      {(inPageFrameTab === "BOTH" || inPageFrameTab === "TOP") && (
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between px-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="px-2 py-0.5 rounded-full bg-amber-400 text-amber-950 text-[9px] font-black uppercase tracking-wider shadow-xs">
+                                Frame 1 • Top Frame
+                              </span>
+                              <span className="text-[10px] font-bold text-amber-200">
+                                👑 24/7 Solo (Below Header) • {businessName || "Your Business"}
+                              </span>
+                            </div>
+                            <span className="text-[9px] font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/40">
+                              ✓ 100% In-Frame
+                            </span>
+                          </div>
+
+                          <div className="relative w-full h-32 sm:h-36 md:h-40 rounded-2xl overflow-hidden border-2 border-amber-400/90 shadow-lg bg-[#120a06] flex items-center justify-center">
+                            {/* Ambient Blurred Backdrop */}
+                            <div
+                              className="absolute inset-0 bg-cover bg-center blur-lg opacity-30 scale-110 pointer-events-none"
+                              style={{ backgroundImage: `url("${imagePreview}")` }}
+                            />
+                            {/* Banner Image */}
+                            <img
+                              src={imagePreview}
+                              alt="Top Banner Preview"
+                              className="w-full h-full object-contain relative z-10 mx-auto"
+                            />
+                            {/* Top sponsored tag */}
+                            <div className="absolute top-2 left-2 z-20 flex px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-amber-400/40 text-[9px] sm:text-[10px] font-bold text-amber-200 uppercase tracking-wider items-center gap-1.5 shadow-sm pointer-events-none">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                              <span>Sponsored</span>
+                              <span className="font-semibold text-white/90">• {businessName || "Your Business"}</span>
+                            </div>
+                            {/* Desktop CTA Action Button */}
+                            <div className="absolute bottom-2 right-2 z-20">
+                              <span className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[11px] sm:text-xs font-bold shadow-md flex items-center gap-1.5 border border-amber-300/60 whitespace-nowrap">
+                                <span>{ctaButton || "WhatsApp Us"}</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Content Mini Divider (when showing both frames, gives true contextual feel) */}
+                      {inPageFrameTab === "BOTH" && (
+                        <div className="rounded-xl bg-[#2A160E]/60 border border-amber-500/30 p-2.5 text-center flex items-center justify-center gap-3">
+                          <span className="text-[10px] text-amber-300/80 font-medium">
+                            📜 Devotees browsing 108 Durga Mandapams, Aarti schedules &amp; Prasad distribution...
+                          </span>
+                        </div>
+                      )}
+
+                      {/* FRAME 2: BOTTOM AD FRAME (Above Footer) */}
+                      {(inPageFrameTab === "BOTH" || inPageFrameTab === "BOTTOM") && (
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between px-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="px-2 py-0.5 rounded-full bg-amber-400 text-amber-950 text-[9px] font-black uppercase tracking-wider shadow-xs">
+                                Frame 2 • Bottom Frame
+                              </span>
+                              <span className="text-[10px] font-bold text-amber-200">
+                                👑 24/7 Solo (Above Footer) • {businessName || "Your Business"}
+                              </span>
+                            </div>
+                            <span className="text-[9px] font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/40">
+                              ✓ 100% In-Frame
+                            </span>
+                          </div>
+
+                          <div className="relative w-full h-36 sm:h-40 md:h-44 rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-amber-400/90 shadow-lg bg-[#120a06] flex items-center justify-center">
+                            {/* Ambient Blurred Backdrop */}
+                            <div
+                              className="absolute inset-0 bg-cover bg-center blur-lg opacity-30 scale-110 pointer-events-none"
+                              style={{ backgroundImage: `url("${imagePreview}")` }}
+                            />
+                            {/* Banner Image */}
+                            <img
+                              src={imagePreview}
+                              alt="Bottom Banner Preview"
+                              className="w-full h-full object-contain relative z-10 mx-auto"
+                            />
+                            {/* Top sponsored tag */}
+                            <div className="absolute top-2.5 left-2.5 z-20 flex px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-amber-400/40 text-[9px] sm:text-[10px] font-bold text-amber-200 uppercase tracking-wider items-center gap-1.5 shadow-sm pointer-events-none">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                              <span>Sponsored</span>
+                              <span className="font-semibold text-white/90">• {businessName || "Your Business"}</span>
+                            </div>
+                            {/* Desktop CTA Action Button */}
+                            <div className="absolute bottom-2.5 right-2.5 z-20">
+                              <span className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[11px] sm:text-xs font-bold shadow-md flex items-center gap-1.5 border border-amber-300/60 whitespace-nowrap">
+                                <span>{ctaButton || "WhatsApp Us"}</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* MOBILE PHONE REALISTIC SIMULATOR CONTAINER */
+                    <div className="max-w-xs mx-auto space-y-4">
+                      {/* Mobile Header Bar Mockup */}
+                      <div className="rounded-xl overflow-hidden border border-amber-400/40 bg-[#2A160E] shadow-sm">
+                        <div className="bg-[#8B1E1E] text-white px-2 py-0.5 text-[8px] flex items-center justify-between font-serif">
+                          <span className="text-amber-200">॥ Om Sri Matre Namaha ॥</span>
+                          <span className="text-amber-300 font-sans font-bold">English</span>
+                        </div>
+                        <div className="px-2.5 py-1 bg-[#FAF7F0] border-b border-amber-300 flex items-center justify-between">
+                          <div className="flex items-center gap-1 font-['Cinzel',serif] font-black text-[11px] text-[#8B1E1E]">
+                            <span>🔱</span>
+                            <span>Sharan Navaratri</span>
+                          </div>
+                          <div className="w-5 h-5 rounded bg-amber-100 flex flex-col justify-center items-center gap-[2px]">
+                            <span className="w-3 h-[1.5px] bg-[#8B1E1E] rounded-full" />
+                            <span className="w-3 h-[1.5px] bg-[#8B1E1E] rounded-full" />
+                            <span className="w-3 h-[1.5px] bg-[#8B1E1E] rounded-full" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* FRAME 1: TOP AD FRAME (Below Header) — Mobile */}
+                      {(inPageFrameTab === "BOTH" || inPageFrameTab === "TOP") && (
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between px-0.5">
+                            <span className="px-2 py-0.5 rounded-full bg-amber-400 text-amber-950 text-[8px] font-black uppercase tracking-wider shadow-xs">
+                              Frame 1 • Top Frame
+                            </span>
+                            <span className="text-[8px] font-bold text-amber-300">
+                              👑 24/7 Solo • Top Frame
+                            </span>
+                          </div>
+
+                          <div className="relative w-full h-28 rounded-2xl overflow-hidden border-2 border-amber-400/90 shadow-md bg-[#120a06] flex items-center justify-center">
+                            <div
+                              className="absolute inset-0 bg-cover bg-center blur-lg opacity-30 scale-110 pointer-events-none"
+                              style={{ backgroundImage: `url("${imagePreview}")` }}
+                            />
+                            <img
+                              src={imagePreview}
+                              alt="Top Banner Mobile"
+                              className="w-full h-full object-contain relative z-10 mx-auto"
+                            />
+                            <div className="absolute top-1.5 left-1.5 z-20 flex px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-amber-400/40 text-[8.5px] font-bold text-amber-200 uppercase tracking-wider items-center gap-1 shadow-sm">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                              <span>Sponsored</span>
+                            </div>
+                          </div>
+
+                          {/* Mobile Action Row (Exact behavior from NavaratriTopAdBanner) */}
+                          <div className="flex items-center justify-between gap-1.5 pt-0.5 px-1">
+                            <span className="text-[9.5px] text-amber-200/90 font-medium truncate">
+                              • {businessName || "Your Business"}
+                            </span>
+                            <span className="shrink-0 px-2.5 py-1 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[10px] font-bold shadow-xs flex items-center gap-1 border border-amber-300/60">
+                              <span>{ctaButton || "WhatsApp Us"}</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Content Separator on Mobile */}
+                      {inPageFrameTab === "BOTH" && (
+                        <div className="rounded-xl bg-[#2A160E]/50 border border-amber-500/20 p-2 text-center">
+                          <span className="text-[9px] text-amber-300/70">
+                            🏛 108 Durga Mandapams &amp; Aarti Schedules
+                          </span>
+                        </div>
+                      )}
+
+                      {/* FRAME 2: BOTTOM AD FRAME (Above Footer) — Mobile */}
+                      {(inPageFrameTab === "BOTH" || inPageFrameTab === "BOTTOM") && (
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between px-0.5">
+                            <span className="px-2 py-0.5 rounded-full bg-amber-400 text-amber-950 text-[8px] font-black uppercase tracking-wider shadow-xs">
+                              Frame 2 • Bottom Frame
+                            </span>
+                            <span className="text-[8px] font-bold text-amber-300">
+                              👑 24/7 Solo • Bottom Frame
+                            </span>
+                          </div>
+
+                          <div className="relative w-full h-32 rounded-2xl overflow-hidden border-2 border-amber-400/90 shadow-md bg-[#120a06] flex items-center justify-center">
+                            <div
+                              className="absolute inset-0 bg-cover bg-center blur-lg opacity-30 scale-110 pointer-events-none"
+                              style={{ backgroundImage: `url("${imagePreview}")` }}
+                            />
+                            <img
+                              src={imagePreview}
+                              alt="Bottom Banner Mobile"
+                              className="w-full h-full object-contain relative z-10 mx-auto"
+                            />
+                            <div className="absolute top-1.5 left-1.5 z-20 flex px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-amber-400/40 text-[8.5px] font-bold text-amber-200 uppercase tracking-wider items-center gap-1 shadow-sm">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                              <span>Sponsored</span>
+                            </div>
+                          </div>
+
+                          {/* Mobile Action Row (Exact behavior from NavaratriBottomAdBanner) */}
+                          <div className="flex items-center justify-between gap-1.5 pt-0.5 px-1">
+                            <span className="text-[9.5px] text-amber-200/90 font-medium truncate">
+                              • {businessName || "Your Business"}
+                            </span>
+                            <span className="shrink-0 px-2.5 py-1 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-[10px] font-bold shadow-xs flex items-center gap-1 border border-amber-300/60">
+                              <span>{ctaButton || "WhatsApp Us"}</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Summary Bar below preview */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pt-2 px-1 text-[11px] text-amber-200/90 font-medium">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 px-1 text-[11px] text-amber-200/90 font-medium border-t border-amber-500/30">
                     <span className="truncate">
-                      📍 Target: {effectiveDisplayZone}, {city}{adFormat === "TEXT_BULLETIN" && category ? ` • ${category}` : ""}
+                      📍 Target: {effectiveDisplayZone}, {city} • {category || "Sweets & Upvas Food"}
                     </span>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                         isExclusive ? "bg-amber-500/20 text-amber-300 border border-amber-400/40" : "bg-emerald-500/20 text-emerald-300 border border-emerald-400/40"
                       }`}>
                         {isExclusive ? `👑 100% Solo • ${preferredFrame === "BOTH" ? "Top & Bottom Frames" : preferredFrame === "TOP" ? "Top Frame (Below Header)" : "Bottom Frame (Above Footer)"}` : "🔄 Changes Every 6s"}
                       </span>
-                      <span className="text-emerald-300 font-bold">
-                        ✓ 100% In-Frame
+                      <span className="text-emerald-300 font-bold flex items-center gap-1">
+                        <span>✓</span> 100% In-Frame
                       </span>
                     </div>
                   </div>
@@ -1790,7 +2038,7 @@ export const NavaratriAdvertise: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAdPreview(true)}
-                  className="w-full py-2 rounded-xl border border-[#8B1E1E] text-[#8B1E1E] text-xs font-bold hover:bg-[#8B1E1E]/5 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="w-full py-2.5 rounded-xl border-2 border-[#8B1E1E] text-[#8B1E1E] text-xs font-bold hover:bg-[#8B1E1E]/5 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <Play className="w-3.5 h-3.5" />
                   <span>Open Full Phone &amp; Desktop Simulator</span>
