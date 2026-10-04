@@ -285,16 +285,13 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
       ctx.textAlign = "center";
       ctx.fillText("॥ ॐ శ్రీ మాత్రే నమః ॥ • सर्वमङ्गलమాङ्गल्ये शिवे सर्वार्थसाधिके", canvas.width / 2, cardY + 45);
 
-      // 4. Sacred Diya & Platform Badge
-      ctx.font = "26px sans-serif";
-      ctx.fillText("🪔", canvas.width / 2, cardY + 80);
-
+      // 4. Platform Badge
       const badgeText = "NAVARATRI MANDAPAM PLATFORM";
       ctx.font = "bold 15px sans-serif";
       const badgeWidth = ctx.measureText(badgeText).width + 48;
       const badgeHeight = 34;
       const badgeX = (canvas.width - badgeWidth) / 2;
-      const badgeY = cardY + 95;
+      const badgeY = cardY + 65;
 
       ctx.fillStyle = "#8B1E1E";
       ctx.beginPath();
@@ -649,9 +646,8 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
               ॥ ॐ శ్రీ మాత్రే నమః ॥ • सर्वमङ्गलమాङ्गल्ये शिवे सर्वार्थसाधिके
             </div>
 
-            {/* Sacred Diya & Top Platform Arch Badge */}
-            <div className="pt-1 flex flex-col items-center gap-1">
-              <span className="text-xl sm:text-2xl leading-none select-none">🪔</span>
+            {/* Top Platform Arch Badge */}
+            <div className="pt-0.5 flex flex-col items-center">
               <div
                 className={`inline-flex items-center px-4 py-1.5 rounded-full ${currentFrame.badgeBg} text-white text-xs font-bold shadow-md tracking-wider border border-amber-300/40`}
               >
