@@ -99,33 +99,50 @@ export const NavaratriHeader: React.FC = () => {
           </div>
         </Link>
 
-        {/* Unified 1-Button: [Login as Mandapam (Organizers)] [+Register Mandapam] [Run Ads] */}
-        <div className="hidden lg:flex items-center p-1 rounded-2xl bg-white border-2 border-amber-300 shadow-xs hover:shadow-md transition-all">
+        {/* Unified 1-Button: [Login as Mandapam (Organizers)] [+Register Mandapam] [Run Ads] in Run Ads Pointed-Leaf Design */}
+        <div className="hidden lg:relative lg:inline-flex items-center py-1 px-6 sm:px-7 drop-shadow-md hover:drop-shadow-lg transition-all group/leaf">
+          {/* Pointed pill / leaf shape background matching Run Ads design */}
+          <svg
+            viewBox="0 0 520 44"
+            preserveAspectRatio="none"
+            className="absolute inset-0 w-full h-full text-[#C12535] group-hover/leaf:text-[#A81B2B] transition-colors"
+          >
+            <path
+              d="M 22 1 L 498 1 C 509 1, 516 14, 519 22 C 516 30, 509 43, 498 43 L 22 43 C 11 43, 4 30, 1 22 C 4 14, 11 1, 22 1 Z"
+              fill="currentColor"
+              stroke="#F59E0B"
+              strokeWidth="1.5"
+            />
+          </svg>
+
+          {/* 1. Login as Mandapam (Organizers) */}
           <Link
             to="/navaratri/login"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-stone-700 hover:text-[#8B1E1E] hover:bg-amber-50 text-xs font-bold transition-all"
+            className="relative z-10 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white hover:text-amber-200 hover:bg-black/15 text-xs font-bold transition-all"
             title="Organizer Login for Registered Mandapams"
           >
-            <KeyRound className="w-3.5 h-3.5 text-[#8B1E1E]" />
+            <KeyRound className="w-3.5 h-3.5 text-amber-300 shrink-0" />
             <span>Login as Mandapam (Organizers)</span>
           </Link>
 
-          <div className="h-4 w-[1px] bg-amber-200 mx-0.5" />
+          <div className="relative z-10 h-4 w-[1px] bg-white/30 mx-0.5" />
 
+          {/* 2. +Register Mandapam (White highlighted pill) */}
           <Link
             to="/navaratri/register"
-            className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-bold shadow-xs hover:shadow transition-all active:scale-95"
+            className="relative z-10 inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-white hover:bg-amber-50 text-[#8B1E1E] text-xs font-black shadow-sm transition-all active:scale-95"
             title="Register New Mandapam"
           >
-            <span>+</span>
+            <span className="text-sm font-black leading-none">+</span>
             <span>{t.registerMandapam}</span>
           </Link>
 
-          <div className="h-4 w-[1px] bg-amber-200 mx-0.5" />
+          <div className="relative z-10 h-4 w-[1px] bg-white/30 mx-0.5" />
 
+          {/* 3. Run Ads */}
           <Link
             to="/navaratri/advertise"
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-amber-900 hover:text-amber-950 hover:bg-amber-100 text-xs font-bold transition-all"
+            className="relative z-10 inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-white hover:text-amber-200 hover:bg-black/15 text-xs font-bold transition-all"
             title={t.advertiseWithUs || "Run Ads"}
           >
             <span>Run Ads</span>
