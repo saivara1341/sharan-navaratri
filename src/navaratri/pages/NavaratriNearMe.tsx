@@ -604,29 +604,29 @@ export const NavaratriNearMe: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-5 sm:pt-8 space-y-6 pb-24 font-sans">
-      {/* Location Filter Card */}
-      <section className="rounded-[1.75rem] border border-amber-300 bg-white/95 p-4 sm:p-5 shadow-sm">
-        <div className="flex items-start gap-3">
-          <div className="mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#8B1E1E] text-white shadow">
-            <Navigation className="h-5 w-5" />
+      {/* Location Filter Card (Compact Dimensions) */}
+      <section className="rounded-2xl border border-amber-300 bg-white/95 p-3 sm:p-4 shadow-sm max-w-2xl mx-auto">
+        <div className="flex items-center gap-2.5">
+          <div className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-[#8B1E1E] text-white shadow-xs">
+            <Navigation className="h-4 w-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-stone-500">Showing results near</p>
-            <p className="truncate text-sm sm:text-base font-bold text-stone-900">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-stone-500 leading-none">Showing results near</p>
+            <p className="truncate text-xs sm:text-sm font-bold text-stone-900 mt-0.5">
               {currentDisplayArea}, {currentDisplayCity}
             </p>
             {locationSource === "gps" && (
-              <p className="mt-0.5 text-[10px] font-semibold text-emerald-700">High-accuracy GPS coordinates detected</p>
+              <p className="text-[10px] font-semibold text-emerald-700 leading-tight">High-accuracy GPS detected</p>
             )}
             {showAllOverride && (
-              <div className="mt-1 flex items-center gap-2">
-                <span className="inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-900">
+              <div className="mt-0.5 flex items-center gap-1.5">
+                <span className="inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-bold text-amber-900">
                   Showing all regions
                 </span>
                 <button
                   type="button"
                   onClick={() => setShowAllOverride(false)}
-                  className="text-[10px] font-bold text-[#8B1E1E] underline hover:text-[#781B1B]"
+                  className="text-[9px] font-bold text-[#8B1E1E] underline hover:text-[#781B1B]"
                 >
                   Reset to {currentDisplayArea}
                 </button>
@@ -635,8 +635,8 @@ export const NavaratriNearMe: React.FC = () => {
           </div>
         </div>
 
-        {/* Inputs for City and Area */}
-        <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1.2fr_auto]">
+        {/* Inputs for City and Area (Compact) */}
+        <div className="mt-2.5 grid grid-cols-1 gap-1.5 sm:grid-cols-[1fr_1.2fr_auto]">
           {/* City Selection */}
           <select
             value={REGIONS_DATA[manualCity] ? manualCity : "Nizamabad"}
@@ -647,7 +647,7 @@ export const NavaratriNearMe: React.FC = () => {
               setManualArea(defaultArea);
             }}
             aria-label="Choose city"
-            className="h-11 rounded-xl border border-amber-300 bg-white px-3 text-xs font-semibold text-stone-900 outline-none focus:ring-2 focus:ring-amber-500"
+            className="h-9 rounded-lg border border-amber-300 bg-white px-2.5 text-xs font-semibold text-stone-900 outline-none focus:ring-1 focus:ring-amber-500"
           >
             {Object.keys(REGIONS_DATA).map((city) => (
               <option key={city} value={city}>
@@ -664,7 +664,7 @@ export const NavaratriNearMe: React.FC = () => {
               onChange={(event) => setManualArea(event.target.value)}
               placeholder="Choose or enter area"
               aria-label="Area or locality"
-              className="h-11 w-full rounded-xl border border-amber-300 bg-white px-3 text-xs font-semibold text-stone-900 outline-none focus:ring-2 focus:ring-amber-500"
+              className="h-9 w-full rounded-lg border border-amber-300 bg-white px-2.5 text-xs font-semibold text-stone-900 outline-none focus:ring-1 focus:ring-amber-500"
             />
             <datalist id="area-suggestions">
               <option value={`All Areas in ${manualCity}`} />
@@ -678,53 +678,20 @@ export const NavaratriNearMe: React.FC = () => {
           <button
             type="button"
             onClick={applyManualLocation}
-            className="h-11 rounded-xl bg-[#8B1E1E] px-5 text-xs font-bold text-white shadow-sm hover:bg-[#781B1B] active:scale-[0.98] transition-all"
+            className="h-9 rounded-lg bg-[#8B1E1E] px-3.5 text-xs font-bold text-white shadow-xs hover:bg-[#781B1B] active:scale-[0.98] transition-all whitespace-nowrap"
           >
             Change location
           </button>
         </div>
 
-        {/* Quick Area Filter Chips for Selected City */}
-        {REGIONS_DATA[manualCity] && (
-          <div className="mt-3 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[11px]">
-            <span className="shrink-0 font-bold text-stone-500 text-[10px] uppercase tracking-wider mr-1">
-              Popular:
-            </span>
-            <button
-              type="button"
-              onClick={() => selectQuickArea(`All Areas in ${manualCity}`)}
-              className={`shrink-0 rounded-lg px-2.5 py-1 font-semibold transition-all ${
-                manualArea.includes("All Areas")
-                  ? "bg-[#8B1E1E] text-white"
-                  : "bg-amber-100/70 text-stone-800 hover:bg-amber-200"
-              }`}
-            >
-              All {manualCity}
-            </button>
-            {REGIONS_DATA[manualCity].areas.slice(0, 7).map((area) => (
-              <button
-                key={area}
-                type="button"
-                onClick={() => selectQuickArea(area)}
-                className={`shrink-0 rounded-lg px-2.5 py-1 font-semibold transition-all ${
-                  manualArea.toLowerCase() === area.toLowerCase()
-                    ? "bg-[#8B1E1E] text-white"
-                    : "bg-amber-50 border border-amber-200 text-stone-700 hover:bg-amber-100"
-                }`}
-              >
-                {area}
-              </button>
-            ))}
-          </div>
-        )}
-
+        {/* GPS location button (Compact) */}
         <button
           type="button"
           onClick={requestBrowserLocation}
           disabled={isLocating}
-          className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-amber-300 bg-amber-50 text-xs font-bold text-[#8B1E1E] hover:bg-amber-100 disabled:opacity-60 transition-all"
+          className="mt-2 flex h-8.5 w-full items-center justify-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 text-[11px] font-bold text-[#8B1E1E] hover:bg-amber-100 disabled:opacity-60 transition-all"
         >
-          <Navigation className="h-4 w-4" />
+          <Navigation className="h-3.5 w-3.5" />
           {isLocating ? "Detecting accurate location…" : "Use my current GPS location"}
         </button>
       </section>
