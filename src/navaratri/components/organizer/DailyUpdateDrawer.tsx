@@ -18,6 +18,7 @@ import {
   Calendar,
   Flame,
   Camera,
+  ArrowLeft,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -207,7 +208,7 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
       published: true
     });
 
-    toast.success(`Day ${selectedDayNum} (${stdDay.deviName}) details updated successfully!`);
+    toast.success(`Day ${String(selectedDayNum).padStart(2, "0")} (${stdDay.deviName}) details updated successfully!`);
     onClose();
   };
 
@@ -223,45 +224,26 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
         </button>
 
         <div className="mb-6 space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-[#8B1E1E] text-xs font-bold">
-            <Calendar className="w-3.5 h-3.5 text-amber-600" />
-            <span>Mandapam Day-to-Day Manager</span>
+          <div className="flex items-center justify-between pr-10">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-[#8B1E1E] text-xs font-bold">
+              <Calendar className="w-3.5 h-3.5 text-amber-600" />
+              <span>Day {String(selectedDayNum).padStart(2, "0")} Configuration</span>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-xs font-semibold text-stone-500 hover:text-stone-900 flex items-center gap-1 hover:underline cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to All Days</span>
+            </button>
           </div>
           <h3 className="font-serif font-black text-2xl sm:text-3xl text-[#8B1E1E]">
-            Edit Day-to-Day Festival Data
+            Day {String(selectedDayNum).padStart(2, "0")} • {stdDay.deviName}
           </h3>
-          <p className="text-xs text-stone-600">
-            Select any day to configure custom Alankaranas, Pooja timings, Naivedhyam (Bhog), and Annadanam.
-          </p>
-
-          {/* 10-DAY QUICK SWITCHER */}
-          <div className="pt-2">
-            <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900 mb-1.5">
-              Select Festival Day to Edit (Day 1 – Day 10)
-            </label>
-            <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-thin">
-              {STANDARD_NAVARATRI_DAYS.map((d) => {
-                const isActive = d.dayNumber === selectedDayNum;
-                return (
-                  <button
-                    key={d.dayNumber}
-                    type="button"
-                    onClick={() => setSelectedDayNum(d.dayNumber)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 border cursor-pointer ${
-                      isActive
-                        ? "bg-[#8B1E1E] text-white border-[#8B1E1E] shadow-md scale-105"
-                        : "bg-white text-stone-700 border-amber-300 hover:bg-amber-50"
-                    }`}
-                  >
-                    <span>Day {d.dayNumber}</span>
-                  </button>
-                );
-              })}
-            </div>
-            <div className="text-xs font-semibold text-amber-950 bg-amber-100/70 p-2.5 rounded-xl border border-amber-300/80 flex items-center justify-between">
-              <span>🗓️ Day {selectedDayNum}: <strong>{stdDay.deviName}</strong></span>
-              <span className="text-[11px] text-amber-800 font-mono">{stdDay.date}</span>
-            </div>
+          <div className="text-xs font-semibold text-amber-950 bg-amber-100/70 p-2.5 rounded-xl border border-amber-300/80 flex items-center justify-between">
+            <span>🗓️ Festival Date: <strong>{stdDay.date}</strong></span>
+            <span className="text-[11px] text-amber-800 font-mono">Day {String(selectedDayNum).padStart(2, "0")} of 10</span>
           </div>
         </div>
 
@@ -271,10 +253,10 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
             <div>
               <h4 className="font-bold text-xs uppercase tracking-wider text-[#8B1E1E] flex items-center gap-1.5">
                 <Upload className="w-4 h-4 text-amber-700" />
-                <span>1. Day {selectedDayNum} Idol Darshan & Alankarana Photo</span>
+                <span>1. Day {String(selectedDayNum).padStart(2, "0")} Idol Darshan & Alankarana Photo</span>
               </h4>
               <p className="text-xs text-stone-600 mt-0.5">
-                Upload the real photograph of the mandapam idol for Day {selectedDayNum} so citizens see today's live darshan.
+                Upload the real photograph of the mandapam idol for Day {String(selectedDayNum).padStart(2, "0")} so citizens see today's live darshan.
               </p>
             </div>
 
@@ -364,7 +346,7 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
                 2. Devi Alankarana & Dual Sessions
               </h4>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900">
-                Day {selectedDayNum}
+                Day {String(selectedDayNum).padStart(2, "0")}
               </span>
             </div>
 
@@ -646,14 +628,22 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
             )}
           </div>
 
-          {/* SAVE BUTTON */}
-          <div className="pt-2 sticky bottom-0 bg-[#FDFBF7] py-3 border-t border-amber-300">
+          {/* SAVE BUTTON & CLOSE ACTION */}
+          <div className="pt-2 sticky bottom-0 bg-[#FDFBF7] py-3 border-t border-amber-300 flex flex-col sm:flex-row gap-2">
             <button
               type="submit"
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <Save className="w-4 h-4" />
-              <span>Save Day {selectedDayNum} Updates & Publish Live</span>
+              <span>Save Day {String(selectedDayNum).padStart(2, "0")} Updates & Publish Live</span>
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-3.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs sm:text-sm font-bold transition-all border border-stone-300 flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+            >
+              <X className="w-4 h-4" />
+              <span>Close & Go to Another Day</span>
             </button>
           </div>
         </form>
