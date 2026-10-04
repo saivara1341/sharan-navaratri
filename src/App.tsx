@@ -32,6 +32,7 @@ const RefundCancellationPolicy = lazy(() => import("./pages/RefundCancellationPo
 const ShippingDeliveryPolicy = lazy(() => import("./pages/ShippingDeliveryPolicy"));
 const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 const ContactInformation = lazy(() => import("./pages/ContactInformation"));
+const Pricing = lazy(() => import("./pages/Pricing"));
 const DataRights = lazy(() => import("./pages/DataRights"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ResourceHub = lazy(() => import("@/pages/services/ResourceHub"));
@@ -264,6 +265,9 @@ const App = () => {
                     <Route path="/contact-information" element={<ContactInformation />} />
                     <Route path="/contact" element={<ContactInformation />} />
                     <Route path="/contact-us" element={<ContactInformation />} />
+                    <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/products-services" element={<Pricing />} />
+                    <Route path="/pricing-policy" element={<Pricing />} />
                     {/* SEO Pages */}
                     <Route path="/about" element={<About />} />
                     <Route path="/blog" element={<Blog />} />
@@ -292,6 +296,19 @@ const App = () => {
                     <Route path="/navaratri/admin" element={<NavaratriAppLayout><NavaratriAdmin /></NavaratriAppLayout>} />
                     <Route path="/navaratri/advertise" element={<NavaratriAppLayout><NavaratriAdvertise /></NavaratriAppLayout>} />
                     <Route path="/navaratri/m/:slug" element={<NavaratriAppLayout><NavaratriMandapamDetail /></NavaratriAppLayout>} />
+
+                    {/* Navaratri Cashfree Compliance & Policy Aliases */}
+                    <Route path="/navaratri/pricing" element={<Pricing />} />
+                    <Route path="/navaratri/products-services" element={<Pricing />} />
+                    <Route path="/navaratri/contact" element={<ContactInformation />} />
+                    <Route path="/navaratri/contact-us" element={<ContactInformation />} />
+                    <Route path="/navaratri/terms" element={<TermsOfService />} />
+                    <Route path="/navaratri/terms-and-conditions" element={<TermsOfService />} />
+                    <Route path="/navaratri/terms-of-service" element={<TermsOfService />} />
+                    <Route path="/navaratri/refunds" element={<RefundCancellationPolicy />} />
+                    <Route path="/navaratri/refund-cancellation-policy" element={<RefundCancellationPolicy />} />
+                    <Route path="/navaratri/shipping-delivery-policy" element={<ShippingDeliveryPolicy />} />
+                    <Route path="/navaratri/privacy" element={<PrivacyPolicy />} />
 
                     {/* Navarathri Alternate Spelling Aliases */}
                     <Route path="/navarathri" element={<NavaratriAppLayout><NavaratriHome /></NavaratriAppLayout>} />

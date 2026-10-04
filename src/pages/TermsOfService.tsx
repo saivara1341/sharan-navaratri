@@ -425,8 +425,14 @@ const TermsOfService = () => {
                   </div>
                 </div>
                 <p className="text-muted-foreground">
-                  Invoices are payable within seven (7) days of issuance. All fees are in Indian Rupees (INR) for Indian domestic engagements or USD for international clients, and are exclusive of applicable statutory Goods and Services Tax (GST) or withholding taxes unless explicitly indicated.
+                  Invoices are payable within seven (7) days of issuance. All fees for domestic services and digital advertising packages are denominated and billed strictly in <strong>Indian Rupees (INR / ₹)</strong>, exclusive of applicable statutory Goods and Services Tax (GST) unless explicitly indicated.
                 </p>
+                <div className="p-3.5 rounded-xl bg-primary/10 border border-primary/20 text-xs text-slate-300 space-y-1.5">
+                  <h5 className="font-bold text-white text-xs">Payment Gateway &amp; Online Transactions:</h5>
+                  <p>
+                    Online transactions on our platforms (including advertising bookings on <em>sharan-navratri.vercel.app</em> and software subscriptions) are processed through <strong>Cashfree Payment Gateway</strong> (Cashfree Payments India Private Limited). Users agree to comply with all banking and authentication rules stipulated by RBI and Cashfree. All transactions are governed by our <a href="/refund-cancellation-policy" className="text-primary hover:underline font-bold">Refund &amp; Cancellation Policy</a> and <a href="/pricing" className="text-primary hover:underline font-bold">Products &amp; Pricing Schedule</a>.
+                  </p>
+                </div>
               </div>
             </section>
 

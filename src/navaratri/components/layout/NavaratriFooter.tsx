@@ -1,5 +1,6 @@
 import React from "react";
-import { Heart } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Heart, ShieldCheck, Mail, Phone, MapPin } from "lucide-react";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { FOOTER_SLOKA_TRANSLATIONS } from "../../utils/navaratriTranslations";
 
@@ -52,8 +53,72 @@ export const NavaratriFooter: React.FC = () => {
           {t.tagline}
         </p>
 
+        {/* Cashfree Whitelisting Policy Links */}
+        <div className="pt-2 border-t border-amber-500/20">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-semibold text-amber-200/90 max-w-2xl mx-auto">
+            <Link
+              to="/contact-us"
+              className="hover:text-amber-100 underline-offset-4 hover:underline transition-colors px-1"
+            >
+              Contact Us
+            </Link>
+            <span className="text-amber-500/40 text-[10px]">•</span>
+            <Link
+              to="/terms-and-conditions"
+              className="hover:text-amber-100 underline-offset-4 hover:underline transition-colors px-1"
+            >
+              Terms &amp; Conditions
+            </Link>
+            <span className="text-amber-500/40 text-[10px]">•</span>
+            <Link
+              to="/refund-cancellation-policy"
+              className="hover:text-amber-100 underline-offset-4 hover:underline transition-colors px-1"
+            >
+              Refunds &amp; Cancellations
+            </Link>
+            <span className="text-amber-500/40 text-[10px]">•</span>
+            <Link
+              to="/shipping-delivery-policy"
+              className="hover:text-amber-100 underline-offset-4 hover:underline transition-colors px-1"
+            >
+              Shipping &amp; Delivery
+            </Link>
+            <span className="text-amber-500/40 text-[10px]">•</span>
+            <Link
+              to="/pricing"
+              className="hover:text-amber-100 underline-offset-4 hover:underline transition-colors px-1"
+            >
+              Products &amp; Pricing (INR)
+            </Link>
+            <span className="text-amber-500/40 text-[10px]">•</span>
+            <Link
+              to="/privacy"
+              className="hover:text-amber-100 underline-offset-4 hover:underline transition-colors px-1"
+            >
+              Privacy Policy
+            </Link>
+          </div>
+        </div>
 
-        <div className="pt-4 border-t border-amber-500/15 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-amber-200/80">
+        {/* Merchant & Payment Gateway Compliance Box for Cashfree */}
+        <div className="p-3.5 rounded-2xl bg-black/40 border border-amber-500/20 text-[11px] text-amber-200/75 space-y-1.5 max-w-2xl mx-auto text-center leading-relaxed">
+          <p className="flex items-center justify-center gap-1.5 font-bold text-amber-300">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+            <span>Official Merchant Entity: Siddhi Dynamics LLP</span>
+          </p>
+          <p className="text-[10px] text-amber-100/70">
+            Regd. Office: 3-5-260/2, Shivajinagar Road, Kotagally, Nizamabad, Telangana 503001, India
+          </p>
+          <p className="text-[10px] text-amber-200/80 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+            <span>Support: <a href="tel:+916303602743" className="text-amber-200 underline">+91 63036 02743</a></span>
+            <span>•</span>
+            <span>Email: <a href="mailto:hello@siddhidynamics.in" className="text-amber-200 underline">hello@siddhidynamics.in</a></span>
+            <span>•</span>
+            <span>Online payments processed securely via <strong>Cashfree Payment Gateway</strong></span>
+          </p>
+        </div>
+
+        <div className="pt-2 border-t border-amber-500/15 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-amber-200/80">
           <p>© {currentYear} Sharan Navaratri • {t.appName}. {t.allRightsReserved}</p>
           <div className="flex items-center gap-1.5 font-medium text-amber-300">
             <span>{t.builtWithDevotionBy}</span>

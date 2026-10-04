@@ -328,11 +328,14 @@ export const FooterSection = ({ hideDetailedOffices }: { hideDetailedOffices?: b
             </motion.p>
             <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-x-4 sm:gap-y-2 max-w-full px-1">
               {[
-                { label: t('footer.legal.privacy', 'Privacy Policy'), href: 'https://siddhidynamics.in/privacy' },
-                { label: t('footer.legal.terms', 'Terms & Conditions'), href: 'https://siddhidynamics.in/terms-and-conditions' },
-                { label: t('footer.legal.cookies', 'Cookie Policy'), href: 'https://siddhidynamics.in/cookie-policy' },
-                { label: t('footer.legal.dataRights', 'Your Data Rights'), href: 'https://siddhidynamics.in/data-rights' },
-                { label: t('footer.legal.contactInfo', 'Contact Information'), href: 'https://siddhidynamics.in/contact-information' },
+                { label: t('footer.legal.privacy', 'Privacy Policy'), href: '/privacy' },
+                { label: t('footer.legal.terms', 'Terms & Conditions'), href: '/terms-and-conditions' },
+                { label: 'Refunds & Cancellations', href: '/refund-cancellation-policy' },
+                { label: 'Shipping & Delivery', href: '/shipping-delivery-policy' },
+                { label: 'Products & Pricing (INR)', href: '/pricing' },
+                { label: t('footer.legal.cookies', 'Cookie Policy'), href: '/cookie-policy' },
+                { label: t('footer.legal.dataRights', 'Your Data Rights'), href: '/data-rights' },
+                { label: t('footer.legal.contactInfo', 'Contact Us'), href: '/contact-us' },
               ].map((link, index) => (
                 <motion.a
                   key={link.href}

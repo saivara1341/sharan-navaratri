@@ -17,10 +17,10 @@ const ContactInformation = () => (
       {/* Intro Box */}
       <section className="p-6 rounded-2xl bg-primary/10 border border-primary/25 space-y-3 shadow-sm">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-          <ShieldCheck className="w-5 h-5 text-primary" /> Siddhi Dynamics LLP Official Contact
+          <ShieldCheck className="w-5 h-5 text-primary" /> Siddhi Dynamics LLP Official Merchant Contact
         </h2>
         <p className="text-foreground/85 leading-relaxed text-sm">
-          For business inquiries, project requirement submissions, technical support, billing queries, partner collaborations, or legal notices, please reach out to us through any of the verified contact channels below.
+          Official registered business entity and merchant contact for platforms operated by <strong>Siddhi Dynamics LLP</strong>, including <strong>siddhidynamics.in</strong> and <strong>sharan-navratri.vercel.app</strong> (Sharan Navaratri Festival Portal). For payment inquiries via Cashfree Payment Gateway, advertising support, billing queries, partner collaborations, or legal notices, please reach out to us through any of the verified channels below.
         </p>
       </section>
 
