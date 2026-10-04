@@ -52,8 +52,8 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
         </p>
       </div>
 
-      {/* ── Card Grid / Sticky Stack ── */}
-      <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-6 pb-10">
+      {/* ── Card Grid ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 pb-10">
         {STANDARD_NAVARATRI_DAYS.map((day, index) => {
           const isToday = day.date === todayIso;
           const customSetting = mandapamDaySettings.find(
@@ -84,9 +84,6 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
               ? customSetting.customPoojaTimings
               : null;
 
-          // Sticky stack offset: each card is slightly lower than the previous
-          const stickyTop = 64 + index * 10;
-
           // Determine text color on colored badge based on lightness
           const lightDays = [2, 6]; // orange and green - use dark text
           const badgeTextColor = lightDays.includes(day.dayNumber) ? "#1C1917" : "#FFFFFF";
@@ -95,18 +92,13 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
             <div
               key={day.dayNumber}
               onClick={() => setSelectedDay(day)}
-              style={{ top: `${stickyTop}px`, zIndex: index + 2 }}
               className={[
-                "group rounded-3xl overflow-hidden cursor-pointer text-left",
+                "group rounded-3xl overflow-hidden cursor-pointer text-left relative",
                 "transition-all duration-300",
-                // Mobile sticky stack
-                "sticky sm:static sm:top-auto sm:z-auto",
-                "mb-4 sm:mb-0",
-                // Border
                 "border-2",
                 isToday
                   ? "bg-gradient-to-b from-[#FFFBEB] via-[#FFFDF9] to-[#FEF3C7] border-amber-400 ring-2 ring-amber-400/50 shadow-2xl shadow-amber-300/30"
-                  : "bg-gradient-to-b from-[#FFFDF9] via-white to-[#FFF9F0] border-amber-200 hover:border-amber-400 shadow-[0_-4px_24px_rgba(0,0,0,0.05),0_16px_36px_rgba(0,0,0,0.13)] sm:hover:shadow-2xl sm:hover:-translate-y-2",
+                  : "bg-gradient-to-b from-[#FFFDF9] via-white to-[#FFF9F0] border-amber-200 hover:border-amber-400 shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-xl sm:hover:-translate-y-1.5",
               ].join(" ")}
             >
               {/* ── IMAGE FRAME — object-contain, full deity visible ── */}
