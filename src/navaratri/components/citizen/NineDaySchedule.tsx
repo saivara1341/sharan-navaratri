@@ -241,42 +241,19 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                   </div>
                 </div>
 
-                {/* Bottom gradient scrim */}
-                <div className="absolute bottom-0 inset-x-0 h-28 z-10 bg-gradient-to-t from-black/75 via-black/25 to-transparent pointer-events-none" />
-
-                {/* Devi name overlay */}
-                <div className="absolute bottom-3 inset-x-3 z-20">
-                  <h3 className="font-serif font-black text-sm sm:text-base text-white drop-shadow-lg leading-tight line-clamp-2">
-                    {deviDisplayName}
-                  </h3>
-                  <div className="flex items-center gap-1.5 text-[10px] text-amber-200/90 font-semibold mt-0.5">
-                    <span className="truncate max-w-[45%]">{day.teluguDeviName}</span>
-                    <span className="shrink-0">•</span>
-                    <span className="truncate max-w-[45%]">{day.hindiDeviName}</span>
-                  </div>
-                </div>
               </div>
 
               {/* ── CARD BODY ── */}
-              <div className="p-4 flex flex-col gap-3">
-
-                {/* Sacred Color pill */}
-                <div
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-2xl border"
-                  style={{
-                    backgroundColor: `${day.colorHex}18`,
-                    borderColor: `${day.colorHex}55`,
-                  }}
-                >
-                  <span
-                    className="w-5 h-5 rounded-full border-2 border-white/70 shadow shrink-0"
-                    style={{ backgroundColor: day.colorHex }}
-                  />
-                  <div className="min-w-0">
-                    <span className="text-[9px] font-bold uppercase tracking-widest text-stone-500 block">
-                      Sacred Color • రంగు • रंग
-                    </span>
-                    <span className="text-xs font-bold text-stone-900 truncate block">{day.colorName}</span>
+              <div className="p-4 flex flex-col justify-between flex-1 gap-3">
+                {/* Devi Name & Multilingual Subtitle (shown in place of color) */}
+                <div className="flex flex-col gap-1 min-w-0">
+                  <h3 className="font-serif font-black text-base sm:text-lg text-stone-900 leading-snug tracking-tight line-clamp-2 group-hover:text-amber-700 transition-colors">
+                    {deviDisplayName}
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-1.5 text-xs text-amber-800/90 font-medium">
+                    <span>{day.teluguDeviName}</span>
+                    <span className="shrink-0 text-amber-400">•</span>
+                    <span>{day.hindiDeviName}</span>
                   </div>
                 </div>
 
