@@ -53,11 +53,21 @@ export interface SacredChantingDetails {
   bestChantingGuide: string;
 }
 
+export interface SessionAlankaranaDetails {
+  deviName: string;
+  colorName: string;
+  colorHex?: string;
+  saree: string;
+  ornaments: string;
+}
+
 export interface DualSessionInfo {
   isCommonlyDual?: boolean;
   morningAlankarana?: string;
   eveningAlankarana?: string;
   sessionGuide?: string;
+  morningDetails?: SessionAlankaranaDetails;
+  eveningDetails?: SessionAlankaranaDetails;
 }
 
 export interface StandardFestivalDay {

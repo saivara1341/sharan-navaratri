@@ -249,13 +249,30 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                   <div className="flex flex-col gap-2.5 pt-2 border-t border-amber-200/60 animate-fadeIn">
                     {/* Dual session badge */}
                     {isDual && morningDevi && eveningDevi && (
-                      <div className="text-[11px] font-semibold text-amber-900 bg-amber-100/80 px-3 py-2 rounded-2xl border border-amber-300/80 flex items-start gap-1.5">
-                        <span className="leading-snug">
-                          <span className="block font-black text-[10px] uppercase tracking-wide text-amber-800 mb-0.5">
-                            Special Alankaranas
-                          </span>
-                          {morningDevi} & {eveningDevi}
+                      <div className="text-[11px] font-semibold text-amber-950 bg-gradient-to-r from-amber-50 to-orange-50/70 p-2.5 rounded-2xl border border-amber-300/80 space-y-1.5">
+                        <span className="block font-black text-[10px] uppercase tracking-wide text-amber-900">
+                          🌅 Morning & 🌇 Evening Alankaranas
                         </span>
+                        <div className="grid grid-cols-2 gap-1.5 text-[10px]">
+                          <div className="bg-white/90 p-1.5 rounded-xl border border-amber-200/90 space-y-0.5">
+                            <span className="font-bold text-amber-800 block text-[9px] uppercase tracking-wider">Morning</span>
+                            <span className="font-bold text-stone-900 line-clamp-1">{morningDevi}</span>
+                            {day.dualSessionNote?.morningDetails?.colorName && (
+                              <span className="text-[9px] text-stone-600 block line-clamp-1 font-medium">
+                                🎨 {day.dualSessionNote.morningDetails.colorName}
+                              </span>
+                            )}
+                          </div>
+                          <div className="bg-white/90 p-1.5 rounded-xl border border-indigo-200/90 space-y-0.5">
+                            <span className="font-bold text-indigo-900 block text-[9px] uppercase tracking-wider">Evening</span>
+                            <span className="font-bold text-stone-900 line-clamp-1">{eveningDevi}</span>
+                            {day.dualSessionNote?.eveningDetails?.colorName && (
+                              <span className="text-[9px] text-stone-600 block line-clamp-1 font-medium">
+                                🎨 {day.dualSessionNote.eveningDetails.colorName}
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     )}
 
@@ -461,30 +478,146 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                 </div>
               </div>
 
-              {/* Dual Session */}
+              {/* Dual Session Guide with Colors, Sarees & Ornaments */}
               {selectedDay.dualSessionNote && (
-                <div className="bg-gradient-to-r from-amber-50 via-orange-50/60 to-amber-50 p-4 rounded-2xl border border-amber-300 space-y-2">
-                  <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-[#8B1E1E]">
-                    <Sun className="w-4 h-4 text-amber-600" />
-                    <span className="font-serif font-black">🌅 Morning & 🌇 Evening Dual Alankaranas Guide</span>
+                <div className="bg-gradient-to-br from-amber-50/90 via-orange-50/60 to-amber-50/90 p-4 sm:p-5 rounded-2xl border-2 border-amber-400/80 shadow-sm space-y-3">
+                  <div className="flex items-center justify-between gap-2 border-b border-amber-300/60 pb-2">
+                    <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-[#8B1E1E]">
+                      <Sun className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span className="font-serif font-black">🌅 Morning & 🌇 Evening Dual Alankaranas Guide</span>
+                    </div>
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-200/70 text-[#8B1E1E] border border-amber-300/80">
+                      విశిష్ట అలంకార దర్శనం
+                    </span>
                   </div>
-                  <p className="text-xs text-stone-700 leading-relaxed">
+
+                  <p className="text-xs text-stone-700 leading-relaxed font-medium">
                     {selectedDay.dualSessionNote.sessionGuide}
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs">
-                    <div className="p-2 rounded-xl bg-white/90 border border-amber-200 flex items-center gap-2">
-                      <Sun className="w-4 h-4 text-amber-600 shrink-0" />
-                      <div>
-                        <span className="text-[10px] uppercase font-bold text-amber-800 block">Morning Session</span>
-                        <span className="font-semibold text-stone-900">{selectedDay.dualSessionNote.morningAlankarana}</span>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                    {/* Morning Session Card */}
+                    <div className="p-3.5 rounded-xl bg-white/95 border-2 border-amber-300 shadow-2xs space-y-2.5">
+                      <div className="flex items-center justify-between gap-2 border-b border-amber-100 pb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="w-6 h-6 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-700 shrink-0">
+                            <Sun className="w-3.5 h-3.5" />
+                          </span>
+                          <div>
+                            <span className="text-[10px] uppercase font-black text-amber-800 tracking-wider block">
+                              Morning Session • ప్రాతఃకాలం
+                            </span>
+                            <span className="font-serif font-bold text-sm text-stone-900 block">
+                              {selectedDay.dualSessionNote.morningDetails?.deviName || selectedDay.dualSessionNote.morningAlankarana}
+                            </span>
+                          </div>
+                        </div>
+                        {selectedDay.dualSessionNote.morningDetails?.colorHex && (
+                          <span
+                            className="w-4 h-4 rounded-full border border-stone-300 shadow-2xs shrink-0"
+                            style={{ backgroundColor: selectedDay.dualSessionNote.morningDetails.colorHex }}
+                            title={selectedDay.dualSessionNote.morningDetails.colorName}
+                          />
+                        )}
                       </div>
+
+                      {/* Morning Color */}
+                      {selectedDay.dualSessionNote.morningDetails?.colorName && (
+                        <div className="flex items-start gap-1.5 text-xs text-stone-700">
+                          <span className="text-[10px] font-bold uppercase text-amber-800 shrink-0 min-w-[70px]">
+                            🎨 Color / రంగు:
+                          </span>
+                          <span className="font-semibold text-stone-900 leading-tight">
+                            {selectedDay.dualSessionNote.morningDetails.colorName}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Morning Saree & Vastram */}
+                      {selectedDay.dualSessionNote.morningDetails?.saree && (
+                        <div className="flex items-start gap-1.5 text-xs text-stone-700">
+                          <span className="text-[10px] font-bold uppercase text-amber-800 shrink-0 min-w-[70px]">
+                            🥻 Saree / వస్త్రం:
+                          </span>
+                          <span className="leading-snug text-stone-800">
+                            {selectedDay.dualSessionNote.morningDetails.saree}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Morning Ornaments & Ayudhas */}
+                      {selectedDay.dualSessionNote.morningDetails?.ornaments && (
+                        <div className="flex items-start gap-1.5 text-xs text-stone-700">
+                          <span className="text-[10px] font-bold uppercase text-amber-800 shrink-0 min-w-[70px]">
+                            👑 Ornaments:
+                          </span>
+                          <span className="leading-snug text-stone-800">
+                            {selectedDay.dualSessionNote.morningDetails.ornaments}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                    <div className="p-2 rounded-xl bg-white/90 border border-amber-200 flex items-center gap-2">
-                      <Moon className="w-4 h-4 text-indigo-600 shrink-0" />
-                      <div>
-                        <span className="text-[10px] uppercase font-bold text-indigo-900 block">Evening Session</span>
-                        <span className="font-semibold text-stone-900">{selectedDay.dualSessionNote.eveningAlankarana}</span>
+
+                    {/* Evening Session Card */}
+                    <div className="p-3.5 rounded-xl bg-white/95 border-2 border-indigo-200 shadow-2xs space-y-2.5">
+                      <div className="flex items-center justify-between gap-2 border-b border-indigo-100 pb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="w-6 h-6 rounded-full bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-700 shrink-0">
+                            <Moon className="w-3.5 h-3.5" />
+                          </span>
+                          <div>
+                            <span className="text-[10px] uppercase font-black text-indigo-900 tracking-wider block">
+                              Evening Session • సాయంకాలం
+                            </span>
+                            <span className="font-serif font-bold text-sm text-stone-900 block">
+                              {selectedDay.dualSessionNote.eveningDetails?.deviName || selectedDay.dualSessionNote.eveningAlankarana}
+                            </span>
+                          </div>
+                        </div>
+                        {selectedDay.dualSessionNote.eveningDetails?.colorHex && (
+                          <span
+                            className="w-4 h-4 rounded-full border border-stone-300 shadow-2xs shrink-0"
+                            style={{ backgroundColor: selectedDay.dualSessionNote.eveningDetails.colorHex }}
+                            title={selectedDay.dualSessionNote.eveningDetails.colorName}
+                          />
+                        )}
                       </div>
+
+                      {/* Evening Color */}
+                      {selectedDay.dualSessionNote.eveningDetails?.colorName && (
+                        <div className="flex items-start gap-1.5 text-xs text-stone-700">
+                          <span className="text-[10px] font-bold uppercase text-indigo-900 shrink-0 min-w-[70px]">
+                            🎨 Color / రంగు:
+                          </span>
+                          <span className="font-semibold text-stone-900 leading-tight">
+                            {selectedDay.dualSessionNote.eveningDetails.colorName}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Evening Saree & Vastram */}
+                      {selectedDay.dualSessionNote.eveningDetails?.saree && (
+                        <div className="flex items-start gap-1.5 text-xs text-stone-700">
+                          <span className="text-[10px] font-bold uppercase text-indigo-900 shrink-0 min-w-[70px]">
+                            🥻 Saree / వస్త్రం:
+                          </span>
+                          <span className="leading-snug text-stone-800">
+                            {selectedDay.dualSessionNote.eveningDetails.saree}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Evening Ornaments & Ayudhas */}
+                      {selectedDay.dualSessionNote.eveningDetails?.ornaments && (
+                        <div className="flex items-start gap-1.5 text-xs text-stone-700">
+                          <span className="text-[10px] font-bold uppercase text-indigo-900 shrink-0 min-w-[70px]">
+                            👑 Ornaments:
+                          </span>
+                          <span className="leading-snug text-stone-800">
+                            {selectedDay.dualSessionNote.eveningDetails.ornaments}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

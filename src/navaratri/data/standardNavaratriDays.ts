@@ -46,7 +46,21 @@ Sri Bala Tripura Sundari Devi is the 9-year-old child manifestation of Supreme M
       isCommonlyDual: true,
       morningAlankarana: "Sri Bala Tripura Sundari Devi",
       eveningAlankarana: "Sri Gayatri Devi",
-      sessionGuide: "Morning starts with Ghatasthapana and Suprabhatha Seva for Sri Bala Tripura Sundari Devi; in the evening, transitions into Gayatri Devi."
+      sessionGuide: "Morning starts with Ghatasthapana and Suprabhatha Seva for Sri Bala Tripura Sundari Devi; in the evening, transitions into Gayatri Devi.",
+      morningDetails: {
+        deviName: "Sri Bala Tripura Sundari Devi",
+        colorName: "Bright Yellow / పసుపు / पीला",
+        colorHex: "#EAB308",
+        saree: "Pitambaram / Bright Yellow Silk Pattu Saree with gold Zari border (పసుపు పట్టు చీర, స్వర్ణ జరీ అంచు)",
+        ornaments: "Balika Kiritam (బాలికా కిరీటం), Pearl & Coral necklaces (ముత్యాల హారాలు, పగడాల దండలు), Akshamala (స్పటిక జపమాల), Pustakam (palm-leaf scriptures), and sweet sugarcane pieces"
+      },
+      eveningDetails: {
+        deviName: "Sri Gayatri Devi",
+        colorName: "Radiant Crimson & Orange / నారింజ-ఎరుపు",
+        colorHex: "#EA580C",
+        saree: "Crimson Red & Orange Kanchi Pattu Saree with temple zari borders (ఎరుపు & నారింజ కాంచీపురం పట్టు చీర)",
+        ornaments: "Swarna Ratna Kiritam (రత్న కిరీటం), Shankham, Chakram, Gada, Padmam, Kamandalam, Kasula Peru, and Swarna Vaddanam (గోల్డెన్ వడ్డాణం)"
+      }
     }
   },
   {
@@ -81,7 +95,21 @@ Sri Gayatri Devi is revered across Sanatana Dharma as 'Vedamatha'—the primordi
       isCommonlyDual: true,
       morningAlankarana: "Sri Gayatri Devi",
       eveningAlankarana: "Sri Annapurna Devi",
-      sessionGuide: "Morning worship dedicated to Goddess of Vedic wisdom and light; evening worship switches to Annapurna Devi."
+      sessionGuide: "Morning worship dedicated to Goddess of Vedic wisdom and light; evening worship switches to Annapurna Devi.",
+      morningDetails: {
+        deviName: "Sri Gayatri Devi",
+        colorName: "Auspicious Orange / నారింజ / नारंगी",
+        colorHex: "#EA580C",
+        saree: "Saffron Orange Silk Pattu Saree with grand Golden Zari pallu (కేసరి నారింజ రంగు పట్టు వస్త్రం, స్వర్ణ జరీ అంచు)",
+        ornaments: "Panchamukha Swarna Kiritam (పంచముఖ రత్న కిరీటం), Kasula Haaram, Emerald & Ruby necklaces, holding Shankham, Chakram, Lotus, Rosary, and Kamandalam"
+      },
+      eveningDetails: {
+        deviName: "Sri Annapurna Devi",
+        colorName: "Golden Saffron / కుంకుమ పసుపు / केसरिया",
+        colorHex: "#D97706",
+        saree: "Golden Yellow & Rich Green border Pattu Saree (బంగారు పసుపు పట్టు చీర, పచ్చటి అంచు)",
+        ornaments: "Swarna Kiritam, Navaratna Haaram, Golden Ladle (స్వర్ణ గరిటె / Akshaya Darvi) in right hand, Golden Vessel with ambrosial food (అమృత అన్నపాత్ర), and Jasmine garlands"
+      }
     }
   },
   {
@@ -116,7 +144,21 @@ Sri Annapurna Devi is the eternal mother of Kasi Kshetram and the supreme provid
       isCommonlyDual: true,
       morningAlankarana: "Sri Annapurna Devi",
       eveningAlankarana: "Sri Maha Chandi Devi",
-      sessionGuide: "Morning focuses on nourishment and grace; evening shifts to the formidable form of Maha Chandi Devi to destroy negativity."
+      sessionGuide: "Morning focuses on nourishment and grace; evening shifts to the formidable form of Maha Chandi Devi to destroy negativity.",
+      morningDetails: {
+        deviName: "Sri Annapurna Devi",
+        colorName: "Golden Saffron / కుంకుమ పసుపు / केसरिया",
+        colorHex: "#D97706",
+        saree: "Pure Golden Yellow Silk Saree adorned with Navadhanyam and fresh floral borders (బంగారు పసుపు పట్టు చీర, తాజా పుష్పాలంకరణ)",
+        ornaments: "Swarna Kiritam, Golden ladle (స్వర్ణ దర్వి), Golden bowl of nectarous food (స్వర్ణ అన్నపాత్ర), Navaratna Vaddanam, and pearl necklaces"
+      },
+      eveningDetails: {
+        deviName: "Sri Maha Chandi Devi",
+        colorName: "Fiery Crimson Red / ఎరుపు / गहरा लाल",
+        colorHex: "#DC2626",
+        saree: "Fiery Dark Red Silk Saree with heavy golden temple border (గాఢమైన ఎరుపు పట్టు చీర, స్వర్ణ రత్న అంచు)",
+        ornaments: "Veera Kiritam (వీర కిరీటం), Trishulam (శూలం), Khadgam (తీవ్ర ఖడ్గం), Khethaka (shield), Dhanus, Baanam, Lemon garland (నిమ్మకాయల హారం), and Kasula Peru"
+      }
     }
   },
   {
@@ -151,7 +193,21 @@ Sri Maha Chandi Devi is the invincible warrior embodiment of the Supreme Mother,
       isCommonlyDual: true,
       morningAlankarana: "Sri Maha Chandi Devi",
       eveningAlankarana: "Sri Lalitha Tripura Sundari Devi",
-      sessionGuide: "Morning continues with fierce Chandi form; evening transitions to royal, benevolent Lalitha Tripura Sundari."
+      sessionGuide: "Morning continues with fierce Chandi form; evening transitions to royal, benevolent Lalitha Tripura Sundari.",
+      morningDetails: {
+        deviName: "Sri Maha Chandi Devi",
+        colorName: "Fiery Crimson Red / రక్త వర్ణం",
+        colorHex: "#DC2626",
+        saree: "Radiant Blood Red Silk Pattu Saree with auspicious gold borders (ఎరుపు రంగు పట్టు వస్త్రం, రక్త చందన తిలకం)",
+        ornaments: "Golden Crown with crescent moon, 10 divine weapons (Trishulam, Sword, Discus, Bow & Arrow, Conch), Lemon garlands, and heavy gold waist-belt (వడ్డాణం)"
+      },
+      eveningDetails: {
+        deviName: "Sri Lalitha Tripura Sundari Devi",
+        colorName: "Royal Magenta & Gold / రాణి పింక్ & బంగారం",
+        colorHex: "#CA8A04",
+        saree: "Royal Rani Pink / Magenta Pattu Saree with gold zari brocade (రాణి పింక్ & మామిడిపిందె రంగు పట్టు చీర, బంగారు జరీ)",
+        ornaments: "Ratna Kiritam with Chandra Kala, Sugarcane bow (చెరకుగడ ధనుస్సు), Five flower arrows (పంచ బాణాలు), Pasha, Ankusha, and Diamond Mangalasutram"
+      }
     }
   },
   {
@@ -186,7 +242,21 @@ Sri Lalitha Tripura Sundari Devi is the Sovereign Empress of the Universe (Raja 
       isCommonlyDual: true,
       morningAlankarana: "Sri Lalitha Tripura Sundari Devi",
       eveningAlankarana: "Sri Saraswati Devi",
-      sessionGuide: "Morning centers on royal splendor and harmony; evening transitions into sacred Saraswati Alankaram ahead of Moola Nakshatram."
+      sessionGuide: "Morning centers on royal splendor and harmony; evening transitions into sacred Saraswati Alankaram ahead of Moola Nakshatram.",
+      morningDetails: {
+        deviName: "Sri Lalitha Tripura Sundari Devi",
+        colorName: "Royal Gold / బంగారు పసుపు / सुनहरा पीला",
+        colorHex: "#CA8A04",
+        saree: "Heavy Kanchi Pattu Golden Silk Saree with red border (బంగారు జరీ కాంచీపురం పట్టు చీర, ఎరుపు అంచు)",
+        ornaments: "Manikya Kiritam (మాణిక్య కిరీటం), Sugarcane bow (ఇక్షు ధనుస్సు), 5 floral arrows, Pasha, Ankusha, seated on Sri Chakra with diamond necklaces and Lakshmi Kasula Haaram"
+      },
+      eveningDetails: {
+        deviName: "Sri Saraswati Devi",
+        colorName: "Pure White & Vedic Green / శ్వేతం & ఆకుపచ్చ",
+        colorHex: "#16A34A",
+        saree: "Spotless White Silk Saree with Vedic green and gold border (పరిశుద్ధ శ్వేత పట్టు చీర, ఆకుపచ్చ/బంగారు అంచు)",
+        ornaments: "Swarna Mukutam, Celestial Veena (దివ్య వీణ), Akshamala (స్పటిక జపమాల), Pustakam (Veda grantham), Pearl necklace (ముత్యాల హారం), and white lotus flowers"
+      }
     }
   },
   {
@@ -221,7 +291,21 @@ Sri Saraswati Devi is the divine goddess of supreme learning, intellect, music, 
       isCommonlyDual: true,
       morningAlankarana: "Sri Saraswati Devi",
       eveningAlankarana: "Sri Maha Lakshmi Devi",
-      sessionGuide: "Moola Nakshatram most auspicious for students seeking wisdom (Aksharabhyasam); evening form changes to Maha Lakshmi Devi."
+      sessionGuide: "Moola Nakshatram most auspicious for students seeking wisdom (Aksharabhyasam); evening form changes to Maha Lakshmi Devi.",
+      morningDetails: {
+        deviName: "Sri Saraswati Devi",
+        colorName: "Pure White / శ్వేత వర్ణం / श्वेत",
+        colorHex: "#16A34A",
+        saree: "Pure White Kanchi Silk Pattu Saree adorned with silver/gold threads (స్వచ్ఛమైన శ్వేత పట్టు చీర, వెండి-బంగారు జరీ అంచు)",
+        ornaments: "Diamond-studded Swarna Kiritam, Divine Veena (స్వర్ణ వీణ), Palm-leaf scriptures (తాళపత్ర గ్రంథం), Crystal Rosary (స్పటిక మాల), Pearl Haram, seated on white lotus"
+      },
+      eveningDetails: {
+        deviName: "Sri Maha Lakshmi Devi",
+        colorName: "Grand Rose Magenta & Gold / గులాబీ-బంగారు రంగు",
+        colorHex: "#6B7280",
+        saree: "Rich Deep Magenta or Golden Silk Saree with broad temple zari borders (ఘనమైన మెజెంటా/బంగారు పట్టు చీర)",
+        ornaments: "Swarna Makuta Kiritam, Golden Lotuses in two hands, Abhaya & Varada mudras showering gold coins (స్వర్ణ వర్ష ముద్ర), Kasula Peru, and Swarna Vaddanam"
+      }
     }
   },
   {
@@ -256,7 +340,21 @@ Sri Maha Lakshmi Devi is the divine consort of Lord Maha Vishnu and the eternal 
       isCommonlyDual: true,
       morningAlankarana: "Sri Maha Lakshmi Devi",
       eveningAlankarana: "Sri Durga Devi",
-      sessionGuide: "Morning honors abundance and auspiciousness; evening shifts to Durga Devi as Durgashtami approaches."
+      sessionGuide: "Morning honors abundance and auspiciousness; evening shifts to Durga Devi as Durgashtami approaches.",
+      morningDetails: {
+        deviName: "Sri Maha Lakshmi Devi",
+        colorName: "Sacred Ash / Grey & Rose Gold / బూడిద రంగు & గులాబీ",
+        colorHex: "#6B7280",
+        saree: "Royal Grey/Silver or Auspicious Pink Silk Pattu Saree with gold woven motifs (సిల్వర్ గ్రే లేదా గులాబీ పట్టు చీర, బంగారు జరీ బుట్టాలు)",
+        ornaments: "Ashta Lakshmi Swarna Kiritam, Golden Lotuses (స్వర్ణ పద్మాలు), Kamandalam, Abhaya-Varada hastas, Kasula Haaram, Emerald Padakam, and Gold coin garlands"
+      },
+      eveningDetails: {
+        deviName: "Sri Durga Devi",
+        colorName: "Royal Purple & Fiery Red / ఊదా & ఎరుపు",
+        colorHex: "#7E22CE",
+        saree: "Royal Purple Silk Pattu Saree with bold Crimson Red border (ఊదా రంగు పట్టు చీర, ఎరుపు రంగు కుంభం అంచు)",
+        ornaments: "Veera Makutam, Trishulam, Shankha, Chakra, Gada, Khadga, Bow & Arrows, resting atop the Simha Vahanam (సింహ వాహనం), Lemon garlands, and gold armlets"
+      }
     }
   },
   {
@@ -291,7 +389,21 @@ Sri Durga Devi is the cosmic vanquisher of hardships and distress ('Durgati Nash
       isCommonlyDual: true,
       morningAlankarana: "Sri Durga Devi",
       eveningAlankarana: "Sri Mahishasura Mardhini Devi",
-      sessionGuide: "Morning dedicated to warrior form mounted on lion; evening transitions into fiercest form, Mahishasura Mardhini, preparing for final battle."
+      sessionGuide: "Morning dedicated to warrior form mounted on lion; evening transitions into fiercest form, Mahishasura Mardhini, preparing for final battle.",
+      morningDetails: {
+        deviName: "Sri Durga Devi",
+        colorName: "Royal Purple & Red / ఊదా / बैंगनी",
+        colorHex: "#7E22CE",
+        saree: "Brilliant Purple and Crimson Silk Pattu Saree with gold temple borders (దివ్యమైన ఊదా & రక్తవర్ణ పట్టు చీర)",
+        ornaments: "Simha Vahanam decor, 8 Celestial divine weapons (Trishulam, Sword, Discus, Mace, Conch, Bow, Arrow, Shield), Trishula tilakam, lemon garlands, and gold breastplate (కవచం)"
+      },
+      eveningDetails: {
+        deviName: "Sri Mahishasura Mardhini Devi",
+        colorName: "Peacock Green / Forest Green / నెమలి పింఛం ఆకుపచ్చ",
+        colorHex: "#0F766E",
+        saree: "Emerald Peacock Green Silk Saree with blood-red border (నెమలి ఆకుపచ్చ పట్టు చీర, ఎరుపు అంచు)",
+        ornaments: "Raudra Veera Kiritam, Long Golden Trident (మహా త్రిశూలం) pinning the demon buffalo, 18 celestial weapons, skull/lemon garland, and diamond armlets"
+      }
     }
   },
   {
@@ -326,7 +438,21 @@ Sri Mahishasura Mardhini Devi personifies the supreme victory of cosmic righteou
       isCommonlyDual: true,
       morningAlankarana: "Sri Mahishasura Mardhini Devi",
       eveningAlankarana: "Sri Raja Rajeshwari Devi",
-      sessionGuide: "Morning honors slaying of demon Mahishasura; evening shifts to triumphant, peaceful queen of universe, Sri Raja Rajeshwari Devi."
+      sessionGuide: "Morning honors slaying of demon Mahishasura; evening shifts to triumphant, peaceful queen of universe, Sri Raja Rajeshwari Devi.",
+      morningDetails: {
+        deviName: "Sri Mahishasura Mardhini Devi",
+        colorName: "Peacock Green / నెమలి ఆకుపచ్చ / मोरपंखी हरा",
+        colorHex: "#0F766E",
+        saree: "Majestic Peacock Green & Red Kanchi Pattu Saree with intricate gold brocade (నెమలి ఆకుపచ్చ & ఎరుపు కాంచీపురం పట్టు చీర)",
+        ornaments: "18-Armed celestial arsenal (అష్టాదశ భుజ ఆయుధాలు: త్రిశూలం, ఖడ్గం, చక్రం, గద, బాణం, శంఖం, పాశం, ధనుస్సు), Piercing Trident over Mahishasura, Gold armor (స్వర్ణ కవచం), and Ayudha Pooja garlands"
+      },
+      eveningDetails: {
+        deviName: "Sri Raja Rajeshwari Devi",
+        colorName: "Royal Saffron / Golden Yellow / కాషాయం & పసుపు",
+        colorHex: "#B45309",
+        saree: "Imperial Saffron / Yellow Silk Pattu Saree with gold zari (సామ్రాజ్ఞి కాషాయం/పసుపు పట్టు చీర, మహారాజ్ఞి జరీ)",
+        ornaments: "Sarva Samrajya Kiritam, Sugarcane bow, Pasha, Ankusha, Lotus, Chintamani crown, Shami (Jammi) sprigs, and Nine-gem imperial necklace"
+      }
     }
   },
   {
@@ -361,7 +487,21 @@ Sri Raja Rajeshwari Devi is the Supreme Empress of all universes (Para Bhattarik
       isCommonlyDual: true,
       morningAlankarana: "Sri Raja Rajeshwari Devi (Full Day)",
       eveningAlankarana: "Teppotsavam (5-6 PM) & Nimarjanam",
-      sessionGuide: "Full Day: Sri Raja Rajeshwari Devi. 3:30 PM: Nagarotsavam Procession. 5:00 PM – 6:00 PM: Teppotsavam on Hamsa Vahanam at Durga Ghat in Krishna River."
+      sessionGuide: "Full Day: Sri Raja Rajeshwari Devi. 3:30 PM: Nagarotsavam Procession. 5:00 PM – 6:00 PM: Teppotsavam on Hamsa Vahanam at Durga Ghat in Krishna River.",
+      morningDetails: {
+        deviName: "Sri Raja Rajeshwari Devi (Full Day)",
+        colorName: "Royal Saffron / కాషాయం / केसरिया",
+        colorHex: "#B45309",
+        saree: "Royal Saffron & Golden Brocade Pattu Saree with rich temple motifs (దివ్య కాషాయ రత్న పట్టు చీర, స్వర్ణ అంచు)",
+        ornaments: "Rajadhiraja Manikya Kiritam with crescent moon, Sugarcane bow, Pasha, Ankusha, Lotus, Diamond necklace, Lakshmi Kasula Peru, and Shami leaves"
+      },
+      eveningDetails: {
+        deviName: "Teppotsavam & Nimarjanam (కృష్ణా నదిలో తెప్పోత్సవం)",
+        colorName: "Auspicious Golden White & Crimson / స్వర్ణ శ్వేతం & ఎరుపు",
+        colorHex: "#E11D48",
+        saree: "Grand Festival Pattu Vastram with golden zari for Utsava Vigrahams (ఉత్సవ విగ్రహాలకు దివ్య స్వర్ణ పట్టు వస్త్రాలు)",
+        ornaments: "Hamsa Vahanam (swan boat) floral decor, Swarna Kiritams, Grand Harathi deepams, pearl canopies, and Krishna River sacred offering garlands"
+      }
     }
   }
 ];
