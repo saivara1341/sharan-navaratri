@@ -11,7 +11,7 @@ import {
   Coins,
   Lock,
   Wrench,
-  Sparkles,
+  Award,
   Mail,
   Phone,
   Building2,
@@ -29,7 +29,7 @@ const SECTIONS = [
   { id: "agreement", title: "1. Agreement & Acceptance", icon: Scale },
   { id: "services", title: "2. Scope of Services", icon: Zap },
   { id: "submissions", title: "3. Requirements & Scopes of Work", icon: Send },
-  { id: "ip", title: "4. Intellectual Property & Ownership", icon: Sparkles },
+  { id: "ip", title: "4. Intellectual Property & Ownership", icon: Award },
   { id: "client-duties", title: "5. Client Obligations & Approvals", icon: UserCheck },
   { id: "ai-systems", title: "6. Production AI & Third-Party APIs", icon: ShieldCheck },
   { id: "payments", title: "7. Fees, Milestones & Taxes", icon: Coins },
@@ -43,7 +43,7 @@ const SECTIONS = [
 
 const KEY_PILLARS = [
   {
-    icon: Sparkles,
+    icon: Award,
     title: "100% IP Ownership",
     description: "Custom code, software architectures, and production assets transfer fully to you upon final milestone settlement.",
     accent: "text-amber-400 bg-amber-500/10 border-amber-500/20",
@@ -161,7 +161,7 @@ const TermsOfService = () => {
         {/* 4 Pillars Overview Grid */}
         <section className="mb-14">
           <h2 className="text-xs font-bold uppercase tracking-wider text-primary mb-4 flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5" /> Key Principles at a Glance
+            Key Principles at a Glance
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {KEY_PILLARS.map((pillar) => {
@@ -331,7 +331,7 @@ const TermsOfService = () => {
             <section id="ip" className="scroll-mt-28 glass-card rounded-2xl p-6 md:p-8 border border-white/10 bg-white/[0.03]">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
-                  <Sparkles className="w-5 h-5" />
+                  <Award className="w-5 h-5" />
                 </div>
                 <div>
                   <span className="text-xs font-mono text-primary font-semibold">SECTION 04</span>

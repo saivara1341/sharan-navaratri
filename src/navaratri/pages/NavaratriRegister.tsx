@@ -20,7 +20,6 @@ import {
   EyeOff,
   RefreshCw,
   ExternalLink,
-  Sparkles,
   LocateFixed,
   Loader2,
   Lock
@@ -291,7 +290,6 @@ export const NavaratriRegister: React.FC = () => {
                 onClick={() => navigate("/navaratri/organizer")}
                 className="py-3 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs font-black shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01]"
               >
-                <Sparkles className="w-4 h-4 text-amber-300" />
                 <span>Open Organizer Portal</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>

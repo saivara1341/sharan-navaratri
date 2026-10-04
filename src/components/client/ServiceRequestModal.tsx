@@ -14,7 +14,6 @@ import {
   Target,
   Palette,
   Layers,
-  Sparkles,
   QrCode,
   FileCode2,
   Upload,

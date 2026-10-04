@@ -9,7 +9,6 @@ import {
   Check,
   Clock,
   Eye,
-  Sparkles,
   Smartphone,
   Monitor,
   QrCode

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
-import { ImagePlus, ExternalLink, Sparkles } from "lucide-react";
+import { ImagePlus, ExternalLink } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { AD_PLACEHOLDER_TRANSLATIONS } from "../../utils/navaratriTranslations";
@@ -153,7 +153,6 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
           to="/navaratri/advertise"
           className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 border border-amber-300/80 text-xs sm:text-sm font-bold text-amber-900 shadow-2xs hover:shadow-xs transition-all group"
         >
-          <Sparkles className="w-3.5 h-3.5 text-amber-600 group-hover:scale-110 transition-transform" />
           <span>Run Your Ads</span>
           <span className="text-amber-700 group-hover:translate-x-1 transition-transform">→</span>
         </Link>

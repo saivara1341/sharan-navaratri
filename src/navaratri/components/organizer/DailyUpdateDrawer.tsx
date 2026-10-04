@@ -16,7 +16,6 @@ import {
   Sun,
   Moon,
   Calendar,
-  Sparkles,
   Flame
 } from "lucide-react";
 import { toast } from "sonner";
@@ -168,7 +167,7 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
 
         <div className="mb-6 space-y-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-[#8B1E1E] text-xs font-bold">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+            <Calendar className="w-3.5 h-3.5 text-amber-600" />
             <span>Mandapam Day-to-Day Manager</span>
           </div>
           <h3 className="font-serif font-black text-2xl sm:text-3xl text-[#8B1E1E]">

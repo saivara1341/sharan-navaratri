@@ -15,7 +15,6 @@ import {
   FileText, 
   Send, 
   ExternalLink, 
-  Sparkles, 
   Gift, 
   TrendingUp, 
   Layers, 
@@ -463,7 +462,7 @@ export function AdminInternshipsConsole() {
                 </h4>
               </div>
               <div className="p-2 sm:p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500">
-                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Layers className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
             </div>
 

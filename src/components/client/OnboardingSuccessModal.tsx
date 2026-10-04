@@ -3,7 +3,6 @@ import {
   X,
   CheckCircle2,
   ArrowRight,
-  Sparkles,
   CreditCard,
   Building,
   ShieldCheck
@@ -53,7 +52,7 @@ export const OnboardingSuccessModal: React.FC<OnboardingSuccessModalProps> = ({
           </div>
 
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-lime-100 text-lime-900 border border-lime-300 text-xs font-bold mt-1 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-lime-700" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-lime-700" />
             <span>Onboarding Completed Successfully</span>
           </div>
 

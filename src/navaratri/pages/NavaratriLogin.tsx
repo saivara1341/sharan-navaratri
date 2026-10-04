@@ -11,7 +11,6 @@ import {
   Building,
   ArrowRight,
   ShieldCheck,
-  Sparkles,
   ArrowLeft,
   CheckCircle2,
   LogOut

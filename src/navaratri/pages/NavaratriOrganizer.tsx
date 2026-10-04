@@ -33,7 +33,6 @@ import {
   Eye,
   EyeOff,
   LogOut,
-  Sparkles,
   Lock,
   ArrowRight,
   Trash2,
@@ -2162,7 +2161,7 @@ export const NavaratriOrganizer: React.FC = () => {
             <div className="p-5 bg-gradient-to-r from-[#8B1E1E] to-[#B45309] text-white flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="w-10 h-10 rounded-2xl bg-amber-400/20 border border-amber-300 flex items-center justify-center text-amber-200">
-                  <Sparkles className="w-5 h-5" />
+                  <Camera className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="font-serif font-black text-lg text-white">

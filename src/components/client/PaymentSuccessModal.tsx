@@ -5,7 +5,6 @@ import {
   ShieldCheck,
   FileSignature,
   ArrowRight,
-  Sparkles,
   Briefcase
 } from "lucide-react";
 
@@ -108,7 +107,7 @@ export const PaymentSuccessModal: React.FC<PaymentSuccessModalProps> = ({
           </div>
 
           <div className="p-3.5 rounded-xl bg-lime-50/70 border border-lime-200 text-xs text-lime-950 flex items-start gap-2.5">
-            <Sparkles className="w-4 h-4 text-lime-700 shrink-0 mt-0.5" />
+            <ShieldCheck className="w-4 h-4 text-lime-700 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
               Official <strong>Siddhi Dynamics LLP</strong> banking credentials (SBI Account, IFSC, LLPIN, PAN) and contractual agreement are unlocked in your portal for accounting & GST filings.
             </p>

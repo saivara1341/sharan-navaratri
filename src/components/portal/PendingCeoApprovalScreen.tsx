@@ -10,7 +10,6 @@ import {
   LogOut, 
   ArrowRight, 
   CheckCircle2,
-  Sparkles,
   ExternalLink
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -150,7 +149,7 @@ export const PendingCeoApprovalScreen: React.FC<Props> = ({
         <div className="space-y-4">
           <div className="text-center sm:text-left">
             <h2 className="text-base font-bold text-foreground flex items-center justify-center sm:justify-start gap-2">
-              <Sparkles className="w-4 h-4 text-primary" /> While you wait for CEO approval:
+              While you wait for CEO approval:
             </h2>
             <p className="text-xs text-muted-foreground mt-0.5">
               Explore our engineering publications, company story, or apply for other open technical roles.

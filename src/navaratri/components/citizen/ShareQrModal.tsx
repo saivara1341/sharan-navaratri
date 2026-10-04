@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { Mandapam } from "../../types";
 import { QRCodeSVG, QRCodeCanvas } from "qrcode.react";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
-import { X, Download, Printer, Share2, Copy, Check, Palette, Sparkles } from "lucide-react";
+import { X, Download, Printer, Share2, Copy, Check, Palette } from "lucide-react";
 import { toast } from "sonner";
 import { navaratriAsset } from "../../utils/navaratriAssets";
 import { InstagramVerifiedBadge } from "../devotional/InstagramVerifiedBadge";
@@ -436,7 +436,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
         {/* Modal Top Header (no-print) */}
         <div className="no-print space-y-3 pb-3 border-b border-amber-200">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-amber-600" />
+            <Printer className="w-5 h-5 text-amber-600" />
             <h3 className="font-serif font-black text-lg sm:text-xl text-[#8B1E1E]">
               Mandapam Counter Standee & QR Poster
             </h3>

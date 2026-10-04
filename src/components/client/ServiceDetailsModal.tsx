@@ -33,7 +33,6 @@ import {
   Video,
   Building,
   AlertCircle,
-  Sparkles,
   Send,
   CalendarCheck,
   RefreshCw,
@@ -566,7 +565,7 @@ export const ServiceDetailsModal: React.FC<ServiceDetailsModalProps> = ({
             <div className="space-y-6">
               {/* Notice Banner */}
               <div className="p-4 rounded-2xl bg-lime-50 border border-lime-200 text-xs text-lime-900 flex items-start gap-3">
-                <Sparkles className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <ShieldCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-extrabold text-stone-900">Live Service Inspection & Direct Revision Desk</h4>
                   <p className="text-stone-700 mt-0.5">

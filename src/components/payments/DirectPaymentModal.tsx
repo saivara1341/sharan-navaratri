@@ -10,7 +10,6 @@ import {
   ArrowRight,
   AlertCircle,
   FileCheck2,
-  Sparkles,
   Building2,
   CheckCircle2,
   Upload,

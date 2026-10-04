@@ -8,7 +8,6 @@ import {
   Home,
   ExternalLink,
   ChevronRight,
-  Sparkles,
   ArrowRight,
   Shield,
   Layers,

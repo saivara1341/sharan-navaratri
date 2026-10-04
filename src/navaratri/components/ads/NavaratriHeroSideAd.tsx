@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
-import { ImagePlus, Sparkles, Megaphone, ArrowUpRight, ExternalLink } from "lucide-react";
+import { ImagePlus, Megaphone, ArrowUpRight, ExternalLink } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
 import { navaratriAsset } from "../../utils/navaratriAssets";
 import { getAdCtaDetails } from "../../utils/adButtonHelpers";
@@ -135,7 +135,6 @@ export const NavaratriHeroSideAd: React.FC = () => {
             {/* Bottom CTA Button */}
             <div className="relative z-10 w-full pt-2">
               <div className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#8B1E1E] via-[#A82828] to-[#B45309] text-white text-xs sm:text-sm font-bold shadow-md group-hover:shadow-lg flex items-center justify-center gap-1.5 transition-all">
-                <Sparkles className="w-3.5 h-3.5 text-amber-300 shrink-0" />
                 <span>Run Festival Ad</span>
                 <ArrowUpRight className="w-3.5 h-3.5 ml-0.5 shrink-0" />
               </div>

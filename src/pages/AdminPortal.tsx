@@ -4791,7 +4791,7 @@ ${manualClientForm.scope.trim() || 'Custom software development & digital engine
                                         <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 space-y-3">
                                             <div className="flex items-center justify-between">
                                                 <span className="font-extrabold text-xs text-primary uppercase tracking-wider flex items-center gap-1.5">
-                                                    <Sparkles className="w-3.5 h-3.5" /> Client Requirements & Scope Specifications
+                                                    <ClipboardList className="w-3.5 h-3.5" /> Client Requirements & Scope Specifications
                                                 </span>
                                                 <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold border ${
                                                     sForm?.complexity_tier === 'Premium' ? 'bg-purple-500/20 text-purple-300 border-purple-500/40' :

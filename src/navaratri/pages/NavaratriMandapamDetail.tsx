@@ -37,7 +37,6 @@ import {
   Flame,
   CheckCircle2,
   X,
-  Sparkles,
   Users,
   Info,
   CalendarDays,

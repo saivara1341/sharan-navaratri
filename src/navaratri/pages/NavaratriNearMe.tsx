@@ -11,7 +11,6 @@ import {
   Music2,
   Navigation,
   PlusCircle,
-  Sparkles,
   Trophy,
   Utensils,
   Flame,
@@ -830,7 +829,6 @@ export const NavaratriNearMe: React.FC = () => {
                   }}
                   className="flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 text-xs font-bold text-amber-900 hover:bg-amber-100 transition-all"
                 >
-                  <Sparkles className="h-4 w-4 text-amber-600" />
                   View All ({mandapams.length})
                 </button>
               </div>

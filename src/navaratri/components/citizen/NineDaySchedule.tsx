@@ -6,7 +6,6 @@ import { PrasadBowlIcon } from "../devotional/PrasadBowlIcon";
 import {
   Calendar,
   ShoppingBag,
-  Sparkles,
   X,
   Eye,
   Flame,
@@ -140,7 +139,6 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                     className="px-3 py-1 rounded-full text-xs font-serif font-black shadow-lg border border-white/40 flex items-center gap-1"
                     style={{ backgroundColor: day.colorHex, color: badgeTextColor }}
                   >
-                    <Sparkles className="w-3 h-3 opacity-80" />
                     <span>Day {day.dayNumber}</span>
                   </div>
                   {isToday && (
@@ -200,7 +198,6 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                 {/* Dual session badge */}
                 {isDual && morningDevi && eveningDevi && (
                   <div className="text-[11px] font-semibold text-amber-900 bg-amber-100/80 px-3 py-2 rounded-2xl border border-amber-300/80 flex items-start gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-[#8B1E1E] shrink-0 mt-0.5" />
                     <span className="leading-snug">
                       <span className="block font-black text-[10px] uppercase tracking-wide text-amber-800 mb-0.5">
                         Special Alankaranas
@@ -360,7 +357,6 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
               {/* Why We Celebrate */}
               <div className="bg-gradient-to-br from-[#FFFBEB] via-[#FEF3C7]/40 to-[#FFFDF9] p-4 sm:p-5 rounded-2xl border-2 border-amber-300 shadow-sm space-y-2">
                 <h4 className="font-serif font-black text-sm sm:text-base text-[#8B1E1E] flex items-center gap-2 tracking-wide">
-                  <Sparkles className="w-4 h-4 text-amber-600" />
                   <span>Why We Celebrate This Avatharam • అవతార విశిష్టత</span>
                 </h4>
                 <p className="text-xs sm:text-sm text-stone-800 leading-relaxed font-normal">

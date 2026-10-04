@@ -13,7 +13,6 @@ import {
   Zap, 
   Building2,
   GraduationCap,
-  Sparkles,
   X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -205,7 +204,7 @@ export default function PortalGateway() {
           {/* Quick tips footer */}
           <div className="text-center pt-4">
             <p className="text-xs text-stone-500 flex items-center justify-center gap-2">
-              <Sparkles className="w-3.5 h-3.5 text-[#6b7c45]" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#6b7c45]" />
               <span>All portals are role-protected and sync directly with the Siddhi Dynamics database.</span>
             </p>
           </div>
