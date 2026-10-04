@@ -153,7 +153,7 @@ export const NavaratriOrganizer: React.FC = () => {
 
   // Mandapam Branding, Media & Location State
   const [brandingModalOpen, setBrandingModalOpen] = useState(false);
-  const [brandingTab, setBrandingTab] = useState<"logo" | "photos" | "location" | "organizer">("logo");
+  const [brandingTab, setBrandingTab] = useState<"logo" | "location" | "organizer">("logo");
   const [logoPreview, setLogoPreview] = useState("");
   const [logoInputUrl, setLogoInputUrl] = useState("");
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
@@ -768,10 +768,10 @@ export const NavaratriOrganizer: React.FC = () => {
               setBrandingModalOpen(true);
             }}
             className="px-3.5 py-2 rounded-xl bg-amber-400 text-stone-900 text-xs font-bold hover:bg-amber-300 shadow-md flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-            title="Upload Logo, Mandapam Photos, Location & Committee Details"
+            title="Upload Logo, Location & Committee Details"
           >
             <Camera className="w-4 h-4 text-[#8B1E1E]" />
-            <span>Branding, Photos & Info</span>
+            <span>Branding & Location</span>
           </button>
 
           <button
@@ -2165,10 +2165,10 @@ export const NavaratriOrganizer: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="font-serif font-black text-lg text-white">
-                    Mandapam Branding, Media & Location
+                    Mandapam Branding & Location
                   </h3>
                   <p className="text-[11px] text-amber-100">
-                    Add committee logo, mandapam photo & location for visitors who scan
+                    Add committee logo & location for visitors who scan
                   </p>
                 </div>
               </div>
@@ -2185,7 +2185,7 @@ export const NavaratriOrganizer: React.FC = () => {
             </div>
 
             {/* Tab Navigation inside Modal */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 border-b border-amber-200 bg-amber-50/60 p-1.5 gap-1.5 text-xs font-bold">
+            <div className="grid grid-cols-3 border-b border-amber-200 bg-amber-50/60 p-1.5 gap-1.5 text-xs font-bold">
               <button
                 type="button"
                 onClick={() => setBrandingTab("logo")}
@@ -2201,19 +2201,6 @@ export const NavaratriOrganizer: React.FC = () => {
 
               <button
                 type="button"
-                onClick={() => setBrandingTab("photos")}
-                className={`py-2 px-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                  brandingTab === "photos"
-                    ? "bg-[#8B1E1E] text-white shadow-xs"
-                    : "text-stone-700 hover:bg-white/60"
-                }`}
-              >
-                <Camera className="w-3.5 h-3.5" />
-                <span>2. Photos</span>
-              </button>
-
-              <button
-                type="button"
                 onClick={() => setBrandingTab("location")}
                 className={`py-2 px-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                   brandingTab === "location"
@@ -2222,7 +2209,7 @@ export const NavaratriOrganizer: React.FC = () => {
                 }`}
               >
                 <MapPin className="w-3.5 h-3.5" />
-                <span>3. Location</span>
+                <span>2. Location</span>
               </button>
 
               <button
@@ -2235,7 +2222,7 @@ export const NavaratriOrganizer: React.FC = () => {
                 }`}
               >
                 <Users className="w-3.5 h-3.5" />
-                <span>4. Organizer</span>
+                <span>3. Organizer</span>
               </button>
             </div>
 
@@ -2328,16 +2315,7 @@ export const NavaratriOrganizer: React.FC = () => {
                 </div>
               )}
 
-              {/* TAB 2: MANDAPAM PHOTOS & BANNER */}
-              {brandingTab === "photos" && (
-                <div className="space-y-4 animate-in fade-in duration-150">
-                  <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-stone-600 text-center">
-                    📸 Photo upload for mandapam branding is managed during registration. Contact support to update your cover photo.
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 3: LOCATION & ADDRESS */}
+              {/* TAB 2: LOCATION & ADDRESS */}
               {brandingTab === "location" && (
                 <div className="space-y-4 animate-in fade-in duration-150">
                   <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-stone-700">
@@ -2436,7 +2414,7 @@ export const NavaratriOrganizer: React.FC = () => {
                 </div>
               )}
 
-              {/* TAB 4: ORGANIZER CONTACT & PUBLIC VIEW */}
+              {/* TAB 3: ORGANIZER CONTACT & PUBLIC VIEW */}
               {brandingTab === "organizer" && (
                 <div className="space-y-4 animate-in fade-in duration-150">
                   <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-stone-700">
