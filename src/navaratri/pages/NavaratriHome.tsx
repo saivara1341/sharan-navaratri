@@ -362,7 +362,7 @@ export const NavaratriHome: React.FC = () => {
             </div>
 
             {/* Organizer Quick Access: Login for Registered Mandapams vs Register New */}
-            <div className="w-full flex items-center justify-center px-2 sm:px-4 mt-2 sm:-mt-1 mb-0.5 sm:mb-2">
+            <div className="w-full flex items-center justify-center px-2 sm:px-4 mt-2 sm:mt-4 md:mt-5 mb-0.5 sm:mb-3">
               <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 px-3.5 py-1.5 rounded-2xl bg-gradient-to-r from-amber-50 via-white to-orange-50 border border-amber-300 shadow-xs text-xs text-stone-700">
                 <span className="font-semibold text-stone-800 flex items-center gap-1.5">
                   <span>🚩</span>

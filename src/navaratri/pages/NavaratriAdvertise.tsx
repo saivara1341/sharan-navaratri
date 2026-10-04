@@ -1680,7 +1680,9 @@ export const NavaratriAdvertise: React.FC = () => {
                     <div className="w-[150px] shrink-0">{renderFlankBox("Left side box")}</div>
                     <div className="flex-1 flex flex-col items-center justify-center gap-2">
                       {renderCtaTiles("w-[120px] h-[100px]", "text-[9px]")}
-                      {renderLoginStrip("text-[8px]")}
+                      <div className="pt-1.5">
+                        {renderLoginStrip("text-[8px]")}
+                      </div>
                     </div>
                     <div className="w-[150px] shrink-0">{renderFlankBox("Right side box")}</div>
                   </div>
