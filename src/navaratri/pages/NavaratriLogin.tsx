@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
 import { getPrivatePasscode } from "../utils/mandapamCredentials";
@@ -19,6 +19,57 @@ import {
 import { toast } from "sonner";
 import { NavaratriFlankingAdBox } from "../components/ads/NavaratriFlankingAdBox";
 import { navaratriAsset } from "../utils/navaratriAssets";
+import type { Mandapam } from "../types";
+
+type SupabaseMandapamRow = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  devi_name: string | null;
+  address: string;
+  area: string;
+  city: string;
+  state: string;
+  pincode: string;
+  latitude: number | null;
+  longitude: number | null;
+  verification_status: Mandapam["verificationStatus"];
+  organizer_name: string | null;
+  organizer_mobile: string | null;
+  organizer_email: string | null;
+  logo_url: string | null;
+  cover_image_url: string | null;
+  contact_phone: string | null;
+  whatsapp_number: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+};
+
+const mapSupabaseMandapam = (row: SupabaseMandapamRow): Mandapam => ({
+  id: row.id,
+  name: row.name,
+  slug: row.slug,
+  description: row.description || "Annual Community Navaratri Utsav",
+  deviName: row.devi_name || "Sri Durga Devi",
+  address: row.address,
+  area: row.area,
+  city: row.city,
+  state: row.state,
+  pincode: row.pincode,
+  latitude: row.latitude ?? 0,
+  longitude: row.longitude ?? 0,
+  verificationStatus: row.verification_status || "PENDING",
+  organizerName: row.organizer_name || "Mandapam Organizer",
+  organizerMobile: row.organizer_mobile || row.contact_phone || "",
+  organizerEmail: row.organizer_email || "",
+  logoUrl: row.logo_url || undefined,
+  coverImageUrl: row.cover_image_url || undefined,
+  contactPhone: row.contact_phone || row.organizer_mobile || "",
+  whatsappNumber: row.whatsapp_number || row.organizer_mobile || undefined,
+  createdAt: row.created_at || new Date().toISOString(),
+  updatedAt: row.updated_at || undefined,
+});
 
 export const NavaratriLogin: React.FC = () => {
   const { mandapams, setActiveMandapamId, setRole } = useNavaratriData();
@@ -32,10 +83,148 @@ export const NavaratriLogin: React.FC = () => {
   const [loginPasscode, setLoginPasscode] = useState("");
   const [showLoginPasscode, setShowLoginPasscode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const activeMandapam = authenticatedId
     ? mandapams.find((m) => m.id === authenticatedId)
     : null;
+
+  const openOrganizerPortal = useCallback((mandapam: Mandapam, reloadData = false) => {
+    sessionStorage.setItem("navaratri_organizer_id", mandapam.id);
+    setActiveMandapamId(mandapam.id);
+    setRole("organizer");
+    setAuthenticatedId(mandapam.id);
+    toast.success(`Welcome to ${mandapam.name} Organizer Dashboard!`);
+
+    if (reloadData) {
+      window.location.replace("/navaratri/organizer");
+      return;
+    }
+    navigate("/navaratri/organizer");
+  }, [navigate, setActiveMandapamId, setRole]);
+
+  const resolveGoogleOrganizer = useCallback(async (user: { id: string; email?: string | null; user_metadata?: Record<string, unknown> }) => {
+    const email = user.email?.trim().toLowerCase() || "";
+    const localMatch = email
+      ? mandapams.find((mandapam) => mandapam.organizerEmail?.trim().toLowerCase() === email)
+      : undefined;
+
+    if (localMatch) {
+      openOrganizerPortal(localMatch);
+      return;
+    }
+
+    let remoteMandapam: SupabaseMandapamRow | null = null;
+    const ownedResult = await (supabase as any)
+      .from("navaratri_mandapams")
+      .select("id,name,slug,description,devi_name,address,area,city,state,pincode,latitude,longitude,verification_status,organizer_name,organizer_mobile,organizer_email,logo_url,cover_image_url,contact_phone,whatsapp_number,created_at,updated_at")
+      .eq("owner_user_id", user.id)
+      .limit(1)
+      .maybeSingle();
+
+    if (ownedResult.error) throw ownedResult.error;
+    remoteMandapam = ownedResult.data as SupabaseMandapamRow | null;
+
+    if (!remoteMandapam && email) {
+      const emailResult = await (supabase as any)
+        .from("navaratri_mandapams")
+        .select("id,name,slug,description,devi_name,address,area,city,state,pincode,latitude,longitude,verification_status,organizer_name,organizer_mobile,organizer_email,logo_url,cover_image_url,contact_phone,whatsapp_number,created_at,updated_at")
+        .eq("organizer_email", email)
+        .limit(1)
+        .maybeSingle();
+      if (emailResult.error) throw emailResult.error;
+      remoteMandapam = emailResult.data as SupabaseMandapamRow | null;
+    }
+
+    if (remoteMandapam) {
+      const hydratedMandapam = mapSupabaseMandapam(remoteMandapam);
+      const storedMandapams = JSON.parse(localStorage.getItem("navaratri_mandapams") || "[]") as Mandapam[];
+      const mergedMandapams = [
+        hydratedMandapam,
+        ...storedMandapams.filter((mandapam) => mandapam.id !== hydratedMandapam.id),
+      ];
+      localStorage.setItem("navaratri_mandapams", JSON.stringify(mergedMandapams));
+      openOrganizerPortal(hydratedMandapam, true);
+      return;
+    }
+
+    const displayName = typeof user.user_metadata?.full_name === "string"
+      ? user.user_metadata.full_name
+      : typeof user.user_metadata?.name === "string"
+        ? user.user_metadata.name
+        : "";
+    localStorage.setItem("navaratri_google_onboarding", JSON.stringify({
+      userId: user.id,
+      email,
+      name: displayName,
+    }));
+    toast.info("Welcome! Complete your Mandapam onboarding to create your portal.");
+    navigate("/navaratri/register?source=google");
+  }, [mandapams, navigate, openOrganizerPortal]);
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("oauth") !== "google") return;
+
+    let cancelled = false;
+    let handled = false;
+    setIsGoogleLoading(true);
+
+    const handleAuthenticatedUser = async (user: { id: string; email?: string | null; user_metadata?: Record<string, unknown> }) => {
+      if (cancelled || handled) return;
+      handled = true;
+      try {
+        await resolveGoogleOrganizer(user);
+      } catch (resolveError: any) {
+        console.error("NAVARATRI_GOOGLE_ORGANIZER_LOOKUP_FAILED", resolveError);
+        toast.error("We could not find your Mandapam portal. Please try again.");
+        setIsGoogleLoading(false);
+      }
+    };
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) void handleAuthenticatedUser(session.user);
+    });
+
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (cancelled || handled) return;
+      if (error) {
+        toast.error(error.message || "Google sign-in could not be completed. Please try again.");
+        setIsGoogleLoading(false);
+        return;
+      }
+      if (data.session?.user) {
+        void handleAuthenticatedUser(data.session.user);
+        return;
+      }
+      toast.error("Google sign-in could not be completed. Please try again.");
+      setIsGoogleLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+      authListener.subscription.unsubscribe();
+    };
+  }, [resolveGoogleOrganizer]);
+
+  const handleGoogleLogin = async () => {
+    setIsGoogleLoading(true);
+    const redirectTo = `${window.location.origin}/navaratri/login?oauth=google`;
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo,
+        queryParams: {
+          access_type: "offline",
+          prompt: "select_account",
+        },
+      },
+    });
+    if (error) {
+      console.error("NAVARATRI_GOOGLE_AUTH_FAILED", error);
+      toast.error(error.message || "Google sign-in failed. Please try again.");
+      setIsGoogleLoading(false);
+    }
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,12 +318,6 @@ export const NavaratriLogin: React.FC = () => {
       toast.error("Incorrect passcode. Please check your credentials slip.");
       return;
     }
-
-    sessionStorage.setItem("navaratri_organizer_id", matched.id);
-    setActiveMandapamId(matched.id);
-    setRole("organizer");
-    setAuthenticatedId(matched.id);
-
     // ── Persist login to Supabase ──────────────────────────────────────────
     const sessionId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36);
     sessionStorage.setItem("navaratri_session_id", sessionId);
@@ -163,14 +346,13 @@ export const NavaratriLogin: React.FC = () => {
         if (error) console.warn("[Login] update last_login_at error:", error);
       });
     // ──────────────────────────────────────────────────────────────────────
-
     setIsSubmitting(false);
-    toast.success(`Welcome to ${matched.name} Organizer Dashboard!`);
-    navigate("/navaratri/organizer");
+    openOrganizerPortal(matched);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     sessionStorage.removeItem("navaratri_organizer_id");
+    await supabase.auth.signOut();
     setAuthenticatedId(null);
     setLoginInput("");
     setLoginPasscode("");
@@ -376,6 +558,27 @@ export const NavaratriLogin: React.FC = () => {
             >
               <KeyRound className="w-4 h-4" />
               <span>Login to Mandapam Dashboard</span>
+            </button>
+
+            <div className="flex items-center gap-3 py-0.5" aria-hidden="true">
+              <span className="h-px flex-1 bg-amber-200" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400">or</span>
+              <span className="h-px flex-1 bg-amber-200" />
+            </div>
+
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              disabled={isGoogleLoading}
+              className="w-full py-2.5 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 text-stone-800 text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-[0.98] disabled:opacity-60 disabled:cursor-wait"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#4285F4" d="M21.6 12.23c0-.71-.06-1.24-.2-1.8H12v3.41h5.52a4.72 4.72 0 0 1-2.05 3.1l-.02.11 2.98 2.31.21.02c1.94-1.79 2.96-4.42 2.96-7.15Z" />
+                <path fill="#34A853" d="M12 22c2.7 0 4.96-.89 6.64-2.42l-3.17-2.45c-.85.58-1.99.98-3.47.98-2.6 0-4.81-1.76-5.6-4.19l-.1.01-3.1 2.4-.04.1A10 10 0 0 0 12 22Z" />
+                <path fill="#FBBC05" d="M6.4 13.92A6.02 6.02 0 0 1 6.08 12c0-.67.12-1.32.31-1.92l-.01-.13-3.14-2.44-.1.05A10.02 10.02 0 0 0 2 12c0 1.6.38 3.11 1.16 4.44l3.24-2.52Z" />
+                <path fill="#EA4335" d="M12 5.89c1.88 0 3.15.81 3.88 1.49l2.82-2.75C16.97 3.02 14.7 2 12 2a10 10 0 0 0-8.84 5.56l3.23 2.52C7.19 7.65 9.4 5.89 12 5.89Z" />
+              </svg>
+              <span>{isGoogleLoading ? "Connecting to Google..." : "Continue with Google"}</span>
             </button>
           </form>
         )}

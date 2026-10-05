@@ -27,16 +27,32 @@ import {
 import { generatePasscode, copyToClipboard, downloadMandapamCredentials, savePrivateCredentials } from "../utils/mandapamCredentials";
 import { Mandapam } from "../types";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+
+type GoogleOnboardingProfile = {
+  userId?: string;
+  email?: string;
+  name?: string;
+};
+
+const readGoogleOnboardingProfile = (): GoogleOnboardingProfile => {
+  try {
+    return JSON.parse(localStorage.getItem("navaratri_google_onboarding") || "{}") as GoogleOnboardingProfile;
+  } catch {
+    return {};
+  }
+};
 
 export const NavaratriRegister: React.FC = () => {
   const { registerMandapam, setActiveMandapamId, setRole, toggleFollow, markScanned } = useNavaratriData();
   const { t } = useNavaratriLanguage();
   const navigate = useNavigate();
+  const [googleOnboarding] = useState<GoogleOnboardingProfile>(() => readGoogleOnboardingProfile());
 
   const [name, setName] = useState("");
-  const [organizerName, setOrganizerName] = useState("");
+  const [organizerName, setOrganizerName] = useState(() => googleOnboarding.name || "");
   const [organizerMobile, setOrganizerMobile] = useState("");
-  const [organizerEmail, setOrganizerEmail] = useState("");
+  const [organizerEmail, setOrganizerEmail] = useState(() => googleOnboarding.email || "");
 
   const [address, setAddress] = useState("");
   const [area, setArea] = useState("");
@@ -110,7 +126,7 @@ export const NavaratriRegister: React.FC = () => {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const cleanMobile = organizerMobile.replace(/\D/g, "");
@@ -156,6 +172,53 @@ export const NavaratriRegister: React.FC = () => {
     }
 
     if (res.success && res.mandapam) {
+      const { data: authData } = await supabase.auth.getUser();
+      const googleUser = authData.user;
+
+      if (googleUser) {
+        const existingResult = await (supabase as any)
+          .from("navaratri_mandapams")
+          .select("id")
+          .eq("owner_user_id", googleUser.id)
+          .limit(1)
+          .maybeSingle();
+
+        if (!existingResult.error && !existingResult.data) {
+          const { error: linkError } = await (supabase as any)
+            .from("navaratri_mandapams")
+            .insert({
+              name: res.mandapam.name,
+              slug: res.mandapam.slug,
+              description: res.mandapam.description,
+              devi_name: res.mandapam.deviName,
+              address: res.mandapam.address,
+              area: res.mandapam.area,
+              city: res.mandapam.city,
+              state: res.mandapam.state,
+              pincode: res.mandapam.pincode,
+              latitude: res.mandapam.latitude,
+              longitude: res.mandapam.longitude,
+              verification_status: res.mandapam.verificationStatus,
+              owner_user_id: googleUser.id,
+              organizer_name: res.mandapam.organizerName,
+              organizer_mobile: res.mandapam.organizerMobile,
+              organizer_email: googleUser.email?.trim().toLowerCase() || res.mandapam.organizerEmail || null,
+              logo_url: res.mandapam.logoUrl || null,
+              cover_image_url: res.mandapam.coverImageUrl || null,
+              contact_phone: res.mandapam.contactPhone,
+              whatsapp_number: res.mandapam.whatsappNumber || null,
+            });
+
+          if (linkError) {
+            console.error("NAVARATRI_GOOGLE_MANDAPAM_LINK_FAILED", linkError);
+            toast.warning("Registration saved on this device, but Google portal linking needs another try.");
+          }
+        } else if (existingResult.error) {
+          console.error("NAVARATRI_GOOGLE_MANDAPAM_LOOKUP_FAILED", existingResult.error);
+        }
+      }
+
+      localStorage.removeItem("navaratri_google_onboarding");
       savePrivateCredentials(res.mandapam.id, passcode.trim());
       setActiveMandapamId(res.mandapam.id);
       setRole("organizer");
