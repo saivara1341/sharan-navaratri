@@ -13,15 +13,21 @@ import {
   Store,
   MapPin,
   QrCode,
-  KeyRound
+  KeyRound,
+  Home,
+  ShieldCheck
 } from "lucide-react";
+import { MandapamGoldIcon } from "../devotional/MandapamGoldIcon";
 import { INVOCATION_TRANSLATIONS } from "../../utils/navaratriTranslations";
 
 export const NavaratriHeader: React.FC = () => {
   const { language, setLanguage, t } = useNavaratriLanguage();
-  const { followedIds } = useNavaratriData();
+  const { followedIds, activeMandapam, isOrganizerLoggedIn, isAdmin } = useNavaratriData();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+
+  const isOrganizerPortal = location.pathname.startsWith("/navaratri/organizer");
+  const isAdminPortal = location.pathname.startsWith("/navaratri/admin");
 
   const handleOpenScanner = () => {
     setMobileMenuOpen(false);
@@ -96,8 +102,8 @@ export const NavaratriHeader: React.FC = () => {
           </div>
         </Link>
 
-        {/* Unified 1-Button: [Login as Mandapam (Organizers)] [+Register Mandapam] [Run Ads] in Run Ads Pointed-Leaf Design */}
-        <div className="hidden lg:relative lg:inline-flex items-center py-1 px-6 sm:px-7 drop-shadow-md hover:drop-shadow-lg transition-all group/leaf">
+        {/* Unified 1-Button Cluster in Run Ads Pointed-Leaf Design */}
+        <div className="hidden lg:relative lg:inline-flex items-center py-1 px-5 sm:px-6 drop-shadow-md hover:drop-shadow-lg transition-all group/leaf">
           {/* Pointed pill / leaf shape background matching Run Ads design */}
           <svg
             viewBox="0 0 520 44"
@@ -112,33 +118,86 @@ export const NavaratriHeader: React.FC = () => {
             />
           </svg>
 
-          {/* 1. Login as Mandapam (Organizers) - Silver Background (No border) */}
-          <Link
-            to="/navaratri/login?mode=new"
-            className="relative z-10 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-stone-300 hover:from-white hover:to-slate-200 text-stone-900 shadow-xs text-xs font-black transition-all active:scale-95"
-            title="Organizer Login for Registered Mandapams"
-          >
-            <KeyRound className="w-3.5 h-3.5 text-stone-700 shrink-0" />
-            <span>Login as Mandapam (Organizers)</span>
-          </Link>
+          {isOrganizerLoggedIn ? (
+            /* Logged in organizer: do NOT show "Login as Mandapam" or "+Register Mandapam" */
+            isOrganizerPortal ? (
+              /* Inside Mandapam portal -> Show "Home" to return to landing page */
+              <Link
+                to="/navaratri"
+                className="relative z-10 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-stone-300 hover:from-white hover:to-slate-200 text-stone-900 shadow-xs text-xs font-black transition-all active:scale-95"
+                title="Return to Public Festival Home"
+              >
+                <Home className="w-3.5 h-3.5 text-stone-700 shrink-0" />
+                <span>Home</span>
+              </Link>
+            ) : (
+              /* On Landing page or other page -> Show "Mandapam" (Dashboard) button to open portal */
+              <Link
+                to="/navaratri/organizer"
+                className="relative z-10 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-stone-300 hover:from-white hover:to-slate-200 text-stone-900 shadow-xs text-xs font-black transition-all active:scale-95"
+                title={activeMandapam ? `Mandapam Portal (${activeMandapam.name})` : "Mandapam Portal"}
+              >
+                <MandapamGoldIcon className="w-4 h-4 shrink-0" />
+                <span className="max-w-[150px] truncate">
+                  {activeMandapam ? activeMandapam.name : "Mandapam"}
+                </span>
+              </Link>
+            )
+          ) : (
+            /* Not logged in: Show [Login as Mandapam (Organizers)] and [+Register Mandapam] */
+            <>
+              <Link
+                to="/navaratri/login?mode=new"
+                className="relative z-10 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-stone-300 hover:from-white hover:to-slate-200 text-stone-900 shadow-xs text-xs font-black transition-all active:scale-95"
+                title="Organizer Login for Registered Mandapams"
+              >
+                <KeyRound className="w-3.5 h-3.5 text-stone-700 shrink-0" />
+                <span>Login as Mandapam (Organizers)</span>
+              </Link>
 
-          {/* Vertical Divider Line 1 */}
+              <div className="relative z-10 h-5 w-[1.5px] bg-amber-300/90 mx-1.5 shrink-0" />
+
+              <Link
+                to="/navaratri/login?mode=new"
+                className="relative z-10 inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-white hover:bg-amber-50 text-[#8B1E1E] text-xs font-black shadow-sm transition-all active:scale-95"
+                title="Register New Mandapam"
+              >
+                <span className="text-sm font-black leading-none">+</span>
+                <span>{t.registerMandapam}</span>
+              </Link>
+            </>
+          )}
+
+          {/* Admin Button: If Admin is logged in */}
+          {isAdmin && (
+            <>
+              <div className="relative z-10 h-5 w-[1.5px] bg-amber-300/90 mx-1.5 shrink-0" />
+              {isAdminPortal ? (
+                <Link
+                  to="/navaratri"
+                  className="relative z-10 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-amber-50 text-[#8B1E1E] text-xs font-black shadow-sm transition-all active:scale-95"
+                  title="Return to Public Festival Home"
+                >
+                  <Home className="w-3.5 h-3.5 text-[#8B1E1E] shrink-0" />
+                  <span>Home</span>
+                </Link>
+              ) : (
+                <Link
+                  to="/navaratri/admin"
+                  className="relative z-10 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-amber-50 text-[#8B1E1E] text-xs font-black shadow-sm transition-all active:scale-95"
+                  title="Navaratri Admin HQ"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#8B1E1E] shrink-0" />
+                  <span>Admin</span>
+                </Link>
+              )}
+            </>
+          )}
+
+          {/* Vertical Divider */}
           <div className="relative z-10 h-5 w-[1.5px] bg-amber-300/90 mx-1.5 shrink-0" />
 
-          {/* 2. +Register Mandapam (White highlighted pill - No border) */}
-          <Link
-            to="/navaratri/login?mode=new"
-            className="relative z-10 inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-white hover:bg-amber-50 text-[#8B1E1E] text-xs font-black shadow-sm transition-all active:scale-95"
-            title="Register New Mandapam"
-          >
-            <span className="text-sm font-black leading-none">+</span>
-            <span>{t.registerMandapam}</span>
-          </Link>
-
-          {/* Vertical Divider Line 2 */}
-          <div className="relative z-10 h-5 w-[1.5px] bg-amber-300/90 mx-1.5 shrink-0" />
-
-          {/* 3. Run Ads - Gold Background (No sparkle, No border) */}
+          {/* Run Ads */}
           <Link
             to="/navaratri/advertise"
             className="relative z-10 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-400 hover:from-amber-200 hover:to-yellow-300 text-amber-950 shadow-sm text-xs font-black transition-all active:scale-95"
@@ -193,31 +252,81 @@ export const NavaratriHeader: React.FC = () => {
               <span>Scan Mandapam QR (Camera)</span>
             </button>
 
-            {/* Unified 3-Button cluster for Mobile: [Login as Mandapam (Silver) | + Register Mandapam | Run Ads (Gold)] */}
+            {/* Unified Action Button cluster for Mobile */}
             <div className="p-1 rounded-2xl bg-amber-50/70 border-2 border-amber-300 shadow-xs flex items-center justify-between gap-1">
-              <Link
-                to="/navaratri/login?mode=new"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex-1 py-2 px-1.5 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-stone-300 text-stone-900 text-xs font-black text-center flex items-center justify-center gap-1 transition-all shadow-xs"
-                title="Login as Mandapam (Organizers)"
-              >
-                <KeyRound className="w-3.5 h-3.5 text-stone-700 shrink-0" />
-                <span className="truncate">Login as Mandapam</span>
-              </Link>
+              {isOrganizerLoggedIn ? (
+                isOrganizerPortal ? (
+                  <Link
+                    to="/navaratri"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 py-2 px-2 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-stone-300 text-stone-900 text-xs font-black text-center flex items-center justify-center gap-1.5 transition-all shadow-xs"
+                    title="Back to Landing Page"
+                  >
+                    <Home className="w-3.5 h-3.5 text-stone-700 shrink-0" />
+                    <span className="truncate">Home</span>
+                  </Link>
+                ) : (
+                  <Link
+                    to="/navaratri/organizer"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 py-2 px-2 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-stone-300 text-stone-900 text-xs font-black text-center flex items-center justify-center gap-1.5 transition-all shadow-xs"
+                    title="Mandapam Organizer Portal"
+                  >
+                    <MandapamGoldIcon className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{activeMandapam ? activeMandapam.name : "Mandapam"}</span>
+                  </Link>
+                )
+              ) : (
+                <>
+                  <Link
+                    to="/navaratri/login?mode=new"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 py-2 px-1.5 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-stone-300 text-stone-900 text-xs font-black text-center flex items-center justify-center gap-1 transition-all shadow-xs"
+                    title="Login as Mandapam (Organizers)"
+                  >
+                    <KeyRound className="w-3.5 h-3.5 text-stone-700 shrink-0" />
+                    <span className="truncate">Login as Mandapam</span>
+                  </Link>
 
-              {/* Vertical Divider 1 */}
-              <div className="h-5 w-[1.5px] bg-amber-400/80 mx-0.5 shrink-0" />
+                  <div className="h-5 w-[1.5px] bg-amber-400/80 mx-0.5 shrink-0" />
 
-              <Link
-                to="/navaratri/login?mode=new"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex-1 py-2 px-1.5 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-black text-center flex items-center justify-center gap-1 transition-all shadow-xs"
-                title="Register Mandapam"
-              >
-                <span className="truncate">+ Register</span>
-              </Link>
+                  <Link
+                    to="/navaratri/login?mode=new"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 py-2 px-1.5 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-black text-center flex items-center justify-center gap-1 transition-all shadow-xs"
+                    title="Register Mandapam"
+                  >
+                    <span className="truncate">+ Register</span>
+                  </Link>
+                </>
+              )}
 
-              {/* Vertical Divider 2 */}
+              {/* Admin Button on Mobile if Admin */}
+              {isAdmin && (
+                <>
+                  <div className="h-5 w-[1.5px] bg-amber-400/80 mx-0.5 shrink-0" />
+                  {isAdminPortal ? (
+                    <Link
+                      to="/navaratri"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex-1 py-2 px-1.5 rounded-xl bg-[#8B1E1E] text-white text-xs font-black text-center flex items-center justify-center gap-1 transition-all shadow-xs"
+                    >
+                      <Home className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">Home</span>
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/navaratri/admin"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex-1 py-2 px-1.5 rounded-xl bg-[#8B1E1E] text-white text-xs font-black text-center flex items-center justify-center gap-1 transition-all shadow-xs"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">Admin</span>
+                    </Link>
+                  )}
+                </>
+              )}
+
               <div className="h-5 w-[1.5px] bg-amber-400/80 mx-0.5 shrink-0" />
 
               <Link

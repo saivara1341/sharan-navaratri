@@ -51,6 +51,9 @@ interface NavaratriDataContextType {
   setRole: (role: UserRole) => void;
   activeMandapamId: string;
   setActiveMandapamId: (id: string) => void;
+  activeMandapam: Mandapam | null;
+  isOrganizerLoggedIn: boolean;
+  isAdmin: boolean;
   season: Season;
   mandapams: Mandapam[];
   alankaranas: Alankarana[];
@@ -182,7 +185,68 @@ export const isDemoOrMockMandapam = (m: any): boolean => {
 
 export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [role, setRole] = useState<UserRole>("devotee");
-  const [activeMandapamId, setActiveMandapamId] = useState<string>("");
+  const [activeMandapamId, setActiveMandapamIdState] = useState<string>(() => {
+    if (typeof window === "undefined") return "";
+    return sessionStorage.getItem("navaratri_organizer_id") || localStorage.getItem("navaratri_organizer_id") || "";
+  });
+
+  const setActiveMandapamId = React.useCallback((id: string) => {
+    setActiveMandapamIdState(id);
+    if (typeof window !== "undefined") {
+      if (id) {
+        sessionStorage.setItem("navaratri_organizer_id", id);
+        localStorage.setItem("navaratri_organizer_id", id);
+      } else {
+        sessionStorage.removeItem("navaratri_organizer_id");
+        localStorage.removeItem("navaratri_organizer_id");
+      }
+      window.dispatchEvent(new Event("navaratri:auth-change"));
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleSync = () => {
+      const stored = sessionStorage.getItem("navaratri_organizer_id") || localStorage.getItem("navaratri_organizer_id") || "";
+      setActiveMandapamIdState(stored);
+    };
+    window.addEventListener("storage", handleSync);
+    window.addEventListener("navaratri:auth-change", handleSync);
+    return () => {
+      window.removeEventListener("storage", handleSync);
+      window.removeEventListener("navaratri:auth-change", handleSync);
+    };
+  }, []);
+
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem("navaratri_is_admin") === "true";
+  });
+
+  useEffect(() => {
+    let mounted = true;
+    void supabase.auth.getUser().then(({ data }) => {
+      if (!mounted) return;
+      const isAdm = data.user?.email?.trim().toLowerCase() === "ssaivaraprasad51@gmail.com";
+      setIsAdmin(isAdm);
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("navaratri_is_admin", isAdm ? "true" : "false");
+      }
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      const isAdm = session?.user?.email?.trim().toLowerCase() === "ssaivaraprasad51@gmail.com";
+      setIsAdmin(isAdm);
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("navaratri_is_admin", isAdm ? "true" : "false");
+      }
+    });
+
+    return () => {
+      mounted = false;
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
   const [season, setSeason] = useState<Season>(() => loadStorage("season", INITIAL_SEASON));
 
   // Purge demo mandapams and their artifacts from localStorage immediately
@@ -1223,6 +1287,13 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const activeMandapam = React.useMemo(() => {
+    if (!activeMandapamId) return null;
+    return mandapams.find((m) => m.id === activeMandapamId) || null;
+  }, [activeMandapamId, mandapams]);
+
+  const isOrganizerLoggedIn = Boolean(activeMandapamId);
+
   return (
     <NavaratriDataContext.Provider
       value={{
@@ -1230,6 +1301,9 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
         setRole,
         activeMandapamId,
         setActiveMandapamId,
+        activeMandapam,
+        isOrganizerLoggedIn,
+        isAdmin,
         season,
         mandapams,
         alankaranas,

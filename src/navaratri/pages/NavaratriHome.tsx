@@ -17,6 +17,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
+import { MandapamGoldIcon } from "../components/devotional/MandapamGoldIcon";
 import { FloatingAuspiciousParticles } from "../components/devotional/SacredMotionGraphics";
 import { useNavaratriData, isDemoOrMockMandapam } from "../context/NavaratriDataContext";
 import { useNavaratriLanguage } from "../context/NavaratriLanguageContext";
@@ -28,7 +29,7 @@ import { NavaratriFlankingAdBox } from "../components/ads/NavaratriFlankingAdBox
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
 
 export const NavaratriHome: React.FC = () => {
-  const { mandapams, alankaranas, followedIds, scannedIds, userLocation } = useNavaratriData();
+  const { mandapams, alankaranas, followedIds, scannedIds, userLocation, activeMandapam, isOrganizerLoggedIn, isAdmin } = useNavaratriData();
   const { t } = useNavaratriLanguage();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -341,7 +342,7 @@ export const NavaratriHome: React.FC = () => {
               </div>
 
               <Link
-                to="/navaratri/login?mode=new"
+                to={isOrganizerLoggedIn ? "/navaratri/organizer" : "/navaratri/login?mode=new"}
                 className="group relative w-36 min-[360px]:w-[152px] min-[400px]:w-44 sm:w-52 lg:w-60 xl:w-64 h-36 min-[360px]:h-[152px] min-[400px]:h-44 sm:h-52 lg:h-60 xl:h-64 p-2 sm:p-4 flex flex-col items-center justify-center text-[#8B1E1E] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B1E1E] focus-visible:ring-offset-2 shrink"
               >
                 <img
@@ -351,31 +352,57 @@ export const NavaratriHome: React.FC = () => {
                   className="absolute inset-0 h-full w-full object-contain drop-shadow-md transition-all group-hover:drop-shadow-xl pointer-events-none"
                 />
                 <div className="relative z-10 flex flex-col items-center justify-center text-center px-1.5 max-w-[108px] min-[360px]:max-w-[120px] sm:max-w-none space-y-0.5 sm:space-y-1">
-                  <div className="w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full bg-amber-100/90 border border-amber-300 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                    <Building className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-[#8B1E1E]" />
+                  <div className="w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full bg-amber-100/90 border border-amber-300 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform p-1">
+                    {isOrganizerLoggedIn ? (
+                      <MandapamGoldIcon className="w-4 h-4 sm:w-7 sm:h-7" />
+                    ) : (
+                      <Building className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-[#8B1E1E]" />
+                    )}
                   </div>
                   <span className="font-serif text-[10px] min-[360px]:text-[11px] sm:text-sm lg:text-base font-black leading-tight text-[#8B1E1E] tracking-tight">
-                    Register Your<br />Durga Mandapam
+                    {isOrganizerLoggedIn ? (
+                      <>Mandapam<br />Dashboard</>
+                    ) : (
+                      <>Register Your<br />Durga Mandapam</>
+                    )}
                   </span>
                 </div>
               </Link>
             </div>
 
-            {/* Organizer Quick Access: Login for Registered Mandapams vs Register New */}
+            {/* Organizer Quick Access: Dynamic based on logged in state */}
             <div className="w-full flex items-center justify-center px-2 sm:px-4 mt-2 sm:mt-3 mb-0 sm:mb-1">
               <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 px-3.5 py-1.5 rounded-2xl bg-gradient-to-r from-amber-50 via-white to-orange-50 border border-amber-300 shadow-xs text-xs text-stone-700">
-                <span className="font-semibold text-stone-800 flex items-center gap-1.5">
-                  <span>🚩</span>
-                  <span>Already registered your Durga Mandapam?</span>
-                </span>
-                <Link
-                  to="/navaratri/login?mode=new"
-                  className="font-bold text-[#8B1E1E] hover:text-[#781B1B] inline-flex items-center gap-1 bg-amber-100/80 hover:bg-amber-200/90 px-2.5 py-1 rounded-xl transition-all border border-amber-300/80 shadow-2xs hover:shadow-xs active:scale-95"
-                >
-                  <KeyRound className="w-3.5 h-3.5 text-[#8B1E1E]" />
-                  <span>Login as Mandapam</span>
-                  <ArrowRight className="w-3 h-3 text-[#8B1E1E]" />
-                </Link>
+                {isOrganizerLoggedIn ? (
+                  <>
+                    <span className="font-semibold text-stone-800 flex items-center gap-1.5">
+                      <MandapamGoldIcon className="w-4 h-4 shrink-0" />
+                      <span>Active Mandapam: <strong>{activeMandapam?.name || "Organizer Portal"}</strong></span>
+                    </span>
+                    <Link
+                      to="/navaratri/organizer"
+                      className="font-bold text-[#8B1E1E] hover:text-[#781B1B] inline-flex items-center gap-1 bg-amber-100/80 hover:bg-amber-200/90 px-2.5 py-1 rounded-xl transition-all border border-amber-300/80 shadow-2xs hover:shadow-xs active:scale-95"
+                    >
+                      <span>Open Mandapam Portal</span>
+                      <ArrowRight className="w-3 h-3 text-[#8B1E1E]" />
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <span className="font-semibold text-stone-800 flex items-center gap-1.5">
+                      <span>🚩</span>
+                      <span>Already registered your Durga Mandapam?</span>
+                    </span>
+                    <Link
+                      to="/navaratri/login?mode=new"
+                      className="font-bold text-[#8B1E1E] hover:text-[#781B1B] inline-flex items-center gap-1 bg-amber-100/80 hover:bg-amber-200/90 px-2.5 py-1 rounded-xl transition-all border border-amber-300/80 shadow-2xs hover:shadow-xs active:scale-95"
+                    >
+                      <KeyRound className="w-3.5 h-3.5 text-[#8B1E1E]" />
+                      <span>Login as Mandapam</span>
+                      <ArrowRight className="w-3 h-3 text-[#8B1E1E]" />
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
