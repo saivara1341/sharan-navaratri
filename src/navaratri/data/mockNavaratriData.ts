@@ -28,34 +28,8 @@ export const INITIAL_SEASON: Season = {
 };
 
 // ── Mandapams ─────────────────────────────────────────────────────────────────
-// Only real, verified mandapams. All dummy entries removed.
-export const INITIAL_MANDAPAMS: Mandapam[] = [
-  {
-    id: "mnp-178584",
-    seasonId: "season-2026",
-    name: "Hrudhaya Ragu Ram Youth",
-    slug: "hrudhaya-ragu-ram-youth-nizamabad",
-    description: "Grand Sharan Navaratri celebrations organized by Hrudhaya Ragu Ram Youth in Nizamabad with daily sacred Devi Alankaranas, Sahasranama Archana, and Maha Annadanam.",
-    deviName: "Sri Bala Tripura Sundari Devi",
-    address: "Near Municipal Office, Subhash Nagar Road",
-    area: "Subhash Nagar",
-    city: "Nizamabad",
-    state: "Telangana",
-    pincode: "503002",
-    latitude: 18.6725,
-    longitude: 78.0941,
-    verificationStatus: "VERIFIED",
-    organizerName: "Hrudhaya Ragu Ram Youth Committee",
-    organizerMobile: "6303602743",
-    organizerEmail: "hrudhaya.raguram@gmail.com",
-    logoUrl: navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"),
-    coverImageUrl: navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg"),
-    contactPhone: "6303602743",
-    whatsappNumber: "6303602743",
-    passcode: "178584",
-    createdAt: "2026-10-02T10:00:00Z"
-  }
-];
+// All organization and demo data removed. Real mandapams will populate via registration.
+export const INITIAL_MANDAPAMS: Mandapam[] = [];
 
 // ── All dummy data arrays cleared ─────────────────────────────────────────────
 export const INITIAL_DAY_SETTINGS: MandapamDaySetting[] = [];
@@ -150,56 +124,6 @@ export const INITIAL_AD_PACKAGES: AdPackage[] = [
   }
 ];
 
-// ── Active Advertisements (real paid advertisers) ─────────────────────────────
-export const INITIAL_ADVERTISEMENTS: Advertisement[] = [
-  {
-    id: "sponsor-printflow-2026",
-    businessName: "PrintFlow",
-    category: "Technology",
-    phone: "9100000000",
-    website: "https://printflows.in",
-    email: "hello@printflows.in",
-    address: "Nizamabad, Telangana",
-    city: "Nizamabad",
-    packageId: "premium",
-    title: "PrintFlow — India's Print OS",
-    description: "Manage quotations, GST billing, production tracking & online print orders. Print everything. Delivered fast. Built for Indian print businesses.",
-    imageUrl: navaratriAsset("/navaratri/assets/ad-printflows.jpg"),
-    ctaText: "Visit PrintFlow",
-    ctaUrl: "https://printflows.in/",
-    targetCity: "Nizamabad",
-    startDate: "2026-10-01",
-    endDate: "2026-12-31",
-    status: "ACTIVE" as const,
-    impressions: 42,
-    clicks: 5,
-    paymentStatus: "PAID",
-    spaceType: "EXCLUSIVE",
-    preferredFrame: "TOP",
-  },
-  {
-    id: "sponsor-siddhidynamics-2026",
-    businessName: "Siddhi Dynamics LLP",
-    category: "Technology",
-    phone: "8938264789",
-    website: "https://siddhidynamics.in",
-    email: "ssaivaraprasad51@gmail.com",
-    address: "Nizamabad, Telangana",
-    city: "Nizamabad",
-    packageId: "premium",
-    title: "Siddhi Dynamics — Automate. Build. Rank. Grow.",
-    description: "We don't just compete — we make you #1. AI Automations, Websites, SEO/AEO/GEO. 5-star rated deep-tech AI & software solutions. Serving Hyderabad & Nizamabad.",
-    imageUrl: navaratriAsset("/navaratri/assets/ad-siddhidynamics.jpg"),
-    ctaText: "Visit Siddhi Dynamics",
-    ctaUrl: "https://siddhidynamics.in/",
-    targetCity: "Nizamabad",
-    startDate: "2026-10-01",
-    endDate: "2026-12-31",
-    status: "ACTIVE" as const,
-    impressions: 58,
-    clicks: 8,
-    paymentStatus: "PAID",
-    spaceType: "EXCLUSIVE",
-    preferredFrame: "BOTTOM",
-  },
-];
+// ── Active Advertisements ─────────────────────────────────────────────────────
+// All demo advertisements removed. Real advertisements will populate via ad bookings.
+export const INITIAL_ADVERTISEMENTS: Advertisement[] = [];

@@ -318,13 +318,13 @@ export const NavaratriOrganizer: React.FC = () => {
     mandapams.find((m) => m.id === activeMandapamId) ||
     mandapams[0];
 
-  const mandapamActivities = activities.filter((a) => a.mandapamId === currentMandapam.id);
-  const mandapamBookings = bookings.filter((b) => b.mandapamId === currentMandapam.id);
+  const mandapamActivities = currentMandapam ? activities.filter((a) => a.mandapamId === currentMandapam.id) : [];
+  const mandapamBookings = currentMandapam ? bookings.filter((b) => b.mandapamId === currentMandapam.id) : [];
   const onlineBookingsCount = mandapamBookings.filter((b) => b.bookingType === "ONLINE").length;
   const walkinBookingsCount = mandapamBookings.filter((b) => b.bookingType === "WALK_IN").length;
 
-  const mandapamServices = services.filter((s) => s.mandapamId === currentMandapam.id);
-  const mandapamSlots = slots.filter((s) => s.mandapamId === currentMandapam.id);
+  const mandapamServices = currentMandapam ? services.filter((s) => s.mandapamId === currentMandapam.id) : [];
+  const mandapamSlots = currentMandapam ? slots.filter((s) => s.mandapamId === currentMandapam.id) : [];
 
   const filteredMandapamBookings = mandapamBookings.filter((b) => {
     const matchesFilter =
@@ -670,6 +670,38 @@ export const NavaratriOrganizer: React.FC = () => {
     setBrandingModalOpen(false);
     toast.info("Mandapam logo and photos reset to default theme.");
   };
+
+  if (!currentMandapam) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center space-y-6">
+        <div className="w-20 h-20 mx-auto rounded-3xl bg-amber-100 border-2 border-amber-300 flex items-center justify-center text-3xl shadow-md">
+          🚩
+        </div>
+        <div className="space-y-2">
+          <h1 className="font-serif text-2xl sm:text-3xl font-black text-[#8B1E1E]">
+            No Mandapam Registered Yet
+          </h1>
+          <p className="text-sm text-stone-600 max-w-md mx-auto leading-relaxed">
+            Register your Durga Mandapam now to obtain your private Mandapam ID and Passcode, enable daily Darshan uploads, manage pooja slots, and generate devotee posters.
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+          <Link
+            to="/navaratri/register"
+            className="w-full sm:w-auto px-6 py-3 rounded-full bg-gradient-to-r from-[#8B1E1E] to-[#B45309] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all inline-block"
+          >
+            Register Your Mandapam
+          </Link>
+          <Link
+            to="/navaratri/login"
+            className="w-full sm:w-auto px-6 py-3 rounded-full bg-white border border-amber-300 text-[#8B1E1E] text-sm font-bold shadow-xs hover:bg-amber-50 transition-all inline-block"
+          >
+            Login as Mandapam
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 pb-16 font-sans max-w-7xl mx-auto px-4 sm:px-6">

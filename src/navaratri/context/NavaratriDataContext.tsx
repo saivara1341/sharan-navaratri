@@ -152,18 +152,39 @@ function saveStorage<T>(key: string, value: T) {
 
 export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [role, setRole] = useState<UserRole>("devotee");
-  const [activeMandapamId, setActiveMandapamId] = useState<string>("m-rr-nizamabad");
+  const [activeMandapamId, setActiveMandapamId] = useState<string>("");
   const [season, setSeason] = useState<Season>(() => loadStorage("season", INITIAL_SEASON));
   const [mandapams, setMandapams] = useState<Mandapam[]>(() => {
     try {
       if (typeof window !== "undefined") {
         localStorage.removeItem("navaratri_private_organizer_credentials");
+        const raw = localStorage.getItem("navaratri_mandapams");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            const sanitized = parsed.filter((m: any) =>
+              m &&
+              m.id !== "mnp-178584" &&
+              m.id !== "m-rr-nizamabad" &&
+              !m.id?.startsWith("demo-") &&
+              !m.name?.toLowerCase().includes("hrudhaya")
+            );
+            localStorage.setItem("navaratri_mandapams", JSON.stringify(sanitized));
+          }
+        }
       }
     } catch {
       // ignore
     }
     const loaded = loadStorage<Mandapam[]>("mandapams", INITIAL_MANDAPAMS);
-    const merged = [...loaded];
+    const cleaned = (loaded || []).filter((m) =>
+      m &&
+      m.id !== "mnp-178584" &&
+      m.id !== "m-rr-nizamabad" &&
+      !m.id?.startsWith("demo-") &&
+      !m.name?.toLowerCase().includes("hrudhaya")
+    );
+    const merged = [...cleaned];
     for (const initM of INITIAL_MANDAPAMS) {
       if (!merged.some(m => m.id === initM.id || (m.slug && initM.slug && m.slug.toLowerCase() === initM.slug.toLowerCase()))) {
         merged.push(initM);
@@ -228,8 +249,30 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   const [questions, setQuestions] = useState<CommunityQuestion[]>(() => loadStorage("questions", INITIAL_QUESTIONS));
   const adPackages = INITIAL_AD_PACKAGES;
   const [advertisements, setAdvertisements] = useState<Advertisement[]>(() => {
-    const loaded = loadStorage("ads", []);
-    const userAds = (loaded || []).filter(a => a && !a.id?.startsWith("ad-") && !a.id?.startsWith("sponsor-"));
+    try {
+      if (typeof window !== "undefined") {
+        const rawAds = localStorage.getItem("navaratri_ads");
+        if (rawAds) {
+          const parsedAds = JSON.parse(rawAds);
+          if (Array.isArray(parsedAds)) {
+            const sanitizedAds = parsedAds.filter((a: any) =>
+              a &&
+              !a.id?.startsWith("sponsor-") &&
+              !a.id?.startsWith("demo-") &&
+              !a.businessName?.toLowerCase().includes("printflow")
+            );
+            localStorage.setItem("navaratri_ads", JSON.stringify(sanitizedAds));
+          }
+        }
+      }
+    } catch {}
+    const loaded = loadStorage<Advertisement[]>("ads", []);
+    const userAds = (loaded || []).filter(a =>
+      a &&
+      !a.id?.startsWith("sponsor-") &&
+      !a.id?.startsWith("demo-") &&
+      !a.businessName?.toLowerCase().includes("printflow")
+    );
     return [...INITIAL_ADVERTISEMENTS, ...userAds];
   });
   const [followedIds, setFollowedIds] = useState<string[]>(() => loadStorage("followed_mandapams", []));
