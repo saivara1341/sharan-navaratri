@@ -298,7 +298,7 @@ ALTER TABLE public.navaratri_mandapams ADD COLUMN IF NOT EXISTS login_count inte
 -- Organizer Login Audit Log
 CREATE TABLE IF NOT EXISTS public.navaratri_organizer_logins (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_id text NOT NULL,  -- no FK: avoids uuid/text type mismatch with existing DB
   mandapam_name text,
   login_mode text NOT NULL DEFAULT 'mobile' CHECK (login_mode IN ('mobile', 'mandapamId')),
   logged_in_at timestamptz DEFAULT now(),
