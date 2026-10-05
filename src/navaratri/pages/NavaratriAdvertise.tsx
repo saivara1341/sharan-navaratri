@@ -121,53 +121,53 @@ export const NavaratriAdvertise: React.FC = () => {
             <label className="block text-xs font-bold uppercase tracking-wider text-amber-900">
               Select Visibility Model *
             </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3.5">
               {/* Option 1: Combinational / Shared Ads */}
               <div
                 onClick={() => handleSelectSpaceType("ROTATING")}
-                className={`cursor-pointer rounded-2xl p-4 sm:p-5 border-2 transition-all relative ${
+                className={`cursor-pointer rounded-xl sm:rounded-2xl p-2.5 sm:p-5 border-2 transition-all relative flex flex-col justify-between ${
                   adSpaceType === "ROTATING"
                     ? "bg-amber-50/90 border-[#8B1E1E] shadow-md ring-2 ring-[#8B1E1E]/20"
                     : "bg-white border-amber-200/90 hover:border-amber-300 hover:bg-stone-50/60 shadow-xs"
                 }`}
               >
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="px-2.5 py-0.5 rounded-full bg-amber-200/80 text-amber-900 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                      🔄 Shared Rotation
+                <div className="space-y-2 sm:space-y-2.5">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="px-1.5 sm:px-2.5 py-0.5 rounded-full bg-amber-200/80 text-amber-900 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                      🔄 <span className="hidden xs:inline">Shared</span> Rotation
                     </span>
                     <div
-                      className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
+                      className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full shrink-0 flex items-center justify-center transition-all ${
                         adSpaceType === "ROTATING"
                           ? "bg-[#8B1E1E] text-white"
                           : "border-2 border-stone-300"
                       }`}
                     >
-                      {adSpaceType === "ROTATING" && <Check className="w-3 h-3 stroke-[3]" />}
+                      {adSpaceType === "ROTATING" && <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[3]" />}
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="font-serif font-black text-base text-stone-900">
+                    <h3 className="font-serif font-black text-xs sm:text-base text-stone-900 leading-tight">
                       Combinational Ad Space
                     </h3>
-                    <p className="text-xs text-stone-600 mt-0.5 leading-snug">
-                      Rotates every 6 seconds with other local sponsors. Perfect for sweet stalls, daily specials, and high-frequency reach at lowest cost.
+                    <p className="text-[10px] sm:text-xs text-stone-600 mt-1 leading-snug line-clamp-3 sm:line-clamp-none">
+                      Rotates every 6 seconds with other local sponsors. High-frequency reach at lowest cost.
                     </p>
                   </div>
 
-                  <div className="pt-2 border-t border-amber-100 space-y-1 text-xs">
-                    <div className="flex items-center gap-1.5 text-stone-700">
-                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      <span>Starts from only <strong className="text-[#8B1E1E]">₹49/day</strong></span>
+                  <div className="pt-1.5 sm:pt-2 border-t border-amber-100 space-y-1 text-[10px] sm:text-xs">
+                    <div className="flex items-center gap-1 sm:gap-1.5 text-stone-700">
+                      <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 shrink-0" />
+                      <span>Starts from <strong className="text-[#8B1E1E]">₹49/day</strong></span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-stone-700">
-                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      <span>Appears in both mobile &amp; desktop ad frames</span>
+                    <div className="flex items-center gap-1 sm:gap-1.5 text-stone-700">
+                      <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 shrink-0" />
+                      <span>Mobile &amp; desktop frames</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-stone-700">
-                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      <span>Direct 1-tap call &amp; WhatsApp click buttons</span>
+                    <div className="flex items-center gap-1 sm:gap-1.5 text-stone-700">
+                      <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 shrink-0" />
+                      <span>Direct 1-tap call &amp; WhatsApp</span>
                     </div>
                   </div>
                 </div>
@@ -176,49 +176,49 @@ export const NavaratriAdvertise: React.FC = () => {
               {/* Option 2: Exclusive 24/7 Solo Ad Space */}
               <div
                 onClick={() => handleSelectSpaceType("EXCLUSIVE")}
-                className={`cursor-pointer rounded-2xl p-4 sm:p-5 border-2 transition-all relative ${
+                className={`cursor-pointer rounded-xl sm:rounded-2xl p-2.5 sm:p-5 border-2 transition-all relative flex flex-col justify-between ${
                   adSpaceType === "EXCLUSIVE"
                     ? "bg-gradient-to-br from-amber-50 via-orange-50/50 to-amber-100/40 border-[#8B1E1E] shadow-md ring-2 ring-[#8B1E1E]/20"
                     : "bg-white border-amber-200/90 hover:border-amber-300 hover:bg-stone-50/60 shadow-xs"
                 }`}
               >
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-600 to-[#8B1E1E] text-white text-[10px] font-black uppercase tracking-wider shadow-xs flex items-center gap-1">
-                      👑 100% Solo Visibility
+                <div className="space-y-2 sm:space-y-2.5">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="px-1.5 sm:px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-600 to-[#8B1E1E] text-white text-[9px] sm:text-[10px] font-black uppercase tracking-wider shadow-xs flex items-center gap-1">
+                      👑 <span className="hidden xs:inline">100%</span> Solo
                     </span>
                     <div
-                      className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
+                      className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full shrink-0 flex items-center justify-center transition-all ${
                         adSpaceType === "EXCLUSIVE"
                           ? "bg-[#8B1E1E] text-white"
                           : "border-2 border-stone-300"
                       }`}
                     >
-                      {adSpaceType === "EXCLUSIVE" && <Check className="w-3 h-3 stroke-[3]" />}
+                      {adSpaceType === "EXCLUSIVE" && <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[3]" />}
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="font-serif font-black text-base text-stone-900">
+                    <h3 className="font-serif font-black text-xs sm:text-base text-stone-900 leading-tight">
                       Permanent 24/7 Solo Ad
                     </h3>
-                    <p className="text-xs text-stone-600 mt-0.5 leading-snug">
-                      Your business has 100% permanent solo ownership of the frame. ZERO rotation. Zero competitor banners in your slot.
+                    <p className="text-[10px] sm:text-xs text-stone-600 mt-1 leading-snug line-clamp-3 sm:line-clamp-none">
+                      100% permanent solo ownership of the frame. ZERO rotation. Zero competitor banners.
                     </p>
                   </div>
 
-                  <div className="pt-2 border-t border-amber-100 space-y-1 text-xs">
-                    <div className="flex items-center gap-1.5 text-stone-700">
-                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <div className="pt-1.5 sm:pt-2 border-t border-amber-100 space-y-1 text-[10px] sm:text-xs">
+                    <div className="flex items-center gap-1 sm:gap-1.5 text-stone-700">
+                      <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 shrink-0" />
                       <span>Starts from <strong className="text-[#8B1E1E]">₹149/day</strong></span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-stone-700">
-                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      <span>Choose Top Frame, Bottom Frame, or Both</span>
+                    <div className="flex items-center gap-1 sm:gap-1.5 text-stone-700">
+                      <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 shrink-0" />
+                      <span>Top, Bottom, or Both frames</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-stone-700">
-                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      <span>Fixed 24/7 presence throughout the entire day</span>
+                    <div className="flex items-center gap-1 sm:gap-1.5 text-stone-700">
+                      <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 shrink-0" />
+                      <span>Fixed 24/7 presence all day</span>
                     </div>
                   </div>
                 </div>
@@ -237,7 +237,7 @@ export const NavaratriAdvertise: React.FC = () => {
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-3">
               {currentDurationPackages.map((pkg) => {
                 const isSelected = selectedPkgId === pkg.id;
                 const isFestival = pkg.durationDays === 9 || pkg.durationDays === 10;
@@ -247,7 +247,7 @@ export const NavaratriAdvertise: React.FC = () => {
                   <div
                     key={pkg.id}
                     onClick={() => setSelectedPkgId(pkg.id)}
-                    className={`cursor-pointer rounded-2xl p-4 border-2 transition-all relative flex flex-col justify-between group ${
+                    className={`cursor-pointer rounded-xl sm:rounded-2xl p-2 sm:p-4 border-2 transition-all relative flex flex-col justify-between group ${
                       isSelected
                         ? "bg-amber-50/90 border-[#8B1E1E] shadow-md ring-2 ring-[#8B1E1E]/20"
                         : "bg-white border-amber-200/90 hover:border-amber-300 hover:bg-stone-50/50 shadow-xs"
@@ -255,80 +255,85 @@ export const NavaratriAdvertise: React.FC = () => {
                   >
                     <div>
                       {/* Badges */}
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1 sm:mb-2">
                         {isFestival ? (
-                          <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-[#8B1E1E] text-white text-[9px] font-black uppercase tracking-wider shadow-xs flex items-center gap-1">
-                            <Flame className="w-2.5 h-2.5 fill-current" /> All 9 Days
+                          <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-[#8B1E1E] text-white text-[8px] sm:text-[9px] font-black uppercase tracking-wider shadow-xs flex items-center gap-0.5">
+                            <Flame className="w-2 h-2 sm:w-2.5 sm:h-2.5 fill-current" /> All 9 Days
                           </span>
                         ) : isBooster ? (
-                          <span className="px-2 py-0.5 rounded-full bg-amber-200/90 text-amber-950 text-[9px] font-bold uppercase tracking-wider">
+                          <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-200/90 text-amber-950 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider">
                             Popular
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-full bg-stone-100 text-stone-600 text-[9px] font-semibold uppercase tracking-wider">
+                          <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-stone-100 text-stone-600 text-[8px] sm:text-[9px] font-semibold uppercase tracking-wider">
                             Starter
                           </span>
                         )}
                       </div>
 
                       {/* Plan title & radio */}
-                      <div className="flex items-start gap-2">
+                      <div className="flex items-start gap-1 sm:gap-2">
                         <div
-                          className={`w-4 h-4 rounded-full mt-0.5 shrink-0 flex items-center justify-center transition-all ${
+                          className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full mt-0.5 shrink-0 flex items-center justify-center transition-all ${
                             isSelected
                               ? "bg-[#8B1E1E] text-white"
                               : "border border-stone-300 group-hover:border-amber-400"
                           }`}
                         >
-                          {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                          {isSelected && <Check className="w-2 h-2 sm:w-2.5 sm:h-2.5 stroke-[3]" />}
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-serif font-black text-sm text-stone-900 leading-snug truncate">
+                          <h4 className="font-serif font-black text-[11px] sm:text-sm text-stone-900 leading-tight line-clamp-2 sm:line-clamp-none sm:truncate">
                             {pkg.name}
                           </h4>
-                          <span className="text-[10px] text-stone-500 block">
+                          <span className="text-[9px] sm:text-[10px] text-stone-500 block">
                             {pkg.durationDays} {pkg.durationDays === 1 ? "Day" : "Days"} Active
                           </span>
                         </div>
                       </div>
 
                       {/* Price */}
-                      <div className="mt-2.5 pl-6">
-                        <div className="flex items-baseline gap-1">
-                          <span className="font-serif font-black text-xl text-[#8B1E1E]">
+                      <div className="mt-1.5 sm:mt-2.5 sm:pl-6">
+                        <div className="flex items-baseline gap-0.5 sm:gap-1 flex-wrap">
+                          <span className="font-serif font-black text-sm sm:text-xl text-[#8B1E1E]">
                             ₹{pkg.priceInr}
                           </span>
-                          <span className="text-[10px] text-stone-500">
-                            / {pkg.durationDays} {pkg.durationDays === 1 ? "day" : "days"}
+                          <span className="text-[8px] sm:text-[10px] text-stone-500">
+                            /{pkg.durationDays}d
                           </span>
                         </div>
                       </div>
 
                       {/* Benefit points */}
-                      <div className="mt-2 pl-6 space-y-1 text-[11px] text-stone-600">
+                      <div className="mt-1.5 sm:mt-2 sm:pl-6 space-y-0.5 sm:space-y-1 text-[9px] sm:text-[11px] text-stone-600">
                         <div className="flex items-center gap-1">
-                          <Eye className="w-3 h-3 text-amber-700 shrink-0" />
-                          <span>~{(pkg.estimatedImpressions ?? pkg.impressionLimit ?? 1500).toLocaleString()} views</span>
+                          <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-700 shrink-0" />
+                          <span className="truncate">~{(pkg.estimatedImpressions ?? pkg.impressionLimit ?? 1500).toLocaleString()} views</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <Check className="w-3 h-3 text-emerald-600 shrink-0" />
-                          <span>
-                            {pkg.spaceType === "EXCLUSIVE" ? "Permanent 24/7 solo" : "Rotates every 6s"}
+                          <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-600 shrink-0" />
+                          <span className="truncate">
+                            {pkg.spaceType === "EXCLUSIVE" ? "Permanent solo" : "Rotates 6s"}
                           </span>
                         </div>
                       </div>
                     </div>
 
                     {/* Button footer */}
-                    <div className="mt-3 pl-6">
+                    <div className="mt-2 sm:mt-3 sm:pl-6">
                       <div
-                        className={`w-full py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold text-center transition-all ${
+                        className={`w-full py-1 sm:py-2 rounded-lg sm:rounded-xl text-[9px] sm:text-xs font-bold text-center transition-all ${
                           isSelected
                             ? "bg-[#8B1E1E] text-white shadow-xs"
                             : "bg-amber-100/80 text-stone-700 group-hover:bg-amber-200"
                         }`}
                       >
-                        {isSelected ? "Selected ✓" : "Tap to Choose"}
+                        {isSelected ? "Selected ✓" : (
+                          <>
+                            <span className="sm:hidden">Choose</span>
+                            <span className="hidden sm:inline">Tap to Choose</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
