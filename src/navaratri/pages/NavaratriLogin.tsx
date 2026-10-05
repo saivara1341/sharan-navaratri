@@ -83,6 +83,7 @@ export const NavaratriLogin: React.FC = () => {
   const [accountMode, setAccountMode] = useState<"existing" | "new">(() =>
     new URLSearchParams(location.search).get("mode") === "new" ? "new" : "existing"
   );
+  const isNewMode = accountMode === "new";
   const [loginInput, setLoginInput] = useState("");
   const [loginPasscode, setLoginPasscode] = useState("");
   const [showLoginPasscode, setShowLoginPasscode] = useState(false);
