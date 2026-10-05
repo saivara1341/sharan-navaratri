@@ -42,7 +42,7 @@ export const NavaratriFooter: React.FC = () => {
         </div>
 
         {/* Festival Branding + Tagline — no gap between them */}
-        <div className="space-y-0.5">
+        <div className="space-y-0.5 md:-mt-3">
           <h3 className="font-['Cinzel',serif] text-xl sm:text-2xl font-black text-amber-200 tracking-wide">
             Sharan Navaratri 2026
           </h3>

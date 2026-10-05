@@ -311,7 +311,7 @@ export const NavaratriHome: React.FC = () => {
               <button
                 type="button"
                 onClick={handleOpenScanner}
-                className="group relative w-36 min-[360px]:w-[152px] min-[400px]:w-44 sm:w-52 h-36 min-[360px]:h-[152px] min-[400px]:h-44 sm:h-52 p-2 sm:p-4 flex flex-col items-center justify-center text-[#1E3A8A] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E3A8A] focus-visible:ring-offset-2 cursor-pointer shrink"
+                className="group relative w-36 min-[360px]:w-[152px] min-[400px]:w-44 sm:w-52 lg:w-60 xl:w-64 h-36 min-[360px]:h-[152px] min-[400px]:h-44 sm:h-52 lg:h-60 xl:h-64 p-2 sm:p-4 flex flex-col items-center justify-center text-[#1E3A8A] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E3A8A] focus-visible:ring-offset-2 cursor-pointer shrink"
               >
                 <img
                   src={navaratriAsset("/navaratri/assets/blue-scalloped-cta-frame.png")}
@@ -320,10 +320,10 @@ export const NavaratriHome: React.FC = () => {
                   className="absolute inset-0 h-full w-full object-contain drop-shadow-md transition-all group-hover:drop-shadow-xl pointer-events-none"
                 />
                 <div className="relative z-10 flex flex-col items-center justify-center text-center px-1.5 max-w-[108px] min-[360px]:max-w-[120px] sm:max-w-none space-y-0.5 sm:space-y-1">
-                  <div className="w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-10 sm:h-10 rounded-full bg-blue-100/90 border border-blue-300 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                    <QrCode className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 text-[#1E3A8A]" />
+                  <div className="w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full bg-blue-100/90 border border-blue-300 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                    <QrCode className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-[#1E3A8A]" />
                   </div>
-                  <span className="font-serif text-[10px] min-[360px]:text-[11px] sm:text-sm font-black leading-tight text-[#1E3A8A] tracking-tight">
+                  <span className="font-serif text-[10px] min-[360px]:text-[11px] sm:text-sm lg:text-base font-black leading-tight text-[#1E3A8A] tracking-tight">
                     Scan Mandapam<br />QR (Camera)
                   </span>
                 </div>
@@ -342,7 +342,7 @@ export const NavaratriHome: React.FC = () => {
 
               <Link
                 to="/navaratri/register"
-                className="group relative w-36 min-[360px]:w-[152px] min-[400px]:w-44 sm:w-52 h-36 min-[360px]:h-[152px] min-[400px]:h-44 sm:h-52 p-2 sm:p-4 flex flex-col items-center justify-center text-[#8B1E1E] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B1E1E] focus-visible:ring-offset-2 shrink"
+                className="group relative w-36 min-[360px]:w-[152px] min-[400px]:w-44 sm:w-52 lg:w-60 xl:w-64 h-36 min-[360px]:h-[152px] min-[400px]:h-44 sm:h-52 lg:h-60 xl:h-64 p-2 sm:p-4 flex flex-col items-center justify-center text-[#8B1E1E] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B1E1E] focus-visible:ring-offset-2 shrink"
               >
                 <img
                   src={navaratriAsset("/navaratri/assets/ivory-scalloped-cta-frame.png")}
@@ -351,10 +351,10 @@ export const NavaratriHome: React.FC = () => {
                   className="absolute inset-0 h-full w-full object-contain drop-shadow-md transition-all group-hover:drop-shadow-xl pointer-events-none"
                 />
                 <div className="relative z-10 flex flex-col items-center justify-center text-center px-1.5 max-w-[108px] min-[360px]:max-w-[120px] sm:max-w-none space-y-0.5 sm:space-y-1">
-                  <div className="w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-10 sm:h-10 rounded-full bg-amber-100/90 border border-amber-300 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                    <Building className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 text-[#8B1E1E]" />
+                  <div className="w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full bg-amber-100/90 border border-amber-300 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                    <Building className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-[#8B1E1E]" />
                   </div>
-                  <span className="font-serif text-[10px] min-[360px]:text-[11px] sm:text-sm font-black leading-tight text-[#8B1E1E] tracking-tight">
+                  <span className="font-serif text-[10px] min-[360px]:text-[11px] sm:text-sm lg:text-base font-black leading-tight text-[#8B1E1E] tracking-tight">
                     Register Your<br />Durga Mandapam
                   </span>
                 </div>
