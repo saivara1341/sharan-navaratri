@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
 import { getPrivatePasscode } from "../utils/mandapamCredentials";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Lock,
   KeyRound,
@@ -133,6 +134,36 @@ export const NavaratriLogin: React.FC = () => {
     setActiveMandapamId(matched.id);
     setRole("organizer");
     setAuthenticatedId(matched.id);
+
+    // ── Persist login to Supabase ──────────────────────────────────────────
+    const sessionId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36);
+    sessionStorage.setItem("navaratri_session_id", sessionId);
+
+    // Fire-and-forget: insert audit log row
+    (supabase.from("navaratri_organizer_logins") as any)
+      .insert({
+        mandapam_id: matched.id,
+        mandapam_name: matched.name,
+        login_mode: loginMode,
+        session_id: sessionId,
+        user_agent: typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 255) : null,
+      })
+      .then(({ error }: { error: unknown }) => {
+        if (error) console.warn("[Login audit] insert error:", error);
+      });
+
+    // Bump last_login_at + login_count on the mandapam row
+    (supabase.from("navaratri_mandapams") as any)
+      .update({
+        last_login_at: new Date().toISOString(),
+        // increment via RPC not easily possible from client; just record timestamp
+      })
+      .eq("id", matched.id)
+      .then(({ error }: { error: unknown }) => {
+        if (error) console.warn("[Login] update last_login_at error:", error);
+      });
+    // ──────────────────────────────────────────────────────────────────────
+
     setIsSubmitting(false);
     toast.success(`Welcome to ${matched.name} Organizer Dashboard!`);
     navigate("/navaratri/organizer");

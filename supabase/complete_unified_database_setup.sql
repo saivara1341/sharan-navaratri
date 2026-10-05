@@ -291,6 +291,30 @@ ALTER TABLE public.navaratri_mandapam_members ENABLE ROW LEVEL SECURITY;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.navaratri_mandapam_members TO authenticated;
 GRANT ALL ON public.navaratri_mandapam_members TO service_role;
 
+-- Add last_login_at and login_count to mandapams (safe to re-run)
+ALTER TABLE public.navaratri_mandapams ADD COLUMN IF NOT EXISTS last_login_at timestamptz;
+ALTER TABLE public.navaratri_mandapams ADD COLUMN IF NOT EXISTS login_count integer NOT NULL DEFAULT 0;
+
+-- Organizer Login Audit Log
+CREATE TABLE IF NOT EXISTS public.navaratri_organizer_logins (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_name text,
+  login_mode text NOT NULL DEFAULT 'mobile' CHECK (login_mode IN ('mobile', 'mandapamId')),
+  logged_in_at timestamptz DEFAULT now(),
+  user_agent text,
+  session_id text
+);
+ALTER TABLE public.navaratri_organizer_logins ENABLE ROW LEVEL SECURITY;
+GRANT SELECT, INSERT ON public.navaratri_organizer_logins TO anon, authenticated;
+GRANT ALL ON public.navaratri_organizer_logins TO service_role;
+
+DROP POLICY IF EXISTS "Public insert organizer logins" ON public.navaratri_organizer_logins;
+CREATE POLICY "Public insert organizer logins" ON public.navaratri_organizer_logins FOR INSERT TO anon, authenticated WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Mandapam view own logins" ON public.navaratri_organizer_logins;
+CREATE POLICY "Mandapam view own logins" ON public.navaratri_organizer_logins FOR SELECT TO anon, authenticated USING (true);
+
 -- Standard Festival Days
 CREATE TABLE IF NOT EXISTS public.navaratri_standard_days (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
