@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import { ImagePlus, Megaphone, ArrowUpRight, ExternalLink } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
@@ -9,6 +9,7 @@ export const NavaratriHeroSideAd: React.FC = () => {
   const { advertisements, recordAdClick, recordAdImpression } = useNavaratriData();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const recordedAdIdRef = useRef<string | null>(null);
 
   // Only real active ads that have an image and are paid/approved
   const activeAdsWithImages = advertisements.filter(
@@ -17,13 +18,15 @@ export const NavaratriHeroSideAd: React.FC = () => {
 
   const currentAd = activeAdsWithImages[activeIndex];
   const ctaInfo = getAdCtaDetails(currentAd);
+  const currentAdId = currentAd?.id;
 
-  // Track impressions if an ad is displayed
+  // Track impressions only once per ad display
   useEffect(() => {
-    if (currentAd?.id) {
-      recordAdImpression(currentAd.id);
+    if (currentAdId && recordedAdIdRef.current !== currentAdId) {
+      recordedAdIdRef.current = currentAdId;
+      recordAdImpression(currentAdId);
     }
-  }, [currentAd, recordAdImpression]);
+  }, [currentAdId, recordAdImpression]);
 
   // Auto rotate ads if multiple exist
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import { ImagePlus, Megaphone, ExternalLink, Store } from "lucide-react";
@@ -28,13 +28,16 @@ export const NavaratriFlankingAdBox: React.FC<NavaratriFlankingAdBoxProps> = ({
   const effectiveIndex = activeAdsWithImages.length > 0 ? activeIndex % activeAdsWithImages.length : 0;
   const currentAd = activeAdsWithImages[effectiveIndex];
   const ctaInfo = getAdCtaDetails(currentAd);
+  const currentAdId = currentAd?.id;
+  const recordedAdIdRef = useRef<string | null>(null);
 
   // Track impressions
   useEffect(() => {
-    if (currentAd?.id) {
-      recordAdImpression(currentAd.id);
+    if (currentAdId && recordedAdIdRef.current !== currentAdId) {
+      recordedAdIdRef.current = currentAdId;
+      recordAdImpression(currentAdId);
     }
-  }, [currentAd, recordAdImpression]);
+  }, [currentAdId, recordAdImpression]);
 
   // Auto-rotate ads if multiple exist
   useEffect(() => {

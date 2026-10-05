@@ -262,7 +262,7 @@ export function generateVisitingCardCanvas(data: {
 
   ctx.fillStyle = "#FFFFFF";
   ctx.font = "bold 32px monospace";
-  ctx.fillText(`📞 +91 ${data.phone || "9848012345"}`, boxX + 24, 430);
+  ctx.fillText(`📞 +91 ${data.phone || "9XXXXXXXXX"}`, boxX + 24, 430);
 
   if (data.whatsapp) {
     ctx.fillStyle = "#86EFAC";

@@ -471,7 +471,7 @@ export const CreateAdModal: React.FC<CreateAdModalProps> = ({
                       maxLength={10}
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                      placeholder="e.g. 9XXXXXXXXX"
+                      placeholder="e.g. Your Number"
                       className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white text-stone-900 font-mono"
                     />
                     <span className="absolute right-3 top-2.5 text-[10px] font-bold text-stone-400">

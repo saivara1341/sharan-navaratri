@@ -2521,7 +2521,7 @@ export const NavaratriOrganizer: React.FC = () => {
                         type="text"
                         value={editOrganizerName}
                         onChange={(e) => setEditOrganizerName(e.target.value)}
-                        placeholder="e.g. Hrudhaya Ragu Ram Youth Committee / RAGHU"
+                        placeholder="e.g. Committee Name / Your Name"
                         className="w-full px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                       />
                     </div>
@@ -2535,7 +2535,7 @@ export const NavaratriOrganizer: React.FC = () => {
                           type="tel"
                           value={editOrganizerMobile}
                           onChange={(e) => setEditOrganizerMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                          placeholder="e.g. 6303602743"
+                          placeholder="e.g. Your Number"
                           className="w-full px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                         />
                       </div>
@@ -2548,7 +2548,7 @@ export const NavaratriOrganizer: React.FC = () => {
                           type="tel"
                           value={editWhatsappNumber}
                           onChange={(e) => setEditWhatsappNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                          placeholder="e.g. 6303602743"
+                          placeholder="e.g. Your Number"
                           className="w-full px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                         />
                       </div>

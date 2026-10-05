@@ -152,7 +152,7 @@ export const WalkInRegisterModal: React.FC<WalkInRegisterModalProps> = ({
                   required
                   value={walkinName}
                   onChange={(e) => setWalkinName(e.target.value)}
-                  placeholder="Enter devotee name"
+                  placeholder="e.g. Devotee Name / Your Name"
                   className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white"
                 />
               </div>
@@ -166,7 +166,7 @@ export const WalkInRegisterModal: React.FC<WalkInRegisterModalProps> = ({
                   pattern="[0-9]{10}"
                   value={walkinMobile}
                   onChange={(e) => setWalkinMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                  placeholder="e.g. 9876543210"
+                  placeholder="e.g. Your Number"
                   className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white"
                 />
               </div>

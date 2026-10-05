@@ -264,10 +264,8 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
                   onChange={(e) => setName(e.target.value)}
                   placeholder={
                     isCoupleService
-                      ? "e.g. Ramesh & Sunitha (రమేష్ & సునీత)"
-                      : isFemaleService
-                      ? "e.g. Lakshmi Devi (లక్ష్మి దేవి)"
-                      : "e.g. Rajesh Kumar"
+                      ? "e.g. Your Names (Couple)"
+                      : "e.g. Your Name"
                   }
                   className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
@@ -294,7 +292,7 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
                   pattern="[0-9]{10}"
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                  placeholder="e.g. 9876543210"
+                  placeholder="e.g. Your Number"
                   className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>

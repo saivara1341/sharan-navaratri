@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import {
   Mandapam,
   Alankarana,
@@ -884,7 +884,13 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     setAdvertisements(prev => prev.map(a => a.id === adId ? { ...a, status, rejectionReason } : a));
   };
 
+  const lastImpressionTimeRef = useRef<Map<string, number>>(new Map());
+
   const recordAdImpression = (adId: string) => {
+    const now = Date.now();
+    const last = lastImpressionTimeRef.current.get(adId) || 0;
+    if (now - last < 5000) return; // Ignore repeated calls within 5 seconds
+    lastImpressionTimeRef.current.set(adId, now);
     setAdvertisements(prev => prev.map(a => a.id === adId ? { ...a, impressions: a.impressions + 1 } : a));
   };
 

@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { FOOTER_SLOKA_TRANSLATIONS } from "../../utils/navaratriTranslations";
@@ -52,22 +51,6 @@ export const NavaratriFooter: React.FC = () => {
           </p>
         </div>
 
-        {/* Policy Links — grey */}
-        <div className="pt-2 border-t border-amber-500/20">
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-medium text-stone-400 max-w-2xl mx-auto">
-            <Link to="/contact-us" className="hover:text-stone-200 transition-colors px-1">Contact Us</Link>
-            <span className="text-stone-600 text-[10px]">•</span>
-            <Link to="/terms-and-conditions" className="hover:text-stone-200 transition-colors px-1">Terms &amp; Conditions</Link>
-            <span className="text-stone-600 text-[10px]">•</span>
-            <Link to="/refund-cancellation-policy" className="hover:text-stone-200 transition-colors px-1">Refunds &amp; Cancellations</Link>
-            <span className="text-stone-600 text-[10px]">•</span>
-            <Link to="/shipping-delivery-policy" className="hover:text-stone-200 transition-colors px-1">Shipping &amp; Delivery</Link>
-            <span className="text-stone-600 text-[10px]">•</span>
-            <Link to="/pricing" className="hover:text-stone-200 transition-colors px-1">Products &amp; Pricing (INR)</Link>
-            <span className="text-stone-600 text-[10px]">•</span>
-            <Link to="/privacy" className="hover:text-stone-200 transition-colors px-1">Privacy Policy</Link>
-          </div>
-        </div>
 
         <div className="pt-2 border-t border-amber-500/15 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-amber-200/80">
           <p>© {currentYear} Sharan Navaratri • {t.appName}. {t.allRightsReserved}</p>

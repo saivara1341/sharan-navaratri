@@ -1429,7 +1429,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Ramesh Kumar / Sai Krishna"
+                      placeholder="e.g. Your Name"
                       value={regName}
                       onChange={(e) => setRegName(e.target.value)}
                       className="w-full p-2.5 rounded-xl bg-white border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 text-stone-900"
@@ -1444,7 +1444,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                       type="tel"
                       required
                       maxLength={10}
-                      placeholder="e.g. 9848012345"
+                      placeholder="e.g. Your Number (10 digits)"
                       value={regMobile}
                       onChange={(e) => setRegMobile(e.target.value)}
                       className="w-full p-2.5 rounded-xl bg-white border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 text-stone-900 font-mono"
