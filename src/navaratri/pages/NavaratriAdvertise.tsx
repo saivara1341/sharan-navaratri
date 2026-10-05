@@ -15,7 +15,6 @@ import {
   Clock,
   Layers,
   Zap,
-  Sparkles,
   ShieldCheck,
   Flame
 } from "lucide-react";
@@ -488,8 +487,7 @@ export const NavaratriAdvertise: React.FC = () => {
           <div className="absolute -bottom-16 -left-16 w-44 h-44 bg-orange-400/20 rounded-full blur-2xl pointer-events-none" />
 
           {/* Selected Plan Summary Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-100 to-amber-200 border border-amber-300/90 shadow-xs">
-            <Sparkles className="w-4 h-4 text-[#8B1E1E]" />
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-100 to-amber-200 border border-amber-300/90 shadow-xs">
             <span className="text-xs sm:text-sm font-bold text-stone-900">
               Selected Plan: <strong className="text-[#8B1E1E]">{selectedPkg.name}</strong> •{" "}
               <span className="font-mono text-emerald-800 font-black">₹{effectivePrice}</span>
