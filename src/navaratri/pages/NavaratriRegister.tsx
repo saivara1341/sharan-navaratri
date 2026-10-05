@@ -53,7 +53,7 @@ const readRegistrationCredentials = (): RegistrationCredentials => {
 };
 
 export const NavaratriRegister: React.FC = () => {
-  const { registerMandapam, setActiveMandapamId, setRole, toggleFollow, markScanned } = useNavaratriData();
+  const { registerMandapam, setActiveMandapamId, setRole, toggleFollow, markScanned, mandapams } = useNavaratriData();
   const { t } = useNavaratriLanguage();
   const navigate = useNavigate();
   const [googleOnboarding] = useState<GoogleOnboardingProfile>(() => readGoogleOnboardingProfile());
@@ -87,6 +87,33 @@ export const NavaratriRegister: React.FC = () => {
 
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
   const [registeredMandapam, setRegisteredMandapam] = useState<Mandapam | null>(null);
+
+  // Auto-detect if current user already has a mandapam registered
+  useEffect(() => {
+    let isMounted = true;
+    const checkAlreadyRegistered = async () => {
+      try {
+        const { data: authData } = await supabase.auth.getUser();
+        const user = authData?.user;
+        const email = user?.email?.toLowerCase().trim() || googleOnboarding?.email?.toLowerCase().trim();
+        const uid = user?.id || googleOnboarding?.userId;
+
+        const existing = mandapams.find(
+          (m) => (uid && m.ownerUserId === uid) || (email && m.organizerEmail?.toLowerCase().trim() === email)
+        );
+
+        if (existing && isMounted) {
+          setActiveMandapamId(existing.id);
+          setRole("organizer");
+          setRegisteredMandapam(existing);
+        }
+      } catch {}
+    };
+    checkAlreadyRegistered();
+    return () => {
+      isMounted = false;
+    };
+  }, [mandapams, googleOnboarding, setActiveMandapamId, setRole]);
 
   const handleCaptureGps = () => {
     if (!("geolocation" in navigator)) {
@@ -140,6 +167,7 @@ export const NavaratriRegister: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setDuplicateWarning(null);
 
     const cleanMobile = organizerMobile.replace(/\D/g, "");
     if (!name.trim() || !organizerName.trim() || !cleanMobile || !area.trim()) {
@@ -188,10 +216,13 @@ export const NavaratriRegister: React.FC = () => {
 
     if (res.duplicateWarning) {
       setDuplicateWarning(res.duplicateWarning);
-      toast.warning("Duplicate check triggered");
+      toast.warning("Duplicate notice: similar mandapam exists in this area");
+    } else {
+      setDuplicateWarning(null);
     }
 
     if (res.success && res.mandapam) {
+      setDuplicateWarning(null);
       if (ownerUserId) {
         try {
           await (supabase as any)

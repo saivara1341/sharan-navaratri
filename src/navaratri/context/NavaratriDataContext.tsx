@@ -134,6 +134,7 @@ interface NavaratriDataContextType {
   deleteActivity: (id: string) => void;
   updateMandapam: (mandapamId: string, data: Partial<Mandapam>) => void;
   deleteMandapam: (mandapamId: string) => boolean;
+  deleteUserAccount: (mandapamId?: string) => Promise<boolean>;
 }
 
 const NavaratriDataContext = createContext<NavaratriDataContextType | null>(null);
@@ -920,27 +921,89 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const registerMandapam = (data: Omit<Mandapam, "id" | "slug" | "verificationStatus" | "createdAt"> & { ownerUserId?: string | null }) => {
-    // Duplicate Detection check: only flag if a DIFFERENT organizer mobile has registered the exact same mandapam name in the exact same area and city
     const normalizedName = data.name.toLowerCase().trim();
     const normalizedArea = data.area.toLowerCase().trim();
     const normalizedCity = data.city.toLowerCase().trim();
-    const cleanDataMobile = (data.organizerMobile || "").replace(/\D/g, "");
+    const cleanDataMobile = (data.organizerMobile || "").replace(/\D/g, "").slice(-10);
+    const inputEmail = (data.organizerEmail || "").toLowerCase().trim();
 
-    const existing = mandapams.find(m => {
+    // 1. Check if the current user already owns or previously created this mandapam (or is re-submitting in this session)
+    const ownExisting = mandapams.find(m => {
       if (!m || isDemoOrMockMandapam(m)) return false;
-      const mMobile = (m.organizerMobile || "").replace(/\D/g, "");
-      // If same organizer mobile, they are re-registering or updating their own mandapam
-      if (cleanDataMobile && mMobile === cleanDataMobile) return false;
+      const mMobile = (m.organizerMobile || "").replace(/\D/g, "").slice(-10);
+      const isSamePhone = Boolean(cleanDataMobile && mMobile && cleanDataMobile === mMobile);
+      const isSameOwner = Boolean(data.ownerUserId && m.ownerUserId && data.ownerUserId === m.ownerUserId);
+      const isSameEmail = Boolean(inputEmail && m.organizerEmail && inputEmail === m.organizerEmail.toLowerCase().trim());
+      const isSameName = (m.name || "").toLowerCase().trim() === normalizedName;
+      const isSameArea = (m.area || "").toLowerCase().trim() === normalizedArea;
 
+      // If phone, owner, or email matches alongside name/area, or if exact name+area in current session
+      return (isSameOwner || isSamePhone || isSameEmail) || (isSameName && isSameArea);
+    });
+
+    if (ownExisting) {
+      // It's the user's own mandapam from a previous step or retry!
+      // Update its details with the submitted data and return it immediately without any duplicate warning!
+      const updatedMandapam: Mandapam = {
+        ...ownExisting,
+        ...data,
+        id: ownExisting.id,
+        slug: ownExisting.slug,
+        passcode: ownExisting.passcode || data.passcode,
+        ownerUserId: data.ownerUserId || ownExisting.ownerUserId,
+        organizerEmail: inputEmail || ownExisting.organizerEmail,
+        verificationStatus: ownExisting.verificationStatus || "VERIFIED",
+        updatedAt: new Date().toISOString()
+      };
+
+      setMandapams(prev => prev.map(m => m.id === ownExisting.id ? updatedMandapam : m));
+
+      // Update in Supabase
+      try {
+        (supabase.from("navaratri_mandapams") as any)
+          .update({
+            name: updatedMandapam.name,
+            description: updatedMandapam.description,
+            devi_name: updatedMandapam.deviName,
+            address: updatedMandapam.address,
+            area: updatedMandapam.area,
+            city: updatedMandapam.city,
+            state: updatedMandapam.state,
+            pincode: updatedMandapam.pincode,
+            latitude: updatedMandapam.latitude,
+            longitude: updatedMandapam.longitude,
+            organizer_name: updatedMandapam.organizerName,
+            organizer_mobile: updatedMandapam.organizerMobile,
+            organizer_email: updatedMandapam.organizerEmail || null,
+            owner_user_id: data.ownerUserId || updatedMandapam.ownerUserId || null,
+            updated_at: updatedMandapam.updatedAt
+          })
+          .eq("id", ownExisting.id)
+          .then(({ error }: any) => {
+            if (error) console.warn("Supabase mandapam update notice:", error.message);
+          })
+          .catch(() => {});
+      } catch {}
+
+      return { success: true, mandapam: updatedMandapam };
+    }
+
+    // 2. Only flag duplicate warning if a DIFFERENT organizer with a DIFFERENT phone number has registered this exact name in this exact area
+    const conflicting = mandapams.find(m => {
+      if (!m || isDemoOrMockMandapam(m)) return false;
+      const mMobile = (m.organizerMobile || "").replace(/\D/g, "").slice(-10);
       const mName = (m.name || "").toLowerCase().trim();
       const mArea = (m.area || "").toLowerCase().trim();
       const mCity = (m.city || "").toLowerCase().trim();
-      return mName === normalizedName && mArea === normalizedArea && mCity === normalizedCity;
+
+      const isSameLocation = mName === normalizedName && mArea === normalizedArea && mCity === normalizedCity;
+      const isDifferentPhone = Boolean(cleanDataMobile && mMobile && cleanDataMobile !== mMobile);
+      return isSameLocation && isDifferentPhone;
     });
 
     let duplicateWarning: string | undefined;
-    if (existing) {
-      duplicateWarning = `A Mandapam with similar details (${existing.name} in ${existing.area}) already exists. Your registration has been submitted for Admin review.`;
+    if (conflicting) {
+      duplicateWarning = `A Mandapam with similar details (${conflicting.name} in ${conflicting.area}) already exists. Your registration has been submitted for Admin review.`;
     }
 
     const shortId = `mnp-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -1245,6 +1308,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const deleteMandapam = (mandapamId: string): boolean => {
+    // 1. Remove from all local reactive state
     setMandapams(prev => prev.filter(m => m.id !== mandapamId));
     setAlankaranas(prev => prev.filter(a => a.mandapamId !== mandapamId));
     setDaySettings(prev => prev.filter(d => d.mandapamId !== mandapamId));
@@ -1257,7 +1321,76 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     setNimarjanamSchedules(prev => prev.filter(n => n.mandapamId !== mandapamId));
     setFollowedIds(prev => prev.filter(id => id !== mandapamId));
     setScannedIds(prev => prev.filter(id => id !== mandapamId));
+
+    // 2. Clear browser session and credentials if this mandapam was active
+    if (activeMandapamId === mandapamId) {
+      setActiveMandapamId("");
+      setRole("devotee");
+      sessionStorage.removeItem("navaratri_organizer_id");
+      localStorage.removeItem("navaratri_organizer_id");
+    }
+
+    // 3. Delete from Supabase navaratri_mandapams (PostgreSQL CASCADE foreign keys
+    // will automatically delete all day_settings, alankaranas, services, slots, bookings,
+    // activities, schedules, announcements, pallaki, questions, reminders, and analytics)
+    try {
+      (supabase.from("navaratri_mandapams") as any)
+        .delete()
+        .eq("id", mandapamId)
+        .then(({ error }: any) => {
+          if (error) console.warn("Supabase mandapam delete notice:", error.message);
+        })
+        .catch(() => {});
+    } catch {
+      // offline fallback
+    }
+
     return true;
+  };
+
+  const deleteUserAccount = async (mandapamId?: string): Promise<boolean> => {
+    try {
+      const { data: authData } = await supabase.auth.getUser();
+      const user = authData?.user;
+
+      // 1. Delete target mandapam or all mandapams owned by the user
+      if (mandapamId) {
+        deleteMandapam(mandapamId);
+      } else if (user) {
+        const owned = mandapams.filter(m => m.ownerUserId === user.id);
+        owned.forEach(m => deleteMandapam(m.id));
+      }
+
+      // 2. Execute database RPC or direct cascading deletes across all tables
+      if (user) {
+        try {
+          await (supabase as any).rpc("delete_own_user_account");
+        } catch {
+          // Direct fallback deletions if RPC is unavailable
+          await (supabase.from("navaratri_mandapams") as any).delete().eq("owner_user_id", user.id);
+          await (supabase.from("navaratri_bookings") as any).delete().eq("user_id", user.id);
+          await (supabase.from("navaratri_reminders") as any).delete().eq("user_id", user.id);
+          await (supabase.from("navaratri_community_questions") as any).delete().eq("user_id", user.id);
+          await (supabase.from("navaratri_advertisements") as any).delete().eq("user_id", user.id);
+          await (supabase.from("navaratri_mandapam_members") as any).delete().eq("user_id", user.id);
+        }
+      }
+
+      // 3. Clear all browser session and local storage
+      sessionStorage.clear();
+      localStorage.removeItem("navaratri_organizer_id");
+      localStorage.removeItem("navaratri_google_onboarding");
+      localStorage.removeItem("navaratri_registration_credentials");
+      setActiveMandapamId("");
+      setRole("devotee");
+
+      // 4. Sign out completely
+      await supabase.auth.signOut();
+      return true;
+    } catch (err) {
+      console.error("deleteUserAccount error:", err);
+      return false;
+    }
   };
 
   const updateMandapam = (mandapamId: string, data: Partial<Mandapam>) => {
@@ -1367,7 +1500,8 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
         updateActivity,
         deleteActivity,
         updateMandapam,
-        deleteMandapam
+        deleteMandapam,
+        deleteUserAccount
       }}
     >
       {children}

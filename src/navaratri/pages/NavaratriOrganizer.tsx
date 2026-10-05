@@ -109,6 +109,7 @@ export const NavaratriOrganizer: React.FC = () => {
     announcements,
     publishAnnouncement,
     deleteMandapam,
+    deleteUserAccount,
     updateMandapam,
     services,
     createService,
@@ -495,19 +496,26 @@ export const NavaratriOrganizer: React.FC = () => {
     toast.success("Festival event added and published successfully!");
   };
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     if (!currentMandapam) return;
 
     const mandapamName = currentMandapam.name;
-    const success = deleteMandapam(currentMandapam.id);
-    if (success) {
-      sessionStorage.removeItem("navaratri_organizer_id");
-      setAuthenticatedMandapamId(null);
-      setDeleteStep(0);
-      setDeleteConfirmInput("");
-      toast.success(`${mandapamName} account has been permanently deleted.`);
-      navigate("/navaratri");
-    } else {
+    const targetId = currentMandapam.id;
+    setDeleteStep(0);
+    setDeleteConfirmInput("");
+
+    try {
+      const success = await deleteUserAccount(targetId);
+      if (success) {
+        sessionStorage.removeItem("navaratri_organizer_id");
+        localStorage.removeItem("navaratri_organizer_id");
+        setAuthenticatedMandapamId(null);
+        toast.success(`${mandapamName} and all associated data have been permanently deleted.`);
+        navigate("/navaratri");
+      } else {
+        toast.error("Failed to delete account. Please try again.");
+      }
+    } catch {
       toast.error("Failed to delete account. Please try again.");
     }
   };

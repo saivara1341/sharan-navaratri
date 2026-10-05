@@ -706,6 +706,77 @@ CREATE POLICY "Allow uploads to public buckets" ON storage.objects FOR INSERT TO
   WITH CHECK (bucket_id IN ('media', 'project-attachments', 'mandapam-media', 'alankarana-photos', 'advertisement-creatives'));
 
 -- ------------------------------------------------------------------------------
--- 6. RELOAD SCHEMA CACHE
+-- 6. CASCADE USER & ORGANIZER DELETION
+-- ------------------------------------------------------------------------------
+DROP POLICY IF EXISTS "Organizer delete owned mandapam" ON public.navaratri_mandapams;
+CREATE POLICY "Organizer delete owned mandapam"
+  ON public.navaratri_mandapams
+  FOR DELETE TO anon, authenticated
+  USING (
+    owner_user_id = (select auth.uid())
+    OR (select public.is_portal_admin())
+    OR owner_user_id IS NULL
+  );
+
+CREATE OR REPLACE FUNCTION public.handle_auth_user_deleted()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  DELETE FROM public.navaratri_mandapams WHERE owner_user_id = OLD.id;
+  DELETE FROM public.navaratri_mandapam_members WHERE user_id = OLD.id;
+  DELETE FROM public.navaratri_bookings WHERE user_id = OLD.id;
+  DELETE FROM public.navaratri_reminders WHERE user_id = OLD.id;
+  DELETE FROM public.navaratri_community_questions WHERE user_id = OLD.id;
+  DELETE FROM public.navaratri_advertisements WHERE user_id = OLD.id;
+  DELETE FROM public.client_profiles WHERE user_id = OLD.id;
+  DELETE FROM public.user_roles WHERE user_id = OLD.id;
+  RETURN OLD;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_auth_user_deleted ON auth.users;
+CREATE TRIGGER on_auth_user_deleted
+  AFTER DELETE ON auth.users
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_auth_user_deleted();
+
+CREATE OR REPLACE FUNCTION public.delete_own_user_account()
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_uid uuid;
+  v_deleted_mandapams int := 0;
+BEGIN
+  v_uid := auth.uid();
+  IF v_uid IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  DELETE FROM public.navaratri_mandapams WHERE owner_user_id = v_uid;
+  GET DIAGNOSTICS v_deleted_mandapams = ROW_COUNT;
+
+  DELETE FROM public.navaratri_mandapam_members WHERE user_id = v_uid;
+  DELETE FROM public.navaratri_bookings WHERE user_id = v_uid;
+  DELETE FROM public.navaratri_reminders WHERE user_id = v_uid;
+  DELETE FROM public.navaratri_community_questions WHERE user_id = v_uid;
+  DELETE FROM public.navaratri_advertisements WHERE user_id = v_uid;
+  DELETE FROM public.client_profiles WHERE user_id = v_uid;
+  DELETE FROM public.user_roles WHERE user_id = v_uid;
+  DELETE FROM auth.users WHERE id = v_uid;
+
+  RETURN jsonb_build_object('success', true, 'deleted_user_id', v_uid, 'deleted_mandapams', v_deleted_mandapams);
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.delete_own_user_account() TO authenticated;
+
+-- ------------------------------------------------------------------------------
+-- 7. RELOAD SCHEMA CACHE
 -- ------------------------------------------------------------------------------
 NOTIFY pgrst, 'reload schema';
