@@ -341,7 +341,7 @@ export const NavaratriHome: React.FC = () => {
               </div>
 
               <Link
-                to="/navaratri/register"
+                to="/navaratri/login?mode=new"
                 className="group relative w-36 min-[360px]:w-[152px] min-[400px]:w-44 sm:w-52 lg:w-60 xl:w-64 h-36 min-[360px]:h-[152px] min-[400px]:h-44 sm:h-52 lg:h-60 xl:h-64 p-2 sm:p-4 flex flex-col items-center justify-center text-[#8B1E1E] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B1E1E] focus-visible:ring-offset-2 shrink"
               >
                 <img
@@ -369,7 +369,7 @@ export const NavaratriHome: React.FC = () => {
                   <span>Already registered your Durga Mandapam?</span>
                 </span>
                 <Link
-                  to="/navaratri/login"
+                  to="/navaratri/login?mode=new"
                   className="font-bold text-[#8B1E1E] hover:text-[#781B1B] inline-flex items-center gap-1 bg-amber-100/80 hover:bg-amber-200/90 px-2.5 py-1 rounded-xl transition-all border border-amber-300/80 shadow-2xs hover:shadow-xs active:scale-95"
                 >
                   <KeyRound className="w-3.5 h-3.5 text-[#8B1E1E]" />

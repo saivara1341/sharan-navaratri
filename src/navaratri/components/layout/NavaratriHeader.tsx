@@ -114,7 +114,7 @@ export const NavaratriHeader: React.FC = () => {
 
           {/* 1. Login as Mandapam (Organizers) - Silver Background (No border) */}
           <Link
-            to="/navaratri/login"
+            to="/navaratri/login?mode=new"
             className="relative z-10 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-stone-300 hover:from-white hover:to-slate-200 text-stone-900 shadow-xs text-xs font-black transition-all active:scale-95"
             title="Organizer Login for Registered Mandapams"
           >
@@ -196,7 +196,7 @@ export const NavaratriHeader: React.FC = () => {
             {/* Unified 3-Button cluster for Mobile: [Login as Mandapam (Silver) | + Register Mandapam | Run Ads (Gold)] */}
             <div className="p-1 rounded-2xl bg-amber-50/70 border-2 border-amber-300 shadow-xs flex items-center justify-between gap-1">
               <Link
-                to="/navaratri/login"
+                to="/navaratri/login?mode=new"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex-1 py-2 px-1.5 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-stone-300 text-stone-900 text-xs font-black text-center flex items-center justify-center gap-1 transition-all shadow-xs"
                 title="Login as Mandapam (Organizers)"

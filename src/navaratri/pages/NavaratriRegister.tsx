@@ -1,6 +1,6 @@
 import { navaratriAsset } from "../utils/navaratriAssets";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
 import { useNavaratriLanguage } from "../context/NavaratriLanguageContext";
 import {
@@ -17,6 +17,8 @@ import {
   ExternalLink,
   LocateFixed,
   Loader2,
+  Lock,
+  Sparkles
 } from "lucide-react";
 import { generatePasscode, copyToClipboard } from "../utils/mandapamCredentials";
 import { Mandapam } from "../types";
@@ -56,11 +58,15 @@ export const NavaratriRegister: React.FC = () => {
   const navigate = useNavigate();
   const [googleOnboarding] = useState<GoogleOnboardingProfile>(() => readGoogleOnboardingProfile());
   const [registrationCredentials] = useState<RegistrationCredentials>(() => readRegistrationCredentials());
+  const [searchParams] = useSearchParams();
+  const paramEmail = searchParams.get("email") || "";
+  const paramName = searchParams.get("name") || "";
+  const isGoogleVia = searchParams.get("via") === "google" || searchParams.get("source") === "google" || Boolean(googleOnboarding.email);
 
   const [name, setName] = useState("");
-  const [organizerName, setOrganizerName] = useState(() => googleOnboarding.name || "");
+  const [organizerName, setOrganizerName] = useState(() => paramName || googleOnboarding.name || "");
   const [organizerMobile, setOrganizerMobile] = useState(() => registrationCredentials.mobile || "");
-  const [organizerEmail, setOrganizerEmail] = useState(() => registrationCredentials.email || googleOnboarding.email || "");
+  const [organizerEmail, setOrganizerEmail] = useState(() => paramEmail || registrationCredentials.email || googleOnboarding.email || "");
 
   const [address, setAddress] = useState("");
   const [area, setArea] = useState("");
@@ -535,6 +541,15 @@ export const NavaratriRegister: React.FC = () => {
             <span>3. Committee Contact & Responsibility</span>
           </h3>
 
+          {isGoogleVia && paramEmail && (
+            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-xs text-emerald-800">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>
+                Google Account Connected: <strong>{paramEmail}</strong> (Name & email pre-filled)
+              </span>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-stone-800 mb-1">
@@ -598,6 +613,16 @@ export const NavaratriRegister: React.FC = () => {
           <p className="text-[11px] text-stone-500 text-center mt-2">
             By registering, the committee confirms accurate devotional and civic information for citizens.
           </p>
+          <div className="mt-4 pt-3 border-t border-dashed border-amber-200 text-center flex flex-col sm:flex-row items-center justify-center gap-1.5 text-xs text-stone-600">
+            <span>Already have your Mandapam ID and Passcode?</span>
+            <Link
+              to="/navaratri/login?mode=new"
+              className="font-bold text-[#8B1E1E] hover:underline inline-flex items-center gap-1"
+            >
+              <span>Login to Mandapam Dashboard</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
         </div>
       </form>
     </div>

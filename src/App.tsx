@@ -63,6 +63,7 @@ const NavaratriOrganizer = lazy(() => import("./navaratri/pages/NavaratriOrganiz
 const NavaratriAdmin = lazy(() => import("./navaratri/pages/NavaratriAdmin").then(m => ({ default: m.NavaratriAdmin })));
 const NavaratriAdvertise = lazy(() => import("./navaratri/pages/NavaratriAdvertise").then(m => ({ default: m.NavaratriAdvertise })));
 const NavaratriLogin = lazy(() => import("./navaratri/pages/NavaratriLogin").then(m => ({ default: m.NavaratriLogin })));
+const NavaratriGoogleCallback = lazy(() => import("./navaratri/pages/NavaratriGoogleCallback").then(m => ({ default: m.NavaratriGoogleCallback })));
 
 const isNavaratriSubdomain = typeof window !== 'undefined' && (
   window.location.hostname.toLowerCase().includes('navaratri') ||
@@ -290,6 +291,7 @@ const App = () => {
                     <Route path="/navaratri/nimarjanam" element={<Navigate to="/navaratri" replace />} />
                     <Route path="/navaratri/register" element={<NavaratriAppLayout><NavaratriRegister /></NavaratriAppLayout>} />
                     <Route path="/navaratri/login" element={<NavaratriAppLayout><NavaratriLogin /></NavaratriAppLayout>} />
+                    <Route path="/navaratri/auth/google-callback" element={<NavaratriGoogleCallback />} />
                     <Route path="/navaratri/auth" element={<Navigate to="/navaratri/login" replace />} />
                     <Route path="/navaratri/organizer" element={<NavaratriAppLayout><NavaratriOrganizer /></NavaratriAppLayout>} />
                     <Route path="/navaratri/organizer/:mandapamId" element={<NavaratriAppLayout><NavaratriOrganizer /></NavaratriAppLayout>} />
