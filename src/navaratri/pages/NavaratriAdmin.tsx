@@ -393,7 +393,7 @@ export const NavaratriAdmin: React.FC = () => {
                           {ad.utrNumber || <span className="text-red-500 italic">Not provided</span>}
                         </span>
                       </div>
-                      <p className="text-[10px] text-stone-500">Submitted: {new Date(ad.createdAt).toLocaleString('en-IN')}</p>
+                      <p className="text-[10px] text-stone-500">Submitted: {ad.createdAt ? new Date(ad.createdAt).toLocaleString('en-IN') : 'Recently'}</p>
                     </div>
                     {/* Action Buttons */}
                     <div className="flex flex-col gap-2 min-w-[160px]">

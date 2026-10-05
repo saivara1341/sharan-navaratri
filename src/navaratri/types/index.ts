@@ -307,6 +307,7 @@ export interface AdPackage {
   priceInr: number;
   durationDays: number;
   impressionLimit: number;
+  estimatedImpressions?: number;
   placementType: string;
   description: string;
   popular?: boolean;

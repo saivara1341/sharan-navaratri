@@ -428,7 +428,7 @@ export const NavaratriOrganizer: React.FC = () => {
               <div><strong>Devotee:</strong> ${b.name} (${b.mobile})</div>
               <div><strong>Persons:</strong> ${b.quantity} Devotee(s)</div>
               <div><strong>Status:</strong> ${b.status}</div>
-              <div><strong>Issued:</strong> ${new Date(b.createdAt).toLocaleString()}</div>
+              <div><strong>Issued:</strong> ${b.createdAt ? new Date(b.createdAt).toLocaleString() : new Date().toLocaleString()}</div>
               ${b.notes ? `<div><strong>Notes:</strong> ${b.notes}</div>` : ""}
             </div>
             <div class="footer">

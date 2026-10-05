@@ -308,7 +308,7 @@ export const NavaratriAdvertise: React.FC = () => {
                       <div className="mt-2 pl-6 space-y-1 text-[11px] text-stone-600">
                         <div className="flex items-center gap-1">
                           <Eye className="w-3 h-3 text-amber-700 shrink-0" />
-                          <span>~{pkg.estimatedImpressions.toLocaleString()} views</span>
+                          <span>~{(pkg.estimatedImpressions ?? pkg.impressionLimit ?? 1500).toLocaleString()} views</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Check className="w-3 h-3 text-emerald-600 shrink-0" />
