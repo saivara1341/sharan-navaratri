@@ -2742,7 +2742,6 @@ export const NavaratriOrganizer: React.FC = () => {
                             onClick={() => {
                               setPhotoPreview(preset.url);
                               setPhotoInputUrl(preset.url);
-                              toast.success(`Selected ${preset.title}! Click 'Save Branding & Details' below.`);
                             }}
                             className={`p-2 rounded-2xl border-2 text-left transition-all overflow-hidden cursor-pointer flex items-center gap-3 ${
                               isSelected
