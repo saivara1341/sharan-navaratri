@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { NavaratriFlankingAdBox } from "../components/ads/NavaratriFlankingAdBox";
+import { MandapamGoldIcon } from "../components/devotional/MandapamGoldIcon";
 import { navaratriAsset } from "../utils/navaratriAssets";
 import type { Mandapam } from "../types";
 
@@ -402,9 +403,9 @@ export const NavaratriLogin: React.FC = () => {
       {/* Main Login Card Container */}
       <div className="w-full bg-white p-5 sm:p-6 rounded-3xl border-2 border-amber-300 shadow-none space-y-3.5">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 shrink-0 rounded-2xl bg-gradient-to-br from-[#8B1E1E] via-[#A82828] to-[#B45309] text-white flex items-center justify-center shadow-md border-2 border-amber-300">
+          <div className="w-12 h-12 shrink-0 rounded-2xl bg-gradient-to-br from-[#8B1E1E] via-[#A82828] to-[#B45309] text-white flex items-center justify-center shadow-md border-2 border-amber-300 p-1 overflow-hidden">
             {isNewMode ? (
-              <Sparkles className="w-5 h-5 text-amber-200" />
+              <MandapamGoldIcon className="w-9 h-9" />
             ) : (
               <Lock className="w-5 h-5 text-amber-200" />
             )}

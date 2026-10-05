@@ -12,6 +12,7 @@ import { PrasadBowlIcon } from "../components/devotional/PrasadBowlIcon";
 import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifiedBadge";
 import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
 import { HomaKundaIcon, isHomamEvent } from "../components/devotional/HomaKundaIcon";
+import { MandapamGoldIcon } from "../components/devotional/MandapamGoldIcon";
 import { Activity } from "../types";
 import {
   ShieldCheck,
@@ -249,8 +250,8 @@ export const NavaratriOrganizer: React.FC = () => {
     return (
       <div className="max-w-md mx-auto px-4 py-8 space-y-6 font-sans">
         <div className="text-center space-y-2">
-          <div className="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-br from-[#8B1E1E] to-[#B45309] text-white flex items-center justify-center shadow-lg border-2 border-amber-300">
-            <Lock className="w-8 h-8 text-amber-200" />
+          <div className="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-br from-[#8B1E1E] to-[#B45309] text-white flex items-center justify-center shadow-lg border-2 border-amber-300 p-2 overflow-hidden">
+            <MandapamGoldIcon className="w-12 h-12 object-contain" />
           </div>
           <h1 className="font-serif font-black text-2xl sm:text-3xl text-[#8B1E1E]">
             Mandapam Organizer Portal
