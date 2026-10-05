@@ -367,7 +367,7 @@ export const NavaratriLogin: React.FC = () => {
       </div>
 
       {/* Main Login Card Container */}
-      <div className="w-full bg-white/95 backdrop-blur-md p-5 sm:p-6 rounded-3xl border-2 border-amber-300 shadow-2xl space-y-3.5">
+      <div className="w-full bg-white p-5 sm:p-6 rounded-3xl border-2 border-amber-300 shadow-none space-y-3.5">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 shrink-0 rounded-2xl bg-gradient-to-br from-[#8B1E1E] via-[#A82828] to-[#B45309] text-white flex items-center justify-center shadow-md border-2 border-amber-300">
             <Lock className="w-5 h-5 text-amber-200" />
@@ -564,10 +564,10 @@ export const NavaratriLogin: React.FC = () => {
   );
 
   return (
-    <div className="relative min-h-[100dvh] w-full flex items-center justify-center px-4 py-8 bg-[#820808] overflow-x-hidden">
+    <div className="relative min-h-[100dvh] w-full flex items-center justify-center px-4 py-8 bg-[#700807] overflow-x-hidden">
       {/* User-selected red mandala artwork, shown directly without blur. */}
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none"
+        className="absolute inset-0 bg-cover md:bg-contain bg-center bg-no-repeat pointer-events-none"
         style={{
           backgroundImage: `url(${navaratriAsset("/navaratri/assets/login-red-mandala-bg.jpeg")})`,
         }}
