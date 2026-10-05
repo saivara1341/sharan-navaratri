@@ -23,6 +23,7 @@ import {
   , ReminderRecord
 } from "../types";
 import { supabase } from "@/integrations/supabase/client";
+import { recordNavaratriAnalyticsEvent } from "../utils/navaratriAnalytics";
 import {
   INITIAL_SEASON,
   INITIAL_MANDAPAMS,
@@ -775,6 +776,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     const found = mandapams.find(m => m.id === mandapamId);
     if (!found || isDemoOrMockMandapam(found)) return;
     setScannedIds((previous) => previous.includes(mandapamId) ? previous : [mandapamId, ...previous]);
+    recordNavaratriAnalyticsEvent("QR_SCAN", { mandapamId });
   };
 
   const addReminder = (reminder: Omit<ReminderRecord, "id" | "createdAt">) => {
@@ -1144,10 +1146,13 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     if (now - last < 5000) return; // Ignore repeated calls within 5 seconds
     lastImpressionTimeRef.current.set(adId, now);
     setAdvertisements(prev => prev.map(a => a.id === adId ? { ...a, impressions: a.impressions + 1 } : a));
+    recordNavaratriAnalyticsEvent("AD_IMPRESSION", { adId });
   };
 
   const recordAdClick = (adId: string) => {
     setAdvertisements(prev => prev.map(a => a.id === adId ? { ...a, clicks: a.clicks + 1 } : a));
+    const ad = advertisements.find((item) => item.id === adId);
+    recordNavaratriAnalyticsEvent("AD_CLICK", { adId, mandapamId: ad?.targetMandapamId || null });
   };
 
   const createActivity = (data: Omit<Activity, "id">): Activity => {

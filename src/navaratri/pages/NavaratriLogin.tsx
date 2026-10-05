@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
-import { getPrivatePasscode } from "../utils/mandapamCredentials";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Lock,
@@ -45,6 +44,8 @@ type SupabaseMandapamRow = {
   updated_at: string | null;
 };
 
+const NAVARATRI_ADMIN_EMAIL = "ssaivaraprasad51@gmail.com";
+
 const mapSupabaseMandapam = (row: SupabaseMandapamRow): Mandapam => ({
   id: row.id,
   name: row.name,
@@ -83,17 +84,29 @@ export const NavaratriLogin: React.FC = () => {
   const [showLoginPasscode, setShowLoginPasscode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [pendingPhone, setPendingPhone] = useState("");
+  const [phoneOtp, setPhoneOtp] = useState("");
 
   const activeMandapam = authenticatedId
     ? mandapams.find((m) => m.id === authenticatedId)
     : null;
 
-  const openOrganizerPortal = useCallback((mandapam: Mandapam, reloadData = false) => {
+  const openOrganizerPortal = useCallback((mandapam: Mandapam, reloadData = false, loginMode: "mobile" | "email" | "google" = "google") => {
     sessionStorage.setItem("navaratri_organizer_id", mandapam.id);
     setActiveMandapamId(mandapam.id);
     setRole("organizer");
     setAuthenticatedId(mandapam.id);
     toast.success(`Welcome to ${mandapam.name} Organizer Dashboard!`);
+
+    const sessionId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36);
+    sessionStorage.setItem("navaratri_session_id", sessionId);
+    void (supabase.from("navaratri_organizer_logins") as any).insert({
+      mandapam_id: mandapam.id,
+      mandapam_name: mandapam.name,
+      login_mode: loginMode,
+      session_id: sessionId,
+      user_agent: typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 255) : null,
+    });
 
     if (reloadData) {
       window.location.replace("/navaratri/organizer");
@@ -102,14 +115,21 @@ export const NavaratriLogin: React.FC = () => {
     navigate("/navaratri/organizer");
   }, [navigate, setActiveMandapamId, setRole]);
 
-  const resolveGoogleOrganizer = useCallback(async (user: { id: string; email?: string | null; user_metadata?: Record<string, unknown> }) => {
+  const resolveGoogleOrganizer = useCallback(async (user: { id: string; email?: string | null; user_metadata?: Record<string, unknown> }, allowOnboarding = true, loginMode: "mobile" | "email" | "google" = "google") => {
     const email = user.email?.trim().toLowerCase() || "";
+    if (email === NAVARATRI_ADMIN_EMAIL) {
+      sessionStorage.removeItem("navaratri_organizer_id");
+      setRole("admin");
+      toast.success("Welcome to the Sharan Navaratri Admin Portal.");
+      navigate("/navaratri/admin");
+      return;
+    }
     const localMatch = email
       ? mandapams.find((mandapam) => mandapam.organizerEmail?.trim().toLowerCase() === email)
       : undefined;
 
     if (localMatch) {
-      openOrganizerPortal(localMatch);
+      openOrganizerPortal(localMatch, false, loginMode);
       return;
     }
 
@@ -143,7 +163,12 @@ export const NavaratriLogin: React.FC = () => {
         ...storedMandapams.filter((mandapam) => mandapam.id !== hydratedMandapam.id),
       ];
       localStorage.setItem("navaratri_mandapams", JSON.stringify(mergedMandapams));
-      openOrganizerPortal(hydratedMandapam, true);
+      openOrganizerPortal(hydratedMandapam, true, loginMode);
+      return;
+    }
+
+    if (!allowOnboarding) {
+      toast.error("No Mandapam portal is linked to this account. Choose New Organizer to register.");
       return;
     }
 
@@ -162,7 +187,8 @@ export const NavaratriLogin: React.FC = () => {
   }, [mandapams, navigate, openOrganizerPortal]);
 
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get("oauth") !== "google") return;
+    const authReturn = new URLSearchParams(window.location.search).get("oauth");
+    if (authReturn !== "google" && authReturn !== "account") return;
 
     let cancelled = false;
     let handled = false;
@@ -225,7 +251,7 @@ export const NavaratriLogin: React.FC = () => {
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanInput = loginInput.trim();
     const cleanPass = loginPasscode.trim();
@@ -242,108 +268,79 @@ export const NavaratriLogin: React.FC = () => {
       toast.error("Enter a valid 10-digit mobile number or email address.");
       return;
     }
-    if (!/^\d{4,6}$/.test(cleanPass)) {
-      toast.error("Passcode must contain 4 to 6 digits.");
+    if (!/^\d{6}$/.test(cleanPass)) {
+      toast.error("Security PIN must contain exactly 6 digits.");
       return;
     }
 
     setIsSubmitting(true);
 
-    if (accountMode === "new") {
-      localStorage.setItem("navaratri_registration_credentials", JSON.stringify({
-        mobile: isEmail ? "" : digitsOnly,
-        email: isEmail ? normalizedEmail : "",
-        passcode: cleanPass,
-      }));
-      setIsSubmitting(false);
-      navigate("/navaratri/register?source=new");
-      return;
-    }
-
-    // Build pool including any newly registered mandapams in local storage
-    const pool = [...mandapams];
     try {
-      if (typeof window !== "undefined") {
-        const stored = localStorage.getItem("navaratri_mandapams");
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed)) {
-            for (const item of parsed) {
-              if (item && item.id && !pool.some((m) => m.id === item.id)) {
-                pool.push(item);
-              }
-            }
+      const credentials = isEmail
+        ? { email: normalizedEmail, password: cleanPass }
+        : { phone: `+91${digitsOnly}`, password: cleanPass };
+
+      if (accountMode === "new") {
+        const { data, error } = await supabase.auth.signUp({
+          ...credentials,
+          options: {
+            emailRedirectTo: `${window.location.origin}/navaratri/login?oauth=account`,
+            data: { role: "navaratri_organizer" },
+          },
+        } as any);
+        if (error) throw error;
+
+        localStorage.setItem("navaratri_registration_credentials", JSON.stringify({
+          mobile: isEmail ? "" : digitsOnly,
+          email: isEmail ? normalizedEmail : "",
+        }));
+
+        if (!data.session) {
+          if (isEmail) {
+            toast.success("Check your email to confirm the account, then return to continue onboarding.");
+          } else {
+            setPendingPhone(digitsOnly);
+            toast.success("Enter the verification code sent to your mobile.");
           }
+          return;
         }
+        await resolveGoogleOrganizer(data.user, true, isEmail ? "email" : "mobile");
+        return;
       }
-    } catch {
-      // ignore
-    }
 
-    const matched = pool.find((m) => {
-      const matchEmail = isEmail && m.organizerEmail?.trim().toLowerCase() === normalizedEmail;
-      const mOrgDigits = (m.organizerMobile || "").replace(/\D/g, "");
-      const mContactDigits = (m.contactPhone || "").replace(/\D/g, "");
-      const mWhatsAppDigits = (m.whatsappNumber || "").replace(/\D/g, "");
-
-      const matchMobile =
-        digitsOnly.length === 10 &&
-        (mOrgDigits.endsWith(digitsOnly) ||
-          mContactDigits.endsWith(digitsOnly) ||
-          mWhatsAppDigits.endsWith(digitsOnly));
-
-      return matchEmail || matchMobile;
-    });
-
-    if (!matched) {
+      const { data, error } = await supabase.auth.signInWithPassword(credentials as any);
+      if (error) throw error;
+      await resolveGoogleOrganizer(data.user, false, isEmail ? "email" : "mobile");
+    } catch (authError: any) {
+      console.error("NAVARATRI_PASSWORD_AUTH_FAILED", authError);
+      toast.error(authError?.message || "Could not sign in. Check your details and try again.");
+    } finally {
       setIsSubmitting(false);
-      toast.error("No Mandapam portal was found for this mobile number or email. Choose New Organizer to register.");
+    }
+  };
+
+  const handleVerifyPhoneOtp = async () => {
+    if (!/^\d{6}$/.test(phoneOtp)) {
+      toast.error("Enter the 6-digit verification code sent to your mobile.");
       return;
     }
-
-    const storedPasscode = getPrivatePasscode(matched.id, matched.passcode);
-    const validPasscodes = [
-      storedPasscode,
-      matched.passcode,
-      matched.passcode ? matched.passcode.trim() : null,
-      "123456"
-    ].filter(Boolean);
-
-    if (!validPasscodes.includes(cleanPass)) {
+    setIsSubmitting(true);
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        phone: `+91${pendingPhone}`,
+        token: phoneOtp,
+        type: "sms",
+      });
+      if (error) throw error;
+      if (!data.user) throw new Error("Mobile verification did not return an account.");
+      setPendingPhone("");
+      setPhoneOtp("");
+      await resolveGoogleOrganizer(data.user, true, "mobile");
+    } catch (otpError: any) {
+      toast.error(otpError?.message || "The verification code is invalid or expired.");
+    } finally {
       setIsSubmitting(false);
-      toast.error("Incorrect passcode. Please check your credentials slip.");
-      return;
     }
-    // ── Persist login to Supabase ──────────────────────────────────────────
-    const sessionId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36);
-    sessionStorage.setItem("navaratri_session_id", sessionId);
-
-    // Fire-and-forget: insert audit log row
-    (supabase.from("navaratri_organizer_logins") as any)
-      .insert({
-        mandapam_id: matched.id,
-        mandapam_name: matched.name,
-        login_mode: isEmail ? "email" : "mobile",
-        session_id: sessionId,
-        user_agent: typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 255) : null,
-      })
-      .then(({ error }: { error: unknown }) => {
-        if (error) console.warn("[Login audit] insert error:", error);
-      });
-
-    // Bump last_login_at + login_count on the mandapam row
-    (supabase.from("navaratri_mandapams") as any)
-      .update({
-        last_login_at: new Date().toISOString(),
-        // increment via RPC not easily possible from client; just record timestamp
-      })
-      .eq("id", matched.id)
-      .then(({ error }: { error: unknown }) => {
-        if (error) console.warn("[Login] update last_login_at error:", error);
-      });
-    // ──────────────────────────────────────────────────────────────────────
-    setIsSubmitting(false);
-    openOrganizerPortal(matched);
   };
 
   const handleLogout = async () => {
@@ -414,6 +411,28 @@ export const NavaratriLogin: React.FC = () => {
               </button>
             </div>
           </div>
+        ) : pendingPhone ? (
+          <div className="space-y-3 rounded-2xl border border-amber-200 bg-amber-50/60 p-4">
+            <div>
+              <p className="text-sm font-black text-[#8B1E1E]">Verify mobile number</p>
+              <p className="text-[11px] text-stone-600">Enter the SMS code sent to +91 {pendingPhone}.</p>
+            </div>
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={6}
+              value={phoneOtp}
+              onChange={(event) => setPhoneOtp(event.target.value.replace(/\D/g, "").slice(0, 6))}
+              placeholder="6-digit verification code"
+              className="w-full rounded-xl border border-amber-300 bg-white px-3 py-2.5 text-center font-mono text-lg tracking-[0.35em] focus:outline-none focus:ring-2 focus:ring-amber-500"
+            />
+            <button type="button" onClick={handleVerifyPhoneOtp} disabled={isSubmitting} className="w-full rounded-xl bg-[#8B1E1E] py-2.5 text-xs font-bold text-white disabled:opacity-60">
+              Verify & Continue to Onboarding
+            </button>
+            <button type="button" onClick={() => { setPendingPhone(""); setPhoneOtp(""); }} className="w-full text-[11px] font-bold text-stone-600 hover:text-[#8B1E1E]">
+              Use another mobile number
+            </button>
+          </div>
         ) : (
           <form onSubmit={handleLogin} className="space-y-3">
             {/* Existing / New organizer tabs */}
@@ -474,7 +493,7 @@ export const NavaratriLogin: React.FC = () => {
                 <label className="block text-xs font-semibold text-stone-800">
                   Security Passcode / PIN <span className="text-red-500 font-bold ml-0.5">*</span>
                 </label>
-                <span className="text-[10px] text-stone-400">4-6 digits</span>
+                <span className="text-[10px] text-stone-400">6 digits</span>
               </div>
               <div className="relative">
                 <input
@@ -483,7 +502,7 @@ export const NavaratriLogin: React.FC = () => {
                   maxLength={6}
                   value={loginPasscode}
                   onChange={(e) => setLoginPasscode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                  placeholder="Enter 4-6 digit passcode"
+                  placeholder="Enter 6-digit security PIN"
                   className="w-full px-3 py-2.5 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none pr-10 font-mono tracking-wider shadow-2xs"
                 />
                 <button

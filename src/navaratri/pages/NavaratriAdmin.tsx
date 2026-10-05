@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
 import { useNavaratriLanguage } from "../context/NavaratriLanguageContext";
 import { STANDARD_NAVARATRI_DAYS } from "../data/standardNavaratriDays";
@@ -20,10 +21,30 @@ import {
   ExternalLink,
   X,
   Check
+  , LogIn
+  , QrCode
+  , MousePointerClick
+  , Loader2
 } from "lucide-react";
 import { toast } from "sonner";
 import { Mandapam } from "../types";
 import { navaratriAsset } from "../utils/navaratriAssets";
+import { supabase } from "@/integrations/supabase/client";
+
+const NAVARATRI_ADMIN_EMAIL = "ssaivaraprasad51@gmail.com";
+
+type AdminAnalyticsEvent = {
+  event_type: "QR_SCAN" | "AD_CLICK" | "AD_IMPRESSION";
+  mandapam_id: string | null;
+  ad_id: string | null;
+  visitor_id: string;
+  created_at: string;
+};
+
+type OrganizerLoginRow = {
+  mandapam_id: string;
+  logged_in_at: string;
+};
 
 const ADMIN_PRESETS = [
   {
@@ -54,6 +75,7 @@ const ADMIN_PRESETS = [
 ];
 
 export const NavaratriAdmin: React.FC = () => {
+  const navigate = useNavigate();
   const {
     mandapams,
     verifyMandapam,
@@ -67,6 +89,42 @@ export const NavaratriAdmin: React.FC = () => {
   const { t } = useNavaratriLanguage();
 
   const [activeTab, setActiveTab] = useState<"overview" | "mandapams" | "ads" | "standard_data" | "seasons">("overview");
+  const [adminAccess, setAdminAccess] = useState<"loading" | "allowed" | "denied">("loading");
+  const [analyticsEvents, setAnalyticsEvents] = useState<AdminAnalyticsEvent[]>([]);
+  const [organizerLogins, setOrganizerLogins] = useState<OrganizerLoginRow[]>([]);
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    void supabase.auth.getUser().then(({ data }) => {
+      if (!mounted) return;
+      const allowed = data.user?.email?.trim().toLowerCase() === NAVARATRI_ADMIN_EMAIL;
+      setAdminAccess(allowed ? "allowed" : "denied");
+    });
+    return () => { mounted = false; };
+  }, []);
+
+  useEffect(() => {
+    if (adminAccess !== "allowed") return;
+    let mounted = true;
+    setAnalyticsLoading(true);
+    void Promise.all([
+      (supabase.from("navaratri_organizer_logins") as any)
+        .select("mandapam_id,logged_in_at")
+        .order("logged_in_at", { ascending: false }),
+      (supabase.from("navaratri_analytics_events") as any)
+        .select("event_type,mandapam_id,ad_id,visitor_id,created_at")
+        .order("created_at", { ascending: false }),
+    ]).then(([loginResult, analyticsResult]) => {
+      if (!mounted) return;
+      if (loginResult.error) console.error("NAVARATRI_ADMIN_LOGIN_ANALYTICS_FAILED", loginResult.error);
+      if (analyticsResult.error) console.error("NAVARATRI_ADMIN_EVENT_ANALYTICS_FAILED", analyticsResult.error);
+      setOrganizerLogins((loginResult.data || []) as OrganizerLoginRow[]);
+      setAnalyticsEvents((analyticsResult.data || []) as AdminAnalyticsEvent[]);
+      setAnalyticsLoading(false);
+    });
+    return () => { mounted = false; };
+  }, [adminAccess]);
 
   // Admin Mandapam Card Background State
   const [adminCardModalOpen, setAdminCardModalOpen] = useState(false);
@@ -167,6 +225,38 @@ export const NavaratriAdmin: React.FC = () => {
   const totalMandapams = mandapams.length;
   const verifiedMandapams = mandapams.filter(m => m.verificationStatus === "VERIFIED").length;
   const pendingMandapams = mandapams.filter(m => m.verificationStatus === "PENDING").length;
+  const scanEvents = analyticsEvents.filter((event) => event.event_type === "QR_SCAN");
+  const adClickEvents = analyticsEvents.filter((event) => event.event_type === "AD_CLICK");
+  const uniqueDevotees = new Set(scanEvents.map((event) => event.visitor_id)).size;
+  const mandapamUsage = useMemo(() => mandapams.map((mandapam) => {
+    const logins = organizerLogins.filter((row) => row.mandapam_id === mandapam.id).length;
+    const scans = scanEvents.filter((event) => event.mandapam_id === mandapam.id);
+    return {
+      id: mandapam.id,
+      name: mandapam.name,
+      logins,
+      scans: scans.length,
+      devotees: new Set(scans.map((event) => event.visitor_id)).size,
+      adClicks: adClickEvents.filter((event) => event.mandapam_id === mandapam.id).length,
+    };
+  }).sort((a, b) => (b.scans + b.logins + b.adClicks) - (a.scans + a.logins + a.adClicks)), [adClickEvents, mandapams, organizerLogins, scanEvents]);
+
+  if (adminAccess === "loading") {
+    return <div className="min-h-[50vh] flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-[#8B1E1E]" /></div>;
+  }
+
+  if (adminAccess === "denied") {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="max-w-md rounded-3xl border-2 border-amber-300 bg-white p-7 text-center shadow-xl space-y-4">
+          <ShieldCheck className="mx-auto h-10 w-10 text-[#8B1E1E]" />
+          <h1 className="font-serif text-2xl font-black text-[#8B1E1E]">Admin sign-in required</h1>
+          <p className="text-sm text-stone-600">Continue with the authorized Google account to open platform analytics.</p>
+          <button type="button" onClick={() => navigate("/navaratri/login")} className="rounded-xl bg-[#8B1E1E] px-5 py-2.5 text-sm font-bold text-white">Go to Login</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 pb-16">
@@ -217,7 +307,7 @@ export const NavaratriAdmin: React.FC = () => {
       {/* TAB 1: OVERVIEW METRICS */}
       {activeTab === "overview" && (
         <div className="space-y-6">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="p-4 rounded-2xl bg-white border border-amber-200 shadow-sm space-y-1">
               <span className="text-[10px] text-stone-500 uppercase font-bold">Total Mandapams</span>
               <p className="text-3xl font-black text-[#8B1E1E]">{totalMandapams}</p>
@@ -225,25 +315,46 @@ export const NavaratriAdmin: React.FC = () => {
             </div>
 
             <div className="p-4 rounded-2xl bg-white border border-amber-200 shadow-sm space-y-1">
-              <span className="text-[10px] text-stone-500 uppercase font-bold">Devotee Bookings</span>
-              <p className="text-3xl font-black text-amber-800">{bookings.length}</p>
-              <p className="text-[11px] text-stone-600">Across All Pandals</p>
+              <span className="text-[10px] text-stone-500 uppercase font-bold flex items-center gap-1"><LogIn className="h-3 w-3" /> Organizer Logins</span>
+              <p className="text-3xl font-black text-amber-800">{analyticsLoading ? "—" : organizerLogins.length}</p>
+              <p className="text-[11px] text-stone-600">Across all Mandapams</p>
             </div>
 
             <div className="p-4 rounded-2xl bg-white border border-amber-200 shadow-sm space-y-1">
-              <span className="text-[10px] text-stone-500 uppercase font-bold">Community Q&A</span>
-              <p className="text-3xl font-black text-blue-800">{questions.length}</p>
-              <p className="text-[11px] text-stone-600">Citizen Queries</p>
+              <span className="text-[10px] text-stone-500 uppercase font-bold flex items-center gap-1"><QrCode className="h-3 w-3" /> Devotees Scanned</span>
+              <p className="text-3xl font-black text-blue-800">{analyticsLoading ? "—" : uniqueDevotees}</p>
+              <p className="text-[11px] text-stone-600">{scanEvents.length} total QR scans</p>
             </div>
 
             <div className="p-4 rounded-2xl bg-white border border-amber-200 shadow-sm space-y-1">
-              <span className="text-[10px] text-stone-500 uppercase font-bold">Local Advertisements</span>
-              <p className="text-3xl font-black text-purple-800">{advertisements.length}</p>
-              <p className={`text-[11px] font-semibold ${advertisements.filter(a => a.status === 'PENDING_REVIEW').length > 0 ? 'text-orange-600' : 'text-emerald-700'}`}>
-                {advertisements.filter(a => a.status === 'PENDING_REVIEW').length > 0
-                  ? `⚠️ ${advertisements.filter(a => a.status === 'PENDING_REVIEW').length} Awaiting Payment Verification`
-                  : 'All Ads Verified'}
-              </p>
+              <span className="text-[10px] text-stone-500 uppercase font-bold flex items-center gap-1"><MousePointerClick className="h-3 w-3" /> Advertisement Clicks</span>
+              <p className="text-3xl font-black text-purple-800">{analyticsLoading ? "—" : adClickEvents.length}</p>
+              <p className="text-[11px] text-stone-600">{advertisements.length} campaigns listed</p>
+            </div>
+          </div>
+
+          <div className="overflow-hidden rounded-3xl border border-amber-200 bg-white shadow-sm">
+            <div className="flex items-center justify-between border-b border-amber-200 bg-amber-50/70 px-5 py-3">
+              <h3 className="font-serif font-bold text-[#8B1E1E]">Mandapam Usage at a Glance</h3>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">Live Supabase data</span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[620px] text-left text-xs">
+                <thead className="bg-[#FAF6ED] text-[10px] uppercase text-stone-600">
+                  <tr><th className="p-3">Mandapam</th><th className="p-3 text-center">Organizer Logins</th><th className="p-3 text-center">Unique Devotees</th><th className="p-3 text-center">QR Scans</th><th className="p-3 text-center">Ad Clicks</th></tr>
+                </thead>
+                <tbody className="divide-y divide-amber-100">
+                  {mandapamUsage.map((row) => (
+                    <tr key={row.id} className="hover:bg-amber-50/50">
+                      <td className="p-3 font-bold text-[#8B1E1E]">{row.name}</td>
+                      <td className="p-3 text-center font-semibold">{row.logins}</td>
+                      <td className="p-3 text-center font-semibold">{row.devotees}</td>
+                      <td className="p-3 text-center font-semibold">{row.scans}</td>
+                      <td className="p-3 text-center font-semibold">{row.adClicks}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
 

@@ -47,10 +47,13 @@ export const NavaratriAppLayout: React.FC<NavaratriAppLayoutProps> = ({ children
     } catch (e) {}
   }, [location.pathname]);
 
-  // Pages that are self-contained single-screen views — skip all layout chrome
-  const isBarePage =
+  const isLoginPage =
     location.pathname === "/navaratri/login" ||
-    location.pathname === "/login" ||
+    location.pathname === "/login";
+
+  // Registration remains a focused onboarding view. Login uses the shared
+  // festival header and footer so it stays connected to the main site.
+  const isBarePage =
     location.pathname === "/navaratri/register" ||
     location.pathname === "/register";
 
@@ -59,6 +62,21 @@ export const NavaratriAppLayout: React.FC<NavaratriAppLayoutProps> = ({ children
       <NavaratriLanguageProvider>
         <NavaratriDataProvider>
           {children || <Outlet />}
+        </NavaratriDataProvider>
+      </NavaratriLanguageProvider>
+    );
+  }
+
+  if (isLoginPage) {
+    return (
+      <NavaratriLanguageProvider>
+        <NavaratriDataProvider>
+          <div className="min-h-screen bg-[#FAF7F2] text-[#221A14] flex flex-col font-sans selection:bg-[#9A241C] selection:text-white">
+            <NavaratriHeader />
+            <main className="flex-1 w-full">{children || <Outlet />}</main>
+            <AuspiciousRibbonBorder variant="maroon-gold" heightClass="h-4 sm:h-5.5" />
+            <NavaratriFooter />
+          </div>
         </NavaratriDataProvider>
       </NavaratriLanguageProvider>
     );

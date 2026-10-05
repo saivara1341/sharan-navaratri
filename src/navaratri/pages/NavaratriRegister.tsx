@@ -13,17 +13,12 @@ import {
   AlertTriangle,
   CheckCircle2,
   QrCode,
-  KeyRound,
-  Download,
   Copy,
-  Eye,
-  EyeOff,
   ExternalLink,
   LocateFixed,
   Loader2,
-  Lock
 } from "lucide-react";
-import { generatePasscode, copyToClipboard, downloadMandapamCredentials, savePrivateCredentials } from "../utils/mandapamCredentials";
+import { generatePasscode, copyToClipboard } from "../utils/mandapamCredentials";
 import { Mandapam } from "../types";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,7 +32,6 @@ type GoogleOnboardingProfile = {
 type RegistrationCredentials = {
   mobile?: string;
   email?: string;
-  passcode?: string;
 };
 
 const readGoogleOnboardingProfile = (): GoogleOnboardingProfile => {
@@ -77,8 +71,7 @@ export const NavaratriRegister: React.FC = () => {
   const [coverImageUrl, setCoverImageUrl] = useState(navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg"));
 
   // Credentials are captured on the login page before onboarding.
-  const [passcode] = useState(() => registrationCredentials.passcode || generatePasscode());
-  const [showConfirmPasscode, setShowConfirmPasscode] = useState(false);
+  const [passcode] = useState(() => generatePasscode());
 
   // Exact GPS location
   const [latitude, setLatitude] = useState<number | null>(null);
@@ -183,52 +176,47 @@ export const NavaratriRegister: React.FC = () => {
       const { data: authData } = await supabase.auth.getUser();
       const googleUser = authData.user;
 
-      if (googleUser) {
-        const existingResult = await (supabase as any)
-          .from("navaratri_mandapams")
-          .select("id")
-          .eq("owner_user_id", googleUser.id)
-          .limit(1)
-          .maybeSingle();
+      if (!googleUser) {
+        toast.error("Your account session expired. Please sign in again to finish registration.");
+        navigate("/navaratri/login");
+        return;
+      }
 
-        if (!existingResult.error && !existingResult.data) {
-          const { error: linkError } = await (supabase as any)
-            .from("navaratri_mandapams")
-            .insert({
-              name: res.mandapam.name,
-              slug: res.mandapam.slug,
-              description: res.mandapam.description,
-              devi_name: res.mandapam.deviName,
-              address: res.mandapam.address,
-              area: res.mandapam.area,
-              city: res.mandapam.city,
-              state: res.mandapam.state,
-              pincode: res.mandapam.pincode,
-              latitude: res.mandapam.latitude,
-              longitude: res.mandapam.longitude,
-              verification_status: res.mandapam.verificationStatus,
-              owner_user_id: googleUser.id,
-              organizer_name: res.mandapam.organizerName,
-              organizer_mobile: res.mandapam.organizerMobile,
-              organizer_email: googleUser.email?.trim().toLowerCase() || res.mandapam.organizerEmail || null,
-              logo_url: res.mandapam.logoUrl || null,
-              cover_image_url: res.mandapam.coverImageUrl || null,
-              contact_phone: res.mandapam.contactPhone,
-              whatsapp_number: res.mandapam.whatsappNumber || null,
-            });
+      const linkedEmail = googleUser.email?.trim().toLowerCase() || res.mandapam.organizerEmail || null;
+      const { error: linkError } = await (supabase as any)
+        .from("navaratri_mandapams")
+        .upsert({
+          id: res.mandapam.id,
+          name: res.mandapam.name,
+          slug: res.mandapam.slug,
+          description: res.mandapam.description,
+          devi_name: res.mandapam.deviName,
+          address: res.mandapam.address,
+          area: res.mandapam.area,
+          city: res.mandapam.city,
+          state: res.mandapam.state,
+          pincode: res.mandapam.pincode,
+          latitude: res.mandapam.latitude,
+          longitude: res.mandapam.longitude,
+          verification_status: res.mandapam.verificationStatus,
+          owner_user_id: googleUser.id,
+          organizer_name: res.mandapam.organizerName,
+          organizer_mobile: res.mandapam.organizerMobile,
+          organizer_email: linkedEmail,
+          logo_url: res.mandapam.logoUrl || null,
+          cover_image_url: res.mandapam.coverImageUrl || null,
+          contact_phone: res.mandapam.contactPhone,
+          whatsapp_number: res.mandapam.whatsappNumber || null,
+        }, { onConflict: "id" });
 
-          if (linkError) {
-            console.error("NAVARATRI_GOOGLE_MANDAPAM_LINK_FAILED", linkError);
-            toast.warning("Registration saved on this device, but Google portal linking needs another try.");
-          }
-        } else if (existingResult.error) {
-          console.error("NAVARATRI_GOOGLE_MANDAPAM_LOOKUP_FAILED", existingResult.error);
-        }
+      if (linkError) {
+        console.error("NAVARATRI_ACCOUNT_MANDAPAM_LINK_FAILED", linkError);
+        toast.error("Registration could not be linked to your login. Please try again.");
+        return;
       }
 
       localStorage.removeItem("navaratri_google_onboarding");
       localStorage.removeItem("navaratri_registration_credentials");
-      savePrivateCredentials(res.mandapam.id, passcode.trim());
       setActiveMandapamId(res.mandapam.id);
       setRole("organizer");
       toggleFollow(res.mandapam.id);
@@ -242,7 +230,7 @@ export const NavaratriRegister: React.FC = () => {
   // If successfully registered, show the credentials and download slip
   if (registeredMandapam) {
     const portalSteps = [
-      "Download your Access Slip and keep it with the committee",
+      "Use the same Google account or mobile/email account whenever you sign in",
       "Open the Organizer Portal and add daily Alankarana & pooja timings",
       "Print your Counter Standee QR for devotees to scan"
     ];
@@ -269,12 +257,12 @@ export const NavaratriRegister: React.FC = () => {
             </p>
           </div>
 
-          {/* Floating credentials card */}
+          {/* Linked account card */}
           <div className="relative -mt-9 mx-4 sm:mx-6 rounded-2xl border border-amber-200 bg-gradient-to-b from-[#FFFDF7] to-amber-50 p-5 shadow-xl space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
-                <KeyRound className="w-4 h-4 text-[#8B1E1E]" />
-                Official Mandapam Login Credentials
+                <ShieldCheck className="w-4 h-4 text-[#8B1E1E]" />
+                Organizer Account Linked
               </span>
               <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
                 <ShieldCheck className="w-3 h-3" />
@@ -299,48 +287,14 @@ export const NavaratriRegister: React.FC = () => {
                 </div>
               </div>
 
-              {/* Passcode (masked by default) */}
+              {/* Account identifier */}
               <div className="rounded-xl bg-white border-2 border-dashed border-emerald-300 p-3.5">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1">
-                  <Lock className="w-3 h-3" /> Passcode / PIN
+                <p className="text-[10px] font-bold uppercase tracking-wider text-stone-500">Login Account</p>
+                <p className="mt-1 break-all text-sm font-black text-emerald-800">
+                  {registeredMandapam.organizerEmail || registeredMandapam.organizerMobile}
                 </p>
-                <div className="flex items-center justify-between mt-1 gap-2">
-                  <span className="font-mono text-lg font-black tracking-[0.3em] text-emerald-800">
-                    {showConfirmPasscode ? registeredMandapam.passcode : "•".repeat(registeredMandapam.passcode?.length || 6)}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPasscode(!showConfirmPasscode)}
-                      className="p-2 rounded-lg bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition-all cursor-pointer"
-                      title={showConfirmPasscode ? "Hide passcode" : "Show passcode"}
-                    >
-                      {showConfirmPasscode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => copyToClipboard(registeredMandapam.passcode || "", "Passcode")}
-                      className="p-2 rounded-lg bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition-all cursor-pointer"
-                      title="Copy Passcode"
-                    >
-                      <Copy className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
-
-            <button
-              type="button"
-              onClick={() => downloadMandapamCredentials(registeredMandapam, registeredMandapam.passcode)}
-              className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <Download className="w-4 h-4" />
-              <span>Download Access Slip</span>
-            </button>
-            <p className="text-[11px] text-stone-500 text-center flex items-center justify-center gap-1">
-              <Lock className="w-3 h-3" /> Slip is generated on-demand and never stored in your browser.
-            </p>
           </div>
 
           {/* Next steps */}
