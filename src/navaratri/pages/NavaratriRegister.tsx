@@ -1,6 +1,6 @@
 import { navaratriAsset } from "../utils/navaratriAssets";
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
 import { useNavaratriLanguage } from "../context/NavaratriLanguageContext";
 import {
@@ -18,7 +18,6 @@ import {
   Copy,
   Eye,
   EyeOff,
-  RefreshCw,
   ExternalLink,
   LocateFixed,
   Loader2,
@@ -35,9 +34,23 @@ type GoogleOnboardingProfile = {
   name?: string;
 };
 
+type RegistrationCredentials = {
+  mobile?: string;
+  email?: string;
+  passcode?: string;
+};
+
 const readGoogleOnboardingProfile = (): GoogleOnboardingProfile => {
   try {
     return JSON.parse(localStorage.getItem("navaratri_google_onboarding") || "{}") as GoogleOnboardingProfile;
+  } catch {
+    return {};
+  }
+};
+
+const readRegistrationCredentials = (): RegistrationCredentials => {
+  try {
+    return JSON.parse(localStorage.getItem("navaratri_registration_credentials") || "{}") as RegistrationCredentials;
   } catch {
     return {};
   }
@@ -48,11 +61,12 @@ export const NavaratriRegister: React.FC = () => {
   const { t } = useNavaratriLanguage();
   const navigate = useNavigate();
   const [googleOnboarding] = useState<GoogleOnboardingProfile>(() => readGoogleOnboardingProfile());
+  const [registrationCredentials] = useState<RegistrationCredentials>(() => readRegistrationCredentials());
 
   const [name, setName] = useState("");
   const [organizerName, setOrganizerName] = useState(() => googleOnboarding.name || "");
-  const [organizerMobile, setOrganizerMobile] = useState("");
-  const [organizerEmail, setOrganizerEmail] = useState(() => googleOnboarding.email || "");
+  const [organizerMobile, setOrganizerMobile] = useState(() => registrationCredentials.mobile || "");
+  const [organizerEmail, setOrganizerEmail] = useState(() => registrationCredentials.email || googleOnboarding.email || "");
 
   const [address, setAddress] = useState("");
   const [area, setArea] = useState("");
@@ -62,9 +76,8 @@ export const NavaratriRegister: React.FC = () => {
   const [description, setDescription] = useState("");
   const [coverImageUrl, setCoverImageUrl] = useState(navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg"));
 
-  // Passcode is entered by the organizer (or auto-generated on request)
-  const [passcode, setPasscode] = useState("");
-  const [showPasscode, setShowPasscode] = useState(false);
+  // Credentials are captured on the login page before onboarding.
+  const [passcode] = useState(() => registrationCredentials.passcode || generatePasscode());
   const [showConfirmPasscode, setShowConfirmPasscode] = useState(false);
 
   // Exact GPS location
@@ -137,11 +150,6 @@ export const NavaratriRegister: React.FC = () => {
 
     if (cleanMobile.length !== 10) {
       toast.error("Please enter a valid 10-digit mobile number.");
-      return;
-    }
-
-    if (passcode.length < 4 || passcode.length > 6 || !/^\d{4,6}$/.test(passcode)) {
-      toast.error("Passcode must be between 4 and 6 digits.");
       return;
     }
 
@@ -219,6 +227,7 @@ export const NavaratriRegister: React.FC = () => {
       }
 
       localStorage.removeItem("navaratri_google_onboarding");
+      localStorage.removeItem("navaratri_registration_credentials");
       savePrivateCredentials(res.mandapam.id, passcode.trim());
       setActiveMandapamId(res.mandapam.id);
       setRole("organizer");
@@ -623,61 +632,6 @@ export const NavaratriRegister: React.FC = () => {
           </div>
         </div>
 
-        {/* 4. Portal Security & Login Passcode */}
-        <div className="space-y-3 pt-3">
-          <div className="flex items-center justify-between border-b border-amber-200 pb-1">
-            <h3 className="font-bold text-xs uppercase tracking-wider text-[#8B1E1E] flex items-center gap-1.5">
-              <KeyRound className="w-4 h-4" />
-              <span>4. Organizer Portal Passcode</span>
-            </h3>
-            <button
-              type="button"
-              onClick={() => {
-                const fresh = generatePasscode();
-                setPasscode(fresh);
-                setShowPasscode(true);
-                toast.info("Secure 6-digit passcode auto-generated!");
-              }}
-              className="text-[10px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2 py-0.5 rounded-lg flex items-center gap-1 transition-all cursor-pointer"
-            >
-              <RefreshCw className="w-3 h-3" />
-              Auto Generate
-            </button>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-stone-800 mb-1">
-              Create Security Passcode (4–6 digits) <span className="text-red-500 font-bold ml-0.5">*</span>
-            </label>
-            <div className="relative">
-              <input
-                type={showPasscode ? "text" : "password"}
-                maxLength={6}
-                pattern="\d{4,6}"
-                required
-                value={passcode}
-                onChange={(e) => {
-                  const val = e.target.value.replace(/\D/g, "").slice(0, 6);
-                  setPasscode(val);
-                }}
-                placeholder="Enter your own 4–6 digit passcode"
-                className="w-full pl-3 pr-10 py-2.5 rounded-xl text-sm font-mono tracking-widest font-bold border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPasscode(!showPasscode)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 p-1"
-                aria-label={showPasscode ? "Hide passcode" : "Show passcode"}
-              >
-                {showPasscode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-            <p className="text-[11px] text-stone-500 mt-1">
-              This passcode (4 to 6 digits) will be stored with your Mandapam ID. You will be able to download your access credentials slip right after registration.
-            </p>
-          </div>
-        </div>
-
         {/* Submit */}
         <div className="pt-4 border-t border-amber-200">
           <button
@@ -685,22 +639,11 @@ export const NavaratriRegister: React.FC = () => {
             className="w-full py-3.5 rounded-2xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs sm:text-sm font-bold shadow-xl transition-all flex items-center justify-center gap-2"
           >
             <ShieldCheck className="w-4 h-4" />
-            <span>Register Mandapam & Get ID & Passcode →</span>
+            <span>Register Mandapam & Open Portal →</span>
           </button>
           <p className="text-[11px] text-stone-500 text-center mt-2">
             By registering, the committee confirms accurate devotional and civic information for citizens.
           </p>
-
-          <div className="mt-4 pt-3 border-t border-dashed border-amber-200 text-center flex flex-col sm:flex-row items-center justify-center gap-1.5 text-xs text-stone-600">
-            <span>Already have your Mandapam ID and Passcode?</span>
-            <Link
-              to="/navaratri/login"
-              className="font-bold text-[#8B1E1E] hover:underline inline-flex items-center gap-1"
-            >
-              <span>Login to Mandapam Dashboard</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
         </div>
       </form>
     </div>

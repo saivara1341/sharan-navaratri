@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
 import { getPrivatePasscode } from "../utils/mandapamCredentials";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +8,6 @@ import {
   KeyRound,
   Eye,
   EyeOff,
-  Building,
   ArrowRight,
   ShieldCheck,
   ArrowLeft,
@@ -78,7 +77,7 @@ export const NavaratriLogin: React.FC = () => {
   const [authenticatedId, setAuthenticatedId] = useState<string | null>(() =>
     sessionStorage.getItem("navaratri_organizer_id") || null
   );
-  const [loginMode, setLoginMode] = useState<"mobile" | "mandapamId">("mobile");
+  const [accountMode, setAccountMode] = useState<"existing" | "new">("existing");
   const [loginInput, setLoginInput] = useState("");
   const [loginPasscode, setLoginPasscode] = useState("");
   const [showLoginPasscode, setShowLoginPasscode] = useState(false);
@@ -232,21 +231,34 @@ export const NavaratriLogin: React.FC = () => {
     const cleanPass = loginPasscode.trim();
 
     if (!cleanInput || !cleanPass) {
-      toast.error(
-        loginMode === "mobile"
-          ? "Please enter your 10-digit mobile number and passcode."
-          : "Please enter your Mandapam ID and passcode."
-      );
+      toast.error("Please enter your mobile number or email and passcode.");
       return;
     }
 
     const digitsOnly = cleanInput.replace(/\D/g, "");
-    if (loginMode === "mobile" && digitsOnly.length !== 10) {
-      toast.error("Please enter a valid 10-digit mobile number.");
+    const normalizedEmail = cleanInput.toLowerCase();
+    const isEmail = normalizedEmail.includes("@");
+    if (!isEmail && digitsOnly.length !== 10) {
+      toast.error("Enter a valid 10-digit mobile number or email address.");
+      return;
+    }
+    if (!/^\d{4,6}$/.test(cleanPass)) {
+      toast.error("Passcode must contain 4 to 6 digits.");
       return;
     }
 
     setIsSubmitting(true);
+
+    if (accountMode === "new") {
+      localStorage.setItem("navaratri_registration_credentials", JSON.stringify({
+        mobile: isEmail ? "" : digitsOnly,
+        email: isEmail ? normalizedEmail : "",
+        passcode: cleanPass,
+      }));
+      setIsSubmitting(false);
+      navigate("/navaratri/register?source=new");
+      return;
+    }
 
     // Build pool including any newly registered mandapams in local storage
     const pool = [...mandapams];
@@ -268,20 +280,8 @@ export const NavaratriLogin: React.FC = () => {
       // ignore
     }
 
-    const cleanLower = cleanInput.toLowerCase();
-
     const matched = pool.find((m) => {
-      // 1. Direct ID or slug match
-      const matchId =
-        m.id.toLowerCase() === cleanLower ||
-        (m.slug && m.slug.toLowerCase() === cleanLower);
-
-      // 2. Numeric-only match for mandapam ID (e.g. user typed 123456 instead of mnp-123456)
-      const matchNumericId = cleanLower.startsWith("mnp-")
-        ? m.id.toLowerCase() === cleanLower
-        : m.id.toLowerCase() === `mnp-${cleanLower}`;
-
-      // 3. Mobile match against organizerMobile, contactPhone, or whatsappNumber
+      const matchEmail = isEmail && m.organizerEmail?.trim().toLowerCase() === normalizedEmail;
       const mOrgDigits = (m.organizerMobile || "").replace(/\D/g, "");
       const mContactDigits = (m.contactPhone || "").replace(/\D/g, "");
       const mWhatsAppDigits = (m.whatsappNumber || "").replace(/\D/g, "");
@@ -292,16 +292,12 @@ export const NavaratriLogin: React.FC = () => {
           mContactDigits.endsWith(digitsOnly) ||
           mWhatsAppDigits.endsWith(digitsOnly));
 
-      return matchId || matchNumericId || matchMobile;
+      return matchEmail || matchMobile;
     });
 
     if (!matched) {
       setIsSubmitting(false);
-      toast.error(
-        loginMode === "mobile"
-          ? "No mandapam found with this registered mobile number. Please check or register."
-          : "Mandapam ID not found. Please verify your ID or register."
-      );
+      toast.error("No Mandapam portal was found for this mobile number or email. Choose New Organizer to register.");
       return;
     }
 
@@ -327,7 +323,7 @@ export const NavaratriLogin: React.FC = () => {
       .insert({
         mandapam_id: matched.id,
         mandapam_name: matched.name,
-        login_mode: loginMode,
+        login_mode: isEmail ? "email" : "mobile",
         session_id: sessionId,
         user_agent: typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 255) : null,
       })
@@ -383,7 +379,7 @@ export const NavaratriLogin: React.FC = () => {
             <h1 className="font-serif font-black text-lg text-[#8B1E1E] leading-tight">
               Mandapam Organizer Login
             </h1>
-            <p className="text-[11px] text-stone-500">Sign in with Mobile or Mandapam ID</p>
+            <p className="text-[11px] text-stone-500">Mobile or email access for new and existing organizers</p>
           </div>
         </div>
 
@@ -420,107 +416,57 @@ export const NavaratriLogin: React.FC = () => {
           </div>
         ) : (
           <form onSubmit={handleLogin} className="space-y-3">
-            {/* Login Identifier Switcher Tabs */}
+            {/* Existing / New organizer tabs */}
             <div className="flex rounded-xl p-1 bg-amber-100/70 border border-amber-200">
               <button
                 type="button"
                 onClick={() => {
-                  setLoginMode("mobile");
+                  setAccountMode("existing");
                   setLoginInput("");
+                  setLoginPasscode("");
                 }}
                 className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                  loginMode === "mobile"
+                  accountMode === "existing"
                     ? "bg-white text-[#8B1E1E] shadow-xs"
                     : "text-stone-600 hover:text-stone-900"
                 }`}
               >
                 <Phone className="w-3.5 h-3.5" />
-                <span>Organizer Mobile</span>
+                <span>Existing Organizer</span>
               </button>
               <button
                 type="button"
                 onClick={() => {
-                  setLoginMode("mandapamId");
+                  setAccountMode("new");
                   setLoginInput("");
+                  setLoginPasscode("");
                 }}
                 className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                  loginMode === "mandapamId"
+                  accountMode === "new"
                     ? "bg-white text-[#8B1E1E] shadow-xs"
                     : "text-stone-600 hover:text-stone-900"
                 }`}
               >
-                <Building className="w-3.5 h-3.5" />
-                <span>Mandapam ID</span>
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>New Organizer</span>
               </button>
             </div>
 
-            {/* Input field depending on active mode */}
-            {loginMode === "mobile" ? (
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-semibold text-stone-800">
-                    Organizer Mobile (10 Digits Only) <span className="text-red-500 font-bold ml-0.5">*</span>
-                  </label>
-                  <span
-                    className={`text-[10px] font-bold ${
-                      loginInput.replace(/\D/g, "").length === 10
-                        ? "text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded"
-                        : "text-stone-400"
-                    }`}
-                  >
-                    {loginInput.replace(/\D/g, "").slice(0, 10).length}/10 digits
-                  </span>
-                </div>
-                <input
-                  type="tel"
-                  required
-                  maxLength={10}
-                  pattern="[0-9]{10}"
-                  value={loginInput}
-                  onChange={(e) => setLoginInput(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                  placeholder="Enter 10-digit registered mobile"
-                  className="w-full px-3 py-2.5 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-2xs font-mono"
-                />
-                <div className="flex justify-end mt-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLoginMode("mandapamId");
-                      setLoginInput("");
-                    }}
-                    className="text-[11px] text-[#8B1E1E] hover:underline font-semibold cursor-pointer"
-                  >
-                    Or login with Mandapam ID →
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div>
-                <label className="block text-xs font-semibold text-stone-800 mb-1">
-                  Mandapam ID <span className="text-red-500 font-bold ml-0.5">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={loginInput}
-                  onChange={(e) => setLoginInput(e.target.value)}
-                  placeholder="Enter Mandapam ID (e.g. mnp-123456)"
-                  className="w-full px-3 py-2.5 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-2xs font-mono"
-                />
-                <div className="flex justify-end mt-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLoginMode("mobile");
-                      setLoginInput("");
-                    }}
-                    className="text-[11px] text-[#8B1E1E] hover:underline font-semibold cursor-pointer"
-                  >
-                    Or login with 10-Digit Mobile →
-                  </button>
-                </div>
-              </div>
-            )}
+            <div>
+              <label className="block text-xs font-semibold text-stone-800 mb-1">
+                {accountMode === "existing" ? "Registered Mobile or Email" : "Mobile Number or Email"}
+                <span className="text-red-500 font-bold ml-0.5">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={loginInput}
+                onChange={(e) => setLoginInput(e.target.value)}
+                placeholder="Enter mobile number or email"
+                autoComplete={accountMode === "existing" ? "username" : "email"}
+                className="w-full px-3 py-2.5 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-2xs"
+              />
+            </div>
 
             {/* Passcode Input */}
             <div>
@@ -557,7 +503,7 @@ export const NavaratriLogin: React.FC = () => {
               className="w-full py-3 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] disabled:opacity-60"
             >
               <KeyRound className="w-4 h-4" />
-              <span>Login to Mandapam Dashboard</span>
+              <span>{accountMode === "existing" ? "Login to Mandapam Dashboard" : "Continue to Mandapam Onboarding"}</span>
             </button>
 
             <div className="flex items-center gap-3 py-0.5" aria-hidden="true">
@@ -583,16 +529,12 @@ export const NavaratriLogin: React.FC = () => {
           </form>
         )}
 
-        <div className="pt-2 border-t border-amber-200/80 space-y-2">
-          <p className="text-[11px] text-stone-500 text-center">New organizer? Register your committee's mandapam:</p>
-          <Link
-            to="/navaratri/register"
-            className="w-full py-2.5 rounded-xl border border-amber-400 bg-amber-50 hover:bg-amber-100 text-[#8B1E1E] text-xs font-bold transition-all flex items-center justify-center gap-1.5 hover:shadow-xs active:scale-[0.98]"
-          >
-            <Building className="w-4 h-4 text-[#8B1E1E]" />
-            <span>+ Register New Durga Mandapam</span>
-          </Link>
-        </div>
+        <p className="pt-2 border-t border-amber-200/80 text-[11px] text-stone-500 text-center">
+          New?{" "}
+          <button type="button" onClick={() => setAccountMode("new")} className="font-bold text-[#8B1E1E] hover:underline cursor-pointer">
+            Register now.
+          </button>
+        </p>
 
         <p className="text-[10px] text-stone-500 flex items-center justify-center gap-1 pt-1">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
