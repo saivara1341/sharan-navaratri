@@ -16,7 +16,9 @@ import {
   Layers,
   Zap,
   ShieldCheck,
-  Flame
+  Flame,
+  ArrowRight,
+  ArrowDown
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -576,42 +578,164 @@ export const NavaratriAdvertise: React.FC = () => {
             </span>
           </div>
 
-          {/* 3 Step Simple Process Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-5 border-t border-amber-200/90 text-left relative z-10">
-            <div className="p-3.5 rounded-2xl bg-white/95 border border-amber-200 shadow-2xs space-y-1">
-              <div className="w-6 h-6 rounded-full bg-amber-100 text-[#8B1E1E] font-black text-xs flex items-center justify-center">
-                1
+          {/* 3 Step Simple Process Cards with Linking Connectors */}
+          <div className="pt-5 border-t border-amber-200/90 text-left relative z-10">
+            {/* Step Pipeline Header */}
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-900/80 flex items-center gap-1.5">
+                <span>3-Step Quick Process</span>
+              </span>
+              <div className="hidden sm:flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-300/70">
+                <span>1. Contact</span>
+                <ArrowRight className="w-3 h-3 text-amber-600" />
+                <span>2. Design</span>
+                <ArrowRight className="w-3 h-3 text-amber-600" />
+                <span>3. Live Ads</span>
               </div>
-              <h5 className="font-bold text-xs text-stone-900">Call or WhatsApp Us</h5>
-              <p className="text-[11px] text-stone-600 leading-snug">
-                Contact on <strong>6303602743</strong>. Share your business name, colony, and products/offers.
-              </p>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-white/95 border border-amber-200 shadow-2xs space-y-1">
-              <div className="w-6 h-6 rounded-full bg-amber-100 text-[#8B1E1E] font-black text-xs flex items-center justify-center">
-                2
-              </div>
-              <h5 className="font-bold text-xs text-stone-900">Send Photo / Visiting Card</h5>
-              <p className="text-[11px] text-stone-600 leading-snug">
-                Send your shop photo, visiting card, or logo. Our designers create an attractive festive banner for you.
-              </p>
-            </div>
+            <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* Card 1 */}
+              <div className="relative p-4 rounded-2xl bg-white/95 border-2 border-amber-200 shadow-xs hover:border-amber-400 hover:shadow-md transition-all flex flex-col justify-between group">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-[#8B1E1E] text-white font-black text-xs flex items-center justify-center shadow-xs">
+                      1
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-[#8B1E1E] bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                      Step 1
+                    </span>
+                  </div>
+                  <h5 className="font-bold text-sm text-stone-900 group-hover:text-[#8B1E1E] transition-colors">
+                    Call or WhatsApp Us
+                  </h5>
+                  <p className="mt-1 text-[11px] text-stone-600 leading-snug">
+                    Contact on <strong className="text-stone-900">6303602743</strong>. Share your business name, colony, and products/offers.
+                  </p>
+                </div>
 
-            <div className="p-3.5 rounded-2xl bg-white/95 border border-amber-200 shadow-2xs space-y-1">
-              <div className="w-6 h-6 rounded-full bg-amber-100 text-[#8B1E1E] font-black text-xs flex items-center justify-center">
-                3
+                <div className="mt-3 pt-2.5 border-t border-amber-100 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <a
+                      href="tel:6303602743"
+                      className="inline-flex items-center gap-1 text-[11px] font-bold text-[#8B1E1E] hover:underline"
+                    >
+                      <Phone className="w-3 h-3" /> Call
+                    </a>
+                    <span className="text-stone-300">•</span>
+                    <a
+                      href={`https://wa.me/916303602743?text=${encodeURIComponent(
+                        `Hello! I want to run an advertisement on Sharan Navaratri 2026 for my business.\n\n📌 Selected Plan: ${selectedPkg.name} (₹${effectivePrice})\n🎯 Space Type: ${
+                          adSpaceType === "EXCLUSIVE" ? "Exclusive 24/7 Solo" : "Shared 6s Rotation"
+                        }`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:underline"
+                    >
+                      <MessageCircle className="w-3 h-3" /> Chat Now →
+                    </a>
+                  </div>
+                </div>
+
+                {/* Desktop Connector Link to Card 2 */}
+                <div className="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-gradient-to-r from-amber-500 to-[#8B1E1E] text-white items-center justify-center shadow-md ring-4 ring-white">
+                  <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                </div>
               </div>
-              <h5 className="font-bold text-xs text-stone-900">Ad Goes Live Across Mandapams</h5>
-              <p className="text-[11px] text-stone-600 leading-snug">
-                Devotees see your ad banner right on mandapam notice boards with direct 1-tap call &amp; WhatsApp buttons.
-              </p>
+
+              {/* Mobile Connector Arrow 1 -> 2 */}
+              <div className="flex sm:hidden justify-center items-center -my-1 z-20">
+                <div className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center shadow-xs">
+                  <ArrowDown className="w-3.5 h-3.5 stroke-[2.5]" />
+                </div>
+              </div>
+
+              {/* Card 2 */}
+              <div className="relative p-4 rounded-2xl bg-white/95 border-2 border-amber-200 shadow-xs hover:border-amber-400 hover:shadow-md transition-all flex flex-col justify-between group">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-[#8B1E1E] text-white font-black text-xs flex items-center justify-center shadow-xs">
+                      2
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                      Step 2
+                    </span>
+                  </div>
+                  <h5 className="font-bold text-sm text-stone-900 group-hover:text-[#8B1E1E] transition-colors">
+                    Send Photo / Visiting Card
+                  </h5>
+                  <p className="mt-1 text-[11px] text-stone-600 leading-snug">
+                    Send your shop photo, visiting card, or logo. Our designers create an attractive festive banner for you.
+                  </p>
+                </div>
+
+                <div className="mt-3 pt-2.5 border-t border-amber-100 flex items-center justify-between">
+                  <a
+                    href={`https://wa.me/916303602743?text=${encodeURIComponent(
+                      "Hello! Here is my shop visiting card/photo for the Navaratri festive banner design."
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:underline"
+                  >
+                    <MessageCircle className="w-3 h-3" /> Send on WhatsApp →
+                  </a>
+                  <span className="text-[9px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded">
+                    Free Design
+                  </span>
+                </div>
+
+                {/* Desktop Connector Link to Card 3 */}
+                <div className="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-gradient-to-r from-amber-500 to-[#8B1E1E] text-white items-center justify-center shadow-md ring-4 ring-white">
+                  <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                </div>
+              </div>
+
+              {/* Mobile Connector Arrow 2 -> 3 */}
+              <div className="flex sm:hidden justify-center items-center -my-1 z-20">
+                <div className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center shadow-xs">
+                  <ArrowDown className="w-3.5 h-3.5 stroke-[2.5]" />
+                </div>
+              </div>
+
+              {/* Card 3 */}
+              <div className="relative p-4 rounded-2xl bg-white/95 border-2 border-amber-200 shadow-xs hover:border-amber-400 hover:shadow-md transition-all flex flex-col justify-between group">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-[#8B1E1E] text-white font-black text-xs flex items-center justify-center shadow-xs">
+                      3
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                      Step 3
+                    </span>
+                  </div>
+                  <h5 className="font-bold text-sm text-stone-900 group-hover:text-[#8B1E1E] transition-colors">
+                    Ad Goes Live Across Mandapams
+                  </h5>
+                  <p className="mt-1 text-[11px] text-stone-600 leading-snug">
+                    Devotees see your ad banner right on mandapam notice boards with direct 1-tap call &amp; WhatsApp buttons.
+                  </p>
+                </div>
+
+                <div className="mt-3 pt-2.5 border-t border-amber-100 flex items-center justify-between">
+                  <a
+                    href="#live-campaigns"
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-[#8B1E1E] hover:underline"
+                  >
+                    <Eye className="w-3 h-3" /> View Live Mandapams ↓
+                  </a>
+                  <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded">
+                    ~15 Min
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* ACTIVE CAMPAIGNS DASHBOARD */}
-        <div className="space-y-4 pt-6 border-t-2 border-amber-300/80">
+        <div id="live-campaigns" className="space-y-4 pt-6 border-t-2 border-amber-300/80">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-['Cinzel',serif] font-bold text-xl text-[#8B1E1E]">
