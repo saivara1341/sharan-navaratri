@@ -221,46 +221,44 @@ export const NavaratriLogin: React.FC = () => {
       }
     };
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        window.setTimeout(() => void handleAuthenticatedUser(session.user), 0);
+    const processOAuthCallback = async () => {
+      const { data: existingSession, error: existingSessionError } = await supabase.auth.getSession();
+      if (existingSessionError) {
+        console.error("NAVARATRI_GOOGLE_SESSION_CHECK_FAILED", existingSessionError);
+      }
+      if (existingSession.session?.user) {
+        await handleAuthenticatedUser(existingSession.session.user);
         return;
       }
 
-      if (_event !== "INITIAL_SESSION") return;
-
-      // Let Supabase finish URL detection first. If its initial session is empty
-      // but the OAuth provider returned tokens, pass them through the SDK once.
-      window.setTimeout(async () => {
-        if (cancelled || handled) return;
-
-        const callbackParams = new URLSearchParams(window.location.hash.slice(1));
-        const accessToken = callbackParams.get("access_token");
-        const refreshToken = callbackParams.get("refresh_token");
-        if (!accessToken || !refreshToken) {
-          clearOAuthFragment();
-          toast.error("Google sign-in could not be completed. Please try again.");
-          setIsGoogleLoading(false);
-          return;
-        }
-
-        const { data, error } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        });
+      const callbackParams = new URLSearchParams(window.location.hash.slice(1));
+      const accessToken = callbackParams.get("access_token");
+      const refreshToken = callbackParams.get("refresh_token");
+      if (!accessToken || !refreshToken) {
         clearOAuthFragment();
-        if (error || !data.session?.user) {
-          toast.error(error?.message || "Google sign-in could not be completed. Please try again.");
-          setIsGoogleLoading(false);
-          return;
-        }
-        await handleAuthenticatedUser(data.session.user);
-      }, 0);
-    });
+        toast.error("Google returned without an active session. Please try again.");
+        setIsGoogleLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
+      clearOAuthFragment();
+      if (error || !data.session?.user) {
+        console.error("NAVARATRI_GOOGLE_SESSION_RESTORE_FAILED", error);
+        toast.error(error?.message || "Google sign-in could not be completed. Please try again.");
+        setIsGoogleLoading(false);
+        return;
+      }
+      await handleAuthenticatedUser(data.session.user);
+    };
+
+    void processOAuthCallback();
 
     return () => {
       cancelled = true;
-      authListener.subscription.unsubscribe();
     };
   }, [resolveGoogleOrganizer]);
 
