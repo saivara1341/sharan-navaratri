@@ -12,6 +12,7 @@ import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifi
 import { PrasadBowlIcon } from "../components/devotional/PrasadBowlIcon";
 import { MandapamIcon } from "../components/devotional/MandapamIcon";
 import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
+import { HomaKundaIcon, isHomamEvent } from "../components/devotional/HomaKundaIcon";
 import {
   getTranslatedMandapamName,
   getTranslatedAddress,
@@ -254,6 +255,20 @@ export const NavaratriMandapamDetail: React.FC = () => {
   const effectiveServices = mandapamServices.length > 0 ? mandapamServices : DEFAULT_MANDAPAM_SERVICES;
 
   const DEFAULT_MANDAPAM_ACTIVITIES: Activity[] = [
+    {
+      id: `act-${mandapam.id}-chandi-homam`,
+      mandapamId: mandapam.id,
+      title: "Sri Maha Chandi Homam & Maha Purnahuthi",
+      category: "Pooja",
+      description: "Sacred Vedic Chandi Yagam with 108 medicinal herbs, ghee offerings, and divine purnahuthi blessings.",
+      date: "2026-10-20",
+      startTime: "08:30 AM",
+      endTime: "12:30 PM",
+      location: `${mandapam.area} Yagashala Sanctum`,
+      bookingEnabled: true,
+      published: true,
+      fee: "Free"
+    },
     {
       id: `act-${mandapam.id}-dandiya`,
       mandapamId: mandapam.id,
@@ -707,6 +722,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {effectiveActivities.map((act) => {
             const transAct = getTranslatedActivity(act, language);
+            const isHomam = isHomamEvent(act);
             return (
               <div
                 key={act.id}
@@ -714,8 +730,9 @@ export const NavaratriMandapamDetail: React.FC = () => {
               >
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200 uppercase">
-                      {transAct.category}
+                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200 uppercase flex items-center gap-1.5">
+                      {isHomam && <HomaKundaIcon className="w-4 h-4 inline-block" />}
+                      <span>{transAct.category}</span>
                     </span>
                     <span className="text-xs font-semibold text-stone-600 flex items-center gap-1">
                       <Calendar className="w-3 h-3 text-[#8B1E1E]" />
@@ -723,8 +740,9 @@ export const NavaratriMandapamDetail: React.FC = () => {
                     </span>
                   </div>
 
-                  <h4 className="font-serif font-bold text-base text-[#8B1E1E] leading-snug">
-                    {transAct.title}
+                  <h4 className="font-serif font-bold text-base text-[#8B1E1E] leading-snug flex items-center gap-2">
+                    {isHomam && <HomaKundaIcon className="w-6 h-6 shrink-0" />}
+                    <span>{transAct.title}</span>
                   </h4>
 
                   <p className="text-xs text-stone-700 leading-relaxed">
@@ -780,7 +798,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
           <div className="flex items-center justify-between border-b border-amber-200/80 pb-3">
             <div>
               <div className="flex items-center gap-2">
-                <Flame className="w-5 h-5 text-[#8B1E1E]" />
+                <HomaKundaIcon className="w-6 h-6 shrink-0" />
                 <h3 className="font-serif font-black text-xl text-[#8B1E1E]">
                   {t.poojasTitle}
                 </h3>
@@ -794,6 +812,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {effectiveServices.map((srv) => {
               const transSrv = getTranslatedService(srv, language);
+              const isHomam = isHomamEvent(srv);
               return (
                 <div
                   key={srv.id}
@@ -802,8 +821,9 @@ export const NavaratriMandapamDetail: React.FC = () => {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between flex-wrap gap-1">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-[#8B1E1E] uppercase">
-                          {transSrv.type}
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-[#8B1E1E] uppercase flex items-center gap-1">
+                          {isHomam && <HomaKundaIcon className="w-3.5 h-3.5" />}
+                          <span>{transSrv.type}</span>
                         </span>
                         {srv.targetAudience && (
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
@@ -819,8 +839,9 @@ export const NavaratriMandapamDetail: React.FC = () => {
                         {srv.durationMinutes} {t.minsLabel}
                       </span>
                     </div>
-                    <h4 className="font-serif font-bold text-base text-[#8B1E1E]">
-                      {transSrv.name}
+                    <h4 className="font-serif font-bold text-base text-[#8B1E1E] flex items-center gap-2">
+                      {isHomam && <HomaKundaIcon className="w-5 h-5 shrink-0" />}
+                      <span>{transSrv.name}</span>
                     </h4>
                     <p className="text-xs text-stone-700 leading-relaxed">
                       {transSrv.description}

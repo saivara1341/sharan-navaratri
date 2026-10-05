@@ -3,6 +3,7 @@ import { STANDARD_NAVARATRI_DAYS } from "../../data/standardNavaratriDays";
 import { StandardFestivalDay, Mandapam, MandapamDaySetting } from "../../types";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { PrasadBowlIcon } from "../devotional/PrasadBowlIcon";
+import { HomaKundaIcon, isHomamEvent } from "../devotional/HomaKundaIcon";
 import {
   Calendar,
   ShoppingBag,
@@ -677,7 +678,11 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
               {/* Mandapam Observances */}
               <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-2xl border border-amber-200 space-y-2">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900 uppercase">
-                  <Flame className="w-4 h-4 text-amber-600" />
+                  {isHomamEvent(selectedDay.standardActivities) ? (
+                    <HomaKundaIcon className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <Flame className="w-4 h-4 text-amber-600" />
+                  )}
                   <span>Standard Mandapam Observances & Rituals</span>
                 </div>
                 <p className="text-xs text-stone-700 leading-relaxed">{selectedDay.standardActivities}</p>

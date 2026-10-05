@@ -11,6 +11,7 @@ import { downloadMandapamCredentials, copyToClipboard, getPrivatePasscode } from
 import { PrasadBowlIcon } from "../components/devotional/PrasadBowlIcon";
 import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifiedBadge";
 import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
+import { HomaKundaIcon, isHomamEvent } from "../components/devotional/HomaKundaIcon";
 import { Activity } from "../types";
 import {
   ShieldCheck,
@@ -1172,11 +1173,13 @@ export const NavaratriOrganizer: React.FC = () => {
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900">
-                        {act.category}
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 inline-flex items-center gap-1.5">
+                        {isHomamEvent(act) && <HomaKundaIcon className="w-3.5 h-3.5" />}
+                        <span>{act.category}</span>
                       </span>
-                      <h3 className="font-serif font-black text-lg text-[#8B1E1E] mt-1">
-                        {act.title}
+                      <h3 className="font-serif font-black text-lg text-[#8B1E1E] mt-1 flex items-center gap-2">
+                        {isHomamEvent(act) && <HomaKundaIcon className="w-5 h-5 shrink-0" />}
+                        <span>{act.title}</span>
                       </h3>
                     </div>
                     <button
@@ -1982,7 +1985,7 @@ export const NavaratriOrganizer: React.FC = () => {
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {[
                     { label: "Dandiya Raas", cat: "Game", title: "Dandiya Raas & Garba Utsav" },
-                    { label: "Chandi Homam", cat: "Pooja", title: "Maha Chandi Yagam & Purnahuthi" },
+                    { label: "Chandi Homam", cat: "Pooja", title: "Maha Chandi Yagam & Purnahuthi", isHomam: true },
                     { label: "Kumkumarchana", cat: "Pooja", title: "Sri Lalitha Kumkumarchana Seva" },
                     { label: "Bhajan Sandhya", cat: "Bhajan", title: "Devotional Bhajan Sandhya" },
                     { label: "Bathukamma", cat: "Cultural Program", title: "Maha Bathukamma Celebrations" }
@@ -1992,11 +1995,12 @@ export const NavaratriOrganizer: React.FC = () => {
                       type="button"
                       onClick={() => {
                         setEventTitle(preset.title);
-                        setEventCategory(preset.cat);
+                        setEventCategory(preset.cat as Activity["category"]);
                       }}
-                      className="text-[10px] px-2.5 py-1 rounded-xl bg-white hover:bg-amber-100 text-[#8B1E1E] border border-amber-300 font-semibold transition-all cursor-pointer shadow-2xs"
+                      className="text-[10px] px-2.5 py-1 rounded-xl bg-white hover:bg-amber-100 text-[#8B1E1E] border border-amber-300 font-semibold transition-all cursor-pointer shadow-2xs inline-flex items-center gap-1.5"
                     >
-                      + {preset.label}
+                      {preset.isHomam && <HomaKundaIcon className="w-3.5 h-3.5 shrink-0" />}
+                      <span>+ {preset.label}</span>
                     </button>
                   ))}
                 </div>

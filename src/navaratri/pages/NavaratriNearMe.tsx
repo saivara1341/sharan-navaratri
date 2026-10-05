@@ -17,6 +17,7 @@ import {
   Info
 } from "lucide-react";
 import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
+import { HomaKundaIcon, isHomamEvent } from "../components/devotional/HomaKundaIcon";
 import { toast } from "sonner";
 
 type Category = "all" | "mandapams" | "annadanam" | "bhajans_pallaki" | "activities";
@@ -916,7 +917,9 @@ export const NavaratriNearMe: React.FC = () => {
                 >
                   <div className="flex items-start gap-3">
                     <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-100 text-[#8B1E1E]">
-                      {activity.category === "Competition" ? (
+                      {isHomamEvent(activity) ? (
+                        <HomaKundaIcon className="h-7 w-7" />
+                      ) : activity.category === "Competition" ? (
                         <Trophy className="h-5 w-5" />
                       ) : activity.category === "Pallaki Seva" ? (
                         <Navigation className="h-5 w-5" />

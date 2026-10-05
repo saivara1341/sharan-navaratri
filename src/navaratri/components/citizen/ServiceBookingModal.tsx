@@ -10,6 +10,7 @@ import {
 import { QRCodeSVG } from "qrcode.react";
 import confetti from "canvas-confetti";
 import { X, CheckCircle2, Clock, Users, Calendar, Printer } from "lucide-react";
+import { HomaKundaIcon, isHomamEvent } from "../devotional/HomaKundaIcon";
 import { toast } from "sonner";
 
 interface ServiceBookingModalProps {
@@ -177,6 +178,7 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {mandapamServices.map((srv) => {
                   const transSrv = getTranslatedService(srv, language);
+                  const isHomam = isHomamEvent(srv);
                   return (
                     <button
                       key={srv.id}
@@ -186,14 +188,17 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
                         const matching = slots.find(s => s.serviceId === srv.id && s.mandapamId === mandapam.id);
                         if (matching) setSelectedSlotId(matching.id);
                       }}
-                      className={`p-3 rounded-xl text-left border transition-all text-xs ${
+                      className={`p-3 rounded-xl text-left border transition-all text-xs flex items-start gap-2.5 ${
                         selectedServiceId === srv.id
                           ? "bg-amber-100 border-[#8B1E1E] font-bold text-[#8B1E1E] ring-1 ring-[#8B1E1E]"
                           : "bg-white border-amber-200/80 text-stone-700 hover:bg-amber-50"
                       }`}
                     >
-                      <p className="truncate">{transSrv.name}</p>
-                      <p className="text-[10px] text-stone-500 font-normal">{transSrv.type} • {srv.durationMinutes} {t.minsLabel}</p>
+                      {isHomam && <HomaKundaIcon className="w-5 h-5 shrink-0 mt-0.5" />}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate">{transSrv.name}</p>
+                        <p className="text-[10px] text-stone-500 font-normal">{transSrv.type} • {srv.durationMinutes} {t.minsLabel}</p>
+                      </div>
                     </button>
                   );
                 })}
@@ -425,8 +430,11 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
               <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
                 {language === "kn" ? "ಪೂಜಾ ಪಾಸ್ ದೃಢಪಟ್ಟಿದೆ" : language === "te" ? "భక్తిపూర్వక పూజా పాస్ ఖరారైనది" : language === "hi" ? "भक्ति पूजा पास स्वीकृत" : "Devotional Pooja Pass Confirmed"}
               </span>
-              <h3 className="font-serif font-black text-xl text-[#8B1E1E]">
-                {confirmedBooking.serviceName}
+              <h3 className="font-serif font-black text-xl text-[#8B1E1E] flex items-center justify-center gap-2">
+                {isHomamEvent(confirmedBooking.serviceName) && (
+                  <HomaKundaIcon className="w-6 h-6 inline-block" />
+                )}
+                <span>{confirmedBooking.serviceName}</span>
               </h3>
               <p className="text-xs text-stone-600">
                 {getTranslatedMandapamName(mandapam.name, language)} • {mandapam.area}, {mandapam.city}
