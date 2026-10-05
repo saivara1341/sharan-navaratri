@@ -75,6 +75,7 @@ const mapSupabaseMandapam = (row: SupabaseMandapamRow): Mandapam => ({
 export const NavaratriLogin: React.FC = () => {
   const { mandapams, setActiveMandapamId, setRole } = useNavaratriData();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [authenticatedId, setAuthenticatedId] = useState<string | null>(() =>
     sessionStorage.getItem("navaratri_organizer_id") || null
