@@ -42,6 +42,7 @@ export interface Mandapam {
   contactPhone: string;
   whatsappNumber?: string;
   passcode?: string;
+  ownerUserId?: string;
   createdAt: string;
   updatedAt?: string;
 }

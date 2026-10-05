@@ -155,31 +155,21 @@ function saveStorage<T>(key: string, value: T) {
   }
 }
 
-// Helper to identify and purge any mock/demo mandapam including Matha Nilayam
+// Helper to identify and purge any mock/demo mandapam
 export const isDemoOrMockMandapam = (m: any): boolean => {
   if (!m) return true;
   const id = String(m.id || "").toLowerCase();
   const name = String(m.name || "").toLowerCase().trim();
   const slug = String(m.slug || "").toLowerCase().trim();
-  const area = String(m.area || "").toLowerCase().trim();
-  const city = String(m.city || "").toLowerCase().trim();
   return (
     id.startsWith("demo-") ||
     id === "mnp-178584" ||
     id === "m-rr-nizamabad" ||
-    name.includes("matha nilayam") ||
-    name.includes("nilayam") ||
-    name.includes("hrudhaya") ||
-    name.includes("demo") ||
-    name.includes("test") ||
-    name.includes("sample") ||
-    slug.includes("matha-nilayam") ||
-    slug.includes("nilayam") ||
-    slug.includes("hrudhaya") ||
-    slug.includes("demo") ||
-    slug.includes("test") ||
-    area.includes("south mandal") ||
-    (city.includes("nizamabad") && area.includes("nizamabad"))
+    name === "demo mandapam" ||
+    name === "test mandapam" ||
+    name === "sample mandapam" ||
+    slug === "demo-mandapam" ||
+    slug === "test-mandapam"
   );
 };
 
@@ -517,6 +507,8 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
                 verificationStatus: row.verification_status || "VERIFIED",
                 organizerName: row.organizer_name || "",
                 organizerMobile: row.organizer_mobile || "",
+                organizerEmail: row.organizer_email || "",
+                ownerUserId: row.owner_user_id || undefined,
                 contactPhone: row.contact_phone || row.organizer_mobile || "",
                 whatsappNumber: row.whatsapp_number || "",
                 logoUrl: row.logo_url || undefined,
@@ -927,14 +919,23 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     setSlots(prev => prev.filter(s => s.id !== id));
   };
 
-  const registerMandapam = (data: Omit<Mandapam, "id" | "slug" | "verificationStatus" | "createdAt">) => {
-    // Duplicate Detection check
+  const registerMandapam = (data: Omit<Mandapam, "id" | "slug" | "verificationStatus" | "createdAt"> & { ownerUserId?: string | null }) => {
+    // Duplicate Detection check: only flag if a DIFFERENT organizer mobile has registered the exact same mandapam name in the exact same area and city
     const normalizedName = data.name.toLowerCase().trim();
+    const normalizedArea = data.area.toLowerCase().trim();
+    const normalizedCity = data.city.toLowerCase().trim();
+    const cleanDataMobile = (data.organizerMobile || "").replace(/\D/g, "");
+
     const existing = mandapams.find(m => {
-      const matchName = m.name.toLowerCase().includes(normalizedName) || normalizedName.includes(m.name.toLowerCase());
-      const matchArea = m.area.toLowerCase() === data.area.toLowerCase() && m.city.toLowerCase() === data.city.toLowerCase();
-      const matchMobile = m.organizerMobile.replace(/\D/g, '') === data.organizerMobile.replace(/\D/g, '');
-      return (matchName && matchArea) || matchMobile;
+      if (!m || isDemoOrMockMandapam(m)) return false;
+      const mMobile = (m.organizerMobile || "").replace(/\D/g, "");
+      // If same organizer mobile, they are re-registering or updating their own mandapam
+      if (cleanDataMobile && mMobile === cleanDataMobile) return false;
+
+      const mName = (m.name || "").toLowerCase().trim();
+      const mArea = (m.area || "").toLowerCase().trim();
+      const mCity = (m.city || "").toLowerCase().trim();
+      return mName === normalizedName && mArea === normalizedArea && mCity === normalizedCity;
     });
 
     let duplicateWarning: string | undefined;
@@ -942,23 +943,26 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       duplicateWarning = `A Mandapam with similar details (${existing.name} in ${existing.area}) already exists. Your registration has been submitted for Admin review.`;
     }
 
-    const slug = data.name
+    const shortId = `mnp-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    const baseSlug = (data.name + "-" + data.city)
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "") + `-${data.city.toLowerCase()}`;
+      .replace(/(^-|-$)/g, "");
+    const slugSuffix = shortId.replace("mnp-", "").slice(-4);
+    const slug = `${baseSlug}-${slugSuffix}`;
 
     const generatedPasscode =
       data.passcode && /^\d{4,6}$/.test(data.passcode.trim())
         ? data.passcode.trim()
         : Math.floor(100000 + Math.random() * 900000).toString();
 
-    const shortId = `mnp-${Math.floor(100000 + Math.random() * 900000)}`;
-
     const newMandapam: Mandapam = {
       ...data,
       id: shortId,
       passcode: generatedPasscode,
       slug,
+      ownerUserId: data.ownerUserId || undefined,
       verificationStatus: "VERIFIED", // auto-verified for immediate testing
       createdAt: new Date().toISOString()
     };
@@ -1155,8 +1159,12 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
           longitude: newMandapam.longitude,
           organizer_name: newMandapam.organizerName,
           organizer_mobile: newMandapam.organizerMobile,
+          organizer_email: newMandapam.organizerEmail || null,
+          owner_user_id: data.ownerUserId || null,
           contact_phone: newMandapam.contactPhone,
-          whatsapp_number: newMandapam.whatsappNumber,
+          whatsapp_number: newMandapam.whatsappNumber || null,
+          logo_url: newMandapam.logoUrl || null,
+          cover_image_url: newMandapam.coverImageUrl || null,
           verification_status: "VERIFIED",
           created_at: newMandapam.createdAt,
           updated_at: newMandapam.createdAt

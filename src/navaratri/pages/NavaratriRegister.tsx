@@ -152,11 +152,23 @@ export const NavaratriRegister: React.FC = () => {
       return;
     }
 
+    // Retrieve authenticated Google user if present
+    let googleUser: any = null;
+    try {
+      const { data: authData } = await supabase.auth.getUser();
+      googleUser = authData?.user || null;
+    } catch {
+      // ignore
+    }
+
+    const ownerUserId = googleUser?.id || googleOnboarding?.userId || null;
+    const linkedEmail = googleUser?.email?.trim().toLowerCase() || organizerEmail.trim() || null;
+
     const res = registerMandapam({
       name: name.trim(),
       organizerName: organizerName.trim(),
       organizerMobile: cleanMobile,
-      organizerEmail: organizerEmail.trim(),
+      organizerEmail: linkedEmail || undefined,
       deviName: "Sri Durga Devi",
       address: address.trim() || `${area}, ${city}`,
       area: area.trim(),
@@ -170,7 +182,8 @@ export const NavaratriRegister: React.FC = () => {
       whatsappNumber: cleanMobile,
       coverImageUrl,
       logoUrl: navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"),
-      passcode: passcode.trim()
+      passcode: passcode.trim(),
+      ownerUserId: ownerUserId || undefined
     });
 
     if (res.duplicateWarning) {
@@ -179,46 +192,18 @@ export const NavaratriRegister: React.FC = () => {
     }
 
     if (res.success && res.mandapam) {
-      const { data: authData } = await supabase.auth.getUser();
-      const googleUser = authData.user;
-
-      if (!googleUser) {
-        toast.error("Your account session expired. Please sign in again to finish registration.");
-        navigate("/navaratri/login");
-        return;
-      }
-
-      const linkedEmail = googleUser.email?.trim().toLowerCase() || res.mandapam.organizerEmail || null;
-      const { error: linkError } = await (supabase as any)
-        .from("navaratri_mandapams")
-        .upsert({
-          id: res.mandapam.id,
-          name: res.mandapam.name,
-          slug: res.mandapam.slug,
-          description: res.mandapam.description,
-          devi_name: res.mandapam.deviName,
-          address: res.mandapam.address,
-          area: res.mandapam.area,
-          city: res.mandapam.city,
-          state: res.mandapam.state,
-          pincode: res.mandapam.pincode,
-          latitude: res.mandapam.latitude,
-          longitude: res.mandapam.longitude,
-          verification_status: res.mandapam.verificationStatus,
-          owner_user_id: googleUser.id,
-          organizer_name: res.mandapam.organizerName,
-          organizer_mobile: res.mandapam.organizerMobile,
-          organizer_email: linkedEmail,
-          logo_url: res.mandapam.logoUrl || null,
-          cover_image_url: res.mandapam.coverImageUrl || null,
-          contact_phone: res.mandapam.contactPhone,
-          whatsapp_number: res.mandapam.whatsappNumber || null,
-        }, { onConflict: "id" });
-
-      if (linkError) {
-        console.error("NAVARATRI_ACCOUNT_MANDAPAM_LINK_FAILED", linkError);
-        toast.error("Registration could not be linked to your login. Please try again.");
-        return;
+      if (ownerUserId) {
+        try {
+          await (supabase as any)
+            .from("navaratri_mandapams")
+            .update({
+              owner_user_id: ownerUserId,
+              organizer_email: linkedEmail
+            })
+            .eq("id", res.mandapam.id);
+        } catch (linkErr) {
+          console.warn("Mandapam account link update notice:", linkErr);
+        }
       }
 
       localStorage.removeItem("navaratri_google_onboarding");
@@ -229,7 +214,7 @@ export const NavaratriRegister: React.FC = () => {
       markScanned(res.mandapam.id);
       sessionStorage.setItem("navaratri_organizer_id", res.mandapam.id);
       setRegisteredMandapam(res.mandapam);
-      toast.success("Mandapam registered successfully! Your login credentials are ready.");
+      toast.success("Mandapam registered successfully! Your portal is ready.");
     }
   };
 

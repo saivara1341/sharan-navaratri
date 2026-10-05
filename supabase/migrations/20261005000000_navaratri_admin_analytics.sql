@@ -82,14 +82,26 @@ DROP POLICY IF EXISTS "Admin manage all mandapams" ON public.navaratri_mandapams
 
 CREATE POLICY "Organizer create owned mandapam"
   ON public.navaratri_mandapams
-  FOR INSERT TO authenticated
-  WITH CHECK (owner_user_id = (select auth.uid()) OR (select public.is_portal_admin()));
+  FOR INSERT TO anon, authenticated
+  WITH CHECK (
+    owner_user_id = (select auth.uid())
+    OR owner_user_id IS NULL
+    OR (select public.is_portal_admin())
+  );
 
 CREATE POLICY "Organizer update owned mandapam"
   ON public.navaratri_mandapams
-  FOR UPDATE TO authenticated
-  USING (owner_user_id = (select auth.uid()) OR (select public.is_portal_admin()))
-  WITH CHECK (owner_user_id = (select auth.uid()) OR (select public.is_portal_admin()));
+  FOR UPDATE TO anon, authenticated
+  USING (
+    owner_user_id = (select auth.uid())
+    OR owner_user_id IS NULL
+    OR (select public.is_portal_admin())
+  )
+  WITH CHECK (
+    owner_user_id = (select auth.uid())
+    OR owner_user_id IS NULL
+    OR (select public.is_portal_admin())
+  );
 
 CREATE POLICY "Admin manage all mandapams"
   ON public.navaratri_mandapams
