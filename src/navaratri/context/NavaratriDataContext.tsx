@@ -22,6 +22,7 @@ import {
   NimarjanamQueueStatus
   , ReminderRecord
 } from "../types";
+import { supabase } from "@/integrations/supabase/client";
 import {
   INITIAL_SEASON,
   INITIAL_MANDAPAMS,
@@ -420,6 +421,61 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => saveStorage("ads", advertisements), [advertisements]);
   useEffect(() => saveStorage("pallaki", pallakiSevas), [pallakiSevas]);
   useEffect(() => saveStorage("nimarjanam", nimarjanamSchedules), [nimarjanamSchedules]);
+
+  // Sync from Supabase on mount
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchSupabaseMandapams() {
+      try {
+        const { data, error } = await (supabase.from("navaratri_mandapams") as any).select("*");
+        if (!error && Array.isArray(data) && data.length > 0 && isMounted) {
+          setMandapams(prev => {
+            const currentList = [...prev];
+            data.forEach((row: any) => {
+              if (!row || !row.id || isDemoOrMockMandapam(row)) return;
+              const idx = currentList.findIndex(
+                m => m.id === row.id || (m.slug && row.slug && m.slug.toLowerCase() === row.slug.toLowerCase())
+              );
+              const mapped: Mandapam = {
+                id: row.id,
+                name: row.name,
+                slug: row.slug,
+                description: row.description || "Annual Community Navaratri Utsav",
+                deviName: row.devi_name || "Maa Durga",
+                address: row.address || "",
+                area: row.area || "",
+                city: row.city || "",
+                state: row.state || "Telangana",
+                pincode: row.pincode || "503001",
+                latitude: Number(row.latitude) || 18.6725,
+                longitude: Number(row.longitude) || 78.0941,
+                verificationStatus: row.verification_status || "VERIFIED",
+                organizerName: row.organizer_name || "",
+                organizerMobile: row.organizer_mobile || "",
+                contactPhone: row.contact_phone || row.organizer_mobile || "",
+                whatsappNumber: row.whatsapp_number || "",
+                logoUrl: row.logo_url || undefined,
+                coverImageUrl: row.cover_image_url || undefined,
+                createdAt: row.created_at || new Date().toISOString()
+              };
+              if (idx >= 0) {
+                currentList[idx] = { ...currentList[idx], ...mapped };
+              } else {
+                currentList.push(mapped);
+              }
+            });
+            return currentList;
+          });
+        }
+      } catch {
+        // offline fallback
+      }
+    }
+    fetchSupabaseMandapams();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const getMandapamBySlug = (slug: string) => mandapams.find(m => m.slug.toLowerCase() === slug.toLowerCase());
   const getMandapamById = (id: string) => mandapams.find(m => m.id === id);
@@ -1014,6 +1070,39 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     setNimarjanamSchedules(prev => [initialNimarjanam, ...prev]);
 
     setMandapams(prev => [newMandapam, ...prev]);
+
+    // Persist registered mandapam to Supabase
+    try {
+      (supabase.from("navaratri_mandapams") as any)
+        .insert([{
+          id: newMandapam.id,
+          name: newMandapam.name,
+          slug: newMandapam.slug,
+          description: newMandapam.description || "Annual Community Navaratri Utsav",
+          devi_name: newMandapam.deviName || "Maa Durga",
+          address: newMandapam.address,
+          area: newMandapam.area,
+          city: newMandapam.city,
+          state: newMandapam.state || "Telangana",
+          pincode: newMandapam.pincode || "503001",
+          latitude: newMandapam.latitude,
+          longitude: newMandapam.longitude,
+          organizer_name: newMandapam.organizerName,
+          organizer_mobile: newMandapam.organizerMobile,
+          contact_phone: newMandapam.contactPhone,
+          whatsapp_number: newMandapam.whatsappNumber,
+          verification_status: "VERIFIED",
+          created_at: newMandapam.createdAt,
+          updated_at: newMandapam.createdAt
+        }])
+        .then(({ error }: any) => {
+          if (error) console.warn("Supabase mandapam insert notice:", error.message);
+        })
+        .catch(() => {});
+    } catch {
+      // offline fallback
+    }
+
     return { success: true, mandapam: newMandapam, duplicateWarning };
   };
 
@@ -1098,6 +1187,35 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     setMandapams(prev =>
       prev.map(m => (m.id === mandapamId ? { ...m, ...data, updatedAt: new Date().toISOString() } : m))
     );
+
+    // Sync updates to Supabase
+    try {
+      const dbPayload: any = { updated_at: new Date().toISOString() };
+      if (data.name !== undefined) dbPayload.name = data.name;
+      if (data.address !== undefined) dbPayload.address = data.address;
+      if (data.area !== undefined) dbPayload.area = data.area;
+      if (data.city !== undefined) dbPayload.city = data.city;
+      if (data.state !== undefined) dbPayload.state = data.state;
+      if (data.pincode !== undefined) dbPayload.pincode = data.pincode;
+      if (data.latitude !== undefined) dbPayload.latitude = data.latitude;
+      if (data.longitude !== undefined) dbPayload.longitude = data.longitude;
+      if (data.organizerName !== undefined) dbPayload.organizer_name = data.organizerName;
+      if (data.organizerMobile !== undefined) dbPayload.organizer_mobile = data.organizerMobile;
+      if (data.contactPhone !== undefined) dbPayload.contact_phone = data.contactPhone;
+      if (data.whatsappNumber !== undefined) dbPayload.whatsapp_number = data.whatsappNumber;
+      if (data.logoUrl !== undefined) dbPayload.logo_url = data.logoUrl;
+      if (data.coverImageUrl !== undefined) dbPayload.cover_image_url = data.coverImageUrl;
+
+      (supabase.from("navaratri_mandapams") as any)
+        .update(dbPayload)
+        .eq("id", mandapamId)
+        .then(({ error }: any) => {
+          if (error) console.warn("Supabase mandapam update notice:", error.message);
+        })
+        .catch(() => {});
+    } catch {
+      // offline fallback
+    }
   };
 
   return (

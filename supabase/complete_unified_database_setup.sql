@@ -236,7 +236,7 @@ CREATE POLICY "Public view seasons" ON public.navaratri_seasons FOR SELECT TO an
 
 -- Mandapams Table
 CREATE TABLE IF NOT EXISTS public.navaratri_mandapams (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
   season_id uuid REFERENCES public.navaratri_seasons(id) ON DELETE SET NULL,
   name text NOT NULL,
   slug text NOT NULL UNIQUE,
@@ -262,8 +262,7 @@ CREATE TABLE IF NOT EXISTS public.navaratri_mandapams (
   updated_at timestamptz DEFAULT now()
 );
 ALTER TABLE public.navaratri_mandapams ENABLE ROW LEVEL SECURITY;
-GRANT SELECT ON public.navaratri_mandapams TO anon, authenticated;
-GRANT INSERT, UPDATE, DELETE ON public.navaratri_mandapams TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.navaratri_mandapams TO anon, authenticated;
 GRANT ALL ON public.navaratri_mandapams TO service_role;
 
 CREATE INDEX IF NOT EXISTS idx_mandapams_slug ON public.navaratri_mandapams(slug);
@@ -273,13 +272,16 @@ CREATE INDEX IF NOT EXISTS idx_mandapams_status ON public.navaratri_mandapams(ve
 DROP POLICY IF EXISTS "Public view verified mandapams" ON public.navaratri_mandapams;
 CREATE POLICY "Public view verified mandapams" ON public.navaratri_mandapams FOR SELECT TO anon, authenticated USING (true);
 
-DROP POLICY IF EXISTS "Authenticated create mandapams" ON public.navaratri_mandapams;
-CREATE POLICY "Authenticated create mandapams" ON public.navaratri_mandapams FOR INSERT TO authenticated WITH CHECK (true);
+DROP POLICY IF EXISTS "Public create mandapams" ON public.navaratri_mandapams;
+CREATE POLICY "Public create mandapams" ON public.navaratri_mandapams FOR INSERT TO anon, authenticated WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public update mandapams" ON public.navaratri_mandapams;
+CREATE POLICY "Public update mandapams" ON public.navaratri_mandapams FOR UPDATE TO anon, authenticated USING (true) WITH CHECK (true);
 
 -- Mandapam Members
 CREATE TABLE IF NOT EXISTS public.navaratri_mandapam_members (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  mandapam_id uuid NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
   user_id uuid NOT NULL,
   role text NOT NULL DEFAULT 'CONTENT_MANAGER' CHECK (role IN ('MANDAPAM_ADMIN', 'CONTENT_MANAGER', 'BOOKING_MANAGER', 'COMMUNITY_MANAGER')),
   permissions jsonb DEFAULT '{}'::jsonb,
@@ -315,7 +317,7 @@ CREATE POLICY "Public read standard festival days" ON public.navaratri_standard_
 -- Mandapam Day Customizations
 CREATE TABLE IF NOT EXISTS public.navaratri_mandapam_day_settings (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  mandapam_id uuid NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
   season_id uuid REFERENCES public.navaratri_seasons(id) ON DELETE CASCADE,
   day_number integer NOT NULL CHECK (day_number BETWEEN 1 AND 10),
   date date,
@@ -348,7 +350,7 @@ CREATE POLICY "Public read day settings" ON public.navaratri_mandapam_day_settin
 -- Alankarana (Daily Physical Darshan Uploads)
 CREATE TABLE IF NOT EXISTS public.navaratri_alankaranas (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  mandapam_id uuid NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
   season_id uuid REFERENCES public.navaratri_seasons(id) ON DELETE SET NULL,
   date date NOT NULL,
   title text NOT NULL,
@@ -372,7 +374,7 @@ CREATE POLICY "Public view alankaranas" ON public.navaratri_alankaranas FOR SELE
 -- Services & Service Slots
 CREATE TABLE IF NOT EXISTS public.navaratri_services (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  mandapam_id uuid NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
   type text NOT NULL,
   name text NOT NULL,
   description text,
@@ -392,7 +394,7 @@ CREATE POLICY "Public view services" ON public.navaratri_services FOR SELECT TO 
 CREATE TABLE IF NOT EXISTS public.navaratri_service_slots (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   service_id uuid NOT NULL REFERENCES public.navaratri_services(id) ON DELETE CASCADE,
-  mandapam_id uuid NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
   date date NOT NULL,
   start_time text NOT NULL,
   end_time text NOT NULL,
@@ -416,7 +418,7 @@ CREATE TABLE IF NOT EXISTS public.navaratri_bookings (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   slot_id uuid REFERENCES public.navaratri_service_slots(id) ON DELETE SET NULL,
   service_id uuid NOT NULL REFERENCES public.navaratri_services(id) ON DELETE CASCADE,
-  mandapam_id uuid NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
   booking_code text NOT NULL UNIQUE,
   user_id uuid,
   name text NOT NULL,
@@ -444,7 +446,7 @@ CREATE POLICY "Devotees view own bookings by mobile" ON public.navaratri_booking
 -- Activities & Events
 CREATE TABLE IF NOT EXISTS public.navaratri_activities (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  mandapam_id uuid NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
   title text NOT NULL,
   category text NOT NULL CHECK (category IN ('Pooja', 'Annadanam', 'Game', 'Cultural Program', 'Competition', 'Bhajan', 'Children Activity', 'Special Program', 'Pallaki Seva', 'Nimarjanam', 'Other')),
   description text,
@@ -468,7 +470,7 @@ CREATE POLICY "Public view activities" ON public.navaratri_activities FOR SELECT
 -- Pallaki Seva & Dheeksha & Nimarjanam
 CREATE TABLE IF NOT EXISTS public.navaratri_pallaki_seva (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  mandapam_id uuid NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
   title text NOT NULL,
   date date NOT NULL,
   start_time text NOT NULL,
@@ -487,7 +489,7 @@ GRANT ALL ON public.navaratri_pallaki_seva TO authenticated, service_role;
 
 CREATE TABLE IF NOT EXISTS public.navaratri_dheeksha_programs (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  mandapam_id uuid NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
   dheeksha_name text NOT NULL DEFAULT 'Bhavani Dheeksha',
   mala_dharana_date date,
   viramam_date date,
@@ -503,7 +505,7 @@ GRANT ALL ON public.navaratri_dheeksha_programs TO authenticated, service_role;
 
 CREATE TABLE IF NOT EXISTS public.navaratri_nimarjanam_schedules (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  mandapam_id uuid NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
   nimarjanam_date date NOT NULL,
   shobha_yatra_start_time text,
   designated_ghat text NOT NULL,
@@ -521,7 +523,7 @@ GRANT ALL ON public.navaratri_nimarjanam_schedules TO authenticated, service_rol
 -- Announcements
 CREATE TABLE IF NOT EXISTS public.navaratri_announcements (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  mandapam_id uuid NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
   title text NOT NULL,
   message text NOT NULL,
   priority text DEFAULT 'NORMAL' CHECK (priority IN ('LOW', 'NORMAL', 'HIGH', 'URGENT')),
@@ -535,7 +537,7 @@ GRANT ALL ON public.navaratri_announcements TO authenticated, service_role;
 -- Questions & Answers
 CREATE TABLE IF NOT EXISTS public.navaratri_questions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  mandapam_id uuid NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
   user_id uuid,
   asker_name text NOT NULL,
   question text NOT NULL,
@@ -550,7 +552,7 @@ GRANT ALL ON public.navaratri_questions TO authenticated, service_role;
 CREATE TABLE IF NOT EXISTS public.navaratri_answers (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   question_id uuid NOT NULL REFERENCES public.navaratri_questions(id) ON DELETE CASCADE,
-  mandapam_id uuid NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
   responder_name text NOT NULL,
   is_official boolean DEFAULT true,
   answer text NOT NULL,
@@ -564,7 +566,7 @@ GRANT ALL ON public.navaratri_answers TO authenticated, service_role;
 -- Follows & Reminders
 CREATE TABLE IF NOT EXISTS public.navaratri_follows (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  mandapam_id uuid NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
   user_id uuid,
   device_token text,
   notification_preferences jsonb DEFAULT '{"alankarana": true, "announcements": true, "reminders": true}'::jsonb,
@@ -576,7 +578,7 @@ GRANT ALL ON public.navaratri_follows TO authenticated, service_role;
 
 CREATE TABLE IF NOT EXISTS public.navaratri_reminders (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  mandapam_id uuid NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
+  mandapam_id text NOT NULL REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
   user_id uuid,
   target_type text NOT NULL CHECK (target_type IN ('POOJA', 'SERVICE', 'ANNADANAM', 'ACTIVITY', 'PALLAKI')),
   target_id text NOT NULL,
@@ -630,7 +632,7 @@ CREATE TABLE IF NOT EXISTS public.navaratri_advertisements (
   cta_url text,
   target_city text NOT NULL,
   target_area text,
-  target_mandapam_id uuid REFERENCES public.navaratri_mandapams(id),
+  target_mandapam_id text REFERENCES public.navaratri_mandapams(id),
   preferred_frame text NOT NULL DEFAULT 'BOTTOM' CHECK (preferred_frame IN ('TOP', 'BOTTOM', 'BOTH')),
   campaign_duration_label text,            -- e.g. "1 Day Booster", "3 Days Rush", "9 Days Pass"
   campaign_duration_days integer,          -- 1, 3, or 9

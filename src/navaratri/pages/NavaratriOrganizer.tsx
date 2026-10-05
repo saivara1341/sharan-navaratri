@@ -53,8 +53,15 @@ import {
   Ticket,
   Filter,
   Settings,
+  Sparkles,
+  Phone,
+  MessageCircle,
+  Image as ImageIcon,
+  Crop,
+  Maximize2
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const PRESET_MANDAPAM_BACKGROUNDS = [
   {
@@ -172,6 +179,8 @@ export const NavaratriOrganizer: React.FC = () => {
   const [editOrganizerMobile, setEditOrganizerMobile] = useState("");
   const [editWhatsappNumber, setEditWhatsappNumber] = useState("");
   const [showOrganizerPublicly, setShowOrganizerPublicly] = useState(true);
+  const [isSavingBranding, setIsSavingBranding] = useState(false);
+  const [logoFitMode, setLogoFitMode] = useState<"contain" | "cover">("contain");
 
   // Booking Slot & Quota State
   const [slotModalOpen, setSlotModalOpen] = useState(false);
@@ -621,47 +630,91 @@ export const NavaratriOrganizer: React.FC = () => {
     }
   };
 
-  const handleSaveMandapamBranding = () => {
+  const handleSaveMandapamBranding = async () => {
     if (!currentMandapam) return;
-    const finalLogo = logoPreview.trim() || logoInputUrl.trim() || undefined;
-    const finalPhoto = photoPreview.trim() || photoInputUrl.trim() || undefined;
+    setIsSavingBranding(true);
 
-    if (finalLogo) {
-      updates.logoUrl = finalLogo;
-      localStorage.setItem(`mandapam_logo_${currentMandapam.id}`, finalLogo);
-    } else if (!logoPreview && !logoInputUrl && currentMandapam.logoUrl) {
-      updates.logoUrl = undefined;
-      localStorage.removeItem(`mandapam_logo_${currentMandapam.id}`);
-    }
+    try {
+      const finalLogo = logoPreview.trim() || logoInputUrl.trim() || undefined;
+      const finalPhoto = photoPreview.trim() || photoInputUrl.trim() || undefined;
 
-    if (finalPhoto) {
-      updates.coverImageUrl = finalPhoto;
-      updates.cardBgImageUrl = finalPhoto;
-      localStorage.setItem(`mandapam_cover_${currentMandapam.id}`, finalPhoto);
-      localStorage.setItem(`mandapam_card_bg_${currentMandapam.id}`, finalPhoto);
-    } else if (!photoPreview && !photoInputUrl && currentMandapam.coverImageUrl) {
-      updates.coverImageUrl = undefined;
-      updates.cardBgImageUrl = undefined;
-      localStorage.removeItem(`mandapam_cover_${currentMandapam.id}`);
-      localStorage.removeItem(`mandapam_card_bg_${currentMandapam.id}`);
-    }
-    if (editAddress.trim()) updates.address = editAddress.trim();
-    if (editArea.trim()) updates.area = editArea.trim();
-    if (editCity.trim()) updates.city = editCity.trim();
-    if (editOrganizerName.trim()) updates.organizerName = editOrganizerName.trim();
-    if (editOrganizerMobile.trim()) {
-      updates.organizerMobile = editOrganizerMobile.trim();
-      updates.contactPhone = editOrganizerMobile.trim();
-    }
-    if (editWhatsappNumber.trim()) updates.whatsappNumber = editWhatsappNumber.trim();
-    updates.showOrganizerPublicly = showOrganizerPublicly;
+      const updates: Partial<Mandapam> = {};
 
-    updateMandapam(currentMandapam.id, updates);
-    setBrandingModalOpen(false);
-    toast.success("Mandapam logo, photo, location, and organizer details saved! Devotees scanning your QR code will see your updated branding.");
+      if (finalLogo) {
+        updates.logoUrl = finalLogo;
+        localStorage.setItem(`mandapam_logo_${currentMandapam.id}`, finalLogo);
+      } else if (!logoPreview && !logoInputUrl && currentMandapam.logoUrl) {
+        updates.logoUrl = undefined;
+        localStorage.removeItem(`mandapam_logo_${currentMandapam.id}`);
+      }
+
+      if (finalPhoto) {
+        updates.coverImageUrl = finalPhoto;
+        updates.cardBgImageUrl = finalPhoto;
+        localStorage.setItem(`mandapam_cover_${currentMandapam.id}`, finalPhoto);
+        localStorage.setItem(`mandapam_card_bg_${currentMandapam.id}`, finalPhoto);
+      } else if (!photoPreview && !photoInputUrl && currentMandapam.coverImageUrl) {
+        updates.coverImageUrl = undefined;
+        updates.cardBgImageUrl = undefined;
+        localStorage.removeItem(`mandapam_cover_${currentMandapam.id}`);
+        localStorage.removeItem(`mandapam_card_bg_${currentMandapam.id}`);
+      }
+
+      if (editAddress.trim()) updates.address = editAddress.trim();
+      if (editArea.trim()) updates.area = editArea.trim();
+      if (editCity.trim()) updates.city = editCity.trim();
+      if (editOrganizerName.trim()) updates.organizerName = editOrganizerName.trim();
+      if (editOrganizerMobile.trim()) {
+        updates.organizerMobile = editOrganizerMobile.trim();
+        updates.contactPhone = editOrganizerMobile.trim();
+      }
+      if (editWhatsappNumber.trim()) updates.whatsappNumber = editWhatsappNumber.trim();
+      updates.showOrganizerPublicly = showOrganizerPublicly;
+
+      // 1. Update React state and local storage immediately
+      updateMandapam(currentMandapam.id, updates);
+
+      // 2. Persist to Supabase database
+      try {
+        const payload: any = {
+          id: currentMandapam.id,
+          name: currentMandapam.name,
+          slug: currentMandapam.slug,
+          address: updates.address !== undefined ? updates.address : currentMandapam.address,
+          area: updates.area !== undefined ? updates.area : currentMandapam.area,
+          city: updates.city !== undefined ? updates.city : currentMandapam.city,
+          state: currentMandapam.state || "Telangana",
+          pincode: currentMandapam.pincode || "503001",
+          latitude: currentMandapam.latitude,
+          longitude: currentMandapam.longitude,
+          organizer_name: updates.organizerName !== undefined ? updates.organizerName : currentMandapam.organizerName,
+          organizer_mobile: updates.organizerMobile !== undefined ? updates.organizerMobile : currentMandapam.organizerMobile,
+          contact_phone: updates.contactPhone !== undefined ? updates.contactPhone : currentMandapam.contactPhone,
+          whatsapp_number: updates.whatsappNumber !== undefined ? updates.whatsappNumber : currentMandapam.whatsappNumber,
+          logo_url: updates.logoUrl !== undefined ? updates.logoUrl : (currentMandapam.logoUrl || null),
+          cover_image_url: updates.coverImageUrl !== undefined ? updates.coverImageUrl : (currentMandapam.coverImageUrl || null),
+          updated_at: new Date().toISOString()
+        };
+
+        const { error } = await (supabase.from("navaratri_mandapams") as any).upsert(payload, { onConflict: "id" });
+        if (error) {
+          console.warn("Supabase branding upsert warning (offline fallback active):", error.message);
+        }
+      } catch (dbErr) {
+        console.warn("Supabase network error:", dbErr);
+      }
+
+      setBrandingModalOpen(false);
+      toast.success("Mandapam branding, logo, cover & location saved successfully!");
+    } catch (err: any) {
+      console.error("Save branding error:", err);
+      toast.error("An error occurred while saving branding details.");
+    } finally {
+      setIsSavingBranding(false);
+    }
   };
 
-  const handleResetMandapamBranding = () => {
+  const handleResetMandapamBranding = async () => {
     if (!currentMandapam) return;
     updateMandapam(currentMandapam.id, {
       logoUrl: undefined,
@@ -675,6 +728,15 @@ export const NavaratriOrganizer: React.FC = () => {
     setLogoInputUrl("");
     setPhotoPreview("");
     setPhotoInputUrl("");
+
+    try {
+      await (supabase.from("navaratri_mandapams") as any).update({
+        logo_url: null,
+        cover_image_url: null,
+        updated_at: new Date().toISOString()
+      }).eq("id", currentMandapam.id);
+    } catch {}
+
     setBrandingModalOpen(false);
     toast.info("Mandapam logo and photos reset to default theme.");
   };
@@ -2313,122 +2375,216 @@ export const NavaratriOrganizer: React.FC = () => {
             </div>
 
             {/* Tab Navigation inside Modal */}
-            <div className="grid grid-cols-4 border-b border-amber-200 bg-amber-50/60 p-1.5 gap-1.5 text-xs font-bold">
+            <div className="grid grid-cols-4 border-b border-amber-200 bg-amber-50/70 p-1.5 gap-1.5 text-xs font-bold">
               <button
                 type="button"
                 onClick={() => setBrandingTab("logo")}
-                className={`py-2 px-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                className={`py-2 px-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center ${
                   brandingTab === "logo"
                     ? "bg-[#8B1E1E] text-white shadow-xs"
-                    : "text-stone-700 hover:bg-white/60"
+                    : "text-stone-700 hover:bg-white/80"
                 }`}
               >
-                <span>1. Logo</span>
+                <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">1. Logo</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setBrandingTab("cover")}
-                className={`py-2 px-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                className={`py-2 px-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center ${
                   brandingTab === "cover"
                     ? "bg-[#8B1E1E] text-white shadow-xs"
-                    : "text-stone-700 hover:bg-white/60"
+                    : "text-stone-700 hover:bg-white/80"
                 }`}
               >
-                <span>2. Cover Image</span>
+                <ImageIcon className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">2. Cover</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setBrandingTab("location")}
-                className={`py-2 px-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                className={`py-2 px-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center ${
                   brandingTab === "location"
                     ? "bg-[#8B1E1E] text-white shadow-xs"
-                    : "text-stone-700 hover:bg-white/60"
+                    : "text-stone-700 hover:bg-white/80"
                 }`}
               >
-                <span>3. Location</span>
+                <MapPin className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">3. Location</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setBrandingTab("organizer")}
-                className={`py-2 px-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                className={`py-2 px-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center ${
                   brandingTab === "organizer"
                     ? "bg-[#8B1E1E] text-white shadow-xs"
-                    : "text-stone-700 hover:bg-white/60"
+                    : "text-stone-700 hover:bg-white/80"
                 }`}
               >
-                <span>4. Organizer</span>
+                <Phone className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">4. Organizer</span>
               </button>
             </div>
 
-            <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+            <div className="p-4 sm:p-5 space-y-4 max-h-[70vh] overflow-y-auto">
               {/* TAB 1: COMMITTEE LOGO */}
               {brandingTab === "logo" && (
                 <div className="space-y-4 animate-in fade-in duration-150">
-                  <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-stone-700">
-                    💡 <strong>Visitor Visibility:</strong> Devotees who scan your standee QR code will see this official emblem / logo proudly on your mandapam hero banner and devotee pass slip!
+                  <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-stone-700 flex items-start gap-2">
+                    <span className="text-base shrink-0">💡</span>
+                    <div>
+                      <strong>Visitor Visibility:</strong> Devotees who scan your standee QR code will see this official emblem prominently on your mandapam hero banner and devotee pass slip!
+                    </div>
                   </div>
 
-                  {/* Logo Preview & Quick Upload Beside It */}
-                  <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-stone-50 border border-amber-200">
-                    <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-amber-400 bg-white shadow-md flex items-center justify-center p-1 shrink-0">
-                        {logoPreview || logoInputUrl ? (
-                          <img
-                            src={logoPreview || logoInputUrl}
-                            alt="Mandapam Logo Preview"
-                            className="w-full h-full object-contain rounded-xl"
-                            onError={() => toast.error("Could not load logo preview.")}
-                          />
-                        ) : (
-                          <div className="text-center p-1 text-[10px] text-stone-600 font-bold leading-tight">
-                            No Logo Set
-                          </div>
-                        )}
+                  {/* Emblem Showcase with Perfect Fit & Crop Controls */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-50/40 via-white to-stone-50 border-2 border-amber-200 shadow-xs space-y-4">
+                    <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                      {/* Circular Ornate Emblem Badge */}
+                      <div className="relative shrink-0">
+                        <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-amber-400 bg-white shadow-lg p-1.5 flex items-center justify-center overflow-hidden relative group">
+                          {logoPreview || logoInputUrl ? (
+                            <img
+                              src={logoPreview || logoInputUrl}
+                              alt="Mandapam Logo Preview"
+                              className={`w-full h-full transition-transform duration-200 group-hover:scale-105 ${
+                                logoFitMode === "cover"
+                                  ? "object-cover rounded-full"
+                                  : "object-contain p-0.5 rounded-full"
+                              }`}
+                              onError={() => toast.error("Could not load logo preview.")}
+                            />
+                          ) : (
+                            <div className="text-center p-2 text-[10px] text-stone-500 font-bold leading-tight flex flex-col items-center justify-center">
+                              <span className="text-2xl mb-0.5">卐</span>
+                              <span>No Logo</span>
+                            </div>
+                          )}
+                        </div>
+                        {/* Status chip */}
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-stone-900 text-amber-300 text-[9px] font-bold tracking-wider uppercase border border-amber-400 shadow-xs whitespace-nowrap">
+                          {logoPreview || logoInputUrl ? "Custom Emblem" : "Default Kolam"}
+                        </div>
                       </div>
 
-                      <div className="space-y-1 min-w-0">
-                        <div className="font-serif font-black text-sm text-[#8B1E1E] line-clamp-2 break-words">
-                          {currentMandapam.name}
+                      {/* Controls beside badge */}
+                      <div className="space-y-3 min-w-0 flex-1 text-center sm:text-left">
+                        <div>
+                          <div className="font-serif font-black text-base text-[#8B1E1E] line-clamp-1">
+                            {currentMandapam.name}
+                          </div>
+                          <p className="text-[11px] text-stone-500 leading-snug">
+                            {logoPreview || logoInputUrl
+                              ? "Custom committee emblem active"
+                              : "Using default auspicious kolam icon"}
+                          </p>
                         </div>
-                        <p className="text-[11px] text-stone-500 leading-snug">
-                          {logoPreview || logoInputUrl ? "Custom committee emblem active" : "Using default auspicious kolam icon"}
-                        </p>
+
+                        {/* Fit Mode Toggle */}
                         {(logoPreview || logoInputUrl) && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setLogoPreview("");
-                              setLogoInputUrl("");
-                            }}
-                            className="text-[11px] font-bold text-red-600 hover:text-red-700 underline cursor-pointer"
-                          >
-                            Remove Logo
-                          </button>
+                          <div className="space-y-1">
+                            <span className="text-[10px] font-bold text-stone-600 uppercase tracking-wider block">
+                              Badge Crop / Fit Mode:
+                            </span>
+                            <div className="inline-flex rounded-xl p-0.5 bg-stone-200/80 border border-stone-300">
+                              <button
+                                type="button"
+                                onClick={() => setLogoFitMode("contain")}
+                                className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                                  logoFitMode === "contain"
+                                    ? "bg-white text-stone-900 shadow-xs"
+                                    : "text-stone-600 hover:text-stone-900"
+                                }`}
+                              >
+                                <Maximize2 className="w-3 h-3" />
+                                <span>Fit Full Logo</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setLogoFitMode("cover")}
+                                className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                                  logoFitMode === "cover"
+                                    ? "bg-white text-stone-900 shadow-xs"
+                                    : "text-stone-600 hover:text-stone-900"
+                                }`}
+                              >
+                                <Crop className="w-3 h-3" />
+                                <span>Fill & Crop Circle</span>
+                              </button>
+                            </div>
+                          </div>
                         )}
+
+                        {/* Upload & Remove buttons */}
+                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+                          <label className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white font-bold text-xs rounded-xl shadow-xs hover:shadow-md cursor-pointer transition-all active:scale-95">
+                            <Upload className="w-3.5 h-3.5 shrink-0" />
+                            <span>
+                              {isUploadingLogo
+                                ? "Uploading..."
+                                : logoPreview || logoInputUrl
+                                ? "Change Logo"
+                                : "Upload Logo"}
+                            </span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleLogoFileUpload}
+                              className="hidden"
+                              disabled={isUploadingLogo}
+                            />
+                          </label>
+
+                          {(logoPreview || logoInputUrl) && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setLogoPreview("");
+                                setLogoInputUrl("");
+                              }}
+                              className="px-3 py-2 text-xs font-bold text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 rounded-xl transition-colors cursor-pointer"
+                            >
+                              Remove Logo
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
 
-                    {/* Upload Icon & Action beside this */}
-                    <div className="shrink-0">
-                      <label className="flex items-center gap-2 px-3.5 py-2.5 bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white font-bold text-xs rounded-xl shadow-xs hover:shadow-md cursor-pointer transition-all active:scale-95">
-                        <Upload className="w-4 h-4 shrink-0" />
-                        <span className="hidden sm:inline">
-                          {isUploadingLogo ? "Uploading..." : (logoPreview || logoInputUrl ? "Change Logo" : "Upload Logo")}
+                    {/* Live Devotee Pass Mockup */}
+                    <div className="p-3 rounded-2xl bg-amber-50/60 border border-amber-300 text-xs space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1">
+                          <span>🪔 Devotee Pass Slip Preview</span>
                         </span>
-                        <span className="sm:hidden">
-                          {isUploadingLogo ? "..." : (logoPreview || logoInputUrl ? "Change" : "Upload")}
+                        <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
+                          Live On Booking Pass
                         </span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleLogoFileUpload}
-                          className="hidden"
-                          disabled={isUploadingLogo}
-                        />
-                      </label>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-white border border-amber-200 shadow-inner flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full border-2 border-amber-400 bg-amber-50 p-0.5 shrink-0 flex items-center justify-center overflow-hidden">
+                          {logoPreview || logoInputUrl ? (
+                            <img
+                              src={logoPreview || logoInputUrl}
+                              alt="Logo"
+                              className={`w-full h-full ${logoFitMode === 'cover' ? 'object-cover' : 'object-contain'}`}
+                            />
+                          ) : (
+                            <span className="text-base">卐</span>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-serif font-black text-xs text-[#8B1E1E] truncate">
+                            {currentMandapam.name}
+                          </p>
+                          <p className="text-[10px] text-stone-500 truncate">
+                            Pass #DEV-8291 • Slot: Daily Sahasranama Archana
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2437,15 +2593,19 @@ export const NavaratriOrganizer: React.FC = () => {
               {/* TAB 2: MANDAPAM COVER PHOTO */}
               {brandingTab === "cover" && (
                 <div className="space-y-4 animate-in fade-in duration-150">
-                  <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-stone-700">
-                    🌄 <strong>Devotee Hero Banner:</strong> Devotees visiting your Mandapam page will see this cover photo prominently at the very top of your profile.
+                  <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-stone-700 flex items-start gap-2">
+                    <span className="text-base shrink-0">🌄</span>
+                    <div>
+                      <strong>Devotee Hero Banner:</strong> Devotees visiting your Mandapam page will see this cover photo prominently at the very top of your profile!
+                    </div>
                   </div>
 
-                  {/* Cover Photo Preview & Upload */}
-                  <div className="space-y-2 p-3 sm:p-4 rounded-2xl bg-stone-50 border border-amber-200">
+                  {/* Perfect Aspect-Ratio Hero Banner Preview */}
+                  <div className="space-y-2.5 p-3 sm:p-4 rounded-2xl bg-stone-50 border-2 border-amber-200 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-stone-800">
-                        Current Cover Banner Preview
+                      <span className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
+                        <ImageIcon className="w-3.5 h-3.5 text-amber-700" />
+                        <span>Devotee Hero Banner Live Preview</span>
                       </span>
                       {(photoPreview || photoInputUrl) && (
                         <button
@@ -2461,21 +2621,60 @@ export const NavaratriOrganizer: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="w-full h-36 sm:h-48 rounded-2xl overflow-hidden border-2 border-amber-300 bg-stone-900 relative shadow-inner">
+                    {/* Banner Aspect Ratio Container (16:7 format) with Devotee View Mockup */}
+                    <div className="w-full aspect-[16/7] sm:aspect-[16/6] rounded-2xl overflow-hidden border-2 border-amber-400 bg-stone-900 relative shadow-md group">
                       <img
-                        src={photoPreview || photoInputUrl || currentMandapam.coverImageUrl || navaratriAsset("/navaratri/assets/maa-durga-temple-darshan.jpg")}
+                        src={
+                          photoPreview ||
+                          photoInputUrl ||
+                          currentMandapam.coverImageUrl ||
+                          navaratriAsset("/navaratri/assets/maa-durga-temple-darshan.jpg")
+                        }
                         alt="Mandapam Cover Banner"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-102"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                      <div className="absolute bottom-2.5 left-3 text-white text-xs font-serif font-black drop-shadow-md">
-                        {currentMandapam.name}
+                      {/* Devotee View Overlays */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/15 pointer-events-none" />
+
+                      {/* Mockup Top Action Pills */}
+                      <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 pointer-events-none">
+                        <span className="px-2 py-0.5 rounded-full bg-white/90 text-stone-900 text-[9px] font-bold shadow-xs">
+                          Mandapam QR
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full bg-white/90 text-stone-900 text-[9px] font-bold shadow-xs">
+                          Share
+                        </span>
+                      </div>
+
+                      {/* Mockup Bottom Profile Floating Card */}
+                      <div className="absolute bottom-2 left-2.5 right-2.5 flex items-center gap-2 pointer-events-none">
+                        <div className="w-8 h-8 rounded-full border-2 border-amber-300 bg-white p-0.5 shrink-0 overflow-hidden shadow-xs">
+                          {logoPreview || logoInputUrl ? (
+                            <img
+                              src={logoPreview || logoInputUrl}
+                              alt="Logo"
+                              className={`w-full h-full ${logoFitMode === 'cover' ? 'object-cover' : 'object-contain'}`}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-xs">卐</div>
+                          )}
+                        </div>
+                        <div className="min-w-0 drop-shadow-md">
+                          <p className="font-serif font-black text-white text-xs sm:text-sm truncate leading-tight">
+                            {currentMandapam.name}
+                          </p>
+                          <p className="text-[10px] text-amber-200 truncate flex items-center gap-1">
+                            <span>📍 {editArea || currentMandapam.area}, {editCity || currentMandapam.city}</span>
+                            <span>•</span>
+                            <span className="text-emerald-300">Verified</span>
+                          </p>
+                        </div>
                       </div>
                     </div>
 
                     {/* Upload button & file input */}
-                    <div className="pt-2 flex flex-wrap items-center gap-2">
-                      <label className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white font-bold text-xs rounded-xl shadow-xs hover:shadow-md cursor-pointer transition-all active:scale-95">
+                    <div className="pt-1 flex flex-wrap items-center justify-between gap-2">
+                      <label className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white font-bold text-xs rounded-xl shadow-xs hover:shadow-md cursor-pointer transition-all active:scale-95">
                         <Upload className="w-4 h-4 shrink-0" />
                         <span>{isUploadingPhoto ? "Uploading..." : "Upload New Cover Photo"}</span>
                         <input
@@ -2486,6 +2685,9 @@ export const NavaratriOrganizer: React.FC = () => {
                           disabled={isUploadingPhoto}
                         />
                       </label>
+                      <span className="text-[10px] text-stone-500">
+                        Recommended: 1200 × 600px (16:9 ratio)
+                      </span>
                     </div>
                   </div>
 
@@ -2494,53 +2696,81 @@ export const NavaratriOrganizer: React.FC = () => {
                     <span className="text-xs font-bold text-stone-800 block">
                       Or Choose from Consecrated Festive Themes:
                     </span>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       {[
                         {
                           title: "Temple Sanctum",
+                          desc: "Traditional Sanctum with brass lamps & flowers",
                           url: navaratriAsset("/navaratri/assets/maa-durga-temple-darshan.jpg")
                         },
                         {
                           title: "Royal Gold Sanctum",
+                          desc: "Opulent Golden Arch & Deep Warm Illumination",
                           url: navaratriAsset("/navaratri/assets/royal-temple-gold-sanctum.jpg")
                         },
                         {
                           title: "Divine Maroon Arch",
+                          desc: "Traditional South Indian Brass & Maroon Arch",
                           url: navaratriAsset("/navaratri/assets/royal-maroon-arch.jpg")
+                        },
+                        {
+                          title: "Golden Lotus Sanctum",
+                          desc: "Sacred Golden Lotus Devotional Ambiance",
+                          url: navaratriAsset("/navaratri/assets/golden-lotus-bg.jpg")
                         }
-                      ].map((preset) => (
-                        <button
-                          key={preset.title}
-                          type="button"
-                          onClick={() => {
-                            setPhotoPreview(preset.url);
-                            setPhotoInputUrl(preset.url);
-                            toast.success(`Selected ${preset.title}! Click 'Save Mandapam Branding' below.`);
-                          }}
-                          className={`p-1.5 rounded-xl border-2 text-left transition-all overflow-hidden cursor-pointer ${
-                            (photoPreview === preset.url || (!photoPreview && currentMandapam.coverImageUrl === preset.url))
-                              ? "border-[#8B1E1E] bg-amber-50 ring-2 ring-[#8B1E1E]/20"
-                              : "border-stone-200 hover:border-amber-400 bg-white"
-                          }`}
-                        >
-                          <div className="w-full h-16 rounded-lg overflow-hidden bg-stone-100 mb-1">
-                            <img src={preset.url} alt={preset.title} className="w-full h-full object-cover" />
-                          </div>
-                          <span className="text-[10px] font-bold text-stone-800 block truncate">
-                            {preset.title}
-                          </span>
-                        </button>
-                      ))}
+                      ].map((preset) => {
+                        const isSelected =
+                          photoPreview === preset.url ||
+                          (!photoPreview && currentMandapam.coverImageUrl === preset.url);
+                        return (
+                          <button
+                            key={preset.title}
+                            type="button"
+                            onClick={() => {
+                              setPhotoPreview(preset.url);
+                              setPhotoInputUrl(preset.url);
+                              toast.success(`Selected ${preset.title}! Click 'Save Branding & Details' below.`);
+                            }}
+                            className={`p-2 rounded-2xl border-2 text-left transition-all overflow-hidden cursor-pointer flex items-center gap-3 ${
+                              isSelected
+                                ? "border-[#8B1E1E] bg-amber-50/80 ring-2 ring-[#8B1E1E]/20 shadow-xs"
+                                : "border-stone-200 hover:border-amber-400 bg-white"
+                            }`}
+                          >
+                            <div className="w-16 h-12 rounded-xl overflow-hidden bg-stone-900 shrink-0 border border-stone-200">
+                              <img src={preset.url} alt={preset.title} className="w-full h-full object-cover" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="text-xs font-bold text-stone-900 truncate block">
+                                  {preset.title}
+                                </span>
+                                {isSelected && (
+                                  <span className="shrink-0 w-4 h-4 rounded-full bg-[#8B1E1E] text-white flex items-center justify-center text-[10px]">
+                                    ✓
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-[10px] text-stone-500 line-clamp-1 leading-tight">
+                                {preset.desc}
+                              </p>
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* TAB 2: LOCATION & ADDRESS */}
+              {/* TAB 3: LOCATION & ADDRESS */}
               {brandingTab === "location" && (
                 <div className="space-y-4 animate-in fade-in duration-150">
-                  <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-stone-700">
-                    📍 <strong>Directions & Maps:</strong> Keep your street address accurate so visiting devotees can easily find your mandapam with one tap on Google Maps!
+                  <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-stone-700 flex items-start gap-2">
+                    <span className="text-base shrink-0">📍</span>
+                    <div>
+                      <strong>Directions & Maps:</strong> Keep your street address accurate so visiting devotees can easily find your mandapam with one tap on Google Maps!
+                    </div>
                   </div>
 
                   <div className="space-y-3">
@@ -2553,7 +2783,7 @@ export const NavaratriOrganizer: React.FC = () => {
                         value={editAddress}
                         onChange={(e) => setEditAddress(e.target.value)}
                         placeholder="e.g. 3-5-260/2, Shivaji Nagar Rd, Kotagally"
-                        className="w-full px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                        className="w-full px-3.5 py-2.5 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                       />
                     </div>
 
@@ -2566,8 +2796,8 @@ export const NavaratriOrganizer: React.FC = () => {
                           type="text"
                           value={editArea}
                           onChange={(e) => setEditArea(e.target.value)}
-                          placeholder="e.g. Nizamabad"
-                          className="w-full px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                          placeholder="e.g. Kotagally"
+                          className="w-full px-3.5 py-2.5 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                         />
                       </div>
 
@@ -2580,45 +2810,47 @@ export const NavaratriOrganizer: React.FC = () => {
                           value={editCity}
                           onChange={(e) => setEditCity(e.target.value)}
                           placeholder="e.g. Nizamabad"
-                          className="w-full px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                         />
                       </div>
                     </div>
 
-                    {/* GPS coordinates from onboarding — read-only */}
-                    {(currentMandapam.latitude && currentMandapam.longitude) ? (
+                    {/* GPS coordinates from onboarding */}
+                    {currentMandapam.latitude && currentMandapam.longitude ? (
                       <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-start justify-between gap-3">
                         <div className="space-y-0.5">
-                          <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider block">
-                            📡 GPS — Captured at Onboarding
+                          <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">
+                            📡 GPS Coordinates Captured
                           </span>
                           <p className="text-xs font-mono text-stone-700">
                             {currentMandapam.latitude.toFixed(6)}, {currentMandapam.longitude.toFixed(6)}
                           </p>
-                          <p className="text-[10px] text-stone-500">This was recorded when you registered. It is used for "Near Me" searches.</p>
+                          <p className="text-[10px] text-stone-500">
+                            Used by visiting devotees for live distance & "Near Me" searches.
+                          </p>
                         </div>
                         <a
                           href={`https://www.google.com/maps?q=${currentMandapam.latitude},${currentMandapam.longitude}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="shrink-0 px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold transition-colors"
+                          className="shrink-0 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition-colors"
                         >
                           Open Maps
                         </a>
                       </div>
                     ) : (
-                      <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-[11px] text-amber-700">
-                        ⚠️ No GPS coordinates recorded. Re-register or contact support to update your location pin.
+                      <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-[11px] text-amber-800">
+                        ⚠️ No GPS pin recorded yet.
                       </div>
                     )}
 
                     {/* Preview of Directions Card */}
-                    <div className="p-3 rounded-2xl bg-stone-50 border border-stone-200 text-xs space-y-2">
+                    <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 text-xs space-y-2">
                       <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block">
                         Devotee Directions Preview
                       </span>
                       <p className="font-semibold text-stone-800">
-                        📍 {editAddress ? `${editAddress}, ` : ""}{editArea}, {editCity}
+                        📍 {editAddress ? `${editAddress}, ` : ""}{editArea || currentMandapam.area}, {editCity || currentMandapam.city}
                       </p>
                       {currentMandapam.latitude && currentMandapam.longitude && (
                         <a
@@ -2635,11 +2867,14 @@ export const NavaratriOrganizer: React.FC = () => {
                 </div>
               )}
 
-              {/* TAB 3: ORGANIZER CONTACT & PUBLIC VIEW */}
+              {/* TAB 4: ORGANIZER CONTACT & PUBLIC VIEW */}
               {brandingTab === "organizer" && (
                 <div className="space-y-4 animate-in fade-in duration-150">
-                  <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-stone-700">
-                    👤 <strong>Public Committee Details:</strong> Control how your mandapam organizer or youth committee contact details appear on your public visitor card.
+                  <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-stone-700 flex items-start gap-2">
+                    <span className="text-base shrink-0">👤</span>
+                    <div>
+                      <strong>Public Committee Details:</strong> Control how your mandapam organizer or youth committee contact details appear on your public visitor card.
+                    </div>
                   </div>
 
                   <div className="space-y-3">
@@ -2673,7 +2908,7 @@ export const NavaratriOrganizer: React.FC = () => {
                         value={editOrganizerName}
                         onChange={(e) => setEditOrganizerName(e.target.value)}
                         placeholder="e.g. Committee Name / Your Name"
-                        className="w-full px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                        className="w-full px-3.5 py-2.5 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                       />
                     </div>
 
@@ -2686,8 +2921,8 @@ export const NavaratriOrganizer: React.FC = () => {
                           type="tel"
                           value={editOrganizerMobile}
                           onChange={(e) => setEditOrganizerMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                          placeholder="e.g. Your Number"
-                          className="w-full px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                          placeholder="e.g. 9876543210"
+                          className="w-full px-3.5 py-2.5 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                         />
                       </div>
 
@@ -2699,9 +2934,34 @@ export const NavaratriOrganizer: React.FC = () => {
                           type="tel"
                           value={editWhatsappNumber}
                           onChange={(e) => setEditWhatsappNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                          placeholder="e.g. Your Number"
-                          className="w-full px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                          placeholder="e.g. 9876543210"
+                          className="w-full px-3.5 py-2.5 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
                         />
+                      </div>
+                    </div>
+
+                    {/* Devotee Contact Card Live Preview */}
+                    <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 text-xs space-y-2">
+                      <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block">
+                        Devotee Contact Preview
+                      </span>
+                      <div className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white border border-stone-200">
+                        <div className="min-w-0">
+                          <p className="font-bold text-stone-900 text-xs truncate">
+                            {editOrganizerName || currentMandapam.organizerName || "Mandapam Committee"}
+                          </p>
+                          <p className="text-[10px] text-stone-500 truncate">
+                            Phone: {editOrganizerMobile || currentMandapam.organizerMobile || "Not specified"}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-[10px] font-bold flex items-center gap-1 shadow-2xs">
+                            <Phone className="w-3 h-3" /> Call
+                          </span>
+                          <span className="px-2.5 py-1 rounded-lg bg-emerald-700 text-white text-[10px] font-bold flex items-center gap-1 shadow-2xs">
+                            <MessageCircle className="w-3 h-3" /> WhatsApp
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -2711,7 +2971,7 @@ export const NavaratriOrganizer: React.FC = () => {
 
             {/* Modal Actions */}
             <div className="p-4 bg-stone-50 border-t border-amber-200 flex flex-wrap items-center justify-between gap-2.5">
-              {(currentMandapam.logoUrl || currentMandapam.coverImageUrl || currentMandapam.cardBgImageUrl) && (
+              {(currentMandapam.logoUrl || currentMandapam.coverImageUrl || currentMandapam.cardBgImageUrl || logoPreview || photoPreview) && (
                 <button
                   type="button"
                   onClick={handleResetMandapamBranding}
@@ -2728,17 +2988,27 @@ export const NavaratriOrganizer: React.FC = () => {
                   onClick={() => {
                     setBrandingModalOpen(false);
                   }}
-                  className="px-3.5 py-2 rounded-xl bg-white border border-stone-300 hover:bg-stone-100 text-stone-700 text-xs font-bold transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-white border border-stone-300 hover:bg-stone-100 text-stone-700 text-xs font-bold transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
+                  disabled={isSavingBranding}
                   onClick={handleSaveMandapamBranding}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs font-bold shadow-md transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer active:scale-95"
                 >
-                  <Check className="w-3.5 h-3.5" />
-                  <span>Save Branding & Details</span>
+                  {isSavingBranding ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving to Database...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Save Branding & Details</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
