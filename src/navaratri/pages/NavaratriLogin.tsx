@@ -564,25 +564,14 @@ export const NavaratriLogin: React.FC = () => {
   );
 
   return (
-    <div className="relative min-h-[100dvh] w-full flex items-center justify-center px-4 py-8 bg-[#5d6f51] overflow-x-hidden">
-      {/* Mobile background (portrait 9:16 - embroidery in corners) */}
+    <div className="relative min-h-[100dvh] w-full flex items-center justify-center px-4 py-8 bg-[#820808] overflow-x-hidden">
+      {/* User-selected red mandala artwork, shown directly without blur. */}
       <div
-        className="md:hidden absolute inset-0 bg-cover bg-center pointer-events-none"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none"
         style={{
-          backgroundImage: `url(${navaratriAsset("/navaratri/assets/sage-floral-bg.jpg")})`,
+          backgroundImage: `url(${navaratriAsset("/navaratri/assets/login-red-mandala-bg.jpeg")})`,
         }}
       />
-
-      {/* Desktop background (widescreen 16:9 - embroidery in desktop corners) */}
-      <div
-        className="hidden md:block absolute inset-0 bg-cover bg-center pointer-events-none"
-        style={{
-          backgroundImage: `url(${navaratriAsset("/navaratri/assets/sage-floral-desktop-bg.jpg")})`,
-        }}
-      />
-
-      {/* Subtle vignette / overlay for optimal contrast */}
-      <div className="absolute inset-0 bg-black/10 pointer-events-none" />
 
       {/* Desktop sponsor cards are pinned to opposite wallpaper corners. */}
       <div className="hidden md:block absolute z-10 left-4 lg:left-7 xl:left-10 top-4 lg:top-7 xl:top-10 w-52 xl:w-64">
