@@ -188,7 +188,7 @@ export const NavaratriHome: React.FC = () => {
         <FloatingAuspiciousParticles />
 
         <div className="relative z-10 p-5 sm:p-6 md:p-6 lg:p-7 xl:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-5 lg:gap-6 text-white flex-1">
-          <div className="max-w-2xl space-y-3 sm:space-y-3.5 flex-1">
+          <div className="max-w-2xl space-y-3 sm:space-y-3.5 lg:space-y-5 xl:space-y-6 flex-1">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-200 border border-amber-300/40 text-xs font-bold tracking-wide backdrop-blur-sm shadow-sm">
               <img
                 src={navaratriAsset("/navaratri/assets/sacred-lotus-flower.png")}
@@ -200,7 +200,7 @@ export const NavaratriHome: React.FC = () => {
               </span>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 lg:space-y-3">
               <h1 className="font-['Cinzel',serif] font-black text-2xl sm:text-3xl md:text-3.5xl lg:text-4xl xl:text-[2.6rem] text-[#FFFBEB] leading-snug tracking-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.5)]">
                 Celebrate{" "}
                 <span className="inline-flex items-center gap-1.5 sm:gap-2 align-middle">
@@ -219,7 +219,7 @@ export const NavaratriHome: React.FC = () => {
             </div>
 
             {/* Search Bar */}
-            <form onSubmit={handleSearchSubmit} className="pt-1">
+            <form onSubmit={handleSearchSubmit} className="pt-1 lg:pt-2">
               <div className="flex flex-col sm:flex-row items-center gap-2 bg-[#FAF7F0] p-2 sm:p-2.5 rounded-xl sm:rounded-full shadow-xl border-2 border-amber-400">
                 <div className="flex items-center gap-2.5 flex-1 px-3 w-full text-stone-900">
                   <Search className="w-4 h-4 text-[#8B1E1E] shrink-0" />
@@ -241,7 +241,7 @@ export const NavaratriHome: React.FC = () => {
             </form>
 
             {/* Quick action buttons */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs font-semibold">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 lg:gap-3 pt-1 lg:pt-2 text-xs font-semibold">
               <Link to="/navaratri/near-me?category=annadanam" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
                 <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
                   <Utensils className="w-3.5 h-3.5 shrink-0 text-amber-200" />
@@ -276,7 +276,7 @@ export const NavaratriHome: React.FC = () => {
               <div className="absolute inset-x-0 bottom-0 h-4/5 bg-amber-400/20 blur-3xl rounded-full pointer-events-none" />
               <div className="absolute inset-0 bg-amber-300/10 blur-2xl rounded-full scale-105 pointer-events-none" />
               <img
-                src={navaratriAsset("/navaratri/assets/maa-durga-hero-darshan-nobg.png")}
+                src={navaratriAsset("/navaratri/assets/maa-durga-hero-canvas.png")}
                 alt="Maa Durga Simhavahana Darshan"
                 className="relative z-10 w-64 md:w-72 lg:w-80 xl:w-96 h-auto object-contain drop-shadow-[0_8px_30px_rgba(251,191,36,0.4)] hover:scale-105 transition-transform duration-500 pointer-events-none select-none"
               />
