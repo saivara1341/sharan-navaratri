@@ -123,7 +123,7 @@ export const WalkInRegisterModal: React.FC<WalkInRegisterModalProps> = ({
               className="px-3.5 py-2 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs font-bold shadow flex items-center gap-1.5 transition-colors"
             >
               <UserPlus className="w-4 h-4" />
-              <span>+ Add Walk-In</span>
+              <span>Add Walk-In</span>
             </button>
 
             <button

@@ -316,7 +316,7 @@ export const NavaratriOrganizer: React.FC = () => {
               to="/navaratri/register"
               className="w-full py-2.5 rounded-xl border border-amber-400 bg-amber-50 hover:bg-amber-100 text-[#8B1E1E] text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs hover:shadow-xs active:scale-98"
             >
-              <span>+ Register New Durga Mandapam</span>
+              <span>Register New Durga Mandapam</span>
             </Link>
           </div>
         </div>
@@ -1072,7 +1072,7 @@ export const NavaratriOrganizer: React.FC = () => {
               className="px-5 py-3 rounded-2xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer active:scale-95"
             >
               <Plus className="w-4 h-4" />
-              <span>+ Add Event (Dandiya, Pooja, Archana)</span>
+              <span>Add Event (Dandiya, Pooja, Archana)</span>
             </button>
           </div>
 
@@ -1170,7 +1170,7 @@ export const NavaratriOrganizer: React.FC = () => {
                 className="px-4 py-2 rounded-xl bg-[#8B1E1E] text-white text-xs font-bold shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
               >
                 <DandiyaIcon className="w-4 h-4 text-amber-300" />
-                <span>+ Add First Mandapam Event</span>
+                <span>Add First Mandapam Event</span>
               </button>
             </div>
           ) : (
@@ -1346,7 +1346,7 @@ export const NavaratriOrganizer: React.FC = () => {
                   className="px-3.5 py-2 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>+ Open Booking Opening / Quota</span>
+                  <span>Open Booking Opening / Quota</span>
                 </button>
                 <button
                   type="button"
@@ -1354,7 +1354,7 @@ export const NavaratriOrganizer: React.FC = () => {
                   className="px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <Ticket className="w-4 h-4" />
-                  <span>+ Issue Walk-In Token</span>
+                  <span>Issue Walk-In Token</span>
                 </button>
               </div>
             </div>
@@ -1523,7 +1523,7 @@ export const NavaratriOrganizer: React.FC = () => {
                           className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 hover:bg-emerald-100 text-[11px] font-bold border border-emerald-300 flex items-center gap-1 transition-colors cursor-pointer"
                         >
                           <Ticket className="w-3 h-3" />
-                          <span>+ Walk-In Token</span>
+                          <span>Walk-In Token</span>
                         </button>
                       </div>
                     </div>
@@ -2009,7 +2009,7 @@ export const NavaratriOrganizer: React.FC = () => {
                       className="text-[10px] px-2.5 py-1 rounded-xl bg-white hover:bg-amber-100 text-[#8B1E1E] border border-amber-300 font-semibold transition-all cursor-pointer shadow-2xs inline-flex items-center gap-1.5"
                     >
                       {preset.isHomam && <HomaKundaIcon className="w-3.5 h-3.5 shrink-0" />}
-                      <span>+ {preset.label}</span>
+                      <span>{preset.label}</span>
                     </button>
                   ))}
                 </div>
