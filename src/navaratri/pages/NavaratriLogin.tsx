@@ -205,6 +205,10 @@ export const NavaratriLogin: React.FC = () => {
     let handled = false;
     setIsGoogleLoading(true);
 
+    const clearOAuthFragment = () => {
+      window.history.replaceState(window.history.state, "", `${window.location.pathname}${window.location.search}`);
+    };
+
     const handleAuthenticatedUser = async (user: { id: string; email?: string | null; user_metadata?: Record<string, unknown> }) => {
       if (cancelled || handled) return;
       handled = true;
@@ -218,22 +222,40 @@ export const NavaratriLogin: React.FC = () => {
     };
 
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) void handleAuthenticatedUser(session.user);
-    });
+      if (session?.user) {
+        window.setTimeout(() => void handleAuthenticatedUser(session.user), 0);
+        return;
+      }
 
-    supabase.auth.getSession().then(({ data, error }) => {
-      if (cancelled || handled) return;
-      if (error) {
-        toast.error(error.message || "Google sign-in could not be completed. Please try again.");
-        setIsGoogleLoading(false);
-        return;
-      }
-      if (data.session?.user) {
-        void handleAuthenticatedUser(data.session.user);
-        return;
-      }
-      toast.error("Google sign-in could not be completed. Please try again.");
-      setIsGoogleLoading(false);
+      if (_event !== "INITIAL_SESSION") return;
+
+      // Let Supabase finish URL detection first. If its initial session is empty
+      // but the OAuth provider returned tokens, pass them through the SDK once.
+      window.setTimeout(async () => {
+        if (cancelled || handled) return;
+
+        const callbackParams = new URLSearchParams(window.location.hash.slice(1));
+        const accessToken = callbackParams.get("access_token");
+        const refreshToken = callbackParams.get("refresh_token");
+        if (!accessToken || !refreshToken) {
+          clearOAuthFragment();
+          toast.error("Google sign-in could not be completed. Please try again.");
+          setIsGoogleLoading(false);
+          return;
+        }
+
+        const { data, error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        clearOAuthFragment();
+        if (error || !data.session?.user) {
+          toast.error(error?.message || "Google sign-in could not be completed. Please try again.");
+          setIsGoogleLoading(false);
+          return;
+        }
+        await handleAuthenticatedUser(data.session.user);
+      }, 0);
     });
 
     return () => {
