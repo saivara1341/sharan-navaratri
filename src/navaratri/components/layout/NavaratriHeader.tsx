@@ -127,7 +127,7 @@ export const NavaratriHeader: React.FC = () => {
 
           {/* 2. +Register Mandapam (White highlighted pill - No border) */}
           <Link
-            to="/navaratri/register"
+            to="/navaratri/login?mode=new"
             className="relative z-10 inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-white hover:bg-amber-50 text-[#8B1E1E] text-xs font-black shadow-sm transition-all active:scale-95"
             title="Register New Mandapam"
           >
@@ -209,7 +209,7 @@ export const NavaratriHeader: React.FC = () => {
               <div className="h-5 w-[1.5px] bg-amber-400/80 mx-0.5 shrink-0" />
 
               <Link
-                to="/navaratri/register"
+                to="/navaratri/login?mode=new"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex-1 py-2 px-1.5 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-black text-center flex items-center justify-center gap-1 transition-all shadow-xs"
                 title="Register Mandapam"

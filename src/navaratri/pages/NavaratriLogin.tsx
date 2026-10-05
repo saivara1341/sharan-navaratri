@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -74,11 +74,14 @@ const mapSupabaseMandapam = (row: SupabaseMandapamRow): Mandapam => ({
 export const NavaratriLogin: React.FC = () => {
   const { mandapams, setActiveMandapamId, setRole } = useNavaratriData();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [authenticatedId, setAuthenticatedId] = useState<string | null>(() =>
     sessionStorage.getItem("navaratri_organizer_id") || null
   );
-  const [accountMode, setAccountMode] = useState<"existing" | "new">("existing");
+  const [accountMode, setAccountMode] = useState<"existing" | "new">(() =>
+    new URLSearchParams(location.search).get("mode") === "new" ? "new" : "existing"
+  );
   const [loginInput, setLoginInput] = useState("");
   const [loginPasscode, setLoginPasscode] = useState("");
   const [showLoginPasscode, setShowLoginPasscode] = useState(false);
@@ -86,6 +89,14 @@ export const NavaratriLogin: React.FC = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [pendingPhone, setPendingPhone] = useState("");
   const [phoneOtp, setPhoneOtp] = useState("");
+
+  useEffect(() => {
+    if (new URLSearchParams(location.search).get("mode") === "new") {
+      setAccountMode("new");
+      setLoginInput("");
+      setLoginPasscode("");
+    }
+  }, [location.key, location.search]);
 
   const activeMandapam = authenticatedId
     ? mandapams.find((m) => m.id === authenticatedId)
