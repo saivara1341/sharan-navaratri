@@ -14,34 +14,40 @@ export const copyToClipboard = async (text: string, label: string = "Text") => {
   }
 };
 
-// In-memory runtime cache for the active session - NEVER stored in browser frontend storage (localStorage/sessionStorage)
+// In-memory runtime cache for the active session
 const inMemorySessionCredentials = new Map<string, string>();
-
-// Clean up any legacy credentials from previous versions
-const PRIVATE_CREDENTIALS_KEY = "navaratri_private_organizer_credentials";
-try {
-  if (typeof window !== "undefined") {
-    localStorage.removeItem(PRIVATE_CREDENTIALS_KEY);
-  }
-} catch {
-  // ignore
-}
+const ORGANIZER_PASSCODES_KEY = "navaratri_organizer_passcodes";
 
 export const savePrivateCredentials = (mandapamId: string, passcode: string) => {
-  // Store only in volatile memory during the active session. Do NOT store doc/credentials in frontend storage.
   inMemorySessionCredentials.set(mandapamId, passcode);
   try {
     if (typeof window !== "undefined") {
-      localStorage.removeItem(PRIVATE_CREDENTIALS_KEY);
+      const existing = localStorage.getItem(ORGANIZER_PASSCODES_KEY);
+      const parsed = existing ? JSON.parse(existing) : {};
+      parsed[mandapamId] = passcode;
+      localStorage.setItem(ORGANIZER_PASSCODES_KEY, JSON.stringify(parsed));
     }
   } catch {
-    // ignore
+    // ignore storage exceptions
   }
 };
 
 export const getPrivatePasscode = (mandapamId: string, fallback?: string): string => {
   if (inMemorySessionCredentials.has(mandapamId)) {
     return inMemorySessionCredentials.get(mandapamId)!;
+  }
+  try {
+    if (typeof window !== "undefined") {
+      const existing = localStorage.getItem(ORGANIZER_PASSCODES_KEY);
+      if (existing) {
+        const parsed = JSON.parse(existing);
+        if (parsed && parsed[mandapamId]) {
+          return parsed[mandapamId];
+        }
+      }
+    }
+  } catch {
+    // ignore
   }
   return fallback || "123456";
 };

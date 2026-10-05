@@ -158,7 +158,7 @@ export const NavaratriOrganizer: React.FC = () => {
 
   // Mandapam Branding, Media & Location State
   const [brandingModalOpen, setBrandingModalOpen] = useState(false);
-  const [brandingTab, setBrandingTab] = useState<"logo" | "location" | "organizer">("logo");
+  const [brandingTab, setBrandingTab] = useState<"logo" | "cover" | "location" | "organizer">("logo");
   const [logoPreview, setLogoPreview] = useState("");
   const [logoInputUrl, setLogoInputUrl] = useState("");
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
@@ -626,16 +626,24 @@ export const NavaratriOrganizer: React.FC = () => {
     const finalLogo = logoPreview.trim() || logoInputUrl.trim() || undefined;
     const finalPhoto = photoPreview.trim() || photoInputUrl.trim() || undefined;
 
-    const updates: Partial<typeof currentMandapam> = {};
     if (finalLogo) {
       updates.logoUrl = finalLogo;
       localStorage.setItem(`mandapam_logo_${currentMandapam.id}`, finalLogo);
+    } else if (!logoPreview && !logoInputUrl && currentMandapam.logoUrl) {
+      updates.logoUrl = undefined;
+      localStorage.removeItem(`mandapam_logo_${currentMandapam.id}`);
     }
+
     if (finalPhoto) {
       updates.coverImageUrl = finalPhoto;
       updates.cardBgImageUrl = finalPhoto;
       localStorage.setItem(`mandapam_cover_${currentMandapam.id}`, finalPhoto);
       localStorage.setItem(`mandapam_card_bg_${currentMandapam.id}`, finalPhoto);
+    } else if (!photoPreview && !photoInputUrl && currentMandapam.coverImageUrl) {
+      updates.coverImageUrl = undefined;
+      updates.cardBgImageUrl = undefined;
+      localStorage.removeItem(`mandapam_cover_${currentMandapam.id}`);
+      localStorage.removeItem(`mandapam_card_bg_${currentMandapam.id}`);
     }
     if (editAddress.trim()) updates.address = editAddress.trim();
     if (editArea.trim()) updates.area = editArea.trim();
@@ -836,7 +844,7 @@ export const NavaratriOrganizer: React.FC = () => {
                     <span>Download Access Slip</span>
                   </button>
 
-                  {/* 2. Branding & Location */}
+                  {/* 2. Logo & Cover Image */}
                   <button
                     type="button"
                     onClick={() => {
@@ -858,7 +866,7 @@ export const NavaratriOrganizer: React.FC = () => {
                     className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:text-[#8B1E1E] rounded-xl transition-colors text-left cursor-pointer"
                   >
                     <Camera className="w-4 h-4 text-amber-600 shrink-0" />
-                    <span>Branding & Location</span>
+                    <span>Edit Logo & Cover Image</span>
                   </button>
 
                   {/* 3. Counter Standee */}
@@ -2305,44 +2313,53 @@ export const NavaratriOrganizer: React.FC = () => {
             </div>
 
             {/* Tab Navigation inside Modal */}
-            <div className="grid grid-cols-3 border-b border-amber-200 bg-amber-50/60 p-1.5 gap-1.5 text-xs font-bold">
+            <div className="grid grid-cols-4 border-b border-amber-200 bg-amber-50/60 p-1.5 gap-1.5 text-xs font-bold">
               <button
                 type="button"
                 onClick={() => setBrandingTab("logo")}
-                className={`py-2 px-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                className={`py-2 px-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 ${
                   brandingTab === "logo"
                     ? "bg-[#8B1E1E] text-white shadow-xs"
                     : "text-stone-700 hover:bg-white/60"
                 }`}
               >
-                <Check className={`w-3.5 h-3.5 ${logoPreview ? "text-amber-300" : "opacity-0"}`} />
                 <span>1. Logo</span>
               </button>
 
               <button
                 type="button"
+                onClick={() => setBrandingTab("cover")}
+                className={`py-2 px-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                  brandingTab === "cover"
+                    ? "bg-[#8B1E1E] text-white shadow-xs"
+                    : "text-stone-700 hover:bg-white/60"
+                }`}
+              >
+                <span>2. Cover Image</span>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => setBrandingTab("location")}
-                className={`py-2 px-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                className={`py-2 px-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 ${
                   brandingTab === "location"
                     ? "bg-[#8B1E1E] text-white shadow-xs"
                     : "text-stone-700 hover:bg-white/60"
                 }`}
               >
-                <MapPin className="w-3.5 h-3.5" />
-                <span>2. Location</span>
+                <span>3. Location</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setBrandingTab("organizer")}
-                className={`py-2 px-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                className={`py-2 px-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 ${
                   brandingTab === "organizer"
                     ? "bg-[#8B1E1E] text-white shadow-xs"
                     : "text-stone-700 hover:bg-white/60"
                 }`}
               >
-                <Users className="w-3.5 h-3.5" />
-                <span>3. Organizer</span>
+                <span>4. Organizer</span>
               </button>
             </div>
 
@@ -2412,6 +2429,108 @@ export const NavaratriOrganizer: React.FC = () => {
                           disabled={isUploadingLogo}
                         />
                       </label>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 2: MANDAPAM COVER PHOTO */}
+              {brandingTab === "cover" && (
+                <div className="space-y-4 animate-in fade-in duration-150">
+                  <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-stone-700">
+                    🌄 <strong>Devotee Hero Banner:</strong> Devotees visiting your Mandapam page will see this cover photo prominently at the very top of your profile.
+                  </div>
+
+                  {/* Cover Photo Preview & Upload */}
+                  <div className="space-y-2 p-3 sm:p-4 rounded-2xl bg-stone-50 border border-amber-200">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-stone-800">
+                        Current Cover Banner Preview
+                      </span>
+                      {(photoPreview || photoInputUrl) && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPhotoPreview("");
+                            setPhotoInputUrl("");
+                          }}
+                          className="text-[11px] font-bold text-red-600 hover:text-red-700 underline cursor-pointer"
+                        >
+                          Reset to Default
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="w-full h-36 sm:h-48 rounded-2xl overflow-hidden border-2 border-amber-300 bg-stone-900 relative shadow-inner">
+                      <img
+                        src={photoPreview || photoInputUrl || currentMandapam.coverImageUrl || navaratriAsset("/navaratri/assets/maa-durga-temple-darshan.jpg")}
+                        alt="Mandapam Cover Banner"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      <div className="absolute bottom-2.5 left-3 text-white text-xs font-serif font-black drop-shadow-md">
+                        {currentMandapam.name}
+                      </div>
+                    </div>
+
+                    {/* Upload button & file input */}
+                    <div className="pt-2 flex flex-wrap items-center gap-2">
+                      <label className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white font-bold text-xs rounded-xl shadow-xs hover:shadow-md cursor-pointer transition-all active:scale-95">
+                        <Upload className="w-4 h-4 shrink-0" />
+                        <span>{isUploadingPhoto ? "Uploading..." : "Upload New Cover Photo"}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handlePhotoFileUpload}
+                          className="hidden"
+                          disabled={isUploadingPhoto}
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Preset Themes / Sanctuaries */}
+                  <div className="space-y-2">
+                    <span className="text-xs font-bold text-stone-800 block">
+                      Or Choose from Consecrated Festive Themes:
+                    </span>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {[
+                        {
+                          title: "Temple Sanctum",
+                          url: navaratriAsset("/navaratri/assets/maa-durga-temple-darshan.jpg")
+                        },
+                        {
+                          title: "Royal Gold Sanctum",
+                          url: navaratriAsset("/navaratri/assets/royal-temple-gold-sanctum.jpg")
+                        },
+                        {
+                          title: "Divine Maroon Arch",
+                          url: navaratriAsset("/navaratri/assets/royal-maroon-arch.jpg")
+                        }
+                      ].map((preset) => (
+                        <button
+                          key={preset.title}
+                          type="button"
+                          onClick={() => {
+                            setPhotoPreview(preset.url);
+                            setPhotoInputUrl(preset.url);
+                            toast.success(`Selected ${preset.title}! Click 'Save Mandapam Branding' below.`);
+                          }}
+                          className={`p-1.5 rounded-xl border-2 text-left transition-all overflow-hidden cursor-pointer ${
+                            (photoPreview === preset.url || (!photoPreview && currentMandapam.coverImageUrl === preset.url))
+                              ? "border-[#8B1E1E] bg-amber-50 ring-2 ring-[#8B1E1E]/20"
+                              : "border-stone-200 hover:border-amber-400 bg-white"
+                          }`}
+                        >
+                          <div className="w-full h-16 rounded-lg overflow-hidden bg-stone-100 mb-1">
+                            <img src={preset.url} alt={preset.title} className="w-full h-full object-cover" />
+                          </div>
+                          <span className="text-[10px] font-bold text-stone-800 block truncate">
+                            {preset.title}
+                          </span>
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </div>

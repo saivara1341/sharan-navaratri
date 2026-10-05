@@ -150,11 +150,42 @@ function saveStorage<T>(key: string, value: T) {
   }
 }
 
+// Helper to identify and purge any mock/demo mandapam including Matha Nilayam
+export const isDemoOrMockMandapam = (m: any): boolean => {
+  if (!m) return true;
+  const id = String(m.id || "").toLowerCase();
+  const name = String(m.name || "").toLowerCase().trim();
+  const slug = String(m.slug || "").toLowerCase().trim();
+  const area = String(m.area || "").toLowerCase().trim();
+  const city = String(m.city || "").toLowerCase().trim();
+  return (
+    id.startsWith("demo-") ||
+    id === "mnp-178584" ||
+    id === "m-rr-nizamabad" ||
+    name.includes("matha nilayam") ||
+    name.includes("nilayam") ||
+    name.includes("hrudhaya") ||
+    name.includes("demo") ||
+    name.includes("test") ||
+    name.includes("sample") ||
+    slug.includes("matha-nilayam") ||
+    slug.includes("nilayam") ||
+    slug.includes("hrudhaya") ||
+    slug.includes("demo") ||
+    slug.includes("test") ||
+    area.includes("south mandal") ||
+    (city.includes("nizamabad") && area.includes("nizamabad"))
+  );
+};
+
 export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [role, setRole] = useState<UserRole>("devotee");
   const [activeMandapamId, setActiveMandapamId] = useState<string>("");
   const [season, setSeason] = useState<Season>(() => loadStorage("season", INITIAL_SEASON));
+
+  // Purge demo mandapams and their artifacts from localStorage immediately
   const [mandapams, setMandapams] = useState<Mandapam[]>(() => {
+    const removedIds = new Set<string>();
     try {
       if (typeof window !== "undefined") {
         localStorage.removeItem("navaratri_private_organizer_credentials");
@@ -162,31 +193,89 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
         if (raw) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed)) {
-            const sanitized = parsed.filter((m: any) =>
-              m &&
-              m.id !== "mnp-178584" &&
-              m.id !== "m-rr-nizamabad" &&
-              !m.id?.startsWith("demo-") &&
-              !m.name?.toLowerCase().includes("hrudhaya")
-            );
+            parsed.forEach((m: any) => {
+              if (isDemoOrMockMandapam(m) && m?.id) {
+                removedIds.add(String(m.id));
+              }
+            });
+            const sanitized = parsed.filter((m: any) => !isDemoOrMockMandapam(m));
             localStorage.setItem("navaratri_mandapams", JSON.stringify(sanitized));
           }
         }
+
+        // Build the final valid ID set from the cleaned mandapam list
+        const rawMandapamsClean = localStorage.getItem("navaratri_mandapams");
+        const validMandapamIds = new Set<string>();
+        try {
+          const cleanParsed = rawMandapamsClean ? JSON.parse(rawMandapamsClean) : [];
+          if (Array.isArray(cleanParsed)) {
+            cleanParsed.forEach((m: any) => { if (m?.id) validMandapamIds.add(String(m.id)); });
+          }
+        } catch {}
+
+        // Clean scanned mandapams — remove demo IDs AND orphaned IDs not in the valid list
+        const rawScanned = localStorage.getItem("navaratri_scanned_mandapams");
+        if (rawScanned) {
+          try {
+            const parsedScanned = JSON.parse(rawScanned);
+            if (Array.isArray(parsedScanned)) {
+              const sanitizedScanned = parsedScanned.filter(
+                (id: string) => !removedIds.has(String(id)) && validMandapamIds.has(String(id))
+              );
+              localStorage.setItem("navaratri_scanned_mandapams", JSON.stringify(sanitizedScanned));
+            }
+          } catch {}
+        }
+
+        // Clean followed mandapams — remove demo IDs AND orphaned IDs not in the valid list
+        const rawFollowed = localStorage.getItem("navaratri_followed_mandapams");
+        if (rawFollowed) {
+          try {
+            const parsedFollowed = JSON.parse(rawFollowed);
+            if (Array.isArray(parsedFollowed)) {
+              const sanitizedFollowed = parsedFollowed.filter(
+                (id: string) => !removedIds.has(String(id)) && validMandapamIds.has(String(id))
+              );
+              localStorage.setItem("navaratri_followed_mandapams", JSON.stringify(sanitizedFollowed));
+            }
+          } catch {}
+        }
+
+        // Clean related collections by removed mandapam IDs
+        const collectionsToClean = [
+          "navaratri_alankaranas",
+          "navaratri_day_settings",
+          "navaratri_services",
+          "navaratri_slots",
+          "navaratri_bookings",
+          "navaratri_activities",
+          "navaratri_announcements",
+          "navaratri_questions",
+          "navaratri_pallaki",
+          "navaratri_nimarjanam"
+        ];
+        collectionsToClean.forEach(key => {
+          const r = localStorage.getItem(key);
+          if (r) {
+            try {
+              const p = JSON.parse(r);
+              if (Array.isArray(p)) {
+                const s = p.filter((item: any) => !removedIds.has(String(item.mandapamId || item.id)));
+                localStorage.setItem(key, JSON.stringify(s));
+              }
+            } catch {}
+          }
+        });
       }
     } catch {
       // ignore
     }
+
     const loaded = loadStorage<Mandapam[]>("mandapams", INITIAL_MANDAPAMS);
-    const cleaned = (loaded || []).filter((m) =>
-      m &&
-      m.id !== "mnp-178584" &&
-      m.id !== "m-rr-nizamabad" &&
-      !m.id?.startsWith("demo-") &&
-      !m.name?.toLowerCase().includes("hrudhaya")
-    );
+    const cleaned = (loaded || []).filter((m) => !isDemoOrMockMandapam(m));
     const merged = [...cleaned];
     for (const initM of INITIAL_MANDAPAMS) {
-      if (!merged.some(m => m.id === initM.id || (m.slug && initM.slug && m.slug.toLowerCase() === initM.slug.toLowerCase()))) {
+      if (!isDemoOrMockMandapam(initM) && !merged.some(m => m.id === initM.id || (m.slug && initM.slug && m.slug.toLowerCase() === initM.slug.toLowerCase()))) {
         merged.push(initM);
       }
     }
@@ -198,55 +287,63 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       };
     });
   });
+
   const [alankaranas, setAlankaranas] = useState<Alankarana[]>(() => {
     const loaded = loadStorage<Alankarana[]>("alankaranas", INITIAL_ALANKARANAS);
-    const merged = [...loaded];
-    for (const initA of INITIAL_ALANKARANAS) {
-      if (!merged.some(a => a.id === initA.id || (a.mandapamId === initA.mandapamId && a.date === initA.date))) {
-        merged.push(initA);
-      }
-    }
-    return merged;
+    return (loaded || []).filter((a) => mandapams.some((m) => m.id === a.mandapamId));
   });
+
   const [daySettings, setDaySettings] = useState<MandapamDaySetting[]>(() => {
     const loaded = loadStorage<MandapamDaySetting[]>("day_settings", INITIAL_DAY_SETTINGS);
-    const merged = [...loaded];
-    for (const initDs of INITIAL_DAY_SETTINGS) {
-      if (!merged.some(s => s.id === initDs.id || (s.mandapamId === initDs.mandapamId && s.dayNumber === initDs.dayNumber))) {
-        merged.push(initDs);
-      }
-    }
-    return merged;
+    return (loaded || []).filter((ds) => mandapams.some((m) => m.id === ds.mandapamId));
   });
+
   const [services, setServices] = useState<Service[]>(() => {
     const loaded = loadStorage<Service[]>("services", INITIAL_SERVICES);
-    const cleaned = (loaded || []).filter(s => !(s.type === "Annadanam" || s.name.toLowerCase().includes("annadanam") || s.id === "srv-annadanam-seva"));
-    const merged = [...cleaned];
-    for (const initS of INITIAL_SERVICES) {
-      if (!merged.some(s => s.id === initS.id)) {
-        merged.push(initS);
-      }
-    }
-    return merged;
+    const cleaned = (loaded || []).filter(s => mandapams.some((m) => m.id === s.mandapamId) && !(s.type === "Annadanam" || s.name.toLowerCase().includes("annadanam") || s.id === "srv-annadanam-seva"));
+    return cleaned;
   });
-  const [slots, setSlots] = useState<ServiceSlot[]>(() => loadStorage("slots", INITIAL_SLOTS));
-  const [bookings, setBookings] = useState<Booking[]>(() => loadStorage("bookings", []));
+
+  const [slots, setSlots] = useState<ServiceSlot[]>(() => {
+    const loaded = loadStorage<ServiceSlot[]>("slots", INITIAL_SLOTS);
+    return (loaded || []).filter((sl) => mandapams.some((m) => m.id === sl.mandapamId));
+  });
+
+  const [bookings, setBookings] = useState<Booking[]>(() => {
+    const loaded = loadStorage<Booking[]>("bookings", []);
+    return (loaded || []).filter((b) => mandapams.some((m) => m.id === b.mandapamId));
+  });
+
   const [activities, setActivities] = useState<Activity[]>(() => {
     const loaded = loadStorage<Activity[]>("activities", INITIAL_ACTIVITIES);
-    const cleaned = (loaded || []).filter(a => !(a.mandapamId === "m-rr-nizamabad" && (a.category === "Annadanam" || a.title.toLowerCase().includes("annadanam"))));
-    const merged = [...cleaned];
-    for (const initA of INITIAL_ACTIVITIES) {
-      if (!merged.some(a => a.id === initA.id)) {
-        merged.push(initA);
-      }
-    }
-    return merged;
+    return (loaded || []).filter((act) => mandapams.some((m) => m.id === act.mandapamId));
   });
-  const [pallakiSevas, setPallakiSevas] = useState<PallakiSeva[]>(() => loadStorage("pallaki", INITIAL_PALLAKI_SEVAS));
-  const [dheekshaPrograms, setDheekshaPrograms] = useState<DheekshaProgram[]>(() => loadStorage("dheeksha", INITIAL_DHEEKSHA_PROGRAMS));
-  const [nimarjanamSchedules, setNimarjanamSchedules] = useState<NimarjanamSchedule[]>(() => loadStorage("nimarjanam", INITIAL_NIMARJANAM_SCHEDULES));
-  const [announcements, setAnnouncements] = useState<Announcement[]>(() => loadStorage("announcements", INITIAL_ANNOUNCEMENTS));
-  const [questions, setQuestions] = useState<CommunityQuestion[]>(() => loadStorage("questions", INITIAL_QUESTIONS));
+
+  const [pallakiSevas, setPallakiSevas] = useState<PallakiSeva[]>(() => {
+    const loaded = loadStorage<PallakiSeva[]>("pallaki", INITIAL_PALLAKI_SEVAS);
+    return (loaded || []).filter((p) => mandapams.some((m) => m.id === p.mandapamId));
+  });
+
+  const [dheekshaPrograms, setDheekshaPrograms] = useState<DheekshaProgram[]>(() => {
+    const loaded = loadStorage<DheekshaProgram[]>("dheeksha", INITIAL_DHEEKSHA_PROGRAMS);
+    return (loaded || []).filter((d) => mandapams.some((m) => m.id === d.mandapamId));
+  });
+
+  const [nimarjanamSchedules, setNimarjanamSchedules] = useState<NimarjanamSchedule[]>(() => {
+    const loaded = loadStorage<NimarjanamSchedule[]>("nimarjanam", INITIAL_NIMARJANAM_SCHEDULES);
+    return (loaded || []).filter((n) => mandapams.some((m) => m.id === n.mandapamId));
+  });
+
+  const [announcements, setAnnouncements] = useState<Announcement[]>(() => {
+    const loaded = loadStorage<Announcement[]>("announcements", INITIAL_ANNOUNCEMENTS);
+    return (loaded || []).filter((an) => mandapams.some((m) => m.id === an.mandapamId));
+  });
+
+  const [questions, setQuestions] = useState<CommunityQuestion[]>(() => {
+    const loaded = loadStorage<CommunityQuestion[]>("questions", INITIAL_QUESTIONS);
+    return (loaded || []).filter((q) => mandapams.some((m) => m.id === q.mandapamId));
+  });
+
   const adPackages = INITIAL_AD_PACKAGES;
   const [advertisements, setAdvertisements] = useState<Advertisement[]>(() => {
     try {
@@ -259,7 +356,9 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
               a &&
               !a.id?.startsWith("sponsor-") &&
               !a.id?.startsWith("demo-") &&
-              !a.businessName?.toLowerCase().includes("printflow")
+              !a.businessName?.toLowerCase().includes("printflow") &&
+              !a.businessName?.toLowerCase().includes("demo") &&
+              !a.businessName?.toLowerCase().includes("test")
             );
             localStorage.setItem("navaratri_ads", JSON.stringify(sanitizedAds));
           }
@@ -271,12 +370,23 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       a &&
       !a.id?.startsWith("sponsor-") &&
       !a.id?.startsWith("demo-") &&
-      !a.businessName?.toLowerCase().includes("printflow")
+      !a.businessName?.toLowerCase().includes("printflow") &&
+      !a.businessName?.toLowerCase().includes("demo") &&
+      !a.businessName?.toLowerCase().includes("test")
     );
     return [...INITIAL_ADVERTISEMENTS, ...userAds];
   });
-  const [followedIds, setFollowedIds] = useState<string[]>(() => loadStorage("followed_mandapams", []));
-  const [scannedIds, setScannedIds] = useState<string[]>(() => loadStorage("scanned_mandapams", []));
+
+  const [followedIds, setFollowedIds] = useState<string[]>(() => {
+    const loaded = loadStorage<string[]>("followed_mandapams", []);
+    return (loaded || []).filter((id) => mandapams.some((m) => m.id === id && !isDemoOrMockMandapam(m)));
+  });
+
+  const [scannedIds, setScannedIds] = useState<string[]>(() => {
+    const loaded = loadStorage<string[]>("scanned_mandapams", []);
+    return (loaded || []).filter((id) => mandapams.some((m) => m.id === id && !isDemoOrMockMandapam(m)));
+  });
+
   const [reminders, setReminders] = useState<ReminderRecord[]>(() => loadStorage("reminders", []));
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number; city: string; area: string } | null>({
     lat: 18.6725,
@@ -285,9 +395,9 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     area: "Subhash Nagar"
   });
 
-  // Sync state to localStorage (Security: do not persist passcodes or private credentials in frontend storage)
+  // Sync state to localStorage
   useEffect(() => {
-    const sanitized = mandapams.map(({ passcode, ...rest }) => rest);
+    const sanitized = mandapams.filter(m => !isDemoOrMockMandapam(m));
     saveStorage("mandapams", sanitized);
   }, [mandapams]);
   useEffect(() => saveStorage("alankaranas", alankaranas), [alankaranas]);
@@ -298,8 +408,14 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => saveStorage("activities", activities), [activities]);
   useEffect(() => saveStorage("announcements", announcements), [announcements]);
   useEffect(() => saveStorage("questions", questions), [questions]);
-  useEffect(() => saveStorage("followed_mandapams", followedIds), [followedIds]);
-  useEffect(() => saveStorage("scanned_mandapams", scannedIds), [scannedIds]);
+  useEffect(() => {
+    const valid = followedIds.filter(id => mandapams.some(m => m.id === id && !isDemoOrMockMandapam(m)));
+    saveStorage("followed_mandapams", valid);
+  }, [followedIds, mandapams]);
+  useEffect(() => {
+    const valid = scannedIds.filter(id => mandapams.some(m => m.id === id && !isDemoOrMockMandapam(m)));
+    saveStorage("scanned_mandapams", valid);
+  }, [scannedIds, mandapams]);
   useEffect(() => saveStorage("reminders", reminders), [reminders]);
   useEffect(() => saveStorage("ads", advertisements), [advertisements]);
   useEffect(() => saveStorage("pallaki", pallakiSevas), [pallakiSevas]);
@@ -590,6 +706,8 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const toggleFollow = (mandapamId: string) => {
+    const found = mandapams.find(m => m.id === mandapamId);
+    if (!found || isDemoOrMockMandapam(found)) return;
     setFollowedIds(prev =>
       prev.includes(mandapamId) ? prev.filter(id => id !== mandapamId) : [...prev, mandapamId]
     );
@@ -598,6 +716,8 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   const isFollowing = (mandapamId: string) => followedIds.includes(mandapamId);
 
   const markScanned = (mandapamId: string) => {
+    const found = mandapams.find(m => m.id === mandapamId);
+    if (!found || isDemoOrMockMandapam(found)) return;
     setScannedIds((previous) => previous.includes(mandapamId) ? previous : [mandapamId, ...previous]);
   };
 

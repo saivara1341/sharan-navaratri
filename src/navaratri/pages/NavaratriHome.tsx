@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
 import { FloatingAuspiciousParticles } from "../components/devotional/SacredMotionGraphics";
-import { useNavaratriData } from "../context/NavaratriDataContext";
+import { useNavaratriData, isDemoOrMockMandapam } from "../context/NavaratriDataContext";
 import { useNavaratriLanguage } from "../context/NavaratriLanguageContext";
 import { NineDaySchedule } from "../components/citizen/NineDaySchedule";
 import { AuspiciousRibbonBorder } from "../components/devotional/AuspiciousRibbonBorder";
@@ -39,7 +39,7 @@ export const NavaratriHome: React.FC = () => {
 
   const primaryConnectedMandapam = useMemo(() => {
     if (scannedIds.length > 0) {
-      const found = mandapams.find(m => m.id === scannedIds[0]);
+      const found = mandapams.find(m => m.id === scannedIds[0] && !isDemoOrMockMandapam(m));
       if (found) {
         return {
           ...found,
@@ -49,7 +49,7 @@ export const NavaratriHome: React.FC = () => {
       }
     }
     if (followedIds.length > 0) {
-      const found = mandapams.find(m => m.id === followedIds[0]);
+      const found = mandapams.find(m => m.id === followedIds[0] && !isDemoOrMockMandapam(m));
       if (found) {
         return {
           ...found,
@@ -64,7 +64,7 @@ export const NavaratriHome: React.FC = () => {
   const savedMandapams = useMemo(() => {
     const ids = new Set([...followedIds, ...scannedIds]);
     return mandapams
-      .filter((mandapam) => ids.has(mandapam.id))
+      .filter((mandapam) => ids.has(mandapam.id) && !isDemoOrMockMandapam(mandapam))
       .map((mandapam) => ({
         ...mandapam,
         source: followedIds.includes(mandapam.id) ? "Following" : "Scanned",
@@ -270,14 +270,15 @@ export const NavaratriHome: React.FC = () => {
           </div>
 
           {/* Right side Maa Durga image in desktop view */}
-          <div className="hidden md:flex flex-col items-center justify-center shrink-0 relative pr-1 lg:pr-3">
+          <div className="hidden md:flex flex-col items-center justify-end shrink-0 relative self-end">
             <div className="relative">
-              {/* Divine golden halo glow */}
-              <div className="absolute inset-0 bg-amber-400/25 blur-2xl rounded-full scale-110 pointer-events-none" />
+              {/* Layered divine golden halo glow */}
+              <div className="absolute inset-x-0 bottom-0 h-4/5 bg-amber-400/20 blur-3xl rounded-full pointer-events-none" />
+              <div className="absolute inset-0 bg-amber-300/10 blur-2xl rounded-full scale-105 pointer-events-none" />
               <img
-                src={navaratriAsset("/navaratri/assets/maa-durga-hero-darshan.png")}
+                src={navaratriAsset("/navaratri/assets/maa-durga-hero-darshan-nobg.png")}
                 alt="Maa Durga Simhavahana Darshan"
-                className="relative z-10 w-44 sm:w-52 md:w-56 lg:w-60 xl:w-68 max-h-[260px] md:max-h-[280px] lg:max-h-[300px] h-auto object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.65)] hover:scale-105 transition-transform duration-500 pointer-events-none select-none"
+                className="relative z-10 w-64 md:w-72 lg:w-80 xl:w-96 h-auto object-contain drop-shadow-[0_8px_30px_rgba(251,191,36,0.4)] hover:scale-105 transition-transform duration-500 pointer-events-none select-none"
               />
             </div>
           </div>

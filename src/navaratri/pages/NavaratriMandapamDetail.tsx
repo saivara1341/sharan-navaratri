@@ -22,7 +22,6 @@ import {
   formatLocalizedDateShort,
   DEVI_DAYS_LOCALIZED,
   TITHI_LOCALIZED,
-  TABLE_HEADERS,
   INVOCATION_TRANSLATIONS
 } from "../utils/navaratriTranslations";
 import {
@@ -118,8 +117,8 @@ export const NavaratriMandapamDetail: React.FC = () => {
   const [selectedServiceId, setSelectedServiceId] = useState<string | undefined>(undefined);
   const [qrModalOpen, setQrModalOpen] = useState(false);
 
-  // Card Background & Committee Logo (View Only for Devotees)
-  const [customCardBg, setCustomCardBg] = useState<string>("");
+  // Mandapam Cover & Committee Logo (View Only for Devotees)
+  const [customCover, setCustomCover] = useState<string>("");
   const [customLogo, setCustomLogo] = useState<string>("");
 
   // 10-Day Pop-up State
@@ -312,17 +311,15 @@ export const NavaratriMandapamDetail: React.FC = () => {
     }
   };
 
-  // Synchronize custom card background and committee logo from localStorage or mandapam record
+  // Synchronize custom cover photo and committee logo from localStorage or mandapam record
   useEffect(() => {
     if (mandapam?.id) {
-      const storedCard = localStorage.getItem(`mandapam_card_bg_${mandapam.id}`) || mandapam.cardBgImageUrl || "";
       const storedCover = localStorage.getItem(`mandapam_cover_${mandapam.id}`) || mandapam.coverImageUrl || "";
       const storedLogo = localStorage.getItem(`mandapam_logo_${mandapam.id}`) || mandapam.logoUrl || "";
-      const effective = storedCard || storedCover || "";
-      setCustomCardBg(effective);
+      setCustomCover(storedCover);
       setCustomLogo(storedLogo);
     }
-  }, [mandapam?.id, mandapam?.cardBgImageUrl, mandapam?.coverImageUrl, mandapam?.logoUrl]);
+  }, [mandapam?.id, mandapam?.coverImageUrl, mandapam?.logoUrl]);
 
   // Helper for short dates (e.g., "11 Oct")
   const formatDateShort = (isoDate: string) => {
@@ -424,11 +421,11 @@ export const NavaratriMandapamDetail: React.FC = () => {
       {/* 1. MANDAPAM HERO & PROFILE */}
       <div className="relative rounded-3xl overflow-hidden border-2 border-amber-300 shadow-xl bg-white">
         {/* Cover Photo */}
-        <div className="h-44 sm:h-60 w-full relative bg-[#8B1E1E]">
+        <div className="h-48 sm:h-64 w-full relative bg-[#8B1E1E]">
           <img
-            src={mandapam.coverImageUrl || customCardBg || navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg")}
+            src={customCover || mandapam.coverImageUrl || navaratriAsset("/navaratri/assets/maa-durga-temple-darshan.jpg")}
             alt={mandapam.name}
-            className="w-full h-full object-cover opacity-85"
+            className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
 
@@ -436,7 +433,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
           <div className="absolute top-3 right-3 flex items-center gap-2">
             <button
               onClick={() => setQrModalOpen(true)}
-              className="px-3 py-1.5 rounded-full bg-white/95 hover:bg-white text-stone-900 text-xs font-bold shadow-md flex items-center gap-1.5 transition-colors backdrop-blur-sm"
+              className="px-3 py-1.5 rounded-full bg-white/95 hover:bg-white text-stone-900 text-xs font-bold shadow-md flex items-center gap-1.5 transition-colors backdrop-blur-sm cursor-pointer"
               title="View & Print Mandapam QR Standee"
             >
               <QrCode className="w-3.5 h-3.5 text-[#8B1E1E]" />
@@ -445,7 +442,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
             <button
               onClick={handleShare}
-              className="p-2 rounded-full bg-white/95 hover:bg-white text-stone-900 shadow-md transition-colors backdrop-blur-sm"
+              className="p-2 rounded-full bg-white/95 hover:bg-white text-stone-900 shadow-md transition-colors backdrop-blur-sm cursor-pointer"
               title="Share Mandapam"
             >
               <Share2 className="w-4 h-4 text-stone-800" />
@@ -453,24 +450,8 @@ export const NavaratriMandapamDetail: React.FC = () => {
           </div>
         </div>
 
-        {/* Profile Card */}
-        <div className="relative -mt-10 mx-3 sm:mx-5 rounded-2xl border-2 border-amber-300/90 shadow-lg mb-3 overflow-hidden p-4 sm:p-6 transition-all bg-[#FDFBF7]">
-          {/* Card Background Image (Custom Mandapam Photo or Default) */}
-          {(customCardBg || mandapam.cardBgImageUrl || mandapam.coverImageUrl) ? (
-            <div className="absolute inset-0 pointer-events-none z-0">
-              <img
-                src={customCardBg || mandapam.cardBgImageUrl || mandapam.coverImageUrl}
-                alt={`${mandapam.name} Background`}
-                className="w-full h-full object-cover"
-              />
-              {/* Devotional Warm Glassmorphism Overlay guaranteeing 100% crisp readability */}
-              <div className="absolute inset-0 bg-gradient-to-r from-amber-50/96 via-amber-50/92 to-amber-50/88 backdrop-blur-[1px]" />
-              <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-amber-100/40" />
-            </div>
-          ) : (
-            <div className="absolute inset-0 pointer-events-none z-0 bg-gradient-to-br from-[#FFFDF9] via-[#FDFBF7] to-amber-50/60" />
-          )}
-
+        {/* Profile Card with clean warm devotional color background */}
+        <div className="relative -mt-10 mx-3 sm:mx-5 rounded-2xl border-2 border-amber-300/90 shadow-xl mb-3 overflow-hidden p-4 sm:p-6 transition-all bg-gradient-to-br from-[#FFFDF9] via-[#FCF8EE] to-[#FFF5EB]">
           <div className="relative z-10">
             {/* Top row */}
             <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-amber-200/60">
@@ -701,150 +682,6 @@ export const NavaratriMandapamDetail: React.FC = () => {
               </button>
             );
           })}
-        </div>
-
-        {/* Sacred 10-Day Tithi, Alankaram & Transition Schedule Table */}
-        <div className="mt-4 pt-3.5 border-t border-amber-300/80 space-y-2.5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-            <div className="flex items-center gap-1.5">
-              <span className="text-base">📜</span>
-              <h4 className="font-serif font-black text-sm sm:text-base text-[#8B1E1E]">
-                {TABLE_HEADERS[language]?.title || "Daily Tithi, Alankaram & Transition Schedule"}
-              </h4>
-            </div>
-            <span className="text-[10px] text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-300 font-semibold self-start sm:self-center">
-              {language === "kn"
-                ? "11 ಅಕ್ಟೋ – 20 ಅಕ್ಟೋ 2026"
-                : language === "te"
-                ? "11 అక్టో – 20 అక్టో 2026"
-                : language === "hi"
-                ? "11 अक्टू – 20 अक्टू 2026"
-                : language === "ta"
-                ? "11 அக் – 20 அக் 2026"
-                : language === "ml"
-                ? "11 ഒക്ടോ – 20 ഒക്ടോ 2026"
-                : "11 Oct – 20 Oct 2026"}
-            </span>
-          </div>
-
-          {/* Desktop Table View */}
-          <div className="hidden sm:block overflow-x-auto rounded-2xl border-2 border-amber-300 bg-white shadow-xs">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="bg-gradient-to-r from-amber-200/90 via-amber-100 to-orange-100 text-amber-950 font-bold border-b border-amber-300">
-                  <th className="py-2.5 px-3 whitespace-nowrap">{TABLE_HEADERS[language]?.date || "Date"}</th>
-                  <th className="py-2.5 px-3">{TABLE_HEADERS[language]?.tithi || "Tithi"}</th>
-                  <th className="py-2.5 px-3">{TABLE_HEADERS[language]?.morning || "Morning Alankaram & Pooja"}</th>
-                  <th className="py-2.5 px-3">{TABLE_HEADERS[language]?.evening || "Evening Alankaram & Transition"}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-amber-100 text-stone-800">
-                {STANDARD_NAVARATRI_DAYS.map((day) => {
-                  const isToday = day.date === todayIso;
-                  const customSetting = mandapamDaySettings.find((s) => s.dayNumber === day.dayNumber);
-                  const deviInfo = DEVI_DAYS_LOCALIZED[day.dayNumber]?.[language];
-                  const deviDisplayName = customSetting?.customDeviName || (
-                    deviInfo?.fullName || (language === "te" ? day.teluguDeviName : language === "hi" ? day.hindiDeviName : day.deviName)
-                  );
-                  const morningAlankaramName = customSetting?.morningDeviName || deviInfo?.morning || day.morningAlankaram || deviDisplayName;
-                  const eveningTransitionName = customSetting?.eveningDeviName || deviInfo?.evening || day.eveningTransition;
-                  const localizedTithi = TITHI_LOCALIZED[day.dayNumber]?.[language] || day.tithi;
-
-                  return (
-                    <tr
-                      key={day.dayNumber}
-                      onClick={() => setSelectedDay(day)}
-                      className={`hover:bg-amber-50 cursor-pointer transition-colors ${
-                        isToday ? "bg-amber-100/70 font-semibold" : ""
-                      }`}
-                      title="Tap to view Devi Darshan & Pooja timings"
-                    >
-                      <td className="py-2.5 px-3 whitespace-nowrap">
-                        <span className="font-bold text-[#8B1E1E]">{formatLocalizedDateShort(day.date, language)}</span>
-                        {isToday && (
-                          <span className="ml-1.5 px-1.5 py-0.5 rounded text-[8px] bg-amber-400 text-amber-950 font-black uppercase">
-                            {t.today}
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-2.5 px-3 text-stone-700 font-semibold">
-                        {localizedTithi}
-                      </td>
-                      <td className="py-2.5 px-3 text-[#8B1E1E] font-bold">
-                        {morningAlankaramName}
-                      </td>
-                      <td className="py-2.5 px-3 text-amber-900 font-medium">
-                        {eveningTransitionName}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Mobile Card List View */}
-          <div className="sm:hidden space-y-2">
-            {STANDARD_NAVARATRI_DAYS.map((day) => {
-              const isToday = day.date === todayIso;
-              const customSetting = mandapamDaySettings.find((s) => s.dayNumber === day.dayNumber);
-              const deviInfo = DEVI_DAYS_LOCALIZED[day.dayNumber]?.[language];
-              const deviDisplayName = customSetting?.customDeviName || (
-                deviInfo?.fullName || (language === "te" ? day.teluguDeviName : language === "hi" ? day.hindiDeviName : day.deviName)
-              );
-              const morningAlankaramName = customSetting?.morningDeviName || deviInfo?.morning || day.morningAlankaram || deviDisplayName;
-              const eveningTransitionName = customSetting?.eveningDeviName || deviInfo?.evening || day.eveningTransition;
-              const localizedTithi = TITHI_LOCALIZED[day.dayNumber]?.[language] || day.tithi;
-
-              return (
-                <div
-                  key={day.dayNumber}
-                  onClick={() => setSelectedDay(day)}
-                  className={`p-2.5 rounded-xl border transition-all text-xs cursor-pointer active:scale-[0.99] ${
-                    isToday
-                      ? "bg-amber-100/90 border-amber-400 shadow-sm ring-1 ring-amber-400/50"
-                      : "bg-white border-amber-300/80 shadow-xs hover:border-amber-400"
-                  }`}
-                >
-                  <div className="flex items-center justify-between border-b border-amber-100 pb-1.5 mb-1.5">
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-serif font-black text-[#8B1E1E] text-xs">
-                        {t.dayLabel} {day.dayNumber} • {formatLocalizedDateShort(day.date, language)}
-                      </span>
-                      {isToday && (
-                        <span className="px-1.5 py-0.2 rounded text-[7.5px] bg-amber-400 text-amber-950 font-black uppercase">
-                          {t.today}
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[10px] font-bold text-amber-950 bg-amber-100/80 px-2 py-0.5 rounded-full border border-amber-300">
-                      {localizedTithi}
-                    </span>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="flex items-start gap-1.5">
-                      <span className="text-[10px] font-bold text-stone-500 uppercase shrink-0 mt-0.5">
-                        {TABLE_HEADERS[language]?.morningPrefix || "Morning:"}
-                      </span>
-                      <span className="font-bold text-[#8B1E1E] leading-snug">
-                        {morningAlankaramName}
-                      </span>
-                    </div>
-
-                    <div className="flex items-start gap-1.5">
-                      <span className="text-[10px] font-bold text-amber-800 uppercase shrink-0 mt-0.5">
-                        {TABLE_HEADERS[language]?.eveningPrefix || "Evening:"}
-                      </span>
-                      <span className="text-stone-700 leading-snug">
-                        {eveningTransitionName}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
         </div>
       </section>
 
@@ -1318,10 +1155,10 @@ export const NavaratriMandapamDetail: React.FC = () => {
                     setSelectedServiceId(undefined);
                     setBookingModalOpen(true);
                   }}
-                  className="flex-1 py-3 rounded-2xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs font-bold shadow-md transition-colors flex items-center justify-center gap-1.5"
+                  className="flex-1 py-3 rounded-2xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-[10px] sm:text-xs font-bold shadow-md transition-colors flex items-center justify-center gap-1 min-w-0"
                 >
-                  <Flame className="w-3.5 h-3.5" />
-                  <span>{t.bookPoojaSlotBtn}</span>
+                  <Flame className="w-3 h-3 shrink-0" />
+                  <span className="whitespace-nowrap">{t.bookPoojaSlotBtn}</span>
                 </button>
               )}
               <button
@@ -1424,7 +1261,8 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 <div className="space-y-3 text-xs">
                   <div>
                     <label className="block font-bold text-stone-800 mb-1">
-                      {t.participantFullName}
+                      {t.participantFullName.replace(/\s*\*$/, "")}{" "}
+                      <span className="text-red-500 font-bold ml-0.5">*</span>
                     </label>
                     <input
                       type="text"
@@ -1438,7 +1276,8 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
                   <div>
                     <label className="block font-bold text-stone-800 mb-1">
-                      {t.whatsappMobile}
+                      {t.whatsappMobile.replace(/\s*\*$/, "")}{" "}
+                      <span className="text-red-500 font-bold ml-0.5">*</span>
                     </label>
                     <input
                       type="tel"

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import { ImagePlus, ExternalLink, Phone, MessageCircle } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
@@ -10,6 +10,7 @@ import { getAdCtaDetails } from "../../utils/adButtonHelpers";
 
 export const NavaratriBottomAdBanner: React.FC = () => {
   const { language } = useNavaratriLanguage();
+  const navigate = useNavigate();
   const { advertisements, recordAdClick, recordAdImpression } = useNavaratriData();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -76,8 +77,8 @@ export const NavaratriBottomAdBanner: React.FC = () => {
         return;
       }
     }
-    // If empty container clicked, open modal to upload image & make payment
-    setIsModalOpen(true);
+    // If empty container clicked, navigate to advertise page with plans & contact button
+    navigate("/navaratri/advertise");
   };
 
   return (
@@ -196,9 +197,9 @@ export const NavaratriBottomAdBanner: React.FC = () => {
         ) : (
           /* Empty container slot: clean, ready for user / advertiser to add image in bottom frame */
           <div
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => navigate("/navaratri/advertise")}
             className="w-full h-24 sm:h-32 md:h-36 rounded-2xl sm:rounded-3xl border-2 border-dashed border-amber-300/80 bg-amber-50/20 hover:bg-amber-100/40 hover:border-amber-400 transition-all cursor-pointer flex flex-col items-center justify-center p-4 text-center group shadow-xs"
-            title="Click to place ad in bottom frame above footer"
+            title="Click to view advertising plans and contact us"
           >
             <div className="flex items-center gap-2 text-stone-400 group-hover:text-amber-800 transition-colors">
               <ImagePlus className="w-5 h-5 text-amber-500/70 group-hover:text-amber-600 transition-colors" />

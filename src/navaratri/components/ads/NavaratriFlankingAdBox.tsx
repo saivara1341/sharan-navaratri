@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import { ImagePlus, Megaphone, ExternalLink, Store } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
@@ -15,6 +15,7 @@ export const NavaratriFlankingAdBox: React.FC<NavaratriFlankingAdBoxProps> = ({
   position,
   className = ""
 }) => {
+  const navigate = useNavigate();
   const { advertisements, recordAdClick, recordAdImpression } = useNavaratriData();
   const [activeIndex, setActiveIndex] = useState(position === "right" ? 1 : 0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -61,7 +62,7 @@ export const NavaratriFlankingAdBox: React.FC<NavaratriFlankingAdBoxProps> = ({
         return;
       }
     }
-    setIsModalOpen(true);
+    navigate("/navaratri/advertise");
   };
 
   return (
@@ -120,9 +121,9 @@ export const NavaratriFlankingAdBox: React.FC<NavaratriFlankingAdBoxProps> = ({
         ) : (
           /* EMPTY AD SPACE BOX (ELEGANT CALLOUT TO ADVERTISE) */
           <div
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => navigate("/navaratri/advertise")}
             className="w-full h-full min-h-[240px] rounded-3xl border-2 border-dashed border-amber-400/90 bg-gradient-to-b from-[#FFFDF8] via-[#FAF4EA] to-[#F5EEDB] p-3.5 xl:p-4 flex flex-col justify-between items-center text-center shadow-xs hover:shadow-md hover:border-amber-500 transition-all cursor-pointer group relative overflow-hidden"
-            title="Click to place your ad here"
+            title="Click to view advertising plans and contact us"
           >
             {/* Subtle glow circles */}
             <div className="absolute -top-8 -right-8 w-24 h-24 bg-amber-400/10 rounded-full blur-xl pointer-events-none" />

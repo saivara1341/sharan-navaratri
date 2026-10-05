@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import { ImagePlus, ExternalLink } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
@@ -11,6 +11,7 @@ import { getAdCtaDetails } from "../../utils/adButtonHelpers";
 export const NavaratriTopAdBanner: React.FC = () => {
   const { language } = useNavaratriLanguage();
   const location = useLocation();
+  const navigate = useNavigate();
   const isHomePage =
     location.pathname === "/" ||
     location.pathname === "/navaratri" ||
@@ -62,8 +63,8 @@ export const NavaratriTopAdBanner: React.FC = () => {
         return;
       }
     }
-    // If empty container clicked, open modal to upload image & make payment
-    setIsModalOpen(true);
+    // If empty container clicked, navigate to advertise page with plans & contact button
+    navigate("/navaratri/advertise");
   };
 
   return (
@@ -134,9 +135,9 @@ export const NavaratriTopAdBanner: React.FC = () => {
         ) : (
           /* Empty container slot: clean, ready for user / advertiser to add image in top frame */
           <div
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => navigate("/navaratri/advertise")}
             className="w-full h-20 sm:h-24 md:h-28 rounded-2xl border-2 border-dashed border-amber-300/80 bg-amber-50/30 hover:bg-amber-100/40 hover:border-amber-400 transition-all cursor-pointer flex items-center justify-center p-3 shadow-xs group"
-            title="Click to place ad in top frame below header"
+            title="Click to view advertising plans and contact us"
           >
             <div className="flex items-center gap-2 text-stone-400 group-hover:text-amber-800 transition-colors">
               <ImagePlus className="w-5 h-5 text-amber-500/70 group-hover:text-amber-600 transition-colors" />

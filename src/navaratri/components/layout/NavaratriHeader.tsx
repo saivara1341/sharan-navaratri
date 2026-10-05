@@ -13,8 +13,7 @@ import {
   Store,
   MapPin,
   QrCode,
-  KeyRound,
-  Sparkles
+  KeyRound
 } from "lucide-react";
 import { INVOCATION_TRANSLATIONS } from "../../utils/navaratriTranslations";
 
@@ -113,37 +112,38 @@ export const NavaratriHeader: React.FC = () => {
             />
           </svg>
 
-          {/* 1. Login as Mandapam (Organizers) - Silver Background */}
+          {/* 1. Login as Mandapam (Organizers) - Silver Background (No border) */}
           <Link
             to="/navaratri/login"
-            className="relative z-10 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-stone-300 hover:from-white hover:to-slate-200 text-stone-900 border border-slate-300 shadow-xs text-xs font-black transition-all active:scale-95"
+            className="relative z-10 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-stone-300 hover:from-white hover:to-slate-200 text-stone-900 shadow-xs text-xs font-black transition-all active:scale-95"
             title="Organizer Login for Registered Mandapams"
           >
             <KeyRound className="w-3.5 h-3.5 text-stone-700 shrink-0" />
             <span>Login as Mandapam (Organizers)</span>
           </Link>
 
-          <div className="relative z-10 h-4 w-[1px] bg-white/30 mx-0.5" />
+          {/* Vertical Divider Line 1 */}
+          <div className="relative z-10 h-5 w-[1.5px] bg-amber-300/90 mx-1.5 shrink-0" />
 
-          {/* 2. +Register Mandapam (White highlighted pill) */}
+          {/* 2. +Register Mandapam (White highlighted pill - No border) */}
           <Link
             to="/navaratri/register"
-            className="relative z-10 inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-white hover:bg-amber-50 text-[#8B1E1E] text-xs font-black shadow-sm transition-all active:scale-95 border border-amber-200"
+            className="relative z-10 inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-white hover:bg-amber-50 text-[#8B1E1E] text-xs font-black shadow-sm transition-all active:scale-95"
             title="Register New Mandapam"
           >
             <span className="text-sm font-black leading-none">+</span>
             <span>{t.registerMandapam}</span>
           </Link>
 
-          <div className="relative z-10 h-4 w-[1px] bg-white/30 mx-0.5" />
+          {/* Vertical Divider Line 2 */}
+          <div className="relative z-10 h-5 w-[1.5px] bg-amber-300/90 mx-1.5 shrink-0" />
 
-          {/* 3. Run Ads - Gold Background */}
+          {/* 3. Run Ads - Gold Background (No sparkle, No border) */}
           <Link
             to="/navaratri/advertise"
-            className="relative z-10 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-400 hover:from-amber-200 hover:to-yellow-300 text-amber-950 border border-amber-300 shadow-sm text-xs font-black transition-all active:scale-95"
+            className="relative z-10 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-400 hover:from-amber-200 hover:to-yellow-300 text-amber-950 shadow-sm text-xs font-black transition-all active:scale-95"
             title={t.advertiseWithUs || "Run Ads"}
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-900 shrink-0" />
             <span>Run Ads</span>
           </Link>
         </div>
@@ -194,33 +194,38 @@ export const NavaratriHeader: React.FC = () => {
             </button>
 
             {/* Unified 3-Button cluster for Mobile: [Login as Mandapam (Silver) | + Register Mandapam | Run Ads (Gold)] */}
-            <div className="p-1 rounded-2xl bg-amber-50/70 border-2 border-amber-300 shadow-xs flex items-center justify-between gap-1.5">
+            <div className="p-1 rounded-2xl bg-amber-50/70 border-2 border-amber-300 shadow-xs flex items-center justify-between gap-1">
               <Link
                 to="/navaratri/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex-1 py-2 px-1.5 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-stone-300 text-stone-900 border border-slate-300 text-xs font-black text-center flex items-center justify-center gap-1 transition-all shadow-xs"
+                className="flex-1 py-2 px-1.5 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-stone-300 text-stone-900 text-xs font-black text-center flex items-center justify-center gap-1 transition-all shadow-xs"
                 title="Login as Mandapam (Organizers)"
               >
                 <KeyRound className="w-3.5 h-3.5 text-stone-700 shrink-0" />
                 <span className="truncate">Login as Mandapam</span>
               </Link>
 
+              {/* Vertical Divider 1 */}
+              <div className="h-5 w-[1.5px] bg-amber-400/80 mx-0.5 shrink-0" />
+
               <Link
                 to="/navaratri/register"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex-1 py-2 px-1.5 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-black text-center flex items-center justify-center gap-1 transition-all shadow-xs border border-amber-400/40"
+                className="flex-1 py-2 px-1.5 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-black text-center flex items-center justify-center gap-1 transition-all shadow-xs"
                 title="Register Mandapam"
               >
                 <span className="truncate">+ Register</span>
               </Link>
 
+              {/* Vertical Divider 2 */}
+              <div className="h-5 w-[1.5px] bg-amber-400/80 mx-0.5 shrink-0" />
+
               <Link
                 to="/navaratri/advertise"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex-1 py-2 px-1.5 rounded-xl bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-400 text-amber-950 border border-amber-300 text-xs font-black text-center flex items-center justify-center gap-1 transition-all shadow-xs"
+                className="flex-1 py-2 px-1.5 rounded-xl bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-400 text-amber-950 text-xs font-black text-center flex items-center justify-center gap-1 transition-all shadow-xs"
                 title={t.advertiseWithUs || "Run Ads"}
               >
-                <Sparkles className="w-3 h-3 text-amber-900 shrink-0" />
                 <span className="truncate">Run Ads</span>
               </Link>
             </div>

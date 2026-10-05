@@ -120,7 +120,7 @@ export const NavaratriAdvertise: React.FC = () => {
           {/* AD SPACE OWNERSHIP CHOICE (Combinational vs Exclusive 24/7 Solo) */}
           <div className="space-y-3">
             <label className="block text-xs font-bold uppercase tracking-wider text-amber-900">
-              Select Visibility Model *
+              Select Visibility Model <span className="text-red-500 font-bold ml-0.5">*</span>
             </label>
             <div className="grid grid-cols-2 gap-2 sm:gap-3.5">
               {/* Option 1: Combinational / Shared Ads */}
@@ -231,7 +231,7 @@ export const NavaratriAdvertise: React.FC = () => {
           <div className="space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <label className="block text-xs font-bold uppercase tracking-wider text-amber-900">
-                Choose Campaign Duration ({adSpaceType === "EXCLUSIVE" ? "Permanent 24/7 Solo" : "Combinational 6s Rotation"}) *
+                Choose Campaign Duration ({adSpaceType === "EXCLUSIVE" ? "Permanent 24/7 Solo" : "Combinational 6s Rotation"}) <span className="text-red-500 font-bold ml-0.5">*</span>
               </label>
               <span className="text-[11px] text-amber-800 font-semibold bg-amber-100 px-2 py-0.5 rounded-full">
                 {currentDurationPackages.length} options available

@@ -334,23 +334,6 @@ export const NavaratriRegister: React.FC = () => {
             Create an official digital notice board, receive permanent QR standee, and manage citizen bookings
           </p>
         </div>
-
-        {/* Organizer Login Quick Link */}
-        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-50 via-white to-orange-50 border border-amber-300 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 shadow-2xs">
-          <div className="flex items-center gap-2">
-            <KeyRound className="w-4 h-4 text-[#8B1E1E] shrink-0" />
-            <span className="text-xs font-semibold text-stone-800">
-              Already registered your Durga Mandapam?
-            </span>
-          </div>
-          <Link
-            to="/navaratri/login"
-            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] text-white text-xs font-bold shadow-xs hover:shadow transition-all"
-          >
-            <span>Login as Mandapam Organizer</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
       </div>
 
       {duplicateWarning && (
@@ -374,7 +357,7 @@ export const NavaratriRegister: React.FC = () => {
 
           <div>
             <label className="block text-xs font-semibold text-stone-800 mb-1">
-              Utsav Mandapam Official Name *
+              Utsav Mandapam Official Name <span className="text-red-500 font-bold ml-0.5">*</span>
             </label>
             <input
               type="text"
@@ -423,7 +406,7 @@ export const NavaratriRegister: React.FC = () => {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-stone-800 mb-1">
-                Area / Colony / Mandal *
+                Area / Colony / Mandal <span className="text-red-500 font-bold ml-0.5">*</span>
               </label>
               <input
                 type="text"
@@ -437,7 +420,7 @@ export const NavaratriRegister: React.FC = () => {
 
             <div>
               <label className="block text-xs font-semibold text-stone-800 mb-1">
-                City / Town *
+                City / Town <span className="text-red-500 font-bold ml-0.5">*</span>
               </label>
               <input
                 type="text"
@@ -529,7 +512,7 @@ export const NavaratriRegister: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-stone-800 mb-1">
-                Organizer / Secretary Name *
+                Organizer / Secretary Name <span className="text-red-500 font-bold ml-0.5">*</span>
               </label>
               <input
                 type="text"
@@ -544,7 +527,7 @@ export const NavaratriRegister: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="block text-xs font-semibold text-stone-800">
-                  Organizer Mobile (10 Digits Only) *
+                  Organizer Mobile (10 Digits Only) <span className="text-red-500 font-bold ml-0.5">*</span>
                 </label>
                 <span className={`text-[10px] font-bold ${organizerMobile.length === 10 ? 'text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded' : 'text-stone-400'}`}>
                   {organizerMobile.length}/10 digits
@@ -601,7 +584,7 @@ export const NavaratriRegister: React.FC = () => {
 
           <div>
             <label className="block text-xs font-semibold text-stone-800 mb-1">
-              Create Security Passcode (4–6 digits) *
+              Create Security Passcode (4–6 digits) <span className="text-red-500 font-bold ml-0.5">*</span>
             </label>
             <div className="relative">
               <input

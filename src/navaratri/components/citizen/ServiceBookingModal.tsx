@@ -252,10 +252,11 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
               <div>
                 <label className="block text-xs font-semibold text-stone-700 mb-1">
                   {isCoupleService
-                    ? (language === "te" ? "దంపతుల పేర్లు (Couple Names) *" : "Couple Names (భార్యాభర్తల పేర్లు) *")
+                    ? (language === "te" ? "దంపతుల పేర్లు (Couple Names)" : "Couple Names (భార్యాభర్తల పేర్లు)")
                     : isFemaleService
-                    ? (language === "te" ? "మహిళ / సువాసిని పేరు (Female Devotee Name) *" : "Female / Suhasini Devotee Name *")
-                    : (language === "te" ? "భక్తుని పేరు (Devotee Name) *" : "Devotee Name *")}
+                    ? (language === "te" ? "మహిళ / సువాసిని పేరు (Female Devotee Name)" : "Female / Suhasini Devotee Name")
+                    : (language === "te" ? "భక్తుని పేరు (Devotee Name)" : "Devotee Name")}{" "}
+                  <span className="text-red-500 font-bold ml-0.5">*</span>
                 </label>
                 <input
                   type="text"
@@ -283,7 +284,7 @@ export const ServiceBookingModal: React.FC<ServiceBookingModalProps> = ({
 
               <div>
                 <label className="block text-xs font-semibold text-stone-700 mb-1">
-                  Mobile Number (10 Digits Only) *
+                  Mobile Number (10 Digits Only) <span className="text-red-500 font-bold ml-0.5">*</span>
                 </label>
                 <input
                   type="tel"

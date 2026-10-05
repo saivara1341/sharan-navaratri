@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import { ImagePlus, ExternalLink, Phone, MessageCircle } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
@@ -15,6 +15,7 @@ interface NavaratriAdsSpaceProps {
 export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
   currentCity = "Nizamabad"
 }) => {
+  const navigate = useNavigate();
   const { language } = useNavaratriLanguage();
   const { advertisements, recordAdClick, recordAdImpression } = useNavaratriData();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -82,7 +83,7 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
         return;
       }
     }
-    setIsModalOpen(true);
+    navigate("/navaratri/advertise");
   };
 
   return (
@@ -200,9 +201,9 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
       ) : (
         /* Clean Empty Ad Container Slot */
         <div
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => navigate("/navaratri/advertise")}
           className="relative w-full h-28 sm:h-36 rounded-3xl border-2 border-dashed border-amber-300/80 bg-amber-50/20 hover:bg-amber-100/40 hover:border-amber-400 transition-all cursor-pointer flex flex-col items-center justify-center p-4 text-center group shadow-xs"
-          title="Click to add image & run ad"
+          title="Click to view advertising plans and contact us"
         >
           <div className="flex items-center gap-2 text-stone-400 group-hover:text-amber-800 transition-colors">
             <ImagePlus className="w-5 h-5 text-amber-500/70 group-hover:text-amber-600 transition-colors" />

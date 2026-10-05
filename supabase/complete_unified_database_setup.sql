@@ -5,7 +5,7 @@
 -- 1. Helper Functions & Triggers
 -- 2. Core Siddhi Dynamics Tables & Security Policies (RLS)
 -- 3. Sharan Navaratri Multi-Tenant Mandapam Tables & Security Policies (RLS)
--- 4. Advertising System Tables
+-- 4. Advertising System Tables (Direct Contact — No Payment Processing)
 -- 5. Storage Buckets & Policies
 -- 6. PostgREST Schema Cache Reload
 -- ==============================================================================
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS public.portal_users (
   user_id uuid,
   email text NOT NULL UNIQUE,
   full_name text,
-  role text NOT NULL DEFAULT 'client' CHECK (role IN ('admin', 'employee', 'intern', 'client', 'agency', 'investor')),
+  role text NOT NULL DEFAULT 'client' CHECK (role IN ('admin', 'employee', 'client', 'agency', 'investor')),
   status text NOT NULL DEFAULT 'Active' CHECK (status IN ('Active', 'Invited', 'Suspended', 'Deactivated')),
   metadata jsonb DEFAULT '{}'::jsonb,
   created_at timestamptz NOT NULL DEFAULT now(),
@@ -76,7 +76,7 @@ CREATE POLICY "Users read own portal_user" ON public.portal_users FOR SELECT TO 
 CREATE TABLE IF NOT EXISTS public.admin_preassigned_roles (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   email text NOT NULL UNIQUE,
-  role text NOT NULL CHECK (role IN ('admin', 'employee', 'intern', 'client', 'agency', 'investor')),
+  role text NOT NULL CHECK (role IN ('admin', 'employee', 'client', 'agency', 'investor')),
   assigned_by text,
   notes text,
   created_at timestamptz NOT NULL DEFAULT now()
@@ -209,140 +209,8 @@ DROP POLICY IF EXISTS "Admins manage requirements" ON public.requirements;
 CREATE POLICY "Admins manage requirements" ON public.requirements FOR ALL TO authenticated
   USING ((select public.is_portal_admin())) WITH CHECK ((select public.is_portal_admin()));
 
--- Career Roles & Applications
-CREATE TABLE IF NOT EXISTS public.career_roles (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  title text NOT NULL,
-  department text NOT NULL,
-  location text NOT NULL DEFAULT 'Remote / Hybrid',
-  type text NOT NULL DEFAULT 'Full-Time' CHECK (type IN ('Full-Time','Part-Time','Contract','Internship')),
-  experience text NOT NULL DEFAULT 'Fresher / Experienced',
-  description text NOT NULL,
-  requirements jsonb NOT NULL DEFAULT '[]'::jsonb,
-  responsibilities jsonb NOT NULL DEFAULT '[]'::jsonb,
-  skills jsonb NOT NULL DEFAULT '[]'::jsonb,
-  is_active boolean NOT NULL DEFAULT true,
-  stipend text,
-  apply_deadline date,
-  created_at timestamptz NOT NULL DEFAULT now(),
-  updated_at timestamptz NOT NULL DEFAULT now()
-);
-ALTER TABLE public.career_roles ENABLE ROW LEVEL SECURITY;
-GRANT SELECT ON public.career_roles TO anon, authenticated;
-GRANT ALL ON public.career_roles TO service_role;
-
-DROP POLICY IF EXISTS "Public can view active career roles" ON public.career_roles;
-CREATE POLICY "Public can view active career roles" ON public.career_roles FOR SELECT TO anon, authenticated
-  USING (is_active = true OR (select public.is_portal_admin()));
-
-CREATE TABLE IF NOT EXISTS public.career_applications (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  role_id uuid REFERENCES public.career_roles(id) ON DELETE SET NULL,
-  role_title text,
-  full_name text NOT NULL,
-  email text NOT NULL,
-  phone text NOT NULL,
-  resume_url text,
-  portfolio_url text,
-  cover_letter text,
-  status text NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending','Reviewing','Shortlisted','Interview Scheduled','Accepted','Rejected')),
-  notes text,
-  reviewed_by text,
-  metadata jsonb DEFAULT '{}'::jsonb,
-  created_at timestamptz NOT NULL DEFAULT now(),
-  updated_at timestamptz NOT NULL DEFAULT now()
-);
-ALTER TABLE public.career_applications ENABLE ROW LEVEL SECURITY;
-GRANT SELECT, INSERT, UPDATE, DELETE ON public.career_applications TO authenticated;
-GRANT INSERT ON public.career_applications TO anon;
-GRANT ALL ON public.career_applications TO service_role;
-
-DROP POLICY IF EXISTS "Public can apply to careers" ON public.career_applications;
-CREATE POLICY "Public can apply to careers" ON public.career_applications FOR INSERT TO anon, authenticated
-  WITH CHECK (true);
-
-DROP POLICY IF EXISTS "Admins manage applications" ON public.career_applications;
-CREATE POLICY "Admins manage applications" ON public.career_applications FOR ALL TO authenticated
-  USING ((select public.is_portal_admin())) WITH CHECK ((select public.is_portal_admin()));
-
--- Intern Onboarding Agreements
-CREATE TABLE IF NOT EXISTS public.intern_onboarding_agreements (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  application_id uuid REFERENCES public.career_applications(id) ON DELETE SET NULL,
-  intern_name text NOT NULL,
-  intern_email text NOT NULL,
-  role_title text NOT NULL,
-  start_date date NOT NULL,
-  end_date date,
-  stipend_amount text,
-  terms_agreed boolean NOT NULL DEFAULT false,
-  agreed_at timestamptz,
-  ip_address text,
-  signature_text text,
-  document_url text,
-  created_at timestamptz NOT NULL DEFAULT now()
-);
-ALTER TABLE public.intern_onboarding_agreements ENABLE ROW LEVEL SECURITY;
-GRANT SELECT, INSERT, UPDATE ON public.intern_onboarding_agreements TO authenticated;
-GRANT ALL ON public.intern_onboarding_agreements TO service_role;
-
-DROP POLICY IF EXISTS "Admins manage onboarding agreements" ON public.intern_onboarding_agreements;
-CREATE POLICY "Admins manage onboarding agreements" ON public.intern_onboarding_agreements FOR ALL TO authenticated
-  USING ((select public.is_portal_admin())) WITH CHECK ((select public.is_portal_admin()));
-
-DROP POLICY IF EXISTS "Interns view own agreement" ON public.intern_onboarding_agreements;
-CREATE POLICY "Interns view own agreement" ON public.intern_onboarding_agreements FOR SELECT TO authenticated
-  USING (lower(intern_email) = public.jwt_email());
-
--- Issued Certificates
-CREATE TABLE IF NOT EXISTS public.issued_certificates (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  certificate_number text NOT NULL UNIQUE,
-  recipient_name text NOT NULL,
-  recipient_email text NOT NULL,
-  course_or_internship text NOT NULL,
-  issue_date date NOT NULL DEFAULT CURRENT_DATE,
-  grade_or_status text DEFAULT 'Completed with Distinction',
-  skills_acquired text[] DEFAULT '{}'::text[],
-  verification_qr_code text,
-  status text NOT NULL DEFAULT 'Active' CHECK (status IN ('Active','Revoked')),
-  created_at timestamptz NOT NULL DEFAULT now()
-);
-ALTER TABLE public.issued_certificates ENABLE ROW LEVEL SECURITY;
-GRANT SELECT ON public.issued_certificates TO anon, authenticated;
-GRANT ALL ON public.issued_certificates TO service_role;
-
-DROP POLICY IF EXISTS "Public can verify certificates" ON public.issued_certificates;
-CREATE POLICY "Public can verify certificates" ON public.issued_certificates FOR SELECT TO anon, authenticated
-  USING (true);
-
-DROP POLICY IF EXISTS "Admins manage certificates" ON public.issued_certificates;
-CREATE POLICY "Admins manage certificates" ON public.issued_certificates FOR ALL TO authenticated
-  USING ((select public.is_portal_admin())) WITH CHECK ((select public.is_portal_admin()));
-
--- Payments & Admin Invoices
-CREATE TABLE IF NOT EXISTS public.admin_payment_settings (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  upi_id text NOT NULL,
-  payee_name text NOT NULL,
-  qr_code_image_url text,
-  bank_name text,
-  account_number text,
-  ifsc_code text,
-  is_active boolean DEFAULT true,
-  updated_at timestamptz NOT NULL DEFAULT now()
-);
-ALTER TABLE public.admin_payment_settings ENABLE ROW LEVEL SECURITY;
-GRANT SELECT ON public.admin_payment_settings TO anon, authenticated;
-GRANT ALL ON public.admin_payment_settings TO service_role;
-
-DROP POLICY IF EXISTS "Public can read active payment settings" ON public.admin_payment_settings;
-CREATE POLICY "Public can read active payment settings" ON public.admin_payment_settings FOR SELECT TO anon, authenticated
-  USING (true);
-
-DROP POLICY IF EXISTS "Admins manage payment settings" ON public.admin_payment_settings;
-CREATE POLICY "Admins manage payment settings" ON public.admin_payment_settings FOR ALL TO authenticated
-  USING ((select public.is_portal_admin())) WITH CHECK ((select public.is_portal_admin()));
+-- (Career roles, applications, intern agreements, certificates removed — no career section)
+-- (admin_payment_settings removed — ads use direct contact, no bank/UPI payment processing)
 
 -- ------------------------------------------------------------------------------
 -- 3. SHARAN NAVARATRI MULTI-TENANT MANDAPAM TABLES
@@ -722,49 +590,10 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.navaratri_reminders TO anon, auth
 GRANT ALL ON public.navaratri_reminders TO authenticated, service_role;
 
 -- ------------------------------------------------------------------------------
--- 4. ADVERTISING SYSTEM TABLES (Permanent & Rotating Ads)
+-- 4. ADVERTISING SYSTEM (Direct Contact — No Payment Processing)
+-- Advertisers submit details; admin contacts them to confirm & publish.
+-- navaratri_ad_packages, navaratri_ad_impressions, navaratri_ad_clicks removed.
 -- ------------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS public.navaratri_ad_packages (
-  id text PRIMARY KEY,
-  name text NOT NULL,
-  price_inr integer NOT NULL,
-  duration_days integer NOT NULL,
-  impression_limit integer NOT NULL,
-  estimated_impressions integer NOT NULL,
-  placement_type text NOT NULL,
-  space_type text NOT NULL DEFAULT 'ROTATING' CHECK (space_type IN ('ROTATING', 'EXCLUSIVE')),
-  rotation_seconds integer DEFAULT 6,
-  targeting_enabled boolean DEFAULT true,
-  popular boolean DEFAULT false,
-  best_value boolean DEFAULT false,
-  active boolean DEFAULT true,
-  created_at timestamptz DEFAULT now()
-);
-ALTER TABLE public.navaratri_ad_packages ENABLE ROW LEVEL SECURITY;
-GRANT SELECT ON public.navaratri_ad_packages TO anon, authenticated;
-GRANT ALL ON public.navaratri_ad_packages TO authenticated, service_role;
-
-DROP POLICY IF EXISTS "Public read ad packages" ON public.navaratri_ad_packages;
-CREATE POLICY "Public read ad packages" ON public.navaratri_ad_packages FOR SELECT TO anon, authenticated USING (active = true);
-
--- Insert initial advertising packages
-INSERT INTO public.navaratri_ad_packages (id, name, price_inr, duration_days, impression_limit, estimated_impressions, placement_type, space_type, rotation_seconds, popular, best_value)
-VALUES
-  ('pkg-starter', '1 Day Daily Booster', 49, 1, 1500, 1500, 'HOME_NEAR_ME', 'ROTATING', 6, false, false),
-  ('pkg-growth', '3 Days Weekend Rush', 129, 3, 5000, 5000, 'HOME_EXPLORE_NEARBY', 'ROTATING', 6, true, false),
-  ('pkg-festival', '9 Days Maha Utsav Pass', 349, 9, 18000, 18000, 'ALL_CITIZEN_PAGES', 'ROTATING', 6, false, true),
-  ('pkg-solo-1', '1 Day Solo 24/7 Booster', 149, 1, 4500, 4500, 'EXCLUSIVE_FRAME_24_7', 'EXCLUSIVE', NULL, false, false),
-  ('pkg-solo-3', '3 Days Weekend Solo 24/7', 399, 3, 15000, 15000, 'EXCLUSIVE_FRAME_24_7', 'EXCLUSIVE', NULL, true, false),
-  ('pkg-solo-9', '9 Days Maha Utsav Solo VIP', 999, 9, 55000, 55000, 'EXCLUSIVE_FRAME_24_7', 'EXCLUSIVE', NULL, false, true)
-ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name,
-  price_inr = EXCLUDED.price_inr,
-  duration_days = EXCLUDED.duration_days,
-  impression_limit = EXCLUDED.impression_limit,
-  estimated_impressions = EXCLUDED.estimated_impressions,
-  space_type = EXCLUDED.space_type,
-  popular = EXCLUDED.popular,
-  best_value = EXCLUDED.best_value;
 
 CREATE TABLE IF NOT EXISTS public.navaratri_advertisers (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -789,10 +618,10 @@ CREATE POLICY "Public register advertiser" ON public.navaratri_advertisers FOR I
 DROP POLICY IF EXISTS "Public read advertisers" ON public.navaratri_advertisers;
 CREATE POLICY "Public read advertisers" ON public.navaratri_advertisers FOR SELECT TO anon, authenticated USING (true);
 
+-- Advertisement Submissions (status managed by admin after direct contact; no payment gating)
 CREATE TABLE IF NOT EXISTS public.navaratri_advertisements (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   advertiser_id uuid NOT NULL REFERENCES public.navaratri_advertisers(id) ON DELETE CASCADE,
-  package_id text REFERENCES public.navaratri_ad_packages(id),
   title text NOT NULL,
   business_name text NOT NULL,
   description text NOT NULL,
@@ -803,8 +632,8 @@ CREATE TABLE IF NOT EXISTS public.navaratri_advertisements (
   target_area text,
   target_mandapam_id uuid REFERENCES public.navaratri_mandapams(id),
   preferred_frame text NOT NULL DEFAULT 'BOTTOM' CHECK (preferred_frame IN ('TOP', 'BOTTOM', 'BOTH')),
-  space_type text NOT NULL DEFAULT 'ROTATING' CHECK (space_type IN ('ROTATING', 'EXCLUSIVE')),
-  utr_number text,
+  campaign_duration_label text,            -- e.g. "1 Day Booster", "3 Days Rush", "9 Days Pass"
+  campaign_duration_days integer,          -- 1, 3, or 9
   start_date date NOT NULL DEFAULT CURRENT_DATE,
   end_date date NOT NULL DEFAULT CURRENT_DATE + interval '3 days',
   status text NOT NULL DEFAULT 'PENDING_REVIEW' CHECK (status IN ('DRAFT', 'PENDING_REVIEW', 'APPROVED', 'REJECTED', 'ACTIVE', 'PAUSED', 'EXPIRED')),
@@ -822,32 +651,7 @@ CREATE POLICY "Public view approved ads" ON public.navaratri_advertisements FOR 
 DROP POLICY IF EXISTS "Public insert ads" ON public.navaratri_advertisements;
 CREATE POLICY "Public insert ads" ON public.navaratri_advertisements FOR INSERT TO anon, authenticated WITH CHECK (true);
 
-CREATE TABLE IF NOT EXISTS public.navaratri_ad_impressions (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  ad_id uuid NOT NULL REFERENCES public.navaratri_advertisements(id) ON DELETE CASCADE,
-  placement text NOT NULL,
-  city text,
-  created_at timestamptz DEFAULT now()
-);
-ALTER TABLE public.navaratri_ad_impressions ENABLE ROW LEVEL SECURITY;
-GRANT INSERT ON public.navaratri_ad_impressions TO anon, authenticated;
-GRANT ALL ON public.navaratri_ad_impressions TO authenticated, service_role;
-
-DROP POLICY IF EXISTS "Public log impression" ON public.navaratri_ad_impressions;
-CREATE POLICY "Public log impression" ON public.navaratri_ad_impressions FOR INSERT TO anon, authenticated WITH CHECK (true);
-
-CREATE TABLE IF NOT EXISTS public.navaratri_ad_clicks (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  ad_id uuid NOT NULL REFERENCES public.navaratri_advertisements(id) ON DELETE CASCADE,
-  placement text NOT NULL,
-  created_at timestamptz DEFAULT now()
-);
-ALTER TABLE public.navaratri_ad_clicks ENABLE ROW LEVEL SECURITY;
-GRANT INSERT ON public.navaratri_ad_clicks TO anon, authenticated;
-GRANT ALL ON public.navaratri_ad_clicks TO authenticated, service_role;
-
-DROP POLICY IF EXISTS "Public log click" ON public.navaratri_ad_clicks;
-CREATE POLICY "Public log click" ON public.navaratri_ad_clicks FOR INSERT TO anon, authenticated WITH CHECK (true);
+-- (navaratri_ad_impressions and navaratri_ad_clicks removed — no analytics tracking needed for direct-contact ads)
 
 -- ------------------------------------------------------------------------------
 -- 5. STORAGE BUCKETS SETUP
@@ -857,7 +661,6 @@ VALUES
   ('media', 'media', true, 26214400, ARRAY['image/jpeg','image/png','image/webp','image/gif','image/svg+xml','image/avif','video/mp4']),
   ('client-documents', 'client-documents', false, 52428800, ARRAY['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','text/plain']),
   ('project-attachments', 'project-attachments', true, 52428800, ARRAY['application/pdf','image/jpeg','image/png','image/webp','application/zip','text/plain']),
-  ('career-resumes', 'career-resumes', true, 15728640, ARRAY['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document']),
   ('admin-assets', 'admin-assets', true, 26214400, ARRAY['image/jpeg','image/png','image/webp','image/svg+xml']),
   ('mandapam-media', 'mandapam-media', true, 26214400, ARRAY['image/jpeg','image/png','image/webp']),
   ('alankarana-photos', 'alankarana-photos', true, 26214400, ARRAY['image/jpeg','image/png','image/webp']),
@@ -870,11 +673,11 @@ ON CONFLICT (id) DO UPDATE SET
 -- Storage RLS
 DROP POLICY IF EXISTS "Public view media" ON storage.objects;
 CREATE POLICY "Public view media" ON storage.objects FOR SELECT TO anon, authenticated
-  USING (bucket_id IN ('media', 'project-attachments', 'career-resumes', 'admin-assets', 'mandapam-media', 'alankarana-photos', 'advertisement-creatives'));
+  USING (bucket_id IN ('media', 'project-attachments', 'admin-assets', 'mandapam-media', 'alankarana-photos', 'advertisement-creatives'));
 
 DROP POLICY IF EXISTS "Allow uploads to public buckets" ON storage.objects;
 CREATE POLICY "Allow uploads to public buckets" ON storage.objects FOR INSERT TO anon, authenticated
-  WITH CHECK (bucket_id IN ('media', 'project-attachments', 'career-resumes', 'mandapam-media', 'alankarana-photos', 'advertisement-creatives'));
+  WITH CHECK (bucket_id IN ('media', 'project-attachments', 'mandapam-media', 'alankarana-photos', 'advertisement-creatives'));
 
 -- ------------------------------------------------------------------------------
 -- 6. RELOAD SCHEMA CACHE

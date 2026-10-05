@@ -370,7 +370,7 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
                   <div className="space-y-1">
                     <label className="text-[11px] font-bold text-amber-950 flex items-center gap-1">
                       <Sun className="w-3.5 h-3.5 text-amber-600" />
-                      <span>Morning Avatharam (ఉదయం) *</span>
+                      <span>Morning Avatharam (ఉదయం) <span className="text-red-500 font-bold ml-0.5">*</span></span>
                     </label>
                     <input
                       type="text"
@@ -384,7 +384,7 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
                   <div className="space-y-1">
                     <label className="text-[11px] font-bold text-indigo-950 flex items-center gap-1">
                       <Moon className="w-3.5 h-3.5 text-indigo-600" />
-                      <span>Evening Avatharam (సాయంత్రం) *</span>
+                      <span>Evening Avatharam (సాయంత్రం) <span className="text-red-500 font-bold ml-0.5">*</span></span>
                     </label>
                     <input
                       type="text"

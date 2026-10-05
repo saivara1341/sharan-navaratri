@@ -146,7 +146,9 @@ export const WalkInRegisterModal: React.FC<WalkInRegisterModalProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
               <div>
-                <label className="block font-semibold mb-1">Devotee Name *</label>
+                <label className="block font-semibold mb-1">
+                  Devotee Name <span className="text-red-500 font-bold ml-0.5">*</span>
+                </label>
                 <input
                   type="text"
                   required
@@ -158,7 +160,9 @@ export const WalkInRegisterModal: React.FC<WalkInRegisterModalProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold mb-1">Mobile Number (10 Digits Only) *</label>
+                <label className="block font-semibold mb-1">
+                  Mobile Number (10 Digits Only) <span className="text-red-500 font-bold ml-0.5">*</span>
+                </label>
                 <input
                   type="tel"
                   required

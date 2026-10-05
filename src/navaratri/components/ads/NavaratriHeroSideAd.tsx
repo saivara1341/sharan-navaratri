@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import { ImagePlus, Megaphone, ArrowUpRight, ExternalLink } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
@@ -6,6 +7,7 @@ import { navaratriAsset } from "../../utils/navaratriAssets";
 import { getAdCtaDetails } from "../../utils/adButtonHelpers";
 
 export const NavaratriHeroSideAd: React.FC = () => {
+  const navigate = useNavigate();
   const { advertisements, recordAdClick, recordAdImpression } = useNavaratriData();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,7 +52,7 @@ export const NavaratriHeroSideAd: React.FC = () => {
         return;
       }
     }
-    setIsModalOpen(true);
+    navigate("/navaratri/advertise");
   };
 
   return (
@@ -100,9 +102,9 @@ export const NavaratriHeroSideAd: React.FC = () => {
         ) : (
           /* Empty Sponsor Slot matching hero height on desktop */
           <div
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => navigate("/navaratri/advertise")}
             className="w-full h-full min-h-[360px] sm:min-h-[400px] lg:min-h-full rounded-2xl sm:rounded-3xl border-2 border-dashed border-amber-400/90 bg-gradient-to-b from-[#FFFDF8] via-[#FAF4EA] to-[#F5EEDB] p-5 sm:p-6 flex flex-col justify-between items-center text-center shadow-md hover:shadow-xl hover:border-amber-500 transition-all cursor-pointer group relative overflow-hidden"
-            title="Click to add image & run ad"
+            title="Click to view advertising plans and contact us"
           >
             {/* Subtle background glow */}
             <div className="absolute -top-12 -right-12 w-36 h-36 bg-amber-400/10 rounded-full blur-2xl pointer-events-none" />
