@@ -373,7 +373,14 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const [activities, setActivities] = useState<Activity[]>(() => {
     const loaded = loadStorage<Activity[]>("activities", INITIAL_ACTIVITIES);
-    return (loaded || []).filter((act) => mandapams.some((m) => m.id === act.mandapamId));
+    return (loaded || []).filter(
+      (act) =>
+        mandapams.some((m) => m.id === act.mandapamId) &&
+        !act.title?.toLowerCase().includes("dandiya utsav & bhajans") &&
+        !act.id?.includes("dandiya") &&
+        !act.id?.includes("chandi-homam") &&
+        !act.id?.endsWith("-1")
+    );
   });
 
   const [pallakiSevas, setPallakiSevas] = useState<PallakiSeva[]>(() => {
@@ -1169,21 +1176,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     };
     setAnnouncements(prev => [initialAnnouncement, ...prev]);
 
-    // 6. Initialize Activity
-    const initialActivity: Activity = {
-      id: `act-${shortId}-1`,
-      mandapamId: shortId,
-      title: "Maha Navami Dandiya Utsav & Bhajans",
-      category: "Dandiya Night",
-      date: "2026-10-19",
-      startTime: "07:30 PM",
-      endTime: "10:30 PM",
-      location: `${data.area} Mandapam Grounds`,
-      description: "Traditional Garba, Dandiya Ras, and spiritual bhajan sandhya celebrating Maa Durga.",
-      bookingEnabled: true,
-      published: true
-    };
-    setActivities(prev => [initialActivity, ...prev]);
+    // Activities are left clean and empty so organizers add their own real events
 
     // 7. Initialize Nimarjanam / Visarjan Schedule
     const initialNimarjanam: NimarjanamSchedule = {

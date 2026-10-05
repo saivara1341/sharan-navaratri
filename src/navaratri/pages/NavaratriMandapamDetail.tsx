@@ -254,38 +254,12 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
   const effectiveServices = mandapamServices.length > 0 ? mandapamServices : DEFAULT_MANDAPAM_SERVICES;
 
-  const DEFAULT_MANDAPAM_ACTIVITIES: Activity[] = [
-    {
-      id: `act-${mandapam.id}-chandi-homam`,
-      mandapamId: mandapam.id,
-      title: "Sri Maha Chandi Homam & Maha Purnahuthi",
-      category: "Pooja",
-      description: "Sacred Vedic Chandi Yagam with 108 medicinal herbs, ghee offerings, and divine purnahuthi blessings.",
-      date: "2026-10-20",
-      startTime: "08:30 AM",
-      endTime: "12:30 PM",
-      location: `${mandapam.area} Yagashala Sanctum`,
-      bookingEnabled: true,
-      published: true,
-      fee: "Free"
-    },
-    {
-      id: `act-${mandapam.id}-dandiya`,
-      mandapamId: mandapam.id,
-      title: "Maha Navami Dandiya Utsav & Bhajans",
-      category: "Cultural Program",
-      description: "Traditional Garba, Dandiya Ras, and spiritual bhajan sandhya celebrating Maa Durga.",
-      date: "2026-10-19",
-      startTime: "07:30 PM",
-      endTime: "10:30 PM",
-      location: `${mandapam.area} Mandapam Grounds`,
-      bookingEnabled: true,
-      published: true,
-      fee: "Free"
-    }
-  ];
-
-  const effectiveActivities = mandapamActivities.length > 0 ? mandapamActivities : DEFAULT_MANDAPAM_ACTIVITIES;
+  const effectiveActivities = mandapamActivities.filter(
+    (act) =>
+      !act.title?.toLowerCase().includes("dandiya utsav & bhajans") &&
+      !act.id?.includes("dandiya") &&
+      !act.id?.includes("chandi-homam")
+  );
 
   const DEFAULT_MANDAPAM_ANNOUNCEMENTS = [
     {
