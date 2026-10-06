@@ -297,27 +297,27 @@ export const NavaratriHome: React.FC = () => {
               transition={{ duration: 0.4, delay: 0.24 }}
               className="grid grid-cols-2 sm:grid-cols-4 gap-2 lg:gap-3 pt-1 lg:pt-2 text-xs font-semibold"
             >
-              <Link to="/navaratri/near-me?category=annadanam" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
-                <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
-                  <UtensilsCrossed className="h-4 w-4 shrink-0 text-amber-200" aria-hidden="true" />
+              <Link to="/navaratri/near-me?category=annadanam" className="min-h-12 sm:min-h-[3.25rem] px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
+                <span className="flex items-center justify-center gap-2 text-amber-100 text-sm font-semibold">
+                  <UtensilsCrossed className="h-5 w-5 shrink-0 text-amber-200" aria-hidden="true" />
                   <span className="truncate">Annadanam Near Me</span>
                 </span>
               </Link>
-              <Link to="/navaratri/near-me?category=bhajans_pallaki" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
-                <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
-                  <PallakiIcon className="w-4 h-4 shrink-0 text-amber-200" />
+              <Link to="/navaratri/near-me?category=bhajans_pallaki" className="min-h-12 sm:min-h-[3.25rem] px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
+                <span className="flex items-center justify-center gap-2 text-amber-100 text-sm font-semibold">
+                  <PallakiIcon className="w-5 h-5 shrink-0 text-amber-200" />
                   <span className="truncate">Pallaki Seva & Bhajans</span>
                 </span>
               </Link>
-              <Link to="/navaratri/near-me?category=activities" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
-                <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
-                  <DandiyaIcon className="w-4 h-4 shrink-0 text-amber-200" />
+              <Link to="/navaratri/near-me?category=activities" className="min-h-12 sm:min-h-[3.25rem] px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
+                <span className="flex items-center justify-center gap-2 text-amber-100 text-sm font-semibold">
+                  <DandiyaIcon className="w-5 h-5 shrink-0 text-amber-200" />
                   <span className="truncate">Dandiya & Activities</span>
                 </span>
               </Link>
-              <Link to="/navaratri/know" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
-                <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
-                  <BookOpen className="w-3.5 h-3.5 shrink-0 text-amber-200" />
+              <Link to="/navaratri/know" className="min-h-12 sm:min-h-[3.25rem] px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
+                <span className="flex items-center justify-center gap-2 text-amber-100 text-sm font-semibold">
+                  <BookOpen className="w-5 h-5 shrink-0 text-amber-200" />
                   <span className="truncate">Sacred Devi Guide</span>
                 </span>
               </Link>

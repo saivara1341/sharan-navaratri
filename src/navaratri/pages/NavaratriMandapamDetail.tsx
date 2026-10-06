@@ -1,6 +1,7 @@
 import { navaratriAsset } from "../utils/navaratriAssets";
 import { getMandapamDirectionsUrl } from "../utils/mandapamMaps";
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
 import { useNavaratriLanguage } from "../context/NavaratriLanguageContext";
@@ -69,33 +70,9 @@ interface ActivityRegistrationRecord {
   registeredAt: string;
 }
 
-const PRESET_MANDAPAM_BACKGROUNDS = [
-  {
-    id: "preset-terracotta",
-    name: "Terracotta Kolam Utsav",
-    url: navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg"),
-  },
-  {
-    id: "preset-golden",
-    name: "Golden Lotus Sanctum",
-    url: navaratriAsset("/navaratri/assets/golden-lotus-bg.jpg"),
-  },
-  {
-    id: "preset-ivory",
-    name: "Ivory Lotus Sanctum",
-    url: navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"),
-  },
-  {
-    id: "preset-sage",
-    name: "Sage Floral Utsav",
-    url: navaratriAsset("/navaratri/assets/sage-floral-bg.jpg"),
-  },
-  {
-    id: "preset-royal",
-    name: "Royal Mandir Sanctum",
-    url: navaratriAsset("/navaratri/assets/royal-maroon-arch.jpg"),
-  }
-];
+// Public Mandapam pages intentionally use one festival cover. An organizer's
+// uploaded branding stays in the portal and does not change the devotee view.
+const PUBLIC_MANDAPAM_COVER = navaratriAsset("/navaratri/assets/royal-temple-gold-sanctum.jpg");
 
 export const NavaratriMandapamDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -108,10 +85,11 @@ export const NavaratriMandapamDetail: React.FC = () => {
     slots,
     activities,
     announcements,
+    isMandapamsLoading,
+    loadPublicMandapam,
     toggleFollow,
     isFollowing,
     markScanned,
-    updateMandapam,
     createBooking
   } = useNavaratriData();
   const { t, language } = useNavaratriLanguage();
@@ -120,9 +98,9 @@ export const NavaratriMandapamDetail: React.FC = () => {
   const [selectedServiceId, setSelectedServiceId] = useState<string | undefined>(undefined);
   const [qrModalOpen, setQrModalOpen] = useState(false);
 
-  // Mandapam Cover & Committee Logo (View Only for Devotees)
-  const [customCover, setCustomCover] = useState<string>("");
+  // Committee logo is shown to devotees; the organizer cover remains private to the portal.
   const [customLogo, setCustomLogo] = useState<string>("");
+  const [isResolvingPublicMandapam, setIsResolvingPublicMandapam] = useState(false);
 
   // 10-Day Pop-up State
   const [selectedDay, setSelectedDay] = useState<StandardFestivalDay | null>(null);
@@ -149,6 +127,21 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
   const following = mandapam ? isFollowing(mandapam.id) : false;
 
+  // A QR visitor may open the page on a device without local state. Resolve its
+  // exact public record directly rather than showing a false "not found" screen.
+  useEffect(() => {
+    if (mandapam || !normalizedSlug) {
+      setIsResolvingPublicMandapam(false);
+      return;
+    }
+    let active = true;
+    setIsResolvingPublicMandapam(true);
+    void loadPublicMandapam(normalizedSlug).finally(() => {
+      if (active) setIsResolvingPublicMandapam(false);
+    });
+    return () => { active = false; };
+  }, [loadPublicMandapam, mandapam, normalizedSlug]);
+
   // A card or shared URL visit must not appear as a QR scan. QR posters and the
   // in-app scanner explicitly add source=qr.
   useEffect(() => {
@@ -157,6 +150,24 @@ export const NavaratriMandapamDetail: React.FC = () => {
     }
     document.title = "Sharan Navaratri";
   }, [mandapam?.id, markScanned, searchParams]);
+
+  // Synchronize the committee logo from localStorage or the Mandapam record.
+  // This runs before the loading return so the hook sequence never changes.
+  useEffect(() => {
+    if (mandapam?.id) {
+      const storedLogo = localStorage.getItem(`mandapam_logo_${mandapam.id}`) || mandapam.logoUrl || "";
+      setCustomLogo(storedLogo);
+    }
+  }, [mandapam?.id, mandapam?.logoUrl]);
+
+  if (!mandapam && (isMandapamsLoading || isResolvingPublicMandapam)) {
+    return (
+      <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3 p-6 text-center">
+        <RefreshCw className="h-8 w-8 animate-spin text-[#8B1E1E]" />
+        <p className="text-sm font-semibold text-stone-700">Opening Mandapam details…</p>
+      </div>
+    );
+  }
 
   if (!mandapam) {
     return (
@@ -188,67 +199,9 @@ export const NavaratriMandapamDetail: React.FC = () => {
   const todayAlankarana = alankaranas.find(a => a.mandapamId === mandapam.id);
   const todaySetting = daySettings.find(s => s.mandapamId === mandapam.id && s.dayNumber === 1);
 
-  // 4 Standard Poojas as requested by devotees & committee if not customized yet
-  const DEFAULT_MANDAPAM_SERVICES: Service[] = [
-    {
-      id: `srv-${mandapam.id}-sahasranama`,
-      mandapamId: mandapam.id,
-      name: "Sri Durga Devi Sahasranama Archana",
-      type: "POOJA",
-      durationMinutes: 45,
-      description: "Sacred 1008 divine names archana with fresh red kumkum, bilva, and fragrant flowers for family well-being.",
-      itemsRequired: "Coconuts, Betel leaves, Fresh flower garland, Bananas",
-      enabled: true,
-      bookingEnabled: true,
-      capacityPerSlot: 150,
-      targetAudience: "COUPLES",
-      targetAudienceLabel: "Couples / Pairs (దంపతులు)"
-    },
-    {
-      id: `srv-${mandapam.id}-kumkumarchana`,
-      mandapamId: mandapam.id,
-      name: "Sri Lalitha Sahasranama Kumkumarchana",
-      type: "KUMKUMARCHANA",
-      durationMinutes: 30,
-      description: "Special women's sacred Kumkuma puja invoking Maa Durga's divine protection and prosperity.",
-      itemsRequired: "Pure Sindoor/Kumkum, Fresh jasmine flowers, Turmeric",
-      enabled: true,
-      bookingEnabled: true,
-      capacityPerSlot: 150,
-      targetAudience: "FEMALES_ONLY",
-      targetAudienceLabel: "Only Females / Suhasinis (స్త్రీలు / సువాసినులు)"
-    },
-    {
-      id: `srv-${mandapam.id}-harathi`,
-      mandapamId: mandapam.id,
-      name: "Maha Deeparadhana & Harathi Darshan Pass",
-      type: "HARATHI",
-      durationMinutes: 20,
-      description: "Priority sanctum darshan during the divine evening Maha Mangala Harathi and sacred prasad distribution.",
-      itemsRequired: "Devotion and sacred offerings",
-      enabled: true,
-      bookingEnabled: true,
-      capacityPerSlot: 150,
-      targetAudience: "ALL",
-      targetAudienceLabel: "All Devotees & Families"
-    },
-    {
-      id: `srv-${mandapam.id}-homa`,
-      mandapamId: mandapam.id,
-      name: "Chandi Parayanam & Homa Sankalpam",
-      type: "HOMA",
-      durationMinutes: 60,
-      description: "Special sankalpam during the holy Navaratri Chandi Homam conducted by Vedic priests.",
-      itemsRequired: "Gotram, Family names, Homa samagri",
-      enabled: true,
-      bookingEnabled: true,
-      capacityPerSlot: 150,
-      targetAudience: "COUPLES",
-      targetAudienceLabel: "Couples / Parties (దంపతులు)"
-    }
-  ];
-
-  const effectiveServices = mandapamServices.length > 0 ? mandapamServices : DEFAULT_MANDAPAM_SERVICES;
+  // Never invent poojas on a public page. Deleted/disabled organizer services
+  // must disappear immediately for devotees.
+  const effectiveServices = mandapamServices;
 
   const effectiveActivities = mandapamActivities.filter(
     (act) =>
@@ -295,16 +248,6 @@ export const NavaratriMandapamDetail: React.FC = () => {
       toast.success("Mandapam link copied to clipboard!");
     }
   };
-
-  // Synchronize custom cover photo and committee logo from localStorage or mandapam record
-  useEffect(() => {
-    if (mandapam?.id) {
-      const storedCover = localStorage.getItem(`mandapam_cover_${mandapam.id}`) || mandapam.coverImageUrl || "";
-      const storedLogo = localStorage.getItem(`mandapam_logo_${mandapam.id}`) || mandapam.logoUrl || "";
-      setCustomCover(storedCover);
-      setCustomLogo(storedLogo);
-    }
-  }, [mandapam?.id, mandapam?.coverImageUrl, mandapam?.logoUrl]);
 
   // Helper for short dates (e.g., "11 Oct")
   const formatDateShort = (isoDate: string) => {
@@ -402,23 +345,23 @@ export const NavaratriMandapamDetail: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 pb-20 max-w-4xl mx-auto">
-      {/* 1. MANDAPAM HERO & PROFILE */}
-      <div className="relative rounded-3xl overflow-hidden border-2 border-amber-300 shadow-xl bg-white">
-        {/* Cover Photo */}
-        <div className="h-48 sm:h-64 w-full relative bg-[#8B1E1E]">
-          <img
-            src={customCover || mandapam.coverImageUrl || navaratriAsset("/navaratri/assets/maa-durga-temple-darshan.jpg")}
-            alt={mandapam.name}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
-
-          {/* Quick Actions (Top Right) */}
-          <div className="absolute top-3 right-3 flex items-center gap-2">
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.38, ease: "easeOut" }}
+      className="mx-auto max-w-4xl space-y-6 pb-20"
+    >
+      {/* 1. MANDAPAM PROFILE — one shared festival cover for every devotee page. */}
+      <div className="relative overflow-hidden rounded-3xl border border-amber-300/90 bg-white shadow-[0_18px_45px_-20px_rgba(120,30,30,.45)]">
+        <div className="relative h-48 w-full overflow-hidden bg-[#4a1212] sm:h-64">
+          <img src={PUBLIC_MANDAPAM_COVER} alt="Sharan Navaratri festival cover" className="h-full w-full object-cover object-center transition-transform duration-1000 hover:scale-105" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#260707]/90 via-[#260707]/35 to-[#260707]/5" />
+          <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-amber-200 to-transparent" />
+          <p className="absolute bottom-3 left-4 rounded-full border border-amber-200/50 bg-[#591212]/85 px-3 py-1 text-[10px] font-black uppercase tracking-[.16em] text-amber-100 shadow-lg backdrop-blur-sm sm:left-6 sm:text-xs">Sharan Navaratri 2026</p>
+          <div className="absolute right-3 top-3 flex items-center gap-2 sm:right-5 sm:top-5">
             <button
               onClick={() => setQrModalOpen(true)}
-              className="px-3 py-1.5 rounded-full bg-white/95 hover:bg-white text-stone-900 text-xs font-bold shadow-md flex items-center gap-1.5 transition-colors backdrop-blur-sm cursor-pointer"
+              className="flex items-center gap-1.5 rounded-full border border-white/50 bg-white/95 px-3 py-1.5 text-xs font-bold text-stone-900 shadow-md backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:bg-white cursor-pointer"
               title="View & Print Mandapam QR Standee"
             >
               <QrCode className="w-3.5 h-3.5 text-[#8B1E1E]" />
@@ -427,7 +370,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
             <button
               onClick={handleShare}
-              className="p-2 rounded-full bg-white/95 hover:bg-white text-stone-900 shadow-md transition-colors backdrop-blur-sm cursor-pointer"
+              className="rounded-full border border-white/50 bg-white/95 p-2 text-stone-900 shadow-md backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:bg-white cursor-pointer"
               title="Share Mandapam"
             >
               <Share2 className="w-4 h-4 text-stone-800" />
@@ -436,7 +379,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
         </div>
 
         {/* Profile Card with clean warm devotional color background */}
-        <div className="relative -mt-10 mx-3 sm:mx-5 rounded-2xl border-2 border-amber-300/90 shadow-xl mb-3 overflow-hidden p-4 sm:p-6 transition-all bg-gradient-to-br from-[#FFFDF9] via-[#FCF8EE] to-[#FFF5EB]">
+        <div className="relative m-3 overflow-hidden rounded-2xl border border-amber-300/90 bg-[radial-gradient(circle_at_95%_5%,rgba(251,191,36,.22),transparent_27%),linear-gradient(135deg,#fffdf9,#fcf8ee_55%,#fff5eb)] p-4 shadow-[0_12px_28px_-18px_rgba(120,30,30,.65)] sm:m-5 sm:p-6">
           <div className="relative z-10">
             {/* Top row */}
             <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-amber-200/60">
@@ -453,17 +396,17 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start sm:items-center gap-3.5">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 overflow-hidden relative group">
+                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border-2 border-amber-300 bg-white p-1 shadow-lg sm:h-24 sm:w-24">
                   <img
                     src={customLogo || mandapam.logoUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg")}
                     alt="Logo"
-                    className="w-full h-full object-contain"
+                    className="h-full w-full rounded-xl object-contain"
                   />
                 </div>
 
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                    <h1 className="font-serif font-black text-xl sm:text-2xl text-[#8B1E1E] flex items-center gap-1.5 leading-snug drop-shadow-xs">
+                    <h1 className="flex items-center gap-1.5 font-serif text-xl font-black leading-snug text-[#8B1E1E] drop-shadow-xs sm:text-2xl">
                       <span>{getTranslatedMandapamName(mandapam.name, language)}</span>
                       <InstagramVerifiedBadge className="w-5 h-5 shrink-0 drop-shadow-xs" title="Official Verified Mandapam" />
                     </h1>
@@ -486,8 +429,8 @@ export const NavaratriMandapamDetail: React.FC = () => {
                   onClick={handleFollowToggle}
                   className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 ${
                     following
-                      ? "bg-amber-100 text-[#8B1E1E] border border-amber-400"
-                      : "bg-[#8B1E1E] text-white hover:bg-[#9A241C]"
+                    ? "border border-amber-400 bg-amber-100 text-[#8B1E1E]"
+                    : "bg-gradient-to-r from-[#8B1E1E] to-[#B45309] text-white hover:brightness-110"
                   }`}
                 >
                   <Heart className={`w-3.5 h-3.5 ${following ? "fill-current text-[#8B1E1E]" : ""}`} />
@@ -572,8 +515,29 @@ export const NavaratriMandapamDetail: React.FC = () => {
         </div>
       </div>
 
+      {/* 2. LIVE NOTICE BOARD — immediately after the Mandapam profile */}
+      {effectiveAnnouncements.length > 0 && (
+        <section className="animate-in fade-in slide-in-from-bottom-3 duration-500 rounded-3xl border-2 border-amber-300 bg-white p-5 shadow-[0_12px_28px_-18px_rgba(120,30,30,.45)] space-y-3">
+          <div className="flex items-center gap-2 border-b border-amber-200/80 pb-3">
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-[#8B1E1E] to-[#B45309] text-base shadow-sm">📢</span>
+            <div>
+              <h3 className="font-serif text-lg font-black text-[#8B1E1E]">{t.noticeBoard}</h3>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-amber-800">Live updates from this Mandapam</p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            {effectiveAnnouncements.map((ann) => (
+              <div key={ann.id} className="rounded-2xl border border-amber-200 bg-[linear-gradient(135deg,#fffdf7,#fff7e7)] p-3.5 text-xs shadow-sm">
+                <h4 className="text-sm font-bold text-[#8B1E1E]">{ann.title}</h4>
+                <p className="mt-1 leading-relaxed text-stone-700">{ann.message}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* 2. 10-DAY FESTIVAL BUTTONS (2 ROWS ON MOBILE, NO SCROLL) */}
-      <section className="bg-gradient-to-br from-[#FFFDF9] via-[#FAF6ED] to-[#FEF3C7] border-2 border-amber-400 rounded-3xl p-4 sm:p-5 shadow-xl shadow-amber-200/60 ring-2 ring-amber-200/40 space-y-3.5" style={{boxShadow: '0 0 0 2px #fbbf24, 0 8px 32px -4px rgba(180,83,9,0.18)'}}>
+      <section className="animate-in fade-in slide-in-from-bottom-3 duration-500 bg-gradient-to-br from-[#FFFDF9] via-[#FAF6ED] to-[#FEF3C7] border-2 border-amber-400 rounded-3xl p-4 sm:p-5 shadow-xl shadow-amber-200/60 ring-2 ring-amber-200/40 space-y-3.5" style={{boxShadow: '0 0 0 2px #fbbf24, 0 8px 32px -4px rgba(180,83,9,0.18)'}}>
         <div className="flex items-center justify-between border-b border-amber-200/80 pb-2">
           <div className="flex items-center gap-2">
             <span className="text-xl">🪔</span>
@@ -671,7 +635,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
       </section>
 
       {/* 3. MANDAPAM ACTIVITIES & COMPETITIONS (With Registration Action) */}
-      <section className="bg-white border-2 border-amber-300 rounded-3xl p-5 sm:p-6 shadow-lg space-y-4">
+      <section className="animate-in fade-in slide-in-from-bottom-3 duration-500 bg-white border-2 border-amber-300 rounded-3xl p-5 sm:p-6 shadow-lg space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200/80 pb-3">
           <div>
             <div className="flex items-center gap-2">
@@ -764,7 +728,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
       {/* 5. MANDAPAM AVAILABLE POOJAS & SEVAS (If enabled) */}
       {effectiveServices.length > 0 && (
-        <section className="bg-white border-2 border-amber-300 rounded-3xl p-5 sm:p-6 shadow-lg space-y-4">
+        <section className="animate-in fade-in slide-in-from-bottom-3 duration-500 bg-white border-2 border-amber-300 rounded-3xl p-5 sm:p-6 shadow-lg space-y-4">
           <div className="flex items-center justify-between border-b border-amber-200/80 pb-3">
             <div>
               <div className="flex items-center gap-2">
@@ -874,27 +838,6 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 </div>
               );
             })}
-          </div>
-        </section>
-      )}
-
-      {/* 6. MANDAPAM ANNOUNCEMENTS */}
-      {effectiveAnnouncements.length > 0 && (
-        <section className="bg-white border-2 border-amber-300 rounded-3xl p-5 shadow-md space-y-3">
-          <h3 className="font-serif font-bold text-lg text-[#8B1E1E] flex items-center gap-2">
-            <span>📢</span>
-            <span>{t.noticeBoard}</span>
-          </h3>
-          <div className="space-y-2">
-            {effectiveAnnouncements.map((ann) => (
-              <div
-                key={ann.id}
-                className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200 text-xs"
-              >
-                <h4 className="font-bold text-[#8B1E1E] text-sm">{ann.title}</h4>
-                <p className="text-stone-700 mt-1 leading-relaxed">{ann.message}</p>
-              </div>
-            ))}
           </div>
         </section>
       )}
@@ -1364,6 +1307,6 @@ export const NavaratriMandapamDetail: React.FC = () => {
         onClose={() => setQrModalOpen(false)}
       />
 
-    </div>
+    </motion.div>
   );
 };

@@ -2,15 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
-import { ImagePlus, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
-import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
-import { AD_PLACEHOLDER_TRANSLATIONS } from "../../utils/navaratriTranslations";
 import { navaratriAsset } from "../../utils/navaratriAssets";
 import { getAdCtaDetails } from "../../utils/adButtonHelpers";
+import { NavaratriPlatformAd } from "./NavaratriPlatformAd";
 
 export const NavaratriTopAdBanner: React.FC = () => {
-  const { language } = useNavaratriLanguage();
   const location = useLocation();
   const navigate = useNavigate();
   const isHomePage =
@@ -139,18 +137,8 @@ export const NavaratriTopAdBanner: React.FC = () => {
             </div>
           </div>
         ) : (
-          /* Empty container slot: clean, ready for user / advertiser to add image in top frame */
-          <div
-            onClick={() => navigate("/navaratri/advertise")}
-            className="w-full h-20 sm:h-24 md:h-28 rounded-2xl border-2 border-dashed border-amber-300/80 bg-amber-50/30 hover:bg-amber-100/40 hover:border-amber-400 transition-all cursor-pointer flex items-center justify-center p-3 shadow-xs group"
-            title="Click to view advertising plans and contact us"
-          >
-            <div className="flex items-center gap-2 text-stone-400 group-hover:text-amber-800 transition-colors">
-              <ImagePlus className="w-5 h-5 text-amber-500/70 group-hover:text-amber-600 transition-colors" />
-              <span className="text-xs sm:text-sm font-medium tracking-wide">
-                {AD_PLACEHOLDER_TRANSLATIONS[language] || "Top Ad Frame Available (Tap to place ad below header)"}
-              </span>
-            </div>
+          <div className="w-full h-28 sm:h-36 md:h-40 overflow-hidden rounded-2xl border-2 border-amber-400/80 shadow-md">
+            <NavaratriPlatformAd placement="top" />
           </div>
         )}
       </motion.div>

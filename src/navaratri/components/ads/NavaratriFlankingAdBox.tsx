@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
-import { ImagePlus, Megaphone, ExternalLink, Store } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
 import { navaratriAsset } from "../../utils/navaratriAssets";
 import { getAdCtaDetails } from "../../utils/adButtonHelpers";
+import { NavaratriPlatformAd } from "./NavaratriPlatformAd";
 
 interface NavaratriFlankingAdBoxProps {
   position: "left" | "right";
@@ -119,76 +120,8 @@ export const NavaratriFlankingAdBox: React.FC<NavaratriFlankingAdBoxProps> = ({
             </div>
           </div>
         ) : (
-          /* EMPTY AD SPACE BOX (ELEGANT CALLOUT TO ADVERTISE) */
-          <div
-            onClick={() => navigate("/navaratri/advertise")}
-            className="w-full h-full min-h-[240px] rounded-3xl border-2 border-dashed border-amber-400/90 bg-gradient-to-b from-[#FFFDF8] via-[#FAF4EA] to-[#F5EEDB] p-3.5 xl:p-4 flex flex-col justify-between items-center text-center shadow-xs hover:shadow-md hover:border-amber-500 transition-all cursor-pointer group relative overflow-hidden"
-            title="Click to view advertising plans and contact us"
-          >
-            {/* Subtle glow circles */}
-            <div className="absolute -top-8 -right-8 w-24 h-24 bg-amber-400/10 rounded-full blur-xl pointer-events-none" />
-            <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-[#8B1E1E]/5 rounded-full blur-xl pointer-events-none" />
-
-            {/* Top Badge */}
-            <div className="relative z-10 w-full flex items-center justify-center">
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100/90 border border-amber-300/80 text-[#8B1E1E] text-[10px] font-black tracking-wider uppercase shadow-2xs">
-                {position === "left" ? (
-                  <>
-                    <Megaphone className="w-3 h-3 text-[#8B1E1E]" />
-                    <span>Festival Ad Space</span>
-                  </>
-                ) : (
-                  <>
-                    <Store className="w-3 h-3 text-[#8B1E1E]" />
-                    <span>Sponsor Ad Space</span>
-                  </>
-                )}
-              </span>
-            </div>
-
-            {/* Center Content */}
-            <div className="relative z-10 my-auto py-2 flex flex-col items-center space-y-1.5">
-              <div className="w-11 h-11 xl:w-12 xl:h-12 rounded-2xl bg-amber-100/90 border-2 border-amber-300 flex items-center justify-center text-[#8B1E1E] shadow-inner group-hover:scale-110 group-hover:bg-amber-200 transition-all">
-                <ImagePlus className="w-5 h-5 xl:w-6 xl:h-6 text-[#8B1E1E]" />
-              </div>
-
-              <div className="space-y-0.5 px-1">
-                <h3 className="font-serif text-xs xl:text-sm font-black text-[#8B1E1E] leading-tight">
-                  Ad Space Available
-                </h3>
-                <p className="text-[10px] xl:text-[11px] font-medium text-stone-600 leading-snug">
-                  Promote your Mandapam, Business or Shop
-                </p>
-              </div>
-            </div>
-
-            {/* Bottom Button (Pointed leaf-pill design without arrow) */}
-            <div className="relative z-10 w-full flex flex-col items-center gap-1 pt-1">
-              <div
-                className="relative inline-flex items-center justify-center px-5 py-2 font-sans font-bold text-xs tracking-wide text-white transition-all transform group-hover:scale-105 active:scale-95 drop-shadow-xs"
-              >
-                <svg
-                  viewBox="0 0 160 40"
-                  preserveAspectRatio="none"
-                  className="absolute inset-0 w-full h-full text-[#C12535] group-hover:text-[#A81B2B] transition-colors"
-                >
-                  <path
-                    d="M 18 0 L 142 0 C 151 0, 157 12, 160 20 C 157 28, 151 40, 142 40 L 18 40 C 9 40, 3 28, 0 20 C 3 12, 9 0, 18 0 Z"
-                    fill="currentColor"
-                  />
-                </svg>
-                <span className="relative z-10 font-bold text-white select-none text-[11px]">
-                  Run Ads
-                </span>
-              </div>
-              <Link
-                to="/navaratri/advertise"
-                onClick={(e) => e.stopPropagation()}
-                className="text-[10px] text-amber-900/80 hover:text-amber-950 font-semibold underline decoration-amber-300 underline-offset-2 hover:decoration-amber-500"
-              >
-                View Plans
-              </Link>
-            </div>
+          <div className="h-full min-h-[240px] w-full overflow-hidden rounded-3xl border-2 border-amber-400 shadow-md">
+            <NavaratriPlatformAd placement={position === "left" ? "side-left" : "side-right"} />
           </div>
         )}
       </div>

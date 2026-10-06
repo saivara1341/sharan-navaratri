@@ -2,15 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
-import { ImagePlus, ExternalLink, Phone, MessageCircle } from "lucide-react";
+import { ExternalLink, Phone, MessageCircle } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
-import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
-import { AD_PLACEHOLDER_TRANSLATIONS } from "../../utils/navaratriTranslations";
 import { navaratriAsset } from "../../utils/navaratriAssets";
 import { getAdCtaDetails } from "../../utils/adButtonHelpers";
+import { NavaratriPlatformAd } from "./NavaratriPlatformAd";
 
 export const NavaratriBottomAdBanner: React.FC = () => {
-  const { language } = useNavaratriLanguage();
   const navigate = useNavigate();
   const { advertisements, recordAdClick, recordAdImpression } = useNavaratriData();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -202,18 +200,8 @@ export const NavaratriBottomAdBanner: React.FC = () => {
             </div>
           </div>
         ) : (
-          /* Empty container slot: clean, ready for user / advertiser to add image in bottom frame */
-          <div
-            onClick={() => navigate("/navaratri/advertise")}
-            className="w-full h-24 sm:h-32 md:h-36 rounded-2xl sm:rounded-3xl border-2 border-dashed border-amber-300/80 bg-amber-50/20 hover:bg-amber-100/40 hover:border-amber-400 transition-all cursor-pointer flex flex-col items-center justify-center p-4 text-center group shadow-xs"
-            title="Click to view advertising plans and contact us"
-          >
-            <div className="flex items-center gap-2 text-stone-400 group-hover:text-amber-800 transition-colors">
-              <ImagePlus className="w-5 h-5 text-amber-500/70 group-hover:text-amber-600 transition-colors" />
-              <span className="text-xs sm:text-sm font-medium tracking-wide">
-                {AD_PLACEHOLDER_TRANSLATIONS[language] || "Bottom Ad Frame Available (Tap to place ad above footer)"}
-              </span>
-            </div>
+          <div className="w-full h-32 sm:h-44 md:h-48 overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-amber-400/80 shadow-md">
+            <NavaratriPlatformAd placement="bottom" />
           </div>
         )}
 

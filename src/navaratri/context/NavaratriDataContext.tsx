@@ -56,6 +56,7 @@ interface NavaratriDataContextType {
   isAdmin: boolean;
   season: Season;
   mandapams: Mandapam[];
+  isMandapamsLoading: boolean;
   alankaranas: Alankarana[];
   daySettings: MandapamDaySetting[];
   services: Service[];
@@ -78,6 +79,7 @@ interface NavaratriDataContextType {
   // Actions
   getMandapamBySlug: (slug: string) => Mandapam | undefined;
   getMandapamById: (id: string) => Mandapam | undefined;
+  loadPublicMandapam: (publicId: string) => Promise<Mandapam | undefined>;
   getAlankaranaForDate: (mandapamId: string, date: string) => Alankarana | undefined;
   getDaySetting: (mandapamId: string, dayNumber: number) => MandapamDaySetting | undefined;
   updateDaySetting: (setting: Partial<MandapamDaySetting> & { mandapamId: string; dayNumber: number }) => void;
@@ -242,6 +244,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const [season, setSeason] = useState<Season>(() => loadStorage("season", INITIAL_SEASON));
+  const [isMandapamsLoading, setIsMandapamsLoading] = useState(true);
 
   // Purge demo mandapams and their artifacts from localStorage immediately
   const [mandapams, setMandapams] = useState<Mandapam[]>(() => {
@@ -538,6 +541,8 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       } catch {
         // offline fallback
+      } finally {
+        if (isMounted) setIsMandapamsLoading(false);
       }
     }
     fetchSupabaseMandapams();
@@ -548,6 +553,56 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const getMandapamBySlug = (slug: string) => mandapams.find(m => m.slug.toLowerCase() === slug.toLowerCase());
   const getMandapamById = (id: string) => mandapams.find(m => m.id === id);
+
+  const loadPublicMandapam = React.useCallback(async (publicId: string): Promise<Mandapam | undefined> => {
+    const normalized = decodeURIComponent(publicId || "").trim().toLowerCase();
+    if (!normalized) return undefined;
+
+    try {
+      let result = await (supabase.from("navaratri_mandapams") as any).select("*").eq("slug", normalized).maybeSingle();
+      if (!result.data && !result.error) {
+        result = await (supabase.from("navaratri_mandapams") as any).select("*").eq("id", normalized).maybeSingle();
+      }
+      const row = result.data;
+      if (result.error || !row || isDemoOrMockMandapam(row)) return undefined;
+
+      const mapped: Mandapam = {
+        id: row.id,
+        name: row.name,
+        slug: row.slug,
+        description: row.description || "Annual Community Navaratri Utsav",
+        deviName: row.devi_name || "Maa Durga",
+        address: row.address || "",
+        area: row.area || "",
+        city: row.city || "",
+        state: row.state || "Telangana",
+        pincode: row.pincode || "503001",
+        latitude: Number(row.latitude) || 18.6725,
+        longitude: Number(row.longitude) || 78.0941,
+        googleMapsUrl: row.google_maps_url || undefined,
+        verificationStatus: row.verification_status || "VERIFIED",
+        organizerName: row.organizer_name || "",
+        organizerMobile: row.organizer_mobile || "",
+        organizerEmail: row.organizer_email || "",
+        ownerUserId: row.owner_user_id || undefined,
+        contactPhone: row.contact_phone || row.organizer_mobile || "",
+        whatsappNumber: row.whatsapp_number || "",
+        logoUrl: row.logo_url || undefined,
+        coverImageUrl: row.cover_image_url || undefined,
+        createdAt: row.created_at || new Date().toISOString()
+      };
+      setMandapams(previous => {
+        const found = previous.findIndex(item => item.id === mapped.id || item.slug.toLowerCase() === mapped.slug.toLowerCase());
+        if (found < 0) return [mapped, ...previous];
+        const next = [...previous];
+        next[found] = { ...next[found], ...mapped };
+        return next;
+      });
+      return mapped;
+    } catch {
+      return undefined;
+    }
+  }, []);
 
   const getAlankaranaForDate = (mandapamId: string, date: string) => {
     return alankaranas.find(a => a.mandapamId === mandapamId && a.date === date);
@@ -1065,7 +1120,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       customPrasadam: `${d.suggestedOfferings} distributed to all visiting devotees`,
       useStandardItems: true,
       customItemsToBring: d.suggestedItems,
-      annadanamEnabled: true,
+      annadanamEnabled: false,
       annadanamStartTime: "12:30 PM",
       annadanamEndTime: "03:30 PM",
       annadanamLocation: "Mandapam Annadanam Dining Hall",
@@ -1082,7 +1137,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       title: "Day 1 Sacred Alankarana",
       deviName: data.deviName || STANDARD_NAVARATRI_DAYS[0].deviName,
       description: "Consecrated idol decorated with festive gold ornaments and traditional silks",
-      imageUrl: data.coverImageUrl || STANDARD_NAVARATRI_DAYS[0].imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"),
+      imageUrl: STANDARD_NAVARATRI_DAYS[0].imageUrl || navaratriAsset("/navaratri/assets/maa-durga-icon.png"),
       published: true,
       createdAt: new Date().toISOString()
     };
@@ -1453,6 +1508,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
         isAdmin,
         season,
         mandapams,
+        isMandapamsLoading,
         alankaranas,
         daySettings,
         services,
@@ -1473,6 +1529,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
         setUserLocation,
         getMandapamBySlug,
         getMandapamById,
+        loadPublicMandapam,
         getAlankaranaForDate,
         getDaySetting,
         updateDaySetting,

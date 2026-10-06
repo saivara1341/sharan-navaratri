@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
-import { ImagePlus, ExternalLink, Phone, MessageCircle } from "lucide-react";
+import { ExternalLink, Phone, MessageCircle } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
-import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
-import { AD_PLACEHOLDER_TRANSLATIONS } from "../../utils/navaratriTranslations";
 import { navaratriAsset } from "../../utils/navaratriAssets";
 import { getAdCtaDetails } from "../../utils/adButtonHelpers";
+import { NavaratriPlatformAd } from "./NavaratriPlatformAd";
 
 interface NavaratriAdsSpaceProps {
   currentCity?: string;
@@ -16,7 +15,6 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
   currentCity = "Nizamabad"
 }) => {
   const navigate = useNavigate();
-  const { language } = useNavaratriLanguage();
   const { advertisements, recordAdClick, recordAdImpression } = useNavaratriData();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -199,18 +197,8 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
         </div>
         </>
       ) : (
-        /* Clean Empty Ad Container Slot */
-        <div
-          onClick={() => navigate("/navaratri/advertise")}
-          className="relative w-full h-28 sm:h-36 rounded-3xl border-2 border-dashed border-amber-300/80 bg-amber-50/20 hover:bg-amber-100/40 hover:border-amber-400 transition-all cursor-pointer flex flex-col items-center justify-center p-4 text-center group shadow-xs"
-          title="Click to view advertising plans and contact us"
-        >
-          <div className="flex items-center gap-2 text-stone-400 group-hover:text-amber-800 transition-colors">
-            <ImagePlus className="w-5 h-5 text-amber-500/70 group-hover:text-amber-600 transition-colors" />
-            <span className="text-xs sm:text-sm font-medium tracking-wide">
-              {AD_PLACEHOLDER_TRANSLATIONS[language] || "Ad Space Available (Tap to add image & run ad)"}
-            </span>
-          </div>
+        <div className="relative w-full h-40 sm:h-56 md:h-64 overflow-hidden rounded-3xl border-2 border-amber-400 shadow-md">
+          <NavaratriPlatformAd placement="inline" />
         </div>
       )}
 

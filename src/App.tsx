@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { lazy, Suspense, useEffect } from "react";
+import { NavaratriLoadingScreen } from "./navaratri/components/layout/NavaratriLoadingScreen";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SiteIntro } from "@/components/SiteIntro";
@@ -142,7 +143,11 @@ const AuthRedirectHandler = () => {
   return null;
 };
 
-const PageLoadingFallback = () => (
+const PageLoadingFallback = () => {
+  const isNavaratriRoute = typeof window !== "undefined" && /^\/navaratri(?:\/|$)|^\/navarathri(?:\/|$)|^\/m\//.test(window.location.pathname);
+  if (isNavaratriRoute) return <NavaratriLoadingScreen />;
+
+  return (
   <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4" aria-busy="true" aria-label="Loading page">
     <div className="relative flex flex-col items-center justify-center space-y-5">
       <div className="relative w-16 h-16 flex items-center justify-center">
@@ -160,7 +165,8 @@ const PageLoadingFallback = () => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 const ScrollToTop = () => {
   const { pathname, hash } = useLocation();

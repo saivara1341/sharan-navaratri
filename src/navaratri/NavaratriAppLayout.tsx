@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { NavaratriLanguageProvider } from "./context/NavaratriLanguageContext";
@@ -11,6 +11,7 @@ import { CitizenBottomNav } from "./components/layout/CitizenBottomNav";
 import { AuspiciousRibbonBorder } from "./components/devotional/AuspiciousRibbonBorder";
 import { NavaratriFooter } from "./components/layout/NavaratriFooter";
 import { NavaratriQrScannerModal } from "./components/citizen/NavaratriQrScannerModal";
+import { NavaratriLoadingScreen } from "./components/layout/NavaratriLoadingScreen";
 import { navaratriAsset } from "./utils/navaratriAssets";
 
 interface NavaratriAppLayoutProps {
@@ -21,6 +22,12 @@ const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
 
 export const NavaratriAppLayout: React.FC<NavaratriAppLayoutProps> = ({ children }) => {
   const location = useLocation();
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowLoadingScreen(false), 1100);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     // 1. Keep browser tab title strictly as "Sharan Navaratri" (no "Promote & Run Ads")
@@ -57,6 +64,8 @@ export const NavaratriAppLayout: React.FC<NavaratriAppLayoutProps> = ({ children
   const isBarePage =
     location.pathname === "/navaratri/register" ||
     location.pathname === "/register";
+
+  if (showLoadingScreen) return <NavaratriLoadingScreen />;
 
   if (isBarePage) {
     return (

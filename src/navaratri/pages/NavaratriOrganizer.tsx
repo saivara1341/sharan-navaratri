@@ -27,7 +27,6 @@ import {
   QrCode,
   CheckSquare,
   AlertTriangle,
-  ExternalLink,
   Plus,
   Printer,
   Download,
@@ -115,7 +114,8 @@ export const NavaratriOrganizer: React.FC = () => {
     deleteService,
     createSlot,
     deleteSlot,
-    updateBookingStatus
+    updateBookingStatus,
+    updateDaySetting
   } = useNavaratriData();
   const { t } = useNavaratriLanguage();
 
@@ -133,6 +133,7 @@ export const NavaratriOrganizer: React.FC = () => {
   const [sessionMandapam, setSessionMandapam] = useState<Mandapam | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true);
   const [sessionPasscode, setSessionPasscode] = useState("");
+  const [isGoogleOrganizerSession, setIsGoogleOrganizerSession] = useState<boolean | null>(null);
   const [showDashboardPasscode, setShowDashboardPasscode] = useState(false);
 
   // Active Organizer Tab
@@ -156,6 +157,14 @@ export const NavaratriOrganizer: React.FC = () => {
   const [eventDescription, setEventDescription] = useState("");
   const [eventFee, setEventFee] = useState("");
   const [eventBookingEnabled, setEventBookingEnabled] = useState(false);
+
+  // Quick Annadanam schedule setup
+  const [annadanamModalOpen, setAnnadanamModalOpen] = useState(false);
+  const [annadanamScope, setAnnadanamScope] = useState<"one" | "all">("one");
+  const [annadanamDay, setAnnadanamDay] = useState(1);
+  const [quickAnnadanamStart, setQuickAnnadanamStart] = useState("12:30 PM");
+  const [quickAnnadanamEnd, setQuickAnnadanamEnd] = useState("03:30 PM");
+  const [quickAnnadanamLocation, setQuickAnnadanamLocation] = useState("");
 
   // Two-Step Delete Account Modal State
   const [deleteStep, setDeleteStep] = useState<0 | 1 | 2>(0);
@@ -196,7 +205,8 @@ export const NavaratriOrganizer: React.FC = () => {
   const [slotDate, setSlotDate] = useState("2026-10-15");
   const [slotStartTime, setSlotStartTime] = useState("06:00 PM");
   const [slotEndTime, setSlotEndTime] = useState("08:00 PM");
-  const [slotCapacity, setSlotCapacity] = useState<number>(4);
+  // Keep this as text while editing so organizers can fully clear and replace it.
+  const [slotCapacity, setSlotCapacity] = useState("");
   const [slotPrice, setSlotPrice] = useState("0");
   const [slotDescription, setSlotDescription] = useState("");
   const [slotItemsRequired, setSlotItemsRequired] = useState("");
@@ -210,6 +220,20 @@ export const NavaratriOrganizer: React.FC = () => {
     let isMounted = true;
 
     const resolveOrganizerSession = async () => {
+      // Resolve the auth provider before accepting a persisted organizer ID.
+      // Google sessions do not have a portal passcode to include in an access slip.
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (isMounted) {
+          setIsGoogleOrganizerSession(
+            user?.app_metadata?.provider === "google" ||
+              Boolean(user?.identities?.some((identity) => identity.provider === "google"))
+          );
+        }
+      } catch {
+        if (isMounted) setIsGoogleOrganizerSession(false);
+      }
+
       // 1. Check stored ID from context or localStorage / sessionStorage
       const storedId =
         activeMandapamId ||
@@ -447,7 +471,11 @@ export const NavaratriOrganizer: React.FC = () => {
       toast.error("Please enter a title for the booking opening.");
       return;
     }
-    const cap = Math.max(1, slotCapacity || 4);
+    const cap = Number.parseInt(slotCapacity, 10);
+    if (!Number.isInteger(cap) || cap < 1 || cap > 1000) {
+      toast.error("Enter a quota between 1 and 1,000.");
+      return;
+    }
     const finalCategory = slotCategory === "Other" ? (customSlotCategory.trim() || "Special Program") : slotCategory;
 
     const newSrv = createService({
@@ -478,7 +506,7 @@ export const NavaratriOrganizer: React.FC = () => {
     setCustomSlotCategory("");
     setSlotDescription("");
     setSlotItemsRequired("");
-    setSlotCapacity(4);
+    setSlotCapacity("");
     toast.success(`Booking slot "${slotTitle}" opened with quota of ${cap} tokens!`);
   };
 
@@ -581,6 +609,27 @@ export const NavaratriOrganizer: React.FC = () => {
     setCustomCategory("");
     setEventModalOpen(false);
     toast.success("Festival event added and published successfully!");
+  };
+
+  const openAnnadanamSetup = () => {
+    setQuickAnnadanamLocation(currentMandapam.address || currentMandapam.area || "Mandapam premises");
+    setAnnadanamModalOpen(true);
+  };
+
+  const saveQuickAnnadanam = (e: React.FormEvent) => {
+    e.preventDefault();
+    const selectedDays = annadanamScope === "all" ? STANDARD_NAVARATRI_DAYS : STANDARD_NAVARATRI_DAYS.filter(day => day.dayNumber === annadanamDay);
+    selectedDays.forEach(day => updateDaySetting({
+      mandapamId: currentMandapam.id,
+      dayNumber: day.dayNumber,
+      date: day.date,
+      annadanamEnabled: true,
+      annadanamStartTime: quickAnnadanamStart.trim(),
+      annadanamEndTime: quickAnnadanamEnd.trim(),
+      annadanamLocation: quickAnnadanamLocation.trim() || currentMandapam.address || currentMandapam.area || "Mandapam premises"
+    }));
+    setAnnadanamModalOpen(false);
+    toast.success(`Annadanam enabled for ${annadanamScope === "all" ? "all 10 days" : `Day ${annadanamDay}`}.`);
   };
 
   const handleDeleteAccount = async () => {
@@ -990,18 +1039,19 @@ export const NavaratriOrganizer: React.FC = () => {
                 </div>
 
                 <div className="py-1 space-y-0.5">
-                  {/* 1. Download Access Slip */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSettingsOpen(false);
-                      downloadMandapamCredentials(currentMandapam, sessionPasscode);
-                    }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:text-[#8B1E1E] rounded-xl transition-colors text-left cursor-pointer"
-                  >
-                    <Download className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Download Access Slip</span>
-                  </button>
+                  {isGoogleOrganizerSession === false && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSettingsOpen(false);
+                        downloadMandapamCredentials(currentMandapam, sessionPasscode);
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:text-[#8B1E1E] rounded-xl transition-colors text-left cursor-pointer"
+                    >
+                      <Download className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Download Access Slip</span>
+                    </button>
+                  )}
 
                   {/* 2. Logo & Cover Image */}
                   <button
@@ -1025,7 +1075,7 @@ export const NavaratriOrganizer: React.FC = () => {
                     className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:text-[#8B1E1E] rounded-xl transition-colors text-left cursor-pointer"
                   >
                     <Camera className="w-4 h-4 text-amber-600 shrink-0" />
-                    <span>Edit Logo & Cover Image</span>
+                    <span>Edit Logo</span>
                   </button>
 
                   {/* 3. Counter Standee */}
@@ -1038,18 +1088,8 @@ export const NavaratriOrganizer: React.FC = () => {
                     className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:text-[#8B1E1E] rounded-xl transition-colors text-left cursor-pointer"
                   >
                     <QrCode className="w-4 h-4 text-[#8B1E1E] shrink-0" />
-                    <span>Counter Standee</span>
+                    <span>Mandapam QR Code</span>
                   </button>
-
-                  {/* 4. View Public Page */}
-                  <Link
-                    to={`/navaratri/m/${currentMandapam.slug}`}
-                    onClick={() => setSettingsOpen(false)}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:text-[#8B1E1E] rounded-xl transition-colors text-left cursor-pointer"
-                  >
-                    <ExternalLink className="w-4 h-4 text-blue-600 shrink-0" />
-                    <span>View Public Page</span>
-                  </Link>
 
                   <div className="my-1 border-t border-stone-200" />
 
@@ -1140,18 +1180,16 @@ export const NavaratriOrganizer: React.FC = () => {
       {/* TAB 1: 10-DAY FESTIVAL SCHEDULE & QUICK EVENT CREATOR */}
       {activeTab === "days" && (
         <div className="space-y-6">
-          {/* Action Card: Add Events (Dandiya, Pooja, Archanas, etc.) */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 rounded-3xl bg-gradient-to-r from-amber-50 via-orange-50 to-amber-100/70 border-2 border-amber-300 shadow-sm">
-            <div className="space-y-1">
+          {/* Quick setup actions */}
+          <div className="grid gap-3 lg:grid-cols-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-3xl bg-gradient-to-r from-amber-50 via-orange-50 to-amber-100/70 border-2 border-amber-300 shadow-sm">
+            <div>
               <div className="flex items-center gap-2">
                 <DandiyaIcon className="w-5 h-5 text-[#8B1E1E]" />
                 <h2 className="font-serif font-black text-lg sm:text-xl text-[#8B1E1E]">
-                  Add Mandapam Events (Dandiya, Pooja, Archana)
+                  Add Events
                 </h2>
               </div>
-              <p className="text-xs text-stone-700 leading-relaxed max-w-2xl">
-                Quickly add special events like Dandiya nights, Homams, Archanas, or cultural programs with title, date, time, and entry fee so devotees visiting your page see them on their respective dates.
-              </p>
             </div>
             <button
               type="button"
@@ -1159,8 +1197,17 @@ export const NavaratriOrganizer: React.FC = () => {
               className="px-5 py-3 rounded-2xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer active:scale-95"
             >
               <Plus className="w-4 h-4" />
-              <span>Add Event (Dandiya, Pooja, Archana)</span>
+              <span>Add Event</span>
             </button>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-3xl bg-gradient-to-r from-emerald-50 via-amber-50 to-amber-100/70 border-2 border-amber-300 shadow-sm">
+            <div className="flex items-center gap-2">
+              <div className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-700 text-white shadow-sm"><Utensils className="h-4 w-4" /></div>
+              <div><h2 className="font-serif font-black text-lg text-[#8B1E1E]">Annadanam</h2><p className="text-[11px] text-stone-600">Set days, timings & location</p></div>
+            </div>
+            <button type="button" onClick={openAnnadanamSetup} className="px-5 py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-md transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer active:scale-95"><Plus className="w-4 h-4" /><span>Set Annadanam</span></button>
+          </div>
           </div>
 
           {/* Clean Day 1 to Day 10 Buttons */}
@@ -1874,42 +1921,21 @@ export const NavaratriOrganizer: React.FC = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-stone-800 mb-1">
-                    Category *
-                  </label>
-                  <select
-                    value={slotCategory}
-                    onChange={(e) => setSlotCategory(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none font-semibold text-stone-800"
-                  >
-                    <option value="Pooja">🪔 Special Pooja / Seva</option>
-                    <option value="Lottery / Lucky Draw">🎟️ Lottery / Lucky Draw</option>
-                    <option value="Dandiya / Garba">💃 Dandiya / Garba</option>
-                    <option value="Daily Pooja">☀️ Daily Pooja</option>
-                    <option value="Other">🎯 Other (Custom)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-stone-800 mb-1">
-                    Token Quota Limit (Max Bookings) *
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="1000"
-                    required
-                    value={slotCapacity}
-                    onChange={(e) => setSlotCapacity(Math.max(1, parseInt(e.target.value) || 1))}
-                    placeholder="e.g. 4"
-                    className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none font-bold text-[#8B1E1E]"
-                  />
-                  <p className="text-[10px] text-stone-500 mt-0.5">
-                    e.g. Set to 4 to strictly allow 4 bookings. When reached, shows FILLED SLOTS.
-                  </p>
-                </div>
+              <div>
+                <label className="block text-xs font-bold text-stone-800 mb-1">
+                  Category *
+                </label>
+                <select
+                  value={slotCategory}
+                  onChange={(e) => setSlotCategory(e.target.value as any)}
+                  className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none font-semibold text-stone-800"
+                >
+                  <option value="Pooja">🪔 Special Pooja / Seva</option>
+                  <option value="Lottery / Lucky Draw">🎟️ Lottery / Lucky Draw</option>
+                  <option value="Dandiya / Garba">💃 Dandiya / Garba</option>
+                  <option value="Daily Pooja">☀️ Daily Pooja</option>
+                  <option value="Other">🎯 Other (Custom)</option>
+                </select>
               </div>
 
               {slotCategory === "Other" && (
@@ -1927,6 +1953,26 @@ export const NavaratriOrganizer: React.FC = () => {
                   />
                 </div>
               )}
+
+              <div>
+                <label className="block text-xs font-bold text-stone-800 mb-1">
+                  Token Quota Limit (Max Bookings) *
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="1000"
+                  required
+                  inputMode="numeric"
+                  value={slotCapacity}
+                  onChange={(e) => setSlotCapacity(e.target.value)}
+                  placeholder="e.g. 4"
+                  className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none font-bold text-[#8B1E1E]"
+                />
+                <p className="text-[10px] text-stone-500 mt-0.5">
+                  Enter 1–1,000. You can clear this field and enter a new quota at any time.
+                </p>
+              </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
@@ -2083,6 +2129,7 @@ export const NavaratriOrganizer: React.FC = () => {
                     { label: "Dandiya Raas", cat: "Game", title: "Dandiya Raas & Garba Utsav" },
                     { label: "Chandi Homam", cat: "Pooja", title: "Maha Chandi Yagam & Purnahuthi", isHomam: true },
                     { label: "Kumkumarchana", cat: "Pooja", title: "Sri Lalitha Kumkumarchana Seva" },
+                    { label: "Annadanam", cat: "Annadanam", title: "Maha Annadanam Seva" },
                     { label: "Bhajan Sandhya", cat: "Bhajan", title: "Devotional Bhajan Sandhya" },
                     { label: "Bathukamma", cat: "Cultural Program", title: "Maha Bathukamma Celebrations" }
                   ].map((preset) => (
@@ -2278,6 +2325,22 @@ export const NavaratriOrganizer: React.FC = () => {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {annadanamModalOpen && (
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-3 backdrop-blur-sm" onClick={() => setAnnadanamModalOpen(false)}>
+          <form onSubmit={saveQuickAnnadanam} onClick={(event) => event.stopPropagation()} className="w-full max-w-md space-y-4 rounded-3xl border-2 border-amber-400 bg-[#fffdf9] p-5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-amber-200 pb-3"><div className="flex items-center gap-2"><Utensils className="h-5 w-5 text-emerald-700" /><div><h3 className="font-serif text-lg font-black text-[#8B1E1E]">Annadanam setup</h3><p className="text-[11px] text-stone-600">Publish the same schedule to one day or all days.</p></div></div><button type="button" onClick={() => setAnnadanamModalOpen(false)} className="rounded-full bg-stone-100 p-2 text-stone-600"><X className="h-4 w-4" /></button></div>
+            <div className="grid grid-cols-2 gap-2 rounded-xl bg-amber-50 p-1.5">
+              <button type="button" onClick={() => setAnnadanamScope("one")} className={`rounded-lg px-3 py-2 text-xs font-bold ${annadanamScope === "one" ? "bg-[#8B1E1E] text-white" : "text-stone-700"}`}>One day</button>
+              <button type="button" onClick={() => setAnnadanamScope("all")} className={`rounded-lg px-3 py-2 text-xs font-bold ${annadanamScope === "all" ? "bg-[#8B1E1E] text-white" : "text-stone-700"}`}>All 10 days</button>
+            </div>
+            {annadanamScope === "one" && <label className="block text-xs font-bold text-stone-800">Festival day<select value={annadanamDay} onChange={(event) => setAnnadanamDay(Number(event.target.value))} className="mt-1 w-full rounded-xl border border-amber-300 bg-white px-3 py-2 text-xs">{STANDARD_NAVARATRI_DAYS.map(day => <option key={day.dayNumber} value={day.dayNumber}>Day {day.dayNumber} — {day.date}</option>)}</select></label>}
+            <div className="grid grid-cols-2 gap-3"><label className="text-xs font-bold text-stone-800">Start time<input required value={quickAnnadanamStart} onChange={(event) => setQuickAnnadanamStart(event.target.value)} className="mt-1 w-full rounded-xl border border-amber-300 bg-white px-3 py-2 text-xs" /></label><label className="text-xs font-bold text-stone-800">End time<input required value={quickAnnadanamEnd} onChange={(event) => setQuickAnnadanamEnd(event.target.value)} className="mt-1 w-full rounded-xl border border-amber-300 bg-white px-3 py-2 text-xs" /></label></div>
+            <label className="block text-xs font-bold text-stone-800">Location / Hall<input required value={quickAnnadanamLocation} onChange={(event) => setQuickAnnadanamLocation(event.target.value)} className="mt-1 w-full rounded-xl border border-amber-300 bg-white px-3 py-2 text-xs" /><span className="mt-1 block font-normal text-stone-500">Defaults to your Mandapam address and uses the same Google Maps link.</span></label>
+            <div className="flex gap-2"><button type="button" onClick={() => setAnnadanamModalOpen(false)} className="flex-1 rounded-xl border border-stone-300 bg-white py-2.5 text-xs font-bold text-stone-700">Cancel</button><button type="submit" className="flex-1 rounded-xl bg-emerald-700 py-2.5 text-xs font-bold text-white">Save Annadanam</button></div>
+          </form>
         </div>
       )}
 
