@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { NavaratriFlankingAdBox } from "../components/ads/NavaratriFlankingAdBox";
 import { MandapamGoldIcon } from "../components/devotional/MandapamGoldIcon";
 import { navaratriAsset } from "../utils/navaratriAssets";
+import { getMandapamDisplayId } from "../utils/mandapamDisplayId";
 import type { Mandapam } from "../types";
 
 type SupabaseMandapamRow = {
@@ -481,7 +482,7 @@ export const NavaratriLogin: React.FC = () => {
             <div>
               <h2 className="font-serif font-black text-base text-[#8B1E1E]">{activeMandapam.name}</h2>
               <p className="text-[11px] text-stone-600">
-                ID: <span className="font-mono font-bold text-stone-800">{activeMandapam.id}</span> &bull; {activeMandapam.area}, {activeMandapam.city}
+                ID: <span className="font-mono font-bold text-stone-800">{getMandapamDisplayId(activeMandapam.id)}</span> &bull; {activeMandapam.area}, {activeMandapam.city}
               </p>
             </div>
             <div className="flex gap-2">

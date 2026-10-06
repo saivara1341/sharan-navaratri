@@ -18,6 +18,7 @@ import {
   Upload
 } from "lucide-react";
 import { generatePasscode, copyToClipboard } from "../utils/mandapamCredentials";
+import { getMandapamDisplayId } from "../utils/mandapamDisplayId";
 import { Mandapam } from "../types";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -273,10 +274,10 @@ export const NavaratriRegister: React.FC = () => {
               <div className="rounded-xl bg-white border-2 border-dashed border-amber-300 p-3.5">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-stone-500">Mandapam ID</p>
                 <div className="flex items-center justify-between mt-1 gap-2">
-                  <span className="font-mono text-lg font-black text-[#8B1E1E] break-all">{registeredMandapam.id}</span>
+                  <span className="font-mono text-lg font-black text-[#8B1E1E]">{getMandapamDisplayId(registeredMandapam.id)}</span>
                   <button
                     type="button"
-                    onClick={() => copyToClipboard(registeredMandapam.id, "Mandapam ID")}
+                    onClick={() => copyToClipboard(getMandapamDisplayId(registeredMandapam.id), "Mandapam ID")}
                     className="p-2 rounded-lg bg-amber-100 text-amber-900 hover:bg-amber-200 transition-all cursor-pointer"
                     title="Copy Mandapam ID"
                   >
@@ -591,7 +592,7 @@ export const NavaratriRegister: React.FC = () => {
             By registering, the committee confirms accurate devotional and civic information for citizens.
           </p>
           <div className="mt-4 pt-3 border-t border-dashed border-amber-200 text-center flex flex-col sm:flex-row items-center justify-center gap-1.5 text-xs text-stone-600">
-            <span>Already have your Mandapam ID and Passcode?</span>
+            <span>Already have your organizer mobile/email and passcode?</span>
             <Link
               to="/navaratri/login"
               className="font-bold text-[#8B1E1E] hover:underline inline-flex items-center gap-1"

@@ -1,5 +1,6 @@
 import { Mandapam } from "../types";
 import { toast } from "sonner";
+import { getMandapamDisplayId } from "./mandapamDisplayId";
 
 export const generatePasscode = (): string => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -66,7 +67,7 @@ export const downloadMandapamCredentials = (mandapam: Mandapam, sessionPasscode?
 🕉️ MANDAPAM DETAILS:
 ----------------------------------------------------------------------
 Mandapam Name       : ${mandapam.name}
-Official Mandapam ID: ${mandapam.id}
+Official Mandapam ID: ${getMandapamDisplayId(mandapam.id)}
 Passcode / PIN      : ${passcode}
 Devi Alankarana     : ${mandapam.deviName}
 Location            : ${mandapam.area}, ${mandapam.city}, ${mandapam.state}
@@ -83,9 +84,10 @@ Email                : ${mandapam.organizerEmail || "Not provided"}
 1. Open Portal URL:
    ${portalUrl}
 
-2. Enter your Login Credentials:
-   - Mandapam ID     : ${mandapam.id}   (or your mobile: ${mandapam.organizerMobile})
+2. Sign in with your organizer credentials:
+   - Mobile / Email  : ${mandapam.organizerMobile}
    - Passcode / PIN  : ${passcode}
+   - Mandapam ID     : ${getMandapamDisplayId(mandapam.id)} (reference only)
 
 3. Click "Login to Mandapam Dashboard" to:
    ✓ Update Daily Maa Darshan & Alankarana with photos
@@ -113,7 +115,7 @@ Sharan Navaratri 2026 Devotional Platform
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `Mandapam-${mandapam.id}-Access-Slip.txt`;
+  link.download = `Mandapam-${getMandapamDisplayId(mandapam.id)}-Access-Slip.txt`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

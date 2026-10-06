@@ -9,6 +9,7 @@ import { WalkInRegisterModal } from "../components/organizer/WalkInRegisterModal
 import { ShareQrModal } from "../components/citizen/ShareQrModal";
 import { STANDARD_NAVARATRI_DAYS } from "../data/standardNavaratriDays";
 import { downloadMandapamCredentials, copyToClipboard, getPrivatePasscode } from "../utils/mandapamCredentials";
+import { getMandapamDisplayId } from "../utils/mandapamDisplayId";
 import { PrasadBowlIcon } from "../components/devotional/PrasadBowlIcon";
 import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifiedBadge";
 import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
@@ -929,10 +930,10 @@ export const NavaratriOrganizer: React.FC = () => {
             {/* Mandapam ID Badge */}
             <div className="flex items-center gap-1 bg-black/30 border border-white/20 px-2.5 py-1 rounded-xl">
               <span className="text-amber-300 font-bold">ID:</span>
-              <span className="font-mono font-bold">{currentMandapam.id}</span>
+              <span className="font-mono font-bold">{getMandapamDisplayId(currentMandapam.id)}</span>
               <button
                 type="button"
-                onClick={() => copyToClipboard(currentMandapam.id, "Mandapam ID")}
+                onClick={() => copyToClipboard(getMandapamDisplayId(currentMandapam.id), "Mandapam ID")}
                 className="text-white/70 hover:text-white ml-1 p-0.5 cursor-pointer"
                 title="Copy Mandapam ID"
               >
@@ -1829,7 +1830,7 @@ export const NavaratriOrganizer: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+          className="fixed inset-0 z-[70] flex items-start sm:items-center justify-center overflow-y-auto overscroll-contain p-2 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
           onClick={() => setSlotModalOpen(false)}
         >
           <div
@@ -2049,34 +2050,35 @@ export const NavaratriOrganizer: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+          className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto overscroll-contain p-2 sm:items-center sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
           onClick={() => setEventModalOpen(false)}
         >
           <div
-            className="bg-[#FFFDF9] rounded-3xl max-w-lg w-full shadow-2xl border-2 border-amber-400 overflow-hidden animate-in zoom-in-95 duration-200"
+            className="my-auto flex w-full max-w-lg max-h-[calc(100dvh-1rem)] flex-col overflow-hidden rounded-3xl border-2 border-amber-400 bg-[#FFFDF9] shadow-2xl animate-in zoom-in-95 duration-200 sm:max-h-[calc(100dvh-2rem)]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-5 bg-gradient-to-r from-[#8B1E1E] to-[#B45309] text-white flex items-center justify-between">
+            <div className="sticky top-0 z-10 flex shrink-0 items-center justify-between gap-3 bg-gradient-to-r from-[#8B1E1E] to-[#B45309] p-4 text-white sm:p-5">
               <div className="flex items-center gap-2">
                 <DandiyaIcon className="w-5 h-5 text-amber-300" />
-                <h3 className="font-serif font-black text-lg text-white">
+                <h3 className="font-serif font-black text-base leading-tight text-white sm:text-lg">
                   Add Mandapam Event & Activity
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setEventModalOpen(false)}
-                className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white"
+                className="shrink-0 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+                aria-label="Close event form"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateEvent} className="p-5 sm:p-6 space-y-4 text-xs font-medium text-stone-800">
+            <form onSubmit={handleCreateEvent} className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain p-4 text-xs font-medium text-stone-800 sm:p-6">
               {/* Quick Preset Templates */}
               <div className="space-y-1 bg-amber-50/70 p-3 rounded-2xl border border-amber-200">
-                <span className="text-[10px] text-amber-900 font-bold uppercase tracking-wider block">
-                  Quick Event Suggestions (Tap to Auto-Fill):
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-amber-900">
+                  Quick event suggestions
                 </span>
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {[
@@ -2093,7 +2095,7 @@ export const NavaratriOrganizer: React.FC = () => {
                         setEventTitle(preset.title);
                         setEventCategory(preset.cat as Activity["category"]);
                       }}
-                      className="text-[10px] px-2.5 py-1 rounded-xl bg-white hover:bg-amber-100 text-[#8B1E1E] border border-amber-300 font-semibold transition-all cursor-pointer shadow-2xs inline-flex items-center gap-1.5"
+                      className="inline-flex min-h-8 items-center gap-1.5 rounded-xl border border-amber-300 bg-white px-2.5 py-1 text-[10px] font-semibold text-[#8B1E1E] shadow-2xs transition-all hover:bg-amber-100 active:scale-[0.98]"
                     >
                       {preset.isHomam && <HomaKundaIcon className="w-3.5 h-3.5 shrink-0" />}
                       <span>{preset.label}</span>
@@ -2116,7 +2118,7 @@ export const NavaratriOrganizer: React.FC = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <label className="block text-stone-700 font-bold mb-1">
                     Event Category *
@@ -2152,7 +2154,7 @@ export const NavaratriOrganizer: React.FC = () => {
                 </div>
 
                 {eventCategory === "Other" && (
-                  <div className="col-span-2 space-y-1 bg-amber-50 p-2.5 rounded-xl border border-amber-300">
+                  <div className="space-y-1 rounded-xl border border-amber-300 bg-amber-50 p-2.5 sm:col-span-2">
                     <label className="block text-stone-800 font-bold text-xs">
                       Enter Custom Category Name *
                     </label>
@@ -2168,7 +2170,7 @@ export const NavaratriOrganizer: React.FC = () => {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <label className="block text-stone-700 font-bold mb-1">
                     Start Time *
@@ -2261,17 +2263,17 @@ export const NavaratriOrganizer: React.FC = () => {
                 />
               </div>
 
-              <div className="pt-2 border-t border-amber-200 flex items-center justify-end gap-2">
+              <div className="sticky bottom-0 -mx-4 flex gap-2 border-t border-amber-200 bg-[#FFFDF9]/95 px-4 pt-3 pb-1 backdrop-blur sm:-mx-6 sm:justify-end sm:px-6">
                 <button
                   type="button"
                   onClick={() => setEventModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-stone-300 bg-white text-stone-700 cursor-pointer"
+                  className="min-h-11 flex-1 rounded-xl border border-stone-300 bg-white px-4 py-2 text-stone-700 transition-colors hover:bg-stone-50 sm:flex-none cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] text-white font-bold shadow-sm cursor-pointer"
+                  className="min-h-11 flex-[1.45] rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] px-5 py-2 font-bold text-white shadow-sm transition-transform active:scale-[0.98] sm:flex-none cursor-pointer"
                 >
                   Save & Publish Event
                 </button>
@@ -2286,7 +2288,7 @@ export const NavaratriOrganizer: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+          className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
           onClick={() => setDeleteStep(0)}
         >
           <div
@@ -2359,7 +2361,7 @@ export const NavaratriOrganizer: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+          className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
           onClick={() => setDeleteStep(0)}
         >
           <div
@@ -2438,7 +2440,7 @@ export const NavaratriOrganizer: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in"
+          className="fixed inset-0 z-[70] bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in"
           onClick={() => {
             setBrandingModalOpen(false);
           }}
