@@ -608,12 +608,14 @@ export const NavaratriLogin: React.FC = () => {
           </form>
         )}
 
-        <p className="pt-2 border-t border-amber-200/80 text-[11px] text-stone-500 text-center">
-          New?{" "}
-          <button type="button" onClick={() => setAccountMode("new")} className="font-bold text-[#8B1E1E] hover:underline cursor-pointer">
-            Register now.
-          </button>
-        </p>
+        {accountMode === "existing" && (
+          <p className="pt-2 border-t border-amber-200/80 text-[11px] text-stone-500 text-center">
+            New?{" "}
+            <button type="button" onClick={() => setAccountMode("new")} className="font-bold text-[#8B1E1E] hover:underline cursor-pointer">
+              Register now.
+            </button>
+          </p>
+        )}
 
         <p className="text-[10px] text-stone-500 flex items-center justify-center gap-1 pt-1">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
