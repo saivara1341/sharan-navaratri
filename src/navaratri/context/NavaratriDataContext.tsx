@@ -122,7 +122,7 @@ interface NavaratriDataContextType {
   createSlot: (data: Omit<ServiceSlot, "id" | "bookedCount" | "walkinCount" | "status">) => ServiceSlot;
   updateSlot: (id: string, data: Partial<ServiceSlot>) => void;
   deleteSlot: (id: string) => void;
-  registerMandapam: (data: Omit<Mandapam, "id" | "slug" | "verificationStatus" | "createdAt">) => { success: boolean; mandapam?: Mandapam; duplicateWarning?: string };
+  registerMandapam: (data: Omit<Mandapam, "id" | "slug" | "verificationStatus" | "createdAt">) => Promise<{ success: boolean; mandapam?: Mandapam; duplicateWarning?: string; error?: string }>;
   verifyMandapam: (mandapamId: string, status: VerificationStatus) => void;
   updatePallakiStatus: (id: string, status: PallakiLiveStatus) => void;
   updateNimarjanamStatus: (id: string, status: NimarjanamQueueStatus) => void;
@@ -931,7 +931,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     setSlots(prev => prev.filter(s => s.id !== id));
   };
 
-  const registerMandapam = (data: Omit<Mandapam, "id" | "slug" | "verificationStatus" | "createdAt"> & { ownerUserId?: string | null }) => {
+  const registerMandapam = async (data: Omit<Mandapam, "id" | "slug" | "verificationStatus" | "createdAt"> & { ownerUserId?: string | null }) => {
     const normalizedName = data.name.toLowerCase().trim();
     const normalizedArea = data.area.toLowerCase().trim();
     const normalizedCity = data.city.toLowerCase().trim();
@@ -1232,22 +1232,18 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
           created_at: newMandapam.createdAt,
           updated_at: newMandapam.createdAt
         };
-      (supabase.from("navaratri_mandapams") as any)
-        .insert([payload])
-        .then(async ({ error }: any) => {
-          if (!error) return;
-          // Keeps registration available while an older database awaits the committed migration.
-          if (String(error.message || "").includes("google_maps_url")) {
-            const { google_maps_url: _mapsLink, ...legacyPayload } = payload;
-            const { error: fallbackError } = await (supabase.from("navaratri_mandapams") as any).insert([legacyPayload]);
-            if (fallbackError) console.warn("Supabase mandapam insert notice:", fallbackError.message);
-            return;
-          }
-          console.warn("Supabase mandapam insert notice:", error.message);
-        })
-        .catch(() => {});
-    } catch {
-      // offline fallback
+      const { error } = await (supabase.from("navaratri_mandapams") as any).insert([payload]);
+      if (error) {
+        if (String(error.message || "").includes("google_maps_url")) {
+          const { google_maps_url: _mapsLink, ...legacyPayload } = payload;
+          const { error: fallbackError } = await (supabase.from("navaratri_mandapams") as any).insert([legacyPayload]);
+          if (!fallbackError) return { success: true, mandapam: newMandapam, duplicateWarning };
+          return { success: false, duplicateWarning, error: fallbackError.message || "Could not save your Mandapam." };
+        }
+        return { success: false, duplicateWarning, error: error.message || "Could not save your Mandapam." };
+      }
+    } catch (error) {
+      return { success: false, duplicateWarning, error: error instanceof Error ? error.message : "Could not save your Mandapam." };
     }
 
     return { success: true, mandapam: newMandapam, duplicateWarning };

@@ -164,7 +164,7 @@ export const NavaratriRegister: React.FC = () => {
     const ownerUserId = googleUser?.id || googleOnboarding?.userId || null;
     const linkedEmail = googleUser?.email?.trim().toLowerCase() || organizerEmail.trim() || null;
 
-    const res = registerMandapam({
+    const res = await registerMandapam({
       name: name.trim(),
       organizerName: organizerName.trim(),
       organizerMobile: cleanMobile,
@@ -186,6 +186,11 @@ export const NavaratriRegister: React.FC = () => {
       passcode: passcode.trim(),
       ownerUserId: ownerUserId || undefined
     });
+
+    if (!res.success) {
+      toast.error(res.error || "Your Mandapam could not be saved. Please try again.");
+      return;
+    }
 
     if (res.duplicateWarning) {
       setDuplicateWarning(res.duplicateWarning);
