@@ -1,4 +1,5 @@
 import { navaratriAsset } from "../utils/navaratriAssets";
+import { getMandapamDirectionsUrl } from "../utils/mandapamMaps";
 import React, { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
@@ -810,7 +811,7 @@ export const NavaratriNearMe: React.FC = () => {
             </div>
           ) : (
             displayedMandapams.map((item) => {
-              const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${item.latitude},${item.longitude}`;
+              const mapsUrl = getMandapamDirectionsUrl(item);
               return (
                 <article
                   key={item.id}
@@ -907,9 +908,7 @@ export const NavaratriNearMe: React.FC = () => {
           ) : (
             visibleActivities.map((activity) => {
               const mandapam = activity.mandapam;
-              const activityMapsUrl = mandapam
-                ? `https://www.google.com/maps/dir/?api=1&destination=${mandapam.latitude},${mandapam.longitude}`
-                : undefined;
+              const activityMapsUrl = mandapam ? getMandapamDirectionsUrl(mandapam) : undefined;
               return (
                 <article
                   key={activity.id}

@@ -34,6 +34,7 @@ type SupabaseMandapamRow = {
   pincode: string;
   latitude: number | null;
   longitude: number | null;
+  google_maps_url: string | null;
   verification_status: Mandapam["verificationStatus"];
   organizer_name: string | null;
   organizer_mobile: string | null;
@@ -61,6 +62,7 @@ const mapSupabaseMandapam = (row: SupabaseMandapamRow): Mandapam => ({
   pincode: row.pincode,
   latitude: row.latitude ?? 0,
   longitude: row.longitude ?? 0,
+  googleMapsUrl: row.google_maps_url || undefined,
   verificationStatus: row.verification_status || "PENDING",
   organizerName: row.organizer_name || "Mandapam Organizer",
   organizerMobile: row.organizer_mobile || row.contact_phone || "",
@@ -151,7 +153,7 @@ export const NavaratriLogin: React.FC = () => {
     let remoteMandapam: SupabaseMandapamRow | null = null;
     const ownedResult = await (supabase as any)
       .from("navaratri_mandapams")
-      .select("id,name,slug,description,devi_name,address,area,city,state,pincode,latitude,longitude,verification_status,organizer_name,organizer_mobile,organizer_email,logo_url,cover_image_url,contact_phone,whatsapp_number,created_at,updated_at")
+      .select("id,name,slug,description,devi_name,address,area,city,state,pincode,latitude,longitude,google_maps_url,verification_status,organizer_name,organizer_mobile,organizer_email,logo_url,cover_image_url,contact_phone,whatsapp_number,created_at,updated_at")
       .eq("owner_user_id", user.id)
       .limit(1)
       .maybeSingle();
@@ -162,7 +164,7 @@ export const NavaratriLogin: React.FC = () => {
     if (!remoteMandapam && email) {
       const emailResult = await (supabase as any)
         .from("navaratri_mandapams")
-        .select("id,name,slug,description,devi_name,address,area,city,state,pincode,latitude,longitude,verification_status,organizer_name,organizer_mobile,organizer_email,logo_url,cover_image_url,contact_phone,whatsapp_number,created_at,updated_at")
+        .select("id,name,slug,description,devi_name,address,area,city,state,pincode,latitude,longitude,google_maps_url,verification_status,organizer_name,organizer_mobile,organizer_email,logo_url,cover_image_url,contact_phone,whatsapp_number,created_at,updated_at")
         .eq("organizer_email", email)
         .limit(1)
         .maybeSingle();

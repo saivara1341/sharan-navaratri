@@ -26,6 +26,7 @@ import { AuspiciousRibbonBorder } from "../components/devotional/AuspiciousRibbo
 import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifiedBadge";
 import { NavaratriFlankingAdBox } from "../components/ads/NavaratriFlankingAdBox";
 import annadanamSevaIllustration from "@/assets/annadanam-seva-illustration.png";
+import { getMandapamDirectionsUrl } from "../utils/mandapamMaps";
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
 
@@ -500,7 +501,7 @@ export const NavaratriHome: React.FC = () => {
 
           <div className="grid gap-4 md:grid-cols-2">
             {savedMandapams.map((mandapam) => {
-              const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${mandapam.latitude},${mandapam.longitude}`;
+              const mapsUrl = getMandapamDirectionsUrl(mandapam);
               return (
                 <article
                   key={mandapam.id}

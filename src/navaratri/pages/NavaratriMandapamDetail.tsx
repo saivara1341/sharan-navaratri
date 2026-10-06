@@ -1,4 +1,5 @@
 import { navaratriAsset } from "../utils/navaratriAssets";
+import { getMandapamDirectionsUrl } from "../utils/mandapamMaps";
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
@@ -499,7 +500,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 </button>
 
                 <a
-                  href={`https://maps.google.com/?q=${encodeURIComponent(`${mandapam.name}, ${mandapam.address}, ${mandapam.city}`)}`}
+                  href={getMandapamDirectionsUrl(mandapam)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-white hover:bg-amber-50 text-stone-800 border border-amber-300 text-xs font-bold shadow-sm transition-colors flex items-center justify-center gap-1.5"

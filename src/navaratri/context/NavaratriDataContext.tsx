@@ -512,6 +512,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
                 pincode: row.pincode || "503001",
                 latitude: Number(row.latitude) || 18.6725,
                 longitude: Number(row.longitude) || 78.0941,
+                googleMapsUrl: row.google_maps_url || undefined,
                 verificationStatus: row.verification_status || "VERIFIED",
                 organizerName: row.organizer_name || "",
                 organizerMobile: row.organizer_mobile || "",
@@ -979,6 +980,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
             pincode: updatedMandapam.pincode,
             latitude: updatedMandapam.latitude,
             longitude: updatedMandapam.longitude,
+            google_maps_url: updatedMandapam.googleMapsUrl || null,
             organizer_name: updatedMandapam.organizerName,
             organizer_mobile: updatedMandapam.organizerMobile,
             organizer_email: updatedMandapam.organizerEmail || null,
@@ -1199,8 +1201,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Persist registered mandapam to Supabase
     try {
-      (supabase.from("navaratri_mandapams") as any)
-        .insert([{
+      const payload = {
           id: newMandapam.id,
           name: newMandapam.name,
           slug: newMandapam.slug,
@@ -1213,6 +1214,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
           pincode: newMandapam.pincode || "503001",
           latitude: newMandapam.latitude,
           longitude: newMandapam.longitude,
+          google_maps_url: newMandapam.googleMapsUrl || null,
           organizer_name: newMandapam.organizerName,
           organizer_mobile: newMandapam.organizerMobile,
           organizer_email: newMandapam.organizerEmail || null,
@@ -1224,9 +1226,19 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
           verification_status: "VERIFIED",
           created_at: newMandapam.createdAt,
           updated_at: newMandapam.createdAt
-        }])
-        .then(({ error }: any) => {
-          if (error) console.warn("Supabase mandapam insert notice:", error.message);
+        };
+      (supabase.from("navaratri_mandapams") as any)
+        .insert([payload])
+        .then(async ({ error }: any) => {
+          if (!error) return;
+          // Keeps registration available while an older database awaits the committed migration.
+          if (String(error.message || "").includes("google_maps_url")) {
+            const { google_maps_url: _mapsLink, ...legacyPayload } = payload;
+            const { error: fallbackError } = await (supabase.from("navaratri_mandapams") as any).insert([legacyPayload]);
+            if (fallbackError) console.warn("Supabase mandapam insert notice:", fallbackError.message);
+            return;
+          }
+          console.warn("Supabase mandapam insert notice:", error.message);
         })
         .catch(() => {});
     } catch {

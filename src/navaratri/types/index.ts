@@ -31,6 +31,7 @@ export interface Mandapam {
   pincode: string;
   latitude: number;
   longitude: number;
+  googleMapsUrl?: string;
   verificationStatus: VerificationStatus;
   organizerName: string;
   organizerMobile: string;

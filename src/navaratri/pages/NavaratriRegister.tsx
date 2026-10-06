@@ -15,8 +15,6 @@ import {
   QrCode,
   Copy,
   ExternalLink,
-  LocateFixed,
-  Loader2,
   Lock,
   Sparkles
 } from "lucide-react";
@@ -79,11 +77,7 @@ export const NavaratriRegister: React.FC = () => {
   // Credentials are captured on the login page before onboarding.
   const [passcode] = useState(() => generatePasscode());
 
-  // Exact GPS location
-  const [latitude, setLatitude] = useState<number | null>(null);
-  const [longitude, setLongitude] = useState<number | null>(null);
-  const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
-  const [gpsLoading, setGpsLoading] = useState(false);
+  const [googleMapsUrl, setGoogleMapsUrl] = useState("");
 
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
   const [registeredMandapam, setRegisteredMandapam] = useState<Mandapam | null>(null);
@@ -115,68 +109,29 @@ export const NavaratriRegister: React.FC = () => {
     };
   }, [mandapams, googleOnboarding, setActiveMandapamId, setRole]);
 
-  const handleCaptureGps = () => {
-    if (!("geolocation" in navigator)) {
-      toast.error("GPS is not supported on this device/browser.");
-      return;
-    }
-    setGpsLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const { latitude: lat, longitude: lng, accuracy } = pos.coords;
-        setLatitude(lat);
-        setLongitude(lng);
-        setGpsAccuracy(Math.round(accuracy));
-        toast.success(`Exact GPS location captured (±${Math.round(accuracy)} m)`);
-
-        // Reverse geocode to auto-fill empty address fields
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&addressdetails=1`,
-            { headers: { Accept: "application/json" } }
-          );
-          if (res.ok) {
-            const data = await res.json();
-            const a = data.address || {};
-            const foundArea = a.suburb || a.neighbourhood || a.village || a.quarter || a.county || "";
-            const foundCity = a.city || a.town || a.city_district || a.state_district || "";
-            const foundStreet = [a.house_number, a.road].filter(Boolean).join(", ");
-            if (!address.trim() && foundStreet) setAddress(foundStreet);
-            if (!area.trim() && foundArea) setArea(foundArea);
-            if (!city.trim() && foundCity) setCity(foundCity);
-            if (!state.trim() && a.state) setState(a.state);
-            if (!pincode.trim() && a.postcode) setPincode(String(a.postcode).replace(/\s/g, ""));
-          }
-        } catch {
-          // Reverse geocoding is best-effort only
-        } finally {
-          setGpsLoading(false);
-        }
-      },
-      (err) => {
-        setGpsLoading(false);
-        toast.error(
-          err.code === err.PERMISSION_DENIED
-            ? "Location permission denied. Please allow location access and try again."
-            : "Could not fetch GPS location. Please try again outdoors or near a window."
-        );
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-    );
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setDuplicateWarning(null);
 
     const cleanMobile = organizerMobile.replace(/\D/g, "");
-    if (!name.trim() || !organizerName.trim() || !cleanMobile || !area.trim()) {
+    if (!name.trim() || !organizerName.trim() || !cleanMobile || !area.trim() || !googleMapsUrl.trim()) {
       toast.error("Please fill in all mandatory fields.");
       return;
     }
 
     if (cleanMobile.length !== 10) {
       toast.error("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+
+    let normalizedMapsUrl = "";
+    try {
+      const parsedUrl = new URL(googleMapsUrl.trim());
+      const isGoogleMapsUrl = ["maps.google.com", "www.google.com", "google.com", "maps.app.goo.gl"].includes(parsedUrl.hostname);
+      if (!isGoogleMapsUrl) throw new Error("not a Google Maps URL");
+      normalizedMapsUrl = parsedUrl.toString();
+    } catch {
+      toast.error("Please paste a valid Google Maps share link for this mandapam.");
       return;
     }
 
@@ -203,8 +158,9 @@ export const NavaratriRegister: React.FC = () => {
       city: city.trim(),
       state,
       pincode,
-      latitude: latitude ?? 18.6725,
-      longitude: longitude ?? 78.0941,
+      latitude: 18.6725,
+      longitude: 78.0941,
+      googleMapsUrl: normalizedMapsUrl,
       description: description.trim() || "Annual Community Navaratri Utsav",
       contactPhone: cleanMobile,
       whatsappNumber: cleanMobile,
@@ -509,44 +465,23 @@ export const NavaratriRegister: React.FC = () => {
             </div>
           </div>
 
-          {/* Exact GPS Location */}
-          <div className={`rounded-2xl border p-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 transition-colors ${latitude !== null ? "border-emerald-300 bg-emerald-50/70" : "border-amber-300 bg-amber-50/60"}`}>
-            <div className="flex items-start gap-2.5">
-              <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${latitude !== null ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-[#8B1E1E]"}`}>
-                <LocateFixed className="w-4 h-4" />
-              </div>
-              <div className="text-xs">
-                <p className="font-bold text-stone-800">Exact GPS Location</p>
-                {latitude !== null && longitude !== null ? (
-                  <p className="text-emerald-800 font-mono text-[11px] mt-0.5">
-                    {latitude.toFixed(6)}, {longitude.toFixed(6)}
-                    {gpsAccuracy !== null && <span className="text-stone-500 font-sans"> • ±{gpsAccuracy} m</span>}
-                    {" • "}
-                    <a
-                      href={`https://maps.google.com/?q=${latitude},${longitude}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-sans font-bold text-[#8B1E1E] hover:underline"
-                    >
-                      Verify on map
-                    </a>
-                  </p>
-                ) : (
-                  <p className="text-stone-600 text-[11px] mt-0.5">
-                    Stand at the mandapam and tap to capture its exact location so devotees get precise directions.
-                  </p>
-                )}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={handleCaptureGps}
-              disabled={gpsLoading}
-              className="shrink-0 px-3.5 py-2 rounded-xl bg-[#8B1E1E] hover:bg-[#781B1B] disabled:opacity-60 text-white text-xs font-bold shadow-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-            >
-              {gpsLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <LocateFixed className="w-3.5 h-3.5" />}
-              <span>{gpsLoading ? "Locating..." : latitude !== null ? "Recapture GPS" : "Use Current GPS"}</span>
-            </button>
+          <div className="rounded-2xl border border-amber-300 bg-amber-50/60 p-3.5">
+            <label htmlFor="google-maps-url" className="mb-1.5 flex items-center gap-2 text-xs font-bold text-stone-800">
+              <MapPin className="h-4 w-4 text-[#8B1E1E]" />
+              Google Maps Link <span className="text-red-600">*</span>
+            </label>
+            <input
+              id="google-maps-url"
+              type="url"
+              required
+              value={googleMapsUrl}
+              onChange={(event) => setGoogleMapsUrl(event.target.value)}
+              placeholder="Paste the Google Maps share link for this mandapam"
+              className="w-full rounded-xl border border-amber-300 bg-white px-3 py-2 text-xs text-stone-800 outline-none placeholder:text-stone-400 focus:border-[#8B1E1E] focus:ring-2 focus:ring-amber-200"
+            />
+            <p className="mt-1.5 text-[11px] leading-relaxed text-stone-600">
+              Open the mandapam in Google Maps, tap <strong>Share</strong>, then paste that link here. Devotees will use it to navigate directly to your mandapam.
+            </p>
           </div>
         </div>
 

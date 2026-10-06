@@ -1,4 +1,5 @@
 import { navaratriAsset } from "../../utils/navaratriAssets";
+import { getMandapamDirectionsUrl } from "../../utils/mandapamMaps";
 import React from "react";
 import { Link } from "react-router-dom";
 import { Mandapam, Alankarana } from "../../types";
@@ -129,7 +130,7 @@ export const TodayDarshanHero: React.FC<TodayDarshanHeroProps> = ({
             </Link>
 
             <a
-              href={`https://maps.google.com/?q=${encodeURIComponent(`${mandapam.name}, ${mandapam.address}, ${mandapam.city}`)}`}
+              href={getMandapamDirectionsUrl(mandapam)}
               target="_blank"
               rel="noopener noreferrer"
               className="px-5 py-3 rounded-full bg-white hover:bg-amber-50 text-stone-800 border-2 border-amber-300 text-xs sm:text-sm font-bold shadow-sm transition-colors flex items-center gap-2"

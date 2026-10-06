@@ -1,4 +1,5 @@
 import { navaratriAsset } from "../utils/navaratriAssets";
+import { getMandapamDirectionsUrl } from "../utils/mandapamMaps";
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
@@ -2953,7 +2954,7 @@ export const NavaratriOrganizer: React.FC = () => {
                       </p>
                       {currentMandapam.latitude && currentMandapam.longitude && (
                         <a
-                          href={`https://www.google.com/maps/dir/?api=1&destination=${currentMandapam.latitude},${currentMandapam.longitude}`}
+                          href={getMandapamDirectionsUrl(currentMandapam)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-900 underline underline-offset-2 transition-colors"
