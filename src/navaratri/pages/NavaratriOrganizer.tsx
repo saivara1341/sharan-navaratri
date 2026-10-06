@@ -1,5 +1,5 @@
 import { navaratriAsset } from "../utils/navaratriAssets";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
 import { useNavaratriLanguage } from "../context/NavaratriLanguageContext";
@@ -29,7 +29,6 @@ import {
   ExternalLink,
   Plus,
   Printer,
-  KeyRound,
   Download,
   Copy,
   Eye,
@@ -120,16 +119,20 @@ export const NavaratriOrganizer: React.FC = () => {
   } = useNavaratriData();
   const { t } = useNavaratriLanguage();
 
-  // Authentication State
-  const [authenticatedMandapamId, setAuthenticatedMandapamId] = useState<string | null>(() => {
-    return sessionStorage.getItem("navaratri_organizer_id") || null;
-  });
+  // Persistent Authentication State
+  const initialOrganizerId =
+    activeMandapamId ||
+    (typeof window !== "undefined"
+      ? localStorage.getItem("navaratri_organizer_id") ||
+        sessionStorage.getItem("navaratri_organizer_id")
+      : null);
 
-  // Login Form State
-  const [loginInput, setLoginInput] = useState("");
-  const [loginPasscode, setLoginPasscode] = useState("");
+  const [authenticatedMandapamId, setAuthenticatedMandapamId] = useState<string | null>(
+    () => initialOrganizerId || null
+  );
+  const [sessionMandapam, setSessionMandapam] = useState<Mandapam | null>(null);
+  const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true);
   const [sessionPasscode, setSessionPasscode] = useState("");
-  const [showLoginPasscode, setShowLoginPasscode] = useState(false);
   const [showDashboardPasscode, setShowDashboardPasscode] = useState(false);
 
   // Active Organizer Tab
@@ -202,133 +205,217 @@ export const NavaratriOrganizer: React.FC = () => {
   const [bookingSearchQuery, setBookingSearchQuery] = useState("");
   const [bookingFilterType, setBookingFilterType] = useState<"ALL" | "ONLINE" | "WALK_IN">("ALL");
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    const cleanId = loginInput.trim().toLowerCase();
-    const cleanPass = loginPasscode.trim();
+  // Persistent Session Resolution & Google Auth Auto-Link
+  useEffect(() => {
+    let isMounted = true;
 
-    if (!cleanId || !cleanPass) {
-      toast.error("Please enter your Mandapam ID or Mobile, and passcode.");
-      return;
-    }
+    const resolveOrganizerSession = async () => {
+      // 1. Check stored ID from context or localStorage / sessionStorage
+      const storedId =
+        activeMandapamId ||
+        (typeof window !== "undefined"
+          ? localStorage.getItem("navaratri_organizer_id") ||
+            sessionStorage.getItem("navaratri_organizer_id")
+          : null);
 
-    const matched = mandapams.find((m) => {
-      const matchId = m.id.toLowerCase() === cleanId || m.slug.toLowerCase() === cleanId;
-      const matchMobile = m.organizerMobile.replace(/\D/g, "") === cleanId.replace(/\D/g, "");
-      const matchPhone = m.contactPhone.replace(/\D/g, "") === cleanId.replace(/\D/g, "");
-      return matchId || matchMobile || matchPhone;
-    });
+      if (storedId) {
+        // Find in in-memory mandapams
+        const localMatch = mandapams.find((m) => m.id === storedId);
+        if (localMatch) {
+          if (isMounted) {
+            setAuthenticatedMandapamId(storedId);
+            setActiveMandapamId(storedId);
+            setSessionMandapam(localMatch);
+            setIsCheckingAuth(false);
+          }
+          return;
+        }
 
-    if (!matched) {
-      toast.error("Mandapam ID or Mobile not found. Check your credentials or register your mandapam.");
-      return;
-    }
+        // Check localStorage cached mandapams
+        try {
+          const raw = localStorage.getItem("navaratri_mandapams");
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+              const cachedMatch = parsed.find((m: any) => m?.id === storedId);
+              if (cachedMatch && isMounted) {
+                setAuthenticatedMandapamId(storedId);
+                setActiveMandapamId(storedId);
+                setSessionMandapam(cachedMatch);
+                setIsCheckingAuth(false);
+                return;
+              }
+            }
+          }
+        } catch {}
 
-    const expectedPasscode = getPrivatePasscode(matched.id, matched.passcode || "123456");
-    if (cleanPass !== expectedPasscode) {
-      toast.error("Incorrect passcode. Please check your credentials slip.");
-      return;
-    }
+        // Fetch from Supabase by ID
+        try {
+          const { data: remoteData } = await (supabase.from("navaratri_mandapams") as any)
+            .select("*")
+            .eq("id", storedId)
+            .maybeSingle();
 
-    setAuthenticatedMandapamId(matched.id);
-    setActiveMandapamId(matched.id);
-    setSessionPasscode(cleanPass);
-    sessionStorage.setItem("navaratri_organizer_id", matched.id);
-    toast.success(`Welcome to ${matched.name} Organizer Dashboard!`);
-  };
+          if (remoteData && isMounted) {
+            const hydrated: Mandapam = {
+              id: remoteData.id,
+              name: remoteData.name,
+              slug: remoteData.slug,
+              description: remoteData.description || "Annual Community Navaratri Utsav",
+              deviName: remoteData.devi_name || "Maa Durga",
+              address: remoteData.address || "",
+              area: remoteData.area || "",
+              city: remoteData.city || "",
+              state: remoteData.state || "Telangana",
+              pincode: remoteData.pincode || "503001",
+              latitude: Number(remoteData.latitude) || 18.6725,
+              longitude: Number(remoteData.longitude) || 78.0941,
+              verificationStatus: remoteData.verification_status || "VERIFIED",
+              organizerName: remoteData.organizer_name || "",
+              organizerMobile: remoteData.organizer_mobile || "",
+              organizerEmail: remoteData.organizer_email || "",
+              ownerUserId: remoteData.owner_user_id || undefined,
+              contactPhone: remoteData.contact_phone || remoteData.organizer_mobile || "",
+              whatsappNumber: remoteData.whatsapp_number || remoteData.organizer_mobile || undefined,
+              logoUrl: remoteData.logo_url || undefined,
+              coverImageUrl: remoteData.cover_image_url || undefined,
+              createdAt: remoteData.created_at || new Date().toISOString()
+            };
+            setAuthenticatedMandapamId(storedId);
+            setActiveMandapamId(storedId);
+            setSessionMandapam(hydrated);
+            setIsCheckingAuth(false);
+            return;
+          }
+        } catch (err) {
+          console.error("Failed to load mandapam by ID:", err);
+        }
+      }
 
-  const handleLogout = () => {
+      // 2. Check Supabase Auth User (Google OAuth / Supabase login)
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const userEmail = user.email?.trim().toLowerCase();
+
+          // Check in-memory first
+          let matched = mandapams.find(
+            (m) =>
+              (m.ownerUserId && m.ownerUserId === user.id) ||
+              (userEmail && m.organizerEmail && m.organizerEmail.trim().toLowerCase() === userEmail)
+          );
+
+          if (!matched) {
+            // Check Supabase database
+            const { data: remoteData } = await (supabase.from("navaratri_mandapams") as any)
+              .select("*")
+              .or(`owner_user_id.eq.${user.id},organizer_email.eq.${userEmail || "none"}`)
+              .limit(1)
+              .maybeSingle();
+
+            if (remoteData) {
+              matched = {
+                id: remoteData.id,
+                name: remoteData.name,
+                slug: remoteData.slug,
+                description: remoteData.description || "Annual Community Navaratri Utsav",
+                deviName: remoteData.devi_name || "Maa Durga",
+                address: remoteData.address || "",
+                area: remoteData.area || "",
+                city: remoteData.city || "",
+                state: remoteData.state || "Telangana",
+                pincode: remoteData.pincode || "503001",
+                latitude: Number(remoteData.latitude) || 18.6725,
+                longitude: Number(remoteData.longitude) || 78.0941,
+                verificationStatus: remoteData.verification_status || "VERIFIED",
+                organizerName: remoteData.organizer_name || "",
+                organizerMobile: remoteData.organizer_mobile || "",
+                organizerEmail: remoteData.organizer_email || "",
+                ownerUserId: remoteData.owner_user_id || undefined,
+                contactPhone: remoteData.contact_phone || remoteData.organizer_mobile || "",
+                whatsappNumber: remoteData.whatsapp_number || remoteData.organizer_mobile || undefined,
+                logoUrl: remoteData.logo_url || undefined,
+                coverImageUrl: remoteData.cover_image_url || undefined,
+                createdAt: remoteData.created_at || new Date().toISOString()
+              };
+            }
+          }
+
+          if (matched && isMounted) {
+            setAuthenticatedMandapamId(matched.id);
+            setActiveMandapamId(matched.id);
+            setSessionMandapam(matched);
+            if (typeof window !== "undefined") {
+              localStorage.setItem("navaratri_organizer_id", matched.id);
+              sessionStorage.setItem("navaratri_organizer_id", matched.id);
+            }
+            setIsCheckingAuth(false);
+            return;
+          }
+        }
+      } catch (authErr) {
+        console.error("Supabase auth check error:", authErr);
+      }
+
+      // 3. Not logged in -> Redirect to official login page with Google button
+      if (isMounted) {
+        setIsCheckingAuth(false);
+        setAuthenticatedMandapamId(null);
+        navigate("/navaratri/login", { replace: true });
+      }
+    };
+
+    resolveOrganizerSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeMandapamId, mandapams, navigate, setActiveMandapamId]);
+
+  const handleLogout = async () => {
     setAuthenticatedMandapamId(null);
-    setSessionPasscode("");
-    sessionStorage.removeItem("navaratri_organizer_id");
-    setLoginInput("");
-    setLoginPasscode("");
+    setSessionMandapam(null);
+    setActiveMandapamId("");
+    setRole("devotee");
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("navaratri_organizer_id");
+      localStorage.removeItem("navaratri_organizer_id");
+      sessionStorage.removeItem("navaratri_google_auth");
+      sessionStorage.removeItem("navaratri_session_id");
+    }
+    try {
+      await supabase.auth.signOut();
+    } catch {}
     toast.info("Logged out of Mandapam Organizer Portal.");
+    navigate("/navaratri", { replace: true });
   };
 
-  // If not authenticated, show Organizer Login Form
-  if (!authenticatedMandapamId) {
+  // Selected mandapam for authenticated organizer
+  const currentMandapam =
+    sessionMandapam ||
+    mandapams.find((m) => m.id === authenticatedMandapamId) ||
+    mandapams.find((m) => m.id === activeMandapamId) ||
+    mandapams[0];
+
+  // If checking authentication, show elegant spinner
+  if (isCheckingAuth) {
     return (
-      <div className="max-w-md mx-auto px-4 py-8 space-y-6 font-sans">
-        <div className="text-center space-y-2">
-          <div className="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-br from-[#8B1E1E] to-[#B45309] text-white flex items-center justify-center shadow-lg border-2 border-amber-300 p-2 overflow-hidden">
-            <MandapamGoldIcon className="w-12 h-12 object-contain" />
-          </div>
-          <h1 className="font-serif font-black text-2xl sm:text-3xl text-[#8B1E1E]">
-            Mandapam Organizer Portal
-          </h1>
-          <p className="text-xs text-stone-600">
-            Log in with your official Mandapam ID or Registered Mobile number and passcode.
-          </p>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 space-y-4 font-sans">
+        <div className="w-14 h-14 rounded-3xl bg-amber-100 flex items-center justify-center animate-pulse border-2 border-amber-300 shadow-md">
+          <MandapamGoldIcon className="w-9 h-9 object-contain" />
         </div>
-
-        <div className="bg-white p-6 sm:p-7 rounded-3xl border-2 border-amber-300 shadow-xl space-y-4">
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-stone-800 mb-1">
-                Mandapam ID or Registered Mobile *
-              </label>
-              <input
-                type="text"
-                required
-                value={loginInput}
-                onChange={(e) => setLoginInput(e.target.value)}
-                placeholder="e.g. Mandapam ID or 10-digit Mobile number"
-                className="w-full px-3.5 py-2.5 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-stone-800 mb-1">
-                Passcode / PIN *
-              </label>
-              <div className="relative">
-                <input
-                  type={showLoginPasscode ? "text" : "password"}
-                  required
-                  value={loginPasscode}
-                  onChange={(e) => setLoginPasscode(e.target.value)}
-                  placeholder="Enter 4-6 digit passcode"
-                  className="w-full px-3.5 py-2.5 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none pr-10 font-mono tracking-wider"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowLoginPasscode(!showLoginPasscode)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
-                >
-                  {showLoginPasscode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
-            >
-              <KeyRound className="w-4 h-4" />
-              <span>Login to Mandapam Dashboard →</span>
-            </button>
-          </form>
-
-          <div className="pt-3 border-t border-amber-200 text-center space-y-2">
-            <p className="text-xs text-stone-600">New organizer? Register your committee's mandapam:</p>
-            <Link
-              to="/navaratri/register"
-              className="w-full py-2.5 rounded-xl border border-amber-400 bg-amber-50 hover:bg-amber-100 text-[#8B1E1E] text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs hover:shadow-xs active:scale-98"
-            >
-              <span>Register New Durga Mandapam</span>
-            </Link>
-          </div>
+        <div className="text-center space-y-1">
+          <h2 className="font-serif font-bold text-base text-[#8B1E1E]">Opening Mandapam Organizer Portal...</h2>
+          <p className="text-xs text-stone-500">Verifying organizer credentials</p>
         </div>
       </div>
     );
   }
 
-  // Selected mandapam for authenticated organizer
-  const currentMandapam =
-    mandapams.find((m) => m.id === authenticatedMandapamId) ||
-    mandapams.find((m) => m.id === activeMandapamId) ||
-    mandapams[0];
+  // If not authenticated or no mandapam, redirect is already in progress
+  if (!authenticatedMandapamId || !currentMandapam) {
+    return null;
+  }
 
   const mandapamActivities = currentMandapam ? activities.filter((a) => a.mandapamId === currentMandapam.id) : [];
   const mandapamBookings = currentMandapam ? bookings.filter((b) => b.mandapamId === currentMandapam.id) : [];

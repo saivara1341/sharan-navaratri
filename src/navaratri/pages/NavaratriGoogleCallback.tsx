@@ -71,6 +71,7 @@ export const NavaratriGoogleCallback: React.FC = () => {
         if (matched) {
           // ── Existing organizer ──────────────────────────────────────────
           sessionStorage.setItem("navaratri_organizer_id", matched.id);
+          localStorage.setItem("navaratri_organizer_id", matched.id);
           sessionStorage.setItem("navaratri_google_auth", "true");
           setActiveMandapamId(matched.id);
           setRole("organizer");

@@ -107,6 +107,7 @@ export const NavaratriLogin: React.FC = () => {
 
   const openOrganizerPortal = useCallback((mandapam: Mandapam, reloadData = false, loginMode: "mobile" | "email" | "google" = "google") => {
     sessionStorage.setItem("navaratri_organizer_id", mandapam.id);
+    localStorage.setItem("navaratri_organizer_id", mandapam.id);
     setActiveMandapamId(mandapam.id);
     setRole("organizer");
     setAuthenticatedId(mandapam.id);
