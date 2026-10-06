@@ -158,7 +158,7 @@ export const NavaratriHeader: React.FC = () => {
             /* Not logged in: Show [Login as Mandapam (Organizers)] and [+Register Mandapam] */
             <>
               <Link
-                to="/navaratri/login?mode=new"
+                to="/navaratri/login"
                 className="relative z-10 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-stone-300 hover:from-white hover:to-slate-200 text-stone-900 shadow-xs text-xs font-black transition-all active:scale-95"
                 title="Organizer Login for Registered Mandapams"
               >
@@ -290,7 +290,7 @@ export const NavaratriHeader: React.FC = () => {
               ) : (
                 <>
                   <Link
-                    to="/navaratri/login?mode=new"
+                    to="/navaratri/login"
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex-1 py-2 px-1.5 rounded-xl bg-gradient-to-b from-slate-100 via-slate-200 to-stone-300 text-stone-900 text-xs font-black text-center flex items-center justify-center gap-1 transition-all shadow-xs"
                     title="Login as Mandapam (Organizers)"

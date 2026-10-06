@@ -14,7 +14,6 @@ import {
   CheckCircle2,
   QrCode,
   Copy,
-  ExternalLink,
   Lock,
   Upload
 } from "lucide-react";
@@ -309,7 +308,7 @@ export const NavaratriRegister: React.FC = () => {
               ))}
             </ol>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-1 gap-2.5">
               <button
                 type="button"
                 onClick={() => navigate("/navaratri/organizer")}
@@ -317,14 +316,6 @@ export const NavaratriRegister: React.FC = () => {
               >
                 <span>Open Organizer Portal</span>
                 <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate(`/navaratri/m/${registeredMandapam.slug}`)}
-                className="py-3 rounded-xl border border-amber-300 bg-white hover:bg-amber-50 text-stone-800 text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span>View Public Page</span>
-                <ExternalLink className="w-3.5 h-3.5 text-amber-700" />
               </button>
             </div>
           </div>
@@ -602,7 +593,7 @@ export const NavaratriRegister: React.FC = () => {
           <div className="mt-4 pt-3 border-t border-dashed border-amber-200 text-center flex flex-col sm:flex-row items-center justify-center gap-1.5 text-xs text-stone-600">
             <span>Already have your Mandapam ID and Passcode?</span>
             <Link
-              to="/navaratri/login?mode=new"
+              to="/navaratri/login"
               className="font-bold text-[#8B1E1E] hover:underline inline-flex items-center gap-1"
             >
               <span>Login to Mandapam Dashboard</span>

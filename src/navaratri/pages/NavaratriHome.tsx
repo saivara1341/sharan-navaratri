@@ -27,7 +27,6 @@ import { NineDaySchedule } from "../components/citizen/NineDaySchedule";
 import { AuspiciousRibbonBorder } from "../components/devotional/AuspiciousRibbonBorder";
 import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifiedBadge";
 import { NavaratriFlankingAdBox } from "../components/ads/NavaratriFlankingAdBox";
-import annadanamSevaIllustration from "@/assets/annadanam-seva-illustration.png";
 import { getMandapamDirectionsUrl } from "../utils/mandapamMaps";
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
@@ -300,9 +299,7 @@ export const NavaratriHome: React.FC = () => {
             >
               <Link to="/navaratri/near-me?category=annadanam" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
                 <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-amber-100/95 ring-1 ring-amber-300">
-                    <img src={annadanamSevaIllustration} alt="Annadanam seva" className="h-full w-full object-cover" />
-                  </span>
+                  <UtensilsCrossed className="h-4 w-4 shrink-0 text-amber-200" aria-hidden="true" />
                   <span className="truncate">Annadanam Near Me</span>
                 </span>
               </Link>
@@ -388,7 +385,7 @@ export const NavaratriHome: React.FC = () => {
                   aria-hidden="true"
                   className="absolute inset-0 h-full w-full object-contain drop-shadow-md transition-all group-hover:drop-shadow-xl pointer-events-none"
                 />
-                <div className="relative z-10 flex flex-col items-center justify-center text-center px-1.5 max-w-[108px] min-[360px]:max-w-[120px] sm:max-w-none space-y-0.5 sm:space-y-1">
+                <div className="relative z-10 -translate-y-1.5 sm:-translate-y-2 flex flex-col items-center justify-center text-center px-1.5 max-w-[108px] min-[360px]:max-w-[120px] sm:max-w-none space-y-0.5 sm:space-y-1">
                   <div className="w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full bg-blue-100/90 border border-blue-300 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
                     <QrCode className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-[#1E3A8A]" />
                   </div>
@@ -462,7 +459,7 @@ export const NavaratriHome: React.FC = () => {
                       <span>Already registered your Durga Mandapam?</span>
                     </span>
                     <Link
-                      to="/navaratri/login?mode=new"
+                      to="/navaratri/login"
                       className="font-bold text-[#8B1E1E] hover:text-[#781B1B] inline-flex items-center gap-1 bg-amber-100/80 hover:bg-amber-200/90 px-2.5 py-1 rounded-xl transition-all border border-amber-300/80 shadow-2xs hover:shadow-xs active:scale-95"
                     >
                       <KeyRound className="w-3.5 h-3.5 text-[#8B1E1E]" />
