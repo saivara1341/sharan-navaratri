@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import { ImagePlus, ExternalLink, Phone, MessageCircle } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
@@ -83,8 +84,14 @@ export const NavaratriBottomAdBanner: React.FC = () => {
 
   return (
     <>
-      {/* Bottom Ad Frame (Above Footer): Displayed across both Mobile and Desktop views */}
-      <section className="w-full max-w-7xl mx-auto px-3 sm:px-6 pt-2 pb-4 font-sans">
+      {/* Bottom Ad Frame (Above Footer): Displayed across both Mobile and Desktop views with In-Animation */}
+      <motion.section
+        initial={{ opacity: 0, y: 22 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.45 }}
+        className="w-full max-w-7xl mx-auto px-3 sm:px-6 pt-2 pb-4 font-sans"
+      >
         {currentAd?.imageUrl ? (
           <div className="flex flex-col">
             <div
@@ -232,7 +239,7 @@ export const NavaratriBottomAdBanner: React.FC = () => {
             </span>
           </Link>
         </div>
-      </section>
+      </motion.section>
 
       {/* Modal to upload image, enter URL/phone, and make payment */}
       <CreateAdModal

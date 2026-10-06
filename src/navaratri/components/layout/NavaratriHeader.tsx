@@ -1,6 +1,7 @@
 import { navaratriAsset } from "../../utils/navaratriAssets";
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useNavaratriLanguage, LanguageCode } from "../../context/NavaratriLanguageContext";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import {
@@ -52,8 +53,13 @@ export const NavaratriHeader: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-[#FDFBF7]/95 backdrop-blur-md border-b-2 border-[#D97706]/30 shadow-md">
-      {/* Top Sacred Saffron & Maroon Invocation Ribbon */}
-      <div className="bg-gradient-to-r from-[#8B1E1E] via-[#9A241C] to-[#8B1E1E] text-white text-xs px-2 sm:px-4 lg:px-6 py-1.5 flex items-center justify-between shadow-inner">
+      {/* Top Sacred Saffron & Maroon Invocation Ribbon with In-Animation */}
+      <motion.div
+        initial={{ opacity: 0, y: -6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="bg-gradient-to-r from-[#8B1E1E] via-[#9A241C] to-[#8B1E1E] text-white text-xs px-2 sm:px-4 lg:px-6 py-1.5 flex items-center justify-between shadow-inner"
+      >
         {/* Left Corner: ॥ Om Sri Matre Namaha ॥ */}
         <div className="flex items-center gap-2 min-w-0">
           <span className="font-serif tracking-wider text-amber-200 font-bold text-xs sm:text-sm drop-shadow whitespace-nowrap">
@@ -81,10 +87,15 @@ export const NavaratriHeader: React.FC = () => {
             </select>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Main Devotional Header Branding Row */}
-      <div className="max-w-7xl mx-auto px-4 h-14 sm:h-16 flex items-center justify-between gap-4">
+      {/* Main Devotional Header Branding Row with In-Animation */}
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.05 }}
+        className="max-w-7xl mx-auto px-4 h-14 sm:h-16 flex items-center justify-between gap-4"
+      >
         <Link to="/navaratri" className="min-w-0 flex items-center gap-2.5 sm:gap-3.5 group">
           <div className="relative flex items-center justify-center">
             {/* Divine golden aura glow behind Trishula head */}
@@ -215,7 +226,7 @@ export const NavaratriHeader: React.FC = () => {
         >
           {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
-      </div>
+      </motion.div>
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (

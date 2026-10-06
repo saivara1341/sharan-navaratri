@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import { Home, BookOpen, MapPin, Heart, QrCode } from "lucide-react";
@@ -14,7 +15,12 @@ export const CitizenBottomNav: React.FC = () => {
   };
 
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-40 bg-[#FBF8F1]/95 backdrop-blur-md border-t border-[#D97706]/30 shadow-2xl py-1.5 px-3 flex items-center justify-around sm:hidden">
+    <motion.nav
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className="fixed bottom-0 inset-x-0 z-40 bg-[#FBF8F1]/95 backdrop-blur-md border-t border-[#D97706]/30 shadow-2xl py-1.5 px-3 flex items-center justify-around sm:hidden"
+    >
       {/* Home */}
       <Link
         to="/navaratri"
@@ -78,6 +84,6 @@ export const CitizenBottomNav: React.FC = () => {
           </span>
         )}
       </Link>
-    </nav>
+    </motion.nav>
   );
 };

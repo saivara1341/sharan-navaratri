@@ -117,8 +117,14 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
       {/* Sacred Temple Filigree Top Bar Accent */}
       <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-amber-400 via-[#8B1E1E] to-amber-400 pointer-events-none" />
 
-      {/* ── Header ── */}
-      <div className="border-b-2 sm:border-b-4 border-amber-300/80 pb-4">
+      {/* ── Header with In-Animation ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.4 }}
+        className="border-b-2 sm:border-b-4 border-amber-300/80 pb-4"
+      >
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <h2 className="font-serif font-black text-2xl md:text-3xl text-[#8B1E1E] leading-tight flex items-baseline gap-2 flex-wrap">
             <span>{mandapam ? `${mandapam.name} • 10 Sacred Alankaranas` : "Sharad Navaratri"}</span>
@@ -137,7 +143,7 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
             ? "శ్రీ అన్నపూర్ణా దేవి, శ్రీ సరస్వతీ దేవి, శ్రీ లక్ష్మీ దేవి, శ్రీ కాళికా దేవి సహా 10 దివ్య అలంకారాలు • నైవేద్యం, మంత్రాలు & ఆధ్యాత్మిక విశిష్టత (11–20 అక్టోబర్ 2026)"
             : "10 Sacred Devi Alankaranas including Sri Annapurna Devi, Sri Maha Saraswathi Devi, Sri Maha Lakshmi Devi, Sri Kalika Devi • Sacred Chants, Bhog & Devotee Guide (11–20 October 2026)"}
         </p>
-      </div>
+      </motion.div>
 
       {/* ── Card Grid ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 pb-2 justify-items-center sm:justify-items-stretch">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import { ImagePlus, ExternalLink } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
@@ -69,8 +70,13 @@ export const NavaratriTopAdBanner: React.FC = () => {
 
   return (
     <>
-      {/* Top Ad Frame (Below Header): Displayed across both Mobile and Desktop views */}
-      <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 pt-2 sm:pt-3 pb-1">
+      {/* Top Ad Frame (Below Header): Displayed across both Mobile and Desktop views with In-Animation */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="w-full max-w-7xl mx-auto px-3 sm:px-6 pt-2 sm:pt-3 pb-1"
+      >
         {currentAd?.imageUrl ? (
           /* Framed Ad Banner: 100% of user banner fits cleanly inside frame with dynamic CTA button */
           <div className="flex flex-col">
@@ -147,7 +153,7 @@ export const NavaratriTopAdBanner: React.FC = () => {
             </div>
           </div>
         )}
-      </div>
+      </motion.div>
 
       {/* Modal to upload image, enter URL/phone, and make payment */}
       <CreateAdModal

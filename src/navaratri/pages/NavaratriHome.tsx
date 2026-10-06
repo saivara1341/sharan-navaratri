@@ -1,6 +1,7 @@
 import { navaratriAsset } from "../utils/navaratriAssets";
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   BookOpen,
   Heart,
@@ -172,8 +173,13 @@ export const NavaratriHome: React.FC = () => {
         </div>
       )}
 
-      {/* 1. TOP SECTION: SACRED HERO CONTAINER */}
-      <section className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-amber-500/30 bg-gradient-to-r from-[#5C1010] via-[#8B1E1E] to-[#781B1B] flex flex-col justify-between max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1440px] mx-auto">
+      {/* 1. TOP SECTION: SACRED HERO CONTAINER WITH IN-ANIMATION */}
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: "easeOut" }}
+        className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-amber-500/30 bg-gradient-to-r from-[#5C1010] via-[#8B1E1E] to-[#781B1B] flex flex-col justify-between max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1440px] mx-auto"
+      >
         {/* Top Ornamental Temple Filigree Border from User Design */}
         <div
           aria-hidden="true"
@@ -190,7 +196,12 @@ export const NavaratriHome: React.FC = () => {
 
         <div className="relative z-10 p-4 sm:p-6 md:p-6 lg:p-7 xl:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-5 lg:gap-6 text-white flex-1">
           <div className="max-w-2xl space-y-3 sm:space-y-3.5 lg:space-y-5 xl:space-y-6 flex-1">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-200 border border-amber-300/40 text-xs font-bold tracking-wide backdrop-blur-sm shadow-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.35, delay: 0.08 }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-200 border border-amber-300/40 text-xs font-bold tracking-wide backdrop-blur-sm shadow-sm"
+            >
               <img
                 src={navaratriAsset("/navaratri/assets/sacred-lotus-flower.png")}
                 alt="Sacred Lotus"
@@ -199,11 +210,16 @@ export const NavaratriHome: React.FC = () => {
               <span className="tracking-wide">
                 SHARAN NAVARATRI <span className="font-['Cinzel',serif] font-black text-xs sm:text-sm text-amber-300 tracking-wider drop-shadow-sm">2026</span> • 9 DAYS OF DIVINE BLISS
               </span>
-            </div>
+            </motion.div>
 
             <div className="space-y-2 lg:space-y-3">
               {/* Mobile View: Content on left, Divine Idol on right. Desktop View: Text on left, Idol in dedicated right hero column */}
-              <div className="flex items-center justify-between gap-3 sm:gap-4">
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.12 }}
+                className="flex items-center justify-between gap-3 sm:gap-4"
+              >
                 <div className="flex-1 min-w-0">
                   <h1 className="font-['Cinzel',serif] font-black text-lg min-[360px]:text-xl min-[400px]:text-2xl sm:text-3xl md:text-3.5xl lg:text-4xl xl:text-[2.6rem] text-[#FFFBEB] leading-tight sm:leading-snug tracking-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.5)]">
                     Celebrate Sharan Maa Durga Matha Navaratri <span className="text-amber-300">2026</span> with Maa Durga's Divine Blessings
@@ -220,15 +236,26 @@ export const NavaratriHome: React.FC = () => {
                     className="relative z-10 w-24 min-[360px]:w-28 min-[400px]:w-32 sm:w-36 h-auto max-h-36 sm:max-h-44 object-contain drop-shadow-[0_0_24px_rgba(251,191,36,0.95)] drop-shadow-[0_6px_14px_rgba(0,0,0,0.5)] transition-transform duration-300 active:scale-105"
                   />
                 </div>
-              </div>
+              </motion.div>
 
-              <p className="font-['Plus_Jakarta_Sans',sans-serif] text-xs sm:text-sm md:text-base text-amber-100/90 leading-relaxed max-w-2xl font-medium pt-0.5">
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.16 }}
+                className="font-['Plus_Jakarta_Sans',sans-serif] text-xs sm:text-sm md:text-base text-amber-100/90 leading-relaxed max-w-2xl font-medium pt-0.5"
+              >
                 One QR. Every Mandapam. Everything a devotee needs. Discover today’s sacred Maa Darshan, live poojas, and annadanam offerings across all mandapams.
-              </p>
+              </motion.p>
             </div>
 
             {/* Search Bar */}
-            <form onSubmit={handleSearchSubmit} className="pt-1 lg:pt-2">
+            <motion.form
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+              onSubmit={handleSearchSubmit}
+              className="pt-1 lg:pt-2"
+            >
               <div className="flex flex-col sm:flex-row items-center gap-2 bg-[#FAF7F0] p-2 sm:p-2.5 rounded-xl sm:rounded-full shadow-xl border-2 border-amber-400">
                 <div className="flex items-center gap-2.5 flex-1 px-3 w-full text-stone-900">
                   <Search className="w-4 h-4 text-[#8B1E1E] shrink-0" />
@@ -247,10 +274,15 @@ export const NavaratriHome: React.FC = () => {
                   Find My Mandapam
                 </button>
               </div>
-            </form>
+            </motion.form>
 
             {/* Quick action buttons */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 lg:gap-3 pt-1 lg:pt-2 text-xs font-semibold">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.24 }}
+              className="grid grid-cols-2 sm:grid-cols-4 gap-2 lg:gap-3 pt-1 lg:pt-2 text-xs font-semibold"
+            >
               <Link to="/navaratri/near-me?category=annadanam" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
                 <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
                   <Utensils className="w-3.5 h-3.5 shrink-0 text-amber-200" />
@@ -275,11 +307,16 @@ export const NavaratriHome: React.FC = () => {
                   <span className="truncate">Sacred Devi Guide</span>
                 </span>
               </Link>
-            </div>
+            </motion.div>
           </div>
 
           {/* Right side Maa Durga image in desktop view */}
-          <div className="hidden md:flex flex-col items-center justify-end shrink-0 relative self-end">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.55, delay: 0.15, ease: "easeOut" }}
+            className="hidden md:flex flex-col items-center justify-end shrink-0 relative self-end"
+          >
             <div className="relative">
               {/* Layered divine golden halo glow */}
               <div className="absolute inset-x-0 bottom-0 h-4/5 bg-amber-400/20 blur-3xl rounded-full pointer-events-none" />
@@ -290,7 +327,7 @@ export const NavaratriHome: React.FC = () => {
                 className="relative z-10 w-64 md:w-72 lg:w-80 xl:w-96 h-auto object-contain drop-shadow-[0_8px_30px_rgba(251,191,36,0.4)] hover:scale-105 transition-transform duration-500 pointer-events-none select-none"
               />
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Bottom Ornamental Temple Filigree Border from User Design (Inverted) */}
@@ -304,10 +341,16 @@ export const NavaratriHome: React.FC = () => {
             backgroundPosition: "center"
           }}
         />
-      </section>
+      </motion.section>
 
-      {/* QUICK ACTIONS ROW: FLANKED BY AD SPACE BOXES IN DESKTOP VIEW */}
-      <section className="w-full max-w-7xl mx-auto px-2 sm:px-4 -mt-2 sm:-mt-4 md:-mt-6 lg:-mt-8 xl:-mt-10 pt-0 pb-1 relative z-20">
+      {/* QUICK ACTIONS ROW: FLANKED BY AD SPACE BOXES IN DESKTOP VIEW WITH IN-ANIMATION */}
+      <motion.section
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.45 }}
+        className="w-full max-w-7xl mx-auto px-2 sm:px-4 -mt-2 sm:-mt-4 md:-mt-6 lg:-mt-8 xl:-mt-10 pt-0 pb-1 relative z-20"
+      >
         <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-3 lg:gap-4 xl:gap-6">
           {/* Left Ad Space Box (Before this design - Desktop View Only) */}
           <div className="hidden lg:flex w-48 xl:w-56 2xl:w-60 shrink-0 self-stretch min-h-[190px] max-h-[240px]">
@@ -420,7 +463,7 @@ export const NavaratriHome: React.FC = () => {
             <NavaratriFlankingAdBox position="right" />
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Sacred Emerald Vine Ribbon Divider below 2 CTA Designs */}
       <AuspiciousRibbonBorder
@@ -431,7 +474,13 @@ export const NavaratriHome: React.FC = () => {
 
       {/* 2. YOUR FOLLOWED MANDAPAMS (IF ANY) */}
       {savedMandapams.length > 0 && (
-        <section className="space-y-4">
+        <motion.section
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.45 }}
+          className="space-y-4"
+        >
           <div className="flex items-center justify-between border-b border-amber-200 pb-2">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-800">Personal Shrines</p>
@@ -509,13 +558,19 @@ export const NavaratriHome: React.FC = () => {
               );
             })}
           </div>
-        </section>
+        </motion.section>
       )}
 
-      {/* 3. 9-DAY SACRED NAVARATRI CALENDAR & ALANKARANAS */}
-      <section className="space-y-4 -mt-2 sm:-mt-3">
+      {/* 3. 9-DAY SACRED NAVARATRI CALENDAR & ALANKARANAS WITH IN-ANIMATION */}
+      <motion.section
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.08 }}
+        transition={{ duration: 0.45 }}
+        className="space-y-4 -mt-2 sm:-mt-3"
+      >
         <NineDaySchedule />
-      </section>
+      </motion.section>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import { NavaratriLanguageProvider } from "./context/NavaratriLanguageContext";
 import { NavaratriDataProvider } from "./context/NavaratriDataContext";
 import { NavaratriHeader } from "./components/layout/NavaratriHeader";
@@ -92,10 +93,16 @@ export const NavaratriAppLayout: React.FC<NavaratriAppLayoutProps> = ({ children
           {/* Dedicated Ad Space */}
           <NavaratriTopAdBanner />
 
-          {/* Main Body */}
-          <main className="flex-1 w-full mx-auto pb-6">
+          {/* Main Body with In-Animation */}
+          <motion.main
+            key={location.pathname}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+            className="flex-1 w-full mx-auto pb-6"
+          >
             {children || <Outlet />}
-          </main>
+          </motion.main>
 
           {/* Bottom Ad Frame (Above Footer) — Visible on Desktop & Mobile */}
           <NavaratriBottomAdBanner />

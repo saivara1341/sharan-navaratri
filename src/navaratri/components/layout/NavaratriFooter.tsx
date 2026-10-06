@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { FOOTER_SLOKA_TRANSLATIONS } from "../../utils/navaratriTranslations";
@@ -16,7 +17,13 @@ export const NavaratriFooter: React.FC = () => {
     : ["॥ Om Sri Matre Namaha ॥", fullSloka];
 
   return (
-    <footer className="w-full bg-gradient-to-b from-[#2D0B0B] via-[#200606] to-[#120303] text-amber-50 border-t border-amber-500/20 pt-6 pb-24 sm:pb-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <motion.footer
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.45 }}
+      className="w-full bg-gradient-to-b from-[#2D0B0B] via-[#200606] to-[#120303] text-amber-50 border-t border-amber-500/20 pt-6 pb-24 sm:pb-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+    >
       {/* Subtle divine background glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-28 bg-amber-500/10 blur-3xl pointer-events-none" />
 
@@ -63,6 +70,6 @@ export const NavaratriFooter: React.FC = () => {
           </div>
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 };
