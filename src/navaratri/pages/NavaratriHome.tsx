@@ -221,9 +221,9 @@ export const NavaratriHome: React.FC = () => {
                 transition={{ duration: 0.4, delay: 0.12 }}
                 className="flex items-center justify-between gap-1.5 rounded-2xl border border-amber-100/15 bg-black/10 px-2.5 py-2 sm:gap-4 sm:border-0 sm:bg-transparent sm:p-0"
               >
-                <div className="flex-1 min-w-0 text-right sm:text-left">
+                <div className="flex flex-1 min-w-0 flex-col justify-center text-left">
                   <h1 className="font-['Cinzel',serif] font-black text-lg min-[360px]:text-lg min-[400px]:text-xl sm:text-3xl md:text-3.5xl lg:text-4xl xl:text-[2.6rem] text-[#FFFBEB] leading-tight sm:leading-snug tracking-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.5)]">
-                    <span className="sm:hidden">
+                    <span className="block text-[15px] leading-[1.55] min-[360px]:text-base sm:hidden">
                       Celebrate Sharan<br />
                       Navaratri <span className="text-amber-300">2026</span><br />
                       Maa Durga Blessings
@@ -232,6 +232,13 @@ export const NavaratriHome: React.FC = () => {
                       Celebrate Sharan Maa Durga Matha Navaratri <span className="text-amber-300">2026</span> with Maa Durga&apos;s Divine Blessings
                     </span>
                   </h1>
+                  <div className="mt-3 flex items-center gap-2 sm:hidden" aria-hidden="true">
+                    <span className="h-px w-7 bg-amber-300/70" />
+                    <img src={navaratriAsset("/navaratri/assets/sacred-lotus-flower.png")} alt="" className="h-7 w-7 object-contain opacity-90 drop-shadow-[0_2px_5px_rgba(251,191,36,0.8)]" />
+                    <span className="text-sm text-amber-200">✦</span>
+                    <img src={navaratriAsset("/navaratri/assets/sacred-lotus-flower.png")} alt="" className="h-5 w-5 object-contain opacity-75" />
+                    <span className="h-px flex-1 bg-amber-300/50" />
+                  </div>
                 </div>
 
                 {/* Mobile Idol on the right */}
