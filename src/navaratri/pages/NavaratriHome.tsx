@@ -14,7 +14,8 @@ import {
   Building,
   QrCode,
   KeyRound,
-  ArrowRight
+  ArrowRight,
+  UtensilsCrossed
 } from "lucide-react";
 import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
 import { MandapamGoldIcon } from "../components/devotional/MandapamGoldIcon";
@@ -25,7 +26,6 @@ import { NineDaySchedule } from "../components/citizen/NineDaySchedule";
 import { AuspiciousRibbonBorder } from "../components/devotional/AuspiciousRibbonBorder";
 import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifiedBadge";
 import { NavaratriFlankingAdBox } from "../components/ads/NavaratriFlankingAdBox";
-import annadanamSevaIllustration from "@/assets/annadanam-seva-illustration.png";
 import { getMandapamDirectionsUrl } from "../utils/mandapamMaps";
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
@@ -219,9 +219,9 @@ export const NavaratriHome: React.FC = () => {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.12 }}
-                className="flex items-center justify-between gap-3 sm:gap-4"
+                className="flex items-center justify-between gap-1.5 rounded-2xl border border-amber-100/15 bg-black/10 px-2.5 py-2 sm:gap-4 sm:border-0 sm:bg-transparent sm:p-0"
               >
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 text-right sm:text-left">
                   <h1 className="font-['Cinzel',serif] font-black text-lg min-[360px]:text-lg min-[400px]:text-xl sm:text-3xl md:text-3.5xl lg:text-4xl xl:text-[2.6rem] text-[#FFFBEB] leading-tight sm:leading-snug tracking-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.5)]">
                     <span className="sm:hidden">
                       Celebrate Sharan<br />
@@ -241,7 +241,7 @@ export const NavaratriHome: React.FC = () => {
                   <img
                     src={navaratriAsset("/navaratri/assets/maa-durga-simhavahana-icon.png")}
                     alt="Maa Durga Matha"
-                    className="relative z-10 w-28 min-[360px]:w-32 min-[400px]:w-36 sm:w-36 h-auto max-h-40 sm:max-h-44 object-contain drop-shadow-[0_0_24px_rgba(251,191,36,0.95)] drop-shadow-[0_6px_14px_rgba(0,0,0,0.5)] transition-transform duration-300 active:scale-105"
+                    className="relative z-10 w-30 min-[360px]:w-34 min-[400px]:w-38 sm:w-36 h-auto max-h-40 sm:max-h-44 object-contain drop-shadow-[0_0_24px_rgba(251,191,36,0.95)] drop-shadow-[0_6px_14px_rgba(0,0,0,0.5)] transition-transform duration-300 active:scale-105"
                   />
                 </div>
               </motion.div>
@@ -293,7 +293,7 @@ export const NavaratriHome: React.FC = () => {
             >
               <Link to="/navaratri/near-me?category=annadanam" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
                 <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
-                  <img src={annadanamSevaIllustration} alt="Annadanam seva" className="w-8 h-6 shrink-0 rounded object-cover object-center border border-amber-100/40" />
+                  <UtensilsCrossed className="w-4 h-4 shrink-0 text-amber-200" aria-hidden="true" />
                   <span className="truncate">Annadanam Near Me</span>
                 </span>
               </Link>
