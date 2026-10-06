@@ -48,6 +48,13 @@ type SupabaseMandapamRow = {
 };
 
 const NAVARATRI_ADMIN_EMAIL = "ssaivaraprasad51@gmail.com";
+const LAST_LOGIN_MODE_KEY = "navaratri_last_organizer_login_mode";
+type OrganizerLoginMode = "mobile" | "email" | "google";
+
+const readLastLoginMode = (): OrganizerLoginMode | null => {
+  const mode = localStorage.getItem(LAST_LOGIN_MODE_KEY);
+  return mode === "mobile" || mode === "email" || mode === "google" ? mode : null;
+};
 
 const mapSupabaseMandapam = (row: SupabaseMandapamRow): Mandapam => ({
   id: row.id,
@@ -86,7 +93,9 @@ export const NavaratriLogin: React.FC = () => {
   const [accountMode, setAccountMode] = useState<"existing" | "new">(() =>
     new URLSearchParams(location.search).get("mode") === "new" ? "new" : "existing"
   );
+  const [lastLoginMode, setLastLoginMode] = useState<OrganizerLoginMode | null>(() => readLastLoginMode());
   const isNewMode = accountMode === "new";
+  const prefersGoogleLastLogin = accountMode === "existing" && lastLoginMode === "google";
   const [loginInput, setLoginInput] = useState("");
   const [loginPasscode, setLoginPasscode] = useState("");
   const [showLoginPasscode, setShowLoginPasscode] = useState(false);
@@ -107,12 +116,14 @@ export const NavaratriLogin: React.FC = () => {
     ? mandapams.find((m) => m.id === authenticatedId)
     : null;
 
-  const openOrganizerPortal = useCallback((mandapam: Mandapam, reloadData = false, loginMode: "mobile" | "email" | "google" = "google") => {
+  const openOrganizerPortal = useCallback((mandapam: Mandapam, reloadData = false, loginMode: OrganizerLoginMode = "google") => {
     sessionStorage.setItem("navaratri_organizer_id", mandapam.id);
     localStorage.setItem("navaratri_organizer_id", mandapam.id);
     setActiveMandapamId(mandapam.id);
     setRole("organizer");
     setAuthenticatedId(mandapam.id);
+    localStorage.setItem(LAST_LOGIN_MODE_KEY, loginMode);
+    setLastLoginMode(loginMode);
     toast.success(`Welcome to ${mandapam.name} Organizer Dashboard!`);
 
     const sessionId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36);
@@ -132,7 +143,7 @@ export const NavaratriLogin: React.FC = () => {
     navigate("/navaratri/organizer");
   }, [navigate, setActiveMandapamId, setRole]);
 
-  const resolveGoogleOrganizer = useCallback(async (user: { id: string; email?: string | null; user_metadata?: Record<string, unknown> }, allowOnboarding = true, loginMode: "mobile" | "email" | "google" = "google") => {
+  const resolveGoogleOrganizer = useCallback(async (user: { id: string; email?: string | null; user_metadata?: Record<string, unknown> }, allowOnboarding = true, loginMode: OrganizerLoginMode = "google") => {
     const email = user.email?.trim().toLowerCase() || "";
     if (email === NAVARATRI_ADMIN_EMAIL) {
       sessionStorage.removeItem("navaratri_organizer_id");
@@ -389,6 +400,25 @@ export const NavaratriLogin: React.FC = () => {
     toast.info("Logged out of organizer session.");
   };
 
+  const renderGoogleButton = (primary = false) => (
+    <button
+      type="button"
+      onClick={handleGoogleLogin}
+      disabled={isGoogleLoading}
+      className={primary
+        ? "w-full py-3 rounded-xl border-2 border-amber-300 bg-white hover:bg-amber-50 text-stone-900 text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-[0.98] disabled:opacity-60 disabled:cursor-wait"
+        : "w-full py-2.5 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 text-stone-800 text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-[0.98] disabled:opacity-60 disabled:cursor-wait"}
+    >
+      <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="#4285F4" d="M21.6 12.23c0-.71-.06-1.24-.2-1.8H12v3.41h5.52a4.72 4.72 0 0 1-2.05 3.1l-.02.11 2.98 2.31.21.02c1.94-1.79 2.96-4.42 2.96-7.15Z" />
+        <path fill="#34A853" d="M12 22c2.7 0 4.96-.89 6.64-2.42l-3.17-2.45c-.85.58-1.99.98-3.47.98-2.6 0-4.81-1.76-5.6-4.19l-.1.01-3.1 2.4-.04.1A10 10 0 0 0 12 22Z" />
+        <path fill="#FBBC05" d="M6.4 13.92A6.02 6.02 0 0 1 6.08 12c0-.67.12-1.32.31-1.92l-.01-.13-3.14-2.44-.1.05A10.02 10.02 0 0 0 2 12c0 1.6.38 3.11 1.16 4.44l3.24-2.52Z" />
+        <path fill="#EA4335" d="M12 5.89c1.88 0 3.15.81 3.88 1.49l2.82-2.75C16.97 3.02 14.7 2 12 2a10 10 0 0 0-8.84 5.56l3.23 2.52C7.19 7.65 9.4 5.89 12 5.89Z" />
+      </svg>
+      <span>{isGoogleLoading ? "Connecting to Google..." : "Continue with Google"}</span>
+    </button>
+  );
+
   const authCard = (
     <div className="w-full max-w-sm space-y-3">
       {/* Back button outside of container */}
@@ -533,6 +563,23 @@ export const NavaratriLogin: React.FC = () => {
               </button>
             </div>
 
+            {prefersGoogleLastLogin ? (
+              <div className="space-y-3 rounded-2xl border border-amber-300 bg-amber-50/70 p-4 text-center">
+                <div className="space-y-1">
+                  <p className="text-sm font-black text-[#8B1E1E]">Continue with your last sign-in method</p>
+                  <p className="text-[11px] leading-relaxed text-stone-600">This organizer portal was last accessed with Google. Choose the same Google account to open your dashboard.</p>
+                </div>
+                {renderGoogleButton(true)}
+                <button
+                  type="button"
+                  onClick={() => setLastLoginMode(null)}
+                  className="text-[11px] font-bold text-stone-600 hover:text-[#8B1E1E] hover:underline"
+                >
+                  Use mobile/email and passcode instead
+                </button>
+              </div>
+            ) : (
+              <>
             <div>
               <label className="block text-xs font-semibold text-stone-800 mb-1">
                 {accountMode === "existing" ? "Registered Mobile or Email" : "Mobile Number or Email"}
@@ -593,20 +640,9 @@ export const NavaratriLogin: React.FC = () => {
               <span className="h-px flex-1 bg-amber-200" />
             </div>
 
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              disabled={isGoogleLoading}
-              className="w-full py-2.5 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 text-stone-800 text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-[0.98] disabled:opacity-60 disabled:cursor-wait"
-            >
-              <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
-                <path fill="#4285F4" d="M21.6 12.23c0-.71-.06-1.24-.2-1.8H12v3.41h5.52a4.72 4.72 0 0 1-2.05 3.1l-.02.11 2.98 2.31.21.02c1.94-1.79 2.96-4.42 2.96-7.15Z" />
-                <path fill="#34A853" d="M12 22c2.7 0 4.96-.89 6.64-2.42l-3.17-2.45c-.85.58-1.99.98-3.47.98-2.6 0-4.81-1.76-5.6-4.19l-.1.01-3.1 2.4-.04.1A10 10 0 0 0 12 22Z" />
-                <path fill="#FBBC05" d="M6.4 13.92A6.02 6.02 0 0 1 6.08 12c0-.67.12-1.32.31-1.92l-.01-.13-3.14-2.44-.1.05A10.02 10.02 0 0 0 2 12c0 1.6.38 3.11 1.16 4.44l3.24-2.52Z" />
-                <path fill="#EA4335" d="M12 5.89c1.88 0 3.15.81 3.88 1.49l2.82-2.75C16.97 3.02 14.7 2 12 2a10 10 0 0 0-8.84 5.56l3.23 2.52C7.19 7.65 9.4 5.89 12 5.89Z" />
-              </svg>
-              <span>{isGoogleLoading ? "Connecting to Google..." : "Continue with Google"}</span>
-            </button>
+            {renderGoogleButton()}
+              </>
+            )}
           </form>
         )}
 

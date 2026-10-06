@@ -179,6 +179,9 @@ export const NavaratriRegister: React.FC = () => {
 
     if (res.success && res.mandapam) {
       setDuplicateWarning(null);
+      if (isGoogleVia) {
+        localStorage.setItem("navaratri_last_organizer_login_mode", "google");
+      }
       if (ownerUserId) {
         try {
           await (supabase as any)
