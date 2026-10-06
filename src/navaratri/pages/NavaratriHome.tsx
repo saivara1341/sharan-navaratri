@@ -188,7 +188,7 @@ export const NavaratriHome: React.FC = () => {
 
         <FloatingAuspiciousParticles />
 
-        <div className="relative z-10 p-5 sm:p-6 md:p-6 lg:p-7 xl:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-5 lg:gap-6 text-white flex-1">
+        <div className="relative z-10 p-4 sm:p-6 md:p-6 lg:p-7 xl:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-5 lg:gap-6 text-white flex-1">
           <div className="max-w-2xl space-y-3 sm:space-y-3.5 lg:space-y-5 xl:space-y-6 flex-1">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-200 border border-amber-300/40 text-xs font-bold tracking-wide backdrop-blur-sm shadow-sm">
               <img
@@ -202,19 +202,27 @@ export const NavaratriHome: React.FC = () => {
             </div>
 
             <div className="space-y-2 lg:space-y-3">
-              <h1 className="font-['Cinzel',serif] font-black text-2xl sm:text-3xl md:text-3.5xl lg:text-4xl xl:text-[2.6rem] text-[#FFFBEB] leading-snug tracking-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.5)]">
-                Celebrate{" "}
-                <span className="inline-flex items-center gap-1.5 sm:gap-2 align-middle">
-                  <span>Sharan</span>
+              {/* Mobile View: Content on left, Divine Idol on right. Desktop View: Text on left, Idol in dedicated right hero column */}
+              <div className="flex items-center justify-between gap-3 sm:gap-4">
+                <div className="flex-1 min-w-0">
+                  <h1 className="font-['Cinzel',serif] font-black text-lg min-[360px]:text-xl min-[400px]:text-2xl sm:text-3xl md:text-3.5xl lg:text-4xl xl:text-[2.6rem] text-[#FFFBEB] leading-tight sm:leading-snug tracking-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.5)]">
+                    Celebrate Sharan Maa Durga Matha Navaratri <span className="text-amber-300">2026</span> with Maa Durga's Divine Blessings
+                  </h1>
+                </div>
+
+                {/* Mobile Idol on the right */}
+                <div className="shrink-0 md:hidden relative flex items-center justify-center -mr-1">
+                  {/* Divine golden halo glow */}
+                  <div className="absolute inset-0 bg-amber-400/35 blur-xl rounded-full pointer-events-none scale-125" />
                   <img
                     src={navaratriAsset("/navaratri/assets/maa-durga-simhavahana-icon.png")}
                     alt="Maa Durga Matha"
-                    className="inline-block md:hidden h-20 min-[360px]:h-24 min-[410px]:h-28 sm:h-32 w-auto object-contain align-middle -my-3 sm:-my-5 mx-0.5 sm:mx-1 drop-shadow-[0_0_22px_rgba(251,191,36,0.95)] drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)] transition-transform duration-300 active:scale-110"
+                    className="relative z-10 w-24 min-[360px]:w-28 min-[400px]:w-32 sm:w-36 h-auto max-h-36 sm:max-h-44 object-contain drop-shadow-[0_0_24px_rgba(251,191,36,0.95)] drop-shadow-[0_6px_14px_rgba(0,0,0,0.5)] transition-transform duration-300 active:scale-105"
                   />
-                </span>{" "}
-                Navaratri <span className="text-amber-300">2026</span> with Maa Durga's Divine Blessings
-              </h1>
-              <p className="font-['Plus_Jakarta_Sans',sans-serif] text-xs sm:text-sm md:text-base text-amber-100/90 leading-relaxed max-w-2xl font-medium">
+                </div>
+              </div>
+
+              <p className="font-['Plus_Jakarta_Sans',sans-serif] text-xs sm:text-sm md:text-base text-amber-100/90 leading-relaxed max-w-2xl font-medium pt-0.5">
                 One QR. Every Mandapam. Everything a devotee needs. Discover today’s sacred Maa Darshan, live poojas, and annadanam offerings across all mandapams.
               </p>
             </div>
