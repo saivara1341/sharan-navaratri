@@ -458,11 +458,11 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start sm:items-center gap-3.5">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-100 border-2 border-amber-400 p-0.5 shadow-md shrink-0 overflow-hidden relative group">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 overflow-hidden relative group">
                   <img
                     src={customLogo || mandapam.logoUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg")}
                     alt="Logo"
-                    className="w-full h-full object-cover rounded-[14px]"
+                    className="w-full h-full object-contain"
                   />
                 </div>
 

@@ -16,7 +16,7 @@ import {
   Copy,
   ExternalLink,
   Lock,
-  Sparkles
+  Upload
 } from "lucide-react";
 import { generatePasscode, copyToClipboard } from "../utils/mandapamCredentials";
 import { Mandapam } from "../types";
@@ -72,7 +72,9 @@ export const NavaratriRegister: React.FC = () => {
   const [state, setState] = useState("");
   const [pincode, setPincode] = useState("");
   const [description, setDescription] = useState("");
-  const [coverImageUrl, setCoverImageUrl] = useState(navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg"));
+  // The public hero cover is platform-managed so every Mandapam profile stays consistent.
+  const coverImageUrl = navaratriAsset("/navaratri/assets/terracotta-kolam-bg.jpg");
+  const [logoUrl, setLogoUrl] = useState("");
 
   // Credentials are captured on the login page before onboarding.
   const [passcode] = useState(() => generatePasscode());
@@ -81,6 +83,22 @@ export const NavaratriRegister: React.FC = () => {
 
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
   const [registeredMandapam, setRegisteredMandapam] = useState<Mandapam | null>(null);
+
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please choose an image file for the Mandapam logo.");
+      return;
+    }
+    if (file.size > 3 * 1024 * 1024) {
+      toast.error("Please choose a logo smaller than 3 MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setLogoUrl(String(reader.result || ""));
+    reader.readAsDataURL(file);
+  };
 
   // Auto-detect if current user already has a mandapam registered
   useEffect(() => {
@@ -114,7 +132,7 @@ export const NavaratriRegister: React.FC = () => {
     setDuplicateWarning(null);
 
     const cleanMobile = organizerMobile.replace(/\D/g, "");
-    if (!name.trim() || !organizerName.trim() || !cleanMobile || !area.trim() || !googleMapsUrl.trim()) {
+    if (!name.trim() || !logoUrl || !organizerName.trim() || !cleanMobile || !area.trim() || !googleMapsUrl.trim()) {
       toast.error("Please fill in all mandatory fields.");
       return;
     }
@@ -165,7 +183,7 @@ export const NavaratriRegister: React.FC = () => {
       contactPhone: cleanMobile,
       whatsappNumber: cleanMobile,
       coverImageUrl,
-      logoUrl: navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"),
+      logoUrl,
       passcode: passcode.trim(),
       ownerUserId: ownerUserId || undefined
     });
@@ -359,7 +377,7 @@ export const NavaratriRegister: React.FC = () => {
         <div className="space-y-3">
           <h3 className="font-bold text-xs uppercase tracking-wider text-[#8B1E1E] border-b border-amber-200 pb-1 flex items-center gap-1.5">
             <Building className="w-4 h-4" />
-            <span>1. Mandapam Identity</span>
+            <span>1. Mandapam Identity & Logo</span>
           </h3>
 
           <div>
@@ -374,6 +392,20 @@ export const NavaratriRegister: React.FC = () => {
               placeholder="Enter official mandapam name"
               className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
             />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-stone-800 mb-1">
+              Mandapam / Committee Logo <span className="text-red-500 font-bold ml-0.5">*</span>
+            </label>
+            <p className="text-[11px] text-stone-500 mb-2">This logo appears in your organizer portal and on the devotee page.</p>
+            <label className="flex min-h-24 cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-amber-400 bg-amber-50/60 p-3 transition hover:bg-amber-50">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white">
+                {logoUrl ? <img src={logoUrl} alt="Mandapam logo preview" className="h-full w-full object-contain" /> : <Upload className="h-6 w-6 text-amber-600" />}
+              </div>
+              <span className="text-xs font-semibold text-[#8B1E1E]">{logoUrl ? "Change logo" : "Upload your logo"}<br /><span className="font-normal text-stone-500">PNG, JPG or WebP up to 3 MB</span></span>
+              <input type="file" accept="image/png,image/jpeg,image/webp" required={!logoUrl} onChange={handleLogoUpload} className="sr-only" />
+            </label>
           </div>
 
           <div>

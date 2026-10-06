@@ -55,7 +55,6 @@ import {
   Ticket,
   Filter,
   Settings,
-  Sparkles,
   Phone,
   MessageCircle,
   Image as ImageIcon,
@@ -900,11 +899,11 @@ export const NavaratriOrganizer: React.FC = () => {
 
           <div className="flex items-center gap-3 min-w-0 pt-0.5">
             {(currentMandapam.logoUrl || (typeof window !== "undefined" && localStorage.getItem(`mandapam_logo_${currentMandapam.id}`))) && (
-              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl overflow-hidden border-2 border-amber-300 shadow-md bg-white p-1 shrink-0">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 overflow-hidden shrink-0">
                 <img
                   src={currentMandapam.logoUrl || localStorage.getItem(`mandapam_logo_${currentMandapam.id}`) || ""}
                   alt="Mandapam Logo"
-                  className="w-full h-full object-contain rounded-xl"
+                  className="w-full h-full object-contain"
                 />
               </div>
             )}
@@ -2476,7 +2475,7 @@ export const NavaratriOrganizer: React.FC = () => {
             </div>
 
             {/* Tab Navigation inside Modal */}
-            <div className="grid grid-cols-4 border-b border-amber-200 bg-amber-50/70 p-1.5 gap-1.5 text-xs font-bold">
+            <div className="grid grid-cols-3 border-b border-amber-200 bg-amber-50/70 p-1.5 gap-1.5 text-xs font-bold">
               <button
                 type="button"
                 onClick={() => setBrandingTab("logo")}
@@ -2486,21 +2485,8 @@ export const NavaratriOrganizer: React.FC = () => {
                     : "text-stone-700 hover:bg-white/80"
                 }`}
               >
-                <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                <Upload className="w-3.5 h-3.5 shrink-0" />
                 <span className="truncate">1. Logo</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setBrandingTab("cover")}
-                className={`py-2 px-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center ${
-                  brandingTab === "cover"
-                    ? "bg-[#8B1E1E] text-white shadow-xs"
-                    : "text-stone-700 hover:bg-white/80"
-                }`}
-              >
-                <ImageIcon className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate">2. Cover</span>
               </button>
 
               <button
@@ -2513,7 +2499,7 @@ export const NavaratriOrganizer: React.FC = () => {
                 }`}
               >
                 <MapPin className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate">3. Location</span>
+                <span className="truncate">2. Location</span>
               </button>
 
               <button
@@ -2526,7 +2512,7 @@ export const NavaratriOrganizer: React.FC = () => {
                 }`}
               >
                 <Phone className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate">4. Organizer</span>
+                <span className="truncate">3. Organizer</span>
               </button>
             </div>
 
@@ -2546,15 +2532,15 @@ export const NavaratriOrganizer: React.FC = () => {
                     <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
                       {/* Circular Ornate Emblem Badge */}
                       <div className="relative shrink-0">
-                        <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-amber-400 bg-white shadow-lg p-1.5 flex items-center justify-center overflow-hidden relative group">
+                        <div className="w-28 h-28 sm:w-32 sm:h-32 bg-white flex items-center justify-center overflow-hidden relative group">
                           {logoPreview || logoInputUrl ? (
                             <img
                               src={logoPreview || logoInputUrl}
                               alt="Mandapam Logo Preview"
                               className={`w-full h-full transition-transform duration-200 group-hover:scale-105 ${
                                 logoFitMode === "cover"
-                                  ? "object-cover rounded-full"
-                                  : "object-contain p-0.5 rounded-full"
+                                  ? "object-cover"
+                                  : "object-contain p-0.5"
                               }`}
                               onError={() => toast.error("Could not load logo preview.")}
                             />
@@ -2692,7 +2678,7 @@ export const NavaratriOrganizer: React.FC = () => {
               )}
 
               {/* TAB 2: MANDAPAM COVER PHOTO */}
-              {brandingTab === "cover" && (
+              {false && brandingTab === "cover" && (
                 <div className="space-y-4 animate-in fade-in duration-150">
                   <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-stone-700 flex items-start gap-2">
                     <span className="text-base shrink-0">🌄</span>
