@@ -19,9 +19,40 @@ const services = [
   ["🎟️", "సేవలు & టోకెన్లు", "Sevas & Devotee Tokens"],
 ];
 
+const standeeThemes = {
+  temple: {
+    label: "Temple maroon",
+    background: "#7c1d1d",
+    panel: "#fffaf0",
+    ink: "#7c1d1d",
+    accent: "#f59e0b",
+    className: "border-[#d97706] bg-[radial-gradient(circle_at_50%_0%,#b45309_0%,#7c1d1d_42%,#4a1010_100%)]",
+  },
+  lotus: {
+    label: "Lotus ivory",
+    background: "#fff7e5",
+    panel: "#ffffff",
+    ink: "#7c1d1d",
+    accent: "#be123c",
+    className: "border-[#be123c] bg-[radial-gradient(circle_at_85%_8%,#fecdd3_0%,transparent_24%),radial-gradient(circle_at_12%_90%,#fde68a_0%,transparent_22%),#fff7e5]",
+  },
+  sanctum: {
+    label: "Sanctum green",
+    background: "#164e3b",
+    panel: "#fdf6df",
+    ink: "#14532d",
+    accent: "#d4a72c",
+    className: "border-[#d4a72c] bg-[radial-gradient(circle_at_50%_0%,#4d7c0f_0%,#14532d_44%,#052e16_100%)]",
+  },
+} as const;
+
+type StandeeTheme = keyof typeof standeeThemes;
+
 export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, onClose }) => {
   const [copied, setCopied] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [theme, setTheme] = useState<StandeeTheme>("temple");
+  const selectedTheme = standeeThemes[theme];
   if (!isOpen) return null;
 
   const shareUrl = `${window.location.origin}${base}/navaratri/m/${encodeURIComponent(mandapam.slug)}`;
@@ -57,10 +88,10 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
       canvas.height = 3508;
       const ctx = canvas.getContext("2d");
       if (!ctx) throw new Error("No canvas context");
-      ctx.fillStyle = "#fffdf8"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#8b1e1e"; ctx.fillRect(150, 145, 2180, 18);
-      ctx.fillStyle = "#d97706"; ctx.fillRect(150, 180, 2180, 6);
-      ctx.fillStyle = "#7c1d1d";
+      ctx.fillStyle = selectedTheme.background; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = selectedTheme.accent; ctx.fillRect(150, 145, 2180, 18);
+      ctx.fillStyle = "#fffdf8"; ctx.fillRect(165, 180, 2150, 5);
+      ctx.fillStyle = selectedTheme.ink;
       ctx.textAlign = "center";
       ctx.font = "bold 54px Georgia";
       ctx.fillText("SHARAN NAVARATRI 2026", 1240, 330);
@@ -72,24 +103,25 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
         if (ctx.measureText(trial).width > 1750 && line) { ctx.fillText(line, 1240, y); y += 100; line = word; } else line = trial;
       }
       if (line) ctx.fillText(line, 1240, y);
-      ctx.fillStyle = "#92400e"; ctx.font = "bold 33px Arial";
+      ctx.fillStyle = selectedTheme.accent; ctx.font = "bold 33px Arial";
       ctx.fillText("Scan to visit your Mandapam digital notice board", 1240, 680);
-      ctx.fillStyle = "#fff"; ctx.roundRect(450, 900, 1580, 1390, 55); ctx.fill();
-      ctx.strokeStyle = "#d97706"; ctx.lineWidth = 10; ctx.beginPath(); ctx.roundRect(450, 900, 1580, 1390, 55); ctx.stroke();
+      ctx.fillStyle = selectedTheme.panel; ctx.roundRect(450, 900, 1580, 1390, 55); ctx.fill();
+      ctx.strokeStyle = selectedTheme.accent; ctx.lineWidth = 10; ctx.beginPath(); ctx.roundRect(450, 900, 1580, 1390, 55); ctx.stroke();
       ctx.drawImage(qr, 650, 1080, 1180, 1180);
-      ctx.fillStyle = "#7c1d1d"; ctx.font = "bold 45px Arial";
+      ctx.fillStyle = selectedTheme.ink; ctx.font = "bold 45px Arial";
       ctx.fillText("SCAN HERE", 1240, 1015);
       ctx.font = "30px Arial"; ctx.fillStyle = "#57534e";
       ctx.fillText("sharan-navratri.vercel.app", 1240, 2355);
       const startY = 2520;
       services.forEach((service, index) => {
         const col = index % 2; const row = Math.floor(index / 2); const x = 250 + col * 1010; const yy = startY + row * 270;
-        ctx.fillStyle = "#fff7e7"; ctx.roundRect(x, yy, 970, 210, 28); ctx.fill();
-        ctx.fillStyle = "#7c1d1d"; ctx.textAlign = "left"; ctx.font = "bold 33px Arial"; ctx.fillText(service[2], x + 42, yy + 85);
-        ctx.font = "28px Arial"; ctx.fillStyle = "#92400e"; ctx.fillText(service[1], x + 42, yy + 142);
+        ctx.fillStyle = selectedTheme.panel; ctx.roundRect(x, yy, 970, 210, 28); ctx.fill();
+        ctx.fillStyle = selectedTheme.ink; ctx.textAlign = "left"; ctx.font = "bold 33px Arial"; ctx.fillText(service[2], x + 42, yy + 85);
+        ctx.font = "28px Arial"; ctx.fillStyle = selectedTheme.accent; ctx.fillText(service[1], x + 42, yy + 142);
       });
       ctx.textAlign = "center";
       try { const logo = await loadImage(siddhiDynamicsLogo); ctx.drawImage(logo, 960, 3180, 560, 185); } catch {}
+      ctx.fillStyle = "#fffdf8"; ctx.font = "bold 27px Arial"; ctx.fillText("అమ్మవారి సేవలో • SIDDHI DYNAMICS LLP", 1240, 3425);
       canvas.toBlob((blob) => {
         if (!blob) return toast.error("Could not create standee.");
         const url = URL.createObjectURL(blob); const a = document.createElement("a");
@@ -120,14 +152,22 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
     <style>{`@media print { @page { size:A4 portrait; margin:0 } body *{visibility:hidden!important} #printable-standee,#printable-standee *{visibility:visible!important} #printable-standee{position:fixed!important;inset:0!important;width:210mm!important;height:297mm!important;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important} .no-print{display:none!important} }`}</style>
     <div className="relative flex min-h-[100dvh] w-full max-w-2xl flex-col bg-[#fffaf0] p-3 shadow-2xl sm:min-h-0 sm:max-h-[calc(100dvh-2rem)] sm:rounded-3xl sm:p-6">
       <button onClick={onClose} aria-label="Close QR poster" className="no-print absolute right-3 top-3 z-30 grid h-10 w-10 place-items-center rounded-full border border-stone-300 bg-white text-stone-700 shadow-md hover:bg-stone-100"><X className="h-5 w-5" /></button>
-      <div className="no-print mb-3 shrink-0 pr-12"><h2 className="font-serif text-xl font-black text-[#7c1d1d]">Mandapam QR</h2><p className="text-xs text-stone-600">Print the A4 poster or download only the QR code.</p></div>
+      <div className="no-print mb-3 shrink-0 pr-12"><h2 className="font-serif text-xl font-black text-[#7c1d1d]">Mandapam QR standee</h2><p className="text-xs text-stone-600">Choose a poster design, then download the standee or only its QR code.</p></div>
+      <div className="no-print mb-3 grid shrink-0 grid-cols-3 gap-2" aria-label="Standee design">
+        {(Object.entries(standeeThemes) as [StandeeTheme, typeof standeeThemes[StandeeTheme]][]).map(([key, option]) => (
+          <button key={key} type="button" onClick={() => setTheme(key)} className={`rounded-xl border-2 p-2 text-left transition ${theme === key ? "border-[#7c1d1d] bg-amber-50 shadow-sm" : "border-amber-200 bg-white hover:border-amber-400"}`}>
+            <span className="mb-1 block h-4 rounded-full" style={{ background: option.background, boxShadow: `inset 0 0 0 2px ${option.accent}` }} />
+            <span className="block text-[10px] font-bold leading-tight text-stone-700">{option.label}</span>
+          </button>
+        ))}
+      </div>
       <div className="hidden"><QRCodeCanvas id="mandapam-qr-canvas" value={publicUrl} size={1200} level="H" includeMargin /></div>
-      <div className="min-h-0 flex-1 overflow-y-auto pb-3 pr-1"><div id="printable-standee" className="mx-auto w-full max-w-[430px] overflow-hidden rounded-2xl border border-amber-300 bg-[#fffdf8] p-4 shadow-inner sm:p-7" style={{ aspectRatio: "210 / 297" }}>
+      <div className="min-h-0 flex-1 overflow-y-auto pb-3 pr-1"><div id="printable-standee" className={`mx-auto w-full max-w-[430px] overflow-hidden rounded-2xl border-2 p-4 shadow-inner sm:p-7 ${selectedTheme.className}`} style={{ aspectRatio: "210 / 297" }}>
         <div className="flex h-full flex-col items-center text-center">
-          <div className="w-full border-y-4 border-[#8b1e1e] px-3 py-3 text-[#7c1d1d]"><p className="text-[10px] font-bold tracking-[.24em] sm:text-xs">SHARAN NAVARATRI 2026</p><h3 className="mt-1 font-serif text-xl font-black leading-tight sm:text-3xl">{mandapam.name}</h3><p className="mt-1 text-[10px] font-semibold text-amber-800 sm:text-xs">Scan for Mandapam details</p></div>
-          <div className="my-auto rounded-3xl border-2 border-amber-500 bg-white p-4 shadow-lg sm:p-7"><p className="mb-2 text-xs font-black tracking-widest text-[#7c1d1d]">SCAN HERE</p><QRCodeSVG value={publicUrl} size={210} level="H" includeMargin className="h-44 w-44 sm:h-56 sm:w-56" /><p className="mt-2 text-[10px] font-semibold text-stone-600">sharan-navratri.vercel.app</p></div>
-          <div className="grid w-full grid-cols-2 gap-2 sm:gap-3">{services.map(([icon, telugu, english]) => <div key={english} className="rounded-xl border border-amber-200 bg-[#fff7e7] p-2 text-left sm:p-3"><div className="text-base">{icon}</div><p className="text-[10px] font-black leading-tight text-[#7c1d1d] sm:text-xs">{telugu}</p><p className="mt-0.5 text-[8px] font-medium leading-tight text-stone-700 sm:text-[10px]">{english}</p></div>)}</div>
-          <img src={siddhiDynamicsLogo} alt="Siddhi Dynamics LLP" className="mt-3 h-7 w-auto object-contain sm:h-9" /></div>
+          <div className="w-full rounded-xl border-y-2 bg-white/90 px-3 py-3" style={{ borderColor: selectedTheme.accent, color: selectedTheme.ink }}><p className="text-[10px] font-bold tracking-[.24em] sm:text-xs">SHARAN NAVARATRI 2026</p><h3 className="mt-1 font-serif text-xl font-black leading-tight sm:text-3xl">{mandapam.name}</h3><p className="mt-1 text-[10px] font-semibold sm:text-xs" style={{ color: selectedTheme.accent }}>Scan for Mandapam details</p></div>
+          <div className="my-auto rounded-3xl border-2 bg-white p-4 shadow-lg sm:p-7" style={{ borderColor: selectedTheme.accent }}><p className="mb-2 text-xs font-black tracking-widest" style={{ color: selectedTheme.ink }}>SCAN HERE</p><QRCodeSVG value={publicUrl} size={210} level="H" includeMargin className="h-44 w-44 sm:h-56 sm:w-56" /><p className="mt-2 text-[10px] font-semibold text-stone-600">sharan-navratri.vercel.app</p></div>
+          <div className="grid w-full grid-cols-2 gap-2 sm:gap-3">{services.map(([icon, telugu, english]) => <div key={english} className="rounded-xl border bg-white/95 p-2 text-left sm:p-3" style={{ borderColor: selectedTheme.accent }}><div className="text-base">{icon}</div><p className="text-[10px] font-black leading-tight sm:text-xs" style={{ color: selectedTheme.ink }}>{telugu}</p><p className="mt-0.5 text-[8px] font-medium leading-tight text-stone-700 sm:text-[10px]">{english}</p></div>)}</div>
+          <div className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-white/90 px-2 py-1.5"><img src={siddhiDynamicsLogo} alt="Siddhi Dynamics LLP" className="h-6 w-auto object-contain sm:h-8" /><span className="text-[8px] font-black uppercase tracking-wide text-stone-700 sm:text-[10px]">అమ్మవారి సేవలో<br />Siddhi Dynamics LLP</span></div></div>
       </div></div>
       <div className="no-print mt-2 grid shrink-0 grid-cols-2 gap-2 border-t border-amber-200 pt-3 sm:flex sm:flex-wrap sm:justify-center"><button onClick={downloadPoster} disabled={isDownloading} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#7c1d1d] px-4 py-2.5 text-xs font-bold text-white"><Download className="h-4 w-4" />{isDownloading ? "Creating…" : "Download design"}</button><button onClick={downloadQr} className="inline-flex items-center justify-center gap-2 rounded-xl border border-amber-500 bg-white px-4 py-2.5 text-xs font-bold text-[#7c1d1d]"><Download className="h-4 w-4" />QR code only</button><button onClick={() => window.print()} className="inline-flex items-center justify-center gap-2 rounded-xl border border-amber-500 bg-white px-4 py-2.5 text-xs font-bold text-[#7c1d1d]"><Printer className="h-4 w-4" />Print A4</button><button onClick={copyLink} className="inline-flex items-center justify-center gap-2 rounded-xl border border-amber-500 bg-white px-4 py-2.5 text-xs font-bold text-[#7c1d1d]">{copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}{copied ? "Copied" : "Copy link"}</button><button onClick={share} className="col-span-2 inline-flex items-center justify-center gap-2 rounded-xl border border-amber-500 bg-white px-4 py-2.5 text-xs font-bold text-[#7c1d1d] sm:col-span-1"><Share2 className="h-4 w-4" />Share</button></div>
     </div>
