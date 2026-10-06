@@ -169,8 +169,11 @@ export const isDemoOrMockMandapam = (m: any): boolean => {
     name === "demo mandapam" ||
     name === "test mandapam" ||
     name === "sample mandapam" ||
+    name === "sri kanaka durga bhavani mandapam" ||
     slug === "demo-mandapam" ||
-    slug === "test-mandapam"
+    slug === "test-mandapam" ||
+    // Retired test profile: never display this unverified placeholder as public data.
+    slug === "sri-kanaka-durga-khaleelwadi"
   );
 };
 
@@ -1015,13 +1018,15 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       duplicateWarning = `A Mandapam with similar details (${conflicting.name} in ${conflicting.area}) already exists. Your registration has been submitted for Admin review.`;
     }
 
-    const shortId = `mnp-${Math.floor(100000 + Math.random() * 900000)}`;
+    // The database primary key is UUID. Persisting a valid UUID makes each
+    // registered Mandapam and its QR page available on every devotee device.
+    const shortId = crypto.randomUUID();
 
     const baseSlug = (data.name + "-" + data.city)
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
-    const slugSuffix = shortId.replace("mnp-", "").slice(-4);
+    const slugSuffix = shortId.replace(/-/g, "").slice(0, 8);
     const slug = `${baseSlug}-${slugSuffix}`;
 
     const generatedPasscode =

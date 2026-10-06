@@ -1,7 +1,7 @@
 import { navaratriAsset } from "../utils/navaratriAssets";
 import { getMandapamDirectionsUrl } from "../utils/mandapamMaps";
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
 import { useNavaratriLanguage } from "../context/NavaratriLanguageContext";
 import { STANDARD_NAVARATRI_DAYS } from "../data/standardNavaratriDays";
@@ -99,6 +99,7 @@ const PRESET_MANDAPAM_BACKGROUNDS = [
 
 export const NavaratriMandapamDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const [searchParams] = useSearchParams();
   const {
     mandapams,
     alankaranas,
@@ -139,29 +140,23 @@ export const NavaratriMandapamDetail: React.FC = () => {
   // Normalize and decode search slug
   const normalizedSlug = decodeURIComponent(slug || "").trim().toLowerCase();
 
-  // Find mandapam by exact slug, id, or partial match, falling back to first mandapam
+  // Public QR/share links must resolve only to their exact Mandapam.
   const mandapam =
     mandapams.find(
       m => (m.slug && m.slug.toLowerCase() === normalizedSlug) ||
            (m.id && m.id.toLowerCase() === normalizedSlug)
-    ) ||
-    (normalizedSlug
-      ? mandapams.find(
-          m => (m.slug && m.slug.toLowerCase().includes(normalizedSlug)) ||
-               (m.name && m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").includes(normalizedSlug))
-        )
-      : undefined) ||
-    mandapams[0];
+    );
 
   const following = mandapam ? isFollowing(mandapam.id) : false;
 
-  // Automatically mark as visited/scanned so it appears on user's home landing page
+  // A card or shared URL visit must not appear as a QR scan. QR posters and the
+  // in-app scanner explicitly add source=qr.
   useEffect(() => {
-    if (mandapam?.id) {
+    if (mandapam?.id && searchParams.get("source") === "qr") {
       markScanned(mandapam.id);
     }
     document.title = "Sharan Navaratri";
-  }, [mandapam?.id, markScanned]);
+  }, [mandapam?.id, markScanned, searchParams]);
 
   if (!mandapam) {
     return (

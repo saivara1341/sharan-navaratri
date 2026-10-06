@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
 import { MandapamIcon } from "../components/devotional/MandapamIcon";
+import { PallakiIcon } from "../components/devotional/PallakiIcon";
+import { PrasadBowlIcon } from "../components/devotional/PrasadBowlIcon";
 import { HomaKundaIcon, isHomamEvent } from "../components/devotional/HomaKundaIcon";
 import { toast } from "sonner";
 
@@ -541,7 +543,7 @@ export const NavaratriNearMe: React.FC = () => {
         if (activeCategory === "annadanam") {
           return activity.category === "Annadanam";
         }
-        return activity.category !== "Annadanam";
+        return true;
       })
       .map((activity) => ({
         ...activity,
@@ -586,15 +588,15 @@ export const NavaratriNearMe: React.FC = () => {
   const categories: Array<{ id: Category; label: string; icon?: React.ReactNode }> = [
     { id: "all", label: "All Near Me" },
     { id: "mandapams", label: "Mandapams", icon: <MandapamIcon className="h-4 w-4" /> },
-    { id: "annadanam", label: "Annadanam Near Me", icon: <Utensils className="h-3.5 w-3.5" /> },
-    { id: "bhajans_pallaki", label: "Pallaki Seva & Bhajans", icon: <Music2 className="h-3.5 w-3.5" /> },
+    { id: "annadanam", label: "Annadanam Near Me", icon: <PrasadBowlIcon className="h-5 w-5" /> },
+    { id: "bhajans_pallaki", label: "Pallaki Seva & Bhajans", icon: <PallakiIcon className="h-4 w-4" /> },
     { id: "activities", label: "Dandiya & Activities", icon: <DandiyaIcon className="h-4 w-4" /> }
   ];
 
   const showMandapams =
     activeCategory === "all" ||
     activeCategory === "mandapams" ||
-    activeCategory === "annadanam";
+    activeCategory === "annadanam" || activeCategory === "bhajans_pallaki" || activeCategory === "activities";
 
   const showActivities =
     activeCategory === "all" ||
@@ -922,7 +924,7 @@ export const NavaratriNearMe: React.FC = () => {
                       ) : activity.category === "Competition" ? (
                         <Trophy className="h-5 w-5" />
                       ) : activity.category === "Pallaki Seva" ? (
-                        <Navigation className="h-5 w-5" />
+                        <PallakiIcon className="h-5 w-5" />
                       ) : activity.category === "Bhajan" ? (
                         <Music2 className="h-5 w-5" />
                       ) : (

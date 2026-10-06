@@ -25,10 +25,11 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
   const [isDownloading, setIsDownloading] = useState(false);
   if (!isOpen) return null;
 
-  const publicUrl = `${window.location.origin}${base}/navaratri/m/${mandapam.slug}`;
+  const shareUrl = `${window.location.origin}${base}/navaratri/m/${encodeURIComponent(mandapam.slug)}`;
+  const publicUrl = `${shareUrl}?source=qr`;
 
   const copyLink = async () => {
-    await navigator.clipboard.writeText(publicUrl);
+    await navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     toast.success("Mandapam link copied.");
     window.setTimeout(() => setCopied(false), 1800);
@@ -36,7 +37,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
 
   const share = () => {
     if (navigator.share) {
-      navigator.share({ title: mandapam.name, text: `Visit ${mandapam.name} on Sharan Navaratri`, url: publicUrl }).catch(() => {});
+      navigator.share({ title: mandapam.name, text: `Visit ${mandapam.name} on Sharan Navaratri`, url: shareUrl }).catch(() => {});
     } else copyLink();
   };
 

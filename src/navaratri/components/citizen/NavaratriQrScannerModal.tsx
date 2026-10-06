@@ -125,7 +125,7 @@ export const NavaratriQrScannerModal: React.FC = () => {
 
       setTimeout(() => {
         closeModal();
-        navigate(`/navaratri/m/${targetSlug}`);
+        navigate(`/navaratri/m/${encodeURIComponent(targetSlug)}?source=qr`);
       }, 700);
     },
     [closeModal, mandapams, markScanned, navigate, stopCamera]

@@ -18,6 +18,7 @@ import {
   UtensilsCrossed
 } from "lucide-react";
 import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
+import { PallakiIcon } from "../components/devotional/PallakiIcon";
 import { MandapamGoldIcon } from "../components/devotional/MandapamGoldIcon";
 import { FloatingAuspiciousParticles } from "../components/devotional/SacredMotionGraphics";
 import { useNavaratriData, isDemoOrMockMandapam } from "../context/NavaratriDataContext";
@@ -36,6 +37,7 @@ export const NavaratriHome: React.FC = () => {
   const { t } = useNavaratriLanguage();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [savedTab, setSavedTab] = useState<"scanned" | "following">("scanned");
 
   const handleOpenScanner = () => {
     window.dispatchEvent(new Event("navaratri:open-scanner"));
@@ -75,6 +77,10 @@ export const NavaratriHome: React.FC = () => {
         todayAlankarana: alankaranas.find((item) => item.mandapamId === mandapam.id)
       }));
   }, [alankaranas, followedIds, mandapams, scannedIds]);
+
+  const scannedMandapams = useMemo(() => savedMandapams.filter((mandapam) => scannedIds.includes(mandapam.id)), [savedMandapams, scannedIds]);
+  const followedMandapams = useMemo(() => savedMandapams.filter((mandapam) => followedIds.includes(mandapam.id)), [savedMandapams, followedIds]);
+  const visibleSavedMandapams = savedTab === "scanned" ? scannedMandapams : followedMandapams;
 
   const handleSearchSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -302,7 +308,7 @@ export const NavaratriHome: React.FC = () => {
               </Link>
               <Link to="/navaratri/near-me?category=bhajans_pallaki" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
                 <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
-                  <Music2 className="w-3.5 h-3.5 shrink-0 text-amber-200" />
+                  <PallakiIcon className="w-4 h-4 shrink-0 text-amber-200" />
                   <span className="truncate">Pallaki Seva & Bhajans</span>
                 </span>
               </Link>
@@ -495,15 +501,20 @@ export const NavaratriHome: React.FC = () => {
           <div className="flex items-center justify-between border-b border-amber-200 pb-2">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-800">Personal Shrines</p>
-              <h2 className="font-['Cinzel',serif] text-2xl font-black text-[#8B1E1E]">Your Saved & Followed Mandapams</h2>
+              <h2 className="font-['Cinzel',serif] text-2xl font-black text-[#8B1E1E]">Your Mandapams</h2>
             </div>
             <span className="px-2.5 py-1 rounded-full bg-amber-100 text-[#8B1E1E] text-xs font-bold">
               {savedMandapams.length} {savedMandapams.length === 1 ? "Mandapam" : "Mandapams"}
             </span>
           </div>
 
+          <div className="grid grid-cols-2 gap-2 rounded-2xl bg-amber-50 p-1.5">
+            <button type="button" onClick={() => setSavedTab("scanned")} className={`rounded-xl px-3 py-2 text-xs font-bold transition ${savedTab === "scanned" ? "bg-[#8B1E1E] text-white shadow-sm" : "text-stone-700"}`}><QrCode className="mr-1 inline h-3.5 w-3.5" /> Scanned ({scannedMandapams.length})</button>
+            <button type="button" onClick={() => setSavedTab("following")} className={`rounded-xl px-3 py-2 text-xs font-bold transition ${savedTab === "following" ? "bg-[#8B1E1E] text-white shadow-sm" : "text-stone-700"}`}><Heart className="mr-1 inline h-3.5 w-3.5" /> Following ({followedMandapams.length})</button>
+          </div>
+
           <div className="grid gap-4 md:grid-cols-2">
-            {savedMandapams.map((mandapam) => {
+            {visibleSavedMandapams.slice(0, 2).map((mandapam) => {
               const mapsUrl = getMandapamDirectionsUrl(mandapam);
               return (
                 <article
@@ -569,6 +580,7 @@ export const NavaratriHome: React.FC = () => {
               );
             })}
           </div>
+          {visibleSavedMandapams.length > 2 && <Link to={`/navaratri/following?tab=${savedTab}`} className="mx-auto flex w-fit items-center gap-1 rounded-xl border border-amber-400 bg-white px-4 py-2 text-xs font-bold text-[#8B1E1E] hover:bg-amber-50">Show more <ChevronRight className="h-4 w-4" /></Link>}
         </motion.section>
       )}
 
