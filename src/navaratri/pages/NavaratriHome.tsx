@@ -9,7 +9,6 @@ import {
   Navigation,
   Search,
   ShieldCheck,
-  Utensils,
   Music2,
   ChevronRight,
   Building,
@@ -26,6 +25,7 @@ import { NineDaySchedule } from "../components/citizen/NineDaySchedule";
 import { AuspiciousRibbonBorder } from "../components/devotional/AuspiciousRibbonBorder";
 import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifiedBadge";
 import { NavaratriFlankingAdBox } from "../components/ads/NavaratriFlankingAdBox";
+import annadanamSevaIllustration from "@/assets/annadanam-seva-illustration.png";
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
 
@@ -221,8 +221,15 @@ export const NavaratriHome: React.FC = () => {
                 className="flex items-center justify-between gap-3 sm:gap-4"
               >
                 <div className="flex-1 min-w-0">
-                  <h1 className="font-['Cinzel',serif] font-black text-lg min-[360px]:text-xl min-[400px]:text-2xl sm:text-3xl md:text-3.5xl lg:text-4xl xl:text-[2.6rem] text-[#FFFBEB] leading-tight sm:leading-snug tracking-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.5)]">
-                    Celebrate Sharan Maa Durga Matha Navaratri <span className="text-amber-300">2026</span> with Maa Durga's Divine Blessings
+                  <h1 className="font-['Cinzel',serif] font-black text-lg min-[360px]:text-lg min-[400px]:text-xl sm:text-3xl md:text-3.5xl lg:text-4xl xl:text-[2.6rem] text-[#FFFBEB] leading-tight sm:leading-snug tracking-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.5)]">
+                    <span className="sm:hidden">
+                      Celebrate Sharan<br />
+                      Navaratri <span className="text-amber-300">2026</span><br />
+                      Maa Durga Blessings
+                    </span>
+                    <span className="hidden sm:inline">
+                      Celebrate Sharan Maa Durga Matha Navaratri <span className="text-amber-300">2026</span> with Maa Durga&apos;s Divine Blessings
+                    </span>
                   </h1>
                 </div>
 
@@ -233,7 +240,7 @@ export const NavaratriHome: React.FC = () => {
                   <img
                     src={navaratriAsset("/navaratri/assets/maa-durga-simhavahana-icon.png")}
                     alt="Maa Durga Matha"
-                    className="relative z-10 w-24 min-[360px]:w-28 min-[400px]:w-32 sm:w-36 h-auto max-h-36 sm:max-h-44 object-contain drop-shadow-[0_0_24px_rgba(251,191,36,0.95)] drop-shadow-[0_6px_14px_rgba(0,0,0,0.5)] transition-transform duration-300 active:scale-105"
+                    className="relative z-10 w-28 min-[360px]:w-32 min-[400px]:w-36 sm:w-36 h-auto max-h-40 sm:max-h-44 object-contain drop-shadow-[0_0_24px_rgba(251,191,36,0.95)] drop-shadow-[0_6px_14px_rgba(0,0,0,0.5)] transition-transform duration-300 active:scale-105"
                   />
                 </div>
               </motion.div>
@@ -285,7 +292,7 @@ export const NavaratriHome: React.FC = () => {
             >
               <Link to="/navaratri/near-me?category=annadanam" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
                 <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
-                  <Utensils className="w-3.5 h-3.5 shrink-0 text-amber-200" />
+                  <img src={annadanamSevaIllustration} alt="Annadanam seva" className="w-8 h-6 shrink-0 rounded object-cover object-center border border-amber-100/40" />
                   <span className="truncate">Annadanam Near Me</span>
                 </span>
               </Link>
