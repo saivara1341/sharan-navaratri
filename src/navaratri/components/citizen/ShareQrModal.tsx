@@ -11,7 +11,6 @@ import {
   Check, 
   Upload, 
   Sparkles, 
-  Layers, 
   ChevronDown,
   MapPin,
   QrCode,
@@ -21,6 +20,7 @@ import {
 import { toast } from "sonner";
 import { navaratriAsset } from "../../utils/navaratriAssets";
 import { InstagramVerifiedBadge } from "../devotional/InstagramVerifiedBadge";
+import siddhiDynamicsLogo from "@/assets/siddhi-dynamics-header-logo.png";
 
 interface ShareQrModalProps {
   mandapam: Mandapam;
@@ -29,65 +29,6 @@ interface ShareQrModalProps {
 }
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
-
-export interface StandeeFrame {
-  id: string;
-  name: string;
-  subtitle: string;
-  frameBgUrl: string;
-  cardBg: string;
-  borderClass: string;
-  badgeBg: string;
-  accentColor: string;
-  sampleColor: string;
-}
-
-const STANDEE_FRAMES: StandeeFrame[] = [
-  {
-    id: "royal-gold-sanctum",
-    name: "Golden Temple Sanctum",
-    subtitle: "Sanctum Pillars & Deepams",
-    frameBgUrl: navaratriAsset("/navaratri/assets/royal-temple-gold-sanctum.jpg"),
-    cardBg: "bg-[#FFFDF9]",
-    borderClass: "border-4 border-amber-500/90 ring-4 ring-amber-400/40",
-    badgeBg: "bg-gradient-to-r from-[#781B1B] via-[#B45309] to-[#781B1B]",
-    accentColor: "#8B1E1E",
-    sampleColor: "from-[#781B1B] via-[#D97706] to-[#781B1B]"
-  },
-  {
-    id: "saffron-gold-mandapam",
-    name: "Saffron Gold Mandapam",
-    subtitle: "24K Filigree & Sacred Bells",
-    frameBgUrl: navaratriAsset("/navaratri/assets/saffron-gold-mandapam-frame.jpg"),
-    cardBg: "bg-[#FFF9F2]",
-    borderClass: "border-4 border-amber-600/90 ring-4 ring-amber-500/40",
-    badgeBg: "bg-gradient-to-r from-[#C2410C] via-[#B45309] to-[#781B1B]",
-    accentColor: "#C2410C",
-    sampleColor: "from-[#C2410C] via-[#EA580C] to-[#D97706]"
-  },
-  {
-    id: "parchment-lotus",
-    name: "Vedic Parchment",
-    subtitle: "Ivory Lotus & Kolam",
-    frameBgUrl: navaratriAsset("/navaratri/assets/parchment-lotus-frame.jpg"),
-    cardBg: "bg-[#FDFBF7]",
-    borderClass: "border-4 border-[#D97706]/80 ring-4 ring-amber-400/30",
-    badgeBg: "bg-gradient-to-r from-[#8B1E1E] to-[#B45309]",
-    accentColor: "#8B1E1E",
-    sampleColor: "from-[#8B1E1E] via-[#D97706] to-[#8B1E1E]"
-  },
-  {
-    id: "sage-lotus",
-    name: "Sage Lotus Garden",
-    subtitle: "Sacred Emerald & Gold",
-    frameBgUrl: navaratriAsset("/navaratri/assets/sage-lotus-border.jpg"),
-    cardBg: "bg-[#F4F7F4]",
-    borderClass: "border-4 border-emerald-700/80 ring-4 ring-emerald-500/30",
-    badgeBg: "bg-gradient-to-r from-emerald-800 to-amber-700",
-    accentColor: "#1B4332",
-    sampleColor: "from-[#1B4332] via-[#2D6A4F] to-[#D97706]"
-  }
-];
 
 // Helper to clean and deduplicate repetitive address strings
 function formatCleanLocation(mandapam: Mandapam): string {
@@ -121,7 +62,6 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
 }) => {
   const { t } = useNavaratriLanguage();
   const [copied, setCopied] = useState(false);
-  const [selectedFrameId, setSelectedFrameId] = useState<string>("royal-gold-sanctum");
   const [selectedDeityId, setSelectedDeityId] = useState<string>("durga-simhavahana");
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -225,7 +165,6 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
 
   const publicUrl = `${window.location.origin}${base}/navaratri/m/${mandapam.slug}`;
   const cleanLocation = formatCleanLocation(mandapam);
-  const currentFrame = STANDEE_FRAMES.find((f) => f.id === selectedFrameId) || STANDEE_FRAMES[0];
   const activeDeity = deityOptions.find((d) => d.id === selectedDeityId) || deityOptions[0];
 
   const handleCopyLink = () => {
@@ -300,11 +239,12 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
     });
   };
 
-  // High-Resolution Standee PNG Generation & Download (1200 x 1800 px)
+  // High-resolution A4 PNG generation (2480 × 3508 px at 300 DPI).
+  // Downloads deliberately use a plain white sheet for affordable, reliable printing.
   const handleDownloadStandee = async () => {
     try {
       setIsDownloading(true);
-      toast.info("Generating high-resolution traditional temple standee (A4 Print Ready)...");
+      toast.info("Generating white-background A4 QR poster...");
 
       const qrCanvas = document.getElementById("mandapam-qr-canvas") as HTMLCanvasElement;
       if (!qrCanvas) {
@@ -313,10 +253,10 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
         return;
       }
 
-      // High-resolution canvas (A4 Golden Ratio: 1200 x 1800)
+      // Exact A4 portrait ratio, 300 DPI.
       const canvas = document.createElement("canvas");
-      canvas.width = 1200;
-      canvas.height = 1800;
+      canvas.width = 2480;
+      canvas.height = 3508;
       const ctx = canvas.getContext("2d");
 
       if (!ctx) {
@@ -325,321 +265,116 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
         return;
       }
 
-      // 1. Draw Outer Frame Background
-      try {
-        const frameImg = await loadImage(currentFrame.frameBgUrl);
-        ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
-      } catch {
-        // Fallback rich traditional maroon/gold gradient
-        const bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        bgGrad.addColorStop(0, "#4A0E0E");
-        bgGrad.addColorStop(0.5, "#781B1B");
-        bgGrad.addColorStop(1, "#360A0A");
-        ctx.fillStyle = bgGrad;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
-
-      // 2. Draw Ivory/Parchment Sacred Inner Card
-      const cardMargin = 40;
-      const cardX = cardMargin;
-      const cardY = cardMargin;
-      const cardW = canvas.width - (cardMargin * 2);
-      const cardH = canvas.height - (cardMargin * 2);
-
-      // Card Fill
-      ctx.fillStyle = "rgba(255, 253, 248, 0.96)";
-      ctx.beginPath();
-      ctx.roundRect(cardX, cardY, cardW, cardH, 36);
-      ctx.fill();
-
-      // Golden Double Border
-      ctx.strokeStyle = "#B45309"; // Dark Gold
-      ctx.lineWidth = 5;
-      ctx.stroke();
-
-      ctx.strokeStyle = "#F59E0B"; // Bright Gold inner line
-      ctx.lineWidth = 2;
-      ctx.strokeRect(cardX + 12, cardY + 12, cardW - 24, cardH - 24);
-
-      // Corner Sacred Ornaments (Golden Filigree Circles)
-      const drawCorner = (cx: number, cy: number) => {
-        ctx.save();
-        ctx.strokeStyle = "#D97706";
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.arc(cx, cy, 18, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.fillStyle = "#8B1E1E";
-        ctx.beginPath();
-        ctx.arc(cx, cy, 6, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      };
-      drawCorner(cardX + 32, cardY + 32);
-      drawCorner(cardX + cardW - 32, cardY + 32);
-      drawCorner(cardX + 32, cardY + cardH - 32);
-      drawCorner(cardX + cardW - 32, cardY + cardH - 32);
-
-      // 3. Top Festive Mango Toranam & Marigold Garlands
-      try {
-        const toranImg = await loadImage(navaratriAsset("/navaratri/assets/mamidi-thoranam.png"));
-        ctx.drawImage(toranImg, cardX + 14, cardY + 14, cardW - 28, 48);
-      } catch {}
-
-      try {
-        const garlandImg = await loadImage(navaratriAsset("/navaratri/assets/banthi-pulu-garland.png"));
-        ctx.drawImage(garlandImg, cardX + 30, cardY + 44, cardW - 60, 32);
-      } catch {}
-
-      // 4. Sacred Slogans & Invocations
-      ctx.textAlign = "center";
-
-      // ॥ ॐ శ్రీ మాత్రే నమః ॥
-      ctx.fillStyle = "#8B1E1E";
-      ctx.font = "bold 30px 'Rozha One', 'Cinzel', serif";
-      ctx.fillText("॥ ॐ శ్రీ మాత్రే నమః ॥", canvas.width / 2, cardY + 115);
-
-      // Maha Mantra: सर्वमङ्गलमाङ्गल्ये शिवे सर्वार्थसाधिके
-      ctx.fillStyle = "#9A3412";
-      ctx.font = "bold 17px 'Rozha One', serif";
-      ctx.fillText("॥ सर्वमङ्गलमाङ्गल्ये शिवे सर्वार्थसाधिके । शरण्ये त्र्यम्बके गौरि नारायणि नमोऽस्तु ते ॥", canvas.width / 2, cardY + 145);
-
-      // 5. Official Platform Title Banner
-      const bannerText = "శరణ్ నవరాత్రి 2026 • అధికారిక డిజిటల్ మండపం బోర్డు";
-      ctx.font = "bold 16px sans-serif";
-      const bannerW = ctx.measureText(bannerText).width + 60;
-      const bannerH = 38;
-      const bannerX = (canvas.width - bannerW) / 2;
-      const bannerY = cardY + 165;
-
-      // Gradient Banner Pill
-      const pillGrad = ctx.createLinearGradient(bannerX, 0, bannerX + bannerW, 0);
-      pillGrad.addColorStop(0, "#781B1B");
-      pillGrad.addColorStop(0.5, "#B45309");
-      pillGrad.addColorStop(1, "#781B1B");
-      ctx.fillStyle = pillGrad;
-      ctx.beginPath();
-      ctx.roundRect(bannerX, bannerY, bannerW, bannerH, 19);
-      ctx.fill();
-
-      ctx.strokeStyle = "#FDE68A";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillText(bannerText, canvas.width / 2, bannerY + 25);
-
-      // 6. Sanctum Archway (Prabhavali) Framing the Divine Deity
-      const sanctumW = 460;
-      const sanctumH = 460;
-      const sanctumX = (canvas.width - sanctumW) / 2;
-      const sanctumY = bannerY + bannerH + 20;
-
-      // Radiant Warm Sanctum Halo
-      const haloGrad = ctx.createRadialGradient(
-        canvas.width / 2,
-        sanctumY + sanctumH * 0.45,
-        40,
-        canvas.width / 2,
-        sanctumY + sanctumH * 0.45,
-        sanctumW * 0.55
-      );
-      haloGrad.addColorStop(0, "#FEF3C7");
-      haloGrad.addColorStop(0.6, "#FDE68A");
-      haloGrad.addColorStop(1, "rgba(253, 230, 138, 0)");
-      ctx.fillStyle = haloGrad;
-      ctx.beginPath();
-      ctx.arc(canvas.width / 2, sanctumY + sanctumH * 0.45, sanctumW * 0.52, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Draw Deity Image
-      try {
-        const deityImg = await loadImage(activeDeity.url);
-
-        if (activeDeity.isTransparent) {
-          // Transparent idol: draw cleanly without clipping, let golden halo shine behind
-          const imgH = sanctumH - 20;
-          const aspect = deityImg.width / deityImg.height;
-          const imgW = imgH * aspect;
-          ctx.drawImage(deityImg, (canvas.width - imgW) / 2, sanctumY, imgW, imgH);
-        } else {
-          // Rectangular / photo idol: arched golden frame
-          ctx.save();
-          ctx.beginPath();
-          ctx.roundRect(sanctumX, sanctumY, sanctumW, sanctumH, 28);
-          ctx.clip();
-          ctx.drawImage(deityImg, sanctumX, sanctumY, sanctumW, sanctumH);
-          ctx.restore();
-
-          // Gold border for photo
-          ctx.strokeStyle = "#F59E0B";
-          ctx.lineWidth = 6;
-          ctx.beginPath();
-          ctx.roundRect(sanctumX, sanctumY, sanctumW, sanctumH, 28);
-          ctx.stroke();
-        }
-      } catch {}
-
-      // Deity Name Banner Pill
-      const deityPillText = `✨ ${activeDeity.name} • ${activeDeity.teluguSubtitle} ✨`;
-      ctx.font = "bold 18px 'Cinzel', serif";
-      const deityPillW = ctx.measureText(deityPillText).width + 48;
-      const deityPillH = 36;
-      const deityPillX = (canvas.width - deityPillW) / 2;
-      const deityPillY = sanctumY + sanctumH + 4;
-
-      ctx.fillStyle = "#FEF3C7";
-      ctx.beginPath();
-      ctx.roundRect(deityPillX, deityPillY, deityPillW, deityPillH, 18);
-      ctx.fill();
-      ctx.strokeStyle = "#F59E0B";
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
-
-      ctx.fillStyle = "#8B1E1E";
-      ctx.fillText(deityPillText, canvas.width / 2, deityPillY + 24);
-
-      // 7. Mandapam Identity & Verification
-      const nameY = deityPillY + deityPillH + 44;
-
-      // Sub-invocation
-      ctx.fillStyle = "#B45309";
-      ctx.font = "bold 15px serif";
-      ctx.fillText("॥ దుర్గామాతా దివ్య కటాక్ష సిద్ధిరస్తు ॥", canvas.width / 2, nameY - 14);
-
-      // Mandapam Name (Grand, Bold, Majestic)
-      ctx.fillStyle = "#781B1B";
-      ctx.font = "bold 44px 'Rozha One', 'Cinzel', serif";
-      ctx.fillText(mandapam.name, canvas.width / 2, nameY + 28);
-
-      // Clean Deduplicated Address
-      ctx.fillStyle = "#44403C";
-      ctx.font = "bold 20px sans-serif";
-      ctx.fillText(`📍 ${cleanLocation}`, canvas.width / 2, nameY + 62);
-
-      // Verified Mandapam Badge
+      const pageWidth = canvas.width;
+      const margin = 150;
+      const contentWidth = pageWidth - margin * 2;
+      const centerX = pageWidth / 2;
       const shortCode = mandapam.slug?.split("-").pop() || "2026";
-      const verText = `🛡️ అధికారిక నమోదిత మండపం • Official Utsav ID: #${shortCode}`;
-      ctx.font = "bold 15px sans-serif";
-      const verW = ctx.measureText(verText).width + 36;
-      const verH = 30;
-      const verX = (canvas.width - verW) / 2;
-      const verY = nameY + 76;
+      const drawCenteredLines = (text: string, maxWidth: number, y: number, lineHeight: number) => {
+        const words = text.split(" ");
+        const lines: string[] = [];
+        let line = "";
+        words.forEach((word) => {
+          const proposed = line ? `${line} ${word}` : word;
+          if (ctx.measureText(proposed).width > maxWidth && line) {
+            lines.push(line);
+            line = word;
+          } else line = proposed;
+        });
+        if (line) lines.push(line);
+        lines.forEach((item, index) => ctx.fillText(item, centerX, y + index * lineHeight));
+        return lines.length;
+      };
 
-      ctx.fillStyle = "#E0F2FE";
-      ctx.beginPath();
-      ctx.roundRect(verX, verY, verW, verH, 15);
-      ctx.fill();
-      ctx.strokeStyle = "#0284C7";
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      ctx.fillStyle = "#0369A1";
-      ctx.fillText(verText, canvas.width / 2, verY + 20);
-
-      // 8. Devotee QR Code Section (High-Contrast, Traditional Yantra Frame)
-      const qrSectionY = verY + verH + 28;
-      const qrCardW = 680;
-      const qrCardH = 390;
-      const qrCardX = (canvas.width - qrCardW) / 2;
-
-      // White QR Box
       ctx.fillStyle = "#FFFFFF";
-      ctx.beginPath();
-      ctx.roundRect(qrCardX, qrSectionY, qrCardW, qrCardH, 28);
-      ctx.fill();
-
-      // Ornate Border
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = "#8B1E1E";
+      ctx.lineWidth = 12;
+      ctx.strokeRect(margin, margin, contentWidth, canvas.height - margin * 2);
       ctx.strokeStyle = "#D97706";
-      ctx.lineWidth = 4;
-      ctx.stroke();
+      ctx.lineWidth = 3;
+      ctx.strokeRect(margin + 22, margin + 22, contentWidth - 44, canvas.height - margin * 2 - 44);
 
-      ctx.strokeStyle = "#FDE68A";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(qrCardX + 8, qrSectionY + 8, qrCardW - 16, qrCardH - 16);
-
-      // QR Instruction Header
+      ctx.textAlign = "center";
+      try {
+        const trishula = await loadImage(navaratriAsset("/navaratri/assets/trishula-head.png"));
+        ctx.drawImage(trishula, margin + 75, 205, 88, 145);
+      } catch {}
+      ctx.fillStyle = "#781B1B";
+      ctx.font = "bold 68px Georgia, serif";
+      ctx.fillText("SHARAN NAVARATRI 2026", centerX + 40, 275);
+      ctx.fillStyle = "#A16207";
+      ctx.font = "bold 28px Arial, sans-serif";
+      ctx.fillText("Official Mandapam Digital Notice Board", centerX + 40, 325);
       ctx.fillStyle = "#8B1E1E";
-      ctx.font = "bold 20px sans-serif";
-      ctx.fillText("📲 మీ మొబైల్ కెమెరా లేదా Google Lens తో స్కాన్ చేయండి", canvas.width / 2, qrSectionY + 36);
+      ctx.fillRect(margin + 70, 382, contentWidth - 140, 6);
 
-      ctx.fillStyle = "#78350F";
-      ctx.font = "14px sans-serif";
-      ctx.fillText("Scan with Camera / Google Lens / PhonePe / GPay / Paytm", canvas.width / 2, qrSectionY + 58);
+      ctx.fillStyle = "#8B1E1E";
+      ctx.font = "bold 37px Georgia, serif";
+      ctx.fillText(mandapam.name, centerX, 470);
+      ctx.fillStyle = "#44403C";
+      ctx.font = "28px Arial, sans-serif";
+      drawCenteredLines(cleanLocation, contentWidth - 260, 525, 38);
+      ctx.fillStyle = "#8B1E1E";
+      ctx.font = "bold 24px Arial, sans-serif";
+      ctx.fillText(`OFFICIAL UTSAV ID  •  #${shortCode}`, centerX, 610);
 
-      // Draw QR Code
-      const qrSize = 210;
-      const qrX = qrCardX + 40;
-      const qrY = qrSectionY + 80;
+      const deityBox = { x: centerX - 360, y: 675, w: 720, h: 760 };
+      ctx.fillStyle = "#FFFDF8";
+      ctx.fillRect(deityBox.x, deityBox.y, deityBox.w, deityBox.h);
+      ctx.strokeStyle = "#D97706";
+      ctx.lineWidth = 5;
+      ctx.strokeRect(deityBox.x, deityBox.y, deityBox.w, deityBox.h);
+      try {
+        const deity = await loadImage(activeDeity.url);
+        const ratio = deity.width / deity.height;
+        const height = deityBox.h - 60;
+        const width = Math.min(deityBox.w - 60, height * ratio);
+        ctx.drawImage(deity, centerX - width / 2, deityBox.y + 30, width, height);
+      } catch {}
+      ctx.fillStyle = "#781B1B";
+      ctx.font = "bold 25px Georgia, serif";
+      ctx.fillText(activeDeity.englishName, centerX, deityBox.y + deityBox.h + 48);
+
+      const qrSize = 680;
+      const qrX = centerX - qrSize / 2;
+      const qrY = 1575;
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillRect(qrX - 38, qrY - 120, qrSize + 76, qrSize + 190);
+      ctx.strokeStyle = "#8B1E1E";
+      ctx.lineWidth = 7;
+      ctx.strokeRect(qrX - 38, qrY - 120, qrSize + 76, qrSize + 190);
+      ctx.fillStyle = "#8B1E1E";
+      ctx.font = "bold 37px Arial, sans-serif";
+      ctx.fillText("SCAN FOR MANDAPAM DARSHAN & SERVICES", centerX, qrY - 65);
+      ctx.fillStyle = "#57534E";
+      ctx.font = "26px Arial, sans-serif";
+      ctx.fillText("Use your camera or Google Lens", centerX, qrY - 25);
       ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
 
-      // Right Column: 4 Devotee Service Highlight Chips
-      const features = [
-        { icon: "🌸", title: "నేటి అలంకారం & దర్శనం", desc: "Today's Devi Alankaram & Darshan" },
-        { icon: "🪔", title: "పూజలు & హారతి సమయాలు", desc: "Daily Pooja & Aarti Timings" },
-        { icon: "🍲", title: "మహా ప్రసాదం & అన్నదానం", desc: "Prasadam & Annadanam Schedule" },
-        { icon: "🎟️", title: "సేవా బుకింగ్స్ & టోకెన్లు", desc: "Online Sevas & Devotee Tokens" }
-      ];
-
-      const featX = qrX + qrSize + 28;
-      let featY = qrSectionY + 82;
-      const featW = qrCardW - (qrSize + 96);
-
-      features.forEach((feat) => {
-        ctx.fillStyle = "#FEF3C7";
-        ctx.beginPath();
-        ctx.roundRect(featX, featY, featW, 46, 12);
-        ctx.fill();
-
-        ctx.strokeStyle = "#F59E0B";
-        ctx.lineWidth = 1;
-        ctx.stroke();
-
-        ctx.textAlign = "left";
-        ctx.font = "bold 15px sans-serif";
-        ctx.fillStyle = "#781B1B";
-        ctx.fillText(`${feat.icon} ${feat.title}`, featX + 12, featY + 22);
-
-        ctx.font = "12px sans-serif";
-        ctx.fillStyle = "#57534E";
-        ctx.fillText(feat.desc, featX + 32, featY + 38);
-
-        featY += 54;
-      });
-
-      // Bottom of QR box: Scan prompt
-      ctx.textAlign = "center";
-      ctx.fillStyle = "#047857";
-      ctx.font = "bold 15px sans-serif";
-      ctx.fillText("⚡ వేగవంతమైన సమాచారం • నోటీసు బోర్డు • భక్తుల సౌలభ్యం", canvas.width / 2, qrSectionY + qrCardH - 18);
-
-      // 9. Golden Devotional Slogan & URL Bar
-      const sloganY = qrSectionY + qrCardH + 18;
-      const sloganW = 900;
-      const sloganH = 80;
-      const sloganX = (canvas.width - sloganW) / 2;
-
-      ctx.fillStyle = "#FEF3C7";
-      ctx.beginPath();
-      ctx.roundRect(sloganX, sloganY, sloganW, sloganH, 18);
-      ctx.fill();
-
-      ctx.strokeStyle = "#F59E0B";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
       ctx.fillStyle = "#781B1B";
-      ctx.font = "bold 19px 'Rozha One', 'Cinzel', serif";
-      ctx.fillText("“ఒక్క QR కోడ్ • సమస్త మండపం సేవలు భక్తుల వేలిముద్రల్లో”", canvas.width / 2, sloganY + 32);
-
+      ctx.font = "bold 31px Arial, sans-serif";
+      ctx.fillText("Today’s Darshan  •  Pooja Timings  •  Annadanam  •  Sevas", centerX, 2390);
       ctx.fillStyle = "#57534E";
-      ctx.font = "bold 14px monospace";
-      ctx.fillText(publicUrl, canvas.width / 2, sloganY + 58);
+      ctx.font = "24px Arial, sans-serif";
+      drawCenteredLines(publicUrl, contentWidth - 260, 2460, 32);
 
-      // 10. Sacred Platform Footer
+      ctx.strokeStyle = "#D97706";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(margin + 70, 2660);
+      ctx.lineTo(pageWidth - margin - 70, 2660);
+      ctx.stroke();
+      try {
+        const siddhiLogo = await loadImage(siddhiDynamicsLogo);
+        ctx.drawImage(siddhiLogo, centerX - 230, 2710, 460, 258);
+      } catch {}
+      ctx.fillStyle = "#57534E";
+      ctx.font = "bold 22px Arial, sans-serif";
+      ctx.fillText("Digital platform by Siddhi Dynamics LLP", centerX, 3035);
+      ctx.font = "22px Georgia, serif";
       ctx.fillStyle = "#8B1E1E";
-      ctx.font = "bold 14px serif";
-      ctx.fillText("శరణ్ నవరాత్రి మహోత్సవాలు 2026 • Siddhi Dynamics LLP", canvas.width / 2, cardY + cardH - 18);
+      ctx.fillText("॥ ॐ श्री मात्रे नमः ॥", centerX, 3160);
 
       // Export Canvas to PNG Blob
       canvas.toBlob((blob) => {
@@ -652,19 +387,19 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `${mandapam.slug}-traditional-navaratri-standee.png`;
+        a.download = `${mandapam.slug}-a4-qr-poster.png`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
         setIsDownloading(false);
-        toast.success("Traditional Temple Standee PNG downloaded! Ready to print for your mandapam counter.");
+        toast.success("White-background A4 QR poster downloaded and ready to print.");
       }, "image/png");
     } catch (err) {
       console.error(err);
       setIsDownloading(false);
-      toast.error("Could not download standee image. You can also click 'Print Mandapam A4 Counter Poster'.");
+      toast.error("Could not download the poster. You can also click 'Print A4 QR Poster'.");
     }
   };
 
@@ -684,6 +419,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
       {/* Embedded print stylesheet so only the standee card prints cleanly on A4 */}
       <style>{`
         @media print {
+          @page { size: A4 portrait; margin: 0; }
           body * {
             visibility: hidden !important;
           }
@@ -694,19 +430,50 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
             position: fixed !important;
             left: 0 !important;
             top: 0 !important;
-            width: 100vw !important;
-            min-height: 100vh !important;
+            width: 210mm !important;
+            height: 297mm !important;
+            min-height: 297mm !important;
             margin: 0 !important;
-            padding: 0.8cm 1cm !important;
+            padding: 9mm !important;
             background: white !important;
-            border: none !important;
+            background-image: none !important;
+            border: 1.5pt solid #8B1E1E !important;
+            border-radius: 0 !important;
             box-shadow: none !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: center !important;
             z-index: 999999 !important;
+            overflow: hidden !important;
+            box-sizing: border-box !important;
           }
+          #printable-standee .standee-sheet {
+            height: 100% !important;
+            padding: 6mm !important;
+            border: 1pt solid #D97706 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            background: white !important;
+            gap: 3mm !important;
+          }
+          #printable-standee .standee-deity {
+            width: 39mm !important;
+            height: 50mm !important;
+          }
+          #printable-standee .standee-title { font-size: 18pt !important; }
+          #printable-standee .standee-qr { padding: 3mm !important; border-width: 1.5pt !important; }
+          #printable-standee .standee-qr svg { width: 45mm !important; height: 45mm !important; }
+          #printable-standee .standee-features { gap: 2mm !important; margin-top: 2mm !important; }
+          #printable-standee .standee-features > div { padding: 1.5mm !important; }
+          #printable-standee .standee-footer-logo { width: 42mm !important; }
+          #printable-standee p { margin: 0 !important; }
+          #printable-standee .standee-url { font-size: 7pt !important; }
+          #printable-standee .standee-service-copy { font-size: 7.5pt !important; }
+          #printable-standee .standee-compact { font-size: 7pt !important; }
+          #printable-standee .standee-hide-print { display: none !important; }
+          #printable-standee h2 { margin: 0 !important; }
+          #printable-standee img { max-height: none !important; }
+          #printable-standee * { box-sizing: border-box !important; }
+          #printable-standee .standee-brand-line { padding-bottom: 2mm !important; }
+          #printable-standee .standee-tagline { padding: 2mm !important; }
+          #printable-standee .standee-id { padding: 1mm 3mm !important; }
           .no-print {
             display: none !important;
           }
@@ -729,61 +496,20 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
             <span className="text-2xl">🪔</span>
             <div>
               <h3 className="font-serif font-black text-lg sm:text-xl text-[#781B1B]">
-                Traditional Mandapam Counter Standee & QR Poster
+                Mandapam A4 QR Poster
               </h3>
               <p className="text-xs text-stone-600">
-                Auspicious Vedic temple design with sacred slokas, divine Durga Matha idols, clean location, and high-contrast devotee QR code.
+                Choose an idol photo, then print or download a clean white A4 poster with a high-contrast QR code.
               </p>
             </div>
           </div>
 
-          {/* 1. FRAME DESIGNS SELECTOR */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
-              <Layers className="w-4 h-4 text-amber-700" />
-              <span>1. Choose Auspicious Temple Frame</span>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {STANDEE_FRAMES.map((frame) => {
-                const isSelected = selectedFrameId === frame.id;
-                return (
-                  <button
-                    key={frame.id}
-                    type="button"
-                    onClick={() => setSelectedFrameId(frame.id)}
-                    className={`relative p-2 rounded-2xl border-2 transition-all flex flex-col items-center gap-1.5 text-center cursor-pointer ${
-                      isSelected
-                        ? "border-[#8B1E1E] bg-amber-50 shadow-md ring-2 ring-amber-400/50 scale-102"
-                        : "border-stone-200 hover:border-amber-300 bg-white hover:shadow-xs"
-                    }`}
-                  >
-                    <div className="w-full h-12 rounded-xl overflow-hidden border border-amber-300 shadow-2xs bg-stone-100">
-                      <img
-                        src={frame.frameBgUrl}
-                        alt={frame.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <span className="text-[11px] font-black text-stone-800 leading-tight">
-                      {frame.name}
-                    </span>
-                    {isSelected && (
-                      <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#8B1E1E] text-white flex items-center justify-center text-[10px] font-bold shadow">
-                        ✓
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 2. SACRED DURGA MATHA IDOL SELECTOR */}
+          {/* SACRED DURGA MATHA IDOL SELECTOR */}
           <div className="space-y-2 pt-1">
             <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
               <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
                 <Sparkles className="w-4 h-4 text-amber-700 shrink-0" />
-                <span>2. Select Divine Durga Matha Idol / Alankaram</span>
+                <span>Choose Mandapam Idol / Alankaram</span>
               </div>
               <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-[11px] font-bold cursor-pointer shadow-xs active:scale-95 transition-all shrink-0">
                 <Upload className="w-3.5 h-3.5" />
@@ -852,45 +578,23 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
           </div>
         </div>
 
-        {/* ----------------- TRADITIONAL TEMPLE STANDEE PREVIEW & PRINT ----------------- */}
+        {/* One-page A4 standee preview. Decorative controls above never print. */}
         <div
           id="printable-standee"
           ref={printRef}
-          className="relative text-center p-3 sm:p-6 rounded-3xl mt-4 transition-all shadow-2xl border-4 border-amber-500 overflow-hidden bg-cover bg-center"
-          style={{ backgroundImage: `url(${currentFrame.frameBgUrl})` }}
+          className="relative text-center p-3 sm:p-6 rounded-3xl mt-4 shadow-xl border-4 border-[#8B1E1E] overflow-hidden bg-white"
         >
-          {/* Inner Ivory Card with Golden Double Frame */}
-          <div className="relative z-10 bg-[#FFFDF8]/96 backdrop-blur-[2px] p-4 sm:p-6 rounded-2xl border-2 border-amber-400 shadow-xl space-y-3 sm:space-y-4">
+          <div className="standee-sheet relative z-10 bg-white p-4 sm:p-6 rounded-2xl border-2 border-amber-400 shadow-sm space-y-3 sm:space-y-4">
             
-            {/* Top Mango Leaf Toranam & Marigold Garlands */}
-            <div className="relative -mt-2 -mx-2 sm:-mx-4 overflow-hidden rounded-t-xl">
-              <img
-                src={navaratriAsset("/navaratri/assets/mamidi-thoranam.png")}
-                alt="Mango Leaf Toranam"
-                className="w-full h-8 sm:h-11 object-cover"
-              />
-              <img
-                src={navaratriAsset("/navaratri/assets/banthi-pulu-garland.png")}
-                alt="Marigold Garland"
-                className="w-full h-5 sm:h-7 object-cover -mt-1 sm:-mt-2 opacity-95"
-              />
-            </div>
-
-            {/* Sacred Invocations & Slogans in Elegant Vedic Typography */}
-            <div className="space-y-0.5 pt-1">
-              <div className="font-serif font-black text-sm sm:text-lg text-[#781B1B] tracking-wider drop-shadow-2xs">
-                ॥ ॐ శ్రీ మాత్రే నమః ॥
+            <div className="standee-brand-line flex items-center justify-between gap-3 border-b-2 border-[#8B1E1E] pb-3">
+              <div className="flex items-center gap-2 text-left">
+                <img src={navaratriAsset("/navaratri/assets/trishula-head.png")} alt="Sharan Navaratri" className="h-10 w-7 object-contain" />
+                <div>
+                  <p className="font-serif font-black text-base sm:text-xl tracking-wide text-[#781B1B]">SHARAN NAVARATRI 2026</p>
+                  <p className="standee-compact text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.16em] text-amber-800">Official Mandapam Digital Notice Board</p>
+                </div>
               </div>
-              <div className="text-[10px] sm:text-xs font-serif font-bold text-amber-900 leading-snug">
-                ॥ सर्वमङ्गलमाङ्गल्ये शिवे सर्वार्थसाधिके । शरण्ये त्र्यम्बके गौरि नारायणि नमोऽस्तु ते ॥
-              </div>
-            </div>
-
-            {/* Platform Official Title Ribbon */}
-            <div className="flex justify-center">
-              <div className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full bg-gradient-to-r from-[#781B1B] via-[#B45309] to-[#781B1B] text-white text-[11px] sm:text-xs font-bold shadow-md tracking-wider border border-amber-200">
-                <span>శరణ్ నవరాత్రి 2026 • అధికారిక డిజిటల్ మండపం బోర్డు</span>
-              </div>
+              <img src={siddhiDynamicsLogo} alt="Siddhi Dynamics LLP" className="standee-footer-logo w-24 sm:w-32 rounded bg-[#17110d] object-contain" />
             </div>
 
             {/* DIVINE SANCTUM ARCH & DURGA MATHA IDOL */}
@@ -899,7 +603,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
                 {/* Radiant Golden Prabhavali Halo behind Idol */}
                 <div className="absolute inset-0 rounded-full bg-radial from-amber-200/80 via-amber-100/40 to-transparent blur-md -z-10" />
 
-                <div className="w-48 h-56 sm:w-56 sm:h-68 mx-auto rounded-3xl overflow-hidden border-4 border-amber-400 shadow-2xl ring-4 ring-amber-500/30 bg-gradient-to-b from-amber-100/90 to-amber-50 flex items-center justify-center p-1">
+                <div className="standee-deity w-48 h-56 sm:w-56 sm:h-68 mx-auto rounded-3xl overflow-hidden border-2 border-amber-500 shadow-lg bg-white flex items-center justify-center p-1">
                   <img
                     src={activeDeity.url}
                     alt={activeDeity.name}
@@ -907,21 +611,15 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
                   />
                 </div>
 
-                {/* Golden Swaroopam Banner Pill */}
-                <div className="mt-2 inline-flex items-center gap-1 px-3.5 py-1 rounded-full bg-gradient-to-r from-amber-100 via-amber-50 to-amber-100 text-[#781B1B] text-[11px] sm:text-xs font-black tracking-wide shadow-sm border border-amber-400">
-                  <span>✨</span>
-                  <span>{activeDeity.name} • {activeDeity.teluguSubtitle}</span>
-                  <span>✨</span>
+                <div className="mt-2 inline-flex items-center gap-1 px-3.5 py-1 rounded-full bg-amber-50 text-[#781B1B] text-[11px] sm:text-xs font-black tracking-wide border border-amber-400">
+                  <span>{activeDeity.englishName}</span>
                 </div>
               </div>
             </div>
 
             {/* MANDAPAM IDENTITY & VERIFIED LOCATION */}
             <div className="space-y-1 pt-1">
-              <div className="text-[11px] font-serif font-bold text-amber-800">
-                ॥ దుర్గామాతా దివ్య కటాక్ష సిద్ధిరస్తు ॥
-              </div>
-              <h2 className="font-serif font-black text-2xl sm:text-3xl text-[#781B1B] flex items-center justify-center gap-2 leading-tight">
+              <h2 className="standee-title font-serif font-black text-2xl sm:text-3xl text-[#781B1B] flex items-center justify-center gap-2 leading-tight">
                 <span>{mandapam.name}</span>
                 <InstagramVerifiedBadge className="w-5 h-5 sm:w-6 sm:h-6 shrink-0 drop-shadow" title="Official Verified Mandapam" />
               </h2>
@@ -929,26 +627,24 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
                 <MapPin className="w-3.5 h-3.5 text-[#8B1E1E] shrink-0" />
                 <span>{cleanLocation}</span>
               </div>
-              <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-800 text-[10px] sm:text-[11px] font-bold border border-sky-300">
-                <span>🛡️</span>
-                <span>అధికారిక నమోదిత మండపం • Utsav ID: #{mandapam.slug?.split("-").pop() || "2026"}</span>
+              <div className="standee-id inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 text-[#8B1E1E] text-[10px] sm:text-[11px] font-bold border border-amber-400">
+                <span>Official Utsav ID: #{mandapam.slug?.split("-").pop() || "2026"}</span>
               </div>
             </div>
 
             {/* DEVOTEE HIGH-CONTRAST SCANNABLE QR CODE SECTION */}
-            <div className="mx-auto max-w-md p-4 sm:p-5 rounded-3xl bg-white border-4 border-[#D97706] shadow-xl flex flex-col items-center justify-center relative">
+            <div className="standee-qr mx-auto max-w-md p-4 sm:p-5 rounded-3xl bg-white border-4 border-[#D97706] shadow-sm flex flex-col items-center justify-center relative">
               <div className="text-center space-y-0.5 mb-3">
                 <div className="text-xs sm:text-sm font-black text-[#781B1B] flex items-center justify-center gap-1">
-                  <span>📲</span>
-                  <span>మీ మొబైల్ కెమెరా లేదా Google Lens తో స్కాన్ చేయండి</span>
+                  <span>SCAN FOR DARSHAN, POOJAS & SERVICES</span>
                 </div>
                 <div className="text-[10px] sm:text-xs text-stone-500 font-medium">
-                  Scan with Camera / Google Lens / PhonePe / GPay / Paytm
+                  Use your mobile camera or Google Lens
                 </div>
               </div>
 
               {/* QR Code */}
-              <div className="p-3 rounded-2xl bg-white border-2 border-amber-300 shadow-inner">
+              <div className="p-3 rounded-2xl bg-white border-2 border-amber-300">
                 <QRCodeSVG
                   id="mandapam-qr-svg"
                   value={publicUrl}
@@ -959,13 +655,13 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
               </div>
 
               {/* 4 Sacred Devotee Features Grid */}
-              <div className="grid grid-cols-2 gap-2 w-full mt-3.5 text-left">
+              <div className="standee-features grid grid-cols-2 gap-2 w-full mt-3.5 text-left">
                 <div className="p-2 rounded-xl bg-amber-50/90 border border-amber-200">
                   <div className="text-[11px] font-black text-[#781B1B] flex items-center gap-1">
                     <span>🌸</span>
                     <span>నేటి అలంకారం</span>
                   </div>
-                  <div className="text-[9px] text-stone-600">Today's Alankaram & Live Darshan</div>
+                  <div className="standee-service-copy text-[9px] text-stone-600">Today's Alankaram & Darshan</div>
                 </div>
 
                 <div className="p-2 rounded-xl bg-amber-50/90 border border-amber-200">
@@ -973,7 +669,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
                     <span>🪔</span>
                     <span>పూజ & హారతి</span>
                   </div>
-                  <div className="text-[9px] text-stone-600">Daily Aarti & Pooja Timings</div>
+                  <div className="standee-service-copy text-[9px] text-stone-600">Daily Aarti & Pooja Timings</div>
                 </div>
 
                 <div className="p-2 rounded-xl bg-amber-50/90 border border-amber-200">
@@ -981,7 +677,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
                     <span>🍲</span>
                     <span>మహా ప్రసాదం</span>
                   </div>
-                  <div className="text-[9px] text-stone-600">Prasadam & Annadanam Schedule</div>
+                  <div className="standee-service-copy text-[9px] text-stone-600">Prasadam & Annadanam</div>
                 </div>
 
                 <div className="p-2 rounded-xl bg-amber-50/90 border border-amber-200">
@@ -989,27 +685,23 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
                     <span>🎟️</span>
                     <span>సేవలు & టోకెన్లు</span>
                   </div>
-                  <div className="text-[9px] text-stone-600">Online Sevas & Devotee Tokens</div>
+                  <div className="standee-service-copy text-[9px] text-stone-600">Sevas & Devotee Tokens</div>
                 </div>
               </div>
             </div>
 
-            {/* GOLDEN DEVOTIONAL SLOGAN & URL */}
-            <div className="p-3 rounded-2xl bg-amber-50/95 border border-amber-300 text-xs text-stone-800 space-y-1">
+            {/* POSTER FOOTNOTE */}
+            <div className="standee-tagline p-3 rounded-2xl bg-amber-50/95 border border-amber-300 text-xs text-stone-800 space-y-1">
               <p className="font-serif font-bold text-xs sm:text-sm text-[#781B1B]">
-                “ఒక్క QR కోడ్ • సమస్త మండపం సేవలు భక్తుల వేలిముద్రల్లో”
+                One QR. Every Mandapam. Everything a devotee needs.
               </p>
-              <p className="text-[11px] text-stone-600 font-semibold">
-                “One QR. Every Mandapam. Everything a devotee needs.”
-              </p>
-              <p className="text-[10px] sm:text-[11px] text-stone-500 font-mono break-all pt-0.5">
+              <p className="standee-url text-[10px] sm:text-[11px] text-stone-500 font-mono break-all pt-0.5">
                 {publicUrl}
               </p>
             </div>
 
-            {/* Sacred Platform Footer */}
-            <div className="text-[10px] text-stone-500 font-medium pt-0.5">
-              శరణ్ నవరాత్రి మహోత్సవాలు 2026 • Siddhi Dynamics LLP
+            <div className="standee-compact text-[10px] text-stone-500 font-medium pt-0.5">
+              Sharan Navaratri 2026 • Digital platform by Siddhi Dynamics LLP
             </div>
           </div>
         </div>
@@ -1024,7 +716,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
               className="py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 disabled:opacity-50 text-stone-950 font-black text-xs shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
               <Download className="w-4 h-4 text-stone-900" />
-              <span>{isDownloading ? "Generating Standee..." : "Download High-Res Standee PNG"}</span>
+              <span>{isDownloading ? "Generating A4 Poster..." : "Download A4 Poster PNG"}</span>
             </button>
 
             {/* Print Directly on A4 */}
@@ -1033,7 +725,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
               className="py-3 px-4 rounded-xl bg-white hover:bg-amber-50 text-stone-900 border-2 border-amber-400 font-black text-xs shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
               <Printer className="w-4 h-4 text-amber-700" />
-              <span>Print Mandapam A4 Counter Poster</span>
+              <span>Print A4 QR Poster</span>
             </button>
           </div>
 
@@ -1059,4 +751,3 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({
     </div>
   );
 };
-
