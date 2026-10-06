@@ -26,6 +26,7 @@ import { NineDaySchedule } from "../components/citizen/NineDaySchedule";
 import { AuspiciousRibbonBorder } from "../components/devotional/AuspiciousRibbonBorder";
 import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifiedBadge";
 import { NavaratriFlankingAdBox } from "../components/ads/NavaratriFlankingAdBox";
+import annadanamSevaIllustration from "@/assets/annadanam-seva-illustration.png";
 import { getMandapamDirectionsUrl } from "../utils/mandapamMaps";
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
@@ -223,7 +224,7 @@ export const NavaratriHome: React.FC = () => {
               >
                 <div className="flex flex-1 min-w-0 flex-col justify-center text-left">
                   <h1 className="font-['Cinzel',serif] font-black text-lg min-[360px]:text-lg min-[400px]:text-xl sm:text-3xl md:text-3.5xl lg:text-4xl xl:text-[2.6rem] text-[#FFFBEB] leading-tight sm:leading-snug tracking-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.5)]">
-                    <span className="block text-[15px] leading-[1.55] min-[360px]:text-base sm:hidden">
+                    <span className="block text-[17px] leading-[1.48] min-[360px]:text-lg sm:hidden">
                       Celebrate Sharan<br />
                       Navaratri <span className="text-amber-300">2026</span><br />
                       Maa Durga Blessings
@@ -232,13 +233,6 @@ export const NavaratriHome: React.FC = () => {
                       Celebrate Sharan Maa Durga Matha Navaratri <span className="text-amber-300">2026</span> with Maa Durga&apos;s Divine Blessings
                     </span>
                   </h1>
-                  <div className="mt-3 flex items-center gap-2 sm:hidden" aria-hidden="true">
-                    <span className="h-px w-7 bg-amber-300/70" />
-                    <img src={navaratriAsset("/navaratri/assets/sacred-lotus-flower.png")} alt="" className="h-7 w-7 object-contain opacity-90 drop-shadow-[0_2px_5px_rgba(251,191,36,0.8)]" />
-                    <span className="text-sm text-amber-200">✦</span>
-                    <img src={navaratriAsset("/navaratri/assets/sacred-lotus-flower.png")} alt="" className="h-5 w-5 object-contain opacity-75" />
-                    <span className="h-px flex-1 bg-amber-300/50" />
-                  </div>
                 </div>
 
                 {/* Mobile Idol on the right */}
@@ -300,7 +294,9 @@ export const NavaratriHome: React.FC = () => {
             >
               <Link to="/navaratri/near-me?category=annadanam" className="min-h-10 sm:min-h-11 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
                 <span className="flex items-center justify-center gap-1.5 text-amber-100 text-xs">
-                  <UtensilsCrossed className="w-4 h-4 shrink-0 text-amber-200" aria-hidden="true" />
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-amber-100/95 ring-1 ring-amber-300">
+                    <img src={annadanamSevaIllustration} alt="Annadanam seva" className="h-full w-full object-cover" />
+                  </span>
                   <span className="truncate">Annadanam Near Me</span>
                 </span>
               </Link>
