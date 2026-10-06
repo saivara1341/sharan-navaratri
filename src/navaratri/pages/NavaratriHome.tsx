@@ -370,11 +370,11 @@ export const NavaratriHome: React.FC = () => {
 
           {/* Center Design: Scan QR + Swastika + Register Durga Mandapam + Mandapam Login */}
           <div className="flex-1 flex flex-col items-center justify-center max-w-2xl w-full">
-            <div className="flex flex-row flex-nowrap items-center justify-center gap-1.5 min-[360px]:gap-2.5 sm:gap-8 pt-0.5 sm:pt-1 pb-0 sm:pb-1 w-full px-2">
+            <div className="flex flex-row flex-nowrap items-center justify-center gap-1.5 min-[360px]:gap-2.5 min-[400px]:gap-1 sm:gap-8 pt-0.5 sm:pt-1 pb-0 sm:pb-1 w-full px-2">
               <button
                 type="button"
                 onClick={handleOpenScanner}
-                className="group relative w-36 min-[360px]:w-[152px] min-[400px]:w-44 sm:w-52 lg:w-60 xl:w-64 h-36 min-[360px]:h-[152px] min-[400px]:h-44 sm:h-52 lg:h-60 xl:h-64 p-2 sm:p-4 flex flex-col items-center justify-center text-[#1E3A8A] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E3A8A] focus-visible:ring-offset-2 cursor-pointer shrink"
+                className="group relative w-36 min-[360px]:w-[152px] min-[400px]:w-48 sm:w-52 lg:w-60 xl:w-64 h-36 min-[360px]:h-[152px] min-[400px]:h-48 sm:h-52 lg:h-60 xl:h-64 p-2 sm:p-4 flex flex-col items-center justify-center text-[#1E3A8A] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E3A8A] focus-visible:ring-offset-2 cursor-pointer shrink"
               >
                 <img
                   src={navaratriAsset("/navaratri/assets/blue-scalloped-cta-frame.png")}
@@ -393,19 +393,19 @@ export const NavaratriHome: React.FC = () => {
               </button>
 
               {/* Sacred Swastika Divider between Scan QR and Register Mandapam */}
-              <div className="flex items-center justify-center gap-0.5 min-[360px]:gap-1 sm:gap-2.5 px-0.5 sm:px-1 select-none pointer-events-none self-center shrink-0" aria-hidden="true">
-                <span className="w-1.5 min-[360px]:w-2.5 sm:w-6 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-amber-500 rounded-full" />
-                <div className="relative w-6 h-6 min-[360px]:w-7 min-[360px]:h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-[#FFFBEB] via-[#FEF3C7] to-[#FDE68A] border-2 border-amber-400/90 shadow-md flex items-center justify-center">
+              <div className="flex items-center justify-center gap-0.5 min-[360px]:gap-1 min-[400px]:gap-0 sm:gap-2.5 px-0.5 sm:px-1 select-none pointer-events-none self-center shrink-0" aria-hidden="true">
+                <span className="w-1.5 min-[360px]:w-2.5 min-[400px]:w-1.5 sm:w-6 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-amber-500 rounded-full" />
+                <div className="relative w-6 h-6 min-[360px]:w-7 min-[360px]:h-7 min-[400px]:w-6 min-[400px]:h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-[#FFFBEB] via-[#FEF3C7] to-[#FDE68A] border-2 border-amber-400/90 shadow-md flex items-center justify-center">
                   <span className="text-xs min-[360px]:text-sm sm:text-base font-black text-[#8B1E1E] leading-none drop-shadow-[0_1px_2px_rgba(245,158,11,0.5)]">
                     卐
                   </span>
                 </div>
-                <span className="w-1.5 min-[360px]:w-2.5 sm:w-6 h-0.5 bg-gradient-to-l from-transparent via-amber-400 to-amber-500 rounded-full" />
+                <span className="w-1.5 min-[360px]:w-2.5 min-[400px]:w-1.5 sm:w-6 h-0.5 bg-gradient-to-l from-transparent via-amber-400 to-amber-500 rounded-full" />
               </div>
 
               <Link
                 to={isOrganizerLoggedIn ? "/navaratri/organizer" : "/navaratri/login?mode=new"}
-                className="group relative w-36 min-[360px]:w-[152px] min-[400px]:w-44 sm:w-52 lg:w-60 xl:w-64 h-36 min-[360px]:h-[152px] min-[400px]:h-44 sm:h-52 lg:h-60 xl:h-64 p-2 sm:p-4 flex flex-col items-center justify-center text-[#8B1E1E] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B1E1E] focus-visible:ring-offset-2 shrink"
+                className="group relative w-36 min-[360px]:w-[152px] min-[400px]:w-48 sm:w-52 lg:w-60 xl:w-64 h-36 min-[360px]:h-[152px] min-[400px]:h-48 sm:h-52 lg:h-60 xl:h-64 p-2 sm:p-4 flex flex-col items-center justify-center text-[#8B1E1E] font-bold transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B1E1E] focus-visible:ring-offset-2 shrink"
               >
                 <img
                   src={navaratriAsset("/navaratri/assets/ivory-scalloped-cta-frame.png")}
