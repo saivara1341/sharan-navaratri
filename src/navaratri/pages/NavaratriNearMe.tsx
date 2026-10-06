@@ -18,6 +18,7 @@ import {
   Info
 } from "lucide-react";
 import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
+import { MandapamIcon } from "../components/devotional/MandapamIcon";
 import { HomaKundaIcon, isHomamEvent } from "../components/devotional/HomaKundaIcon";
 import { toast } from "sonner";
 
@@ -584,7 +585,7 @@ export const NavaratriNearMe: React.FC = () => {
 
   const categories: Array<{ id: Category; label: string; icon?: React.ReactNode }> = [
     { id: "all", label: "All Near Me" },
-    { id: "mandapams", label: "Mandapams", icon: <MapPin className="h-3.5 w-3.5" /> },
+    { id: "mandapams", label: "Mandapams", icon: <MandapamIcon className="h-4 w-4" /> },
     { id: "annadanam", label: "Annadanam Near Me", icon: <Utensils className="h-3.5 w-3.5" /> },
     { id: "bhajans_pallaki", label: "Pallaki Seva & Bhajans", icon: <Music2 className="h-3.5 w-3.5" /> },
     { id: "activities", label: "Dandiya & Activities", icon: <DandiyaIcon className="h-4 w-4" /> }
