@@ -656,7 +656,7 @@ CREATE TABLE IF NOT EXISTS public.navaratri_advertisements (
   cta_url text,
   target_city text NOT NULL,
   target_area text,
-  target_mandapam_id text REFERENCES public.navaratri_mandapams(id),
+  target_mandapam_id text REFERENCES public.navaratri_mandapams(id) ON DELETE CASCADE,
   preferred_frame text NOT NULL DEFAULT 'BOTTOM' CHECK (preferred_frame IN ('TOP', 'BOTTOM', 'BOTH')),
   campaign_duration_label text,            -- e.g. "1 Day Booster", "3 Days Rush", "9 Days Pass"
   campaign_duration_days integer,          -- 1, 3, or 9
@@ -725,21 +725,65 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  DELETE FROM public.navaratri_mandapams WHERE owner_user_id = OLD.id;
-  DELETE FROM public.navaratri_mandapam_members WHERE user_id = OLD.id;
-  DELETE FROM public.navaratri_bookings WHERE user_id = OLD.id;
-  DELETE FROM public.navaratri_reminders WHERE user_id = OLD.id;
-  DELETE FROM public.navaratri_community_questions WHERE user_id = OLD.id;
-  DELETE FROM public.navaratri_advertisements WHERE user_id = OLD.id;
-  DELETE FROM public.client_profiles WHERE user_id = OLD.id;
-  DELETE FROM public.user_roles WHERE user_id = OLD.id;
+  BEGIN
+    DELETE FROM public.navaratri_mandapams WHERE owner_user_id = OLD.id;
+  EXCEPTION WHEN OTHERS THEN NULL;
+  END;
+
+  BEGIN
+    IF OLD.email IS NOT NULL THEN
+      DELETE FROM public.navaratri_mandapams WHERE organizer_email ILIKE OLD.email;
+    END IF;
+  EXCEPTION WHEN OTHERS THEN NULL;
+  END;
+
+  BEGIN
+    DELETE FROM public.navaratri_mandapam_members WHERE user_id = OLD.id;
+  EXCEPTION WHEN OTHERS THEN NULL;
+  END;
+
+  BEGIN
+    DELETE FROM public.navaratri_bookings WHERE user_id = OLD.id;
+  EXCEPTION WHEN OTHERS THEN NULL;
+  END;
+
+  BEGIN
+    DELETE FROM public.navaratri_reminders WHERE user_id = OLD.id;
+  EXCEPTION WHEN OTHERS THEN NULL;
+  END;
+
+  BEGIN
+    DELETE FROM public.navaratri_community_questions WHERE user_id = OLD.id;
+  EXCEPTION WHEN OTHERS THEN NULL;
+  END;
+
+  BEGIN
+    DELETE FROM public.navaratri_advertisements WHERE user_id = OLD.id;
+  EXCEPTION WHEN OTHERS THEN NULL;
+  END;
+
+  BEGIN
+    DELETE FROM public.portal_users WHERE auth_user_id = OLD.id;
+  EXCEPTION WHEN OTHERS THEN NULL;
+  END;
+
+  BEGIN
+    DELETE FROM public.client_profiles WHERE user_id = OLD.id;
+  EXCEPTION WHEN OTHERS THEN NULL;
+  END;
+
+  BEGIN
+    DELETE FROM public.user_roles WHERE user_id = OLD.id;
+  EXCEPTION WHEN OTHERS THEN NULL;
+  END;
+
   RETURN OLD;
 END;
 $$;
 
 DROP TRIGGER IF EXISTS on_auth_user_deleted ON auth.users;
 CREATE TRIGGER on_auth_user_deleted
-  AFTER DELETE ON auth.users
+  BEFORE DELETE ON auth.users
   FOR EACH ROW
   EXECUTE FUNCTION public.handle_auth_user_deleted();
 
