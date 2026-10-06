@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { STANDARD_NAVARATRI_DAYS } from "../../data/standardNavaratriDays";
 import { StandardFestivalDay, Mandapam, MandapamDaySetting } from "../../types";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
@@ -182,12 +183,20 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
           };
 
           return (
-            <div
+            <motion.div
               key={day.dayNumber}
+              initial={{ opacity: 0, y: 45, scale: 0.96 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-30px 0px -20px 0px", amount: 0.12 }}
+              transition={{
+                duration: 0.5,
+                delay: (index % 2) * 0.06,
+                ease: [0.21, 0.47, 0.32, 0.98],
+              }}
               onClick={() => setSelectedDay(day)}
               className={[
-                "group rounded-3xl overflow-hidden cursor-pointer text-left relative",
-                "transition-all duration-300",
+                "group rounded-3xl overflow-hidden cursor-pointer text-left relative will-change-transform",
+                "transition-shadow duration-300",
                 "border-2",
                 "w-full max-w-[295px] sm:max-w-none mx-auto",
                 cardTheme.bg,
@@ -286,7 +295,7 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                   </button>
                 </div>
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>
