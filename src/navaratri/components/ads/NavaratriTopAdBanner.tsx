@@ -149,11 +149,21 @@ export const NavaratriTopAdBanner: React.FC = () => {
                   e.stopPropagation();
                   navigate("/navaratri/advertise");
                 }}
-                className="min-w-0 px-2.5 py-1.5 rounded-xl bg-[#9A1B1F] text-white text-xs font-bold shadow-xs flex items-center justify-center gap-1.5 active:scale-95 border border-amber-300/70 cursor-pointer whitespace-nowrap"
+                className="relative min-w-0 inline-flex items-center justify-center px-3 py-1.5 font-sans text-xs font-bold text-white transition-all active:scale-95 drop-shadow-sm cursor-pointer whitespace-nowrap"
                 title="Run Your Ads on Sharan Navaratri"
               >
-                <span className="truncate">Run Your Ads</span>
-                <ExternalLink className="w-3 h-3 shrink-0" />
+                <svg
+                  viewBox="0 0 160 40"
+                  preserveAspectRatio="none"
+                  className="absolute inset-0 h-full w-full text-[#C12535]"
+                >
+                  <path
+                    d="M 18 0 L 142 0 C 151 0, 157 12, 160 20 C 157 28, 151 40, 142 40 L 18 40 C 9 40, 3 28, 0 20 C 3 12, 9 0, 18 0 Z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <span className="relative z-10 truncate">Run Your Ads</span>
+                <ExternalLink className="relative z-10 ml-1.5 w-3 h-3 shrink-0" />
               </button>
             </div>
           </div>

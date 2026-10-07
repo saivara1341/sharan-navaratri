@@ -424,6 +424,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
               !a.id?.startsWith("sponsor-") &&
               !a.id?.startsWith("demo-") &&
               !a.businessName?.toLowerCase().includes("printflow") &&
+              !a.businessName?.toLowerCase().includes("siddhi dynamics") &&
               !a.businessName?.toLowerCase().includes("demo") &&
               !a.businessName?.toLowerCase().includes("test")
             );
@@ -438,6 +439,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       !a.id?.startsWith("sponsor-") &&
       !a.id?.startsWith("demo-") &&
       !a.businessName?.toLowerCase().includes("printflow") &&
+      !a.businessName?.toLowerCase().includes("siddhi dynamics") &&
       !a.businessName?.toLowerCase().includes("demo") &&
       !a.businessName?.toLowerCase().includes("test")
     );
