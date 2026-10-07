@@ -1005,7 +1005,7 @@ export const NavaratriOrganizer: React.FC = () => {
 
               {/* Dropdown Menu */}
               <div className="absolute right-0 top-full mt-2 w-64 bg-white text-stone-900 rounded-2xl shadow-2xl border border-amber-200 p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="px-3 py-2 border-b border-amber-100 flex items-center justify-between">
+                <div className="px-3 py-2 rounded-xl border border-[#D4A017] bg-amber-50/80 flex items-center justify-between">
                   <div className="flex items-center gap-1.5 text-xs font-black text-[#8B1E1E] uppercase tracking-wider">
                     <Settings className="w-3.5 h-3.5 text-amber-600" />
                     <span>Mandapam Settings</span>
