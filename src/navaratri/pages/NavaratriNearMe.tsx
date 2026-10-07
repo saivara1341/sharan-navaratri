@@ -11,6 +11,8 @@ import {
   MapPinOff,
   Music2,
   Navigation,
+  Search,
+  Crosshair,
   PlusCircle,
   Trophy,
   Utensils,
@@ -25,6 +27,15 @@ import { HomaKundaIcon, isHomamEvent } from "../components/devotional/HomaKundaI
 import { toast } from "sonner";
 
 type Category = "all" | "mandapams" | "annadanam" | "bhajans_pallaki" | "activities";
+
+const GoogleMapsIcon: React.FC<{ className?: string }> = ({ className = "h-5 w-5" }) => (
+  <svg viewBox="0 0 32 32" className={className} aria-hidden="true">
+    <path fill="#34A853" d="M4 5.5 12 2v24l-8 4V5.5Z" />
+    <path fill="#4285F4" d="m12 2 8 4v24l-8-4V2Z" />
+    <path fill="#FBBC04" d="m20 6 8-4v24l-8 4V6Z" />
+    <path fill="#EA4335" d="M16 8.2c-3.1 0-5.6 2.4-5.6 5.5 0 4.1 5.6 10.1 5.6 10.1s5.6-6 5.6-10.1c0-3.1-2.5-5.5-5.6-5.5Zm0 7.6a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2Z" />
+  </svg>
+);
 
 export interface RegionConfig {
   name: string;
@@ -336,8 +347,9 @@ export const NavaratriNearMe: React.FC = () => {
   }, [queryCategory]);
 
   const [activeCategory, setActiveCategory] = useState<Category>(initialCategory);
-  const [manualCity, setManualCity] = useState(userLocation?.city || "Nizamabad");
-  const [manualArea, setManualArea] = useState(userLocation?.area || "Subhash Nagar");
+  const [manualCity, setManualCity] = useState(userLocation?.city && REGIONS_DATA[userLocation.city] ? userLocation.city : "Nizamabad");
+  // Area is optional: selecting a district alone must show all Mandapams in it.
+  const [manualArea, setManualArea] = useState("");
   const [isLocating, setIsLocating] = useState(false);
   const [locationSource, setLocationSource] = useState<"default" | "manual" | "gps">("default");
   const [showAllOverride, setShowAllOverride] = useState(false);
@@ -348,13 +360,13 @@ export const NavaratriNearMe: React.FC = () => {
     const areaCoord = region.areaCoordinates?.[areaTrimmed];
     const lat = areaCoord ? areaCoord.lat : region.lat;
     const lng = areaCoord ? areaCoord.lng : region.lng;
-    const finalArea = areaTrimmed || region.defaultArea;
+    const finalArea = areaTrimmed;
 
     setManualArea(finalArea);
     setUserLocation({ lat, lng, city: manualCity, area: finalArea });
     setLocationSource("manual");
     setShowAllOverride(false);
-    toast.success(`Showing results near ${finalArea}, ${manualCity}.`);
+    toast.success(finalArea ? `Showing results near ${finalArea}, ${manualCity}.` : `Showing all Mandapams in ${manualCity}.`);
   };
 
   const selectQuickArea = (selectedArea: string) => {
@@ -386,8 +398,7 @@ export const NavaratriNearMe: React.FC = () => {
           city: "GPS location",
           area: coordinateLabel
         });
-        setManualCity("GPS location");
-        setManualArea(coordinateLabel);
+        setManualArea("");
         setLocationSource("gps");
         setShowAllOverride(false);
         setIsLocating(false);
@@ -436,7 +447,7 @@ export const NavaratriNearMe: React.FC = () => {
       lat: REGIONS_DATA.Nizamabad.lat,
       lng: REGIONS_DATA.Nizamabad.lng,
       city: "Nizamabad",
-      area: "Subhash Nagar"
+      area: ""
     };
 
     const currentCity = (userLocation?.city || manualCity || "").trim().toLowerCase();
@@ -604,8 +615,9 @@ export const NavaratriNearMe: React.FC = () => {
     activeCategory === "activities" ||
     activeCategory === "annadanam";
 
-  const currentDisplayArea = userLocation?.area || manualArea;
-  const currentDisplayCity = userLocation?.city || manualCity;
+  const currentDisplayArea = locationSource === "gps" ? userLocation?.area || "Current location" : manualArea;
+  const currentDisplayCity = locationSource === "gps" ? userLocation?.city || "GPS" : manualCity;
+  const displayLocation = currentDisplayArea ? `${currentDisplayArea}, ${currentDisplayCity}` : currentDisplayCity;
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-5 sm:pt-8 space-y-6 pb-24 font-sans">
@@ -618,7 +630,7 @@ export const NavaratriNearMe: React.FC = () => {
           <div className="min-w-0 flex-1">
             <p className="text-[10px] font-bold uppercase tracking-wider text-stone-500 leading-none">Showing results near</p>
             <p className="truncate text-xs sm:text-sm font-bold text-stone-900 mt-0.5">
-              {currentDisplayArea}, {currentDisplayCity}
+              {displayLocation}
             </p>
             {locationSource === "gps" && (
               <p className="text-[10px] font-semibold text-emerald-700 leading-tight">High-accuracy GPS detected</p>
@@ -640,65 +652,31 @@ export const NavaratriNearMe: React.FC = () => {
           </div>
         </div>
 
-        {/* Inputs for City and Area (Compact) */}
-        <div className="mt-2.5 grid grid-cols-1 gap-1.5 sm:grid-cols-[1fr_1.2fr_auto]">
-          {/* City Selection */}
+        {/* District is required; the area field is intentionally optional. */}
+        <div className="mt-2.5 grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[1fr_1.2fr_auto_auto]">
           <select
             value={REGIONS_DATA[manualCity] ? manualCity : "Nizamabad"}
             onChange={(event) => {
-              const cityName = event.target.value;
-              setManualCity(cityName);
-              const defaultArea = REGIONS_DATA[cityName]?.defaultArea || "Main Area";
-              setManualArea(defaultArea);
+              setManualCity(event.target.value);
+              setManualArea("");
+              setLocationSource("manual");
             }}
-            aria-label="Choose city"
-            className="h-9 rounded-lg border border-amber-300 bg-white px-2.5 text-xs font-semibold text-stone-900 outline-none focus:ring-1 focus:ring-amber-500"
+            aria-label="Choose district"
+            className="col-span-2 h-10 rounded-xl border border-amber-300 bg-white px-3 text-xs font-semibold text-stone-900 outline-none focus:ring-2 focus:ring-amber-500 sm:col-span-1"
           >
-            {Object.keys(REGIONS_DATA).map((city) => (
-              <option key={city} value={city}>
-                {city} ({REGIONS_DATA[city].state})
-              </option>
-            ))}
+            {Object.keys(REGIONS_DATA).map((city) => <option key={city} value={city}>{city} ({REGIONS_DATA[city].state})</option>)}
           </select>
-
-          {/* Area Selection / Autocomplete */}
-          <div className="relative">
-            <input
-              list="area-suggestions"
-              value={manualArea}
-              onChange={(event) => setManualArea(event.target.value)}
-              placeholder="Choose or enter area"
-              aria-label="Area or locality"
-              className="h-9 w-full rounded-lg border border-amber-300 bg-white px-2.5 text-xs font-semibold text-stone-900 outline-none focus:ring-1 focus:ring-amber-500"
-            />
-            <datalist id="area-suggestions">
-              <option value={`All Areas in ${manualCity}`} />
-              {(REGIONS_DATA[manualCity]?.areas || []).map((area) => (
-                <option key={area} value={area} />
-              ))}
-            </datalist>
+          <div className="relative col-span-2 sm:col-span-1">
+            <input list="area-suggestions" value={manualArea} onChange={(event) => setManualArea(event.target.value)} placeholder="Area or locality (optional)" aria-label="Area or locality (optional)" className="h-10 w-full rounded-xl border border-amber-300 bg-white px-3 text-xs font-semibold text-stone-900 outline-none focus:ring-2 focus:ring-amber-500" />
+            <datalist id="area-suggestions">{(REGIONS_DATA[manualCity]?.areas || []).map((area) => <option key={area} value={area} />)}</datalist>
           </div>
-
-          {/* Change Location Action */}
-          <button
-            type="button"
-            onClick={applyManualLocation}
-            className="h-9 rounded-lg bg-[#8B1E1E] px-3.5 text-xs font-bold text-white shadow-xs hover:bg-[#781B1B] active:scale-[0.98] transition-all whitespace-nowrap"
-          >
-            Change location
+          <button type="button" onClick={applyManualLocation} className="h-10 rounded-xl bg-[#8B1E1E] px-4 text-xs font-bold text-white shadow-xs hover:bg-[#781B1B] active:scale-[0.98] transition-all whitespace-nowrap">
+            <Search className="mr-1.5 inline h-4 w-4" />Search
+          </button>
+          <button type="button" onClick={requestBrowserLocation} disabled={isLocating} aria-label="Use current GPS location" title="Use current GPS location" className="grid h-10 w-10 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100 disabled:opacity-60 transition-all">
+            <Crosshair className={`h-4 w-4 ${isLocating ? "animate-spin" : ""}`} />
           </button>
         </div>
-
-        {/* GPS location button (Compact) */}
-        <button
-          type="button"
-          onClick={requestBrowserLocation}
-          disabled={isLocating}
-          className="mt-2 flex h-8.5 w-full items-center justify-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 text-[11px] font-bold text-[#8B1E1E] hover:bg-amber-100 disabled:opacity-60 transition-all"
-        >
-          <Navigation className="h-3.5 w-3.5" />
-          {isLocating ? "Detecting accurate location…" : "Use my current GPS location"}
-        </button>
       </section>
 
       {/* Filter Category Pills */}
@@ -754,7 +732,7 @@ export const NavaratriNearMe: React.FC = () => {
                 <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
                   No Durga Mandapams have been registered yet from{" "}
                   <span className="font-bold text-stone-900">
-                    {currentDisplayArea}, {currentDisplayCity}
+                    {displayLocation}
                   </span>.
                   {locationSource === "gps"
                     ? " No registered mandapams were found within 25 km of your GPS location."
@@ -861,7 +839,7 @@ export const NavaratriNearMe: React.FC = () => {
                       title="Navigate to this exact mandapam location"
                       className="grid h-10 w-12 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100"
                     >
-                      <Navigation className="h-4 w-4" />
+                      <GoogleMapsIcon className="h-5 w-5" />
                     </a>
                   </div>
                 </article>
