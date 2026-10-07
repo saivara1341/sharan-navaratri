@@ -1262,8 +1262,8 @@ export const NavaratriOrganizer: React.FC = () => {
 
       {/* DASHBOARD TAB NAVIGATION - 2 in a row on mobile view */}
       <div className="relative grid grid-cols-2 lg:flex lg:items-center gap-2.5 border-b-2 border-amber-300 pb-3">
-        <div className="pointer-events-none absolute left-1/2 top-1/2 z-20 grid h-10 w-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-amber-300 bg-white shadow-lg lg:hidden" aria-hidden="true">
-          <span className="text-xl leading-none">🪷</span>
+        <div className="pointer-events-none absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 lg:hidden" aria-hidden="true">
+          <span className="block text-2xl leading-none drop-shadow-[0_2px_5px_rgba(180,83,9,0.35)]">🪷</span>
         </div>
         <button
           onClick={() => setActiveTab("days")}
