@@ -125,8 +125,8 @@ export const INITIAL_AD_PACKAGES: AdPackage[] = [
 ];
 
 // ── Platform Sponsor Advertisements ───────────────────────────────────────────
-// These supplied partner creatives fill the site-wide 16:9 ad frames and rotate with
-// any approved organizer advertisements. All sponsored campaigns retain click tracking.
+// These three supplied partner creatives fill the site-wide 16:9 ad frames and rotate with
+// any approved organizer advertisements. All campaigns retain click tracking.
 export const INITIAL_ADVERTISEMENTS: Advertisement[] = [
   {
     id: "partner-printflow-doorstep",
@@ -152,16 +152,39 @@ export const INITIAL_ADVERTISEMENTS: Advertisement[] = [
     createdAt: "2026-10-07T00:00:00.000Z"
   },
   {
-    id: "partner-siddhi-rank-above",
+    id: "partner-siddhi-rank-top",
     businessName: "Siddhi Dynamics LLP",
     category: "SEO & digital growth",
     phone: "",
     address: "Nizamabad, Telangana",
     city: "Nizamabad",
     packageId: "platform-sponsor",
-    title: "Rank above your competitors.",
-    description: "We make you number one in search visibility.",
-    imageUrl: "/navaratri/assets/ads/siddhi-rank-above.jpg",
+    title: "Rank at the top.",
+    description: "Be seen first on Search and Google Maps.",
+    imageUrl: "/navaratri/assets/ads/siddhi-rank-top.jpg",
+    ctaText: "Grow Visibility",
+    ctaUrl: "https://siddhidynamics.in",
+    targetCity: "All",
+    startDate: "2026-01-01",
+    endDate: "2026-12-31",
+    status: "ACTIVE",
+    impressions: 0,
+    clicks: 0,
+    format: "BANNER",
+    preferredFrame: "BOTH",
+    createdAt: "2026-10-07T00:00:00.000Z"
+  },
+  {
+    id: "partner-siddhi-number-one",
+    businessName: "Siddhi Dynamics LLP",
+    category: "SEO & digital growth",
+    phone: "",
+    address: "Nizamabad, Telangana",
+    city: "Nizamabad",
+    packageId: "platform-sponsor",
+    title: "We make you #1 online.",
+    description: "A sharper digital presence for your business.",
+    imageUrl: "/navaratri/assets/ads/siddhi-make-you-number-one.jpg",
     ctaText: "Grow Visibility",
     ctaUrl: "https://siddhidynamics.in",
     targetCity: "All",
