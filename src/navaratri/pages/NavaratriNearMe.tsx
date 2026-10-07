@@ -679,13 +679,33 @@ export const NavaratriNearMe: React.FC = () => {
       </section>
 
       {/* Filter Category Pills */}
-      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+      <div className="relative min-h-[255px] w-full bg-contain bg-center bg-no-repeat sm:hidden" style={{ backgroundImage: `url(${navaratriAsset("/navaratri/assets/sage-scroll-filter-frame.jpg")})` }}>
+        <div className="absolute inset-y-[20%] left-[14%] right-[14%] grid grid-cols-2 content-center gap-2">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              type="button"
+              onClick={() => setActiveCategory(category.id)}
+              className={`flex min-h-10 items-center justify-center gap-1.5 rounded-xl px-2 py-1.5 text-center text-[10px] font-black leading-tight shadow-sm transition-all last:col-span-2 last:mx-auto last:w-[calc(50%-0.25rem)] ${
+                activeCategory === category.id
+                  ? "bg-[#8B1E1E] text-white ring-2 ring-amber-100"
+                  : "border border-[#e9ddb9] bg-[#fffaf0]/95 text-[#465b28] hover:bg-white"
+              }`}
+            >
+              <span className="shrink-0">{category.icon}</span>
+              <span>{category.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="hidden sm:flex sm:flex-wrap sm:justify-center sm:gap-2 rounded-2xl border-2 border-[#f1e2bd] bg-[#fff9ea] p-2 shadow-xs">
         {categories.map((category) => (
           <button
             key={category.id}
             type="button"
             onClick={() => setActiveCategory(category.id)}
-            className={`flex min-h-11 items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-[11px] font-bold transition-all sm:text-xs ${
+            className={`flex min-h-10 items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition-all ${
               activeCategory === category.id
                 ? "bg-[#8B1E1E] text-white shadow-sm"
                 : "border border-amber-300 bg-white text-stone-700 hover:bg-amber-50"
