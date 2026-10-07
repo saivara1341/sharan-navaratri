@@ -11,8 +11,6 @@ interface ShareQrModalProps {
 }
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
-const sharanTrishulaUrl = `${base}/navaratri/assets/trishula-head.png`;
-const siddhiDynamicsLogoUrl = `${base}/navaratri/assets/ads/siddhi-dynamics-official-logo.png`;
 type PosterTemplate = "ROYAL" | "TEMPLE" | "SAFFRON";
 
 const posterTemplates: Record<PosterTemplate, { label: string; swatch: string; frame: string; panel: string; canvas: [string, string, string] }> = {
@@ -48,7 +46,6 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
   const mandapamPublicId = mandapam.slug || mandapam.id;
   const shareUrl = `${window.location.origin}${base}/navaratri/m/${encodeURIComponent(mandapamPublicId)}`;
   const publicUrl = `${shareUrl}?source=qr`;
-  const mandapamIdentityImage = mandapam.logoUrl || mandapam.coverImageUrl;
   const activeTemplate = posterTemplates[posterTemplate];
 
   const copyLink = async () => {
@@ -161,19 +158,42 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
         </div>
       )}
       <div className="hidden"><QRCodeCanvas id="mandapam-qr-canvas" value={publicUrl} size={1200} level="H" includeMargin /></div>
-      <div className="min-h-0 flex flex-1 items-start justify-center overflow-hidden pt-1 sm:items-center sm:pt-0">
-        <div className="relative h-[min(48dvh,440px)] max-h-full w-auto max-w-full aspect-[4/5] sm:h-[min(58dvh,520px)]">
+      <div className="min-h-0 flex flex-1 items-start justify-center overflow-y-auto pt-1 sm:items-center sm:pt-0">
+        <div className="relative aspect-[4/5] h-[min(68dvh,680px)] max-h-full w-auto max-w-full sm:h-[min(72dvh,760px)]">
           <button onClick={share} aria-label="Share Mandapam URL" className="absolute right-3 top-3 z-20 grid h-10 w-10 place-items-center rounded-full bg-white/95 text-[#7c1d1d] shadow-lg ring-1 ring-amber-300 hover:bg-amber-50 cursor-pointer"><Share2 className="h-4 w-4" /></button>
           {designMode === "POSTER" ? (
-            <div id="printable-standee" className={`h-full overflow-hidden rounded-[26px] border p-1.5 shadow-xl ${activeTemplate.frame}`}>
-              <div className={`flex h-full flex-col rounded-[20px] px-4 py-5 text-center text-white sm:px-6 sm:py-6 ${activeTemplate.panel}`}>
-                <div className="mx-auto inline-flex items-center gap-1.5 px-1 py-0.5 text-[8px] font-black tracking-[0.14em] text-amber-100 sm:text-[10px]"><img src={sharanTrishulaUrl} alt="" className="h-5 w-3.5 object-contain" /> SHARAN NAVARATRI <span className="text-amber-300">2026</span></div>
-                {mandapamIdentityImage && <img src={mandapamIdentityImage} alt="Mandapam logo or idol" className="mx-auto mt-2 h-12 w-16 object-contain sm:h-16 sm:w-20" />}
-                <h3 className={`${mandapamIdentityImage ? "mt-1.5" : "mt-3"} font-serif text-xl font-black leading-tight sm:text-3xl`}>{mandapam.name}</h3>
-                <p className="mt-1 text-[9px] font-semibold text-amber-100 sm:text-xs">Darshan, poojas, Annadanam & live updates</p>
-                <p className="mt-0.5 text-[8px] font-semibold text-amber-200/90 sm:text-[10px]">దర్శనం, పూజలు, అన్నదానం & తాజా సమాచారం</p>
-                <div className="mx-auto my-auto rounded-2xl bg-white p-2.5 shadow-2xl ring-2 ring-amber-300/40 sm:p-4"><QRCodeSVG value={publicUrl} size={224} level="H" includeMargin className="h-36 w-36 sm:h-48 sm:w-48" /><p className="mt-1 text-[8px] font-black tracking-[0.14em] text-[#7c1d1d] sm:text-[10px]">SCAN TO OPEN</p></div>
-                <div className="mt-2.5 border-t border-amber-200/40 pt-2"><p className="text-[9px] font-bold text-amber-100 sm:text-[11px]">One QR. Every Mandapam. Every devotee.</p><p className="mt-0.5 text-[8px] text-amber-200/90 sm:text-[10px]">sharan-navratri.vercel.app</p><div className="mt-1.5 flex items-center justify-center gap-1.5 text-[7px] font-bold text-amber-100 sm:text-[9px]"><img src={siddhiDynamicsLogoUrl} alt="Siddhi Dynamics LLP" className="h-4 w-4 object-contain" /><span>అమ్మవారి సేవలో • SIDDHI DYNAMICS LLP</span></div></div>
+            <div id="printable-standee" className={`h-full overflow-hidden rounded-[18px] border border-amber-300 shadow-xl ${activeTemplate.frame}`}>
+              <div className={`flex h-full flex-col px-[6%] py-[5%] text-center text-white ${activeTemplate.panel}`}>
+                <div className="h-1.5 w-full bg-amber-400" />
+                <div className="mt-2 h-0.5 w-[39%] bg-amber-200" />
+
+                <div className="mt-[7%] text-[11px] font-black uppercase tracking-wide text-white sm:text-base">
+                  SHARAN NAVARATRI
+                </div>
+                <div className="mt-0.5 text-[8px] font-black text-amber-200 sm:text-xs">2026</div>
+
+                <h3 className="mx-auto mt-[5%] max-w-[86%] font-serif text-[28px] font-black leading-tight text-amber-100 sm:text-5xl">
+                  {mandapam.name}
+                </h3>
+                <p className="mt-[4%] text-[10px] font-black uppercase tracking-wide text-amber-100 sm:text-lg">
+                  Scan for Darshan, Poojas & Mandapam Updates
+                </p>
+
+                <div className="mx-auto mt-[6%] flex w-[72%] flex-1 flex-col items-center justify-start rounded-[22px] border-[5px] border-amber-400 bg-[#fffdf8] px-[5%] py-[6%] shadow-2xl sm:rounded-[34px] sm:border-[7px]">
+                  <p className="text-[13px] font-black uppercase tracking-wide text-[#7c1d1d] sm:text-2xl">SCAN HERE</p>
+                  <div className="mt-[7%] w-full bg-white p-[3%]">
+                    <QRCodeSVG value={publicUrl} size={560} level="H" includeMargin className="h-auto w-full" />
+                  </div>
+                  <p className="mt-[7%] text-[10px] font-semibold text-stone-600 sm:text-base">
+                    Open your Mandapam page instantly
+                  </p>
+                </div>
+
+                <div className="mt-auto">
+                  <div className="h-1.5 w-full bg-amber-400" />
+                  <p className="mt-[4%] text-[10px] font-black text-white sm:text-lg">One QR. Every Mandapam. Every devotee.</p>
+                  <p className="mt-1 text-[8px] font-bold text-amber-200 sm:text-sm">In service of Ammavari • Siddhi Dynamics LLP</p>
+                </div>
               </div>
             </div>
           ) : (
