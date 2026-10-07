@@ -97,39 +97,39 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
 
   const downloadSelected = designMode === "POSTER" ? downloadPoster : downloadQr;
 
-  return <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/80 p-0 backdrop-blur-sm sm:items-center sm:p-4">
-    <div className="relative flex min-h-[100dvh] w-full max-w-xl flex-col bg-[#fffaf0] p-4 shadow-2xl sm:min-h-0 sm:max-h-[calc(100dvh-2rem)] sm:rounded-3xl sm:p-5">
+  return <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/80 p-0 backdrop-blur-sm sm:p-4">
+    <div className="relative flex h-[100dvh] w-full max-w-xl flex-col overflow-hidden bg-[#fffaf0] p-3 shadow-2xl sm:h-[calc(100dvh-2rem)] sm:rounded-3xl sm:p-4">
       <button onClick={onClose} aria-label="Close Mandapam QR" className="absolute right-3 top-3 z-30 grid h-10 w-10 place-items-center rounded-full border border-stone-300 bg-white text-stone-700 shadow-md hover:bg-stone-100"><X className="h-5 w-5" /></button>
-      <div className="mb-4 shrink-0 pr-12"><h2 className="font-serif text-xl font-black text-[#7c1d1d]">Mandapam QR Code</h2><p className="mt-0.5 text-xs text-stone-600">Choose a design, download it, or share your Mandapam page.</p></div>
-      <div className="mb-3 grid grid-cols-2 rounded-2xl border border-amber-200 bg-amber-50 p-1.5 text-xs font-bold">
-        <button type="button" onClick={() => setDesignMode("POSTER")} className={`rounded-xl px-3 py-2.5 transition-colors cursor-pointer ${designMode === "POSTER" ? "bg-[#7c1d1d] text-white shadow-sm" : "text-stone-700 hover:bg-white"}`}>Poster design</button>
-        <button type="button" onClick={() => setDesignMode("QR")} className={`rounded-xl px-3 py-2.5 transition-colors cursor-pointer ${designMode === "QR" ? "bg-[#7c1d1d] text-white shadow-sm" : "text-stone-700 hover:bg-white"}`}>QR only</button>
+      <div className="mb-2 shrink-0 pr-12"><h2 className="font-serif text-lg font-black text-[#7c1d1d]">Mandapam QR Code</h2><p className="mt-0.5 text-[11px] text-stone-600">Download or share your Mandapam page.</p></div>
+      <div className="mb-2 grid shrink-0 grid-cols-2 rounded-2xl border border-amber-200 bg-amber-50 p-1 text-xs font-bold">
+        <button type="button" onClick={() => setDesignMode("POSTER")} className={`rounded-xl px-3 py-2 transition-colors cursor-pointer ${designMode === "POSTER" ? "bg-[#7c1d1d] text-white shadow-sm" : "text-stone-700 hover:bg-white"}`}>Poster design</button>
+        <button type="button" onClick={() => setDesignMode("QR")} className={`rounded-xl px-3 py-2 transition-colors cursor-pointer ${designMode === "QR" ? "bg-[#7c1d1d] text-white shadow-sm" : "text-stone-700 hover:bg-white"}`}>QR only</button>
       </div>
       <div className="hidden"><QRCodeCanvas id="mandapam-qr-canvas" value={publicUrl} size={1200} level="H" includeMargin /></div>
-      <div className="min-h-0 flex-1 overflow-y-auto pb-3 pr-1">
-        <div className="relative mx-auto w-full max-w-[420px]">
+      <div className="min-h-0 flex flex-1 items-center justify-center overflow-hidden py-1">
+        <div className="relative h-[min(58dvh,520px)] max-h-full w-auto max-w-full aspect-[4/5]">
           <button onClick={share} aria-label="Share Mandapam URL" className="absolute right-3 top-3 z-20 grid h-10 w-10 place-items-center rounded-full bg-white/95 text-[#7c1d1d] shadow-lg ring-1 ring-amber-300 hover:bg-amber-50 cursor-pointer"><Share2 className="h-4 w-4" /></button>
           {designMode === "POSTER" ? (
-            <div id="printable-standee" className="overflow-hidden rounded-[28px] border border-amber-300 bg-[#7c1d1d] p-2 shadow-xl">
-              <div className="flex min-h-[510px] flex-col rounded-[21px] bg-[radial-gradient(circle_at_top,_#b45309_0%,_#7c1d1d_43%,_#3f0b0b_100%)] px-5 py-7 text-center text-white sm:min-h-[560px] sm:px-8">
-                <div className="mx-auto inline-flex items-center gap-1.5 rounded-full border border-amber-200/50 bg-black/15 px-3 py-1.5 text-[10px] font-black tracking-[0.18em] text-amber-100"><Sparkles className="h-3.5 w-3.5" /> SHARAN NAVARATRI 2026</div>
-                {mandapam.logoUrl && <img src={mandapam.logoUrl} alt="" className="mx-auto mt-4 h-12 w-12 rounded-2xl border-2 border-amber-200 object-cover shadow-lg" />}
-                <h3 className="mt-3 font-serif text-3xl font-black leading-tight sm:text-4xl">{mandapam.name}</h3>
-                <p className="mt-2 text-xs font-semibold text-amber-100">Darshan, poojas, Annadanam & live Mandapam updates</p>
-                <div className="mx-auto my-auto rounded-[28px] bg-white p-4 shadow-2xl ring-4 ring-amber-300/40 sm:p-5"><QRCodeSVG value={publicUrl} size={224} level="H" includeMargin className="h-48 w-48 sm:h-56 sm:w-56" /><p className="mt-2 text-[10px] font-black tracking-[0.16em] text-[#7c1d1d]">SCAN TO OPEN</p></div>
-                <div className="mt-5 border-t border-amber-200/40 pt-4"><p className="text-[11px] font-bold text-amber-100">One QR. Every Mandapam. Every devotee.</p><p className="mt-1 text-[10px] text-amber-200/90">sharan-navratri.vercel.app</p></div>
+            <div id="printable-standee" className="h-full overflow-hidden rounded-[26px] border border-amber-300 bg-[#7c1d1d] p-1.5 shadow-xl">
+              <div className="flex h-full flex-col rounded-[20px] bg-[radial-gradient(circle_at_top,_#b45309_0%,_#7c1d1d_43%,_#3f0b0b_100%)] px-4 py-5 text-center text-white sm:px-6 sm:py-6">
+                <div className="mx-auto inline-flex items-center gap-1 rounded-full border border-amber-200/50 bg-black/15 px-2.5 py-1 text-[8px] font-black tracking-[0.15em] text-amber-100 sm:text-[10px]"><Sparkles className="h-3 w-3" /> SHARAN NAVARATRI 2026</div>
+                {mandapam.logoUrl && <img src={mandapam.logoUrl} alt="" className="mx-auto mt-2.5 h-9 w-9 rounded-xl border border-amber-200 object-cover shadow-lg sm:h-11 sm:w-11" />}
+                <h3 className="mt-2 font-serif text-xl font-black leading-tight sm:text-3xl">{mandapam.name}</h3>
+                <p className="mt-1 text-[9px] font-semibold text-amber-100 sm:text-xs">Darshan, poojas, Annadanam & live updates</p>
+                <div className="mx-auto my-auto rounded-2xl bg-white p-2.5 shadow-2xl ring-2 ring-amber-300/40 sm:p-4"><QRCodeSVG value={publicUrl} size={224} level="H" includeMargin className="h-36 w-36 sm:h-48 sm:w-48" /><p className="mt-1 text-[8px] font-black tracking-[0.14em] text-[#7c1d1d] sm:text-[10px]">SCAN TO OPEN</p></div>
+                <div className="mt-2.5 border-t border-amber-200/40 pt-2"><p className="text-[9px] font-bold text-amber-100 sm:text-[11px]">One QR. Every Mandapam. Every devotee.</p><p className="mt-0.5 text-[8px] text-amber-200/90 sm:text-[10px]">sharan-navratri.vercel.app</p></div>
               </div>
             </div>
           ) : (
-            <div className="flex min-h-[510px] flex-col items-center justify-center rounded-[28px] border border-amber-300 bg-white p-6 shadow-xl sm:min-h-[560px]">
-              <p className="text-xs font-black tracking-[0.2em] text-[#7c1d1d]">{mandapam.name.toUpperCase()}</p>
-              <div className="mt-5 rounded-3xl border-4 border-amber-400 bg-white p-4 shadow-lg sm:p-6"><QRCodeSVG value={publicUrl} size={256} level="H" includeMargin className="h-56 w-56 sm:h-64 sm:w-64" /></div>
-              <p className="mt-5 text-center text-sm font-bold text-stone-800">Scan to visit this Mandapam</p><p className="mt-1 text-xs text-stone-500">Open live darshan, poojas and festival updates.</p>
+            <div className="flex h-full flex-col items-center justify-center rounded-[26px] border border-amber-300 bg-white p-5 shadow-xl">
+              <p className="text-[10px] font-black tracking-[0.16em] text-[#7c1d1d] sm:text-xs">{mandapam.name.toUpperCase()}</p>
+              <div className="mt-4 rounded-3xl border-4 border-amber-400 bg-white p-3 shadow-lg sm:p-5"><QRCodeSVG value={publicUrl} size={256} level="H" includeMargin className="h-44 w-44 sm:h-56 sm:w-56" /></div>
+              <p className="mt-4 text-center text-xs font-bold text-stone-800 sm:text-sm">Scan to visit this Mandapam</p><p className="mt-1 text-center text-[10px] text-stone-500 sm:text-xs">Open live darshan, poojas and updates.</p>
             </div>
           )}
         </div>
       </div>
-      <div className="mt-2 shrink-0 border-t border-amber-200 pt-3"><button onClick={downloadSelected} disabled={isDownloading} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#7c1d1d] px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-[#651717] disabled:opacity-70 cursor-pointer"><Download className="h-4 w-4" />{isDownloading ? "Creating download…" : designMode === "POSTER" ? "Download poster" : "Download QR code"}</button></div>
+      <div className="mt-2 shrink-0 border-t border-amber-200 pt-2"><button onClick={downloadSelected} disabled={isDownloading} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#7c1d1d] px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#651717] disabled:opacity-70 cursor-pointer"><Download className="h-4 w-4" />{isDownloading ? "Creating download…" : designMode === "POSTER" ? "Download poster" : "Download QR code"}</button></div>
     </div>
   </div>;
 };
