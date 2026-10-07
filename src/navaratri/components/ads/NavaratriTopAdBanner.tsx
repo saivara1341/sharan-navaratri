@@ -136,17 +136,6 @@ export const NavaratriTopAdBanner: React.FC = () => {
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleContainerClick();
-                }}
-                className="min-w-0 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-xs font-bold shadow-xs flex items-center justify-center gap-1.5 active:scale-95 border border-amber-300/60 cursor-pointer whitespace-nowrap"
-              >
-                <span className="truncate">{ctaInfo.label}</span>
-                <ExternalLink className="w-3 h-3 shrink-0" />
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
                   navigate("/navaratri/advertise");
                 }}
                 className="relative min-w-0 inline-flex items-center justify-center px-3 py-1.5 font-sans text-xs font-bold text-white transition-all active:scale-95 drop-shadow-sm cursor-pointer whitespace-nowrap"
@@ -164,6 +153,17 @@ export const NavaratriTopAdBanner: React.FC = () => {
                 </svg>
                 <span className="relative z-10 truncate">Run Your Ads</span>
                 <ExternalLink className="relative z-10 ml-1.5 w-3 h-3 shrink-0" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleContainerClick();
+                }}
+                className="min-w-0 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-xs font-bold shadow-xs flex items-center justify-center gap-1.5 active:scale-95 border border-amber-300/60 cursor-pointer whitespace-nowrap"
+              >
+                <span className="truncate">{ctaInfo.label}</span>
+                <ExternalLink className="w-3 h-3 shrink-0" />
               </button>
             </div>
           </div>
