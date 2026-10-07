@@ -271,19 +271,13 @@ export const NavaratriMandapamDetail: React.FC = () => {
       !act.id?.includes("chandi-homam")
   );
 
-  const DEFAULT_MANDAPAM_ANNOUNCEMENTS = [
-    {
-      id: `ann-${mandapam.id}-default`,
-      mandapamId: mandapam.id,
-      title: "Divine Navaratri 2026 Celebrations",
-      message: `Welcome all devotees to ${mandapam.name}! Join us daily for sacred Maa Darshan, Annadanam, and Evening Maha Harathi. Free Pooja booking passes are available online.`,
-      priority: "HIGH" as const,
-      published: true,
-      createdAt: new Date().toISOString()
-    }
-  ];
+  const isGenericSeededNotice = (title?: string, message?: string) =>
+    title === "Divine Navaratri 2026 Celebrations" &&
+    Boolean(message?.includes("Free Pooja booking passes are available online"));
 
-  const effectiveAnnouncements = mandapamAnnouncements.length > 0 ? mandapamAnnouncements : DEFAULT_MANDAPAM_ANNOUNCEMENTS;
+  const effectiveAnnouncements = mandapamAnnouncements.filter(
+    (ann) => !isGenericSeededNotice(ann.title, ann.message)
+  );
 
   const todayIso = new Date().toLocaleDateString("en-CA");
 
@@ -623,12 +617,21 @@ export const NavaratriMandapamDetail: React.FC = () => {
             </div>
           </div>
           <div className="space-y-2">
-            {effectiveAnnouncements.map((ann) => (
-              <article key={ann.id} className="rounded-2xl border border-amber-200 bg-amber-50/70 p-3.5 text-xs shadow-sm">
-                <h4 className="text-sm font-black text-[#8B1E1E]">{ann.title}</h4>
-                <p className="mt-1 leading-relaxed text-stone-700">{ann.message}</p>
+            {effectiveAnnouncements.length > 0 ? (
+              effectiveAnnouncements.map((ann) => (
+                <article key={ann.id} className="rounded-2xl border border-amber-200 bg-amber-50/70 p-3.5 text-xs shadow-sm">
+                  <h4 className="text-sm font-black text-[#8B1E1E]">{ann.title}</h4>
+                  <p className="mt-1 leading-relaxed text-stone-700">{ann.message}</p>
+                </article>
+              ))
+            ) : (
+              <article className="rounded-2xl border border-amber-200 bg-white/80 p-3.5 text-xs shadow-sm">
+                <h4 className="text-sm font-black text-[#8B1E1E]">No notices yet</h4>
+                <p className="mt-1 leading-relaxed text-stone-700">
+                  Welcome to {mandapam.name}. Updates from the mandapam committee will appear here.
+                </p>
               </article>
-            ))}
+            )}
           </div>
         </section>
       )}

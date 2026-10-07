@@ -1175,17 +1175,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     });
     setSlots(prev => [...initialSlots, ...prev]);
 
-    // 5. Initialize Welcome Announcement
-    const initialAnnouncement: Announcement = {
-      id: `ann-${shortId}-1`,
-      mandapamId: shortId,
-      title: "Divine Navaratri 2026 Celebrations",
-      message: `Welcome all devotees to ${data.name}! Join us daily for sacred Maa Darshan, Annadanam, and Evening Maha Harathi. Free Pooja booking passes are available online.`,
-      priority: "HIGH",
-      published: true,
-      createdAt: new Date().toISOString()
-    };
-    setAnnouncements(prev => [initialAnnouncement, ...prev]);
+    // Announcements are left empty until organizers publish a real notice.
 
     // Activities are left clean and empty so organizers add their own real events
 
