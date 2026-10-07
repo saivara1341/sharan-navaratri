@@ -5,6 +5,7 @@ import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { Store, Phone, ExternalLink, MapPin, Utensils, ShoppingBag } from "lucide-react";
 import { navaratriAsset } from "../../utils/navaratriAssets";
 import { getAdCtaDetails } from "../../utils/adButtonHelpers";
+import { isSiddhiDynamicsAd } from "../../utils/adFrameHelpers";
 
 interface SponsoredCardProps {
   ad: Advertisement;
@@ -24,6 +25,7 @@ export const SponsoredCard: React.FC<SponsoredCardProps> = ({ ad, className = ""
   };
 
   const ctaInfo = getAdCtaDetails(ad);
+  const isSiddhiAd = isSiddhiDynamicsAd(ad);
 
   const renderIcon = () => {
     if (ctaInfo.iconName === "utensils") return <Utensils className="w-3.5 h-3.5" />;
@@ -47,15 +49,17 @@ export const SponsoredCard: React.FC<SponsoredCardProps> = ({ ad, className = ""
 
       {/* Optional Framed Image Preview if uploaded */}
       {ad.imageUrl && (
-        <div className="relative w-full h-32 sm:h-40 rounded-xl overflow-hidden border border-amber-300/80 bg-[#1e130e] flex items-center justify-center my-1">
-          <div
-            className="absolute inset-0 bg-cover bg-center blur-md opacity-30 scale-110 pointer-events-none"
-            style={{ backgroundImage: `url("${navaratriAsset(ad.imageUrl)}")` }}
-          />
+        <div className={`relative w-full rounded-xl overflow-hidden border border-amber-300/80 flex items-center justify-center my-1 ${isSiddhiAd ? "aspect-[16/9] bg-[#f8f4ec]" : "h-32 sm:h-40 bg-[#1e130e]"}`}>
+          {!isSiddhiAd && (
+            <div
+              className="absolute inset-0 bg-cover bg-center blur-md opacity-30 scale-110 pointer-events-none"
+              style={{ backgroundImage: `url("${navaratriAsset(ad.imageUrl)}")` }}
+            />
+          )}
           <img
             src={navaratriAsset(ad.imageUrl)}
             alt={ad.businessName}
-            className="w-full h-full object-contain relative z-10 mx-auto"
+            className={`relative z-10 mx-auto h-full w-full ${isSiddhiAd ? "object-cover" : "object-contain"}`}
           />
         </div>
       )}

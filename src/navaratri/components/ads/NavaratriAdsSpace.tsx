@@ -7,6 +7,7 @@ import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { AD_PLACEHOLDER_TRANSLATIONS } from "../../utils/navaratriTranslations";
 import { navaratriAsset } from "../../utils/navaratriAssets";
 import { getAdCtaDetails } from "../../utils/adButtonHelpers";
+import { isSiddhiDynamicsAd } from "../../utils/adFrameHelpers";
 
 interface NavaratriAdsSpaceProps {
   currentCity?: string;
@@ -32,6 +33,7 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
   const currentAd = activeAdsWithImages[activeIndex];
   const ctaInfo = getAdCtaDetails(currentAd);
   const isBusinessCard = currentAd?.format === "BUSINESS_CARD";
+  const isSiddhiAd = isSiddhiDynamicsAd(currentAd);
   const cardPhone = (currentAd?.phone || "").replace(/\D/g, "");
   const cardWhatsapp = (currentAd?.whatsapp || currentAd?.phone || "").replace(/\D/g, "");
 
@@ -93,20 +95,22 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
         {/* Framed Active Image Banner: perfectly centered, not too below or out of frame */}
         <div
           onClick={handleContainerClick}
-          className="relative w-full h-40 sm:h-56 md:h-64 rounded-3xl overflow-hidden border-2 border-amber-400 shadow-md hover:shadow-xl transition-all cursor-pointer bg-[#1e130e] flex items-center justify-center group"
+          className={`relative rounded-3xl overflow-hidden border-2 border-amber-400 shadow-md hover:shadow-xl transition-all cursor-pointer flex items-center justify-center group ${isSiddhiAd ? "mx-auto aspect-[16/9] h-auto w-full max-w-3xl bg-[#f8f4ec]" : "w-full h-40 sm:h-56 md:h-64 bg-[#1e130e]"}`}
           title={`Click to visit ${currentAd.businessName || "sponsor"}`}
         >
           {/* Ambient Backdrop matching image colors */}
-          <div
-            className="absolute inset-0 bg-cover bg-center blur-lg opacity-30 scale-110 pointer-events-none"
-            style={{ backgroundImage: `url("${navaratriAsset(currentAd.imageUrl)}")` }}
-          />
+          {!isSiddhiAd && (
+            <div
+              className="absolute inset-0 bg-cover bg-center blur-lg opacity-30 scale-110 pointer-events-none"
+              style={{ backgroundImage: `url("${navaratriAsset(currentAd.imageUrl)}")` }}
+            />
+          )}
 
           {/* User Image in Frame: object-contain preserves all content in frame */}
           <img
             src={navaratriAsset(currentAd.imageUrl)}
             alt={currentAd.businessName || "Advertisement"}
-            className="w-full h-full object-contain relative z-10 mx-auto"
+            className={`relative z-10 mx-auto h-full w-full ${isSiddhiAd ? "object-cover" : "object-contain"}`}
           />
 
           {/* Bottom-Right Clickable Dynamic Button (desktop only so it NEVER covers the image on mobile) */}
