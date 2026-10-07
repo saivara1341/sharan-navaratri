@@ -1065,7 +1065,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       customPrasadam: `${d.suggestedOfferings} distributed to all visiting devotees`,
       useStandardItems: true,
       customItemsToBring: d.suggestedItems,
-      annadanamEnabled: true,
+      annadanamEnabled: false,
       annadanamStartTime: "12:30 PM",
       annadanamEndTime: "03:30 PM",
       annadanamLocation: "Mandapam Annadanam Dining Hall",
