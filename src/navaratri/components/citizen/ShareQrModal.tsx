@@ -13,13 +13,40 @@ interface ShareQrModalProps {
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
 type PosterTemplate = "ROYAL" | "TEMPLE" | "SAFFRON";
 
-const posterTemplates: Record<PosterTemplate, { label: string; swatch: string; frame: string; panel: string; canvas: [string, string, string] }> = {
+
+const loadCanvasImage = (src: string) =>
+  new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+
+const drawTempleArch = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, stroke: string, fill?: string) => {
+  const top = y + h * 0.08;
+  const shoulder = y + h * 0.28;
+  const bottom = y + h;
+  ctx.beginPath();
+  ctx.moveTo(x, bottom);
+  ctx.lineTo(x, shoulder);
+  ctx.quadraticCurveTo(x + w * 0.08, top, x + w * 0.5, top);
+  ctx.quadraticCurveTo(x + w * 0.92, top, x + w, shoulder);
+  ctx.lineTo(x + w, bottom);
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  ctx.strokeStyle = stroke;
+  ctx.lineWidth = 10;
+  ctx.stroke();
+};
+
+const posterTemplates: Record<PosterTemplate, { label: string; swatch: string; frame: string; panel: string; canvas: [string, string, string]; asset: string }> = {
   ROYAL: {
     label: "Royal",
     swatch: "bg-[#7c1d1d]",
     frame: "border-amber-300 bg-[#7c1d1d]",
     panel: "bg-[radial-gradient(circle_at_top,_#b45309_0%,_#7c1d1d_43%,_#3f0b0b_100%)]",
     canvas: ["#7c1d1d", "#991b1b", "#3f0b0b"],
+    asset: `${base}/navaratri/assets/royal-maroon-arch.jpg`,
   },
   TEMPLE: {
     label: "Temple",
@@ -27,6 +54,7 @@ const posterTemplates: Record<PosterTemplate, { label: string; swatch: string; f
     frame: "border-orange-200 bg-[#713f12]",
     panel: "bg-[radial-gradient(circle_at_top,_#f59e0b_0%,_#9a3412_42%,_#431407_100%)]",
     canvas: ["#854d0e", "#9a3412", "#431407"],
+    asset: `${base}/navaratri/assets/temple-arch-frame.jpg`,
   },
   SAFFRON: {
     label: "Saffron",
@@ -34,6 +62,7 @@ const posterTemplates: Record<PosterTemplate, { label: string; swatch: string; f
     frame: "border-yellow-300 bg-[#c2410c]",
     panel: "bg-[radial-gradient(circle_at_top,_#f97316_0%,_#c2410c_42%,_#7c2d12_100%)]",
     canvas: ["#c2410c", "#ea580c", "#7c2d12"],
+    asset: `${base}/navaratri/assets/saffron-gold-mandapam-frame.jpg`,
   },
 };
 
@@ -72,6 +101,26 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
       const background = ctx.createLinearGradient(0, 0, 1600, 2000);
       background.addColorStop(0, activeTemplate.canvas[0]); background.addColorStop(0.46, activeTemplate.canvas[1]); background.addColorStop(1, activeTemplate.canvas[2]);
       ctx.fillStyle = background; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      try {
+        const archImage = await loadCanvasImage(activeTemplate.asset);
+        ctx.save();
+        ctx.globalAlpha = 0.34;
+        ctx.drawImage(archImage, 0, 0, 1600, 1120);
+        ctx.scale(1, -1);
+        ctx.globalAlpha = 0.18;
+        ctx.drawImage(archImage, 0, -2000, 1600, 900);
+        ctx.restore();
+      } catch {
+        // Keep the generated poster usable even if a decorative asset cannot load.
+      }
+      const veil = ctx.createLinearGradient(0, 0, 0, 2000);
+      veil.addColorStop(0, "rgba(60, 10, 10, 0.24)");
+      veil.addColorStop(0.44, "rgba(60, 10, 10, 0.46)");
+      veil.addColorStop(1, "rgba(20, 5, 5, 0.62)");
+      ctx.fillStyle = veil; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = "rgba(251, 191, 36, 0.70)";
+      ctx.lineWidth = 8;
+      drawTempleArch(ctx, 205, 305, 1190, 520, "rgba(251, 191, 36, 0.55)");
       ctx.fillStyle = "#fbbf24"; ctx.fillRect(100, 100, 1400, 10);
       ctx.fillStyle = "#fde68a"; ctx.fillRect(100, 132, 540, 4);
       ctx.fillStyle = "#fff7ed";
@@ -92,7 +141,9 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
       ctx.fillText("SCAN FOR DARSHAN, POOJAS & MANDAPAM UPDATES", 800, y + 82);
       ctx.fillStyle = "#fffdf8"; ctx.roundRect(310, y + 150, 980, 1040, 56); ctx.fill();
       ctx.strokeStyle = "#fbbf24"; ctx.lineWidth = 12; ctx.beginPath(); ctx.roundRect(310, y + 150, 980, 1040, 56); ctx.stroke();
-      ctx.drawImage(qr, 475, y + 300, 650, 650);
+      drawTempleArch(ctx, 360, y + 205, 880, 840, "rgba(180, 83, 9, 0.28)");
+      ctx.fillStyle = "rgba(251, 191, 36, 0.22)"; ctx.fillRect(350, y + 262, 900, 5);
+      ctx.drawImage(qr, 475, y + 320, 650, 650);
       ctx.fillStyle = "#7c1d1d"; ctx.font = "bold 38px Arial";
       ctx.fillText("SCAN HERE", 800, y + 255);
       ctx.font = "28px Arial"; ctx.fillStyle = "#57534e";
@@ -163,23 +214,30 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
           <button onClick={share} aria-label="Share Mandapam URL" className="absolute right-3 top-3 z-20 grid h-10 w-10 place-items-center rounded-full bg-white/95 text-[#7c1d1d] shadow-lg ring-1 ring-amber-300 hover:bg-amber-50 cursor-pointer"><Share2 className="h-4 w-4" /></button>
           {designMode === "POSTER" ? (
             <div id="printable-standee" className={`h-full overflow-hidden rounded-[18px] border border-amber-300 shadow-xl ${activeTemplate.frame}`}>
-              <div className={`flex h-full flex-col px-[6%] py-[5%] text-center text-white ${activeTemplate.panel}`}>
-                <div className="h-1.5 w-full bg-amber-400" />
-                <div className="mt-2 h-0.5 w-[39%] bg-amber-200" />
+              <div className={`relative flex h-full flex-col overflow-hidden px-[6%] py-[5%] text-center text-white ${activeTemplate.panel}`}>
+                <img src={activeTemplate.asset} alt="" aria-hidden="true" className="absolute inset-x-0 top-0 h-[52%] w-full object-cover opacity-35 mix-blend-screen" />
+                <img src={activeTemplate.asset} alt="" aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[34%] w-full scale-y-[-1] object-cover opacity-20 mix-blend-screen" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/35 to-black/55" />
+                <div className="pointer-events-none absolute left-[11%] right-[11%] top-[9%] h-[24%] rounded-t-full border-2 border-amber-300/50 border-b-0 bg-black/10" />
+                <div className="pointer-events-none absolute left-[7%] top-[17%] h-[38%] w-3 rounded-full bg-amber-300/35 blur-[1px]" />
+                <div className="pointer-events-none absolute right-[7%] top-[17%] h-[38%] w-3 rounded-full bg-amber-300/35 blur-[1px]" />
+                <div className="relative h-1.5 w-full bg-amber-400" />
+                <div className="relative mt-2 h-0.5 w-[39%] bg-amber-200" />
 
-                <div className="mt-[7%] text-[11px] font-black uppercase tracking-wide text-white sm:text-base">
+                <div className="relative mt-[7%] text-[11px] font-black uppercase tracking-wide text-white sm:text-base">
                   SHARAN NAVARATRI
                 </div>
-                <div className="mt-0.5 text-[8px] font-black text-amber-200 sm:text-xs">2026</div>
+                <div className="relative mt-0.5 text-[8px] font-black text-amber-200 sm:text-xs">2026</div>
 
-                <h3 className="mx-auto mt-[5%] max-w-[86%] font-serif text-[28px] font-black leading-tight text-amber-100 sm:text-5xl">
+                <h3 className="relative mx-auto mt-[5%] max-w-[86%] font-serif text-[28px] font-black leading-tight text-amber-100 drop-shadow sm:text-5xl">
                   {mandapam.name}
                 </h3>
-                <p className="mt-[4%] text-[10px] font-black uppercase tracking-wide text-amber-100 sm:text-lg">
+                <p className="relative mt-[4%] text-[10px] font-black uppercase tracking-wide text-amber-100 sm:text-lg">
                   Scan for Darshan, Poojas & Mandapam Updates
                 </p>
 
-                <div className="mx-auto mt-[6%] flex w-[72%] flex-1 flex-col items-center justify-start rounded-[22px] border-[5px] border-amber-400 bg-[#fffdf8] px-[5%] py-[6%] shadow-2xl sm:rounded-[34px] sm:border-[7px]">
+                <div className="relative mx-auto mt-[6%] flex w-[72%] flex-1 flex-col items-center justify-start overflow-hidden rounded-[22px] border-[5px] border-amber-400 bg-[#fffdf8] px-[5%] py-[6%] shadow-2xl sm:rounded-[34px] sm:border-[7px]">
+                  <div className="pointer-events-none absolute left-[8%] right-[8%] top-[4%] h-[18%] rounded-t-full border-2 border-amber-300/60 border-b-0" />
                   <p className="text-[13px] font-black uppercase tracking-wide text-[#7c1d1d] sm:text-2xl">SCAN HERE</p>
                   <div className="mt-[7%] w-full bg-white p-[3%]">
                     <QRCodeSVG value={publicUrl} size={560} level="H" includeMargin className="h-auto w-full" />
@@ -189,7 +247,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
                   </p>
                 </div>
 
-                <div className="mt-auto">
+                <div className="relative mt-auto">
                   <div className="h-1.5 w-full bg-amber-400" />
                   <p className="mt-[4%] text-[10px] font-black text-white sm:text-lg">One QR. Every Mandapam. Every devotee.</p>
                   <p className="mt-1 text-[8px] font-bold text-amber-200 sm:text-sm">In service of Ammavari • Siddhi Dynamics LLP</p>
