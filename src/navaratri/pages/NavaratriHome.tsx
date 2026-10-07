@@ -296,30 +296,30 @@ export const NavaratriHome: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.24 }}
-              className="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:gap-4 pt-2 lg:pt-3 text-sm font-bold"
+              className="grid grid-cols-2 gap-2.5 sm:gap-3 pt-2 lg:pt-3 text-sm font-bold"
             >
-              <Link to="/navaratri/near-me?category=annadanam" className="min-h-14 sm:min-h-16 px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
-                <span className="flex items-center justify-center gap-2 text-amber-100 text-sm font-bold">
-                  <PrasadBowlIcon className="h-6 w-6 shrink-0" />
-                  <span className="truncate">Annadanam Near Me</span>
+              <Link to="/navaratri/near-me?category=annadanam" className="min-h-14 sm:min-h-16 min-w-0 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
+                <span className="flex min-w-0 items-center justify-center gap-1.5 sm:gap-2 text-amber-100 text-xs sm:text-sm font-bold leading-tight">
+                  <PrasadBowlIcon className="h-5 w-5 sm:h-6 sm:w-6 shrink-0" />
+                  <span className="min-w-0 text-center leading-tight">Annadanam Near Me</span>
                 </span>
               </Link>
-              <Link to="/navaratri/near-me?category=bhajans_pallaki" className="min-h-14 sm:min-h-16 px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
-                <span className="flex items-center justify-center gap-2 text-amber-100 text-sm font-bold">
-                  <PallakiIcon className="w-6 h-6 shrink-0 text-amber-200" />
-                  <span className="truncate">Pallaki Seva & Bhajans</span>
+              <Link to="/navaratri/near-me?category=bhajans_pallaki" className="min-h-14 sm:min-h-16 min-w-0 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
+                <span className="flex min-w-0 items-center justify-center gap-1.5 sm:gap-2 text-amber-100 text-xs sm:text-sm font-bold leading-tight">
+                  <PallakiIcon className="w-5 h-5 sm:w-6 sm:h-6 shrink-0 text-amber-200" />
+                  <span className="min-w-0 text-center leading-tight">Pallaki Seva & Bhajans</span>
                 </span>
               </Link>
-              <Link to="/navaratri/near-me?category=activities" className="min-h-14 sm:min-h-16 px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
-                <span className="flex items-center justify-center gap-2 text-amber-100 text-sm font-bold">
-                  <DandiyaIcon className="w-6 h-6 shrink-0 text-amber-200" />
-                  <span className="truncate">Dandiya & Activities</span>
+              <Link to="/navaratri/near-me?category=activities" className="min-h-14 sm:min-h-16 min-w-0 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
+                <span className="flex min-w-0 items-center justify-center gap-1.5 sm:gap-2 text-amber-100 text-xs sm:text-sm font-bold leading-tight">
+                  <DandiyaIcon className="w-5 h-5 sm:w-6 sm:h-6 shrink-0 text-amber-200" />
+                  <span className="min-w-0 text-center leading-tight">Dandiya & Activities</span>
                 </span>
               </Link>
-              <Link to="/navaratri/know" className="min-h-14 sm:min-h-16 px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
-                <span className="flex items-center justify-center gap-2 text-amber-100 text-sm font-bold">
+              <Link to="/navaratri/know" className="min-h-14 sm:min-h-16 min-w-0 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-center transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
+                <span className="flex min-w-0 items-center justify-center gap-1.5 sm:gap-2 text-amber-100 text-xs sm:text-sm font-bold leading-tight">
                   <BookOpen className="w-5 h-5 shrink-0 text-amber-200" />
-                  <span className="truncate">Sacred Devi Guide</span>
+                  <span className="min-w-0 text-center leading-tight">Sacred Devi Guide</span>
                 </span>
               </Link>
             </motion.div>
