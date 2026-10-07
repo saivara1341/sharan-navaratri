@@ -1412,10 +1412,30 @@ export const NavaratriOrganizer: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="text-xs font-bold text-stone-700">Start time
-                <div className="relative mt-1"><Clock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-700" /><input type="time" value={annadanamStartTime} onChange={(e) => setAnnadanamStartTime(e.target.value)} className="w-full rounded-xl border border-amber-300 bg-white py-2.5 pl-9 pr-3 text-sm font-semibold text-stone-800 shadow-xs cursor-pointer" /></div>
+                <div
+                  className="relative mt-1"
+                  onClick={(event) => {
+                    const input = event.currentTarget.querySelector("input");
+                    input?.focus();
+                    input?.showPicker?.();
+                  }}
+                >
+                  <Clock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-700" />
+                  <input type="time" value={annadanamStartTime} onFocus={(e) => e.currentTarget.showPicker?.()} onChange={(e) => setAnnadanamStartTime(e.target.value)} className="w-full rounded-xl border border-amber-300 bg-white py-2.5 pl-9 pr-3 text-sm font-semibold text-stone-800 shadow-xs cursor-pointer" />
+                </div>
               </label>
               <label className="text-xs font-bold text-stone-700">End time
-                <div className="relative mt-1"><Clock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-700" /><input type="time" value={annadanamEndTime} onChange={(e) => setAnnadanamEndTime(e.target.value)} className="w-full rounded-xl border border-amber-300 bg-white py-2.5 pl-9 pr-3 text-sm font-semibold text-stone-800 shadow-xs cursor-pointer" /></div>
+                <div
+                  className="relative mt-1"
+                  onClick={(event) => {
+                    const input = event.currentTarget.querySelector("input");
+                    input?.focus();
+                    input?.showPicker?.();
+                  }}
+                >
+                  <Clock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-700" />
+                  <input type="time" value={annadanamEndTime} onFocus={(e) => e.currentTarget.showPicker?.()} onChange={(e) => setAnnadanamEndTime(e.target.value)} className="w-full rounded-xl border border-amber-300 bg-white py-2.5 pl-9 pr-3 text-sm font-semibold text-stone-800 shadow-xs cursor-pointer" />
+                </div>
               </label>
             </div>
 
