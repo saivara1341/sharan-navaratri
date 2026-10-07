@@ -311,11 +311,11 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+          className="fixed inset-x-0 bottom-0 top-[106px] z-40 flex items-start justify-center overflow-y-auto bg-black/75 p-3 backdrop-blur-sm animate-in fade-in duration-200 sm:top-[112px] sm:items-center sm:p-4"
           onClick={() => setSelectedDay(null)}
         >
           <div
-            className="bg-[#FFFDF9] rounded-3xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl border-2 border-amber-400/80 overflow-hidden animate-in zoom-in-95 duration-200"
+            className="my-auto flex w-full max-w-3xl max-h-[calc(100dvh-7.5rem)] flex-col overflow-hidden rounded-3xl border-2 border-amber-400/80 bg-[#FFFDF9] shadow-2xl animate-in zoom-in-95 duration-200 sm:max-h-[calc(100dvh-8rem)]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -729,4 +729,3 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
     </section>
   );
 };
-

@@ -120,8 +120,8 @@ export const NavaratriMandapamDetail: React.FC = () => {
   const [selectedServiceId, setSelectedServiceId] = useState<string | undefined>(undefined);
   const [qrModalOpen, setQrModalOpen] = useState(false);
 
-  // Mandapam Cover & Committee Logo (View Only for Devotees)
-  const [customCover, setCustomCover] = useState<string>("");
+  // Committee logo is organizer-managed. The public hero uses one shared
+  // festival cover so an idol/branding upload never becomes a page background.
   const [customLogo, setCustomLogo] = useState<string>("");
 
   // 10-Day Pop-up State
@@ -248,7 +248,9 @@ export const NavaratriMandapamDetail: React.FC = () => {
     }
   ];
 
-  const effectiveServices = mandapamServices.length > 0 ? mandapamServices : DEFAULT_MANDAPAM_SERVICES;
+  // Do not recreate sample Poojas after an organizer removes their last one.
+  // An empty list is an accurate public state.
+  const effectiveServices = mandapamServices;
 
   const effectiveActivities = mandapamActivities.filter(
     (act) =>
@@ -296,15 +298,13 @@ export const NavaratriMandapamDetail: React.FC = () => {
     }
   };
 
-  // Synchronize custom cover photo and committee logo from localStorage or mandapam record
+  // Synchronize only the committee logo from localStorage or the Mandapam record.
   useEffect(() => {
     if (mandapam?.id) {
-      const storedCover = localStorage.getItem(`mandapam_cover_${mandapam.id}`) || mandapam.coverImageUrl || "";
       const storedLogo = localStorage.getItem(`mandapam_logo_${mandapam.id}`) || mandapam.logoUrl || "";
-      setCustomCover(storedCover);
       setCustomLogo(storedLogo);
     }
-  }, [mandapam?.id, mandapam?.coverImageUrl, mandapam?.logoUrl]);
+  }, [mandapam?.id, mandapam?.logoUrl]);
 
   // Helper for short dates (e.g., "11 Oct")
   const formatDateShort = (isoDate: string) => {
@@ -408,8 +408,8 @@ export const NavaratriMandapamDetail: React.FC = () => {
         {/* Cover Photo */}
         <div className="h-48 sm:h-64 w-full relative bg-[#8B1E1E]">
           <img
-            src={customCover || mandapam.coverImageUrl || navaratriAsset("/navaratri/assets/maa-durga-temple-darshan.jpg")}
-            alt={mandapam.name}
+            src={navaratriAsset("/navaratri/assets/royal-temple-gold-sanctum.jpg")}
+            alt="Sharan Navaratri royal temple festival cover"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
@@ -572,7 +572,29 @@ export const NavaratriMandapamDetail: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. 10-DAY FESTIVAL BUTTONS (2 ROWS ON MOBILE, NO SCROLL) */}
+      {/* 2. LIVE MANDAPAM NOTICE BOARD */}
+      {effectiveAnnouncements.length > 0 && (
+        <section className="relative overflow-hidden rounded-3xl border-2 border-amber-300 bg-gradient-to-br from-white via-[#FFFDF7] to-amber-50 p-4 shadow-lg sm:p-5">
+          <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#8B1E1E] via-amber-500 to-[#8B1E1E]" />
+          <div className="mb-3 flex items-center gap-2 border-b border-amber-200 pb-3 pt-1">
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#8B1E1E] text-lg shadow-sm">📢</span>
+            <div>
+              <h3 className="font-serif text-lg font-black text-[#8B1E1E]">{t.noticeBoard}</h3>
+              <p className="text-[11px] font-semibold text-emerald-800">● Live updates from the Mandapam committee</p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            {effectiveAnnouncements.map((ann) => (
+              <article key={ann.id} className="rounded-2xl border border-amber-200 bg-amber-50/70 p-3.5 text-xs shadow-sm">
+                <h4 className="text-sm font-black text-[#8B1E1E]">{ann.title}</h4>
+                <p className="mt-1 leading-relaxed text-stone-700">{ann.message}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 3. 10-DAY FESTIVAL BUTTONS (2 ROWS ON MOBILE, NO SCROLL) */}
       <section className="bg-gradient-to-br from-[#FFFDF9] via-[#FAF6ED] to-[#FEF3C7] border-2 border-amber-400 rounded-3xl p-4 sm:p-5 shadow-xl shadow-amber-200/60 ring-2 ring-amber-200/40 space-y-3.5" style={{boxShadow: '0 0 0 2px #fbbf24, 0 8px 32px -4px rgba(180,83,9,0.18)'}}>
         <div className="flex items-center justify-between border-b border-amber-200/80 pb-2">
           <div className="flex items-center gap-2">
@@ -878,33 +900,12 @@ export const NavaratriMandapamDetail: React.FC = () => {
         </section>
       )}
 
-      {/* 6. MANDAPAM ANNOUNCEMENTS */}
-      {effectiveAnnouncements.length > 0 && (
-        <section className="bg-white border-2 border-amber-300 rounded-3xl p-5 shadow-md space-y-3">
-          <h3 className="font-serif font-bold text-lg text-[#8B1E1E] flex items-center gap-2">
-            <span>📢</span>
-            <span>{t.noticeBoard}</span>
-          </h3>
-          <div className="space-y-2">
-            {effectiveAnnouncements.map((ann) => (
-              <div
-                key={ann.id}
-                className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200 text-xs"
-              >
-                <h4 className="font-bold text-[#8B1E1E] text-sm">{ann.title}</h4>
-                <p className="text-stone-700 mt-1 leading-relaxed">{ann.message}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* ============================================================ */}
       {/* DAY POP-UP CARD MODAL (Opened upon tapping any of the 10 buttons) */}
       {/* ============================================================ */}
       {selectedDay && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in">
-          <div className="bg-[#FDFBF7] text-[#221A14] w-full max-w-lg rounded-3xl p-5 sm:p-6 shadow-2xl border-2 border-amber-400 relative my-6 max-h-[90vh] overflow-y-auto space-y-4">
+        <div className="fixed inset-x-0 bottom-0 top-[106px] z-40 flex items-start justify-center overflow-y-auto bg-black/80 p-3 backdrop-blur-sm animate-in fade-in sm:top-[112px] sm:p-4">
+          <div className="relative my-auto w-full max-w-lg max-h-[calc(100dvh-7.5rem)] overflow-y-auto rounded-3xl border-2 border-amber-400 bg-[#FDFBF7] p-5 text-[#221A14] shadow-2xl space-y-4 sm:max-h-[calc(100dvh-8rem)] sm:p-6">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-amber-200 pb-3">
               <div className="flex items-center gap-2">
