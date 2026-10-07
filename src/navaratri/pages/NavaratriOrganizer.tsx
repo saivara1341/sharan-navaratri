@@ -56,6 +56,7 @@ import {
   Ticket,
   Filter,
   Settings,
+  Pencil,
   Phone,
   MessageCircle,
   Image as ImageIcon,
@@ -105,6 +106,7 @@ export const NavaratriOrganizer: React.FC = () => {
     slots,
     activities,
     createActivity,
+    updateActivity,
     deleteActivity,
     announcements,
     publishAnnouncement,
@@ -158,6 +160,7 @@ export const NavaratriOrganizer: React.FC = () => {
   const [eventDescription, setEventDescription] = useState("");
   const [eventFee, setEventFee] = useState("");
   const [eventBookingEnabled, setEventBookingEnabled] = useState(false);
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
 
   // Annadanam schedule controls — published day settings appear in the devotee portal.
   const [annadanamScope, setAnnadanamScope] = useState<"ONE_DAY" | "MULTIPLE_DAYS" | "ALL_DAYS">("ONE_DAY");
@@ -166,6 +169,7 @@ export const NavaratriOrganizer: React.FC = () => {
   const [annadanamEndTime, setAnnadanamEndTime] = useState("15:30");
   const [annadanamLocationMode, setAnnadanamLocationMode] = useState<"MANDAPAM" | "OTHER">("MANDAPAM");
   const [annadanamLocation, setAnnadanamLocation] = useState("");
+  const [annadanamEditMode, setAnnadanamEditMode] = useState(false);
 
   // Two-Step Delete Account Modal State
   const [deleteStep, setDeleteStep] = useState<0 | 1 | 2>(0);
@@ -411,6 +415,15 @@ export const NavaratriOrganizer: React.FC = () => {
     return `${String(displayHour).padStart(2, "0")}:${minute} ${suffix}`;
   };
 
+  const to24HourTime = (value: string) => {
+    const match = value.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (!match) return value;
+    const [, hourValue, minute, suffix] = match;
+    let hour = Number(hourValue) % 12;
+    if (suffix.toUpperCase() === "PM") hour += 12;
+    return `${String(hour).padStart(2, "0")}:${minute}`;
+  };
+
   const saveAnnadanamSchedule = () => {
     const targetDays = annadanamScope === "ALL_DAYS"
       ? STANDARD_NAVARATRI_DAYS.map((day) => day.dayNumber)
@@ -441,6 +454,7 @@ export const NavaratriOrganizer: React.FC = () => {
         ? "Annadanam seva at the Mandapam location. Devotees can use the Mandapam Google Maps directions."
         : "Annadanam seva at the venue shown above."
     }));
+    setAnnadanamEditMode(false);
     toast.success(`Annadanam schedule saved for ${annadanamScope === "ALL_DAYS" ? "all 10 days" : `${targetDays.length} selected day${targetDays.length === 1 ? "" : "s"}`}.`);
   };
 
@@ -450,6 +464,33 @@ export const NavaratriOrganizer: React.FC = () => {
     mandapams.find((m) => m.id === authenticatedMandapamId) ||
     mandapams.find((m) => m.id === activeMandapamId) ||
     mandapams[0];
+
+  const savedAnnadanamSettings = daySettings.filter(
+    (setting) => setting.mandapamId === currentMandapam?.id && setting.annadanamEnabled
+  );
+
+  const loadSavedAnnadanamSchedule = () => {
+    if (savedAnnadanamSettings.length === 0) return;
+    const firstSetting = savedAnnadanamSettings[0];
+    const selectedDays = savedAnnadanamSettings.map((setting) => setting.dayNumber).sort((a, b) => a - b);
+    setAnnadanamDayNumbers(selectedDays);
+    setAnnadanamScope(selectedDays.length === STANDARD_NAVARATRI_DAYS.length ? "ALL_DAYS" : selectedDays.length === 1 ? "ONE_DAY" : "MULTIPLE_DAYS");
+    setAnnadanamStartTime(to24HourTime(firstSetting.annadanamStartTime || "12:30 PM"));
+    setAnnadanamEndTime(to24HourTime(firstSetting.annadanamEndTime || "03:30 PM"));
+    const usesMandapamLocation = firstSetting.annadanamNotes?.includes("Mandapam location") ?? false;
+    setAnnadanamLocationMode(usesMandapamLocation ? "MANDAPAM" : "OTHER");
+    setAnnadanamLocation(usesMandapamLocation ? "" : firstSetting.annadanamLocation || "");
+  };
+
+  const openAnnadanamEditor = () => {
+    loadSavedAnnadanamSchedule();
+    setAnnadanamEditMode(true);
+  };
+
+  const cancelAnnadanamEdit = () => {
+    loadSavedAnnadanamSchedule();
+    setAnnadanamEditMode(false);
+  };
 
   // If checking authentication, show elegant spinner
   if (isCheckingAuth) {
@@ -606,6 +647,45 @@ export const NavaratriOrganizer: React.FC = () => {
     setUpdateDrawerOpen(true);
   };
 
+  const resetEventForm = () => {
+    setEditingEventId(null);
+    setEventTitle("");
+    setEventCategory("Special Program");
+    setCustomCategory("");
+    setEventDate("2026-10-15");
+    setEventStartTime("06:30 PM");
+    setEventEndTime("09:30 PM");
+    setEventLocation("Mandapam Main Stage");
+    setEventDescription("");
+    setEventFee("");
+    setEventBookingEnabled(false);
+  };
+
+  const openCreateEvent = () => {
+    resetEventForm();
+    setEventModalOpen(true);
+  };
+
+  const openEditEvent = (activity: Activity) => {
+    setEditingEventId(activity.id);
+    setEventTitle(activity.title);
+    setEventCategory(activity.category);
+    setCustomCategory("");
+    setEventDate(activity.date);
+    setEventStartTime(activity.startTime);
+    setEventEndTime(activity.endTime || "");
+    setEventLocation(activity.location || "");
+    setEventDescription(activity.description || "");
+    setEventFee(activity.fee || "");
+    setEventBookingEnabled(activity.bookingEnabled);
+    setEventModalOpen(true);
+  };
+
+  const closeEventModal = () => {
+    setEventModalOpen(false);
+    resetEventForm();
+  };
+
   const handleCreateEvent = (e: React.FormEvent) => {
     e.preventDefault();
     if (!eventTitle.trim() || !eventDate.trim() || !eventStartTime.trim()) {
@@ -615,7 +695,7 @@ export const NavaratriOrganizer: React.FC = () => {
 
     const finalCategory = (eventCategory === "Other" ? (customCategory.trim() || "Special Program") : eventCategory) as Activity["category"];
 
-    createActivity({
+    const eventData = {
       mandapamId: currentMandapam.id,
       title: eventTitle.trim(),
       category: finalCategory,
@@ -627,14 +707,17 @@ export const NavaratriOrganizer: React.FC = () => {
       fee: eventFee.trim() || undefined,
       bookingEnabled: eventBookingEnabled,
       published: true
-    });
+    };
 
-    setEventTitle("");
-    setEventDescription("");
-    setEventFee("");
-    setCustomCategory("");
-    setEventModalOpen(false);
-    toast.success("Festival event added and published successfully!");
+    if (editingEventId) {
+      updateActivity(editingEventId, eventData);
+      toast.success("Festival event updated successfully!");
+    } else {
+      createActivity(eventData);
+      toast.success("Festival event added and published successfully!");
+    }
+
+    closeEventModal();
   };
 
   const handleDeleteAccount = async () => {
@@ -1188,21 +1271,27 @@ export const NavaratriOrganizer: React.FC = () => {
               <DandiyaIcon className="w-5 h-5 text-[#8B1E1E] shrink-0" />
               <h2 className="font-serif font-black text-lg text-[#8B1E1E]">Add Events</h2>
             </div>
-            <button type="button" onClick={() => setEventModalOpen(true)} className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] text-white text-xs font-bold shadow-md flex items-center gap-2 shrink-0 cursor-pointer active:scale-95">
+            <button type="button" onClick={openCreateEvent} className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] text-white text-xs font-bold shadow-md flex items-center gap-2 shrink-0 cursor-pointer active:scale-95">
               <Plus className="w-4 h-4" />
               <span>Add Event</span>
             </button>
           </div>
 
           <section className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-white via-amber-50/40 to-orange-50/50 border-2 border-amber-200 shadow-xs space-y-4">
-            <div className="flex items-start gap-2.5">
-              <span className="mt-0.5 grid h-9 w-9 place-items-center rounded-2xl bg-amber-100 text-[#8B1E1E] shrink-0"><PrasadBowlIcon className="w-5 h-5" /></span>
-              <div>
-                <h2 className="font-serif font-black text-xl text-[#8B1E1E]">Annadanam</h2>
-                <p className="mt-0.5 text-[11px] leading-relaxed text-stone-600">Choose one day, selected festival days, or the full 10-day seva. Devotees use your Mandapam Maps directions when you select Mandapam location.</p>
+            <div className="flex items-start justify-between gap-2.5">
+              <div className="flex items-start gap-2.5">
+                <span className="mt-0.5 grid h-9 w-9 place-items-center rounded-2xl bg-amber-100 text-[#8B1E1E] shrink-0"><PrasadBowlIcon className="w-5 h-5" /></span>
+                <div>
+                  <h2 className="font-serif font-black text-xl text-[#8B1E1E]">Annadanam</h2>
+                  <p className="mt-0.5 text-[11px] leading-relaxed text-stone-600">Choose one day, selected festival days, or the full 10-day seva. Devotees use your Mandapam Maps directions when you select Mandapam location.</p>
+                </div>
               </div>
+              {savedAnnadanamSettings.length > 0 && !annadanamEditMode && (
+                <button type="button" onClick={openAnnadanamEditor} className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-amber-400 bg-white px-3 py-2 text-xs font-bold text-[#8B1E1E] shadow-xs transition-colors hover:bg-amber-50 cursor-pointer"><Pencil className="h-3.5 w-3.5" />Edit</button>
+              )}
             </div>
 
+            <fieldset disabled={savedAnnadanamSettings.length > 0 && !annadanamEditMode} className="space-y-4 disabled:opacity-70">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="text-xs font-bold text-stone-700">Offering days
                 <select value={annadanamScope} onChange={(e) => {
@@ -1264,8 +1353,14 @@ export const NavaratriOrganizer: React.FC = () => {
               </div>
               {annadanamLocationMode === "MANDAPAM" ? <div className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-stone-700"><span className="font-bold">Mandapam address:</span> {currentMandapam.address || "Add your Mandapam address in Edit Logo settings."}</div> : <label className="block text-xs font-bold text-stone-700">Location / Hall<input value={annadanamLocation} placeholder="e.g. Dining Pandal, Temple Road" onChange={(e) => setAnnadanamLocation(e.target.value)} className="mt-1 w-full rounded-xl border border-amber-300 bg-white px-3 py-2.5 text-sm font-medium shadow-xs" /></label>}
             </div>
+            </fieldset>
 
-            <button type="button" onClick={saveAnnadanamSchedule} className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-sm transition-colors active:scale-95 cursor-pointer">Save Annadanam Schedule</button>
+            {(annadanamEditMode || savedAnnadanamSettings.length === 0) && (
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                {savedAnnadanamSettings.length > 0 && <button type="button" onClick={cancelAnnadanamEdit} className="w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-xs font-bold text-stone-700 transition-colors hover:bg-stone-50 sm:w-auto cursor-pointer">Cancel</button>}
+                <button type="button" onClick={saveAnnadanamSchedule} className="w-full rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-colors hover:bg-emerald-800 active:scale-95 sm:w-auto cursor-pointer">Save Annadanam Schedule</button>
+              </div>
+            )}
           </section>
 
           {/* Clean Day 1 to Day 10 Buttons */}
@@ -1341,7 +1436,7 @@ export const NavaratriOrganizer: React.FC = () => {
             </div>
             <button
               type="button"
-              onClick={() => setEventModalOpen(true)}
+              onClick={openCreateEvent}
               className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs font-bold shadow-md transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
             >
               <DandiyaIcon className="w-4 h-4 text-amber-300" />
@@ -1358,7 +1453,7 @@ export const NavaratriOrganizer: React.FC = () => {
               </p>
               <button
                 type="button"
-                onClick={() => setEventModalOpen(true)}
+                onClick={openCreateEvent}
                 className="px-4 py-2 rounded-xl bg-[#8B1E1E] text-white text-xs font-bold shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
               >
                 <DandiyaIcon className="w-4 h-4 text-amber-300" />
@@ -1383,19 +1478,30 @@ export const NavaratriOrganizer: React.FC = () => {
                         <span>{act.title}</span>
                       </h3>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (confirm(`Delete event "${act.title}"?`)) {
-                          deleteActivity(act.id);
-                          toast.success("Event removed.");
-                        }
-                      }}
-                      className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                      title="Delete Event"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => openEditEvent(act)}
+                        className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-bold text-[#8B1E1E] transition-colors hover:bg-amber-50"
+                        title={`Edit ${act.title}`}
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm(`Delete event "${act.title}"?`)) {
+                            deleteActivity(act.id);
+                            toast.success("Event removed.");
+                          }
+                        }}
+                        className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                        title="Delete Event"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
 
                   <p className="text-xs text-stone-700 leading-relaxed">
@@ -2155,7 +2261,7 @@ export const NavaratriOrganizer: React.FC = () => {
           role="dialog"
           aria-modal="true"
           className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto overscroll-contain p-2 sm:items-center sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
-          onClick={() => setEventModalOpen(false)}
+          onClick={closeEventModal}
         >
           <div
             className="my-auto flex w-full max-w-lg max-h-[calc(100dvh-1rem)] flex-col overflow-hidden rounded-3xl border-2 border-amber-400 bg-[#FFFDF9] shadow-2xl animate-in zoom-in-95 duration-200 sm:max-h-[calc(100dvh-2rem)]"
@@ -2165,12 +2271,12 @@ export const NavaratriOrganizer: React.FC = () => {
               <div className="flex items-center gap-2">
                 <DandiyaIcon className="w-5 h-5 text-amber-300" />
                 <h3 className="font-serif font-black text-base leading-tight text-white sm:text-lg">
-                  Add Mandapam Event & Activity
+                  {editingEventId ? "Edit Mandapam Event & Activity" : "Add Mandapam Event & Activity"}
                 </h3>
               </div>
               <button
                 type="button"
-                onClick={() => setEventModalOpen(false)}
+                onClick={closeEventModal}
                 className="shrink-0 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
                 aria-label="Close event form"
               >
@@ -2370,7 +2476,7 @@ export const NavaratriOrganizer: React.FC = () => {
               <div className="sticky bottom-0 -mx-4 flex gap-2 border-t border-amber-200 bg-[#FFFDF9]/95 px-4 pt-3 pb-1 backdrop-blur sm:-mx-6 sm:justify-end sm:px-6">
                 <button
                   type="button"
-                  onClick={() => setEventModalOpen(false)}
+                  onClick={closeEventModal}
                   className="min-h-11 flex-1 rounded-xl border border-stone-300 bg-white px-4 py-2 text-stone-700 transition-colors hover:bg-stone-50 sm:flex-none cursor-pointer"
                 >
                   Cancel
@@ -2379,7 +2485,7 @@ export const NavaratriOrganizer: React.FC = () => {
                   type="submit"
                   className="min-h-11 flex-[1.45] rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] px-5 py-2 font-bold text-white shadow-sm transition-transform active:scale-[0.98] sm:flex-none cursor-pointer"
                 >
-                  Save & Publish Event
+                  {editingEventId ? "Save Event Changes" : "Save & Publish Event"}
                 </button>
               </div>
             </form>
