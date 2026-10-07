@@ -525,15 +525,6 @@ export const NavaratriMandapamDetail: React.FC = () => {
                   <span>{t.directions}</span>
                 </a>
 
-                {mandapam.contactPhone && (
-                  <a
-                    href={`tel:${mandapam.contactPhone}`}
-                    className="p-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs font-bold transition-colors flex items-center justify-center"
-                    title="Call Mandapam Organizer"
-                  >
-                    <Phone className="w-4 h-4 text-[#8B1E1E]" />
-                  </a>
-                )}
               </div>
             </div>
 
@@ -566,11 +557,11 @@ export const NavaratriMandapamDetail: React.FC = () => {
                     {(mandapam.organizerMobile || mandapam.contactPhone) && (
                       <a
                         href={`tel:${mandapam.organizerMobile || mandapam.contactPhone}`}
-                        className="grid h-9 w-9 place-items-center rounded-full bg-white hover:bg-amber-100 text-emerald-900 border border-emerald-300 shadow-xs transition-colors"
+                        className="grid h-9 w-9 place-items-center rounded-full bg-transparent text-emerald-800 transition-transform hover:scale-110"
                         title={`${orgLabels.callBtn}: ${mandapam.organizerMobile || mandapam.contactPhone}`}
                         aria-label={`${orgLabels.callBtn}: ${mandapam.organizerMobile || mandapam.contactPhone}`}
                       >
-                        <Phone className="w-4 h-4 text-emerald-700" />
+                        <Phone className="w-5 h-5 text-emerald-700" />
                       </a>
                     )}
 
@@ -579,11 +570,11 @@ export const NavaratriMandapamDetail: React.FC = () => {
                         href={`https://wa.me/91${(mandapam.whatsappNumber || mandapam.organizerMobile).replace(/\D/g, "")}?text=${encodeURIComponent(`${orgLabels.greeting} (${transName})`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="grid h-9 w-9 place-items-center rounded-full bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs transition-colors"
+                        className="grid h-9 w-9 place-items-center rounded-full bg-transparent transition-transform hover:scale-110"
                         title={orgLabels.whatsappBtn}
                         aria-label={orgLabels.whatsappBtn}
                       >
-                        <img src={navaratriAsset("/navaratri/assets/whatsapp-icon.svg")} alt="WhatsApp" className="h-5 w-5 object-contain" />
+                        <img src={navaratriAsset("/navaratri/assets/whatsapp-icon.svg")} alt="WhatsApp" className="h-6 w-6 object-contain" />
                       </a>
                     )}
 
