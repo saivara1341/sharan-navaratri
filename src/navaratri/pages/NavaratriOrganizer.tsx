@@ -1020,7 +1020,7 @@ export const NavaratriOrganizer: React.FC = () => {
   return (
     <div className="space-y-8 pb-16 font-sans max-w-7xl mx-auto px-4 sm:px-6">
       {/* Top Banner with Mandapam ID, Passcode, Download Slip, Photo & Logout */}
-      <div className="relative p-6 rounded-3xl bg-gradient-to-r from-[#9A241C] via-[#8B1E1E] to-[#781B1B] text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="relative mt-3 sm:mt-4 p-6 rounded-3xl bg-gradient-to-r from-[#9A241C] via-[#8B1E1E] to-[#781B1B] text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         {(currentMandapam.coverImageUrl || currentMandapam.cardBgImageUrl) && (
           <div className="absolute inset-0 pointer-events-none opacity-20 z-0 overflow-hidden rounded-3xl">
             <img
@@ -1223,7 +1223,10 @@ export const NavaratriOrganizer: React.FC = () => {
       </div>
 
       {/* DASHBOARD TAB NAVIGATION - 2 in a row on mobile view */}
-      <div className="grid grid-cols-2 lg:flex lg:items-center gap-2.5 border-b-2 border-amber-300 pb-3">
+      <div className="relative grid grid-cols-2 lg:flex lg:items-center gap-2.5 border-b-2 border-amber-300 pb-3">
+        <div className="pointer-events-none absolute left-1/2 top-1/2 z-20 grid h-10 w-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-amber-300 bg-white shadow-lg lg:hidden" aria-hidden="true">
+          <span className="text-xl leading-none">🪷</span>
+        </div>
         <button
           onClick={() => setActiveTab("days")}
           className={`w-full lg:w-auto px-3 sm:px-4 py-3 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-black flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer text-center ${
