@@ -679,17 +679,22 @@ export const NavaratriNearMe: React.FC = () => {
       </section>
 
       {/* Filter Category Pills */}
-      <div className="relative min-h-[255px] w-full bg-contain bg-center bg-no-repeat sm:hidden" style={{ backgroundImage: `url(${navaratriAsset("/navaratri/assets/sage-scroll-filter-frame.jpg")})` }}>
-        <div className="absolute inset-y-[20%] left-[14%] right-[14%] grid grid-cols-2 content-center gap-2">
+      <div className="relative mx-auto h-[310px] w-full max-w-[430px] overflow-visible sm:hidden">
+        <img
+          src={navaratriAsset("/navaratri/assets/sage-scroll-filter-frame.jpg")}
+          alt=""
+          className="absolute inset-0 h-full w-full object-contain"
+        />
+        <div className="absolute left-[13%] right-[13%] top-[23%] grid grid-cols-2 gap-2">
           {categories.map((category) => (
             <button
               key={category.id}
               type="button"
               onClick={() => setActiveCategory(category.id)}
-              className={`flex min-h-10 items-center justify-center gap-1.5 rounded-xl px-2 py-1.5 text-center text-[10px] font-black leading-tight shadow-sm transition-all last:col-span-2 last:mx-auto last:w-[calc(50%-0.25rem)] ${
+              className={`flex h-[54px] items-center justify-center gap-1.5 rounded-xl px-2 py-1.5 text-center text-[10px] font-black leading-tight shadow-sm transition-all last:col-span-2 last:mx-auto last:w-[58%] ${
                 activeCategory === category.id
                   ? "bg-[#8B1E1E] text-white ring-2 ring-amber-100"
-                  : "border border-[#e9ddb9] bg-[#fffaf0]/95 text-[#465b28] hover:bg-white"
+                  : "border border-[#e9ddb9] bg-[#fffaf0]/90 text-[#465b28] backdrop-blur-[1px] hover:bg-white"
               }`}
             >
               <span className="shrink-0">{category.icon}</span>
