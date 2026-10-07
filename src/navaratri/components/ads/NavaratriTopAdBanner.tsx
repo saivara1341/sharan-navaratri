@@ -132,6 +132,29 @@ export const NavaratriTopAdBanner: React.FC = () => {
                 <ExternalLink className="w-3 h-3" />
               </button>
             </div>
+            <div className="flex items-center justify-center pt-3">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate("/navaratri/advertise");
+                }}
+                className="relative inline-flex items-center justify-center px-8 py-2.5 sm:px-10 sm:py-3 font-sans font-bold text-xs sm:text-sm tracking-wide text-white transition-all transform hover:scale-105 active:scale-95 group drop-shadow-md hover:drop-shadow-lg cursor-pointer"
+                title="Run Your Ads on Sharan Navaratri"
+              >
+                <svg
+                  viewBox="0 0 160 40"
+                  preserveAspectRatio="none"
+                  className="absolute inset-0 h-full w-full text-[#C12535] transition-colors group-hover:text-[#A81B2B]"
+                >
+                  <path
+                    d="M 18 0 L 142 0 C 151 0, 157 12, 160 20 C 157 28, 151 40, 142 40 L 18 40 C 9 40, 3 28, 0 20 C 3 12, 9 0, 18 0 Z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <span className="relative z-10 font-bold text-white select-none">Run Your Ads</span>
+              </button>
+            </div>
           </div>
         ) : (
           /* Empty container slot: clean, ready for user / advertiser to add image in top frame */
