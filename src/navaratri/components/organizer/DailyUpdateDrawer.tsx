@@ -11,7 +11,6 @@ import {
   Save, 
   CheckCircle, 
   Clock, 
-  Utensils, 
   ShoppingBag,
   Sun,
   Moon,
@@ -70,11 +69,6 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
   const [useStdItems, setUseStdItems] = useState(currentSetting?.useStandardItems ?? true);
   const [customItems, setCustomItems] = useState(currentSetting?.customItemsToBring || "");
 
-  const [annadanamEnabled, setAnnadanamEnabled] = useState(currentSetting?.annadanamEnabled ?? true);
-  const [annadanamStart, setAnnadanamStart] = useState(currentSetting?.annadanamStartTime || "12:30 PM");
-  const [annadanamEnd, setAnnadanamEnd] = useState(currentSetting?.annadanamEndTime || "03:30 PM");
-  const [annadanamLocation, setAnnadanamLocation] = useState(currentSetting?.annadanamLocation || "Mandapam Kalyana Hall");
-  const [annadanamCount, setAnnadanamCount] = useState(currentSetting?.annadanamExpectedCount || 1200);
 
   // Alankarana upload
   const [alankaranaImage, setAlankaranaImage] = useState(stdDay.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"));
@@ -101,11 +95,6 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
     setCustomPrasadam(s?.customPrasadam || "");
     setUseStdItems(s?.useStandardItems ?? true);
     setCustomItems(s?.customItemsToBring || "");
-    setAnnadanamEnabled(s?.annadanamEnabled ?? true);
-    setAnnadanamStart(s?.annadanamStartTime || "12:30 PM");
-    setAnnadanamEnd(s?.annadanamEndTime || "03:30 PM");
-    setAnnadanamLocation(s?.annadanamLocation || "Mandapam Kalyana Hall");
-    setAnnadanamCount(s?.annadanamExpectedCount || 1200);
 
     const initialImg = existingAlankarana?.imageUrl || d.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg");
     setAlankaranaImage(initialImg);
@@ -186,12 +175,7 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
       useStandardPrasadam: useStdPrasadam,
       customPrasadam: customPrasadam,
       useStandardItems: useStdItems,
-      customItemsToBring: customItems,
-      annadanamEnabled,
-      annadanamStartTime: annadanamStart,
-      annadanamEndTime: annadanamEnd,
-      annadanamLocation,
-      annadanamExpectedCount: annadanamCount
+      customItemsToBring: customItems
     });
 
     // 2. Upload/Save physical Alankarana photo
@@ -549,83 +533,6 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
                 />
               )}
             </div>
-          </div>
-
-          {/* SECTION 3: ANNADANAM */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-[#FFFDF9] border border-amber-300 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <h4 className="font-bold text-xs uppercase tracking-wider text-[#8B1E1E] flex items-center gap-1.5">
-                <Utensils className="w-4 h-4 text-amber-700" />
-                <span>3. Day {selectedDayNum} Annadanam Setup</span>
-              </h4>
-              <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold">
-                <input
-                  type="checkbox"
-                  checked={annadanamEnabled}
-                  onChange={(e) => setAnnadanamEnabled(e.target.checked)}
-                  className="rounded border-amber-400 text-[#8B1E1E] focus:ring-amber-500"
-                />
-                <span>Annadanam Active Today</span>
-              </label>
-            </div>
-
-            {annadanamEnabled && (
-              <div className="space-y-3 pt-2">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                      Start Time
-                    </label>
-                    <input
-                      type="text"
-                      value={annadanamStart}
-                      onChange={(e) => setAnnadanamStart(e.target.value)}
-                      placeholder="12:30 PM"
-                      className="w-full px-3 py-1.5 rounded-lg text-xs border border-amber-300 bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                      End Time
-                    </label>
-                    <input
-                      type="text"
-                      value={annadanamEnd}
-                      onChange={(e) => setAnnadanamEnd(e.target.value)}
-                      placeholder="03:30 PM"
-                      className="w-full px-3 py-1.5 rounded-lg text-xs border border-amber-300 bg-white"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                      Location / Hall
-                    </label>
-                    <input
-                      type="text"
-                      value={annadanamLocation}
-                      onChange={(e) => setAnnadanamLocation(e.target.value)}
-                      placeholder="Mandapam Dining Hall"
-                      className="w-full px-3 py-1.5 rounded-lg text-xs border border-amber-300 bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                      Expected Devotees Count
-                    </label>
-                    <input
-                      type="number"
-                      value={annadanamCount}
-                      onChange={(e) => setAnnadanamCount(Number(e.target.value))}
-                      placeholder="1200"
-                      className="w-full px-3 py-1.5 rounded-lg text-xs border border-amber-300 bg-white"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* SAVE BUTTON & CLOSE ACTION */}

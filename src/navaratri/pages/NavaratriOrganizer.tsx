@@ -499,7 +499,6 @@ export const NavaratriOrganizer: React.FC = () => {
   const cancelAnnadanamEdit = () => {
     loadSavedAnnadanamSchedule();
     setAnnadanamEditMode(false);
-    setAnnadanamPanelOpen(false);
   };
 
   // If checking authentication, show elegant spinner
@@ -1301,7 +1300,10 @@ export const NavaratriOrganizer: React.FC = () => {
               </div>
               <button
                 type="button"
-                onClick={() => setAnnadanamPanelOpen((open) => !open)}
+                onClick={() => {
+                  if (annadanamPanelOpen) setAnnadanamEditMode(false);
+                  setAnnadanamPanelOpen((open) => !open);
+                }}
                 aria-expanded={annadanamPanelOpen}
                 className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-amber-400 bg-white px-3 py-2 text-xs font-bold text-[#8B1E1E] shadow-xs transition-colors hover:bg-amber-50 cursor-pointer"
               >
@@ -1310,21 +1312,25 @@ export const NavaratriOrganizer: React.FC = () => {
               </button>
             </div>
 
-            <div className="rounded-2xl border border-amber-200 bg-white/85 p-3">
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div className="min-w-0 space-y-1">
-                  <p className="text-xs font-black text-stone-800">{annadanamSummaryText}</p>
-                  <p className="truncate text-[11px] font-semibold text-stone-500">{annadanamSummaryLocation}</p>
+            {annadanamPanelOpen && savedAnnadanamSettings.length > 0 && !annadanamEditMode && (
+              <div className="overflow-hidden rounded-2xl border border-amber-200 bg-white shadow-sm">
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#8B1E1E]">
+                  Saved Annadanam Schedule
                 </div>
-                {savedAnnadanamSettings.length > 0 && !annadanamEditMode && (
-                  <button type="button" onClick={openAnnadanamEditor} className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-bold text-[#8B1E1E] transition-colors hover:bg-amber-100 cursor-pointer"><Pencil className="h-3.5 w-3.5" />Edit</button>
-                )}
+                <div className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0 space-y-1">
+                    <p className="text-sm font-black text-stone-900">{annadanamSummaryText}</p>
+                    <p className="truncate text-xs font-semibold text-stone-600">{annadanamSummaryLocation}</p>
+                    <p className="text-[10px] font-medium text-stone-500">Devotees will see this Annadanam info on your Mandapam page.</p>
+                  </div>
+                  <button type="button" onClick={openAnnadanamEditor} className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-xs font-bold text-[#8B1E1E] transition-colors hover:bg-amber-100 cursor-pointer"><Pencil className="h-3.5 w-3.5" />Edit</button>
+                </div>
               </div>
-            </div>
+            )}
 
-            {annadanamPanelOpen && (
+            {annadanamPanelOpen && (annadanamEditMode || savedAnnadanamSettings.length === 0) && (
               <>
-            <fieldset disabled={savedAnnadanamSettings.length > 0 && !annadanamEditMode} className="space-y-4 disabled:opacity-70">
+            <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="text-xs font-bold text-stone-700">Offering days
                 <select value={annadanamScope} onChange={(e) => {
@@ -1386,14 +1392,12 @@ export const NavaratriOrganizer: React.FC = () => {
               </div>
               {annadanamLocationMode === "MANDAPAM" ? <div className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-stone-700"><span className="font-bold">Mandapam address:</span> {currentMandapam.address || "Add your Mandapam address in Edit Logo settings."}</div> : <label className="block text-xs font-bold text-stone-700">Location / Hall<input value={annadanamLocation} placeholder="e.g. Dining Pandal, Temple Road" onChange={(e) => setAnnadanamLocation(e.target.value)} className="mt-1 w-full rounded-xl border border-amber-300 bg-white px-3 py-2.5 text-sm font-medium shadow-xs" /></label>}
             </div>
-            </fieldset>
+            </div>
 
-            {(annadanamEditMode || savedAnnadanamSettings.length === 0) && (
               <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                 {savedAnnadanamSettings.length > 0 && <button type="button" onClick={cancelAnnadanamEdit} className="w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-xs font-bold text-stone-700 transition-colors hover:bg-stone-50 sm:w-auto cursor-pointer">Cancel</button>}
                 <button type="button" onClick={saveAnnadanamSchedule} className="w-full rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-colors hover:bg-emerald-800 active:scale-95 sm:w-auto cursor-pointer">Save Annadanam Schedule</button>
               </div>
-            )}
               </>
             )}
           </section>
