@@ -12,7 +12,6 @@ import {
   Music2,
   Navigation,
   Search,
-  Crosshair,
   PlusCircle,
   Trophy,
   Utensils,
@@ -674,7 +673,7 @@ export const NavaratriNearMe: React.FC = () => {
             <Search className="mr-1.5 inline h-4 w-4" />Search
           </button>
           <button type="button" onClick={requestBrowserLocation} disabled={isLocating} aria-label="Use current GPS location" title="Use current GPS location" className="grid h-10 w-10 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100 disabled:opacity-60 transition-all">
-            <Crosshair className={`h-4 w-4 ${isLocating ? "animate-spin" : ""}`} />
+            <MapPin className={`h-[18px] w-[18px] ${isLocating ? "animate-pulse" : ""}`} />
           </button>
         </div>
       </section>
@@ -851,7 +850,7 @@ export const NavaratriNearMe: React.FC = () => {
 
       {/* 2. ACTIVITIES & PROCESSIONS (PALLAKI SEVA, BHAJANS, DANDIYA, ETC.) */}
       {showActivities && (
-        <section className="space-y-3 pt-2">
+        <section className="mt-7 space-y-3 border-t-2 border-amber-200/90 pt-5">
           <div className="flex items-end justify-between gap-3 border-b border-amber-200/80 pb-2">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-800">
