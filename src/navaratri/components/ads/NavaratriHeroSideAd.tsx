@@ -71,12 +71,6 @@ export const NavaratriHeroSideAd: React.FC = () => {
               style={{ backgroundImage: `url("${navaratriAsset(currentAd.imageUrl)}")` }}
             />
 
-            {/* Top Badge */}
-            <div className="absolute top-3 left-3 z-20 px-2.5 py-0.5 rounded-full bg-black/70 backdrop-blur-sm border border-amber-300/40 text-[10px] font-bold tracking-wider text-amber-200 uppercase flex items-center gap-1.5 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-              <span>Sponsored</span>
-            </div>
-
             {/* Framed Image: object-contain preserves all content in frame */}
             <img
               src={navaratriAsset(currentAd.imageUrl)}

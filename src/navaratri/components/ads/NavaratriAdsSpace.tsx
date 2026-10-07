@@ -109,19 +109,6 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
             className="w-full h-full object-contain relative z-10 mx-auto"
           />
 
-          {/* Top Info Bar (desktop only so it NEVER covers the image on mobile) */}
-          <div className="hidden sm:flex absolute top-3 left-3 z-20 items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-black/65 backdrop-blur-md border border-amber-400/40 text-[10px] font-bold text-amber-200 uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-              Sponsored
-            </span>
-            {currentAd.businessName && (
-              <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-black/65 backdrop-blur-md text-[10px] font-semibold text-white/90">
-                {currentAd.businessName}
-              </span>
-            )}
-          </div>
-
           {/* Bottom-Right Clickable Dynamic Button (desktop only so it NEVER covers the image on mobile) */}
           <div className="hidden sm:flex absolute bottom-3 right-3 z-20 items-center gap-2">
             {isBusinessCard && cardPhone && (
@@ -156,15 +143,8 @@ export const NavaratriAdsSpace: React.FC<NavaratriAdsSpaceProps> = ({
           </div>
         </div>
 
-        {/* Mobile: Clean Sponsor & Action Bar below the image (NEVER covers the image) */}
-        <div className="flex sm:hidden items-center justify-between gap-2.5 pt-2 px-1 text-xs flex-wrap">
-          <div className="flex items-center gap-1.5 font-medium text-amber-900/80 flex-wrap min-w-0">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
-            <span className="font-bold text-[11px] uppercase tracking-wider text-amber-800 shrink-0">Sponsored</span>
-            {currentAd.businessName && (
-              <span className="text-stone-800 font-bold text-xs whitespace-normal">• {currentAd.businessName}</span>
-            )}
-          </div>
+        {/* Mobile action sits below the creative; no sponsor label is displayed. */}
+        <div className="flex sm:hidden items-center justify-end gap-2.5 pt-2 px-1 text-xs flex-wrap">
           {isBusinessCard ? (
             <div className="flex items-center gap-1.5">
               {cardPhone && (

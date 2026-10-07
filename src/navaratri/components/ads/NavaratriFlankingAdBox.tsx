@@ -81,19 +81,6 @@ export const NavaratriFlankingAdBox: React.FC<NavaratriFlankingAdBoxProps> = ({
               style={{ backgroundImage: `url("${navaratriAsset(currentAd.imageUrl)}")` }}
             />
 
-            {/* Top Badge */}
-            <div className="relative z-10 w-full flex items-center justify-between">
-              <span className="px-2.5 py-0.5 rounded-full bg-black/70 backdrop-blur-sm border border-amber-300/40 text-[10px] font-bold tracking-wider text-amber-200 uppercase flex items-center gap-1.5 shadow-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                <span>Sponsored</span>
-              </span>
-              {currentAd.businessName && (
-                <span className="text-[11px] font-semibold text-amber-100/90 truncate max-w-[120px] px-2 py-0.5 bg-black/40 rounded-full">
-                  {currentAd.businessName}
-                </span>
-              )}
-            </div>
-
             {/* Framed Image */}
             <div className="relative z-10 w-full flex-1 flex items-center justify-center my-2 overflow-hidden">
               <img

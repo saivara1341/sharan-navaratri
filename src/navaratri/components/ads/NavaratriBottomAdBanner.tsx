@@ -112,17 +112,6 @@ export const NavaratriBottomAdBanner: React.FC = () => {
                 className="w-full h-full object-contain relative z-10 mx-auto"
               />
 
-              {/* Top-Left Sponsor Pill — shown on ALL screen sizes */}
-              <div className="absolute top-2.5 left-2.5 z-20 flex px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-md border border-amber-400/40 text-[9px] sm:text-[10px] font-bold text-amber-200 uppercase tracking-wider items-center gap-1.5 shadow-sm pointer-events-none">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                <span>Sponsored</span>
-                {currentAd.businessName && (
-                  <span className="hidden sm:inline-block font-semibold text-white/90">
-                    • {currentAd.businessName}
-                  </span>
-                )}
-              </div>
-
               {/* Bottom-Right Dynamic Action Buttons (desktop view inside frame) */}
               <div className="hidden sm:flex absolute bottom-2.5 right-2.5 z-20 items-center gap-2">
                 {isBusinessCard && cardPhone && (
@@ -159,15 +148,8 @@ export const NavaratriBottomAdBanner: React.FC = () => {
               </div>
             </div>
 
-            {/* Mobile View: Clean Caption & Action Bar below frame */}
-            <div className="flex sm:hidden items-center justify-between gap-2 pt-2 px-1 text-xs flex-wrap">
-              <div className="flex items-center gap-1.5 font-medium text-amber-900/80 min-w-0">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
-                <span className="font-bold text-[11px] uppercase tracking-wider text-amber-800 shrink-0">Sponsored</span>
-                {currentAd.businessName && (
-                  <span className="text-stone-800 font-bold text-xs truncate">• {currentAd.businessName}</span>
-                )}
-              </div>
+            {/* Mobile action sits below the creative; no sponsor label or business caption is shown. */}
+            <div className="flex sm:hidden items-center justify-end gap-2 pt-2 px-1 text-xs flex-wrap">
               {isBusinessCard ? (
                 <div className="flex items-center gap-1.5">
                   {cardPhone && (

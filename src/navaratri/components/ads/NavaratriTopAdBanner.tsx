@@ -98,12 +98,6 @@ export const NavaratriTopAdBanner: React.FC = () => {
                 className="w-full h-full object-contain relative z-10 mx-auto"
               />
 
-              {/* Top-Left Sponsor Pill — shown on ALL screen sizes inside the frame */}
-              <div className="absolute top-2 left-2 z-20 flex px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 text-[9px] font-bold text-amber-200 uppercase tracking-wider items-center gap-1 shadow-sm pointer-events-none">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                <span>Sponsored</span>
-              </div>
-
               {/* CTA button — desktop only inside frame */}
               <div className="hidden sm:block absolute bottom-2 right-2 z-20">
                 <button
@@ -120,11 +114,8 @@ export const NavaratriTopAdBanner: React.FC = () => {
               </div>
             </div>
 
-            {/* Mobile only: business name caption + CTA button — BELOW the frame, never on image */}
-            <div className="flex sm:hidden items-center justify-between gap-2 pt-1.5 px-1">
-              <span className="text-[10px] text-stone-500 font-medium truncate">
-                {currentAd.businessName ? `• ${currentAd.businessName}` : ""}
-              </span>
+            {/* Mobile action is below the image so no sponsor text covers the creative. */}
+            <div className="flex sm:hidden items-center justify-end gap-2 pt-1.5 px-1">
               <button
                 type="button"
                 onClick={(e) => {
