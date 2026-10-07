@@ -959,25 +959,13 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 </span>
               </div>
 
-              <div className="flex items-center gap-2">
-                {/* Color Tag */}
-                <div
-                  className="px-2.5 py-0.5 rounded-full text-[10px] font-bold text-white shadow-xs"
-                  style={{
-                    backgroundColor: selectedDay.colorHex,
-                    color: selectedDay.dayNumber === 2 ? "#1C1917" : "#FFFFFF"
-                  }}
-                >
-                  {selectedDay.colorName.split("/")[0]}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedDay(null)}
-                  className="p-1.5 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-700 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedDay(null)}
+                className="p-1.5 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-700 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
             {/* Devi Avatharam & Consecrated Darshan */}
@@ -1092,6 +1080,23 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
               return (
                 <div className="space-y-2.5 text-xs">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="rounded-2xl border border-amber-200 bg-white p-2.5 shadow-xs">
+                      <span className="block text-[9px] font-bold uppercase tracking-wider text-stone-500">Auspicious Color</span>
+                      <div className="mt-1 flex items-center gap-1.5">
+                        <span
+                          className="h-3.5 w-3.5 rounded-full border border-amber-200 shadow-inner"
+                          style={{ backgroundColor: selectedDay.colorHex }}
+                        />
+                        <span className="font-bold text-[#8B1E1E] leading-snug">{selectedDay.colorName}</span>
+                      </div>
+                    </div>
+                    <div className="rounded-2xl border border-amber-200 bg-white p-2.5 shadow-xs">
+                      <span className="block text-[9px] font-bold uppercase tracking-wider text-stone-500">Tithi</span>
+                      <p className="mt-1 font-bold text-stone-800 leading-snug">{selectedDay.tithi}</p>
+                    </div>
+                  </div>
+
                   {/* Pooja Timings */}
                   <div className="p-3 rounded-2xl bg-white border border-amber-200 shadow-xs space-y-1">
                     <span className="font-bold text-amber-900 flex items-center gap-1.5 uppercase text-[10px] tracking-wider">
