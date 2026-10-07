@@ -84,7 +84,7 @@ export const NavaratriTopAdBanner: React.FC = () => {
           <div className="flex flex-col">
             <div
               onClick={handleContainerClick}
-              className={`relative rounded-2xl overflow-hidden border-2 border-amber-400/80 shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center group ${isSiddhiAd ? "mx-auto aspect-[16/9] h-auto w-full max-w-3xl bg-[#f8f4ec]" : "w-full h-28 sm:h-36 md:h-40 bg-[#1e130e]"}`}
+              className={`relative rounded-2xl overflow-hidden border-2 border-amber-400/80 shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center group ${isSiddhiAd ? "mx-auto aspect-[16/9] h-auto w-[92%] max-w-[360px] bg-[#f8f4ec] sm:w-full sm:max-w-3xl" : "mx-auto h-24 w-[92%] max-w-[360px] bg-[#1e130e] sm:h-36 sm:w-full sm:max-w-none md:h-40"}`}
               title={`Advertisement: ${currentAd.businessName || "Special Festive Offer"}`}
             >
               {/* Ambient Blurred Backdrop */}
@@ -102,8 +102,8 @@ export const NavaratriTopAdBanner: React.FC = () => {
                 className={`relative z-10 mx-auto h-full w-full ${isSiddhiAd ? "object-cover" : "object-contain"}`}
               />
 
-              {/* CTA button — desktop only inside frame */}
-              <div className="hidden sm:block absolute bottom-2 right-2 z-20">
+              {/* CTA buttons — desktop only inside frame */}
+              <div className="hidden sm:flex absolute bottom-2 right-2 z-20 items-center gap-2">
                 <button
                   type="button"
                   onClick={(e) => {
@@ -115,44 +115,45 @@ export const NavaratriTopAdBanner: React.FC = () => {
                   <span>{ctaInfo.label}</span>
                   <ExternalLink className="w-3 h-3" />
                 </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate("/navaratri/advertise");
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-[#9A1B1F] hover:bg-[#7F1418] text-white text-[11px] sm:text-xs font-bold shadow-md hover:shadow-xl transition-all transform active:scale-95 flex items-center gap-1.5 border border-amber-300/70 cursor-pointer"
+                  title="Run Your Ads on Sharan Navaratri"
+                >
+                  <span>Run Your Ads</span>
+                  <ExternalLink className="w-3 h-3" />
+                </button>
               </div>
             </div>
 
-            {/* Mobile action is below the image so no sponsor text covers the creative. */}
-            <div className="flex sm:hidden items-center justify-end gap-2 pt-1.5 px-1">
+            {/* Mobile actions sit directly under the image in one compact row. */}
+            <div className="grid sm:hidden grid-cols-2 gap-2 pt-1.5 px-1">
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleContainerClick();
                 }}
-                className="shrink-0 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-xs font-bold shadow-xs flex items-center gap-1.5 active:scale-95 border border-amber-300/60 cursor-pointer whitespace-nowrap"
+                className="min-w-0 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#9A241C] text-white text-xs font-bold shadow-xs flex items-center justify-center gap-1.5 active:scale-95 border border-amber-300/60 cursor-pointer whitespace-nowrap"
               >
-                <span>{ctaInfo.label}</span>
-                <ExternalLink className="w-3 h-3" />
+                <span className="truncate">{ctaInfo.label}</span>
+                <ExternalLink className="w-3 h-3 shrink-0" />
               </button>
-            </div>
-            <div className="flex items-center justify-center pt-3">
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   navigate("/navaratri/advertise");
                 }}
-                className="relative inline-flex items-center justify-center px-8 py-2.5 sm:px-10 sm:py-3 font-sans font-bold text-xs sm:text-sm tracking-wide text-white transition-all transform hover:scale-105 active:scale-95 group drop-shadow-md hover:drop-shadow-lg cursor-pointer"
+                className="min-w-0 px-2.5 py-1.5 rounded-xl bg-[#9A1B1F] text-white text-xs font-bold shadow-xs flex items-center justify-center gap-1.5 active:scale-95 border border-amber-300/70 cursor-pointer whitespace-nowrap"
                 title="Run Your Ads on Sharan Navaratri"
               >
-                <svg
-                  viewBox="0 0 160 40"
-                  preserveAspectRatio="none"
-                  className="absolute inset-0 h-full w-full text-[#C12535] transition-colors group-hover:text-[#A81B2B]"
-                >
-                  <path
-                    d="M 18 0 L 142 0 C 151 0, 157 12, 160 20 C 157 28, 151 40, 142 40 L 18 40 C 9 40, 3 28, 0 20 C 3 12, 9 0, 18 0 Z"
-                    fill="currentColor"
-                  />
-                </svg>
-                <span className="relative z-10 font-bold text-white select-none">Run Your Ads</span>
+                <span className="truncate">Run Your Ads</span>
+                <ExternalLink className="w-3 h-3 shrink-0" />
               </button>
             </div>
           </div>
