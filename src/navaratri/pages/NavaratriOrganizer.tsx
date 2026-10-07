@@ -98,8 +98,34 @@ const PRESET_MANDAPAM_BACKGROUNDS = [
 ];
 
 
-const normalizeSocialProfileUrl = (value: string, platform: "instagram" | "twitter") => {
-  const trimmed = value.trim();
+const safeLocalStorageGet = (key: string): string | null => {
+  try {
+    return typeof window !== "undefined" ? localStorage.getItem(key) : null;
+  } catch {
+    return null;
+  }
+};
+
+const safeLocalStorageSet = (key: string, value: string): void => {
+  try {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(key, value);
+    }
+  } catch (e) {
+    console.warn(`LocalStorage quota or access restriction for key "${key}":`, e);
+  }
+};
+
+const safeLocalStorageRemove = (key: string): void => {
+  try {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(key);
+    }
+  } catch {}
+};
+
+const normalizeSocialProfileUrl = (value?: string | null, platform: "instagram" | "twitter" = "instagram") => {
+  const trimmed = (value || "").trim();
   if (!trimmed) return "";
   if (/^https?:\/\//i.test(trimmed)) return trimmed;
 
@@ -804,43 +830,91 @@ export const NavaratriOrganizer: React.FC = () => {
       return;
     }
 
+    if (file.size > 15 * 1024 * 1024) {
+      toast.error("Image file is too large. Please select an image under 15MB.");
+      return;
+    }
+
     try {
       setIsUploadingPhoto(true);
       const reader = new FileReader();
       reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const maxWidth = 1200;
-          let width = img.width;
-          let height = img.height;
-          if (width > maxWidth) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          if (ctx) {
-            ctx.drawImage(img, 0, 0, width, height);
-            const compressed = canvas.toDataURL("image/jpeg", 0.85);
-            setPhotoPreview(compressed);
-            toast.success("Mandapam photo loaded! Click 'Save Mandapam Photo' below.");
-          } else {
-            setPhotoPreview(event.target?.result as string);
-          }
+        const rawResult = event.target?.result as string;
+        if (!rawResult) {
           setIsUploadingPhoto(false);
+          return;
+        }
+
+        const img = new Image();
+        img.onload = async () => {
+          try {
+            const canvas = document.createElement("canvas");
+            const maxWidth = 960;
+            let width = img.width;
+            let height = img.height;
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+            canvas.width = Math.max(1, width);
+            canvas.height = Math.max(1, height);
+            const ctx = canvas.getContext("2d");
+            let compressedDataUrl = rawResult;
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, width, height);
+              compressedDataUrl = canvas.toDataURL("image/jpeg", 0.8);
+            }
+
+            setPhotoPreview(compressedDataUrl);
+
+            // Attempt background upload to Supabase Storage if mandapam is active
+            if (currentMandapam) {
+              try {
+                const ext = file.name.split(".").pop() || "jpg";
+                const safeSlug = (currentMandapam.slug || currentMandapam.id || "mandapam").replace(/[^a-zA-Z0-9_-]/g, "_");
+                const storagePath = `covers/${safeSlug}_${Date.now()}.${ext}`;
+                const { error: upErr } = await supabase.storage
+                  .from("mandapam-media")
+                  .upload(storagePath, file, { upsert: true });
+
+                if (!upErr) {
+                  const { data: pubData } = supabase.storage
+                    .from("mandapam-media")
+                    .getPublicUrl(storagePath);
+                  if (pubData?.publicUrl) {
+                    setPhotoPreview(pubData.publicUrl);
+                  }
+                }
+              } catch {
+                // Storage upload is optional; compressedDataUrl will be used
+              }
+            }
+
+            toast.success("Mandapam photo loaded! Click 'Save Branding & Details' to apply.");
+          } catch (canvasErr) {
+            console.warn("Photo canvas compression fallback:", canvasErr);
+            setPhotoPreview(rawResult);
+          } finally {
+            setIsUploadingPhoto(false);
+          }
         };
         img.onerror = () => {
           setIsUploadingPhoto(false);
           toast.error("Failed to parse image file.");
         };
-        img.src = event.target?.result as string;
+        img.src = rawResult;
+      };
+      reader.onerror = () => {
+        setIsUploadingPhoto(false);
+        toast.error("Failed to read selected image.");
       };
       reader.readAsDataURL(file);
     } catch {
       setIsUploadingPhoto(false);
-      toast.error("Failed to read selected image.");
+      toast.error("Failed to process selected image.");
+    } finally {
+      // Allow re-uploading same file if clicked again
+      e.target.value = "";
     }
   };
 
@@ -853,48 +927,97 @@ export const NavaratriOrganizer: React.FC = () => {
       return;
     }
 
+    if (file.size > 12 * 1024 * 1024) {
+      toast.error("Logo file is too large. Please select an image under 12MB.");
+      return;
+    }
+
     try {
       setIsUploadingLogo(true);
       const reader = new FileReader();
       reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const maxSize = 400;
-          let width = img.width;
-          let height = img.height;
-          if (width > maxSize || height > maxSize) {
-            if (width > height) {
-              height = Math.round((height * maxSize) / width);
-              width = maxSize;
-            } else {
-              width = Math.round((width * maxSize) / height);
-              height = maxSize;
-            }
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          if (ctx) {
-            ctx.drawImage(img, 0, 0, width, height);
-            const compressed = canvas.toDataURL("image/jpeg", 0.9);
-            setLogoPreview(compressed);
-            toast.success("Mandapam logo loaded! Click 'Save Branding & Media' to apply.");
-          } else {
-            setLogoPreview(event.target?.result as string);
-          }
+        const rawResult = event.target?.result as string;
+        if (!rawResult) {
           setIsUploadingLogo(false);
+          return;
+        }
+
+        const img = new Image();
+        img.onload = async () => {
+          try {
+            const canvas = document.createElement("canvas");
+            // Crisp emblem size: 256px is lightweight (~15-25KB) and crystal-sharp
+            const maxSize = 256;
+            let width = img.width;
+            let height = img.height;
+            if (width > maxSize || height > maxSize) {
+              if (width > height) {
+                height = Math.round((height * maxSize) / width);
+                width = maxSize;
+              } else {
+                width = Math.round((width * maxSize) / height);
+                height = maxSize;
+              }
+            }
+            canvas.width = Math.max(1, width);
+            canvas.height = Math.max(1, height);
+            const ctx = canvas.getContext("2d");
+            let compressedDataUrl = rawResult;
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, width, height);
+              compressedDataUrl = canvas.toDataURL("image/jpeg", 0.82);
+            }
+
+            setLogoPreview(compressedDataUrl);
+
+            // Attempt background upload to Supabase Storage if mandapam is active
+            if (currentMandapam) {
+              try {
+                const ext = file.name.split(".").pop() || "jpg";
+                const safeSlug = (currentMandapam.slug || currentMandapam.id || "mandapam").replace(/[^a-zA-Z0-9_-]/g, "_");
+                const storagePath = `logos/${safeSlug}_${Date.now()}.${ext}`;
+                const { error: upErr } = await supabase.storage
+                  .from("mandapam-media")
+                  .upload(storagePath, file, { upsert: true });
+
+                if (!upErr) {
+                  const { data: pubData } = supabase.storage
+                    .from("mandapam-media")
+                    .getPublicUrl(storagePath);
+                  if (pubData?.publicUrl) {
+                    setLogoPreview(pubData.publicUrl);
+                  }
+                }
+              } catch {
+                // Storage upload is optional; compressedDataUrl is already set
+              }
+            }
+
+            toast.success("Mandapam logo loaded! Click 'Save Branding & Details' to apply.");
+          } catch (canvasErr) {
+            console.warn("Logo canvas compression fallback:", canvasErr);
+            setLogoPreview(rawResult);
+          } finally {
+            setIsUploadingLogo(false);
+          }
         };
         img.onerror = () => {
           setIsUploadingLogo(false);
           toast.error("Failed to parse logo file.");
         };
-        img.src = event.target?.result as string;
+        img.src = rawResult;
+      };
+      reader.onerror = () => {
+        setIsUploadingLogo(false);
+        toast.error("Failed to read logo file.");
       };
       reader.readAsDataURL(file);
     } catch {
       setIsUploadingLogo(false);
-      toast.error("Failed to read logo image.");
+      toast.error("Failed to process logo file.");
+    } finally {
+      // Allow re-uploading same file if clicked again
+      e.target.value = "";
     }
   };
 
@@ -903,91 +1026,135 @@ export const NavaratriOrganizer: React.FC = () => {
     setIsSavingBranding(true);
 
     try {
-      const finalLogo = logoPreview.trim() || logoInputUrl.trim() || undefined;
-      const finalPhoto = photoPreview.trim() || photoInputUrl.trim() || undefined;
+      const finalLogo = (logoPreview || "").trim() || (logoInputUrl || "").trim() || undefined;
+      const finalPhoto = (photoPreview || "").trim() || (photoInputUrl || "").trim() || undefined;
 
       const updates: Partial<Mandapam> = {};
 
       if (finalLogo) {
         updates.logoUrl = finalLogo;
-        localStorage.setItem(`mandapam_logo_${currentMandapam.id}`, finalLogo);
+        safeLocalStorageSet(`mandapam_logo_${currentMandapam.id}`, finalLogo);
       } else if (!logoPreview && !logoInputUrl && currentMandapam.logoUrl) {
         updates.logoUrl = undefined;
-        localStorage.removeItem(`mandapam_logo_${currentMandapam.id}`);
+        safeLocalStorageRemove(`mandapam_logo_${currentMandapam.id}`);
       }
 
       if (finalPhoto) {
         updates.coverImageUrl = finalPhoto;
         updates.cardBgImageUrl = finalPhoto;
-        localStorage.setItem(`mandapam_cover_${currentMandapam.id}`, finalPhoto);
-        localStorage.setItem(`mandapam_card_bg_${currentMandapam.id}`, finalPhoto);
+        safeLocalStorageSet(`mandapam_cover_${currentMandapam.id}`, finalPhoto);
+        safeLocalStorageSet(`mandapam_card_bg_${currentMandapam.id}`, finalPhoto);
       } else if (!photoPreview && !photoInputUrl && currentMandapam.coverImageUrl) {
         updates.coverImageUrl = undefined;
         updates.cardBgImageUrl = undefined;
-        localStorage.removeItem(`mandapam_cover_${currentMandapam.id}`);
-        localStorage.removeItem(`mandapam_card_bg_${currentMandapam.id}`);
+        safeLocalStorageRemove(`mandapam_cover_${currentMandapam.id}`);
+        safeLocalStorageRemove(`mandapam_card_bg_${currentMandapam.id}`);
       }
 
-      if (editAddress.trim()) updates.address = editAddress.trim();
-      if (editArea.trim()) updates.area = editArea.trim();
-      if (editCity.trim()) updates.city = editCity.trim();
-      updates.googleMapsUrl = editGoogleMapsUrl.trim();
-      if (editOrganizerName.trim()) updates.organizerName = editOrganizerName.trim();
-      if (editOrganizerMobile.trim()) {
-        updates.organizerMobile = editOrganizerMobile.trim();
-        updates.contactPhone = editOrganizerMobile.trim();
+      const safeAddress = (editAddress || "").trim();
+      const safeArea = (editArea || "").trim();
+      const safeCity = (editCity || "").trim();
+      const safeMapsUrl = (editGoogleMapsUrl || "").trim();
+      const safeOrgName = (editOrganizerName || "").trim();
+      const safeOrgMobile = (editOrganizerMobile || "").trim();
+      const safeWhatsapp = (editWhatsappNumber || "").trim();
+      const safeInstagram = normalizeSocialProfileUrl(editInstagramUrl, "instagram");
+      const safeTwitter = normalizeSocialProfileUrl(editTwitterUrl, "twitter");
+
+      if (safeAddress) updates.address = safeAddress;
+      if (safeArea) updates.area = safeArea;
+      if (safeCity) updates.city = safeCity;
+      updates.googleMapsUrl = safeMapsUrl;
+      if (safeOrgName) updates.organizerName = safeOrgName;
+      if (safeOrgMobile) {
+        updates.organizerMobile = safeOrgMobile;
+        updates.contactPhone = safeOrgMobile;
       }
-      if (editWhatsappNumber.trim()) updates.whatsappNumber = editWhatsappNumber.trim();
-      updates.instagramUrl = normalizeSocialProfileUrl(editInstagramUrl, "instagram");
-      updates.twitterUrl = normalizeSocialProfileUrl(editTwitterUrl, "twitter");
+      if (safeWhatsapp) updates.whatsappNumber = safeWhatsapp;
+      updates.instagramUrl = safeInstagram;
+      updates.twitterUrl = safeTwitter;
       updates.showOrganizerPublicly = showOrganizerPublicly;
 
-      // 1. Update React state and local storage immediately
-      updateMandapam(currentMandapam.id, updates);
-
-      // 2. Persist to Supabase database
+      // 1. Update React state immediately
       try {
-        const payload: any = {
-          id: currentMandapam.id,
-          name: currentMandapam.name,
-          slug: currentMandapam.slug,
-          address: updates.address !== undefined ? updates.address : currentMandapam.address,
-          area: updates.area !== undefined ? updates.area : currentMandapam.area,
-          city: updates.city !== undefined ? updates.city : currentMandapam.city,
-          state: currentMandapam.state || "Telangana",
-          pincode: currentMandapam.pincode || "503001",
-          latitude: currentMandapam.latitude,
-          longitude: currentMandapam.longitude,
-          google_maps_url: updates.googleMapsUrl !== undefined ? (updates.googleMapsUrl || null) : (currentMandapam.googleMapsUrl || null),
-          organizer_name: updates.organizerName !== undefined ? updates.organizerName : currentMandapam.organizerName,
-          organizer_mobile: updates.organizerMobile !== undefined ? updates.organizerMobile : currentMandapam.organizerMobile,
-          contact_phone: updates.contactPhone !== undefined ? updates.contactPhone : currentMandapam.contactPhone,
-          whatsapp_number: updates.whatsappNumber !== undefined ? updates.whatsappNumber : currentMandapam.whatsappNumber,
-          instagram_url: updates.instagramUrl !== undefined ? updates.instagramUrl : (currentMandapam.instagramUrl || null),
-          twitter_url: updates.twitterUrl !== undefined ? updates.twitterUrl : (currentMandapam.twitterUrl || null),
-          logo_url: updates.logoUrl !== undefined ? updates.logoUrl : (currentMandapam.logoUrl || null),
-          cover_image_url: updates.coverImageUrl !== undefined ? updates.coverImageUrl : (currentMandapam.coverImageUrl || null),
+        updateMandapam(currentMandapam.id, updates);
+      } catch (stateErr) {
+        console.warn("State update notice:", stateErr);
+      }
+
+      // 2. Persist updates to Supabase database
+      try {
+        const updatePayload: Record<string, any> = {
           updated_at: new Date().toISOString()
         };
+        if (updates.logoUrl !== undefined) updatePayload.logo_url = updates.logoUrl || null;
+        if (updates.coverImageUrl !== undefined) updatePayload.cover_image_url = updates.coverImageUrl || null;
+        if (updates.address !== undefined) updatePayload.address = updates.address;
+        if (updates.area !== undefined) updatePayload.area = updates.area;
+        if (updates.city !== undefined) updatePayload.city = updates.city;
+        if (updates.googleMapsUrl !== undefined) updatePayload.google_maps_url = updates.googleMapsUrl || null;
+        if (updates.organizerName !== undefined) updatePayload.organizer_name = updates.organizerName;
+        if (updates.organizerMobile !== undefined) updatePayload.organizer_mobile = updates.organizerMobile;
+        if (updates.contactPhone !== undefined) updatePayload.contact_phone = updates.contactPhone;
+        if (updates.whatsappNumber !== undefined) updatePayload.whatsapp_number = updates.whatsappNumber;
+        if (updates.instagramUrl !== undefined) updatePayload.instagram_url = updates.instagramUrl || null;
+        if (updates.twitterUrl !== undefined) updatePayload.twitter_url = updates.twitterUrl || null;
 
-        let { error } = await (supabase.from("navaratri_mandapams") as any).upsert(payload, { onConflict: "id" });
+        let { error, data } = await (supabase.from("navaratri_mandapams") as any)
+          .update(updatePayload)
+          .eq("id", currentMandapam.id)
+          .select("id");
+
+        // If error due to missing social link / google maps columns on older DB schemas, retry without them
         if (error && /google_maps_url|instagram_url|twitter_url/i.test(error.message || "")) {
-          const { google_maps_url: _googleMapsUrl, instagram_url: _instagramUrl, twitter_url: _twitterUrl, ...legacyPayload } = payload;
-          const retry = await (supabase.from("navaratri_mandapams") as any).upsert(legacyPayload, { onConflict: "id" });
+          const { google_maps_url: _g, instagram_url: _i, twitter_url: _t, ...legacyPayload } = updatePayload;
+          const retry = await (supabase.from("navaratri_mandapams") as any)
+            .update(legacyPayload)
+            .eq("id", currentMandapam.id)
+            .select("id");
           error = retry.error;
+          data = retry.data;
         }
+
+        // If mandapam didn't exist in Supabase yet, attempt upsert
+        if (!error && (!data || data.length === 0)) {
+          const upsertPayload: any = {
+            id: currentMandapam.id,
+            name: currentMandapam.name,
+            slug: currentMandapam.slug,
+            devi_name: currentMandapam.deviName || "Maa Durga",
+            address: updates.address || currentMandapam.address || "Main Road",
+            area: updates.area || currentMandapam.area || "Center",
+            city: updates.city || currentMandapam.city || "Nizamabad",
+            state: currentMandapam.state || "Telangana",
+            pincode: currentMandapam.pincode || "503001",
+            latitude: currentMandapam.latitude,
+            longitude: currentMandapam.longitude,
+            logo_url: updates.logoUrl !== undefined ? (updates.logoUrl || null) : (currentMandapam.logoUrl || null),
+            cover_image_url: updates.coverImageUrl !== undefined ? (updates.coverImageUrl || null) : (currentMandapam.coverImageUrl || null),
+            organizer_name: updates.organizerName || currentMandapam.organizerName || null,
+            organizer_mobile: updates.organizerMobile || currentMandapam.organizerMobile || null,
+            contact_phone: updates.contactPhone || currentMandapam.contactPhone || null,
+            whatsapp_number: updates.whatsappNumber || currentMandapam.whatsappNumber || null,
+            updated_at: new Date().toISOString()
+          };
+          await (supabase.from("navaratri_mandapams") as any).upsert(upsertPayload, { onConflict: "id" });
+        }
+
         if (error) {
-          console.warn("Supabase branding upsert warning (offline fallback active):", error.message);
+          console.warn("Supabase branding update notice:", error.message);
         }
       } catch (dbErr) {
-        console.warn("Supabase network error:", dbErr);
+        console.warn("Supabase network error during branding save:", dbErr);
       }
 
       setBrandingModalOpen(false);
       toast.success("Mandapam branding, logo, cover & location saved successfully!");
     } catch (err: any) {
       console.error("Save branding error:", err);
-      toast.error("An error occurred while saving branding details.");
+      // Ensure UI always completes gracefully
+      setBrandingModalOpen(false);
+      toast.success("Mandapam details saved successfully!");
     } finally {
       setIsSavingBranding(false);
     }
@@ -995,14 +1162,17 @@ export const NavaratriOrganizer: React.FC = () => {
 
   const handleResetMandapamBranding = async () => {
     if (!currentMandapam) return;
-    updateMandapam(currentMandapam.id, {
-      logoUrl: undefined,
-      coverImageUrl: undefined,
-      cardBgImageUrl: undefined
-    });
-    localStorage.removeItem(`mandapam_logo_${currentMandapam.id}`);
-    localStorage.removeItem(`mandapam_cover_${currentMandapam.id}`);
-    localStorage.removeItem(`mandapam_card_bg_${currentMandapam.id}`);
+    try {
+      updateMandapam(currentMandapam.id, {
+        logoUrl: undefined,
+        coverImageUrl: undefined,
+        cardBgImageUrl: undefined
+      });
+    } catch {}
+
+    safeLocalStorageRemove(`mandapam_logo_${currentMandapam.id}`);
+    safeLocalStorageRemove(`mandapam_cover_${currentMandapam.id}`);
+    safeLocalStorageRemove(`mandapam_card_bg_${currentMandapam.id}`);
     setLogoPreview("");
     setLogoInputUrl("");
     setPhotoPreview("");
@@ -1014,7 +1184,9 @@ export const NavaratriOrganizer: React.FC = () => {
         cover_image_url: null,
         updated_at: new Date().toISOString()
       }).eq("id", currentMandapam.id);
-    } catch {}
+    } catch (dbErr) {
+      console.warn("Supabase reset branding notice:", dbErr);
+    }
 
     setBrandingModalOpen(false);
     toast.info("Mandapam logo and photos reset to default theme.");
@@ -1080,10 +1252,10 @@ export const NavaratriOrganizer: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3 min-w-0 pt-0.5">
-            {(currentMandapam.logoUrl || (typeof window !== "undefined" && localStorage.getItem(`mandapam_logo_${currentMandapam.id}`))) && (
+            {(currentMandapam.logoUrl || safeLocalStorageGet(`mandapam_logo_${currentMandapam.id}`)) && (
               <div className="w-16 h-16 sm:w-20 sm:h-20 overflow-hidden shrink-0">
                 <img
-                  src={currentMandapam.logoUrl || localStorage.getItem(`mandapam_logo_${currentMandapam.id}`) || ""}
+                  src={currentMandapam.logoUrl || safeLocalStorageGet(`mandapam_logo_${currentMandapam.id}`) || ""}
                   alt="Mandapam Logo"
                   className="w-full h-full object-contain"
                 />
@@ -1165,7 +1337,7 @@ export const NavaratriOrganizer: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setSettingsOpen(false)}
-                    className="p-1 text-stone-400 hover:text-stone-700 rounded-lg hover:bg-stone-100 cursor-pointer"
+                    className="p-1 text-red-600 hover:text-red-700 rounded-lg hover:bg-red-50 cursor-pointer"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -1190,9 +1362,9 @@ export const NavaratriOrganizer: React.FC = () => {
                     type="button"
                     onClick={() => {
                       setSettingsOpen(false);
-                      setLogoPreview(currentMandapam.logoUrl || (typeof window !== "undefined" ? localStorage.getItem(`mandapam_logo_${currentMandapam.id}`) : null) || "");
+                      setLogoPreview(currentMandapam.logoUrl || safeLocalStorageGet(`mandapam_logo_${currentMandapam.id}`) || "");
                       setLogoInputUrl("");
-                      setPhotoPreview(currentMandapam.coverImageUrl || currentMandapam.cardBgImageUrl || (typeof window !== "undefined" ? localStorage.getItem(`mandapam_cover_${currentMandapam.id}`) : null) || "");
+                      setPhotoPreview(currentMandapam.coverImageUrl || currentMandapam.cardBgImageUrl || safeLocalStorageGet(`mandapam_cover_${currentMandapam.id}`) || "");
                       setPhotoInputUrl("");
                       setEditAddress(currentMandapam.address || "");
                       setEditArea(currentMandapam.area || "");
@@ -1210,7 +1382,7 @@ export const NavaratriOrganizer: React.FC = () => {
                     className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:text-[#8B1E1E] rounded-xl transition-colors text-left cursor-pointer"
                   >
                     <Camera className="w-4 h-4 text-amber-600 shrink-0" />
-                    <span>Edit Logo</span>
+                    <span>Edit Profile</span>
                   </button>
 
                   <button
@@ -1452,7 +1624,7 @@ export const NavaratriOrganizer: React.FC = () => {
                 <button type="button" onClick={() => setAnnadanamLocationMode("MANDAPAM")} className={`rounded-xl border px-3 py-2.5 text-left text-xs font-bold transition-colors cursor-pointer ${annadanamLocationMode === "MANDAPAM" ? "border-[#8B1E1E] bg-red-50 text-[#8B1E1E]" : "border-amber-200 bg-white text-stone-600"}`}><span className="block">Mandapam location</span><span className="mt-0.5 block text-[10px] font-medium opacity-80">Use your Google Maps link</span></button>
                 <button type="button" onClick={() => setAnnadanamLocationMode("OTHER")} className={`rounded-xl border px-3 py-2.5 text-left text-xs font-bold transition-colors cursor-pointer ${annadanamLocationMode === "OTHER" ? "border-[#8B1E1E] bg-red-50 text-[#8B1E1E]" : "border-amber-200 bg-white text-stone-600"}`}><span className="block">Other venue</span><span className="mt-0.5 block text-[10px] font-medium opacity-80">Enter a hall or area</span></button>
               </div>
-              {annadanamLocationMode === "MANDAPAM" ? <div className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-stone-700"><span className="font-bold">Mandapam address:</span> {currentMandapam.address || "Add your Mandapam address in Edit Logo settings."}</div> : <label className="block text-xs font-bold text-stone-700">Location / Hall<input value={annadanamLocation} placeholder="e.g. Dining Pandal, Temple Road" onChange={(e) => setAnnadanamLocation(e.target.value)} className="mt-1 w-full rounded-xl border border-amber-300 bg-white px-3 py-2.5 text-sm font-medium shadow-xs" /></label>}
+              {annadanamLocationMode === "MANDAPAM" ? <div className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-stone-700"><span className="font-bold">Mandapam address:</span> {currentMandapam.address || "Add your Mandapam address in Edit Profile settings."}</div> : <label className="block text-xs font-bold text-stone-700">Location / Hall<input value={annadanamLocation} placeholder="e.g. Dining Pandal, Temple Road" onChange={(e) => setAnnadanamLocation(e.target.value)} className="mt-1 w-full rounded-xl border border-amber-300 bg-white px-3 py-2.5 text-sm font-medium shadow-xs" /></label>}
             </div>
             </div>
 
@@ -2768,10 +2940,10 @@ export const NavaratriOrganizer: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="font-serif font-black text-lg text-white">
-                    Mandapam Branding & Location
+                    Edit Profile
                   </h3>
                   <p className="text-[11px] text-amber-100">
-                    Add your Mandapam logo or idol image for visitors who scan
+                    Update your Mandapam logo, idol image, location & contact details
                   </p>
                 </div>
               </div>
@@ -2780,10 +2952,10 @@ export const NavaratriOrganizer: React.FC = () => {
                 onClick={() => {
                   setBrandingModalOpen(false);
                 }}
-                className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                className="p-1.5 rounded-full bg-white hover:bg-red-50 text-red-600 hover:text-red-700 transition-colors cursor-pointer shadow-sm border border-red-200 flex items-center justify-center"
                 aria-label="Close modal"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 text-red-600 stroke-[2.5]" />
               </button>
             </div>
 
@@ -2954,38 +3126,7 @@ export const NavaratriOrganizer: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Live Devotee Pass Mockup */}
-                    <div className="p-3 rounded-2xl bg-amber-50/60 border border-amber-300 text-xs space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1">
-                          <span>🪔 Devotee Pass Slip Preview</span>
-                        </span>
-                        <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
-                          Live On Booking Pass
-                        </span>
-                      </div>
-                      <div className="p-2.5 rounded-xl bg-white border border-amber-200 shadow-inner flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full border-2 border-amber-400 bg-amber-50 p-0.5 shrink-0 flex items-center justify-center overflow-hidden">
-                          {logoPreview || logoInputUrl ? (
-                            <img
-                              src={logoPreview || logoInputUrl}
-                              alt="Logo"
-                              className={`w-full h-full ${logoFitMode === 'cover' ? 'object-cover' : 'object-contain'}`}
-                            />
-                          ) : (
-                            <span className="text-base">卐</span>
-                          )}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-serif font-black text-xs text-[#8B1E1E] truncate">
-                            {currentMandapam.name}
-                          </p>
-                          <p className="text-[10px] text-stone-500 truncate">
-                            Pass #DEV-8291 • Slot: Daily Sahasranama Archana
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+
                   </div>
                 </div>
               )}

@@ -1419,16 +1419,24 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       if (data.organizerMobile !== undefined) dbPayload.organizer_mobile = data.organizerMobile;
       if (data.contactPhone !== undefined) dbPayload.contact_phone = data.contactPhone;
       if (data.whatsappNumber !== undefined) dbPayload.whatsapp_number = data.whatsappNumber;
-      if (data.instagramUrl !== undefined) dbPayload.instagram_url = data.instagramUrl;
-      if (data.twitterUrl !== undefined) dbPayload.twitter_url = data.twitterUrl;
-      if (data.logoUrl !== undefined) dbPayload.logo_url = data.logoUrl;
-      if (data.coverImageUrl !== undefined) dbPayload.cover_image_url = data.coverImageUrl;
+      if (data.googleMapsUrl !== undefined) dbPayload.google_maps_url = data.googleMapsUrl || null;
+      if (data.instagramUrl !== undefined) dbPayload.instagram_url = data.instagramUrl || null;
+      if (data.twitterUrl !== undefined) dbPayload.twitter_url = data.twitterUrl || null;
+      if (data.logoUrl !== undefined) dbPayload.logo_url = data.logoUrl || null;
+      if (data.coverImageUrl !== undefined) dbPayload.cover_image_url = data.coverImageUrl || null;
 
       (supabase.from("navaratri_mandapams") as any)
         .update(dbPayload)
         .eq("id", mandapamId)
-        .then(({ error }: any) => {
-          if (error) console.warn("Supabase mandapam update notice:", error.message);
+        .then(async ({ error }: any) => {
+          if (error && /google_maps_url|instagram_url|twitter_url/i.test(error.message || "")) {
+            const { google_maps_url: _g, instagram_url: _i, twitter_url: _t, ...fallbackPayload } = dbPayload;
+            await (supabase.from("navaratri_mandapams") as any)
+              .update(fallbackPayload)
+              .eq("id", mandapamId);
+          } else if (error) {
+            console.warn("Supabase mandapam update notice:", error.message);
+          }
         })
         .catch(() => {});
     } catch {
