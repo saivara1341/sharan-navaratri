@@ -475,9 +475,9 @@ export const NavaratriMandapamDetail: React.FC = () => {
 
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                    <h1 className="font-serif font-black text-xl sm:text-2xl text-[#8B1E1E] flex items-center gap-1.5 leading-snug drop-shadow-xs">
-                      <span>{getTranslatedMandapamName(mandapam.name, language)}</span>
-                      <InstagramVerifiedBadge className="w-5 h-5 shrink-0 drop-shadow-xs" title="Official Verified Mandapam" />
+                    <h1 className="font-serif font-black text-xl sm:text-2xl text-[#8B1E1E] leading-snug drop-shadow-xs">
+                      {getTranslatedMandapamName(mandapam.name, language)}
+                      <InstagramVerifiedBadge className="ml-1.5 inline-block h-5 w-5 align-[-0.12em] drop-shadow-xs" title="Official Verified Mandapam" />
                     </h1>
                   </div>
 
@@ -574,7 +574,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                         title={orgLabels.whatsappBtn}
                         aria-label={orgLabels.whatsappBtn}
                       >
-                        <MessageCircle className="w-4 h-4" />
+                        <img src={navaratriAsset("/navaratri/assets/whatsapp-icon.svg")} alt="WhatsApp" className="h-5 w-5 object-contain" />
                       </a>
                     )}
 
