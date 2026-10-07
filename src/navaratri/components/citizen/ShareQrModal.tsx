@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { QRCodeCanvas, QRCodeSVG } from "qrcode.react";
-import { Download, Share2, Sparkles, X } from "lucide-react";
+import { Download, Share2, X } from "lucide-react";
 import { toast } from "sonner";
 import { Mandapam } from "../../types";
 
@@ -11,6 +11,8 @@ interface ShareQrModalProps {
 }
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
+const sharanTrishulaUrl = `${base}/navaratri/assets/trishula-head.png`;
+const siddhiDynamicsLogoUrl = `${base}/navaratri/assets/ads/siddhi-dynamics-official-logo.png`;
 export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, onClose }) => {
   const [designMode, setDesignMode] = useState<"POSTER" | "QR">("POSTER");
   const [isDownloading, setIsDownloading] = useState(false);
@@ -18,6 +20,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
 
   const shareUrl = `${window.location.origin}${base}/navaratri/m/${encodeURIComponent(mandapam.slug)}`;
   const publicUrl = `${shareUrl}?source=qr`;
+  const mandapamIdentityImage = mandapam.logoUrl || mandapam.coverImageUrl;
 
   const copyLink = async () => {
     await navigator.clipboard.writeText(shareUrl);
@@ -48,7 +51,9 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
       ctx.fillStyle = "#fff7ed";
       ctx.textAlign = "center";
       ctx.font = "bold 42px Arial";
-      ctx.fillText("SHARAN NAVARATRI 2026", 800, 240);
+      ctx.fillText("SHARAN NAVARATRI", 800, 220);
+      ctx.fillStyle = "#fde68a"; ctx.font = "bold 24px Arial";
+      ctx.fillText("2026", 800, 258);
       ctx.font = "bold 80px Georgia";
       const words = mandapam.name.split(" ");
       let line = ""; let y = 365;
@@ -69,6 +74,8 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
       ctx.fillStyle = "#fbbf24"; ctx.fillRect(100, 1850, 1400, 8);
       ctx.fillStyle = "#fff7ed"; ctx.font = "bold 30px Arial";
       ctx.fillText("One QR. Every Mandapam. Every devotee.", 800, 1925);
+      ctx.fillStyle = "#fde68a"; ctx.font = "bold 24px Arial";
+      ctx.fillText("In service of Ammavari • Siddhi Dynamics LLP", 800, 1965);
       canvas.toBlob((blob) => {
         if (!blob) return toast.error("Could not create standee.");
         const url = URL.createObjectURL(blob); const a = document.createElement("a");
@@ -112,12 +119,13 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
           {designMode === "POSTER" ? (
             <div id="printable-standee" className="h-full overflow-hidden rounded-[26px] border border-amber-300 bg-[#7c1d1d] p-1.5 shadow-xl">
               <div className="flex h-full flex-col rounded-[20px] bg-[radial-gradient(circle_at_top,_#b45309_0%,_#7c1d1d_43%,_#3f0b0b_100%)] px-4 py-5 text-center text-white sm:px-6 sm:py-6">
-                <div className="mx-auto inline-flex items-center gap-1 rounded-full border border-amber-200/50 bg-black/15 px-2.5 py-1 text-[8px] font-black tracking-[0.15em] text-amber-100 sm:text-[10px]"><Sparkles className="h-3 w-3" /> SHARAN NAVARATRI 2026</div>
-                {mandapam.logoUrl && <img src={mandapam.logoUrl} alt="" className="mx-auto mt-2.5 h-9 w-9 rounded-xl border border-amber-200 object-cover shadow-lg sm:h-11 sm:w-11" />}
-                <h3 className="mt-2 font-serif text-xl font-black leading-tight sm:text-3xl">{mandapam.name}</h3>
+                <div className="mx-auto inline-flex items-center gap-1.5 px-1 py-0.5 text-[8px] font-black tracking-[0.14em] text-amber-100 sm:text-[10px]"><img src={sharanTrishulaUrl} alt="" className="h-5 w-3.5 object-contain" /> SHARAN NAVARATRI <span className="text-amber-300">2026</span></div>
+                {mandapamIdentityImage && <img src={mandapamIdentityImage} alt="Mandapam logo or idol" className="mx-auto mt-2 h-12 w-16 object-contain sm:h-16 sm:w-20" />}
+                <h3 className={`${mandapamIdentityImage ? "mt-1.5" : "mt-3"} font-serif text-xl font-black leading-tight sm:text-3xl`}>{mandapam.name}</h3>
                 <p className="mt-1 text-[9px] font-semibold text-amber-100 sm:text-xs">Darshan, poojas, Annadanam & live updates</p>
+                <p className="mt-0.5 text-[8px] font-semibold text-amber-200/90 sm:text-[10px]">దర్శనం, పూజలు, అన్నదానం & తాజా సమాచారం</p>
                 <div className="mx-auto my-auto rounded-2xl bg-white p-2.5 shadow-2xl ring-2 ring-amber-300/40 sm:p-4"><QRCodeSVG value={publicUrl} size={224} level="H" includeMargin className="h-36 w-36 sm:h-48 sm:w-48" /><p className="mt-1 text-[8px] font-black tracking-[0.14em] text-[#7c1d1d] sm:text-[10px]">SCAN TO OPEN</p></div>
-                <div className="mt-2.5 border-t border-amber-200/40 pt-2"><p className="text-[9px] font-bold text-amber-100 sm:text-[11px]">One QR. Every Mandapam. Every devotee.</p><p className="mt-0.5 text-[8px] text-amber-200/90 sm:text-[10px]">sharan-navratri.vercel.app</p></div>
+                <div className="mt-2.5 border-t border-amber-200/40 pt-2"><p className="text-[9px] font-bold text-amber-100 sm:text-[11px]">One QR. Every Mandapam. Every devotee.</p><p className="mt-0.5 text-[8px] text-amber-200/90 sm:text-[10px]">sharan-navratri.vercel.app</p><div className="mt-1.5 flex items-center justify-center gap-1.5 text-[7px] font-bold text-amber-100 sm:text-[9px]"><img src={siddhiDynamicsLogoUrl} alt="Siddhi Dynamics LLP" className="h-4 w-4 object-contain" /><span>అమ్మవారి సేవలో • SIDDHI DYNAMICS LLP</span></div></div>
               </div>
             </div>
           ) : (

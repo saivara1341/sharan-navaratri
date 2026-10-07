@@ -2670,7 +2670,7 @@ export const NavaratriOrganizer: React.FC = () => {
                     Mandapam Branding & Location
                   </h3>
                   <p className="text-[11px] text-amber-100">
-                    Add committee logo & location for visitors who scan
+                    Add your Mandapam logo or idol image for visitors who scan
                   </p>
                 </div>
               </div>
@@ -2698,7 +2698,7 @@ export const NavaratriOrganizer: React.FC = () => {
                 }`}
               >
                 <Upload className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate">1. Logo</span>
+                <span className="truncate">1. Logo / Idol</span>
               </button>
 
               <button
@@ -2735,7 +2735,7 @@ export const NavaratriOrganizer: React.FC = () => {
                   <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-stone-700 flex items-start gap-2">
                     <span className="text-base shrink-0">💡</span>
                     <div>
-                      <strong>Visitor Visibility:</strong> Devotees who scan your standee QR code will see this official emblem prominently on your mandapam hero banner and devotee pass slip!
+                      <strong>Visitor Visibility:</strong> Upload your official logo or a Maa idol image. Devotees who scan your QR code will see it on the Mandapam poster, hero banner, and devotee pass slip.
                     </div>
                   </div>
 
@@ -2825,8 +2825,8 @@ export const NavaratriOrganizer: React.FC = () => {
                               {isUploadingLogo
                                 ? "Uploading..."
                                 : logoPreview || logoInputUrl
-                                ? "Change Logo"
-                                : "Upload Logo"}
+                                ? "Change Logo / Idol"
+                                : "Upload Logo / Idol"}
                             </span>
                             <input
                               type="file"
