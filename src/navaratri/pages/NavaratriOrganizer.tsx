@@ -160,10 +160,11 @@ export const NavaratriOrganizer: React.FC = () => {
   const [eventBookingEnabled, setEventBookingEnabled] = useState(false);
 
   // Annadanam schedule controls — published day settings appear in the devotee portal.
-  const [annadanamScope, setAnnadanamScope] = useState<"ONE_DAY" | "ALL_DAYS">("ONE_DAY");
-  const [annadanamDayNumber, setAnnadanamDayNumber] = useState(1);
-  const [annadanamStartTime, setAnnadanamStartTime] = useState("12:30 PM");
-  const [annadanamEndTime, setAnnadanamEndTime] = useState("03:30 PM");
+  const [annadanamScope, setAnnadanamScope] = useState<"ONE_DAY" | "MULTIPLE_DAYS" | "ALL_DAYS">("ONE_DAY");
+  const [annadanamDayNumbers, setAnnadanamDayNumbers] = useState<number[]>([1]);
+  const [annadanamStartTime, setAnnadanamStartTime] = useState("12:30");
+  const [annadanamEndTime, setAnnadanamEndTime] = useState("15:30");
+  const [annadanamLocationMode, setAnnadanamLocationMode] = useState<"MANDAPAM" | "OTHER">("MANDAPAM");
   const [annadanamLocation, setAnnadanamLocation] = useState("");
 
   // Two-Step Delete Account Modal State
@@ -402,22 +403,45 @@ export const NavaratriOrganizer: React.FC = () => {
   const isGoogleAuthenticated = typeof window !== "undefined" &&
     localStorage.getItem("navaratri_last_organizer_login_mode") === "google";
 
+  const formatScheduleTime = (value: string) => {
+    const [hourValue, minute = "00"] = value.split(":");
+    const hour = Number(hourValue);
+    const suffix = hour >= 12 ? "PM" : "AM";
+    const displayHour = hour % 12 || 12;
+    return `${String(displayHour).padStart(2, "0")}:${minute} ${suffix}`;
+  };
+
   const saveAnnadanamSchedule = () => {
     const targetDays = annadanamScope === "ALL_DAYS"
       ? STANDARD_NAVARATRI_DAYS.map((day) => day.dayNumber)
-      : [annadanamDayNumber];
-    const location = annadanamLocation.trim() || currentMandapam.address;
+      : annadanamDayNumbers;
+
+    if (targetDays.length === 0) {
+      toast.error("Select at least one festival day for Annadanam.");
+      return;
+    }
+
+    if (annadanamLocationMode === "OTHER" && !annadanamLocation.trim()) {
+      toast.error("Enter the Annadanam venue or select Mandapam location.");
+      return;
+    }
+
+    const location = annadanamLocationMode === "MANDAPAM"
+      ? currentMandapam.address
+      : annadanamLocation.trim();
 
     targetDays.forEach((dayNumber) => updateDaySetting({
       mandapamId: currentMandapam.id,
       dayNumber,
       annadanamEnabled: true,
-      annadanamStartTime,
-      annadanamEndTime,
+      annadanamStartTime: formatScheduleTime(annadanamStartTime),
+      annadanamEndTime: formatScheduleTime(annadanamEndTime),
       annadanamLocation: location,
-      annadanamNotes: "Annadanam seva at the Mandapam location"
+      annadanamNotes: annadanamLocationMode === "MANDAPAM"
+        ? "Annadanam seva at the Mandapam location. Devotees can use the Mandapam Google Maps directions."
+        : "Annadanam seva at the venue shown above."
     }));
-    toast.success(`Annadanam schedule saved for ${annadanamScope === "ALL_DAYS" ? "all 10 days" : `Day ${annadanamDayNumber}`}.`);
+    toast.success(`Annadanam schedule saved for ${annadanamScope === "ALL_DAYS" ? "all 10 days" : `${targetDays.length} selected day${targetDays.length === 1 ? "" : "s"}`}.`);
   };
 
   // Selected mandapam for authenticated organizer
@@ -1170,26 +1194,79 @@ export const NavaratriOrganizer: React.FC = () => {
             </button>
           </div>
 
-          <div className="p-4 rounded-3xl bg-white border-2 border-amber-200 shadow-xs space-y-3">
-            <div className="flex items-center gap-2">
-              <PrasadBowlIcon className="w-5 h-5 text-[#8B1E1E]" />
-              <div><h2 className="font-serif font-black text-lg text-[#8B1E1E]">Annadanam</h2><p className="text-[11px] text-stone-600">Uses your Mandapam address and Google Maps directions.</p></div>
+          <section className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-white via-amber-50/40 to-orange-50/50 border-2 border-amber-200 shadow-xs space-y-4">
+            <div className="flex items-start gap-2.5">
+              <span className="mt-0.5 grid h-9 w-9 place-items-center rounded-2xl bg-amber-100 text-[#8B1E1E] shrink-0"><PrasadBowlIcon className="w-5 h-5" /></span>
+              <div>
+                <h2 className="font-serif font-black text-xl text-[#8B1E1E]">Annadanam</h2>
+                <p className="mt-0.5 text-[11px] leading-relaxed text-stone-600">Choose one day, selected festival days, or the full 10-day seva. Devotees use your Mandapam Maps directions when you select Mandapam location.</p>
+              </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <label className="text-xs font-bold text-stone-700">Schedule
-                <select value={annadanamScope} onChange={(e) => setAnnadanamScope(e.target.value as "ONE_DAY" | "ALL_DAYS")} className="mt-1 w-full rounded-xl border border-amber-300 bg-white px-3 py-2 text-sm font-semibold">
-                  <option value="ONE_DAY">One day</option><option value="ALL_DAYS">All 10 days</option>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label className="text-xs font-bold text-stone-700">Offering days
+                <select value={annadanamScope} onChange={(e) => {
+                  const value = e.target.value as "ONE_DAY" | "MULTIPLE_DAYS" | "ALL_DAYS";
+                  setAnnadanamScope(value);
+                  if (value === "ALL_DAYS") setAnnadanamDayNumbers(STANDARD_NAVARATRI_DAYS.map((day) => day.dayNumber));
+                  if (value === "ONE_DAY" && annadanamDayNumbers.length !== 1) setAnnadanamDayNumbers([1]);
+                }} className="mt-1 w-full rounded-xl border border-amber-300 bg-white px-3 py-2.5 text-sm font-semibold text-stone-800 shadow-xs cursor-pointer">
+                  <option value="ONE_DAY">One festival day</option>
+                  <option value="MULTIPLE_DAYS">Select multiple days</option>
+                  <option value="ALL_DAYS">All 10 festival days</option>
                 </select>
               </label>
-              {annadanamScope === "ONE_DAY" && <label className="text-xs font-bold text-stone-700">Festival day
-                <select value={annadanamDayNumber} onChange={(e) => setAnnadanamDayNumber(Number(e.target.value))} className="mt-1 w-full rounded-xl border border-amber-300 bg-white px-3 py-2 text-sm font-semibold">{STANDARD_NAVARATRI_DAYS.map((day) => <option key={day.dayNumber} value={day.dayNumber}>Day {day.dayNumber} · {day.date}</option>)}</select>
-              </label>}
-              <label className="text-xs font-bold text-stone-700">Start time<input value={annadanamStartTime} onChange={(e) => setAnnadanamStartTime(e.target.value)} className="mt-1 w-full rounded-xl border border-amber-300 px-3 py-2 text-sm" /></label>
-              <label className="text-xs font-bold text-stone-700">End time<input value={annadanamEndTime} onChange={(e) => setAnnadanamEndTime(e.target.value)} className="mt-1 w-full rounded-xl border border-amber-300 px-3 py-2 text-sm" /></label>
+
+              {annadanamScope === "ONE_DAY" && (
+                <label className="text-xs font-bold text-stone-700">Festival day
+                  <select value={annadanamDayNumbers[0] ?? 1} onChange={(e) => setAnnadanamDayNumbers([Number(e.target.value)])} className="mt-1 w-full rounded-xl border border-amber-300 bg-white px-3 py-2.5 text-sm font-semibold text-stone-800 shadow-xs cursor-pointer">
+                    {STANDARD_NAVARATRI_DAYS.map((day) => <option key={day.dayNumber} value={day.dayNumber}>Day {day.dayNumber} · {day.date}</option>)}
+                  </select>
+                </label>
+              )}
+
+              {annadanamScope === "ALL_DAYS" && (
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-xs font-semibold text-emerald-800 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 shrink-0" /> Annadanam will be offered on every festival day.
+                </div>
+              )}
             </div>
-            <label className="block text-xs font-bold text-stone-700">Location / Hall<input value={annadanamLocation} placeholder={currentMandapam.address} onChange={(e) => setAnnadanamLocation(e.target.value)} className="mt-1 w-full rounded-xl border border-amber-300 px-3 py-2 text-sm" /></label>
-            <button type="button" onClick={saveAnnadanamSchedule} className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-700 text-white text-xs font-bold shadow-sm active:scale-95 cursor-pointer">Save Annadanam Schedule</button>
-          </div>
+
+            {annadanamScope === "MULTIPLE_DAYS" && (
+              <div className="rounded-2xl border border-amber-200 bg-white/80 p-3 space-y-2">
+                <div className="flex items-center justify-between gap-3"><p className="text-xs font-black text-[#8B1E1E]">Select festival days</p><span className="text-[10px] font-bold text-stone-500">Choose one or more days</span></div>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                  {STANDARD_NAVARATRI_DAYS.map((day) => {
+                    const selected = annadanamDayNumbers.includes(day.dayNumber);
+                    return <label key={day.dayNumber} className={`flex items-center gap-2 rounded-xl border px-2.5 py-2 text-xs font-bold cursor-pointer transition-colors ${selected ? "border-[#8B1E1E] bg-red-50 text-[#8B1E1E]" : "border-amber-200 bg-white text-stone-700 hover:bg-amber-50"}`}>
+                      <input type="checkbox" checked={selected} onChange={() => setAnnadanamDayNumbers((days) => selected ? days.filter((number) => number !== day.dayNumber) : [...days, day.dayNumber].sort((a, b) => a - b))} className="h-3.5 w-3.5 accent-[#8B1E1E]" />
+                      Day {day.dayNumber}
+                    </label>;
+                  })}
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label className="text-xs font-bold text-stone-700">Start time
+                <div className="relative mt-1"><Clock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-700" /><input type="time" value={annadanamStartTime} onChange={(e) => setAnnadanamStartTime(e.target.value)} className="w-full rounded-xl border border-amber-300 bg-white py-2.5 pl-9 pr-3 text-sm font-semibold text-stone-800 shadow-xs cursor-pointer" /></div>
+              </label>
+              <label className="text-xs font-bold text-stone-700">End time
+                <div className="relative mt-1"><Clock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-700" /><input type="time" value={annadanamEndTime} onChange={(e) => setAnnadanamEndTime(e.target.value)} className="w-full rounded-xl border border-amber-300 bg-white py-2.5 pl-9 pr-3 text-sm font-semibold text-stone-800 shadow-xs cursor-pointer" /></div>
+              </label>
+            </div>
+
+            <div className="rounded-2xl border border-amber-200 bg-white/80 p-3 space-y-2.5">
+              <div className="flex items-center gap-2"><MapPin className="w-4 h-4 text-[#8B1E1E]" /><p className="text-xs font-black text-stone-800">Annadanam location</p></div>
+              <div className="grid grid-cols-2 gap-2">
+                <button type="button" onClick={() => setAnnadanamLocationMode("MANDAPAM")} className={`rounded-xl border px-3 py-2.5 text-left text-xs font-bold transition-colors cursor-pointer ${annadanamLocationMode === "MANDAPAM" ? "border-[#8B1E1E] bg-red-50 text-[#8B1E1E]" : "border-amber-200 bg-white text-stone-600"}`}><span className="block">Mandapam location</span><span className="mt-0.5 block text-[10px] font-medium opacity-80">Use your Google Maps link</span></button>
+                <button type="button" onClick={() => setAnnadanamLocationMode("OTHER")} className={`rounded-xl border px-3 py-2.5 text-left text-xs font-bold transition-colors cursor-pointer ${annadanamLocationMode === "OTHER" ? "border-[#8B1E1E] bg-red-50 text-[#8B1E1E]" : "border-amber-200 bg-white text-stone-600"}`}><span className="block">Other venue</span><span className="mt-0.5 block text-[10px] font-medium opacity-80">Enter a hall or area</span></button>
+              </div>
+              {annadanamLocationMode === "MANDAPAM" ? <div className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-stone-700"><span className="font-bold">Mandapam address:</span> {currentMandapam.address || "Add your Mandapam address in Edit Logo settings."}</div> : <label className="block text-xs font-bold text-stone-700">Location / Hall<input value={annadanamLocation} placeholder="e.g. Dining Pandal, Temple Road" onChange={(e) => setAnnadanamLocation(e.target.value)} className="mt-1 w-full rounded-xl border border-amber-300 bg-white px-3 py-2.5 text-sm font-medium shadow-xs" /></label>}
+            </div>
+
+            <button type="button" onClick={saveAnnadanamSchedule} className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-sm transition-colors active:scale-95 cursor-pointer">Save Annadanam Schedule</button>
+          </section>
 
           {/* Clean Day 1 to Day 10 Buttons */}
           <div className="p-5 rounded-3xl bg-white border-2 border-amber-200/90 shadow-xs space-y-3">
