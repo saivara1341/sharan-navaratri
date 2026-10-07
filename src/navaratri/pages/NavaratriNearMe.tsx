@@ -27,15 +27,6 @@ import { toast } from "sonner";
 
 type Category = "all" | "mandapams" | "annadanam" | "bhajans_pallaki" | "activities";
 
-const GoogleMapsIcon: React.FC<{ className?: string }> = ({ className = "h-5 w-5" }) => (
-  <svg viewBox="0 0 32 32" className={className} aria-hidden="true">
-    <path fill="#34A853" d="M4 5.5 12 2v24l-8 4V5.5Z" />
-    <path fill="#4285F4" d="m12 2 8 4v24l-8-4V2Z" />
-    <path fill="#FBBC04" d="m20 6 8-4v24l-8 4V6Z" />
-    <path fill="#EA4335" d="M16 8.2c-3.1 0-5.6 2.4-5.6 5.5 0 4.1 5.6 10.1 5.6 10.1s5.6-6 5.6-10.1c0-3.1-2.5-5.5-5.6-5.5Zm0 7.6a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2Z" />
-  </svg>
-);
-
 export interface RegionConfig {
   name: string;
   state: string;
@@ -442,15 +433,20 @@ export const NavaratriNearMe: React.FC = () => {
         .sort((a, b) => a.distanceKm - b.distanceKm);
     }
 
-    const origin = userLocation || {
-      lat: REGIONS_DATA.Nizamabad.lat,
-      lng: REGIONS_DATA.Nizamabad.lng,
-      city: "Nizamabad",
-      area: ""
-    };
+    const region = REGIONS_DATA[manualCity] || REGIONS_DATA.Nizamabad;
+    const manualAreaTrimmed = manualArea.trim();
+    const manualAreaCoord = manualAreaTrimmed ? region.areaCoordinates?.[manualAreaTrimmed] : undefined;
+    const origin = locationSource === "gps" && userLocation
+      ? userLocation
+      : {
+          lat: manualAreaCoord?.lat ?? region.lat,
+          lng: manualAreaCoord?.lng ?? region.lng,
+          city: manualCity,
+          area: manualAreaTrimmed
+        };
 
-    const currentCity = (userLocation?.city || manualCity || "").trim().toLowerCase();
-    const currentArea = (userLocation?.area || manualArea || "").trim().toLowerCase();
+    const currentCity = (locationSource === "gps" ? userLocation?.city : manualCity || "").trim().toLowerCase();
+    const currentArea = (locationSource === "gps" ? userLocation?.area : manualAreaTrimmed || "").trim().toLowerCase();
 
     return mandapams
       .map((mandapam) => ({
@@ -617,6 +613,7 @@ export const NavaratriNearMe: React.FC = () => {
   const currentDisplayArea = locationSource === "gps" ? userLocation?.area || "Current location" : manualArea;
   const currentDisplayCity = locationSource === "gps" ? userLocation?.city || "GPS" : manualCity;
   const displayLocation = currentDisplayArea ? `${currentDisplayArea}, ${currentDisplayCity}` : currentDisplayCity;
+  const shouldShowDistance = locationSource === "gps" || (locationSource === "manual" && Boolean(manualArea.trim()));
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-5 sm:pt-8 space-y-6 pb-24 font-sans">
@@ -679,19 +676,19 @@ export const NavaratriNearMe: React.FC = () => {
       </section>
 
       {/* Filter Category Pills */}
-      <div className="relative mx-auto h-[280px] w-full max-w-[460px] overflow-visible sm:hidden">
+      <div className="relative mx-auto h-[270px] w-full max-w-[440px] overflow-hidden rounded-[1.75rem] sm:hidden">
         <img
           src={navaratriAsset("/navaratri/assets/sage-scroll-filter-frame-transparent.png")}
           alt=""
-          className="absolute left-[-14%] top-0 h-auto w-[128%] max-w-none object-contain"
+          className="absolute inset-0 h-full w-full object-fill"
         />
-        <div className="absolute left-[8%] right-[8%] top-[25%] grid grid-cols-2 gap-2">
+        <div className="absolute left-[11%] right-[11%] top-[24%] grid grid-cols-2 gap-2">
           {categories.map((category) => (
             <button
               key={category.id}
               type="button"
               onClick={() => setActiveCategory(category.id)}
-              className={`flex h-[52px] items-center justify-center gap-1.5 rounded-xl px-2 py-1.5 text-center text-[10px] font-black leading-tight shadow-sm transition-all last:col-span-2 last:mx-auto last:w-[50%] ${
+              className={`flex h-[52px] items-center justify-center gap-1.5 rounded-xl px-2 py-1.5 text-center text-[10px] font-black leading-tight shadow-sm transition-all last:col-span-2 last:mx-auto last:w-[54%] ${
                 activeCategory === category.id
                   ? "bg-[#8B1E1E] text-white ring-2 ring-amber-100"
                   : "border border-[#e9ddb9] bg-[#fffaf0]/90 text-[#465b28] backdrop-blur-[1px] hover:bg-white"
@@ -831,9 +828,11 @@ export const NavaratriNearMe: React.FC = () => {
                     />
                     <div className="min-w-0 flex-1 space-y-1.5">
                       <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold">
-                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-800">
-                          {item.distanceKm.toFixed(1)} km away
-                        </span>
+                        {shouldShowDistance && (
+                          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-800">
+                            {item.distanceKm.toFixed(1)} km away
+                          </span>
+                        )}
                         <span className="text-stone-500">
                           {item.area}, {item.city}
                         </span>
@@ -864,7 +863,7 @@ export const NavaratriNearMe: React.FC = () => {
                       title="Navigate to this exact mandapam location"
                       className="grid h-10 w-12 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100"
                     >
-                      <GoogleMapsIcon className="h-5 w-5" />
+                      <img src={navaratriAsset("/navaratri/assets/google-maps-pin.png")} alt="Google Maps" className="h-6 w-6 object-contain" />
                     </a>
                   </div>
                 </article>
