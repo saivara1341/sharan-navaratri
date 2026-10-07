@@ -490,65 +490,192 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => saveStorage("pallaki", pallakiSevas), [pallakiSevas]);
   useEffect(() => saveStorage("nimarjanam", nimarjanamSchedules), [nimarjanamSchedules]);
 
-  // Sync from Supabase on mount
+  // Helper to purge one or multiple mandapams completely from local reactive state and localStorage
+  const purgeMandapamsLocal = React.useCallback((idsToPurge: string[]) => {
+    if (!idsToPurge || idsToPurge.length === 0) return;
+    const purgeSet = new Set(idsToPurge);
+
+    setMandapams(prev => prev.filter(m => !purgeSet.has(m.id)));
+    setAlankaranas(prev => prev.filter(a => !purgeSet.has(a.mandapamId)));
+    setDaySettings(prev => prev.filter(d => !purgeSet.has(d.mandapamId)));
+    setServices(prev => prev.filter(s => !purgeSet.has(s.mandapamId)));
+    setSlots(prev => prev.filter(sl => !purgeSet.has(sl.mandapamId)));
+    setBookings(prev => prev.filter(b => !purgeSet.has(b.mandapamId)));
+    setActivities(prev => prev.filter(ac => !purgeSet.has(ac.mandapamId)));
+    setAnnouncements(prev => prev.filter(an => !purgeSet.has(an.mandapamId)));
+    setPallakiSevas(prev => prev.filter(p => !purgeSet.has(p.mandapamId)));
+    setNimarjanamSchedules(prev => prev.filter(n => !purgeSet.has(n.mandapamId)));
+    setFollowedIds(prev => prev.filter(id => !purgeSet.has(id)));
+    setScannedIds(prev => prev.filter(id => !purgeSet.has(id)));
+
+    if (activeMandapamId && purgeSet.has(activeMandapamId)) {
+      setActiveMandapamId("");
+      setRole("devotee");
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem("navaratri_organizer_id");
+        localStorage.removeItem("navaratri_organizer_id");
+      }
+    }
+
+    try {
+      if (typeof window !== "undefined") {
+        const collections = [
+          "navaratri_mandapams",
+          "navaratri_alankaranas",
+          "navaratri_day_settings",
+          "navaratri_services",
+          "navaratri_slots",
+          "navaratri_bookings",
+          "navaratri_activities",
+          "navaratri_announcements",
+          "navaratri_pallaki",
+          "navaratri_nimarjanam",
+          "navaratri_followed_mandapams",
+          "navaratri_scanned_mandapams"
+        ];
+        collections.forEach(key => {
+          const raw = localStorage.getItem(key);
+          if (raw) {
+            try {
+              const parsed = JSON.parse(raw);
+              if (Array.isArray(parsed)) {
+                const cleaned = parsed.filter((item: any) => {
+                  if (typeof item === "string") return !purgeSet.has(item);
+                  return !purgeSet.has(item?.mandapamId) && !purgeSet.has(item?.id);
+                });
+                localStorage.setItem(key, JSON.stringify(cleaned));
+              }
+            } catch {}
+          }
+        });
+      }
+    } catch {}
+  }, [activeMandapamId, setActiveMandapamId]);
+
+  // Sync from Supabase on mount, realtime changes, and window focus/visibility
   useEffect(() => {
     let isMounted = true;
+
     async function fetchSupabaseMandapams() {
       try {
         const { data, error } = await (supabase.from("navaratri_mandapams") as any).select("*");
-        if (!error && Array.isArray(data) && data.length > 0 && isMounted) {
+        if (error || !isMounted) return;
+
+        if (Array.isArray(data)) {
+          const remoteList: Mandapam[] = [];
+          const remoteIdSet = new Set<string>();
+          const remoteSlugSet = new Set<string>();
+
+          data.forEach((row: any) => {
+            if (!row || !row.id || isDemoOrMockMandapam(row)) return;
+            remoteIdSet.add(row.id);
+            if (row.slug) remoteSlugSet.add(row.slug.toLowerCase());
+
+            const mapped: Mandapam = {
+              id: row.id,
+              name: row.name,
+              slug: row.slug,
+              description: row.description || "Annual Community Navaratri Utsav",
+              deviName: row.devi_name || "Maa Durga",
+              address: row.address || "",
+              area: row.area || "",
+              city: row.city || "",
+              state: row.state || "Telangana",
+              pincode: row.pincode || "503001",
+              latitude: Number(row.latitude) || 18.6725,
+              longitude: Number(row.longitude) || 78.0941,
+              googleMapsUrl: row.google_maps_url || undefined,
+              verificationStatus: row.verification_status || "VERIFIED",
+              organizerName: row.organizer_name || "",
+              organizerMobile: row.organizer_mobile || "",
+              organizerEmail: row.organizer_email || "",
+              ownerUserId: row.owner_user_id || undefined,
+              contactPhone: row.contact_phone || row.organizer_mobile || "",
+              whatsappNumber: row.whatsapp_number || "",
+              instagramUrl: row.instagram_url || undefined,
+              twitterUrl: row.twitter_url || undefined,
+              logoUrl: row.logo_url || undefined,
+              coverImageUrl: row.cover_image_url || undefined,
+              createdAt: row.created_at || new Date().toISOString()
+            };
+            remoteList.push(mapped);
+          });
+
+          // Reconcile: identify any mandapams previously retained locally that are absent in Supabase
+          // (i.e. deleted via Supabase Auth Users table or directly deleted from the database)
           setMandapams(prev => {
-            const currentList = [...prev];
-            data.forEach((row: any) => {
-              if (!row || !row.id || isDemoOrMockMandapam(row)) return;
-              const idx = currentList.findIndex(
-                m => m.id === row.id || (m.slug && row.slug && m.slug.toLowerCase() === row.slug.toLowerCase())
-              );
-              const mapped: Mandapam = {
-                id: row.id,
-                name: row.name,
-                slug: row.slug,
-                description: row.description || "Annual Community Navaratri Utsav",
-                deviName: row.devi_name || "Maa Durga",
-                address: row.address || "",
-                area: row.area || "",
-                city: row.city || "",
-                state: row.state || "Telangana",
-                pincode: row.pincode || "503001",
-                latitude: Number(row.latitude) || 18.6725,
-                longitude: Number(row.longitude) || 78.0941,
-                googleMapsUrl: row.google_maps_url || undefined,
-                verificationStatus: row.verification_status || "VERIFIED",
-                organizerName: row.organizer_name || "",
-                organizerMobile: row.organizer_mobile || "",
-                organizerEmail: row.organizer_email || "",
-                ownerUserId: row.owner_user_id || undefined,
-                contactPhone: row.contact_phone || row.organizer_mobile || "",
-                whatsappNumber: row.whatsapp_number || "",
-                instagramUrl: row.instagram_url || undefined,
-                twitterUrl: row.twitter_url || undefined,
-                logoUrl: row.logo_url || undefined,
-                coverImageUrl: row.cover_image_url || undefined,
-                createdAt: row.created_at || new Date().toISOString()
-              };
-              if (idx >= 0) {
-                currentList[idx] = { ...currentList[idx], ...mapped };
-              } else {
-                currentList.push(mapped);
+            const staleIds = prev
+              .filter(
+                m =>
+                  !isDemoOrMockMandapam(m) &&
+                  !remoteIdSet.has(m.id) &&
+                  !(m.slug && remoteSlugSet.has(m.slug.toLowerCase()))
+              )
+              .map(m => m.id);
+
+            if (staleIds.length > 0) {
+              purgeMandapamsLocal(staleIds);
+            }
+
+            const reconciledList = [...remoteList];
+            for (const initM of INITIAL_MANDAPAMS) {
+              if (
+                !isDemoOrMockMandapam(initM) &&
+                !reconciledList.some(
+                  m => m.id === initM.id || (m.slug && initM.slug && m.slug.toLowerCase() === initM.slug.toLowerCase())
+                )
+              ) {
+                reconciledList.push(initM);
               }
-            });
-            return currentList;
+            }
+
+            saveStorage("mandapams", reconciledList);
+            return reconciledList;
           });
         }
       } catch {
         // offline fallback
       }
     }
+
+    // 1. Initial fetch
     fetchSupabaseMandapams();
+
+    // 2. Realtime listener for deletes, updates, and inserts on navaratri_mandapams
+    const channel = supabase
+      .channel("navaratri_mandapams_live_sync")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "navaratri_mandapams" },
+        (payload: any) => {
+          if (payload.eventType === "DELETE") {
+            const deletedId = payload.old?.id;
+            if (deletedId) {
+              purgeMandapamsLocal([deletedId]);
+            } else {
+              fetchSupabaseMandapams();
+            }
+          } else {
+            fetchSupabaseMandapams();
+          }
+        }
+      )
+      .subscribe();
+
+    // 3. Window focus and visibility listener (triggers when admin deletes a user in Supabase Studio and returns to app tab)
+    const handleRevalidate = () => {
+      fetchSupabaseMandapams();
+    };
+    window.addEventListener("focus", handleRevalidate);
+    document.addEventListener("visibilitychange", handleRevalidate);
+
     return () => {
       isMounted = false;
+      supabase.removeChannel(channel);
+      window.removeEventListener("focus", handleRevalidate);
+      document.removeEventListener("visibilitychange", handleRevalidate);
     };
-  }, []);
+  }, [purgeMandapamsLocal]);
 
   const getMandapamBySlug = (slug: string) => mandapams.find(m => m.slug.toLowerCase() === slug.toLowerCase());
   const getMandapamById = (id: string) => mandapams.find(m => m.id === id);
@@ -1359,21 +1486,38 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       const { data: authData } = await supabase.auth.getUser();
       const user = authData?.user;
 
-      // 1. Delete target mandapam or all mandapams owned by the user
+      // 1. Identify mandapams to purge from local state
+      const idsToPurge: string[] = [];
       if (mandapamId) {
-        deleteMandapam(mandapamId);
+        idsToPurge.push(mandapamId);
       } else if (user) {
-        const owned = mandapams.filter(m => m.ownerUserId === user.id);
-        owned.forEach(m => deleteMandapam(m.id));
+        mandapams
+          .filter(m => m.ownerUserId === user.id || (user.email && m.organizerEmail && m.organizerEmail.toLowerCase() === user.email.toLowerCase()))
+          .forEach(m => idsToPurge.push(m.id));
+      }
+      // Purge from local reactive state and localStorage immediately
+      if (idsToPurge.length > 0) {
+        purgeMandapamsLocal(idsToPurge);
       }
 
-      // 2. Execute database RPC or direct cascading deletes across all tables
+      // 2. Execute database deletion via SECURITY DEFINER RPC
+      // The RPC deletes: navaratri_mandapams (+ all CASCADE children), bookings, reminders,
+      // community_questions, advertisements, mandapam_members, and the auth.users row itself.
       if (user) {
+        let rpcSuccess = false;
         try {
-          await (supabase as any).rpc("delete_own_user_account");
+          const { error: rpcErr } = await (supabase as any).rpc("delete_own_user_account");
+          if (!rpcErr) rpcSuccess = true;
         } catch {
-          // Direct fallback deletions if RPC is unavailable
+          // RPC unavailable — use direct fallback
+        }
+
+        if (!rpcSuccess) {
+          // Direct fallback: delete DB data and sign out (cannot delete auth.users directly from client)
           await (supabase.from("navaratri_mandapams") as any).delete().eq("owner_user_id", user.id);
+          if (user.email) {
+            await (supabase.from("navaratri_mandapams") as any).delete().ilike("organizer_email", user.email);
+          }
           await (supabase.from("navaratri_bookings") as any).delete().eq("user_id", user.id);
           await (supabase.from("navaratri_reminders") as any).delete().eq("user_id", user.id);
           await (supabase.from("navaratri_community_questions") as any).delete().eq("user_id", user.id);
@@ -1384,13 +1528,30 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // 3. Clear all browser session and local storage
       sessionStorage.clear();
-      localStorage.removeItem("navaratri_organizer_id");
-      localStorage.removeItem("navaratri_google_onboarding");
-      localStorage.removeItem("navaratri_registration_credentials");
+      try {
+        const keysToRemove = [
+          "navaratri_organizer_id",
+          "navaratri_google_onboarding",
+          "navaratri_registration_credentials",
+          "navaratri_mandapams",
+          "navaratri_alankaranas",
+          "navaratri_day_settings",
+          "navaratri_services",
+          "navaratri_slots",
+          "navaratri_bookings",
+          "navaratri_activities",
+          "navaratri_announcements",
+          "navaratri_pallaki",
+          "navaratri_nimarjanam",
+          "navaratri_followed_mandapams",
+          "navaratri_scanned_mandapams"
+        ];
+        keysToRemove.forEach(k => localStorage.removeItem(k));
+      } catch {}
       setActiveMandapamId("");
       setRole("devotee");
 
-      // 4. Sign out completely
+      // 4. Sign out of Supabase Auth session
       await supabase.auth.signOut();
       return true;
     } catch (err) {

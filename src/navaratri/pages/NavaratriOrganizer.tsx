@@ -312,9 +312,9 @@ export const NavaratriOrganizer: React.FC = () => {
           }
         } catch {}
 
-        // Fetch from Supabase by ID
+        // Fetch from Supabase by ID — authoritative source-of-truth
         try {
-          const { data: remoteData } = await (supabase.from("navaratri_mandapams") as any)
+          const { data: remoteData, error: remoteError } = await (supabase.from("navaratri_mandapams") as any)
             .select("*")
             .eq("id", storedId)
             .maybeSingle();
@@ -350,6 +350,18 @@ export const NavaratriOrganizer: React.FC = () => {
             setActiveMandapamId(storedId);
             setSessionMandapam(hydrated);
             setIsCheckingAuth(false);
+            return;
+          }
+
+          // Mandapam not found in Supabase (deleted by admin or user)
+          // — purge stale credentials and redirect to login
+          if (!remoteData && !remoteError && isMounted) {
+            sessionStorage.removeItem("navaratri_organizer_id");
+            localStorage.removeItem("navaratri_organizer_id");
+            setAuthenticatedMandapamId(null);
+            setActiveMandapamId("");
+            setIsCheckingAuth(false);
+            navigate("/navaratri/login", { replace: true });
             return;
           }
         } catch (err) {
@@ -434,10 +446,34 @@ export const NavaratriOrganizer: React.FC = () => {
 
     resolveOrganizerSession();
 
+    // Revalidate session whenever user switches back to this tab or window
+    // (handles the case where admin deletes the user in Supabase Dashboard)
+    const handleFocusRevalidate = () => {
+      resolveOrganizerSession();
+    };
+    window.addEventListener("focus", handleFocusRevalidate);
+    document.addEventListener("visibilitychange", handleFocusRevalidate);
+
     return () => {
       isMounted = false;
+      window.removeEventListener("focus", handleFocusRevalidate);
+      document.removeEventListener("visibilitychange", handleFocusRevalidate);
     };
   }, [activeMandapamId, mandapams, navigate, setActiveMandapamId]);
+
+  // Supabase Auth state change listener — fires SIGNED_OUT when admin deletes user from auth.users
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT" || event === "USER_DELETED") {
+        sessionStorage.removeItem("navaratri_organizer_id");
+        localStorage.removeItem("navaratri_organizer_id");
+        setAuthenticatedMandapamId(null);
+        setActiveMandapamId("");
+        navigate("/navaratri/login", { replace: true });
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [navigate, setActiveMandapamId]);
 
   const handleLogout = async () => {
     setAuthenticatedMandapamId(null);
