@@ -425,6 +425,15 @@ export const NavaratriMandapamDetail: React.FC = () => {
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 flex justify-center pointer-events-none">
+            <div className="absolute bottom-0 h-28 w-56 rounded-full bg-amber-300/25 blur-3xl" />
+            <img
+              src={navaratriAsset("/navaratri/assets/maa-durga-hero-darshan-nobg.png")}
+              alt=""
+              aria-hidden="true"
+              className="relative h-40 max-h-[88%] max-w-[72%] object-contain opacity-95 drop-shadow-2xl sm:h-56"
+            />
+          </div>
 
           {/* Quick Actions (Top Right) */}
           <div className="absolute top-3 right-3 flex items-center gap-2">

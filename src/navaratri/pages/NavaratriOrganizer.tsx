@@ -215,6 +215,7 @@ export const NavaratriOrganizer: React.FC = () => {
   const [editAddress, setEditAddress] = useState("");
   const [editArea, setEditArea] = useState("");
   const [editCity, setEditCity] = useState("");
+  const [editGoogleMapsUrl, setEditGoogleMapsUrl] = useState("");
   const [editOrganizerName, setEditOrganizerName] = useState("");
   const [editOrganizerMobile, setEditOrganizerMobile] = useState("");
   const [editWhatsappNumber, setEditWhatsappNumber] = useState("");
@@ -930,6 +931,7 @@ export const NavaratriOrganizer: React.FC = () => {
       if (editAddress.trim()) updates.address = editAddress.trim();
       if (editArea.trim()) updates.area = editArea.trim();
       if (editCity.trim()) updates.city = editCity.trim();
+      updates.googleMapsUrl = editGoogleMapsUrl.trim();
       if (editOrganizerName.trim()) updates.organizerName = editOrganizerName.trim();
       if (editOrganizerMobile.trim()) {
         updates.organizerMobile = editOrganizerMobile.trim();
@@ -956,6 +958,7 @@ export const NavaratriOrganizer: React.FC = () => {
           pincode: currentMandapam.pincode || "503001",
           latitude: currentMandapam.latitude,
           longitude: currentMandapam.longitude,
+          google_maps_url: updates.googleMapsUrl !== undefined ? (updates.googleMapsUrl || null) : (currentMandapam.googleMapsUrl || null),
           organizer_name: updates.organizerName !== undefined ? updates.organizerName : currentMandapam.organizerName,
           organizer_mobile: updates.organizerMobile !== undefined ? updates.organizerMobile : currentMandapam.organizerMobile,
           contact_phone: updates.contactPhone !== undefined ? updates.contactPhone : currentMandapam.contactPhone,
@@ -968,8 +971,8 @@ export const NavaratriOrganizer: React.FC = () => {
         };
 
         let { error } = await (supabase.from("navaratri_mandapams") as any).upsert(payload, { onConflict: "id" });
-        if (error && /instagram_url|twitter_url/i.test(error.message || "")) {
-          const { instagram_url: _instagramUrl, twitter_url: _twitterUrl, ...legacyPayload } = payload;
+        if (error && /google_maps_url|instagram_url|twitter_url/i.test(error.message || "")) {
+          const { google_maps_url: _googleMapsUrl, instagram_url: _instagramUrl, twitter_url: _twitterUrl, ...legacyPayload } = payload;
           const retry = await (supabase.from("navaratri_mandapams") as any).upsert(legacyPayload, { onConflict: "id" });
           error = retry.error;
         }
@@ -1194,6 +1197,7 @@ export const NavaratriOrganizer: React.FC = () => {
                       setEditAddress(currentMandapam.address || "");
                       setEditArea(currentMandapam.area || "");
                       setEditCity(currentMandapam.city || "");
+                      setEditGoogleMapsUrl(currentMandapam.googleMapsUrl || "");
                       setEditOrganizerName(currentMandapam.organizerName || "");
                       setEditOrganizerMobile(currentMandapam.organizerMobile || currentMandapam.contactPhone || "");
                       setEditWhatsappNumber(currentMandapam.whatsappNumber || "");
@@ -3207,6 +3211,22 @@ export const NavaratriOrganizer: React.FC = () => {
                       </div>
                     </div>
 
+                    <div>
+                      <label className="block text-xs font-bold text-stone-800 mb-1">
+                        Google Maps Link (Optional)
+                      </label>
+                      <input
+                        type="url"
+                        value={editGoogleMapsUrl}
+                        onChange={(e) => setEditGoogleMapsUrl(e.target.value)}
+                        placeholder="Paste Google Maps share link or place URL"
+                        className="w-full px-3.5 py-2.5 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      />
+                      <p className="mt-1 text-[10px] text-stone-500">
+                        Add this when you want the Directions button to open the exact mandapam location.
+                      </p>
+                    </div>
+
                     {/* GPS coordinates from onboarding */}
                     {currentMandapam.latitude && currentMandapam.longitude ? (
                       <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-start justify-between gap-3">
@@ -3222,7 +3242,7 @@ export const NavaratriOrganizer: React.FC = () => {
                           </p>
                         </div>
                         <a
-                          href={`https://www.google.com/maps?q=${currentMandapam.latitude},${currentMandapam.longitude}`}
+                          href={editGoogleMapsUrl.trim() || `https://www.google.com/maps?q=${currentMandapam.latitude},${currentMandapam.longitude}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="shrink-0 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition-colors"
@@ -3244,9 +3264,9 @@ export const NavaratriOrganizer: React.FC = () => {
                       <p className="font-semibold text-stone-800">
                         📍 {editAddress ? `${editAddress}, ` : ""}{editArea || currentMandapam.area}, {editCity || currentMandapam.city}
                       </p>
-                      {currentMandapam.latitude && currentMandapam.longitude && (
+                      {(editGoogleMapsUrl.trim() || (currentMandapam.latitude && currentMandapam.longitude)) && (
                         <a
-                          href={getMandapamDirectionsUrl(currentMandapam)}
+                          href={editGoogleMapsUrl.trim() || getMandapamDirectionsUrl(currentMandapam)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-900 underline underline-offset-2 transition-colors"

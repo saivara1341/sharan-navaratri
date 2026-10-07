@@ -17,9 +17,24 @@ import {
   Calendar,
   Flame,
   Camera,
-  ArrowLeft,
 } from "lucide-react";
 import { toast } from "sonner";
+
+const DEFAULT_ALANKARANA_IMAGE = navaratriAsset("/navaratri/assets/alankaranas/day-1-bala-tripura-sundari.jpg");
+const DECORATIVE_BACKGROUND_TOKENS = [
+  "terracotta-kolam-bg",
+  "ivory-lotus-kolam",
+  "golden-lotus-bg",
+  "sage-floral-bg",
+  "royal-maroon-arch",
+  "royal-temple-gold-sanctum"
+];
+
+const getDayDeityImage = (day: { imageUrl?: string }) =>
+  day.imageUrl || DEFAULT_ALANKARANA_IMAGE;
+
+const isDecorativeBackgroundImage = (imageUrl?: string) =>
+  Boolean(imageUrl && DECORATIVE_BACKGROUND_TOKENS.some((token) => imageUrl.includes(token)));
 
 interface DailyUpdateDrawerProps {
   mandapam: Mandapam;
@@ -71,7 +86,7 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
 
 
   // Alankarana upload
-  const [alankaranaImage, setAlankaranaImage] = useState(stdDay.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"));
+  const [alankaranaImage, setAlankaranaImage] = useState(getDayDeityImage(stdDay));
   const [alankaranaTitle, setAlankaranaTitle] = useState(`${stdDay.deviName} Alankarana`);
   const [alankaranaDesc, setAlankaranaDesc] = useState("Adorned in royal silk with fragrant floral garlands and traditional ornaments.");
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
@@ -96,7 +111,9 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
     setUseStdItems(s?.useStandardItems ?? true);
     setCustomItems(s?.customItemsToBring || "");
 
-    const initialImg = existingAlankarana?.imageUrl || d.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg");
+    const dayDefaultImage = getDayDeityImage(d);
+    const savedImage = isDecorativeBackgroundImage(existingAlankarana?.imageUrl) ? undefined : existingAlankarana?.imageUrl;
+    const initialImg = savedImage || dayDefaultImage;
     setAlankaranaImage(initialImg);
     setAlankaranaTitle(existingAlankarana?.title || `${d.deviName} Alankarana`);
     if (existingAlankarana?.description) {
@@ -208,19 +225,11 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
         </button>
 
         <div className="mb-6 space-y-2">
-          <div className="flex items-center justify-between pr-10">
+          <div className="flex items-center pr-10">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-[#8B1E1E] text-xs font-bold">
               <Calendar className="w-3.5 h-3.5 text-amber-600" />
               <span>Day {String(selectedDayNum).padStart(2, "0")} Configuration</span>
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-xs font-semibold text-stone-500 hover:text-stone-900 flex items-center gap-1 hover:underline cursor-pointer"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to All Days</span>
-            </button>
           </div>
           <h3 className="font-serif font-black text-2xl sm:text-3xl text-[#8B1E1E]">
             Day {String(selectedDayNum).padStart(2, "0")} • {stdDay.deviName}
@@ -235,9 +244,8 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
           {/* SECTION 1: PHYSICAL ALANKARANA UPLOAD */}
           <div className="p-4 sm:p-5 rounded-2xl bg-[#FFFDF9] border border-amber-300 shadow-sm space-y-4">
             <div>
-              <h4 className="font-bold text-xs uppercase tracking-wider text-[#8B1E1E] flex items-center gap-1.5">
-                <Upload className="w-4 h-4 text-amber-700" />
-                <span>1. Day {String(selectedDayNum).padStart(2, "0")} Idol Darshan & Alankarana Photo</span>
+              <h4 className="font-bold text-xs uppercase tracking-wider text-[#8B1E1E]">
+                1. Day {String(selectedDayNum).padStart(2, "0")} Idol Darshan & Alankarana Photo
               </h4>
               <p className="text-xs text-stone-600 mt-0.5">
                 Upload the real photograph of the mandapam idol for Day {String(selectedDayNum).padStart(2, "0")} so citizens see today's live darshan.
@@ -248,7 +256,7 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
             <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-4 p-3.5 bg-amber-50/70 rounded-2xl border border-amber-200">
               <div className="relative group w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border-2 border-amber-400 shadow-md bg-stone-900 shrink-0">
                 <img
-                  src={alankaranaImage || (stdDay.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"))}
+                  src={alankaranaImage || getDayDeityImage(stdDay)}
                   alt="Alankarana Preview"
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
@@ -271,7 +279,7 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
                     {stdDay.deviName} Darshan
                   </div>
                   <p className="text-[11px] text-stone-600 mt-0.5">
-                    {alankaranaImage && alankaranaImage !== (stdDay.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"))
+                    {alankaranaImage && alankaranaImage !== getDayDeityImage(stdDay)
                       ? "Custom mandapam idol photograph active for devotees."
                       : "Currently showing default auspicious deity photo. Tap upload to show your mandapam's real idol darshan."}
                   </p>
@@ -280,7 +288,7 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
                   <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs font-bold shadow-xs hover:shadow transition-all cursor-pointer active:scale-95">
                     <Upload className="w-3.5 h-3.5" />
-                    <span>{isUploadingPhoto ? "Uploading..." : (alankaranaImage && alankaranaImage !== (stdDay.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg")) ? "Change Idol Photo" : "Upload Idol Photo")}</span>
+                    <span>{isUploadingPhoto ? "Uploading..." : (alankaranaImage && alankaranaImage !== getDayDeityImage(stdDay) ? "Change Idol Photo" : "Upload Idol Photo")}</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -290,10 +298,10 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
                     />
                   </label>
 
-                  {alankaranaImage && alankaranaImage !== (stdDay.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg")) && (
+                  {alankaranaImage && alankaranaImage !== getDayDeityImage(stdDay) && (
                     <button
                       type="button"
-                      onClick={() => setAlankaranaImage(stdDay.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg"))}
+                      onClick={() => setAlankaranaImage(getDayDeityImage(stdDay))}
                       className="px-3 py-1.5 rounded-xl bg-white hover:bg-stone-100 text-stone-700 border border-stone-300 text-xs font-semibold transition-colors cursor-pointer"
                     >
                       Reset to Default
@@ -398,7 +406,7 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
                         onClick={() => setUseStdDevi(false)}
                         className={`px-2 py-0.5 rounded-md ${!useStdDevi ? "bg-[#8B1E1E] text-white font-bold" : "bg-white text-stone-700 border border-stone-300"}`}
                       >
-                        Custom
+                        Edit
                       </button>
                     </div>
                   </div>
@@ -439,7 +447,7 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
                     onClick={() => setUseStdPooja(false)}
                     className={`px-2 py-0.5 rounded-md ${!useStdPooja ? "bg-[#8B1E1E] text-white font-bold" : "bg-white text-stone-700 border border-stone-300"}`}
                   >
-                    Custom
+                    Edit
                   </button>
                 </div>
               </div>
@@ -476,7 +484,7 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
                     onClick={() => setUseStdNaivedhyam(false)}
                     className={`px-2 py-0.5 rounded-md ${!useStdNaivedhyam ? "bg-[#8B1E1E] text-white font-bold" : "bg-white text-stone-700 border border-stone-300"}`}
                   >
-                    Custom
+                    Edit
                   </button>
                 </div>
               </div>
@@ -515,7 +523,7 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
                     onClick={() => setUseStdItems(false)}
                     className={`px-2 py-0.5 rounded-md ${!useStdItems ? "bg-[#8B1E1E] text-white font-bold" : "bg-white text-stone-700 border border-stone-300"}`}
                   >
-                    Custom
+                    Edit
                   </button>
                 </div>
               </div>
@@ -536,21 +544,21 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
           </div>
 
           {/* SAVE BUTTON & CLOSE ACTION */}
-          <div className="pt-2 sticky bottom-0 bg-[#FDFBF7] py-3 border-t border-amber-300 flex flex-col sm:flex-row gap-2">
+          <div className="pt-2 sticky bottom-0 bg-[#FDFBF7] py-3 border-t border-amber-300 grid grid-cols-2 gap-2">
             <button
               type="submit"
-              className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="py-3.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] to-[#B45309] hover:from-[#781B1B] hover:to-[#92400E] text-white text-xs sm:text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <Save className="w-4 h-4" />
-              <span>Save Day {String(selectedDayNum).padStart(2, "0")} Updates & Publish Live</span>
+              <span>Save</span>
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-3.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs sm:text-sm font-bold transition-all border border-stone-300 flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+              className="py-3.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs sm:text-sm font-bold transition-all border border-stone-300 flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <X className="w-4 h-4" />
-              <span>Close & Go to Another Day</span>
+              <span>Cancel</span>
             </button>
           </div>
         </form>
