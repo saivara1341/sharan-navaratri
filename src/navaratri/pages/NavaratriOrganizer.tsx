@@ -1374,7 +1374,7 @@ export const NavaratriOrganizer: React.FC = () => {
                   if (value === "ALL_DAYS") setAnnadanamDayNumbers(STANDARD_NAVARATRI_DAYS.map((day) => day.dayNumber));
                   if (value === "ONE_DAY" && annadanamDayNumbers.length !== 1) setAnnadanamDayNumbers([1]);
                 }} className="mt-1 w-full rounded-xl border border-amber-300 bg-white px-3 py-2.5 text-sm font-semibold text-stone-800 shadow-xs cursor-pointer">
-                  <option value="ONE_DAY">One festival day</option>
+                  <option value="ONE_DAY">One day</option>
                   <option value="MULTIPLE_DAYS">Select multiple days</option>
                   <option value="ALL_DAYS">All 10 festival days</option>
                 </select>
