@@ -229,14 +229,14 @@ export const NavaratriHome: React.FC = () => {
                 className="flex items-center justify-between gap-1.5 rounded-2xl border border-amber-100/15 bg-black/10 px-2.5 py-2 sm:gap-4 sm:border-0 sm:bg-transparent sm:p-0"
               >
                 <div className="flex flex-1 min-w-0 flex-col justify-center text-left">
-                  <h1 className="font-['Cinzel',serif] font-black text-lg min-[360px]:text-lg min-[400px]:text-xl sm:text-3xl md:text-3.5xl lg:text-4xl xl:text-[2.6rem] text-[#FFFBEB] leading-tight sm:leading-snug tracking-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.5)]">
+                  <h1 className="font-['Cinzel',serif] font-black text-lg min-[360px]:text-lg min-[400px]:text-xl sm:font-serif sm:font-bold sm:text-3xl md:text-4xl lg:text-[2.55rem] xl:text-[2.8rem] text-[#FFFBEB] leading-tight sm:leading-[1.16] tracking-tight sm:tracking-normal drop-shadow-[0_3px_10px_rgba(0,0,0,0.5)]">
                     <span className="block text-[17px] leading-[1.48] min-[360px]:text-lg sm:hidden">
                       Celebrate Sharan<br />
                       Navaratri <span className="text-amber-300">2026</span><br />
                       Maa Durga Blessings
                     </span>
-                    <span className="hidden sm:inline">
-                      Celebrate Sharan Maa Durga Matha Navaratri <span className="text-amber-300">2026</span> with Maa Durga&apos;s Divine Blessings
+                    <span className="hidden sm:inline-block max-w-3xl">
+                      Celebrate Sharan Navaratri <span className="text-amber-300">2026</span> with Maa Durga&apos;s Divine Blessings
                     </span>
                   </h1>
                 </div>
