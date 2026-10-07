@@ -61,7 +61,8 @@ import {
   MessageCircle,
   Image as ImageIcon,
   Crop,
-  Maximize2
+  Maximize2,
+  ChevronDown
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -170,6 +171,7 @@ export const NavaratriOrganizer: React.FC = () => {
   const [annadanamLocationMode, setAnnadanamLocationMode] = useState<"MANDAPAM" | "OTHER">("MANDAPAM");
   const [annadanamLocation, setAnnadanamLocation] = useState("");
   const [annadanamEditMode, setAnnadanamEditMode] = useState(false);
+  const [annadanamPanelOpen, setAnnadanamPanelOpen] = useState(false);
 
   // Two-Step Delete Account Modal State
   const [deleteStep, setDeleteStep] = useState<0 | 1 | 2>(0);
@@ -455,6 +457,7 @@ export const NavaratriOrganizer: React.FC = () => {
         : "Annadanam seva at the venue shown above."
     }));
     setAnnadanamEditMode(false);
+    setAnnadanamPanelOpen(false);
     toast.success(`Annadanam schedule saved for ${annadanamScope === "ALL_DAYS" ? "all 10 days" : `${targetDays.length} selected day${targetDays.length === 1 ? "" : "s"}`}.`);
   };
 
@@ -468,11 +471,16 @@ export const NavaratriOrganizer: React.FC = () => {
   const savedAnnadanamSettings = daySettings.filter(
     (setting) => setting.mandapamId === currentMandapam?.id && setting.annadanamEnabled
   );
+  const sortedAnnadanamSettings = [...savedAnnadanamSettings].sort((a, b) => a.dayNumber - b.dayNumber);
+  const annadanamSummaryText = sortedAnnadanamSettings.length > 0
+    ? `${sortedAnnadanamSettings.length === STANDARD_NAVARATRI_DAYS.length ? "All 10 festival days" : sortedAnnadanamSettings.map((setting) => `Day ${setting.dayNumber}`).join(", ")} • ${sortedAnnadanamSettings[0].annadanamStartTime || "12:30 PM"} - ${sortedAnnadanamSettings[0].annadanamEndTime || "03:30 PM"}`
+    : "No Annadanam schedule saved yet";
+  const annadanamSummaryLocation = sortedAnnadanamSettings[0]?.annadanamLocation || currentMandapam?.address || "Mandapam location";
 
   const loadSavedAnnadanamSchedule = () => {
-    if (savedAnnadanamSettings.length === 0) return;
-    const firstSetting = savedAnnadanamSettings[0];
-    const selectedDays = savedAnnadanamSettings.map((setting) => setting.dayNumber).sort((a, b) => a - b);
+    if (sortedAnnadanamSettings.length === 0) return;
+    const firstSetting = sortedAnnadanamSettings[0];
+    const selectedDays = sortedAnnadanamSettings.map((setting) => setting.dayNumber).sort((a, b) => a - b);
     setAnnadanamDayNumbers(selectedDays);
     setAnnadanamScope(selectedDays.length === STANDARD_NAVARATRI_DAYS.length ? "ALL_DAYS" : selectedDays.length === 1 ? "ONE_DAY" : "MULTIPLE_DAYS");
     setAnnadanamStartTime(to24HourTime(firstSetting.annadanamStartTime || "12:30 PM"));
@@ -485,11 +493,13 @@ export const NavaratriOrganizer: React.FC = () => {
   const openAnnadanamEditor = () => {
     loadSavedAnnadanamSchedule();
     setAnnadanamEditMode(true);
+    setAnnadanamPanelOpen(true);
   };
 
   const cancelAnnadanamEdit = () => {
     loadSavedAnnadanamSchedule();
     setAnnadanamEditMode(false);
+    setAnnadanamPanelOpen(false);
   };
 
   // If checking authentication, show elegant spinner
@@ -1283,14 +1293,34 @@ export const NavaratriOrganizer: React.FC = () => {
                 <span className="mt-0.5 grid h-9 w-9 place-items-center rounded-2xl bg-amber-100 text-[#8B1E1E] shrink-0"><PrasadBowlIcon className="w-5 h-5" /></span>
                 <div>
                   <h2 className="font-serif font-black text-xl text-[#8B1E1E]">Annadanam</h2>
-                  <p className="mt-0.5 text-[11px] leading-relaxed text-stone-600">Choose one day, selected festival days, or the full 10-day seva. Devotees use your Mandapam Maps directions when you select Mandapam location.</p>
+                  <p className="mt-0.5 text-[11px] leading-relaxed text-stone-600">Choose one day, selected festival days, or the full 10-day seva.</p>
                 </div>
               </div>
-              {savedAnnadanamSettings.length > 0 && !annadanamEditMode && (
-                <button type="button" onClick={openAnnadanamEditor} className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-amber-400 bg-white px-3 py-2 text-xs font-bold text-[#8B1E1E] shadow-xs transition-colors hover:bg-amber-50 cursor-pointer"><Pencil className="h-3.5 w-3.5" />Edit</button>
-              )}
+              <button
+                type="button"
+                onClick={() => setAnnadanamPanelOpen((open) => !open)}
+                aria-expanded={annadanamPanelOpen}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-amber-400 bg-white px-3 py-2 text-xs font-bold text-[#8B1E1E] shadow-xs transition-colors hover:bg-amber-50 cursor-pointer"
+              >
+                <span>{annadanamPanelOpen ? "Close" : savedAnnadanamSettings.length > 0 ? "View" : "Add"}</span>
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${annadanamPanelOpen ? "rotate-180" : ""}`} />
+              </button>
             </div>
 
+            <div className="rounded-2xl border border-amber-200 bg-white/85 p-3">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0 space-y-1">
+                  <p className="text-xs font-black text-stone-800">{annadanamSummaryText}</p>
+                  <p className="truncate text-[11px] font-semibold text-stone-500">{annadanamSummaryLocation}</p>
+                </div>
+                {savedAnnadanamSettings.length > 0 && !annadanamEditMode && (
+                  <button type="button" onClick={openAnnadanamEditor} className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-bold text-[#8B1E1E] transition-colors hover:bg-amber-100 cursor-pointer"><Pencil className="h-3.5 w-3.5" />Edit</button>
+                )}
+              </div>
+            </div>
+
+            {annadanamPanelOpen && (
+              <>
             <fieldset disabled={savedAnnadanamSettings.length > 0 && !annadanamEditMode} className="space-y-4 disabled:opacity-70">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="text-xs font-bold text-stone-700">Offering days
@@ -1360,6 +1390,8 @@ export const NavaratriOrganizer: React.FC = () => {
                 {savedAnnadanamSettings.length > 0 && <button type="button" onClick={cancelAnnadanamEdit} className="w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-xs font-bold text-stone-700 transition-colors hover:bg-stone-50 sm:w-auto cursor-pointer">Cancel</button>}
                 <button type="button" onClick={saveAnnadanamSchedule} className="w-full rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-colors hover:bg-emerald-800 active:scale-95 sm:w-auto cursor-pointer">Save Annadanam Schedule</button>
               </div>
+            )}
+              </>
             )}
           </section>
 
