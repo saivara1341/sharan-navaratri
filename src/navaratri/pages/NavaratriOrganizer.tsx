@@ -1262,9 +1262,12 @@ export const NavaratriOrganizer: React.FC = () => {
 
       {/* DASHBOARD TAB NAVIGATION - 2 in a row on mobile view */}
       <div className="relative grid grid-cols-2 lg:flex lg:items-center gap-2.5 border-b-2 border-amber-300 pb-3">
-        <div className="pointer-events-none absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 lg:hidden" aria-hidden="true">
-          <span className="block text-2xl leading-none drop-shadow-[0_2px_5px_rgba(180,83,9,0.35)]">🪷</span>
-        </div>
+        <img
+          src={navaratriAsset("/navaratri/assets/sacred-lotus-flower.png")}
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-1/2 z-20 h-8 w-8 -translate-x-1/2 -translate-y-1/2 object-contain drop-shadow-[0_2px_5px_rgba(180,83,9,0.35)] lg:hidden"
+        />
         <button
           onClick={() => setActiveTab("days")}
           className={`w-full lg:w-auto px-3 sm:px-4 py-3 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-black flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer text-center ${
