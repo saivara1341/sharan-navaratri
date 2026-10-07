@@ -15,7 +15,7 @@ import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifi
 import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
 import { HomaKundaIcon, isHomamEvent } from "../components/devotional/HomaKundaIcon";
 import { MandapamGoldIcon } from "../components/devotional/MandapamGoldIcon";
-import { Activity } from "../types";
+import { Activity, Mandapam } from "../types";
 import {
   ShieldCheck,
   Upload,
@@ -59,6 +59,8 @@ import {
   Pencil,
   Phone,
   MessageCircle,
+  Instagram,
+  Twitter,
   Image as ImageIcon,
   Crop,
   Maximize2,
@@ -94,6 +96,22 @@ const PRESET_MANDAPAM_BACKGROUNDS = [
     url: navaratriAsset("/navaratri/assets/royal-maroon-arch.jpg"),
   }
 ];
+
+
+const normalizeSocialProfileUrl = (value: string, platform: "instagram" | "twitter") => {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+
+  const handle = trimmed
+    .replace(/^@+/, "")
+    .replace(/^\/+/, "")
+    .split(/[/?#]/)[0]
+    .trim();
+
+  if (!handle) return "";
+  return platform === "instagram" ? `https://instagram.com/${handle}` : `https://x.com/${handle}`;
+};
 
 export const NavaratriOrganizer: React.FC = () => {
   const navigate = useNavigate();
@@ -200,6 +218,8 @@ export const NavaratriOrganizer: React.FC = () => {
   const [editOrganizerName, setEditOrganizerName] = useState("");
   const [editOrganizerMobile, setEditOrganizerMobile] = useState("");
   const [editWhatsappNumber, setEditWhatsappNumber] = useState("");
+  const [editInstagramUrl, setEditInstagramUrl] = useState("");
+  const [editTwitterUrl, setEditTwitterUrl] = useState("");
   const [showOrganizerPublicly, setShowOrganizerPublicly] = useState(true);
   const [isSavingBranding, setIsSavingBranding] = useState(false);
   const [logoFitMode, setLogoFitMode] = useState<"contain" | "cover">("contain");
@@ -293,6 +313,8 @@ export const NavaratriOrganizer: React.FC = () => {
               ownerUserId: remoteData.owner_user_id || undefined,
               contactPhone: remoteData.contact_phone || remoteData.organizer_mobile || "",
               whatsappNumber: remoteData.whatsapp_number || remoteData.organizer_mobile || undefined,
+              instagramUrl: remoteData.instagram_url || undefined,
+              twitterUrl: remoteData.twitter_url || undefined,
               logoUrl: remoteData.logo_url || undefined,
               coverImageUrl: remoteData.cover_image_url || undefined,
               createdAt: remoteData.created_at || new Date().toISOString()
@@ -350,6 +372,8 @@ export const NavaratriOrganizer: React.FC = () => {
                 ownerUserId: remoteData.owner_user_id || undefined,
                 contactPhone: remoteData.contact_phone || remoteData.organizer_mobile || "",
                 whatsappNumber: remoteData.whatsapp_number || remoteData.organizer_mobile || undefined,
+                instagramUrl: remoteData.instagram_url || undefined,
+                twitterUrl: remoteData.twitter_url || undefined,
                 logoUrl: remoteData.logo_url || undefined,
                 coverImageUrl: remoteData.cover_image_url || undefined,
                 createdAt: remoteData.created_at || new Date().toISOString()
@@ -912,6 +936,8 @@ export const NavaratriOrganizer: React.FC = () => {
         updates.contactPhone = editOrganizerMobile.trim();
       }
       if (editWhatsappNumber.trim()) updates.whatsappNumber = editWhatsappNumber.trim();
+      updates.instagramUrl = normalizeSocialProfileUrl(editInstagramUrl, "instagram");
+      updates.twitterUrl = normalizeSocialProfileUrl(editTwitterUrl, "twitter");
       updates.showOrganizerPublicly = showOrganizerPublicly;
 
       // 1. Update React state and local storage immediately
@@ -934,12 +960,19 @@ export const NavaratriOrganizer: React.FC = () => {
           organizer_mobile: updates.organizerMobile !== undefined ? updates.organizerMobile : currentMandapam.organizerMobile,
           contact_phone: updates.contactPhone !== undefined ? updates.contactPhone : currentMandapam.contactPhone,
           whatsapp_number: updates.whatsappNumber !== undefined ? updates.whatsappNumber : currentMandapam.whatsappNumber,
+          instagram_url: updates.instagramUrl !== undefined ? updates.instagramUrl : (currentMandapam.instagramUrl || null),
+          twitter_url: updates.twitterUrl !== undefined ? updates.twitterUrl : (currentMandapam.twitterUrl || null),
           logo_url: updates.logoUrl !== undefined ? updates.logoUrl : (currentMandapam.logoUrl || null),
           cover_image_url: updates.coverImageUrl !== undefined ? updates.coverImageUrl : (currentMandapam.coverImageUrl || null),
           updated_at: new Date().toISOString()
         };
 
-        const { error } = await (supabase.from("navaratri_mandapams") as any).upsert(payload, { onConflict: "id" });
+        let { error } = await (supabase.from("navaratri_mandapams") as any).upsert(payload, { onConflict: "id" });
+        if (error && /instagram_url|twitter_url/i.test(error.message || "")) {
+          const { instagram_url: _instagramUrl, twitter_url: _twitterUrl, ...legacyPayload } = payload;
+          const retry = await (supabase.from("navaratri_mandapams") as any).upsert(legacyPayload, { onConflict: "id" });
+          error = retry.error;
+        }
         if (error) {
           console.warn("Supabase branding upsert warning (offline fallback active):", error.message);
         }
@@ -1164,6 +1197,8 @@ export const NavaratriOrganizer: React.FC = () => {
                       setEditOrganizerName(currentMandapam.organizerName || "");
                       setEditOrganizerMobile(currentMandapam.organizerMobile || currentMandapam.contactPhone || "");
                       setEditWhatsappNumber(currentMandapam.whatsappNumber || "");
+                      setEditInstagramUrl(currentMandapam.instagramUrl || "");
+                      setEditTwitterUrl(currentMandapam.twitterUrl || "");
                       setShowOrganizerPublicly(currentMandapam.showOrganizerPublicly !== false);
                       setBrandingTab("logo");
                       setBrandingModalOpen(true);
@@ -2726,7 +2761,7 @@ export const NavaratriOrganizer: React.FC = () => {
             </div>
 
             {/* Tab Navigation inside Modal */}
-            <div className="grid grid-cols-3 border-b border-amber-200 bg-amber-50/70 p-1.5 gap-1.5 text-xs font-bold">
+            <div className="grid grid-cols-3 border-y border-amber-300 bg-gradient-to-r from-[#FFF7D6] via-[#FFFDF4] to-[#FFE7C2] p-1.5 gap-1.5 text-xs font-bold shadow-inner">
               <button
                 type="button"
                 onClick={() => setBrandingTab("logo")}
@@ -3277,6 +3312,40 @@ export const NavaratriOrganizer: React.FC = () => {
                       </div>
                     </div>
 
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-stone-800 mb-1">
+                          Instagram Handle / URL (Optional)
+                        </label>
+                        <div className="relative">
+                          <Instagram className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-pink-600" />
+                          <input
+                            type="text"
+                            value={editInstagramUrl}
+                            onChange={(e) => setEditInstagramUrl(e.target.value)}
+                            placeholder="@mandapam or https://instagram.com/..."
+                            className="w-full rounded-xl border border-amber-300 bg-white py-2.5 pl-9 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-stone-800 mb-1">
+                          Twitter / X Handle or URL (Optional)
+                        </label>
+                        <div className="relative">
+                          <Twitter className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sky-600" />
+                          <input
+                            type="text"
+                            value={editTwitterUrl}
+                            onChange={(e) => setEditTwitterUrl(e.target.value)}
+                            placeholder="@mandapam or https://x.com/..."
+                            className="w-full rounded-xl border border-amber-300 bg-white py-2.5 pl-9 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Devotee Contact Card Live Preview */}
                     <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 text-xs space-y-2">
                       <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block">
@@ -3298,6 +3367,11 @@ export const NavaratriOrganizer: React.FC = () => {
                           <span className="px-2.5 py-1 rounded-lg bg-emerald-700 text-white text-[10px] font-bold flex items-center gap-1 shadow-2xs">
                             <MessageCircle className="w-3 h-3" /> WhatsApp
                           </span>
+                          {(editInstagramUrl || editTwitterUrl) && (
+                            <span className="px-2.5 py-1 rounded-lg bg-pink-600 text-white text-[10px] font-bold flex items-center gap-1 shadow-2xs">
+                              <Instagram className="w-3 h-3" /> Social
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>

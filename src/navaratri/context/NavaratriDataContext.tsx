@@ -525,6 +525,8 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
                 ownerUserId: row.owner_user_id || undefined,
                 contactPhone: row.contact_phone || row.organizer_mobile || "",
                 whatsappNumber: row.whatsapp_number || "",
+                instagramUrl: row.instagram_url || undefined,
+                twitterUrl: row.twitter_url || undefined,
                 logoUrl: row.logo_url || undefined,
                 coverImageUrl: row.cover_image_url || undefined,
                 createdAt: row.created_at || new Date().toISOString()
@@ -1228,6 +1230,8 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
           owner_user_id: data.ownerUserId || null,
           contact_phone: newMandapam.contactPhone,
           whatsapp_number: newMandapam.whatsappNumber || null,
+          instagram_url: newMandapam.instagramUrl || null,
+          twitter_url: newMandapam.twitterUrl || null,
           logo_url: newMandapam.logoUrl || null,
           cover_image_url: newMandapam.coverImageUrl || null,
           verification_status: "VERIFIED",
@@ -1239,8 +1243,8 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
         .then(async ({ error }: any) => {
           if (!error) return;
           // Keeps registration available while an older database awaits the committed migration.
-          if (String(error.message || "").includes("google_maps_url")) {
-            const { google_maps_url: _mapsLink, ...legacyPayload } = payload;
+          if (/google_maps_url|instagram_url|twitter_url/i.test(String(error.message || ""))) {
+            const { google_maps_url: _mapsLink, instagram_url: _instagramUrl, twitter_url: _twitterUrl, ...legacyPayload } = payload;
             const { error: fallbackError } = await (supabase.from("navaratri_mandapams") as any).insert([legacyPayload]);
             if (fallbackError) console.warn("Supabase mandapam insert notice:", fallbackError.message);
             return;
@@ -1425,6 +1429,8 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       if (data.organizerMobile !== undefined) dbPayload.organizer_mobile = data.organizerMobile;
       if (data.contactPhone !== undefined) dbPayload.contact_phone = data.contactPhone;
       if (data.whatsappNumber !== undefined) dbPayload.whatsapp_number = data.whatsappNumber;
+      if (data.instagramUrl !== undefined) dbPayload.instagram_url = data.instagramUrl;
+      if (data.twitterUrl !== undefined) dbPayload.twitter_url = data.twitterUrl;
       if (data.logoUrl !== undefined) dbPayload.logo_url = data.logoUrl;
       if (data.coverImageUrl !== undefined) dbPayload.cover_image_url = data.coverImageUrl;
 

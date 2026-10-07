@@ -679,19 +679,19 @@ export const NavaratriNearMe: React.FC = () => {
       </section>
 
       {/* Filter Category Pills */}
-      <div className="relative mx-auto h-[325px] w-full max-w-[430px] overflow-visible sm:hidden">
+      <div className="relative mx-auto h-[280px] w-full max-w-[460px] overflow-visible sm:hidden">
         <img
           src={navaratriAsset("/navaratri/assets/sage-scroll-filter-frame-transparent.png")}
           alt=""
-          className="absolute left-[-6%] top-2 h-auto w-[112%] max-w-none object-contain"
+          className="absolute left-[-14%] top-0 h-auto w-[128%] max-w-none object-contain"
         />
-        <div className="absolute left-[10%] right-[10%] top-[26%] grid grid-cols-2 gap-2">
+        <div className="absolute left-[8%] right-[8%] top-[25%] grid grid-cols-2 gap-2">
           {categories.map((category) => (
             <button
               key={category.id}
               type="button"
               onClick={() => setActiveCategory(category.id)}
-              className={`flex h-[52px] items-center justify-center gap-1.5 rounded-xl px-2 py-1.5 text-center text-[10px] font-black leading-tight shadow-sm transition-all last:col-span-2 last:mx-auto last:w-[54%] ${
+              className={`flex h-[52px] items-center justify-center gap-1.5 rounded-xl px-2 py-1.5 text-center text-[10px] font-black leading-tight shadow-sm transition-all last:col-span-2 last:mx-auto last:w-[50%] ${
                 activeCategory === category.id
                   ? "bg-[#8B1E1E] text-white ring-2 ring-amber-100"
                   : "border border-[#e9ddb9] bg-[#fffaf0]/90 text-[#465b28] backdrop-blur-[1px] hover:bg-white"
@@ -817,6 +817,7 @@ export const NavaratriNearMe: React.FC = () => {
           ) : (
             displayedMandapams.map((item) => {
               const mapsUrl = getMandapamDirectionsUrl(item);
+              const mandapamLogo = item.logoUrl || (typeof window !== "undefined" ? localStorage.getItem(`mandapam_logo_${item.id}`) : null) || item.coverImageUrl || navaratriAsset("/navaratri/assets/royal-maroon-arch.jpg");
               return (
                 <article
                   key={item.id}
@@ -824,7 +825,7 @@ export const NavaratriNearMe: React.FC = () => {
                 >
                   <div className="flex items-start gap-3 sm:gap-4">
                     <img
-                      src={item.coverImageUrl || navaratriAsset("/navaratri/assets/royal-maroon-arch.jpg")}
+                      src={mandapamLogo}
                       alt=""
                       className="h-16 w-16 shrink-0 rounded-2xl border border-amber-300 object-cover shadow-sm sm:h-20 sm:w-20"
                     />

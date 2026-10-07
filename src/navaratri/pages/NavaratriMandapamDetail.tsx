@@ -43,6 +43,8 @@ import {
   CalendarDays,
   ExternalLink,
   MessageCircle,
+  Instagram,
+  Twitter,
   ShoppingBag,
   Flower2,
   Gift,
@@ -96,6 +98,16 @@ const PRESET_MANDAPAM_BACKGROUNDS = [
     url: navaratriAsset("/navaratri/assets/royal-maroon-arch.jpg"),
   }
 ];
+
+
+const normalizePublicSocialUrl = (value?: string, platform?: "instagram" | "twitter") => {
+  const trimmed = (value || "").trim();
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  const handle = trimmed.replace(/^@+/, "").replace(/^\/+/, "").split(/[/?#]/)[0].trim();
+  if (!handle) return "";
+  return platform === "instagram" ? `https://instagram.com/${handle}` : `https://x.com/${handle}`;
+};
 
 export const NavaratriMandapamDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -441,7 +453,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
             {/* Top row */}
             <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-amber-200/60">
               <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <Flower2 className="h-3.5 w-3.5 text-pink-600" />
                 <span className="text-[11px] font-bold text-amber-900 uppercase tracking-wider">
                   Mandapam Profile
                 </span>
@@ -517,7 +529,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
             </div>
 
             {/* Organizer / Committee Details (If shared for public view) */}
-            {(mandapam.showOrganizerPublicly !== false) && (mandapam.organizerName || mandapam.organizerMobile || mandapam.contactPhone) && (() => {
+            {(mandapam.showOrganizerPublicly !== false) && (mandapam.organizerName || mandapam.organizerMobile || mandapam.contactPhone || mandapam.instagramUrl || mandapam.twitterUrl) && (() => {
               const orgLabels = getTranslatedOrganizerLabels(language);
               const transName = getTranslatedMandapamName(mandapam.name, language);
               return (
@@ -527,15 +539,15 @@ export const NavaratriMandapamDetail: React.FC = () => {
                       <Users className="w-4 h-4 text-amber-200" />
                     </div>
                     <div>
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900">
+                      <div className="space-y-1.5">
+                        <span className="block text-[10px] font-bold uppercase tracking-wider text-amber-900">
                           {orgLabels.committee}
                         </span>
-                        <span className="px-2 py-0.2 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-300">
+                        <span className="inline-flex px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-300">
                           {orgLabels.contactBadge}
                         </span>
                       </div>
-                      <p className="font-serif font-bold text-xs sm:text-sm text-[#8B1E1E]">
+                      <p className="mt-2 font-serif font-bold text-xs sm:text-sm text-[#8B1E1E]">
                         {mandapam.organizerName || orgLabels.leadRole}
                       </p>
                     </div>
@@ -545,11 +557,11 @@ export const NavaratriMandapamDetail: React.FC = () => {
                     {(mandapam.organizerMobile || mandapam.contactPhone) && (
                       <a
                         href={`tel:${mandapam.organizerMobile || mandapam.contactPhone}`}
-                        className="px-3.5 py-1.5 rounded-xl bg-white hover:bg-amber-100 text-emerald-900 border border-emerald-300 text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
-                        title={orgLabels.callBtn}
+                        className="grid h-9 w-9 place-items-center rounded-full bg-white hover:bg-amber-100 text-emerald-900 border border-emerald-300 shadow-xs transition-colors"
+                        title={`${orgLabels.callBtn}: ${mandapam.organizerMobile || mandapam.contactPhone}`}
+                        aria-label={`${orgLabels.callBtn}: ${mandapam.organizerMobile || mandapam.contactPhone}`}
                       >
-                        <Phone className="w-3.5 h-3.5 text-emerald-700" />
-                        <span>{mandapam.organizerMobile || mandapam.contactPhone}</span>
+                        <Phone className="w-4 h-4 text-emerald-700" />
                       </a>
                     )}
 
@@ -558,10 +570,37 @@ export const NavaratriMandapamDetail: React.FC = () => {
                         href={`https://wa.me/91${(mandapam.whatsappNumber || mandapam.organizerMobile).replace(/\D/g, "")}?text=${encodeURIComponent(`${orgLabels.greeting} (${transName})`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
+                        className="grid h-9 w-9 place-items-center rounded-full bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs transition-colors"
                         title={orgLabels.whatsappBtn}
+                        aria-label={orgLabels.whatsappBtn}
                       >
-                        <span>{orgLabels.whatsappBtn}</span>
+                        <MessageCircle className="w-4 h-4" />
+                      </a>
+                    )}
+
+                    {mandapam.instagramUrl && (
+                      <a
+                        href={normalizePublicSocialUrl(mandapam.instagramUrl, "instagram")}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-pink-600 via-rose-600 to-amber-500 text-white shadow-xs transition-transform hover:scale-105"
+                        title="Instagram"
+                        aria-label="Instagram"
+                      >
+                        <Instagram className="w-4 h-4" />
+                      </a>
+                    )}
+
+                    {mandapam.twitterUrl && (
+                      <a
+                        href={normalizePublicSocialUrl(mandapam.twitterUrl, "twitter")}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="grid h-9 w-9 place-items-center rounded-full bg-stone-950 text-white shadow-xs transition-transform hover:scale-105"
+                        title="X / Twitter"
+                        aria-label="X / Twitter"
+                      >
+                        <Twitter className="w-4 h-4" />
                       </a>
                     )}
                   </div>
@@ -864,7 +903,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                           </span>
                         ) : (
                           <span className="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <Flower2 className="h-3.5 w-3.5 text-pink-600" />
                             <span>{slotUI.leftText}</span>
                           </span>
                         )}
@@ -952,7 +991,9 @@ export const NavaratriMandapamDetail: React.FC = () => {
                       imageUrl={
                         (selectedDay.dayNumber === 1 && todayAlankarana?.imageUrl)
                           ? todayAlankarana.imageUrl
-                          : selectedDay.imageUrl
+                          : (selectedDay.imageUrl && !selectedDay.imageUrl.includes("terracotta-kolam-bg")
+                              ? selectedDay.imageUrl
+                              : navaratriAsset("/navaratri/assets/golden-lotus-bg.jpg"))
                       }
                       title={selectedDayDeviName}
                       subtitle={

@@ -42,6 +42,8 @@ export interface Mandapam {
   cardBgImageUrl?: string;
   contactPhone: string;
   whatsappNumber?: string;
+  instagramUrl?: string;
+  twitterUrl?: string;
   passcode?: string;
   ownerUserId?: string;
   createdAt: string;

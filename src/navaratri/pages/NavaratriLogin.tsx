@@ -44,6 +44,8 @@ type SupabaseMandapamRow = {
   cover_image_url: string | null;
   contact_phone: string | null;
   whatsapp_number: string | null;
+  instagram_url?: string | null;
+  twitter_url?: string | null;
   created_at: string | null;
   updated_at: string | null;
 };
@@ -79,6 +81,8 @@ const mapSupabaseMandapam = (row: SupabaseMandapamRow): Mandapam => ({
   coverImageUrl: row.cover_image_url || undefined,
   contactPhone: row.contact_phone || row.organizer_mobile || "",
   whatsappNumber: row.whatsapp_number || row.organizer_mobile || undefined,
+  instagramUrl: row.instagram_url || undefined,
+  twitterUrl: row.twitter_url || undefined,
   createdAt: row.created_at || new Date().toISOString(),
   updatedAt: row.updated_at || undefined,
 });
