@@ -18,6 +18,38 @@ interface NavaratriAppLayoutProps {
 }
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
+const SIDDHI_PROMO_URL = "https://siddhidynamics.in/submit?type=problem";
+
+const SiddhiDynamicsPromoBanner: React.FC<{ placement: "top" | "bottom" }> = ({ placement }) => {
+  const imageSrc =
+    placement === "top"
+      ? navaratriAsset("/navaratri/assets/siddhi-google-rank-ad.jpg")
+      : navaratriAsset("/navaratri/assets/siddhi-custom-solutions-ad.jpg");
+
+  const label =
+    placement === "top"
+      ? "Siddhi Dynamics Google ranking service"
+      : "Siddhi Dynamics custom software and automation service";
+
+  return (
+    <section className="w-full max-w-7xl mx-auto px-3 sm:px-6 py-2 font-sans">
+      <a
+        href={SIDDHI_PROMO_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${label} - submit your business problem`}
+        className="group block overflow-hidden rounded-2xl border-2 border-amber-400/80 bg-white shadow-md transition-all hover:shadow-xl active:scale-[0.995]"
+      >
+        <img
+          src={imageSrc}
+          alt={label}
+          className="block aspect-[8/3] h-auto w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.01]"
+          loading={placement === "top" ? "eager" : "lazy"}
+        />
+      </a>
+    </section>
+  );
+};
 
 export const NavaratriAppLayout: React.FC<NavaratriAppLayoutProps> = ({ children }) => {
   const location = useLocation();
@@ -92,6 +124,7 @@ export const NavaratriAppLayout: React.FC<NavaratriAppLayoutProps> = ({ children
 
           {/* Dedicated Ad Space */}
           <NavaratriTopAdBanner />
+          <SiddhiDynamicsPromoBanner placement="top" />
 
           {/* Main Body with In-Animation */}
           <motion.main
@@ -103,6 +136,8 @@ export const NavaratriAppLayout: React.FC<NavaratriAppLayoutProps> = ({ children
           >
             {children || <Outlet />}
           </motion.main>
+
+          <SiddhiDynamicsPromoBanner placement="bottom" />
 
           {/* Bottom Ad Frame (Above Footer) — Visible on Desktop & Mobile */}
           <NavaratriBottomAdBanner />
