@@ -680,22 +680,22 @@ export const NavaratriNearMe: React.FC = () => {
         <img
           src={navaratriAsset("/navaratri/assets/sage-scroll-filter-frame-transparent.png")}
           alt=""
-          className="absolute left-1/2 top-2 h-[270px] w-[116%] -translate-x-1/2 object-fill"
+          className="absolute left-1/2 top-3 h-[274px] w-[122%] -translate-x-1/2 object-fill"
         />
-        <div className="absolute left-[12%] right-[12%] top-[29%] grid grid-cols-2 gap-2">
+        <div className="absolute left-[15%] right-[15%] top-[32%] grid grid-cols-2 gap-2.5">
           {categories.map((category) => (
             <button
               key={category.id}
               type="button"
               onClick={() => setActiveCategory(category.id)}
-              className={`flex h-[52px] items-center justify-center gap-1.5 rounded-xl px-2 py-1.5 text-center text-[10px] font-black leading-tight shadow-sm transition-all last:col-span-2 last:mx-auto last:w-[54%] ${
+              className={`flex h-[45px] items-center justify-center gap-1.5 rounded-xl px-1.5 py-1 text-center text-[11px] font-black leading-tight shadow-sm transition-all last:col-span-2 last:mx-auto last:w-[52%] ${
                 activeCategory === category.id
                   ? "bg-[#8B1E1E] text-white ring-2 ring-amber-100"
                   : "border border-[#e9ddb9] bg-[#fffaf0]/90 text-[#465b28] backdrop-blur-[1px] hover:bg-white"
               }`}
             >
-              <span className="shrink-0">{category.icon}</span>
-              <span>{category.label}</span>
+              <span className="shrink-0 scale-90">{category.icon}</span>
+              <span className="max-w-full text-balance">{category.label}</span>
             </button>
           ))}
         </div>
@@ -876,12 +876,12 @@ export const NavaratriNearMe: React.FC = () => {
       {/* 2. ACTIVITIES & PROCESSIONS (PALLAKI SEVA, BHAJANS, DANDIYA, ETC.) */}
       {showActivities && (
         <section className="mt-7 space-y-3">
-          <div className="relative -mx-4 h-16 overflow-hidden bg-white sm:-mx-6 sm:h-20">
+          <div className="relative -mx-4 h-20 overflow-hidden sm:-mx-6 sm:h-24">
             <img
-              src={navaratriAsset("/navaratri/assets/blue-floral-horizontal-divider.jpg")}
+              src={navaratriAsset("/navaratri/assets/floral-vine-transparent-divider.png")}
               alt=""
               aria-hidden="true"
-              className="h-full w-full object-cover object-center saturate-150 contrast-125"
+              className="h-full w-full object-contain object-center drop-shadow-sm"
             />
           </div>
           <div className="flex items-end justify-between gap-3 border-b border-amber-200/80 pb-2">

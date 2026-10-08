@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useNavaratriData } from "../../context/NavaratriDataContext";
 import { ImagePlus, ExternalLink, Phone, MessageCircle } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
+import { PrintFlowWaitlistModal } from "./PrintFlowWaitlistModal";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { AD_PLACEHOLDER_TRANSLATIONS } from "../../utils/navaratriTranslations";
 import { navaratriAsset } from "../../utils/navaratriAssets";
@@ -16,6 +17,7 @@ export const NavaratriBottomAdBanner: React.FC = () => {
   const { advertisements, recordAdClick, recordAdImpression } = useNavaratriData();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPrintFlowWaitlistOpen, setIsPrintFlowWaitlistOpen] = useState(false);
 
   // Real active ads that target the BOTTOM frame (or BOTH, or unspecified default)
   const activeAdsWithImages = advertisements.filter(
@@ -67,9 +69,15 @@ export const NavaratriBottomAdBanner: React.FC = () => {
     return () => clearInterval(timer);
   }, [activeAdsWithImages.length]);
 
+  const isPrintFlowAd = currentAd?.businessName?.toLowerCase().includes("printflow") || currentAd?.id?.includes("printflow");
+
   const handleContainerClick = () => {
     if (currentAd?.imageUrl) {
       recordAdClick(currentAd.id);
+      if (isPrintFlowAd) {
+        setIsPrintFlowWaitlistOpen(true);
+        return;
+      }
       const target = currentAd.ctaUrl || (currentAd.phone ? `tel:${currentAd.phone}` : undefined);
       if (target) {
         if (target.startsWith("http")) {
@@ -233,6 +241,10 @@ export const NavaratriBottomAdBanner: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         onSuccess={() => setActiveIndex(0)}
         defaultFrame="BOTTOM"
+      />
+      <PrintFlowWaitlistModal
+        isOpen={isPrintFlowWaitlistOpen}
+        onClose={() => setIsPrintFlowWaitlistOpen(false)}
       />
     </>
   );
