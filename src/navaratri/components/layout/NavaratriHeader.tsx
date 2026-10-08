@@ -1,5 +1,5 @@
 import { navaratriAsset } from "../../utils/navaratriAssets";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useNavaratriLanguage, LanguageCode } from "../../context/NavaratriLanguageContext";
@@ -11,28 +11,82 @@ import {
   Building,
   Menu,
   X,
-  Store,
   MapPin,
   QrCode,
   KeyRound,
   Home,
-  ShieldCheck
+  ShieldCheck,
+  Download
 } from "lucide-react";
 import { MandapamGoldIcon } from "../devotional/MandapamGoldIcon";
 import { INVOCATION_TRANSLATIONS } from "../../utils/navaratriTranslations";
+import { toast } from "sonner";
+
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+};
 
 export const NavaratriHeader: React.FC = () => {
   const { language, setLanguage, t } = useNavaratriLanguage();
   const { followedIds, activeMandapam, isOrganizerLoggedIn, isAdmin } = useNavaratriData();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isAppInstalled, setIsAppInstalled] = useState(false);
   const location = useLocation();
 
   const isOrganizerPortal = location.pathname.startsWith("/navaratri/organizer");
   const isAdminPortal = location.pathname.startsWith("/navaratri/admin");
 
+  useEffect(() => {
+    const standalone = window.matchMedia("(display-mode: standalone)").matches || (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
+    setIsAppInstalled(standalone);
+
+    const handleBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setInstallPrompt(event as BeforeInstallPromptEvent);
+      setIsAppInstalled(false);
+    };
+
+    const handleAppInstalled = () => {
+      setInstallPrompt(null);
+      setIsAppInstalled(true);
+      toast.success("Sharan Navaratri app installed.");
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
+  }, []);
+
   const handleOpenScanner = () => {
     setMobileMenuOpen(false);
     window.dispatchEvent(new Event("navaratri:open-scanner"));
+  };
+
+  const handleInstallApp = async () => {
+    if (isAppInstalled) {
+      toast.info("Sharan Navaratri is already installed.");
+      setMobileMenuOpen(false);
+      return;
+    }
+
+    if (!installPrompt) {
+      toast.info("Use your browser menu and tap Add to Home Screen to install Sharan Navaratri.");
+      return;
+    }
+
+    await installPrompt.prompt();
+    const choice = await installPrompt.userChoice;
+    setInstallPrompt(null);
+    if (choice.outcome === "accepted") {
+      toast.success("Installing Sharan Navaratri app.");
+      setMobileMenuOpen(false);
+    }
   };
 
   const navLinks = [
@@ -254,14 +308,27 @@ export const NavaratriHeader: React.FC = () => {
           </div>
 
           <div className="pt-2 border-t border-amber-200 flex flex-col gap-2">
-            <button
-              type="button"
-              onClick={handleOpenScanner}
-              className="py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-stone-950 text-xs font-bold text-center shadow-md flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-amber-300"
-            >
-              <QrCode className="w-4 h-4 text-stone-950" />
-              <span>Scan Mandapam QR (Camera)</span>
-            </button>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={handleOpenScanner}
+                className="py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-stone-950 text-xs font-bold text-center shadow-md flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-amber-300"
+              >
+                <QrCode className="w-4 h-4 text-stone-950" />
+                <span>Scan Mandapam QR (Camera)</span>
+              </button>
+
+              {!isAppInstalled && (
+                <button
+                  type="button"
+                  onClick={handleInstallApp}
+                  className="py-2.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] via-[#A12A20] to-[#C2410C] hover:from-[#781B1B] hover:to-[#A83212] text-white text-xs font-bold text-center shadow-md flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-amber-300"
+                >
+                  <Download className="w-4 h-4 text-amber-100" />
+                  <span>Install App</span>
+                </button>
+              )}
+            </div>
 
             {/* Unified Action Button cluster for Mobile */}
             <div className="p-1 rounded-2xl bg-amber-50/70 border-2 border-amber-300 shadow-xs flex items-center justify-between gap-1">
