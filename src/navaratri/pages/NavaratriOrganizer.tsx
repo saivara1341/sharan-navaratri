@@ -3044,7 +3044,7 @@ export const NavaratriOrganizer: React.FC = () => {
                   <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-stone-700 flex items-start gap-2">
                     <span className="text-base shrink-0">💡</span>
                     <div>
-                      <strong>Visitor Visibility:</strong> Upload your official logo or a Maa idol image. Devotees who scan your QR code will see it on the Mandapam poster, hero banner, and devotee pass slip.
+                      <strong>Visitor Visibility:</strong> Upload your official logo or a Maa idol image. Devotees who scan your QR code will see it on the Mandapam poster and public profile.
                     </div>
                   </div>
 

@@ -170,6 +170,16 @@ export const NavaratriMandapamDetail: React.FC = () => {
     document.title = "Sharan Navaratri";
   }, [mandapam?.id, markScanned, searchParams]);
 
+  // Synchronize only the committee logo from localStorage or the Mandapam record.
+  // Keep this hook before any conditional return so React never changes hook order
+  // while mandapam data is loading or refreshing.
+  useEffect(() => {
+    if (mandapam?.id) {
+      const storedLogo = localStorage.getItem(`mandapam_logo_${mandapam.id}`) || mandapam.logoUrl || "";
+      setCustomLogo(storedLogo);
+    }
+  }, [mandapam?.id, mandapam?.logoUrl]);
+
   if (!mandapam) {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center p-6 text-center space-y-4">
@@ -303,14 +313,6 @@ export const NavaratriMandapamDetail: React.FC = () => {
       toast.success("Mandapam link copied to clipboard!");
     }
   };
-
-  // Synchronize only the committee logo from localStorage or the Mandapam record.
-  useEffect(() => {
-    if (mandapam?.id) {
-      const storedLogo = localStorage.getItem(`mandapam_logo_${mandapam.id}`) || mandapam.logoUrl || "";
-      setCustomLogo(storedLogo);
-    }
-  }, [mandapam?.id, mandapam?.logoUrl]);
 
   // Helper for short dates (e.g., "11 Oct")
   const formatDateShort = (isoDate: string) => {
