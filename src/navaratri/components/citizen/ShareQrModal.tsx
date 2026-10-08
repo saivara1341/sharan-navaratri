@@ -11,61 +11,60 @@ interface ShareQrModalProps {
 }
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
-type PosterTemplateId = "DEVOTION_GUIDE" | "DEVOTIONAL_POSTER" | "MODERN_QR" | "CLASSIC_QR";
+type PosterTemplateId = "ROYAL_CLASSIC" | "LOTUS_GLOW" | "MODERN_DEVOTEE" | "TEMPLE_WHITE";
+type PosterTone = "maroon" | "saffron" | "ink" | "white";
 
-type Box = { x: number; y: number; w: number; h: number };
-type TemplateTextTone = "warm" | "red" | "ink";
-
-interface PosterTemplate {
+type PosterTemplate = {
   id: PosterTemplateId;
   label: string;
-  asset: string;
-  nameBox: Box;
-  qrBox: Box;
-  logoBox?: Box;
-  locationBox?: Box;
-  tone: TemplateTextTone;
-}
+  tone: PosterTone;
+  background: string;
+  accent: string;
+  text: string;
+  muted: string;
+  panel: string;
+};
 
 const posterTemplates: PosterTemplate[] = [
   {
-    id: "DEVOTION_GUIDE",
-    label: "Devotion Guide",
-    asset: `${base}/navaratri/assets/qr-template-devotion-guide.png`,
-    nameBox: { x: 72, y: 370, w: 430, h: 132 },
-    locationBox: { x: 132, y: 536, w: 360, h: 44 },
-    logoBox: { x: 570, y: 400, w: 150, h: 150 },
-    qrBox: { x: 398, y: 640, w: 230, h: 230 },
-    tone: "ink",
+    id: "ROYAL_CLASSIC",
+    label: "Royal Classic",
+    tone: "maroon",
+    background: "linear-gradient(160deg, #fff8e7 0%, #ffe1aa 34%, #8b1e1e 35%, #4a0d0d 100%)",
+    accent: "#f6b01e",
+    text: "#7c1d1d",
+    muted: "#78350f",
+    panel: "rgba(255, 250, 240, 0.94)",
   },
   {
-    id: "DEVOTIONAL_POSTER",
-    label: "Devotional Poster",
-    asset: `${base}/navaratri/assets/qr-template-devotional-poster.png`,
-    nameBox: { x: 285, y: 465, w: 450, h: 116 },
-    locationBox: { x: 394, y: 618, w: 330, h: 40 },
-    logoBox: { x: 112, y: 50, w: 118, h: 118 },
-    qrBox: { x: 398, y: 720, w: 230, h: 230 },
-    tone: "ink",
+    id: "LOTUS_GLOW",
+    label: "Lotus Glow",
+    tone: "saffron",
+    background: "radial-gradient(circle at 80% 12%, rgba(255, 183, 77, 0.8), transparent 28%), linear-gradient(180deg, #fff7ed 0%, #fed7aa 45%, #fb923c 100%)",
+    accent: "#ea580c",
+    text: "#9a3412",
+    muted: "#7c2d12",
+    panel: "rgba(255, 255, 255, 0.88)",
   },
   {
-    id: "MODERN_QR",
-    label: "Modern QR",
-    asset: `${base}/navaratri/assets/qr-template-modern-poster.png`,
-    nameBox: { x: 72, y: 460, w: 420, h: 132 },
-    locationBox: { x: 122, y: 645, w: 335, h: 38 },
-    logoBox: { x: 548, y: 460, w: 150, h: 150 },
-    qrBox: { x: 398, y: 785, w: 230, h: 230 },
+    id: "MODERN_DEVOTEE",
+    label: "Modern Devotee",
     tone: "ink",
+    background: "linear-gradient(135deg, #fff7ed 0%, #ffffff 43%, #ffedd5 100%)",
+    accent: "#dc2626",
+    text: "#111827",
+    muted: "#57534e",
+    panel: "rgba(255, 255, 255, 0.94)",
   },
   {
-    id: "CLASSIC_QR",
-    label: "Classic QR",
-    asset: `${base}/navaratri/assets/qr-template-classic-poster.png`,
-    nameBox: { x: 438, y: 420, w: 435, h: 132 },
-    logoBox: { x: 142, y: 410, w: 160, h: 160 },
-    qrBox: { x: 398, y: 685, w: 230, h: 230 },
-    tone: "red",
+    id: "TEMPLE_WHITE",
+    label: "Temple White",
+    tone: "white",
+    background: "radial-gradient(circle at 50% 0%, rgba(251, 191, 36, 0.34), transparent 30%), linear-gradient(180deg, #fffdf7 0%, #fff7ed 62%, #ffedd5 100%)",
+    accent: "#b45309",
+    text: "#8b1e1e",
+    muted: "#7c2d12",
+    panel: "rgba(255, 255, 255, 0.92)",
   },
 ];
 
@@ -78,13 +77,6 @@ const loadCanvasImage = (src: string) =>
     img.src = src;
   });
 
-const cssBox = (box: Box): React.CSSProperties => ({
-  left: `${(box.x / 1024) * 100}%`,
-  top: `${(box.y / 1536) * 100}%`,
-  width: `${(box.w / 1024) * 100}%`,
-  height: `${(box.h / 1536) * 100}%`,
-});
-
 const fitFont = (ctx: CanvasRenderingContext2D, text: string, maxWidth: number, maxSize: number, minSize: number, family: string, weight = "900") => {
   let size = maxSize;
   while (size > minSize) {
@@ -95,7 +87,7 @@ const fitFont = (ctx: CanvasRenderingContext2D, text: string, maxWidth: number, 
   return minSize;
 };
 
-const wrapText = (ctx: CanvasRenderingContext2D, text: string, maxWidth: number, fontSize: number, family: string, weight = "900") => {
+const wrapText = (ctx: CanvasRenderingContext2D, text: string, maxWidth: number, fontSize: number, family: string, weight = "900", maxLines = 3) => {
   ctx.font = `${weight} ${fontSize}px ${family}`;
   const words = text.trim().split(/\s+/).filter(Boolean);
   const lines: string[] = [];
@@ -110,49 +102,207 @@ const wrapText = (ctx: CanvasRenderingContext2D, text: string, maxWidth: number,
     }
   });
   if (line) lines.push(line);
-  return lines.slice(0, 3);
+  return lines.slice(0, maxLines);
 };
 
-const fitWrappedText = (
+const drawWrappedCenterText = (
   ctx: CanvasRenderingContext2D,
   text: string,
-  box: Box,
+  x: number,
+  centerY: number,
+  maxWidth: number,
+  maxHeight: number,
   maxSize: number,
   minSize: number,
-  family: string,
+  color: string,
+  family = "Georgia",
   weight = "900"
 ) => {
-  const maxWidth = box.w - 44;
-  const maxHeight = box.h - 28;
   for (let size = maxSize; size >= minSize; size -= 2) {
-    const lines = wrapText(ctx, text, maxWidth, size, family, weight);
+    const lines = wrapText(ctx, text, maxWidth, size, family, weight, 3);
     const lineHeight = size * 1.08;
-    if (lines.length * lineHeight <= maxHeight && lines.every((line) => ctx.measureText(line).width <= maxWidth)) {
-      return { size, lines, lineHeight };
+    if (lines.length * lineHeight <= maxHeight) {
+      ctx.fillStyle = color;
+      ctx.font = `${weight} ${size}px ${family}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      const startY = centerY - ((lines.length - 1) * lineHeight) / 2;
+      lines.forEach((line, index) => ctx.fillText(line, x, startY + index * lineHeight));
+      return;
     }
   }
-  return { size: minSize, lines: wrapText(ctx, text, maxWidth, minSize, family, weight), lineHeight: minSize * 1.08 };
 };
 
-const previewNameSize = (box: Box) => `clamp(10px, ${(box.w / 1024) * 5.8}cqw, 25px)`;
-
-const drawRoundedImage = (ctx: CanvasRenderingContext2D, img: HTMLImageElement, box: Box) => {
+const fillRoundRect = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number, fill: string, stroke?: string, lineWidth = 4) => {
   ctx.save();
   ctx.beginPath();
-  ctx.arc(box.x + box.w / 2, box.y + box.h / 2, Math.min(box.w, box.h) / 2, 0, Math.PI * 2);
-  ctx.clip();
-  ctx.drawImage(img, box.x, box.y, box.w, box.h);
+  ctx.roundRect(x, y, w, h, r);
+  ctx.fillStyle = fill;
+  ctx.fill();
+  if (stroke) {
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = stroke;
+    ctx.stroke();
+  }
   ctx.restore();
+};
+
+const drawCircularImage = (ctx: CanvasRenderingContext2D, img: HTMLImageElement, x: number, y: number, size: number) => {
+  ctx.save();
   ctx.beginPath();
-  ctx.arc(box.x + box.w / 2, box.y + box.h / 2, Math.min(box.w, box.h) / 2, 0, Math.PI * 2);
+  ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
+  ctx.clip();
+  ctx.drawImage(img, x, y, size, size);
+  ctx.restore();
+};
+
+const drawPosterBackground = (ctx: CanvasRenderingContext2D, template: PosterTemplate) => {
+  const gradient = ctx.createLinearGradient(0, 0, 1024, 1536);
+  if (template.tone === "maroon") {
+    gradient.addColorStop(0, "#fff8e7");
+    gradient.addColorStop(0.42, "#ffe8bd");
+    gradient.addColorStop(0.43, "#8b1e1e");
+    gradient.addColorStop(1, "#3a0909");
+  } else if (template.tone === "saffron") {
+    gradient.addColorStop(0, "#fff7ed");
+    gradient.addColorStop(0.55, "#fed7aa");
+    gradient.addColorStop(1, "#fb923c");
+  } else if (template.tone === "ink") {
+    gradient.addColorStop(0, "#fff7ed");
+    gradient.addColorStop(0.5, "#ffffff");
+    gradient.addColorStop(1, "#ffedd5");
+  } else {
+    gradient.addColorStop(0, "#fffdf7");
+    gradient.addColorStop(0.7, "#fff7ed");
+    gradient.addColorStop(1, "#ffedd5");
+  }
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 1024, 1536);
+
+  ctx.save();
+  ctx.globalAlpha = template.tone === "maroon" ? 0.2 : 0.12;
+  ctx.fillStyle = template.accent;
+  ctx.beginPath();
+  ctx.arc(900, 140, 210, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(80, 1380, 240, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.save();
+  ctx.strokeStyle = template.accent;
   ctx.lineWidth = 8;
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.85)";
-  ctx.stroke();
+  ctx.globalAlpha = 0.8;
+  ctx.strokeRect(34, 34, 956, 1468);
+  ctx.restore();
+};
+
+const drawFeature = (ctx: CanvasRenderingContext2D, x: number, y: number, icon: string, title: string, subtitle: string, template: PosterTemplate) => {
+  fillRoundRect(ctx, x, y, 205, 138, 26, "rgba(255,255,255,0.82)", "rgba(245, 158, 11, 0.32)", 3);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "42px Arial";
+  ctx.fillText(icon, x + 102, y + 38);
+  ctx.font = "900 25px Arial";
+  ctx.fillStyle = template.text;
+  ctx.fillText(title, x + 102, y + 82);
+  ctx.font = "700 18px Arial";
+  ctx.fillStyle = template.muted;
+  ctx.fillText(subtitle, x + 102, y + 112);
+};
+
+const drawGeneratedPoster = async (
+  ctx: CanvasRenderingContext2D,
+  template: PosterTemplate,
+  mandapam: Mandapam,
+  mandapamLocation: string,
+  publicUrl: string,
+  qr: HTMLCanvasElement
+) => {
+  drawPosterBackground(ctx, template);
+
+  try {
+    const trishul = await loadCanvasImage(`${base}/navaratri/assets/trishula-head.png`);
+    ctx.drawImage(trishul, 92, 84, 92, 92);
+  } catch {
+    ctx.font = "72px serif";
+    ctx.fillText("🔱", 135, 130);
+  }
+
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = template.text;
+  ctx.font = "900 56px Georgia";
+  ctx.fillText("SHARAN", 205, 110);
+  ctx.font = "900 66px Georgia";
+  ctx.fillText("NAVARATRI", 205, 174);
+  ctx.font = "700 16px Arial";
+  ctx.fillStyle = template.muted;
+  ctx.fillText("ALL MANDAPAMS  |  ALL INFORMATION  |  FOR ALL DEVOTEES", 96, 240);
+
+  fillRoundRect(ctx, 80, 315, 864, 286, 44, template.panel, template.accent, 5);
+  fillRoundRect(ctx, 118, 360, 210, 210, 105, "rgba(255,255,255,0.92)", "rgba(245, 158, 11, 0.35)", 4);
+  if (mandapam.logoUrl) {
+    try {
+      const logo = await loadCanvasImage(mandapam.logoUrl);
+      drawCircularImage(ctx, logo, 143, 385, 160);
+    } catch {
+      ctx.fillStyle = template.muted;
+      ctx.font = "900 22px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("MANDAPAM", 223, 446);
+      ctx.fillText("LOGO", 223, 478);
+    }
+  }
+
+  ctx.textAlign = "center";
+  ctx.font = "700 24px Arial";
+  ctx.fillStyle = template.muted;
+  ctx.fillText("WELCOME TO", 620, 370);
+  drawWrappedCenterText(ctx, mandapam.name.toUpperCase(), 620, 470, 500, 132, 54, 26, template.text);
+  const locationFont = fitFont(ctx, mandapamLocation, 440, 24, 16, "Arial", "700");
+  ctx.font = `700 ${locationFont}px Arial`;
+  ctx.fillStyle = template.muted;
+  ctx.fillText(mandapamLocation, 620, 560);
+
+  fillRoundRect(ctx, 292, 650, 440, 440, 36, "rgba(255,255,255,0.96)", template.accent, 8);
+  ctx.drawImage(qr, 342, 690, 340, 340);
+  fillRoundRect(ctx, 300, 1040, 424, 86, 28, template.tone === "ink" ? "#8b1e1e" : template.text, template.accent, 4);
+  ctx.font = "900 42px Arial";
+  ctx.fillStyle = "#ffffff";
+  ctx.textAlign = "center";
+  ctx.fillText("SCAN HERE", 512, 1076);
+  ctx.font = "700 17px Arial";
+  ctx.fillText("TO VIEW TODAY'S DETAILS", 512, 1108);
+
+  drawFeature(ctx, 70, 1165, "🌺", "Alankarana", "Today & Upcoming", template);
+  drawFeature(ctx, 300, 1165, "🍚", "Naivedyam", "Today's Offerings", template);
+  drawFeature(ctx, 530, 1165, "🍛", "Annadanam", "Timings & Details", template);
+  drawFeature(ctx, 760, 1165, "🕘", "Puja Timings", "Daily Schedule", template);
+
+  fillRoundRect(ctx, 80, 1360, 864, 98, 30, "rgba(255,255,255,0.78)", "rgba(245, 158, 11, 0.35)", 3);
+  ctx.font = "700 24px Georgia";
+  ctx.fillStyle = template.text;
+  ctx.fillText("Amma Vari Sevalo", 242, 1410);
+  try {
+    const siddhiLogo = await loadCanvasImage(`${base}/assets/siddhi-logo-transparent-Bv2_XJq0.png`);
+    ctx.drawImage(siddhiLogo, 430, 1372, 86, 58);
+  } catch {
+    ctx.font = "900 24px Arial";
+    ctx.fillText("SIDDHI", 470, 1398);
+  }
+  ctx.font = "900 28px Arial";
+  ctx.fillStyle = "#111827";
+  ctx.fillText("SIDDHI DYNAMICS LLP", 604, 1404);
+  ctx.font = "700 16px Arial";
+  ctx.fillStyle = template.muted;
+  ctx.fillText("A TECHNOLOGY INITIATIVE FOR OUR DEVOTEES", 748, 1435);
 };
 
 export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, onClose }) => {
   const [designMode, setDesignMode] = useState<"POSTER" | "QR">("POSTER");
-  const [posterTemplateId, setPosterTemplateId] = useState<PosterTemplateId>("DEVOTION_GUIDE");
+  const [posterTemplateId, setPosterTemplateId] = useState<PosterTemplateId>("ROYAL_CLASSIC");
   const [isDownloading, setIsDownloading] = useState(false);
   if (!isOpen) return null;
 
@@ -185,62 +335,7 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
       const ctx = canvas.getContext("2d");
       if (!ctx) throw new Error("No canvas context");
 
-      const templateImage = await loadCanvasImage(activeTemplate.asset);
-      ctx.drawImage(templateImage, 0, 0, 1024, 1536);
-
-      const { nameBox, locationBox, logoBox, qrBox, tone } = activeTemplate;
-      ctx.save();
-      ctx.fillStyle = tone === "red" ? "rgba(255, 252, 245, 0.92)" : "rgba(255, 250, 242, 0.88)";
-      ctx.beginPath();
-      ctx.roundRect(nameBox.x, nameBox.y, nameBox.w, nameBox.h, 24);
-      ctx.fill();
-      ctx.restore();
-
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      const fittedName = fitWrappedText(ctx, mandapam.name.toUpperCase(), nameBox, tone === "red" ? 42 : 44, 20, "Georgia");
-      ctx.font = `900 ${fittedName.size}px Georgia`;
-      ctx.fillStyle = tone === "red" ? "#991b1b" : "#111827";
-      const startY = nameBox.y + nameBox.h / 2 - ((fittedName.lines.length - 1) * fittedName.lineHeight) / 2;
-      fittedName.lines.forEach((line, index) => ctx.fillText(line, nameBox.x + nameBox.w / 2, startY + index * fittedName.lineHeight));
-
-      if (locationBox) {
-        ctx.save();
-        ctx.fillStyle = "rgba(255, 255, 255, 0.90)";
-        ctx.beginPath();
-        ctx.roundRect(locationBox.x, locationBox.y, locationBox.w, locationBox.h, 18);
-        ctx.fill();
-        ctx.fillStyle = "#1f2937";
-        const locationFont = fitFont(ctx, mandapamLocation, locationBox.w - 36, 24, 15, "Arial", "700");
-        ctx.font = `700 ${locationFont}px Arial`;
-        ctx.fillText(mandapamLocation, locationBox.x + locationBox.w / 2, locationBox.y + locationBox.h / 2 + 1);
-        ctx.restore();
-      }
-
-      if (logoBox) {
-        ctx.save();
-        ctx.fillStyle = "rgba(255, 255, 255, 0.90)";
-        ctx.beginPath();
-        ctx.arc(logoBox.x + logoBox.w / 2, logoBox.y + logoBox.h / 2, Math.min(logoBox.w, logoBox.h) / 2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-        if (mandapam.logoUrl) {
-          try {
-            const logo = await loadCanvasImage(mandapam.logoUrl);
-            drawRoundedImage(ctx, logo, logoBox);
-          } catch {
-            // Leave the clean logo holder if the uploaded logo cannot be loaded into canvas.
-          }
-        }
-      }
-
-      ctx.save();
-      ctx.fillStyle = "#ffffff";
-      ctx.beginPath();
-      ctx.roundRect(qrBox.x - 12, qrBox.y - 12, qrBox.w + 24, qrBox.h + 24, 18);
-      ctx.fill();
-      ctx.drawImage(qr, qrBox.x, qrBox.y, qrBox.w, qrBox.h);
-      ctx.restore();
+      await drawGeneratedPoster(ctx, activeTemplate, mandapam, mandapamLocation, publicUrl, qr);
 
       canvas.toBlob((blob) => {
         if (!blob) {
@@ -279,6 +374,65 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
 
   const downloadSelected = designMode === "POSTER" ? downloadPoster : downloadQr;
 
+  const posterPreview = (template: PosterTemplate, compact = false) => (
+    <div className="relative h-full overflow-hidden rounded-[18px] border border-amber-300 bg-white shadow-xl" style={{ background: template.background }}>
+      <div className="absolute -right-[18%] top-[2%] h-[25%] w-[45%] rounded-full opacity-25 blur-md" style={{ backgroundColor: template.accent }} />
+      <div className="absolute -left-[18%] bottom-[2%] h-[28%] w-[48%] rounded-full opacity-20 blur-md" style={{ backgroundColor: template.accent }} />
+      <div className="absolute inset-[3%] rounded-[20px] border-2 border-white/50" />
+      {!compact && <button onClick={share} aria-label="Share Mandapam URL" className="absolute right-3 top-3 z-20 grid h-10 w-10 place-items-center rounded-full bg-white/95 text-[#7c1d1d] shadow-lg ring-1 ring-amber-300 hover:bg-amber-50 cursor-pointer"><Share2 className="h-4 w-4" /></button>}
+
+      <div className="absolute left-[8%] top-[5.5%] flex items-center gap-[3%]">
+        <img src={`${base}/navaratri/assets/trishula-head.png`} alt="" className="h-[8cqw] w-[8cqw] object-contain" />
+        <div className="leading-none">
+          <p className="font-serif text-[7cqw] font-black uppercase" style={{ color: template.text }}>Sharan</p>
+          <p className="font-serif text-[7.6cqw] font-black uppercase" style={{ color: template.text }}>Navaratri</p>
+        </div>
+      </div>
+      <p className="absolute left-[8%] top-[18%] text-[2cqw] font-bold uppercase tracking-[0.2em]" style={{ color: template.muted }}>All Mandapams • All Information • For All Devotees</p>
+
+      <div className="absolute left-[8%] right-[8%] top-[24%] flex h-[19%] items-center gap-[5%] rounded-[6cqw] border border-amber-300/60 p-[4%] shadow-sm" style={{ background: template.panel }}>
+        <div className="grid aspect-square h-full shrink-0 place-items-center overflow-hidden rounded-full border border-amber-300/70 bg-white/85 p-[2%]">
+          {hasLogo ? <img src={mandapam.logoUrl} alt={`${mandapam.name} logo`} className="h-full w-full rounded-full object-cover" /> : <span className="text-center text-[2cqw] font-black uppercase leading-tight text-stone-500">Mandapam<br />Logo</span>}
+        </div>
+        <div className="min-w-0 flex-1 text-center">
+          <p className="text-[2.2cqw] font-bold uppercase tracking-[0.28em]" style={{ color: template.muted }}>Welcome to</p>
+          <p className="line-clamp-3 font-serif text-[5.2cqw] font-black uppercase leading-[0.94]" style={{ color: template.text }}>{mandapam.name}</p>
+          <p className="mt-[2%] truncate text-[2.35cqw] font-bold" style={{ color: template.muted }}>{mandapamLocation}</p>
+        </div>
+      </div>
+
+      <div className="absolute left-1/2 top-[47%] w-[43%] -translate-x-1/2 -translate-y-1/2 rounded-[4cqw] border-[0.7cqw] bg-white p-[4%] shadow-xl" style={{ borderColor: template.accent }}>
+        <QRCodeSVG value={publicUrl} size={560} level="H" includeMargin className="h-full w-full" />
+      </div>
+      <div className="absolute left-1/2 top-[62.5%] w-[50%] -translate-x-1/2 rounded-[3cqw] px-[2%] py-[2.2%] text-center text-white shadow-lg" style={{ background: template.tone === "ink" ? "#8b1e1e" : template.text }}>
+        <p className="text-[4.1cqw] font-black uppercase leading-none">Scan Here</p>
+        <p className="mt-[1%] text-[1.65cqw] font-bold uppercase tracking-[0.22em]">View today's details</p>
+      </div>
+
+      <div className="absolute left-[6%] right-[6%] top-[72%] grid grid-cols-4 gap-[2%]">
+        {[
+          ["🌺", "Alankarana"],
+          ["🍚", "Naivedyam"],
+          ["🍛", "Annadanam"],
+          ["🕘", "Puja Timings"],
+        ].map(([icon, label]) => (
+          <div key={label} className="rounded-[3cqw] bg-white/82 px-[1%] py-[8%] text-center shadow-sm ring-1 ring-amber-200/60">
+            <div className="text-[5cqw] leading-none">{icon}</div>
+            <p className="mt-[8%] text-[2.2cqw] font-black leading-tight" style={{ color: template.text }}>{label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="absolute bottom-[5%] left-[8%] right-[8%] flex items-center justify-between rounded-[3cqw] border border-amber-200/70 bg-white/78 px-[5%] py-[3%] shadow-sm">
+        <p className="text-[2.5cqw] font-serif font-bold tracking-[0.2em]" style={{ color: template.text }}>Amma Vari Sevalo</p>
+        <div className="text-right leading-tight">
+          <p className="text-[3.2cqw] font-black text-orange-600">SIDDHI</p>
+          <p className="text-[2.6cqw] font-black text-stone-900">DYNAMICS LLP</p>
+        </div>
+      </div>
+    </div>
+  );
+
   return <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/80 p-2 backdrop-blur-sm sm:p-4">
     <div className="relative flex h-[calc(100dvh-1rem)] w-full max-w-xl flex-col overflow-hidden rounded-3xl bg-[#fffaf0] p-3 shadow-2xl sm:h-[calc(100dvh-2rem)] sm:p-4">
       <button onClick={onClose} aria-label="Close Mandapam QR" className="absolute right-3 top-3 z-30 grid h-10 w-10 place-items-center rounded-full border border-stone-300 bg-white text-stone-700 shadow-md hover:bg-stone-100"><X className="h-5 w-5" /></button>
@@ -296,11 +450,11 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
                 key={template.id}
                 type="button"
                 onClick={() => setPosterTemplateId(template.id)}
-                className={`overflow-hidden rounded-xl border bg-white p-0.5 transition-all cursor-pointer ${isSelected ? "border-[#7c1d1d] shadow-sm ring-2 ring-[#7c1d1d]/20" : "border-amber-200 hover:border-amber-400"}`}
+                className={`aspect-[2/3] overflow-hidden rounded-xl border bg-white p-0.5 transition-all cursor-pointer [container-type:inline-size] ${isSelected ? "border-[#7c1d1d] shadow-sm ring-2 ring-[#7c1d1d]/20" : "border-amber-200 hover:border-amber-400"}`}
                 aria-label={`Use ${template.label} template`}
                 title={template.label}
               >
-                <img src={template.asset} alt="" className="aspect-[4/5] w-full rounded-lg object-cover" />
+                {posterPreview(template, true)}
               </button>
             );
           })}
@@ -309,30 +463,9 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
       <div className="hidden"><QRCodeCanvas id="mandapam-qr-canvas" value={publicUrl} size={1200} level="H" includeMargin /></div>
       <div className="min-h-0 flex flex-1 items-start justify-center overflow-y-auto pt-1 sm:items-center sm:pt-0">
         <div className="relative aspect-[2/3] h-[min(68dvh,680px)] max-h-full w-auto max-w-full [container-type:inline-size] sm:h-[min(72dvh,760px)]">
-          <button onClick={share} aria-label="Share Mandapam URL" className="absolute right-3 top-3 z-20 grid h-10 w-10 place-items-center rounded-full bg-white/95 text-[#7c1d1d] shadow-lg ring-1 ring-amber-300 hover:bg-amber-50 cursor-pointer"><Share2 className="h-4 w-4" /></button>
-          {designMode === "POSTER" ? (
-            <div id="printable-standee" className="relative h-full overflow-hidden rounded-[18px] border border-amber-300 bg-white shadow-xl">
-              <img src={activeTemplate.asset} alt="Selected Navaratri QR poster template" className="absolute inset-0 h-full w-full object-cover" />
-              <div className={`absolute flex items-center justify-center rounded-2xl px-[3%] text-center font-serif font-black leading-tight ${activeTemplate.tone === "red" ? "bg-white/90 text-[#991b1b]" : "bg-[#fffaf2]/90 text-stone-950"}`} style={cssBox(activeTemplate.nameBox)}>
-                <span className="line-clamp-3 uppercase drop-shadow-sm" style={{ fontSize: previewNameSize(activeTemplate.nameBox) }}>{mandapam.name}</span>
-              </div>
-              {activeTemplate.locationBox && (
-                <div className="absolute flex items-center justify-center rounded-full bg-white/90 px-[2%] text-center text-[clamp(8px,1.7vh,15px)] font-bold text-stone-800" style={cssBox(activeTemplate.locationBox)}>
-                  <span className="truncate">{mandapamLocation}</span>
-                </div>
-              )}
-              {activeTemplate.logoBox && (
-                <div className="absolute overflow-hidden rounded-full bg-white/90 p-[1.2%] shadow-sm ring-2 ring-white/70" style={cssBox(activeTemplate.logoBox)}>
-                  {hasLogo ? <img src={mandapam.logoUrl} alt={`${mandapam.name} logo`} className="h-full w-full rounded-full object-cover" /> : <div className="grid h-full w-full place-items-center rounded-full text-center text-[clamp(7px,1.6vh,13px)] font-black uppercase leading-tight text-stone-500">Mandapam<br />Logo</div>}
-                </div>
-              )}
-              <div className="absolute rounded-xl bg-white p-[1.2%] shadow-sm" style={cssBox(activeTemplate.qrBox)}>
-                <QRCodeSVG value={publicUrl} size={560} level="H" includeMargin className="h-full w-full" />
-              </div>
-            </div>
-          ) : (
+          {designMode === "POSTER" ? posterPreview(activeTemplate) : (
             <div className="flex h-full flex-col items-center justify-center rounded-[26px] border border-amber-300 bg-white p-5 shadow-xl">
-              <p className="text-[10px] font-black tracking-[0.16em] text-[#7c1d1d] sm:text-xs">{mandapam.name.toUpperCase()}</p>
+              <p className="text-center text-[10px] font-black tracking-[0.16em] text-[#7c1d1d] sm:text-xs">{mandapam.name.toUpperCase()}</p>
               <div className="mt-4 rounded-3xl border-4 border-amber-400 bg-white p-3 shadow-lg sm:p-5"><QRCodeSVG value={publicUrl} size={256} level="H" includeMargin className="h-44 w-44 sm:h-56 sm:w-56" /></div>
               <p className="mt-4 text-center text-xs font-bold text-stone-800 sm:text-sm">Scan to visit this Mandapam</p><p className="mt-1 text-center text-[10px] text-stone-500 sm:text-xs">Opens {mandapam.name} darshan, poojas and updates.</p>
             </div>
