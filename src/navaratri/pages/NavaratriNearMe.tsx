@@ -74,6 +74,82 @@ const TELANGANA_DISTRICTS = [
   "Yadadri Bhuvanagiri"
 ] as const;
 
+const INDIA_STATES_AND_UNION_TERRITORIES = [
+  "Andaman and Nicobar Islands",
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chandigarh",
+  "Chhattisgarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jammu and Kashmir",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Ladakh",
+  "Lakshadweep",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Puducherry",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal"
+] as const;
+
+const STATE_FALLBACK_REGIONS: Record<string, Omit<RegionConfig, "state">> = {
+  "Andaman and Nicobar Islands": { name: "Port Blair", lat: 11.6234, lng: 92.7265, defaultArea: "Port Blair", areas: ["Port Blair"] },
+  "Arunachal Pradesh": { name: "Itanagar", lat: 27.0844, lng: 93.6053, defaultArea: "Itanagar", areas: ["Itanagar"] },
+  Assam: { name: "Guwahati", lat: 26.1445, lng: 91.7362, defaultArea: "Guwahati", areas: ["Guwahati"] },
+  Bihar: { name: "Patna", lat: 25.5941, lng: 85.1376, defaultArea: "Patna", areas: ["Patna"] },
+  Chandigarh: { name: "Chandigarh", lat: 30.7333, lng: 76.7794, defaultArea: "Chandigarh", areas: ["Chandigarh"] },
+  Chhattisgarh: { name: "Raipur", lat: 21.2514, lng: 81.6296, defaultArea: "Raipur", areas: ["Raipur"] },
+  "Dadra and Nagar Haveli and Daman and Diu": { name: "Daman", lat: 20.3974, lng: 72.8328, defaultArea: "Daman", areas: ["Daman"] },
+  Delhi: { name: "New Delhi", lat: 28.6139, lng: 77.209, defaultArea: "New Delhi", areas: ["New Delhi"] },
+  Goa: { name: "Panaji", lat: 15.4909, lng: 73.8278, defaultArea: "Panaji", areas: ["Panaji"] },
+  Gujarat: { name: "Ahmedabad", lat: 23.0225, lng: 72.5714, defaultArea: "Ahmedabad", areas: ["Ahmedabad"] },
+  Haryana: { name: "Gurugram", lat: 28.4595, lng: 77.0266, defaultArea: "Gurugram", areas: ["Gurugram"] },
+  "Himachal Pradesh": { name: "Shimla", lat: 31.1048, lng: 77.1734, defaultArea: "Shimla", areas: ["Shimla"] },
+  "Jammu and Kashmir": { name: "Jammu", lat: 32.7266, lng: 74.857, defaultArea: "Jammu", areas: ["Jammu"] },
+  Jharkhand: { name: "Ranchi", lat: 23.3441, lng: 85.3096, defaultArea: "Ranchi", areas: ["Ranchi"] },
+  Karnataka: { name: "Bengaluru", lat: 12.9716, lng: 77.5946, defaultArea: "Bengaluru", areas: ["Bengaluru"] },
+  Kerala: { name: "Thiruvananthapuram", lat: 8.5241, lng: 76.9366, defaultArea: "Thiruvananthapuram", areas: ["Thiruvananthapuram"] },
+  Ladakh: { name: "Leh", lat: 34.1526, lng: 77.5771, defaultArea: "Leh", areas: ["Leh"] },
+  Lakshadweep: { name: "Kavaratti", lat: 10.5593, lng: 72.6358, defaultArea: "Kavaratti", areas: ["Kavaratti"] },
+  "Madhya Pradesh": { name: "Bhopal", lat: 23.2599, lng: 77.4126, defaultArea: "Bhopal", areas: ["Bhopal"] },
+  Maharashtra: { name: "Mumbai", lat: 19.076, lng: 72.8777, defaultArea: "Mumbai", areas: ["Mumbai"] },
+  Manipur: { name: "Imphal", lat: 24.817, lng: 93.9368, defaultArea: "Imphal", areas: ["Imphal"] },
+  Meghalaya: { name: "Shillong", lat: 25.5788, lng: 91.8933, defaultArea: "Shillong", areas: ["Shillong"] },
+  Mizoram: { name: "Aizawl", lat: 23.7307, lng: 92.7173, defaultArea: "Aizawl", areas: ["Aizawl"] },
+  Nagaland: { name: "Kohima", lat: 25.6751, lng: 94.1086, defaultArea: "Kohima", areas: ["Kohima"] },
+  Odisha: { name: "Bhubaneswar", lat: 20.2961, lng: 85.8245, defaultArea: "Bhubaneswar", areas: ["Bhubaneswar"] },
+  Puducherry: { name: "Puducherry", lat: 11.9416, lng: 79.8083, defaultArea: "Puducherry", areas: ["Puducherry"] },
+  Punjab: { name: "Ludhiana", lat: 30.901, lng: 75.8573, defaultArea: "Ludhiana", areas: ["Ludhiana"] },
+  Rajasthan: { name: "Jaipur", lat: 26.9124, lng: 75.7873, defaultArea: "Jaipur", areas: ["Jaipur"] },
+  Sikkim: { name: "Gangtok", lat: 27.3389, lng: 88.6065, defaultArea: "Gangtok", areas: ["Gangtok"] },
+  "Tamil Nadu": { name: "Chennai", lat: 13.0827, lng: 80.2707, defaultArea: "Chennai", areas: ["Chennai"] },
+  Tripura: { name: "Agartala", lat: 23.8315, lng: 91.2868, defaultArea: "Agartala", areas: ["Agartala"] },
+  "Uttar Pradesh": { name: "Lucknow", lat: 26.8467, lng: 80.9462, defaultArea: "Lucknow", areas: ["Lucknow"] },
+  Uttarakhand: { name: "Dehradun", lat: 30.3165, lng: 78.0322, defaultArea: "Dehradun", areas: ["Dehradun"] },
+  "West Bengal": { name: "Kolkata", lat: 22.5726, lng: 88.3639, defaultArea: "Kolkata", areas: ["Kolkata"] }
+};
+
 const TELANGANA_DISTRICT_COORDINATES: Record<string, { lat: number; lng: number }> = {
   Adilabad: { lat: 19.6641, lng: 78.532 },
   "Bhadradri Kothagudem": { lat: 17.55, lng: 80.64 },
@@ -400,6 +476,22 @@ TELANGANA_DISTRICTS.forEach((district) => {
   }
 });
 
+INDIA_STATES_AND_UNION_TERRITORIES.forEach((state) => {
+  const hasRegion = Object.values(REGIONS_DATA).some((region) => region.state === state);
+  const fallback = STATE_FALLBACK_REGIONS[state];
+  if (!hasRegion && fallback) {
+    REGIONS_DATA[fallback.name] = {
+      ...fallback,
+      state
+    };
+  }
+});
+
+const getRegionsForState = (state: string) =>
+  Object.keys(REGIONS_DATA)
+    .filter((regionKey) => REGIONS_DATA[regionKey].state === state)
+    .sort((a, b) => REGIONS_DATA[a].name.localeCompare(REGIONS_DATA[b].name));
+
 const HYDERABAD_METRO_TERMS = [
   "hyderabad",
   "secunderabad",
@@ -458,13 +550,16 @@ export const NavaratriNearMe: React.FC = () => {
   }, [queryCategory]);
 
   const [activeCategory, setActiveCategory] = useState<Category>(initialCategory);
-  const [manualCity, setManualCity] = useState(userLocation?.city && REGIONS_DATA[userLocation.city] ? userLocation.city : "Nizamabad");
+  const initialRegionKey = userLocation?.city && REGIONS_DATA[userLocation.city] ? userLocation.city : "Nizamabad";
+  const [manualState, setManualState] = useState(REGIONS_DATA[initialRegionKey]?.state || "Telangana");
+  const [manualCity, setManualCity] = useState(initialRegionKey);
   // Area is optional: selecting a district alone must show all Mandapams in it.
   const [manualArea, setManualArea] = useState("");
   const [isLocating, setIsLocating] = useState(false);
   const [locationSource, setLocationSource] = useState<"default" | "manual" | "gps">("default");
   const [showAllOverride, setShowAllOverride] = useState(false);
   const resultsSectionRef = useRef<HTMLElement | null>(null);
+  const regionOptionsForState = useMemo(() => getRegionsForState(manualState), [manualState]);
 
   const scrollToResults = () => {
     window.setTimeout(() => {
@@ -473,7 +568,7 @@ export const NavaratriNearMe: React.FC = () => {
   };
 
   const applyManualLocation = () => {
-    const region = REGIONS_DATA[manualCity] || REGIONS_DATA.Nizamabad;
+    const region = REGIONS_DATA[manualCity] || REGIONS_DATA[regionOptionsForState[0]] || REGIONS_DATA.Nizamabad;
     const areaTrimmed = manualArea.trim();
     const areaCoord = region.areaCoordinates?.[areaTrimmed];
     const lat = areaCoord ? areaCoord.lat : region.lat;
@@ -490,7 +585,7 @@ export const NavaratriNearMe: React.FC = () => {
 
   const selectQuickArea = (selectedArea: string) => {
     setManualArea(selectedArea);
-    const region = REGIONS_DATA[manualCity] || REGIONS_DATA.Nizamabad;
+    const region = REGIONS_DATA[manualCity] || REGIONS_DATA[regionOptionsForState[0]] || REGIONS_DATA.Nizamabad;
     const areaCoord = region.areaCoordinates?.[selectedArea];
     const lat = areaCoord ? areaCoord.lat : region.lat;
     const lng = areaCoord ? areaCoord.lng : region.lng;
@@ -562,7 +657,7 @@ export const NavaratriNearMe: React.FC = () => {
         .sort((a, b) => a.distanceKm - b.distanceKm);
     }
 
-    const region = REGIONS_DATA[manualCity] || REGIONS_DATA.Nizamabad;
+    const region = REGIONS_DATA[manualCity] || REGIONS_DATA[regionOptionsForState[0]] || REGIONS_DATA.Nizamabad;
     const manualAreaTrimmed = manualArea.trim();
     const manualAreaCoord = manualAreaTrimmed ? region.areaCoordinates?.[manualAreaTrimmed] : undefined;
     const origin = locationSource === "gps" && userLocation
@@ -640,7 +735,8 @@ export const NavaratriNearMe: React.FC = () => {
     manualCity,
     manualArea,
     locationSource,
-    showAllOverride
+    showAllOverride,
+    regionOptionsForState
   ]);
 
   const isPallakiOrBhajan = (cat: string = "", title: string = "") => {
@@ -780,28 +876,39 @@ export const NavaratriNearMe: React.FC = () => {
           </div>
         </div>
 
-        {/* State is fixed to Telangana, then users choose a district and optional area. */}
+        {/* Users can choose any Indian state/UT, then a supported city or district and optional area. */}
         <div className="mt-2.5 grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[0.8fr_1fr_1.2fr_auto_auto]">
           <select
-            value="Telangana"
-            disabled
+            value={manualState}
+            onChange={(event) => {
+              const nextState = event.target.value;
+              const nextRegions = getRegionsForState(nextState);
+              setManualState(nextState);
+              setManualCity(nextRegions[0] || "Nizamabad");
+              setManualArea("");
+              setLocationSource("manual");
+              setShowAllOverride(false);
+            }}
             aria-label="Choose state"
-            className="col-span-2 h-10 rounded-xl border border-amber-300 bg-amber-50 px-3 text-xs font-black text-[#8B1E1E] outline-none opacity-100 sm:col-span-1"
+            className="col-span-2 h-10 rounded-xl border border-amber-300 bg-amber-50 px-3 text-xs font-black text-[#8B1E1E] outline-none focus:ring-2 focus:ring-amber-500 sm:col-span-1"
           >
-            <option value="Telangana">Telangana</option>
+            {INDIA_STATES_AND_UNION_TERRITORIES.map((state) => (
+              <option key={state} value={state}>{state}</option>
+            ))}
           </select>
           <select
-            value={TELANGANA_DISTRICTS.includes(manualCity as typeof TELANGANA_DISTRICTS[number]) ? manualCity : "Nizamabad"}
+            value={regionOptionsForState.includes(manualCity) ? manualCity : regionOptionsForState[0] || "Nizamabad"}
             onChange={(event) => {
               setManualCity(event.target.value);
               setManualArea("");
               setLocationSource("manual");
+              setShowAllOverride(false);
             }}
             aria-label="Choose district"
             className="col-span-2 h-10 rounded-xl border border-amber-300 bg-white px-3 text-xs font-semibold text-stone-900 outline-none focus:ring-2 focus:ring-amber-500 sm:col-span-1"
           >
-            {TELANGANA_DISTRICTS.map((district) => (
-              <option key={district} value={district}>{district}</option>
+            {regionOptionsForState.map((regionKey) => (
+              <option key={regionKey} value={regionKey}>{REGIONS_DATA[regionKey].name}</option>
             ))}
           </select>
           <div className="relative col-span-2 sm:col-span-1">
