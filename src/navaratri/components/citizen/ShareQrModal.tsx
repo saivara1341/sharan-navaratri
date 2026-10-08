@@ -3,6 +3,7 @@ import { QRCodeCanvas, QRCodeSVG } from "qrcode.react";
 import { Download, Share2, X } from "lucide-react";
 import { toast } from "sonner";
 import { Mandapam } from "../../types";
+import siddhiLogoTransparent from "@/assets/siddhi-logo-transparent.png";
 
 interface ShareQrModalProps {
   mandapam: Mandapam;
@@ -11,6 +12,7 @@ interface ShareQrModalProps {
 }
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
+const siddhiLogoAsset = new URL("../../../assets/siddhi-logo-transparent.png", import.meta.url).href;
 type PosterTemplateId = "ROYAL_CLASSIC" | "LOTUS_GLOW" | "MODERN_DEVOTEE" | "TEMPLE_WHITE";
 type PosterTone = "maroon" | "saffron" | "ink" | "white";
 
@@ -224,7 +226,7 @@ const drawGeneratedPoster = async (
 
   try {
     const trishul = await loadCanvasImage(`${base}/navaratri/assets/trishula-head.png`);
-    ctx.drawImage(trishul, 92, 84, 92, 92);
+    ctx.drawImage(trishul, 92, 92, 82, 82);
   } catch {
     ctx.font = "72px serif";
     ctx.fillText("🔱", 135, 130);
@@ -234,70 +236,68 @@ const drawGeneratedPoster = async (
   ctx.textBaseline = "middle";
   ctx.fillStyle = template.text;
   ctx.font = "900 56px Georgia";
-  ctx.fillText("SHARAN", 205, 110);
-  ctx.font = "900 66px Georgia";
-  ctx.fillText("NAVARATRI", 205, 174);
+  ctx.fillText("SHARAN NAVARATRI", 190, 134);
   ctx.font = "700 16px Arial";
   ctx.fillStyle = template.muted;
-  ctx.fillText("ALL MANDAPAMS  |  ALL INFORMATION  |  FOR ALL DEVOTEES", 96, 240);
+  ctx.fillText("ALL MANDAPAMS  |  ALL INFORMATION  |  FOR ALL DEVOTEES", 96, 226);
 
-  fillRoundRect(ctx, 80, 315, 864, 286, 44, template.panel, template.accent, 5);
-  fillRoundRect(ctx, 118, 360, 210, 210, 105, "rgba(255,255,255,0.92)", "rgba(245, 158, 11, 0.35)", 4);
+  fillRoundRect(ctx, 80, 300, 864, 250, 44, template.panel, template.accent, 5);
+  fillRoundRect(ctx, 118, 340, 180, 180, 90, "rgba(255,255,255,0.92)", "rgba(245, 158, 11, 0.35)", 4);
   if (mandapam.logoUrl) {
     try {
       const logo = await loadCanvasImage(mandapam.logoUrl);
-      drawCircularImage(ctx, logo, 143, 385, 160);
+      drawCircularImage(ctx, logo, 140, 362, 136);
     } catch {
       ctx.fillStyle = template.muted;
       ctx.font = "900 22px Arial";
       ctx.textAlign = "center";
-      ctx.fillText("MANDAPAM", 223, 446);
-      ctx.fillText("LOGO", 223, 478);
+      ctx.fillText("MANDAPAM", 208, 424);
+      ctx.fillText("LOGO", 208, 456);
     }
   }
 
   ctx.textAlign = "center";
   ctx.font = "700 24px Arial";
   ctx.fillStyle = template.muted;
-  ctx.fillText("WELCOME TO", 620, 370);
-  drawWrappedCenterText(ctx, mandapam.name.toUpperCase(), 620, 470, 500, 132, 54, 26, template.text);
-  const locationFont = fitFont(ctx, mandapamLocation, 440, 24, 16, "Arial", "700");
+  ctx.fillText("WELCOME TO", 620, 350);
+  drawWrappedCenterText(ctx, mandapam.name.toUpperCase(), 620, 430, 510, 110, 48, 24, template.text);
+  const locationFont = fitFont(ctx, mandapamLocation, 440, 23, 15, "Arial", "700");
   ctx.font = `700 ${locationFont}px Arial`;
   ctx.fillStyle = template.muted;
-  ctx.fillText(mandapamLocation, 620, 560);
+  ctx.fillText(mandapamLocation, 620, 520);
 
-  fillRoundRect(ctx, 292, 650, 440, 440, 36, "rgba(255,255,255,0.96)", template.accent, 8);
-  ctx.drawImage(qr, 342, 690, 340, 340);
-  fillRoundRect(ctx, 300, 1040, 424, 86, 28, template.tone === "ink" ? "#8b1e1e" : template.text, template.accent, 4);
+  fillRoundRect(ctx, 292, 590, 440, 440, 36, "rgba(255,255,255,0.96)", template.accent, 8);
+  ctx.drawImage(qr, 342, 630, 340, 340);
+  fillRoundRect(ctx, 300, 985, 424, 86, 28, template.tone === "ink" ? "#8b1e1e" : template.text, template.accent, 4);
   ctx.font = "900 42px Arial";
   ctx.fillStyle = "#ffffff";
   ctx.textAlign = "center";
-  ctx.fillText("SCAN HERE", 512, 1076);
+  ctx.fillText("SCAN HERE", 512, 1021);
   ctx.font = "700 17px Arial";
-  ctx.fillText("TO VIEW TODAY'S DETAILS", 512, 1108);
+  ctx.fillText("TO VIEW TODAY'S DETAILS", 512, 1053);
 
-  drawFeature(ctx, 70, 1165, "🌺", "Alankarana", "Today & Upcoming", template);
-  drawFeature(ctx, 300, 1165, "🍚", "Naivedyam", "Today's Offerings", template);
-  drawFeature(ctx, 530, 1165, "🍛", "Annadanam", "Timings & Details", template);
-  drawFeature(ctx, 760, 1165, "🕘", "Puja Timings", "Daily Schedule", template);
+  drawFeature(ctx, 70, 1122, "🌺", "Alankarana", "Today & Upcoming", template);
+  drawFeature(ctx, 300, 1122, "🍚", "Naivedyam", "Today's Offerings", template);
+  drawFeature(ctx, 530, 1122, "🍛", "Annadanam", "Timings & Details", template);
+  drawFeature(ctx, 760, 1122, "🕘", "Puja Timings", "Daily Schedule", template);
 
-  fillRoundRect(ctx, 80, 1360, 864, 98, 30, "rgba(255,255,255,0.78)", "rgba(245, 158, 11, 0.35)", 3);
-  ctx.font = "700 24px Georgia";
+  fillRoundRect(ctx, 80, 1348, 864, 110, 30, "rgba(255,255,255,0.82)", "rgba(245, 158, 11, 0.35)", 3);
+  ctx.font = "900 30px Georgia";
   ctx.fillStyle = template.text;
-  ctx.fillText("Amma Vari Sevalo", 242, 1410);
+  ctx.fillText("అమ్మవారి సేవలో", 270, 1404);
   try {
-    const siddhiLogo = await loadCanvasImage(`${base}/assets/siddhi-logo-transparent-Bv2_XJq0.png`);
-    ctx.drawImage(siddhiLogo, 430, 1372, 86, 58);
+    const siddhiLogo = await loadCanvasImage(siddhiLogoAsset);
+    ctx.drawImage(siddhiLogo, 520, 1368, 92, 72);
   } catch {
     ctx.font = "900 24px Arial";
-    ctx.fillText("SIDDHI", 470, 1398);
+    ctx.fillText("SIDDHI", 560, 1398);
   }
   ctx.font = "900 28px Arial";
   ctx.fillStyle = "#111827";
-  ctx.fillText("SIDDHI DYNAMICS LLP", 604, 1404);
-  ctx.font = "700 16px Arial";
+  ctx.fillText("SIDDHI DYNAMICS LLP", 744, 1398);
+  ctx.font = "700 15px Arial";
   ctx.fillStyle = template.muted;
-  ctx.fillText("A TECHNOLOGY INITIATIVE FOR OUR DEVOTEES", 748, 1435);
+  ctx.fillText("TECHNOLOGY INITIATIVE", 744, 1430);
 };
 
 export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, onClose }) => {
@@ -381,53 +381,53 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
       <div className="absolute inset-[3%] rounded-[20px] border-2 border-white/50" />
       {!compact && <button onClick={share} aria-label="Share Mandapam URL" className="absolute right-3 top-3 z-20 grid h-10 w-10 place-items-center rounded-full bg-white/95 text-[#7c1d1d] shadow-lg ring-1 ring-amber-300 hover:bg-amber-50 cursor-pointer"><Share2 className="h-4 w-4" /></button>}
 
-      <div className="absolute left-[8%] top-[5.5%] flex items-center gap-[3%]">
-        <img src={`${base}/navaratri/assets/trishula-head.png`} alt="" className="h-[8cqw] w-[8cqw] object-contain" />
-        <div className="leading-none">
-          <p className="font-serif text-[7cqw] font-black uppercase" style={{ color: template.text }}>Sharan</p>
-          <p className="font-serif text-[7.6cqw] font-black uppercase" style={{ color: template.text }}>Navaratri</p>
-        </div>
+      <div className="absolute left-[8%] top-[6.2%] flex items-center gap-[2.2%]">
+        <img src={`${base}/navaratri/assets/trishula-head.png`} alt="" className="h-[7cqw] w-[7cqw] object-contain" />
+        <p className="whitespace-nowrap font-serif text-[6.5cqw] font-black uppercase leading-none" style={{ color: template.text }}>Sharan Navaratri</p>
       </div>
-      <p className="absolute left-[8%] top-[18%] text-[2cqw] font-bold uppercase tracking-[0.2em]" style={{ color: template.muted }}>All Mandapams • All Information • For All Devotees</p>
+      <p className="absolute left-[8%] top-[17%] text-[2cqw] font-bold uppercase tracking-[0.2em]" style={{ color: template.muted }}>All Mandapams • All Information • For All Devotees</p>
 
-      <div className="absolute left-[8%] right-[8%] top-[24%] flex h-[19%] items-center gap-[5%] rounded-[6cqw] border border-amber-300/60 p-[4%] shadow-sm" style={{ background: template.panel }}>
-        <div className="grid aspect-square h-full shrink-0 place-items-center overflow-hidden rounded-full border border-amber-300/70 bg-white/85 p-[2%]">
+      <div className="absolute left-[8%] right-[8%] top-[23%] flex h-[17%] items-center gap-[5%] rounded-[6cqw] border border-amber-300/60 p-[4%] shadow-sm" style={{ background: template.panel }}>
+        <div className="grid aspect-square h-[86%] shrink-0 place-items-center overflow-hidden rounded-full border border-amber-300/70 bg-white/85 p-[2%]">
           {hasLogo ? <img src={mandapam.logoUrl} alt={`${mandapam.name} logo`} className="h-full w-full rounded-full object-cover" /> : <span className="text-center text-[2cqw] font-black uppercase leading-tight text-stone-500">Mandapam<br />Logo</span>}
         </div>
         <div className="min-w-0 flex-1 text-center">
-          <p className="text-[2.2cqw] font-bold uppercase tracking-[0.28em]" style={{ color: template.muted }}>Welcome to</p>
-          <p className="line-clamp-3 font-serif text-[5.2cqw] font-black uppercase leading-[0.94]" style={{ color: template.text }}>{mandapam.name}</p>
-          <p className="mt-[2%] truncate text-[2.35cqw] font-bold" style={{ color: template.muted }}>{mandapamLocation}</p>
+          <p className="text-[2cqw] font-bold uppercase tracking-[0.28em]" style={{ color: template.muted }}>Welcome to</p>
+          <p className="line-clamp-3 font-serif text-[4.2cqw] font-black uppercase leading-[0.94]" style={{ color: template.text }}>{mandapam.name}</p>
+          <p className="mt-[1.5%] truncate text-[2.15cqw] font-bold" style={{ color: template.muted }}>{mandapamLocation}</p>
         </div>
       </div>
 
-      <div className="absolute left-1/2 top-[47%] w-[43%] -translate-x-1/2 -translate-y-1/2 rounded-[4cqw] border-[0.7cqw] bg-white p-[4%] shadow-xl" style={{ borderColor: template.accent }}>
+      <div className="absolute left-1/2 top-[48%] w-[41%] -translate-x-1/2 -translate-y-1/2 rounded-[4cqw] border-[0.7cqw] bg-white p-[4%] shadow-xl" style={{ borderColor: template.accent }}>
         <QRCodeSVG value={publicUrl} size={560} level="H" includeMargin className="h-full w-full" />
       </div>
-      <div className="absolute left-1/2 top-[62.5%] w-[50%] -translate-x-1/2 rounded-[3cqw] px-[2%] py-[2.2%] text-center text-white shadow-lg" style={{ background: template.tone === "ink" ? "#8b1e1e" : template.text }}>
+      <div className="absolute left-1/2 top-[61.5%] w-[50%] -translate-x-1/2 rounded-[3cqw] px-[2%] py-[2.2%] text-center text-white shadow-lg" style={{ background: template.tone === "ink" ? "#8b1e1e" : template.text }}>
         <p className="text-[4.1cqw] font-black uppercase leading-none">Scan Here</p>
         <p className="mt-[1%] text-[1.65cqw] font-bold uppercase tracking-[0.22em]">View today's details</p>
       </div>
 
-      <div className="absolute left-[6%] right-[6%] top-[72%] grid grid-cols-4 gap-[2%]">
+      <div className="absolute left-[6%] right-[6%] top-[70.5%] grid grid-cols-4 gap-[2%]">
         {[
           ["🌺", "Alankarana"],
           ["🍚", "Naivedyam"],
           ["🍛", "Annadanam"],
           ["🕘", "Puja Timings"],
         ].map(([icon, label]) => (
-          <div key={label} className="rounded-[3cqw] bg-white/82 px-[1%] py-[8%] text-center shadow-sm ring-1 ring-amber-200/60">
-            <div className="text-[5cqw] leading-none">{icon}</div>
-            <p className="mt-[8%] text-[2.2cqw] font-black leading-tight" style={{ color: template.text }}>{label}</p>
+          <div key={label} className="rounded-[3cqw] bg-white/92 px-[1%] py-[8%] text-center shadow-sm ring-1 ring-amber-300/80">
+            <div className="text-[5cqw] leading-none drop-shadow-sm">{icon}</div>
+            <p className="mt-[8%] text-[2.15cqw] font-black leading-tight text-stone-950">{label}</p>
           </div>
         ))}
       </div>
 
-      <div className="absolute bottom-[5%] left-[8%] right-[8%] flex items-center justify-between rounded-[3cqw] border border-amber-200/70 bg-white/78 px-[5%] py-[3%] shadow-sm">
-        <p className="text-[2.5cqw] font-serif font-bold tracking-[0.2em]" style={{ color: template.text }}>Amma Vari Sevalo</p>
-        <div className="text-right leading-tight">
-          <p className="text-[3.2cqw] font-black text-orange-600">SIDDHI</p>
-          <p className="text-[2.6cqw] font-black text-stone-900">DYNAMICS LLP</p>
+      <div className="absolute bottom-[5%] left-[8%] right-[8%] flex items-center justify-between rounded-[3cqw] border border-amber-200/70 bg-white/82 px-[4%] py-[2.5%] shadow-sm">
+        <p className="text-[3.2cqw] font-serif font-black" style={{ color: template.text }}>అమ్మవారి సేవలో</p>
+        <div className="flex items-center gap-[2%]">
+          <img src={siddhiLogoTransparent} alt="Siddhi Dynamics LLP" className="h-[8cqw] w-[8cqw] object-contain" />
+          <div className="text-right leading-tight">
+            <p className="text-[3cqw] font-black text-orange-600">SIDDHI</p>
+            <p className="text-[2.4cqw] font-black text-stone-900">DYNAMICS LLP</p>
+          </div>
         </div>
       </div>
     </div>
