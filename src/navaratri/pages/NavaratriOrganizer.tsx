@@ -65,10 +65,16 @@ import {
   Crop,
   Maximize2,
   ChevronDown,
-  UserRoundPen
+  UserRoundPen,
+  Smartphone
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+};
 
 const PRESET_MANDAPAM_BACKGROUNDS = [
   {
@@ -229,6 +235,8 @@ export const NavaratriOrganizer: React.FC = () => {
 
   // Mandapam Settings Dropdown State
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isAppInstalled, setIsAppInstalled] = useState(false);
 
   // Mandapam Branding, Media & Location State
   const [brandingModalOpen, setBrandingModalOpen] = useState(false);
@@ -476,6 +484,52 @@ export const NavaratriOrganizer: React.FC = () => {
       sessionStorage.removeItem(key);
       localStorage.removeItem(key);
     });
+  };
+
+  useEffect(() => {
+    const standalone = window.matchMedia("(display-mode: standalone)").matches || (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
+    setIsAppInstalled(standalone);
+
+    const handleBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setInstallPrompt(event as BeforeInstallPromptEvent);
+      setIsAppInstalled(false);
+    };
+
+    const handleAppInstalled = () => {
+      setInstallPrompt(null);
+      setIsAppInstalled(true);
+      toast.success("Sharan Navaratri app installed.");
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (isAppInstalled) {
+      toast.info("Sharan Navaratri is already installed.");
+      setSettingsOpen(false);
+      return;
+    }
+
+    if (!installPrompt) {
+      toast.info("Use your browser menu and tap Add to Home Screen to install Sharan Navaratri.");
+      return;
+    }
+
+    await installPrompt.prompt();
+    const choice = await installPrompt.userChoice;
+    setInstallPrompt(null);
+    if (choice.outcome === "accepted") {
+      toast.success("Installing Sharan Navaratri app.");
+      setSettingsOpen(false);
+    }
   };
 
   // Supabase Auth state change listener — fires SIGNED_OUT when admin deletes user from auth.users
@@ -1448,6 +1502,17 @@ export const NavaratriOrganizer: React.FC = () => {
                     <QrCode className="w-4 h-4 text-[#8B1E1E] shrink-0" />
                     <span>Mandapam QR Code</span>
                   </button>
+
+                  {!isAppInstalled && (
+                    <button
+                      type="button"
+                      onClick={handleInstallApp}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:text-[#8B1E1E] rounded-xl transition-colors text-left cursor-pointer"
+                    >
+                      <Smartphone className="w-4 h-4 text-orange-600 shrink-0" />
+                      <span>Install App</span>
+                    </button>
+                  )}
 
                   <div className="my-1 border-t border-stone-200" />
 
