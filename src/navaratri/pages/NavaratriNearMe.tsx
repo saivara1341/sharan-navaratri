@@ -790,7 +790,7 @@ export const NavaratriNearMe: React.FC = () => {
               key={category.id}
               type="button"
               onClick={() => setActiveCategory(category.id)}
-              className={`flex h-[45px] items-center justify-center gap-1.5 rounded-xl px-1.5 py-1 text-center text-[11px] font-black leading-tight shadow-sm transition-all last:col-span-2 last:mx-auto last:w-[52%] ${
+              className={`flex h-[45px] items-center justify-center gap-1.5 rounded-xl px-1.5 py-1 text-center text-[11px] font-black leading-tight shadow-sm transition-all last:col-span-2 last:mx-auto last:-mt-1 last:w-[48%] ${
                 activeCategory === category.id
                   ? "bg-[#8B1E1E] text-white ring-2 ring-amber-100"
                   : "border border-[#e9ddb9] bg-[#fffaf0]/90 text-[#465b28] backdrop-blur-[1px] hover:bg-white"
