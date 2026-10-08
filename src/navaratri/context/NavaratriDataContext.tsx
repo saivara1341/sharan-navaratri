@@ -1486,7 +1486,6 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       const { data: authData } = await supabase.auth.getUser();
       const user = authData?.user;
 
-      // 1. Identify mandapams to purge from local state
       const idsToPurge: string[] = [];
       if (mandapamId) {
         idsToPurge.push(mandapamId);
@@ -1495,38 +1494,57 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
           .filter(m => m.ownerUserId === user.id || (user.email && m.organizerEmail && m.organizerEmail.toLowerCase() === user.email.toLowerCase()))
           .forEach(m => idsToPurge.push(m.id));
       }
-      // Purge from local reactive state and localStorage immediately
+
+      let remoteDeleted = false;
+      let lastRemoteError = "";
+
+      if (user) {
+        try {
+          const { data, error } = await supabase.functions.invoke("navaratri-account-delete", {
+            body: { mandapamId: mandapamId || null },
+          });
+          if (error) {
+            lastRemoteError = error.message || "Delete service failed.";
+          } else if ((data as any)?.success) {
+            remoteDeleted = true;
+          } else {
+            lastRemoteError = String((data as any)?.error || "Delete service did not confirm deletion.");
+          }
+        } catch (edgeErr: any) {
+          lastRemoteError = edgeErr?.message || "Delete service unavailable.";
+        }
+
+        if (!remoteDeleted) {
+          try {
+            const { error: rpcErr } = await (supabase as any).rpc("delete_own_user_account");
+            if (rpcErr) {
+              lastRemoteError = rpcErr.message || lastRemoteError;
+            } else {
+              remoteDeleted = true;
+            }
+          } catch (rpcCatch: any) {
+            lastRemoteError = rpcCatch?.message || lastRemoteError;
+          }
+        }
+
+        if (!remoteDeleted) {
+          console.error("deleteUserAccount remote deletion failed:", lastRemoteError);
+          return false;
+        }
+      } else if (mandapamId) {
+        const { error } = await (supabase.from("navaratri_mandapams") as any).delete().eq("id", mandapamId);
+        if (error) {
+          console.error("deleteUserAccount unauthenticated mandapam delete failed:", error.message);
+          return false;
+        }
+      } else {
+        return false;
+      }
+
       if (idsToPurge.length > 0) {
         purgeMandapamsLocal(idsToPurge);
       }
 
-      // 2. Execute database deletion via SECURITY DEFINER RPC
-      // The RPC deletes: navaratri_mandapams (+ all CASCADE children), bookings, reminders,
-      // community_questions, advertisements, mandapam_members, and the auth.users row itself.
-      if (user) {
-        let rpcSuccess = false;
-        try {
-          const { error: rpcErr } = await (supabase as any).rpc("delete_own_user_account");
-          if (!rpcErr) rpcSuccess = true;
-        } catch {
-          // RPC unavailable — use direct fallback
-        }
-
-        if (!rpcSuccess) {
-          // Direct fallback: delete DB data and sign out (cannot delete auth.users directly from client)
-          await (supabase.from("navaratri_mandapams") as any).delete().eq("owner_user_id", user.id);
-          if (user.email) {
-            await (supabase.from("navaratri_mandapams") as any).delete().ilike("organizer_email", user.email);
-          }
-          await (supabase.from("navaratri_bookings") as any).delete().eq("user_id", user.id);
-          await (supabase.from("navaratri_reminders") as any).delete().eq("user_id", user.id);
-          await (supabase.from("navaratri_community_questions") as any).delete().eq("user_id", user.id);
-          await (supabase.from("navaratri_advertisements") as any).delete().eq("user_id", user.id);
-          await (supabase.from("navaratri_mandapam_members") as any).delete().eq("user_id", user.id);
-        }
-      }
-
-      // 3. Clear all browser session and local storage
       sessionStorage.clear();
       try {
         const keysToRemove = [
@@ -1551,8 +1569,11 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       setActiveMandapamId("");
       setRole("devotee");
 
-      // 4. Sign out of Supabase Auth session
-      await supabase.auth.signOut();
+      try {
+        await supabase.auth.signOut();
+      } catch {
+        // The auth user may already be deleted by the server-side function.
+      }
       return true;
     } catch (err) {
       console.error("deleteUserAccount error:", err);

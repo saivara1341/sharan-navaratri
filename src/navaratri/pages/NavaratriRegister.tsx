@@ -32,6 +32,7 @@ type GoogleOnboardingProfile = {
 type RegistrationCredentials = {
   mobile?: string;
   email?: string;
+  passcode?: string;
 };
 
 const TELANGANA_DISTRICTS = [
@@ -174,7 +175,11 @@ export const NavaratriRegister: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState("");
 
   // Credentials are captured on the login page before onboarding.
-  const [passcode] = useState(() => generatePasscode());
+  const [passcode] = useState(() =>
+    /^\d{6}$/.test(registrationCredentials.passcode || "")
+      ? registrationCredentials.passcode as string
+      : generatePasscode()
+  );
 
   const [googleMapsUrl, setGoogleMapsUrl] = useState("");
 

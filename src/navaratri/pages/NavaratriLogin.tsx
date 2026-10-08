@@ -54,6 +54,9 @@ const NAVARATRI_ADMIN_EMAIL = "ssaivaraprasad51@gmail.com";
 const LAST_LOGIN_MODE_KEY = "navaratri_last_organizer_login_mode";
 type OrganizerLoginMode = "mobile" | "email" | "google";
 
+const mobileAuthEmail = (digits: string) => `navaratri-mobile-${digits}@siddhidynamics.in`;
+const isInternalMobileAuthEmail = (email: string) => /^navaratri-mobile-\d{10}@siddhidynamics\.in$/i.test(email.trim());
+
 const readLastLoginMode = (): OrganizerLoginMode | null => {
   const mode = localStorage.getItem(LAST_LOGIN_MODE_KEY);
   return mode === "mobile" || mode === "email" || mode === "google" ? mode : null;
@@ -210,13 +213,14 @@ export const NavaratriLogin: React.FC = () => {
       : typeof user.user_metadata?.name === "string"
         ? user.user_metadata.name
         : "";
+    const publicEmail = isInternalMobileAuthEmail(email) ? "" : email;
     localStorage.setItem("navaratri_google_onboarding", JSON.stringify({
       userId: user.id,
-      email,
+      email: publicEmail,
       name: displayName,
     }));
     toast.info("Welcome! Complete your Mandapam onboarding to create your portal.");
-    navigate("/navaratri/register?source=google");
+    navigate(`/navaratri/register?source=${loginMode === "google" ? "google" : "account"}`);
   }, [mandapams, navigate, openOrganizerPortal]);
 
   useEffect(() => {
@@ -329,16 +333,19 @@ export const NavaratriLogin: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const credentials = isEmail
-        ? { email: normalizedEmail, password: cleanPass }
-        : { phone: `+91${digitsOnly}`, password: cleanPass };
+      const authEmail = isEmail ? normalizedEmail : mobileAuthEmail(digitsOnly);
+      const credentials = { email: authEmail, password: cleanPass };
 
       if (accountMode === "new") {
         const { data, error } = await supabase.auth.signUp({
           ...credentials,
           options: {
             emailRedirectTo: `${window.location.origin}/navaratri/login?oauth=account`,
-            data: { role: "navaratri_organizer" },
+            data: {
+              role: "navaratri_organizer",
+              login_method: isEmail ? "email" : "mobile",
+              mobile: isEmail ? undefined : digitsOnly,
+            },
           },
         } as any);
         if (error) throw error;
@@ -346,14 +353,15 @@ export const NavaratriLogin: React.FC = () => {
         localStorage.setItem("navaratri_registration_credentials", JSON.stringify({
           mobile: isEmail ? "" : digitsOnly,
           email: isEmail ? normalizedEmail : "",
+          passcode: cleanPass,
         }));
 
         if (!data.session) {
           if (isEmail) {
             toast.success("Check your email to confirm the account, then return to continue onboarding.");
           } else {
-            setPendingPhone(digitsOnly);
-            toast.success("Enter the verification code sent to your mobile.");
+            toast.success("Account created. Please sign in with the same mobile number and PIN to continue.");
+            setAccountMode("existing");
           }
           return;
         }
