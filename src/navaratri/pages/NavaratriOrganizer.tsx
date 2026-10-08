@@ -64,7 +64,8 @@ import {
   Image as ImageIcon,
   Crop,
   Maximize2,
-  ChevronDown
+  ChevronDown,
+  UserRoundPen
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -461,14 +462,31 @@ export const NavaratriOrganizer: React.FC = () => {
     };
   }, [activeMandapamId, mandapams, navigate, setActiveMandapamId]);
 
+  const clearOrganizerAuthStorage = () => {
+    if (typeof window === "undefined") return;
+    const organizerAuthKeys = [
+      "navaratri_organizer_id",
+      "navaratri_google_auth",
+      "navaratri_session_id",
+      "navaratri_last_organizer_login_mode",
+      "navaratri_google_onboarding",
+      "navaratri_is_admin",
+    ];
+    organizerAuthKeys.forEach((key) => {
+      sessionStorage.removeItem(key);
+      localStorage.removeItem(key);
+    });
+  };
+
   // Supabase Auth state change listener — fires SIGNED_OUT when admin deletes user from auth.users
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_OUT" || event === "USER_DELETED") {
-        sessionStorage.removeItem("navaratri_organizer_id");
-        localStorage.removeItem("navaratri_organizer_id");
+        clearOrganizerAuthStorage();
         setAuthenticatedMandapamId(null);
+        setSessionMandapam(null);
         setActiveMandapamId("");
+        setRole("devotee");
         navigate("/navaratri/login", { replace: true });
       }
     });
@@ -476,21 +494,19 @@ export const NavaratriOrganizer: React.FC = () => {
   }, [navigate, setActiveMandapamId]);
 
   const handleLogout = async () => {
+    setSettingsOpen(false);
+    clearOrganizerAuthStorage();
     setAuthenticatedMandapamId(null);
     setSessionMandapam(null);
     setActiveMandapamId("");
     setRole("devotee");
-    if (typeof window !== "undefined") {
-      sessionStorage.removeItem("navaratri_organizer_id");
-      localStorage.removeItem("navaratri_organizer_id");
-      sessionStorage.removeItem("navaratri_google_auth");
-      sessionStorage.removeItem("navaratri_session_id");
-    }
     try {
       await supabase.auth.signOut();
-    } catch {}
+    } catch {
+      // The local organizer session is already cleared, so still leave the portal.
+    }
     toast.info("Logged out of Mandapam Organizer Portal.");
-    navigate("/navaratri", { replace: true });
+    navigate("/navaratri/login", { replace: true });
   };
 
   const isGoogleAuthenticated = typeof window !== "undefined" &&
@@ -1417,7 +1433,7 @@ export const NavaratriOrganizer: React.FC = () => {
                     }}
                     className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:text-[#8B1E1E] rounded-xl transition-colors text-left cursor-pointer"
                   >
-                    <Camera className="w-4 h-4 text-amber-600 shrink-0" />
+                    <UserRoundPen className="w-4 h-4 text-amber-600 shrink-0" />
                     <span>Edit Profile</span>
                   </button>
 
@@ -1438,10 +1454,7 @@ export const NavaratriOrganizer: React.FC = () => {
                   {/* 5. Logout */}
                   <button
                     type="button"
-                    onClick={() => {
-                      setSettingsOpen(false);
-                      handleLogout();
-                    }}
+                    onClick={handleLogout}
                     className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-stone-700 hover:bg-stone-100 rounded-xl transition-colors text-left cursor-pointer"
                   >
                     <LogOut className="w-4 h-4 text-stone-500 shrink-0" />
