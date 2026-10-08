@@ -488,8 +488,7 @@ export const NavaratriHome: React.FC = () => {
       />
 
       {/* 2. YOUR FOLLOWED MANDAPAMS (IF ANY) */}
-      {savedMandapams.length > 0 && (
-        <motion.section
+      <motion.section
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.15 }}
@@ -502,7 +501,7 @@ export const NavaratriHome: React.FC = () => {
               <h2 className="font-['Cinzel',serif] text-2xl font-black text-[#8B1E1E]">Your Mandapams</h2>
             </div>
             <span className="px-2.5 py-1 rounded-full bg-amber-100 text-[#8B1E1E] text-xs font-bold">
-              {savedMandapams.length} {savedMandapams.length === 1 ? "Mandapam" : "Mandapams"}
+              {scannedMandapams.length} scanned • {followedMandapams.length} following
             </span>
           </div>
 
@@ -511,6 +510,36 @@ export const NavaratriHome: React.FC = () => {
             <button type="button" onClick={() => setSavedTab("following")} className={`rounded-xl px-3 py-2 text-xs font-bold transition ${savedTab === "following" ? "bg-[#8B1E1E] text-white shadow-sm" : "text-stone-700"}`}><Heart className="mr-1 inline h-3.5 w-3.5" /> Following ({followedMandapams.length})</button>
           </div>
 
+          {visibleSavedMandapams.length === 0 ? (
+            <div className="rounded-[1.75rem] border-2 border-dashed border-amber-300 bg-white/80 p-5 text-center shadow-xs">
+              <div className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-amber-100 text-[#8B1E1E]">
+                {savedTab === "scanned" ? <QrCode className="h-6 w-6" /> : <Heart className="h-6 w-6" />}
+              </div>
+              <h3 className="font-serif text-lg font-black text-[#8B1E1E]">
+                {savedTab === "scanned" ? "No scanned Mandapams yet" : "No followed Mandapams yet"}
+              </h3>
+              <p className="mx-auto mt-1 max-w-sm text-xs font-medium leading-relaxed text-stone-600">
+                {savedTab === "scanned"
+                  ? "Scan a Mandapam QR to save it here with its original logo and daily updates."
+                  : "Follow Mandapams to keep them here with their original logo and festival details."}
+              </p>
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
+                <button
+                  type="button"
+                  onClick={handleOpenScanner}
+                  className="rounded-xl bg-[#8B1E1E] px-4 py-2.5 text-xs font-bold text-white shadow transition hover:bg-[#781B1B]"
+                >
+                  Scan Mandapam QR
+                </button>
+                <Link
+                  to="/navaratri/near-me"
+                  className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-xs font-bold text-[#8B1E1E] transition hover:bg-amber-100"
+                >
+                  Find Mandapams Near Me
+                </Link>
+              </div>
+            </div>
+          ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {visibleSavedMandapams.slice(0, 2).map((mandapam) => {
               const mapsUrl = getMandapamDirectionsUrl(mandapam);
@@ -520,11 +549,13 @@ export const NavaratriHome: React.FC = () => {
                   className="overflow-hidden rounded-[1.75rem] border-2 border-amber-300 bg-white p-4 shadow-md hover:shadow-lg transition-shadow"
                 >
                   <div className="flex items-start gap-3.5">
-                    <img
-                      src={mandapam.todayAlankarana?.imageUrl || mandapam.coverImageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg")}
-                      alt={mandapam.name}
-                      className="h-20 w-20 shrink-0 rounded-2xl border border-amber-300 object-cover shadow-sm"
-                    />
+                    <div className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-2xl border border-amber-300 bg-[#FFF8E7] p-1.5 shadow-sm">
+                      <img
+                        src={mandapam.logoUrl || mandapam.todayAlankarana?.imageUrl || mandapam.coverImageUrl || navaratriAsset("/navaratri/assets/mandapam-gold-sanctum.webp")}
+                        alt={`${mandapam.name} logo`}
+                        className="h-full w-full object-contain"
+                      />
+                    </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-1.5 mb-1">
                         {mandapam.source === "Following" ? (
@@ -578,9 +609,9 @@ export const NavaratriHome: React.FC = () => {
               );
             })}
           </div>
+          )}
           {visibleSavedMandapams.length > 2 && <Link to={`/navaratri/following?tab=${savedTab}`} className="mx-auto flex w-fit items-center gap-1 rounded-xl border border-amber-400 bg-white px-4 py-2 text-xs font-bold text-[#8B1E1E] hover:bg-amber-50">Show more <ChevronRight className="h-4 w-4" /></Link>}
         </motion.section>
-      )}
 
       {/* 3. 9-DAY SACRED NAVARATRI CALENDAR & ALANKARANAS WITH IN-ANIMATION */}
       <motion.section

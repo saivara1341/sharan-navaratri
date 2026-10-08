@@ -1,7 +1,7 @@
 import { navaratriAsset } from "../utils/navaratriAssets";
 import React from "react";
 import { Link } from "react-router-dom";
-import { useNavaratriData } from "../context/NavaratriDataContext";
+import { useNavaratriData, isDemoOrMockMandapam } from "../context/NavaratriDataContext";
 import {
   Heart,
   Clock,
@@ -12,7 +12,7 @@ import {
 export const NavaratriFollowing: React.FC = () => {
   const { mandapams, followedIds, alankaranas, toggleFollow } = useNavaratriData();
 
-  const followedMandapams = mandapams.filter(m => followedIds.includes(m.id));
+  const followedMandapams = mandapams.filter(m => followedIds.includes(m.id) && !isDemoOrMockMandapam(m));
 
   return (
     <div className="space-y-6 pb-16">
@@ -55,11 +55,13 @@ export const NavaratriFollowing: React.FC = () => {
 
                   {/* Daily Alankarana Feature Card */}
                   <div className="flex items-center gap-4 bg-amber-50/50 p-3 rounded-2xl border border-amber-200">
-                    <img
-                      src={alankarana?.imageUrl || navaratriAsset("/navaratri/assets/ivory-lotus-kolam.jpg")}
-                      alt="Today Alankarana"
-                      className="w-24 h-24 rounded-xl object-cover border-2 border-amber-400 shadow-sm"
-                    />
+                    <div className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-xl border-2 border-amber-400 bg-[#FFF8E7] p-2 shadow-sm">
+                      <img
+                        src={m.logoUrl || alankarana?.imageUrl || navaratriAsset("/navaratri/assets/mandapam-gold-sanctum.webp")}
+                        alt={`${m.name} logo`}
+                        className="h-full w-full object-contain"
+                      />
+                    </div>
                     <div className="space-y-1">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900">
                         Today's Darshan
