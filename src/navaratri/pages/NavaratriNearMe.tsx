@@ -978,14 +978,15 @@ export const NavaratriNearMe: React.FC = () => {
       {/* 2. ACTIVITIES & PROCESSIONS (PALLAKI SEVA, BHAJANS, DANDIYA, ETC.) */}
       {showActivities && (
         <section className="mt-7 space-y-3">
-          <div className="relative left-1/2 h-20 w-screen -translate-x-1/2 overflow-hidden sm:h-24 lg:w-[calc(100%+3rem)]">
-            <img
-              src={navaratriAsset("/navaratri/assets/floral-vine-transparent-divider.png")}
-              alt=""
-              aria-hidden="true"
-              className="h-full w-full object-cover object-center drop-shadow-sm"
-            />
-          </div>
+          <div
+            aria-hidden="true"
+            className="relative left-1/2 h-16 w-screen -translate-x-1/2 border-y border-amber-300 bg-repeat-x shadow-sm sm:h-20 lg:w-[calc(100%+3rem)]"
+            style={{
+              backgroundImage: `url(${navaratriAsset("/navaratri/assets/floral-vine-transparent-divider.png")})`,
+              backgroundPosition: "center",
+              backgroundSize: "auto 100%",
+            }}
+          />
           <div className="flex items-end justify-between gap-3 border-b border-amber-200/80 pb-2">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-800">
