@@ -942,7 +942,7 @@ export const NavaratriOrganizer: React.FC = () => {
               }
             }
 
-            toast.success("Mandapam photo loaded! Click 'Save Branding & Details' to apply.");
+            toast.success("Mandapam photo loaded! Click 'Save' to apply.");
           } catch (canvasErr) {
             console.warn("Photo canvas compression fallback:", canvasErr);
             setPhotoPreview(rawResult);
@@ -1045,7 +1045,7 @@ export const NavaratriOrganizer: React.FC = () => {
               }
             }
 
-            toast.success("Mandapam logo loaded! Click 'Save Branding & Details' to apply.");
+            toast.success("Mandapam logo loaded! Click 'Save' to apply.");
           } catch (canvasErr) {
             console.warn("Logo canvas compression fallback:", canvasErr);
             setLogoPreview(rawResult);
@@ -3650,7 +3650,7 @@ export const NavaratriOrganizer: React.FC = () => {
                   ) : (
                     <>
                       <Check className="w-3.5 h-3.5" />
-                      <span>Save Branding & Details</span>
+                      <span>Save</span>
                     </>
                   )}
                 </button>
