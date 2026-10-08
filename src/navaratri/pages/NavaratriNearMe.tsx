@@ -37,6 +37,79 @@ export interface RegionConfig {
   areaCoordinates?: Record<string, { lat: number; lng: number }>;
 }
 
+
+const TELANGANA_DISTRICTS = [
+  "Adilabad",
+  "Bhadradri Kothagudem",
+  "Hanumakonda",
+  "Hyderabad",
+  "Jagtial",
+  "Jangaon",
+  "Jayashankar Bhupalpally",
+  "Jogulamba Gadwal",
+  "Kamareddy",
+  "Karimnagar",
+  "Khammam",
+  "Kumuram Bheem",
+  "Mahabubabad",
+  "Mahabubnagar",
+  "Mancherial",
+  "Medak",
+  "Medchal-Malkajgiri",
+  "Mulugu",
+  "Nagarkurnool",
+  "Nalgonda",
+  "Narayanpet",
+  "Nirmal",
+  "Nizamabad",
+  "Peddapalli",
+  "Rajanna Sircilla",
+  "Rangareddy",
+  "Sangareddy",
+  "Siddipet",
+  "Suryapet",
+  "Vikarabad",
+  "Wanaparthy",
+  "Warangal",
+  "Yadadri Bhuvanagiri"
+] as const;
+
+const TELANGANA_DISTRICT_COORDINATES: Record<string, { lat: number; lng: number }> = {
+  Adilabad: { lat: 19.6641, lng: 78.532 },
+  "Bhadradri Kothagudem": { lat: 17.55, lng: 80.64 },
+  Hanumakonda: { lat: 18.0125, lng: 79.5603 },
+  Hyderabad: { lat: 17.385, lng: 78.4867 },
+  Jagtial: { lat: 18.7909, lng: 78.9119 },
+  Jangaon: { lat: 17.726, lng: 79.152 },
+  "Jayashankar Bhupalpally": { lat: 18.438, lng: 79.863 },
+  "Jogulamba Gadwal": { lat: 16.235, lng: 77.805 },
+  Kamareddy: { lat: 18.3205, lng: 78.337 },
+  Karimnagar: { lat: 18.4386, lng: 79.1288 },
+  Khammam: { lat: 17.2473, lng: 80.1514 },
+  "Kumuram Bheem": { lat: 19.365, lng: 79.274 },
+  Mahabubabad: { lat: 17.598, lng: 80.002 },
+  Mahabubnagar: { lat: 16.7488, lng: 78.0035 },
+  Mancherial: { lat: 18.8756, lng: 79.4591 },
+  Medak: { lat: 18.0453, lng: 78.2608 },
+  "Medchal-Malkajgiri": { lat: 17.6297, lng: 78.4814 },
+  Mulugu: { lat: 18.191, lng: 79.943 },
+  Nagarkurnool: { lat: 16.4821, lng: 78.3247 },
+  Nalgonda: { lat: 17.0577, lng: 79.2684 },
+  Narayanpet: { lat: 16.747, lng: 77.495 },
+  Nirmal: { lat: 19.0964, lng: 78.3441 },
+  Nizamabad: { lat: 18.6725, lng: 78.0941 },
+  Peddapalli: { lat: 18.6136, lng: 79.3744 },
+  "Rajanna Sircilla": { lat: 18.3889, lng: 78.8105 },
+  Rangareddy: { lat: 17.3408, lng: 78.2893 },
+  Sangareddy: { lat: 17.6248, lng: 78.0867 },
+  Siddipet: { lat: 18.1018, lng: 78.852 },
+  Suryapet: { lat: 17.1314, lng: 79.6336 },
+  Vikarabad: { lat: 17.3381, lng: 77.9044 },
+  Wanaparthy: { lat: 16.3623, lng: 78.0622 },
+  Warangal: { lat: 17.9689, lng: 79.5941 },
+  "Yadadri Bhuvanagiri": { lat: 17.515, lng: 78.885 }
+};
+
 export const REGIONS_DATA: Record<string, RegionConfig> = {
   Nizamabad: {
     name: "Nizamabad",
@@ -308,6 +381,25 @@ export const REGIONS_DATA: Record<string, RegionConfig> = {
     ]
   }
 };
+
+TELANGANA_DISTRICTS.forEach((district) => {
+  if (!REGIONS_DATA[district]) {
+    const coordinates = TELANGANA_DISTRICT_COORDINATES[district];
+    const districtTown = `${district} Town`;
+    REGIONS_DATA[district] = {
+      name: district,
+      state: "Telangana",
+      lat: coordinates.lat,
+      lng: coordinates.lng,
+      defaultArea: districtTown,
+      areas: [districtTown],
+      areaCoordinates: {
+        [districtTown]: coordinates
+      }
+    };
+  }
+});
+
 
 const distanceKm = (lat1: number, lng1: number, lat2: number, lng2: number) => {
   const toRadians = (value: number) => (value * Math.PI) / 180;
@@ -648,10 +740,18 @@ export const NavaratriNearMe: React.FC = () => {
           </div>
         </div>
 
-        {/* District is required; the area field is intentionally optional. */}
-        <div className="mt-2.5 grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[1fr_1.2fr_auto_auto]">
+        {/* State is fixed to Telangana, then users choose a district and optional area. */}
+        <div className="mt-2.5 grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[0.8fr_1fr_1.2fr_auto_auto]">
           <select
-            value={REGIONS_DATA[manualCity] ? manualCity : "Nizamabad"}
+            value="Telangana"
+            disabled
+            aria-label="Choose state"
+            className="col-span-2 h-10 rounded-xl border border-amber-300 bg-amber-50 px-3 text-xs font-black text-[#8B1E1E] outline-none opacity-100 sm:col-span-1"
+          >
+            <option value="Telangana">Telangana</option>
+          </select>
+          <select
+            value={TELANGANA_DISTRICTS.includes(manualCity as typeof TELANGANA_DISTRICTS[number]) ? manualCity : "Nizamabad"}
             onChange={(event) => {
               setManualCity(event.target.value);
               setManualArea("");
@@ -660,7 +760,9 @@ export const NavaratriNearMe: React.FC = () => {
             aria-label="Choose district"
             className="col-span-2 h-10 rounded-xl border border-amber-300 bg-white px-3 text-xs font-semibold text-stone-900 outline-none focus:ring-2 focus:ring-amber-500 sm:col-span-1"
           >
-            {Object.keys(REGIONS_DATA).map((city) => <option key={city} value={city}>{city} ({REGIONS_DATA[city].state})</option>)}
+            {TELANGANA_DISTRICTS.map((district) => (
+              <option key={district} value={district}>{district}</option>
+            ))}
           </select>
           <div className="relative col-span-2 sm:col-span-1">
             <input list="area-suggestions" value={manualArea} onChange={(event) => setManualArea(event.target.value)} placeholder="Area or locality (optional)" aria-label="Area or locality (optional)" className="h-10 w-full rounded-xl border border-amber-300 bg-white px-3 text-xs font-semibold text-stone-900 outline-none focus:ring-2 focus:ring-amber-500" />
