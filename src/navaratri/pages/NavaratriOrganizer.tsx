@@ -1771,7 +1771,7 @@ export const NavaratriOrganizer: React.FC = () => {
               </span>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-4 sm:gap-3">
               {STANDARD_NAVARATRI_DAYS.map((day) => {
                 const setting = daySettings.find((s) => s.mandapamId === currentMandapam.id && s.dayNumber === day.dayNumber);
                 const mathaImage = setting?.coverImageUrl || setting?.alankaranaPhotoUrl || day.imageUrl;
@@ -1781,11 +1781,11 @@ export const NavaratriOrganizer: React.FC = () => {
                     key={day.dayNumber}
                     type="button"
                     onClick={() => handleOpenDrawerForDay(day.dayNumber)}
-                    className="relative min-h-[150px] p-2.5 sm:min-h-[158px] sm:p-3 lg:h-[164px] rounded-2xl bg-white hover:bg-amber-50/80 border-2 border-amber-200 hover:border-[#8B1E1E] shadow-2xs hover:shadow-md transition-all flex flex-col items-center justify-center text-center group cursor-pointer active:scale-95"
+                    className="relative min-h-[184px] p-4 sm:min-h-[176px] sm:p-3 lg:h-[178px] rounded-3xl bg-white hover:bg-amber-50/80 border-2 border-amber-200 hover:border-[#8B1E1E] shadow-2xs hover:shadow-md transition-all flex flex-col items-center justify-center text-center group cursor-pointer active:scale-95"
                     title={`Day ${day.dayNumber} • ${day.deviName} (${day.date})`}
                   >
                     {/* Matha Image Icon with Day Badge */}
-                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden border-2 border-amber-300 shadow-sm group-hover:scale-105 transition-transform bg-[#FDFBF7] shrink-0">
+                    <div className="relative w-16 h-16 sm:w-16 sm:h-16 lg:w-14 lg:h-14 rounded-2xl overflow-hidden border-2 border-amber-300 shadow-sm group-hover:scale-105 transition-transform bg-[#FDFBF7] shrink-0">
                       <img
                         src={navaratriAsset(mathaImage)}
                         alt={day.deviName}
@@ -1797,18 +1797,18 @@ export const NavaratriOrganizer: React.FC = () => {
                         }}
                       />
                       {/* Day Number Badge */}
-                      <span className="absolute bottom-0 right-0 bg-[#8B1E1E]/95 text-white text-[8px] sm:text-[9px] font-black px-1.5 py-0.5 rounded-tl-lg shadow-xs leading-none">
+                      <span className="absolute bottom-0 right-0 bg-[#8B1E1E]/95 text-white text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 rounded-tl-lg shadow-xs leading-none">
                         D{day.dayNumber}
                       </span>
                     </div>
 
-                    <span className="font-serif font-black text-xs text-stone-900 group-hover:text-[#8B1E1E] mt-1.5">
+                    <span className="font-serif font-black text-base sm:text-sm text-stone-900 group-hover:text-[#8B1E1E] mt-2">
                       Day {day.dayNumber}
                     </span>
-                    <span className="text-[10px] text-stone-500 font-semibold">
+                    <span className="text-xs sm:text-[11px] text-stone-500 font-semibold leading-tight">
                       {day.date.slice(5)}
                     </span>
-                    <span className="w-full truncate whitespace-nowrap px-0.5 text-[9px] leading-none font-medium text-[#8B1E1E] lg:text-[8px]">
+                    <span className="w-full px-1 text-[11px] sm:text-[10px] leading-tight font-semibold text-[#8B1E1E] line-clamp-2 lg:text-[9px]">
                       {day.deviName.replace(/^Sri\s+/, "").replace(/\s+Devi$/, "")}
                     </span>
                   </button>
