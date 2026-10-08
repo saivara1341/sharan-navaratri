@@ -1,5 +1,5 @@
 import { navaratriAsset } from "../utils/navaratriAssets";
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
 import { useNavaratriLanguage } from "../context/NavaratriLanguageContext";
@@ -33,6 +33,103 @@ type RegistrationCredentials = {
   mobile?: string;
   email?: string;
 };
+
+const TELANGANA_DISTRICTS = [
+  "Adilabad",
+  "Bhadradri Kothagudem",
+  "Hanumakonda",
+  "Hyderabad",
+  "Jagtial",
+  "Jangaon",
+  "Jayashankar Bhupalpally",
+  "Jogulamba Gadwal",
+  "Kamareddy",
+  "Karimnagar",
+  "Khammam",
+  "Kumuram Bheem",
+  "Mahabubabad",
+  "Mahabubnagar",
+  "Mancherial",
+  "Medak",
+  "Medchal-Malkajgiri",
+  "Mulugu",
+  "Nagarkurnool",
+  "Nalgonda",
+  "Narayanpet",
+  "Nirmal",
+  "Nizamabad",
+  "Peddapalli",
+  "Rajanna Sircilla",
+  "Rangareddy",
+  "Sangareddy",
+  "Siddipet",
+  "Suryapet",
+  "Vikarabad",
+  "Wanaparthy",
+  "Warangal",
+  "Yadadri Bhuvanagiri"
+] as const;
+
+const TELANGANA_STATE_SUGGESTIONS = ["Telangana"] as const;
+
+const TELANGANA_AREA_SUGGESTIONS: Record<string, string[]> = {
+  Hyderabad: [
+    "Kompally",
+    "Central Hyderabad",
+    "Old City",
+    "Charminar",
+    "Secunderabad",
+    "Ameerpet",
+    "Kukatpally",
+    "Dilsukhnagar",
+    "Madhapur",
+    "Hitec City",
+    "Gachibowli",
+    "Banjara Hills",
+    "Jubilee Hills",
+    "Begumpet",
+    "LB Nagar",
+    "Uppal",
+    "Malkajgiri",
+    "Mehdipatnam",
+    "Kacheguda",
+    "Himayatnagar"
+  ],
+  Nizamabad: [
+    "Subhash Nagar",
+    "Khaleelwadi",
+    "Gandhi Chowk",
+    "Vinayak Nagar",
+    "Kanteshwar",
+    "Bodhan",
+    "Armoor",
+    "Banswada",
+    "Kamareddy",
+    "Dichpally",
+    "Varni",
+    "Bheemgal"
+  ],
+  "Medchal-Malkajgiri": ["Kompally", "Malkajgiri", "Medchal", "Jeedimetla", "Alwal", "Kukatpally"],
+  Rangareddy: ["Kompally", "Gachibowli", "Shamshabad", "Ibrahimpatnam", "Rajendranagar", "Chevella"],
+  Warangal: ["Hanamkonda", "Kazipet", "Warangal Fort", "Subedari", "Nakkalagutta"],
+  Karimnagar: ["Mukarampura", "Kothirampur", "Saraswathi Nagar", "Jagtial Road"],
+  Khammam: ["Wyra Road", "Mamillagudem", "Burhanpuram", "Gandhi Chowk"],
+  Adilabad: ["Bhuktapur", "Dasnapur", "Mavala", "Teachers Colony"]
+};
+
+const TELANGANA_PINCODE_SUGGESTIONS: Record<string, string[]> = {
+  Hyderabad: ["500001", "500003", "500016", "500034", "500072", "500081", "500084"],
+  Nizamabad: ["503001", "503002", "503003", "503186", "503224"],
+  "Medchal-Malkajgiri": ["500014", "500055", "500067", "500100"],
+  Rangareddy: ["500032", "500075", "501218", "501401"],
+  Warangal: ["506001", "506002", "506003"],
+  Karimnagar: ["505001", "505002"],
+  Khammam: ["507001", "507002", "507003"],
+  Adilabad: ["504001", "504002"]
+};
+
+const uniqueSorted = (items: Array<string | undefined | null>) =>
+  Array.from(new Set(items.map((item) => item?.trim()).filter(Boolean) as string[])).sort((a, b) => a.localeCompare(b));
 
 const readGoogleOnboardingProfile = (): GoogleOnboardingProfile => {
   try {
@@ -69,7 +166,7 @@ export const NavaratriRegister: React.FC = () => {
   const [address, setAddress] = useState("");
   const [area, setArea] = useState("");
   const [city, setCity] = useState("");
-  const [state, setState] = useState("");
+  const [state, setState] = useState("Telangana");
   const [pincode, setPincode] = useState("");
   const [description, setDescription] = useState("");
   // The public hero cover is platform-managed so every Mandapam profile stays consistent.
@@ -83,6 +180,28 @@ export const NavaratriRegister: React.FC = () => {
 
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
   const [registeredMandapam, setRegisteredMandapam] = useState<Mandapam | null>(null);
+
+
+  const citySuggestions = useMemo(
+    () => uniqueSorted([...TELANGANA_DISTRICTS, ...mandapams.map((m) => m.city)]),
+    [mandapams]
+  );
+
+  const areaSuggestions = useMemo(() => {
+    const selectedDistrictAreas = TELANGANA_AREA_SUGGESTIONS[city.trim()] || [];
+    const existingMandapamAreas = mandapams
+      .filter((m) => !city.trim() || m.city?.toLowerCase().trim() === city.toLowerCase().trim())
+      .map((m) => m.area);
+    return uniqueSorted([...selectedDistrictAreas, ...existingMandapamAreas]);
+  }, [city, mandapams]);
+
+  const pincodeSuggestions = useMemo(() => {
+    const selectedDistrictPincodes = TELANGANA_PINCODE_SUGGESTIONS[city.trim()] || [];
+    const existingMandapamPincodes = mandapams
+      .filter((m) => !city.trim() || m.city?.toLowerCase().trim() === city.toLowerCase().trim())
+      .map((m) => m.pincode);
+    return uniqueSorted([...selectedDistrictPincodes, ...existingMandapamPincodes]);
+  }, [city, mandapams]);
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -365,6 +484,27 @@ export const NavaratriRegister: React.FC = () => {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6 bg-white/90 p-5 sm:p-7 rounded-3xl border border-amber-300 shadow-sm">
+        <datalist id="navaratri-state-suggestions">
+          {TELANGANA_STATE_SUGGESTIONS.map((suggestion) => (
+            <option key={suggestion} value={suggestion} />
+          ))}
+        </datalist>
+        <datalist id="navaratri-city-suggestions">
+          {citySuggestions.map((suggestion) => (
+            <option key={suggestion} value={suggestion} />
+          ))}
+        </datalist>
+        <datalist id="navaratri-area-suggestions">
+          {areaSuggestions.map((suggestion) => (
+            <option key={suggestion} value={suggestion} />
+          ))}
+        </datalist>
+        <datalist id="navaratri-pincode-suggestions">
+          {pincodeSuggestions.map((suggestion) => (
+            <option key={suggestion} value={suggestion} />
+          ))}
+        </datalist>
+
         {/* Mandapam Identity */}
         <div className="space-y-3">
           <h3 className="font-bold text-xs uppercase tracking-wider text-[#8B1E1E] border-b border-amber-200 pb-1 flex items-center gap-1.5">
@@ -444,21 +584,25 @@ export const NavaratriRegister: React.FC = () => {
                 required
                 value={area}
                 onChange={(e) => setArea(e.target.value)}
-                placeholder="Enter area, colony or mandal"
+                placeholder="Start typing area, colony or mandal"
+                list="navaratri-area-suggestions"
+                autoComplete="address-level3"
                 className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-stone-800 mb-1">
-                City / Town <span className="text-red-500 font-bold ml-0.5">*</span>
+                City / District / Town <span className="text-red-500 font-bold ml-0.5">*</span>
               </label>
               <input
                 type="text"
                 required
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                placeholder="Enter city or town"
+                placeholder="Start typing district or city"
+                list="navaratri-city-suggestions"
+                autoComplete="address-level2"
                 className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
               />
             </div>
@@ -473,7 +617,9 @@ export const NavaratriRegister: React.FC = () => {
                 type="text"
                 value={state}
                 onChange={(e) => setState(e.target.value)}
-                placeholder="Enter state"
+                placeholder="Start typing state"
+                list="navaratri-state-suggestions"
+                autoComplete="address-level1"
                 className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white"
               />
             </div>
@@ -487,6 +633,9 @@ export const NavaratriRegister: React.FC = () => {
                 value={pincode}
                 onChange={(e) => setPincode(e.target.value)}
                 placeholder="Enter 6-digit pincode"
+                list="navaratri-pincode-suggestions"
+                inputMode="numeric"
+                autoComplete="postal-code"
                 className="w-full px-3 py-2 rounded-xl text-xs border border-amber-300 bg-white"
               />
             </div>
