@@ -186,10 +186,10 @@ export const TodayTomorrowView: React.FC<TodayTomorrowViewProps> = ({
             <div className="p-4 rounded-2xl bg-[#FFFDF9] border border-amber-200/80 shadow-sm space-y-2">
               <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
                 <PrasadBowlIcon className="w-4 h-4 text-amber-600" />
-                {t.naivedhyam} (Bhog) & {t.prasadam}
+                {t.naivedhyam} & {t.prasadam}
               </span>
               <div className="text-xs text-stone-800 space-y-1">
-                <p><strong className="text-amber-950">{t.naivedhyam} (Bhog):</strong> {todayNaivedhyam}</p>
+                <p><strong className="text-amber-950">{t.naivedhyam}:</strong> {todayNaivedhyam}</p>
                 <p><strong className="text-amber-950">{t.prasadam}:</strong> {todayPrasadam}</p>
               </div>
             </div>
@@ -275,7 +275,7 @@ export const TodayTomorrowView: React.FC<TodayTomorrowViewProps> = ({
             <div className="p-4 rounded-2xl bg-[#FFFDF9] border border-amber-200/80 shadow-sm space-y-2">
               <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
                 <PrasadBowlIcon className="w-4 h-4 text-amber-600" />
-                Tomorrow's Suggested Naivedhyam (Bhog)
+                Tomorrow's Suggested Naivedhyam
               </span>
               <div className="text-xs text-stone-800 space-y-1">
                 <p><strong className="text-amber-950">Offer at Home / Mandapam:</strong> {tomorrowNaivedhyam}</p>

@@ -36,6 +36,23 @@ const getDayDeityImage = (day: { imageUrl?: string }) =>
 const isDecorativeBackgroundImage = (imageUrl?: string) =>
   Boolean(imageUrl && DECORATIVE_BACKGROUND_TOKENS.some((token) => imageUrl.includes(token)));
 
+const DEFAULT_POOJA_TIMINGS = "Morning: 07:30 AM (Abhishekam) | Afternoon/Evening: 06:30 PM (Maha Harathi)";
+
+const splitPoojaTimings = (value?: string) => {
+  const source = (value || DEFAULT_POOJA_TIMINGS).trim();
+  const parts = source.split(/\s*\|\s*/).filter(Boolean);
+  const clean = (part: string, labelPattern: RegExp) => part.replace(labelPattern, "").trim();
+  const morningPart = parts.find((part) => /morning/i.test(part)) || parts[0] || "07:30 AM (Abhishekam)";
+  const afternoonPart = parts.find((part) => /(afternoon|evening)/i.test(part)) || parts[1] || "06:30 PM (Maha Harathi)";
+  return {
+    morning: clean(morningPart, /^morning\s*:?\s*/i),
+    afternoon: clean(afternoonPart, /^(afternoon\s*\/\s*evening|afternoon|evening)\s*:?\s*/i)
+  };
+};
+
+const joinPoojaTimings = (morning: string, afternoon: string) =>
+  `Morning: ${morning.trim() || "07:30 AM (Abhishekam)"} | Afternoon/Evening: ${afternoon.trim() || "06:30 PM (Maha Harathi)"}`;
+
 interface DailyUpdateDrawerProps {
   mandapam: Mandapam;
   isOpen: boolean;
@@ -71,9 +88,9 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
   const [eveningDevi, setEveningDevi] = useState(currentSetting?.eveningDeviName || stdDay.dualSessionNote?.eveningAlankarana || stdDay.deviName);
 
   const [useStdPooja, setUseStdPooja] = useState(currentSetting?.useStandardPooja ?? false);
-  const [customPooja, setCustomPooja] = useState(
-    currentSetting?.customPoojaTimings || "Morning: 07:30 AM (Abhishekam) | Evening: 06:30 PM (Maha Harathi)"
-  );
+  const initialPoojaTimings = splitPoojaTimings(currentSetting?.customPoojaTimings);
+  const [morningPooja, setMorningPooja] = useState(initialPoojaTimings.morning);
+  const [afternoonPooja, setAfternoonPooja] = useState(initialPoojaTimings.afternoon);
 
   const [useStdNaivedhyam, setUseStdNaivedhyam] = useState(currentSetting?.useStandardNaivedhyam ?? true);
   const [customNaivedhyam, setCustomNaivedhyam] = useState(currentSetting?.customNaivedhyam || "");
@@ -103,7 +120,9 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
     setMorningDevi(s?.morningDeviName || d.dualSessionNote?.morningAlankarana || d.deviName);
     setEveningDevi(s?.eveningDeviName || d.dualSessionNote?.eveningAlankarana || d.deviName);
     setUseStdPooja(s?.useStandardPooja ?? false);
-    setCustomPooja(s?.customPoojaTimings || "Morning: 07:30 AM (Abhishekam) | Evening: 06:30 PM (Maha Harathi)");
+    const parsedPoojaTimings = splitPoojaTimings(s?.customPoojaTimings);
+    setMorningPooja(parsedPoojaTimings.morning);
+    setAfternoonPooja(parsedPoojaTimings.afternoon);
     setUseStdNaivedhyam(s?.useStandardNaivedhyam ?? true);
     setCustomNaivedhyam(s?.customNaivedhyam || "");
     setUseStdPrasadam(s?.useStandardPrasadam ?? true);
@@ -186,7 +205,7 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
       morningDeviName: morningDevi,
       eveningDeviName: eveningDevi,
       useStandardPooja: useStdPooja,
-      customPoojaTimings: customPooja,
+      customPoojaTimings: joinPoojaTimings(morningPooja, afternoonPooja),
       useStandardNaivedhyam: useStdNaivedhyam,
       customNaivedhyam: customNaivedhyam,
       useStandardPrasadam: useStdPrasadam,
@@ -428,8 +447,8 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
             </div>
 
             {/* Pooja Timings */}
-            <div className="space-y-1.5 p-3 rounded-xl bg-amber-50/50 border border-amber-200">
-              <div className="flex items-center justify-between">
+            <div className="space-y-2.5 p-3 rounded-xl bg-amber-50/50 border border-amber-200">
+              <div className="flex items-center justify-between gap-2">
                 <span className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5 text-[#8B1E1E]" />
                   <span>Pooja & Harathi Timings</span>
@@ -451,25 +470,55 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
                   </button>
                 </div>
               </div>
-              {useStdPooja ? (
-                <p className="text-xs text-stone-600 italic">Standard: Morning 07:30 AM & Evening 06:30 PM (Maha Harathi)</p>
-              ) : (
-                <input
-                  type="text"
-                  value={customPooja}
-                  onChange={(e) => setCustomPooja(e.target.value)}
-                  placeholder="e.g. Morning: 07:00 AM (Abhishekam) | Evening: 07:00 PM (Maha Harathi)"
-                  className="w-full px-3 py-1.5 rounded-lg text-xs border border-amber-300 bg-white"
-                />
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <div className="rounded-xl border border-amber-200 bg-white p-2.5">
+                  <label className="mb-1 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-amber-900">
+                    <Sun className="h-3.5 w-3.5 text-[#D97706]" />
+                    Morning Pooja
+                  </label>
+                  {useStdPooja ? (
+                    <p className="text-xs font-semibold text-stone-700">07:30 AM (Abhishekam)</p>
+                  ) : (
+                    <input
+                      type="text"
+                      value={morningPooja}
+                      onChange={(e) => setMorningPooja(e.target.value)}
+                      placeholder="07:30 AM (Abhishekam)"
+                      className="w-full rounded-lg border border-amber-300 bg-white px-2.5 py-1.5 text-xs"
+                    />
+                  )}
+                </div>
+                <div className="rounded-xl border border-amber-200 bg-white p-2.5">
+                  <label className="mb-1 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-indigo-900">
+                    <Moon className="h-3.5 w-3.5 text-indigo-700" />
+                    Afternoon / Evening Harathi
+                  </label>
+                  {useStdPooja ? (
+                    <p className="text-xs font-semibold text-stone-700">06:30 PM (Maha Harathi)</p>
+                  ) : (
+                    <input
+                      type="text"
+                      value={afternoonPooja}
+                      onChange={(e) => setAfternoonPooja(e.target.value)}
+                      placeholder="06:30 PM (Maha Harathi)"
+                      className="w-full rounded-lg border border-amber-300 bg-white px-2.5 py-1.5 text-xs"
+                    />
+                  )}
+                </div>
+              </div>
+              {!useStdPooja && (
+                <p className="text-[11px] text-stone-500">
+                  Saved timings publish to the devotee Mandapam page immediately after Save.
+                </p>
               )}
             </div>
 
-            {/* Suggested Naivedhyam (Bhog) with PrasadBowlIcon */}
+            {/* Suggested Naivedhyam with PrasadBowlIcon */}
             <div className="space-y-1.5 p-3 rounded-xl bg-amber-50/50 border border-amber-200">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
                   <PrasadBowlIcon className="w-4 h-4 text-amber-700" />
-                  <span>Suggested Naivedhyam (Bhog)</span>
+                  <span>Suggested Naivedhyam</span>
                 </span>
                 <div className="flex gap-1 text-[11px]">
                   <button

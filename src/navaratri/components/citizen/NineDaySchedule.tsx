@@ -138,10 +138,10 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
         </div>
         <p className="text-xs sm:text-sm text-stone-700 mt-1.5 leading-relaxed font-medium">
           {mandapam
-            ? `Official daily Maa Alankaranas, Pooja timings, Naivedhyam (Bhog), and Annadanam schedule organized at ${mandapam.name}.`
+            ? `Official daily Maa Alankaranas, Pooja timings, Naivedhyam, and Annadanam schedule organized at ${mandapam.name}.`
             : language === "te"
             ? "శ్రీ అన్నపూర్ణా దేవి, శ్రీ సరస్వతీ దేవి, శ్రీ లక్ష్మీ దేవి, శ్రీ కాళికా దేవి సహా 10 దివ్య అలంకారాలు • నైవేద్యం, మంత్రాలు & ఆధ్యాత్మిక విశిష్టత (11–20 అక్టోబర్ 2026)"
-            : "10 Sacred Devi Alankaranas including Sri Annapurna Devi, Sri Maha Saraswathi Devi, Sri Maha Lakshmi Devi, Sri Kalika Devi • Sacred Chants, Bhog & Devotee Guide (11–20 October 2026)"}
+            : "10 Sacred Devi Alankaranas including Sri Annapurna Devi, Sri Maha Saraswathi Devi, Sri Maha Lakshmi Devi, Sri Kalika Devi • Sacred Chants, Devotee Guide (11–20 October 2026)"}
         </p>
       </motion.div>
 
@@ -614,7 +614,7 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
 
               {/* Sacred Offerings (Naivedhyam) & Pooja Samagri */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* ── ELEVATED NAIVEDHYAM (BHOG) SECTION ── */}
+                {/* ── ELEVATED NAIVEDHYAM SECTION ── */}
                 <div className="bg-gradient-to-br from-[#FFFDF7] via-[#FEF3C7]/50 to-[#FDF0CD]/70 p-4 sm:p-5 rounded-2xl border-2 border-amber-400 shadow-md space-y-3 relative overflow-hidden">
                   <div className="absolute -top-6 -right-6 w-20 h-20 bg-amber-400/20 rounded-full blur-xl pointer-events-none" />
 
@@ -626,7 +626,7 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                       </div>
                       <div>
                         <h4 className="font-serif font-black text-xs sm:text-sm text-[#8B1E1E] uppercase tracking-wide">
-                          Suggested Naivedhyam (Bhog)
+                          Suggested Naivedhyam
                         </h4>
                         <span className="text-[10px] font-bold text-amber-900/80 block">
                           పవిత్ర నైవేద్య సమర్పణ

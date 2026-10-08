@@ -138,7 +138,7 @@ Sri Annapurna Devi is the eternal mother of Kasi Kshetram and the supreme provid
     },
     suggestedOfferings: "Ksheerannam (Paramannam), Sweet Pongali, Dal Vadas, and Maha Annadanam meal distribution.",
     suggestedItems: "Navadhanyalu (nine sacred grains), Rice grains, Fresh harvest fruits, and Yellow flowers.",
-    standardActivities: "Sri Annapurna Devi Golden Ladle Pooja, Maha Annadanam, and Ksheerannam Bhog Distribution.",
+    standardActivities: "Sri Annapurna Devi Golden Ladle Pooja, Maha Annadanam, and Ksheerannam Distribution.",
     significance: "Bestows boundless sustenance, food abundance (Akshaya Patra), and family fulfillment; celebrated with Maha Annadanam.",
     dualSessionNote: {
       isCommonlyDual: true,

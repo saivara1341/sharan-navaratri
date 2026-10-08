@@ -1077,7 +1077,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 ? customSetting.customItemsToBring
                 : selectedDay.suggestedItems;
 
-              const naivedhyamTag = language === "te" ? "భోగ్ నైవేద్యం" : language === "hi" ? "भोग नैवेद्यम्" : language === "kn" ? "ಭೋಗ ನೈವೇದ್ಯ" : language === "ta" ? "போக் நைவேத்யம்" : language === "ml" ? "ഭോഗ് നൈവേദ്യം" : "Bhog Naivedhyam";
+              const naivedhyamTag = t.naivedhyam;
               const itemsTag = language === "te" ? "భక్తులు తేవలసినవి" : language === "hi" ? "भक्तों द्वारा सामग्री" : language === "kn" ? "ಭಕ್ತರು ತರಬೇಕಾದವು" : language === "ta" ? "பக்தர்கள் கொண்டுவர வேண்டியவை" : language === "ml" ? "ഭക്തർ കൊണ്ടുവരേണ്ടവ" : "Items to Bring";
 
               return (
@@ -1110,7 +1110,7 @@ export const NavaratriMandapamDetail: React.FC = () => {
                     </p>
                   </div>
 
-                  {/* Naivedhyam (Bhog) & Prasadam */}
+                  {/* Naivedhyam & Prasadam */}
                   <div className="p-3.5 rounded-2xl bg-white border border-amber-200/90 shadow-xs space-y-2">
                     <div className="flex items-center justify-between border-b border-amber-100 pb-1.5">
                       <span className="font-bold text-amber-950 flex items-center gap-1.5 uppercase text-[10.5px] tracking-wider font-sans">
