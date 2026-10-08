@@ -11,6 +11,7 @@ import { SiteIntro } from "@/components/SiteIntro";
 import { CookieConsentBanner } from "@/components/legal/CookieConsentBanner";
 import { SiteWideTurnstileProtection } from "@/components/common/SiteWideTurnstileProtection";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import siddhiLogoTransparent from "@/assets/siddhi-logo-transparent.png";
 
 const queryClient = new QueryClient();
 const Index = lazy(() => import("./pages/Index"));
@@ -74,6 +75,11 @@ const isNavaratriSubdomain = typeof window !== 'undefined' && (
   window.location.search.includes('navaratri') ||
   window.location.search.includes('navarathri') ||
   window.location.search.includes('navratri')
+);
+
+const isNavaratriSurface = typeof window !== 'undefined' && (
+  isNavaratriSubdomain ||
+  window.location.pathname.startsWith('/navaratri')
 );
 
 import { resolveRoleForEmail, getPortalPathForRole } from "@/lib/roleResolver";
@@ -142,7 +148,55 @@ const AuthRedirectHandler = () => {
   return null;
 };
 
-const PageLoadingFallback = () => (
+const NavaratriLoadingFallback = () => (
+  <div
+    className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#fff8ed] px-6 text-center"
+    aria-busy="true"
+    aria-label="Loading Sharan Navaratri"
+  >
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.34),_transparent_34%),linear-gradient(135deg,_#fff8ed_0%,_#fff2d7_36%,_#fbe5bf_62%,_#fffaf0_100%)]" />
+    <div className="absolute -left-16 top-16 h-48 w-48 rounded-full bg-[#8B1E1E]/12 blur-3xl" />
+    <div className="absolute -right-16 bottom-16 h-56 w-56 rounded-full bg-amber-400/20 blur-3xl" />
+    <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-[#8B1E1E] via-amber-400 to-[#8B1E1E]" />
+    <div className="absolute inset-x-0 bottom-0 h-2 bg-gradient-to-r from-amber-500 via-[#8B1E1E] to-amber-500" />
+
+    <div className="relative z-10 flex w-full max-w-md flex-col items-center rounded-[2rem] border border-amber-200/80 bg-white/58 px-6 py-10 shadow-2xl shadow-amber-950/10 backdrop-blur-md">
+      <div className="relative mb-6 grid h-28 w-28 place-items-center">
+        <div className="absolute inset-0 rounded-full bg-amber-300/25 blur-xl animate-pulse" />
+        <div className="absolute inset-0 rounded-full border border-amber-300/70" />
+        <div className="absolute inset-2 rounded-full border-2 border-dashed border-[#8B1E1E]/25 animate-spin [animation-duration:10s]" />
+        <img
+          src="/navaratri/assets/trishula-head.png"
+          alt="Sharan Navaratri"
+          className="relative h-20 w-20 object-contain drop-shadow-[0_10px_24px_rgba(139,30,30,0.28)] animate-[pulse_1.8s_ease-in-out_infinite]"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-[11px] font-black uppercase tracking-[0.34em] text-[#A64B16]">॥ Om Sri Matre Namaha ॥</p>
+        <h1 className="font-['Cinzel',serif] text-3xl font-black uppercase leading-tight text-[#8B1E1E] drop-shadow-sm sm:text-4xl">
+          Sharan
+          <span className="block bg-gradient-to-r from-[#8B1E1E] via-[#E85D04] to-[#8B1E1E] bg-clip-text text-transparent">Navaratri</span>
+        </h1>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-stone-600">One QR · Every Mandapam · Every Devotee</p>
+      </div>
+
+      <div className="mt-7 h-1.5 w-40 overflow-hidden rounded-full bg-amber-100">
+        <div className="h-full w-1/2 rounded-full bg-gradient-to-r from-[#8B1E1E] via-amber-400 to-[#E85D04] animate-[loading-bar_1.35s_ease-in-out_infinite]" />
+      </div>
+
+      <div className="mt-8 flex w-full items-center justify-center gap-3 rounded-2xl border border-amber-200 bg-white/70 px-4 py-3">
+        <img src={siddhiLogoTransparent} alt="Siddhi Dynamics LLP" className="h-9 w-9 object-contain" />
+        <div className="text-left leading-tight">
+          <p className="text-[11px] font-semibold tracking-[0.28em] text-[#8B1E1E]">Ammavari Sevalo</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-stone-600">A technology initiative by Siddhi Dynamics LLP</p>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const StandardLoadingFallback = () => (
   <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4" aria-busy="true" aria-label="Loading page">
     <div className="relative flex flex-col items-center justify-center space-y-5">
       <div className="relative w-16 h-16 flex items-center justify-center">
@@ -151,16 +205,14 @@ const PageLoadingFallback = () => (
         <div className="absolute inset-2 rounded-full border-2 border-transparent border-b-amber-600 border-l-[#8B1E1E] animate-spin [animation-duration:1.2s]" />
       </div>
       <div className="flex flex-col items-center space-y-1 text-center">
-        <span className="text-sm font-semibold tracking-wider uppercase font-serif font-black text-[#8B1E1E]">
-          {isNavaratriSubdomain ? "Sharan Navaratri 2026" : "Siddhi Dynamics"}
-        </span>
-        <span className="text-xs text-muted-foreground animate-pulse">
-          {isNavaratriSubdomain ? "Loading sacred mandapams..." : "Loading interface..."}
-        </span>
+        <span className="text-sm font-semibold tracking-wider uppercase font-serif font-black text-[#8B1E1E]">Siddhi Dynamics</span>
+        <span className="text-xs text-muted-foreground animate-pulse">Loading interface...</span>
       </div>
     </div>
   </div>
 );
+
+const PageLoadingFallback = () => (isNavaratriSurface ? <NavaratriLoadingFallback /> : <StandardLoadingFallback />);
 
 const ScrollToTop = () => {
   const { pathname, hash } = useLocation();
