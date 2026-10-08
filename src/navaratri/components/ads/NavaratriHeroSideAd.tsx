@@ -5,7 +5,6 @@ import { ImagePlus, Megaphone, ArrowUpRight, ExternalLink } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
 import { navaratriAsset } from "../../utils/navaratriAssets";
 import { getAdCtaDetails } from "../../utils/adButtonHelpers";
-import { isSiddhiDynamicsAd } from "../../utils/adFrameHelpers";
 
 export const NavaratriHeroSideAd: React.FC = () => {
   const navigate = useNavigate();
@@ -22,7 +21,6 @@ export const NavaratriHeroSideAd: React.FC = () => {
   const currentAd = activeAdsWithImages[activeIndex];
   const ctaInfo = getAdCtaDetails(currentAd);
   const currentAdId = currentAd?.id;
-  const isSiddhiAd = isSiddhiDynamicsAd(currentAd);
 
   // Track impressions only once per ad display
   useEffect(() => {
@@ -64,22 +62,20 @@ export const NavaratriHeroSideAd: React.FC = () => {
           /* Active Framed Ad Display: completely visible in frame with dynamic CTA */
           <div
             onClick={handleContainerClick}
-            className={`w-full rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-amber-400 shadow-lg hover:shadow-2xl transition-all cursor-pointer flex items-center justify-center relative group ${isSiddhiAd ? "aspect-[16/9] h-auto min-h-0 bg-[#f8f4ec]" : "h-full min-h-[380px] bg-[#1e130e]"}`}
+            className="relative flex h-full min-h-[380px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-amber-400 bg-[#1e130e] shadow-lg transition-all hover:shadow-2xl sm:rounded-3xl group"
             title={`Sponsor Advertisement: ${currentAd.businessName || ""}`}
           >
             {/* Ambient Blurred Backdrop */}
-            {!isSiddhiAd && (
-              <div
-                className="absolute inset-0 bg-cover bg-center blur-lg opacity-35 scale-110 pointer-events-none"
-                style={{ backgroundImage: `url("${navaratriAsset(currentAd.imageUrl)}")` }}
-              />
-            )}
+            <div
+              className="absolute inset-0 bg-cover bg-center blur-lg opacity-35 scale-110 pointer-events-none"
+              style={{ backgroundImage: `url("${navaratriAsset(currentAd.imageUrl)}")` }}
+            />
 
             {/* Framed Image: object-contain preserves all content in frame */}
             <img
               src={navaratriAsset(currentAd.imageUrl)}
               alt={currentAd.businessName || "Sponsor Advertisement"}
-              className={`relative z-10 mx-auto h-full w-full group-hover:scale-[1.01] transition-transform duration-500 ${isSiddhiAd ? "object-cover" : "object-contain"}`}
+              className="relative z-10 mx-auto h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.01]"
             />
 
             {/* Bottom Floating CTA Button */}

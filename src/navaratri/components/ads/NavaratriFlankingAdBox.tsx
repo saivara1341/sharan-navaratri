@@ -5,7 +5,6 @@ import { ImagePlus, Megaphone, ExternalLink, Store } from "lucide-react";
 import { CreateAdModal } from "./CreateAdModal";
 import { navaratriAsset } from "../../utils/navaratriAssets";
 import { getAdCtaDetails } from "../../utils/adButtonHelpers";
-import { isSiddhiDynamicsAd } from "../../utils/adFrameHelpers";
 
 interface NavaratriFlankingAdBoxProps {
   position: "left" | "right";
@@ -31,7 +30,6 @@ export const NavaratriFlankingAdBox: React.FC<NavaratriFlankingAdBoxProps> = ({
   const currentAd = activeAdsWithImages[effectiveIndex];
   const ctaInfo = getAdCtaDetails(currentAd);
   const currentAdId = currentAd?.id;
-  const isSiddhiAd = isSiddhiDynamicsAd(currentAd);
   const recordedAdIdRef = useRef<string | null>(null);
 
   // Track impressions
@@ -74,23 +72,21 @@ export const NavaratriFlankingAdBox: React.FC<NavaratriFlankingAdBoxProps> = ({
           /* ACTIVE SPONSOR AD DISPLAY */
           <div
             onClick={handleContainerClick}
-            className={`w-full h-full min-h-[240px] rounded-3xl overflow-hidden border-2 border-amber-400 shadow-md hover:shadow-xl transition-all cursor-pointer flex flex-col items-center justify-between relative group ${isSiddhiAd ? "bg-[#f8f4ec] p-2" : "bg-[#1e130e] p-3"}`}
+            className="w-full h-full min-h-[240px] rounded-3xl overflow-hidden border-2 border-amber-400 bg-[#1e130e] p-3 shadow-md hover:shadow-xl transition-all cursor-pointer flex flex-col items-center justify-between relative group"
             title={`Sponsor Advertisement: ${currentAd.businessName || ""}`}
           >
             {/* Ambient Blurred Backdrop */}
-            {!isSiddhiAd && (
-              <div
-                className="absolute inset-0 bg-cover bg-center blur-lg opacity-30 scale-110 pointer-events-none"
-                style={{ backgroundImage: `url("${navaratriAsset(currentAd.imageUrl)}")` }}
-              />
-            )}
+            <div
+              className="absolute inset-0 bg-cover bg-center blur-lg opacity-30 scale-110 pointer-events-none"
+              style={{ backgroundImage: `url("${navaratriAsset(currentAd.imageUrl)}")` }}
+            />
 
             {/* Framed Image */}
-            <div className={`relative z-10 w-full flex-1 flex items-center justify-center overflow-hidden ${isSiddhiAd ? "my-0" : "my-2"}`}>
+            <div className="relative z-10 my-2 w-full flex-1 flex items-center justify-center overflow-hidden">
               <img
                 src={navaratriAsset(currentAd.imageUrl)}
                 alt={currentAd.businessName || "Sponsor Advertisement"}
-                className={`${isSiddhiAd ? "aspect-[16/9] h-auto w-full object-cover rounded-xl" : "max-h-[140px] w-auto max-w-full object-contain rounded-lg"} mx-auto group-hover:scale-105 transition-transform duration-300`}
+                className="mx-auto max-h-[140px] w-auto max-w-full rounded-lg object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </div>
 

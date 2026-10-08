@@ -8,7 +8,6 @@ import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { AD_PLACEHOLDER_TRANSLATIONS } from "../../utils/navaratriTranslations";
 import { navaratriAsset } from "../../utils/navaratriAssets";
 import { getAdCtaDetails } from "../../utils/adButtonHelpers";
-import { isSiddhiDynamicsAd } from "../../utils/adFrameHelpers";
 
 export const NavaratriTopAdBanner: React.FC = () => {
   const { language } = useNavaratriLanguage();
@@ -34,7 +33,6 @@ export const NavaratriTopAdBanner: React.FC = () => {
   const currentAd = activeAdsWithImages[activeIndex];
   const ctaInfo = getAdCtaDetails(currentAd);
   const currentAdId = currentAd?.id;
-  const isSiddhiAd = isSiddhiDynamicsAd(currentAd);
 
   // Track impressions only once when ad changes
   useEffect(() => {
@@ -84,22 +82,20 @@ export const NavaratriTopAdBanner: React.FC = () => {
           <div className="flex flex-col">
             <div
               onClick={handleContainerClick}
-              className={`relative rounded-2xl overflow-hidden border-2 border-amber-400/80 shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center group ${isSiddhiAd ? "mx-auto aspect-[16/9] h-auto w-[92%] max-w-[360px] bg-[#f8f4ec] sm:w-full sm:max-w-3xl" : "mx-auto h-24 w-[92%] max-w-[360px] bg-[#1e130e] sm:h-36 sm:w-full sm:max-w-none md:h-40"}`}
+              className="relative mx-auto h-24 w-[92%] max-w-[360px] rounded-2xl overflow-hidden border-2 border-amber-400/80 bg-[#1e130e] shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center group sm:h-36 sm:w-full sm:max-w-none md:h-40"
               title={`Advertisement: ${currentAd.businessName || "Special Festive Offer"}`}
             >
               {/* Ambient Blurred Backdrop */}
-              {!isSiddhiAd && (
-                <div
-                  className="absolute inset-0 bg-cover bg-center blur-lg opacity-30 scale-110 pointer-events-none"
-                  style={{ backgroundImage: `url("${navaratriAsset(currentAd.imageUrl)}")` }}
-                />
-              )}
+              <div
+                className="absolute inset-0 bg-cover bg-center blur-lg opacity-30 scale-110 pointer-events-none"
+                style={{ backgroundImage: `url("${navaratriAsset(currentAd.imageUrl)}")` }}
+              />
 
               {/* User Uploaded Image - object-contain ensures 0% cropping, stays centered in frame */}
               <img
                 src={navaratriAsset(currentAd.imageUrl)}
                 alt={currentAd.businessName || "Advertisement"}
-                className={`relative z-10 mx-auto h-full w-full ${isSiddhiAd ? "object-cover" : "object-contain"}`}
+                className="relative z-10 mx-auto h-full w-full object-contain"
               />
 
               {/* CTA buttons — desktop only inside frame */}
