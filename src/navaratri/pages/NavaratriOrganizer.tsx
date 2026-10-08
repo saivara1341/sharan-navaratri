@@ -1410,6 +1410,16 @@ export const NavaratriOrganizer: React.FC = () => {
               <QrCode className="w-3.5 h-3.5 text-amber-300" />
               <span>QR Code</span>
             </button>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 bg-black/30 hover:bg-black/50 border border-white/20 hover:border-red-200/70 px-3 py-1 rounded-xl text-red-100 hover:text-white font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+              title="Logout from Mandapam Organizer Portal"
+            >
+              <LogOut className="w-3.5 h-3.5 text-red-200" />
+              <span>Logout</span>
+            </button>
           </div>
         </div>
 
