@@ -538,9 +538,10 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
                 </div>
               </div>
               {useStdNaivedhyam ? (
-                <p className="text-xs text-stone-700 font-semibold bg-white p-2 rounded-lg border border-amber-200">
-                  Standard: {stdDay.suggestedOfferings}
-                </p>
+                <div className="rounded-lg border border-amber-200 bg-white/80 p-2.5">
+                  <p className="mb-1 text-[10px] font-black uppercase tracking-wide text-amber-700">Default suggestion</p>
+                  <p className="text-[12px] font-normal leading-relaxed text-stone-700">{stdDay.suggestedOfferings}</p>
+                </div>
               ) : (
                 <input
                   type="text"
@@ -577,9 +578,10 @@ export const DailyUpdateDrawer: React.FC<DailyUpdateDrawerProps> = ({
                 </div>
               </div>
               {useStdItems ? (
-                <p className="text-xs text-stone-700 font-semibold bg-white p-2 rounded-lg border border-amber-200">
-                  Standard: {stdDay.suggestedItems}
-                </p>
+                <div className="rounded-lg border border-amber-200 bg-white/80 p-2.5">
+                  <p className="mb-1 text-[10px] font-black uppercase tracking-wide text-amber-700">Default suggestion</p>
+                  <p className="text-[12px] font-normal leading-relaxed text-stone-700">{stdDay.suggestedItems}</p>
+                </div>
               ) : (
                 <input
                   type="text"
