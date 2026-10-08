@@ -875,7 +875,16 @@ export const NavaratriNearMe: React.FC = () => {
 
       {/* 2. ACTIVITIES & PROCESSIONS (PALLAKI SEVA, BHAJANS, DANDIYA, ETC.) */}
       {showActivities && (
-        <section className="mt-7 space-y-3 border-t-2 border-amber-200/90 pt-5">
+        <section className="mt-7 space-y-3">
+          <div className="relative -mx-1 h-16 overflow-hidden rounded-2xl border-y border-amber-200/80 bg-stone-50 shadow-inner sm:mx-0 sm:h-20">
+            <img
+              src={navaratriAsset("/navaratri/assets/blue-floral-horizontal-divider.jpg")}
+              alt=""
+              aria-hidden="true"
+              className="h-full w-full object-cover object-center opacity-95 mix-blend-multiply"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#fffdf7] via-transparent to-[#fffdf7]" />
+          </div>
           <div className="flex items-end justify-between gap-3 border-b border-amber-200/80 pb-2">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-800">
