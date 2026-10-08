@@ -283,19 +283,20 @@ const drawGeneratedPoster = async (
   drawFeature(ctx, 760, 1144, "🕘", "Puja Timings", "Daily Schedule", template);
 
   fillRoundRect(ctx, 80, 1348, 864, 110, 30, template.tone === "maroon" ? "rgba(255,248,226,0.96)" : "rgba(255,255,255,0.88)", "rgba(245, 158, 11, 0.72)", 4);
-  ctx.font = "900 30px Georgia";
-  ctx.fillStyle = template.tone === "maroon" ? "#7c1d1d" : template.text;
-  ctx.fillText("అమ్మవారి సేవలో", 270, 1404);
   try {
     const siddhiLogo = await loadCanvasImage(siddhiLogoAsset);
-    ctx.drawImage(siddhiLogo, 530, 1368, 270, 62);
+    ctx.drawImage(siddhiLogo, 134, 1370, 310, 70);
   } catch {
-    ctx.font = "900 24px Arial";
-    ctx.fillText("SIDDHI", 560, 1398);
+    ctx.font = "900 26px Arial";
+    ctx.fillStyle = "#111827";
+    ctx.fillText("SIDDHI DYNAMICS LLP", 300, 1404);
   }
+  ctx.font = "900 32px Georgia";
+  ctx.fillStyle = template.tone === "maroon" ? "#7c1d1d" : template.text;
+  ctx.fillText("అమ్మవారి సేవలో", 724, 1406);
   ctx.font = "700 15px Arial";
   ctx.fillStyle = template.tone === "maroon" ? "#7c1d1d" : template.muted;
-  ctx.fillText("TECHNOLOGY INITIATIVE", 762, 1434);
+  ctx.fillText("TECHNOLOGY INITIATIVE", 724, 1436);
 };
 
 export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, onClose }) => {
@@ -418,9 +419,9 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
         ))}
       </div>
 
-      <div className="absolute bottom-[5%] left-[8%] right-[8%] flex items-center justify-between rounded-[3cqw] border-2 border-amber-400/75 bg-[#fff8e2]/95 px-[4%] py-[2.5%] shadow-sm">
-        <p className="text-[3.2cqw] font-serif font-black text-[#7c1d1d] drop-shadow-sm">అమ్మవారి సేవలో</p>
-        <img src={siddhiDynamicsHeaderLogo} alt="Siddhi Dynamics LLP" className="h-[9cqw] w-[27cqw] object-contain" />
+      <div className="absolute bottom-[5%] left-[8%] right-[8%] flex items-center justify-between rounded-[3cqw] border-2 border-amber-400/75 bg-[#fff8e2]/95 px-[5%] py-[2.5%] shadow-sm">
+        <img src={siddhiDynamicsHeaderLogo} alt="Siddhi Dynamics LLP" className="h-[10cqw] w-[34cqw] object-contain" />
+        <p className="text-right text-[3.2cqw] font-serif font-black text-[#7c1d1d] drop-shadow-sm">అమ్మవారి సేవలో</p>
       </div>
     </div>
   );
