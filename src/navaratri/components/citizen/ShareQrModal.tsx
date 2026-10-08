@@ -32,39 +32,39 @@ const posterTemplates: PosterTemplate[] = [
     id: "DEVOTION_GUIDE",
     label: "Devotion Guide",
     asset: `${base}/navaratri/assets/qr-template-devotion-guide.png`,
-    nameBox: { x: 76, y: 365, w: 430, h: 160 },
-    locationBox: { x: 150, y: 540, w: 340, h: 48 },
-    logoBox: { x: 565, y: 390, w: 170, h: 170 },
-    qrBox: { x: 392, y: 622, w: 250, h: 250 },
+    nameBox: { x: 72, y: 370, w: 430, h: 132 },
+    locationBox: { x: 132, y: 536, w: 360, h: 44 },
+    logoBox: { x: 570, y: 400, w: 150, h: 150 },
+    qrBox: { x: 398, y: 640, w: 230, h: 230 },
     tone: "ink",
   },
   {
     id: "DEVOTIONAL_POSTER",
     label: "Devotional Poster",
     asset: `${base}/navaratri/assets/qr-template-devotional-poster.png`,
-    nameBox: { x: 285, y: 455, w: 450, h: 138 },
-    locationBox: { x: 405, y: 615, w: 310, h: 42 },
-    logoBox: { x: 120, y: 55, w: 132, h: 132 },
-    qrBox: { x: 385, y: 698, w: 255, h: 255 },
+    nameBox: { x: 285, y: 465, w: 450, h: 116 },
+    locationBox: { x: 394, y: 618, w: 330, h: 40 },
+    logoBox: { x: 112, y: 50, w: 118, h: 118 },
+    qrBox: { x: 398, y: 720, w: 230, h: 230 },
     tone: "ink",
   },
   {
     id: "MODERN_QR",
     label: "Modern QR",
     asset: `${base}/navaratri/assets/qr-template-modern-poster.png`,
-    nameBox: { x: 80, y: 460, w: 400, h: 155 },
-    locationBox: { x: 125, y: 652, w: 325, h: 38 },
-    logoBox: { x: 535, y: 455, w: 175, h: 175 },
-    qrBox: { x: 385, y: 765, w: 255, h: 255 },
+    nameBox: { x: 72, y: 460, w: 420, h: 132 },
+    locationBox: { x: 122, y: 645, w: 335, h: 38 },
+    logoBox: { x: 548, y: 460, w: 150, h: 150 },
+    qrBox: { x: 398, y: 785, w: 230, h: 230 },
     tone: "ink",
   },
   {
     id: "CLASSIC_QR",
     label: "Classic QR",
     asset: `${base}/navaratri/assets/qr-template-classic-poster.png`,
-    nameBox: { x: 465, y: 415, w: 430, h: 165 },
-    logoBox: { x: 130, y: 400, w: 190, h: 190 },
-    qrBox: { x: 388, y: 666, w: 250, h: 250 },
+    nameBox: { x: 438, y: 420, w: 435, h: 132 },
+    logoBox: { x: 142, y: 410, w: 160, h: 160 },
+    qrBox: { x: 398, y: 685, w: 230, h: 230 },
     tone: "red",
   },
 ];
@@ -112,6 +112,29 @@ const wrapText = (ctx: CanvasRenderingContext2D, text: string, maxWidth: number,
   if (line) lines.push(line);
   return lines.slice(0, 3);
 };
+
+const fitWrappedText = (
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  box: Box,
+  maxSize: number,
+  minSize: number,
+  family: string,
+  weight = "900"
+) => {
+  const maxWidth = box.w - 44;
+  const maxHeight = box.h - 28;
+  for (let size = maxSize; size >= minSize; size -= 2) {
+    const lines = wrapText(ctx, text, maxWidth, size, family, weight);
+    const lineHeight = size * 1.08;
+    if (lines.length * lineHeight <= maxHeight && lines.every((line) => ctx.measureText(line).width <= maxWidth)) {
+      return { size, lines, lineHeight };
+    }
+  }
+  return { size: minSize, lines: wrapText(ctx, text, maxWidth, minSize, family, weight), lineHeight: minSize * 1.08 };
+};
+
+const previewNameSize = (box: Box) => `clamp(10px, ${(box.w / 1024) * 5.8}cqw, 25px)`;
 
 const drawRoundedImage = (ctx: CanvasRenderingContext2D, img: HTMLImageElement, box: Box) => {
   ctx.save();
@@ -175,13 +198,11 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
 
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      const fontSize = fitFont(ctx, mandapam.name.toUpperCase(), nameBox.w - 40, tone === "red" ? 48 : 54, 28, "Georgia");
-      const nameLines = wrapText(ctx, mandapam.name.toUpperCase(), nameBox.w - 44, fontSize, "Georgia");
-      ctx.font = `900 ${fontSize}px Georgia`;
+      const fittedName = fitWrappedText(ctx, mandapam.name.toUpperCase(), nameBox, tone === "red" ? 42 : 44, 20, "Georgia");
+      ctx.font = `900 ${fittedName.size}px Georgia`;
       ctx.fillStyle = tone === "red" ? "#991b1b" : "#111827";
-      const lineHeight = fontSize * 1.05;
-      const startY = nameBox.y + nameBox.h / 2 - ((nameLines.length - 1) * lineHeight) / 2;
-      nameLines.forEach((line, index) => ctx.fillText(line, nameBox.x + nameBox.w / 2, startY + index * lineHeight));
+      const startY = nameBox.y + nameBox.h / 2 - ((fittedName.lines.length - 1) * fittedName.lineHeight) / 2;
+      fittedName.lines.forEach((line, index) => ctx.fillText(line, nameBox.x + nameBox.w / 2, startY + index * fittedName.lineHeight));
 
       if (locationBox) {
         ctx.save();
@@ -287,13 +308,13 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
       )}
       <div className="hidden"><QRCodeCanvas id="mandapam-qr-canvas" value={publicUrl} size={1200} level="H" includeMargin /></div>
       <div className="min-h-0 flex flex-1 items-start justify-center overflow-y-auto pt-1 sm:items-center sm:pt-0">
-        <div className="relative aspect-[2/3] h-[min(68dvh,680px)] max-h-full w-auto max-w-full sm:h-[min(72dvh,760px)]">
+        <div className="relative aspect-[2/3] h-[min(68dvh,680px)] max-h-full w-auto max-w-full [container-type:inline-size] sm:h-[min(72dvh,760px)]">
           <button onClick={share} aria-label="Share Mandapam URL" className="absolute right-3 top-3 z-20 grid h-10 w-10 place-items-center rounded-full bg-white/95 text-[#7c1d1d] shadow-lg ring-1 ring-amber-300 hover:bg-amber-50 cursor-pointer"><Share2 className="h-4 w-4" /></button>
           {designMode === "POSTER" ? (
             <div id="printable-standee" className="relative h-full overflow-hidden rounded-[18px] border border-amber-300 bg-white shadow-xl">
               <img src={activeTemplate.asset} alt="Selected Navaratri QR poster template" className="absolute inset-0 h-full w-full object-cover" />
               <div className={`absolute flex items-center justify-center rounded-2xl px-[3%] text-center font-serif font-black leading-tight ${activeTemplate.tone === "red" ? "bg-white/90 text-[#991b1b]" : "bg-[#fffaf2]/90 text-stone-950"}`} style={cssBox(activeTemplate.nameBox)}>
-                <span className="line-clamp-3 text-[clamp(18px,4.9vh,44px)] uppercase drop-shadow-sm">{mandapam.name}</span>
+                <span className="line-clamp-3 uppercase drop-shadow-sm" style={{ fontSize: previewNameSize(activeTemplate.nameBox) }}>{mandapam.name}</span>
               </div>
               {activeTemplate.locationBox && (
                 <div className="absolute flex items-center justify-center rounded-full bg-white/90 px-[2%] text-center text-[clamp(8px,1.7vh,15px)] font-bold text-stone-800" style={cssBox(activeTemplate.locationBox)}>
