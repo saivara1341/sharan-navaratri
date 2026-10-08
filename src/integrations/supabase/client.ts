@@ -8,13 +8,15 @@ const SUPABASE_URL =
   import.meta.env.VITE_PUBLIC_SUPABASE_URL ||
   "https://oiazysnimrdkwcubzzxd.supabase.co";
 
+const FALLBACK_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_YoHYip3yxPVl1pCEEhf4sQ_weeTu0J4";
+
 const SUPABASE_PUBLISHABLE_KEY =
   import.meta.env.VITE_SUPABASE_ANON_KEY ||
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
   import.meta.env.VITE_SUPABASE_KEY ||
   import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY ||
   import.meta.env.VITE_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-  "";
+  FALLBACK_SUPABASE_PUBLISHABLE_KEY;
 
 if (!SUPABASE_PUBLISHABLE_KEY && typeof window !== "undefined") {
   console.warn(
@@ -22,7 +24,7 @@ if (!SUPABASE_PUBLISHABLE_KEY && typeof window !== "undefined") {
   );
 }
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY || "placeholder-anon-key", {
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     storage: typeof window !== 'undefined' ? window.localStorage : undefined,
     persistSession: true,
