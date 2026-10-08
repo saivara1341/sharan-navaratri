@@ -948,8 +948,8 @@ export const NavaratriMandapamDetail: React.FC = () => {
       {/* DAY POP-UP CARD MODAL (Opened upon tapping any of the 10 buttons) */}
       {/* ============================================================ */}
       {selectedDay && (
-        <div className="fixed inset-x-0 bottom-0 top-[106px] z-40 flex items-start justify-center overflow-y-auto bg-black/80 p-3 backdrop-blur-sm animate-in fade-in sm:top-[112px] sm:p-4">
-          <div className="relative my-auto w-full max-w-lg max-h-[calc(100dvh-7.5rem)] overflow-y-auto rounded-3xl border-2 border-amber-400 bg-[#FDFBF7] p-5 text-[#221A14] shadow-2xl space-y-4 sm:max-h-[calc(100dvh-8rem)] sm:p-6">
+        <div className="fixed inset-0 z-[80] flex items-stretch justify-center overflow-hidden bg-black/85 p-0 backdrop-blur-sm animate-in fade-in sm:p-4">
+          <div className="relative flex h-full w-full max-w-lg flex-col overflow-y-auto rounded-none border-0 bg-[#FDFBF7] p-5 pb-28 text-[#221A14] shadow-2xl space-y-4 sm:h-[calc(100dvh-2rem)] sm:rounded-3xl sm:border-2 sm:border-amber-400 sm:p-6 sm:pb-8">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-amber-200 pb-3">
               <div className="flex items-center gap-2">
