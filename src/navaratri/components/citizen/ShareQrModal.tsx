@@ -242,45 +242,45 @@ const drawGeneratedPoster = async (
   ctx.fillStyle = template.muted;
   ctx.fillText("ALL MANDAPAMS  |  ALL INFORMATION  |  FOR ALL DEVOTEES", 96, 226);
 
-  fillRoundRect(ctx, 80, 270, 864, 230, 44, template.panel, template.accent, 5);
-  fillRoundRect(ctx, 118, 300, 170, 170, 85, "rgba(255,255,255,0.92)", "rgba(245, 158, 11, 0.35)", 4);
+  fillRoundRect(ctx, 80, 248, 864, 210, 44, template.panel, template.accent, 5);
+  fillRoundRect(ctx, 118, 274, 160, 160, 80, "rgba(255,255,255,0.92)", "rgba(245, 158, 11, 0.35)", 4);
   if (mandapam.logoUrl) {
     try {
       const logo = await loadCanvasImage(mandapam.logoUrl);
-      drawCircularImage(ctx, logo, 140, 318, 126);
+      drawCircularImage(ctx, logo, 140, 292, 118);
     } catch {
       ctx.fillStyle = template.muted;
       ctx.font = "900 22px Arial";
       ctx.textAlign = "center";
-      ctx.fillText("MANDAPAM", 203, 378);
-      ctx.fillText("LOGO", 203, 410);
+      ctx.fillText("MANDAPAM", 198, 352);
+      ctx.fillText("LOGO", 198, 384);
     }
   }
 
   ctx.textAlign = "center";
   ctx.font = "700 24px Arial";
   ctx.fillStyle = template.muted;
-  ctx.fillText("WELCOME TO", 620, 318);
-  drawWrappedCenterText(ctx, mandapam.name.toUpperCase(), 620, 388, 510, 98, 44, 22, template.text);
+  ctx.fillText("WELCOME TO", 620, 292);
+  drawWrappedCenterText(ctx, mandapam.name.toUpperCase(), 620, 356, 510, 88, 40, 21, template.text);
   const locationFont = fitFont(ctx, mandapamLocation, 440, 23, 15, "Arial", "700");
   ctx.font = `700 ${locationFont}px Arial`;
   ctx.fillStyle = template.muted;
-  ctx.fillText(mandapamLocation, 620, 472);
+  ctx.fillText(mandapamLocation, 620, 436);
 
-  fillRoundRect(ctx, 292, 585, 440, 440, 36, "rgba(255,255,255,0.96)", template.accent, 8);
-  ctx.drawImage(qr, 342, 625, 340, 340);
-  fillRoundRect(ctx, 300, 985, 424, 86, 28, template.tone === "ink" ? "#8b1e1e" : template.text, template.accent, 4);
+  fillRoundRect(ctx, 292, 605, 440, 440, 36, "rgba(255,255,255,0.96)", template.accent, 8);
+  ctx.drawImage(qr, 342, 645, 340, 340);
+  fillRoundRect(ctx, 300, 1010, 424, 86, 28, template.tone === "ink" ? "#8b1e1e" : template.text, template.accent, 4);
   ctx.font = "900 42px Arial";
   ctx.fillStyle = "#ffffff";
   ctx.textAlign = "center";
-  ctx.fillText("SCAN HERE", 512, 1021);
+  ctx.fillText("SCAN HERE", 512, 1046);
   ctx.font = "700 17px Arial";
-  ctx.fillText("TO VIEW TODAY'S DETAILS", 512, 1053);
+  ctx.fillText("TO VIEW TODAY'S DETAILS", 512, 1078);
 
-  drawFeature(ctx, 70, 1122, "🌺", "Alankarana", "Today & Upcoming", template);
-  drawFeature(ctx, 300, 1122, "🍚", "Naivedyam", "Today's Offerings", template);
-  drawFeature(ctx, 530, 1122, "🍛", "Annadanam", "Timings & Details", template);
-  drawFeature(ctx, 760, 1122, "🕘", "Puja Timings", "Daily Schedule", template);
+  drawFeature(ctx, 70, 1144, "🌺", "Alankarana", "Today & Upcoming", template);
+  drawFeature(ctx, 300, 1144, "🍚", "Naivedyam", "Today's Offerings", template);
+  drawFeature(ctx, 530, 1144, "🍛", "Annadanam", "Timings & Details", template);
+  drawFeature(ctx, 760, 1144, "🕘", "Puja Timings", "Daily Schedule", template);
 
   fillRoundRect(ctx, 80, 1348, 864, 110, 30, template.tone === "maroon" ? "rgba(255,248,226,0.96)" : "rgba(255,255,255,0.88)", "rgba(245, 158, 11, 0.72)", 4);
   ctx.font = "900 30px Georgia";
@@ -385,26 +385,26 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
       </div>
       <p className="absolute left-[8%] top-[17%] text-[2cqw] font-bold uppercase tracking-[0.2em]" style={{ color: template.muted }}>All Mandapams • All Information • For All Devotees</p>
 
-      <div className="absolute left-[8%] right-[8%] top-[21.5%] flex h-[15.5%] items-center gap-[5%] rounded-[6cqw] border border-amber-300/60 p-[4%] shadow-sm" style={{ background: template.panel }}>
-        <div className="grid aspect-square h-[82%] shrink-0 place-items-center overflow-hidden rounded-full border border-amber-300/70 bg-white/85 p-[2%]">
+      <div className="absolute left-[8%] right-[8%] top-[20%] flex h-[14.5%] items-center gap-[5%] rounded-[6cqw] border border-amber-300/60 p-[4%] shadow-sm" style={{ background: template.panel }}>
+        <div className="grid aspect-square h-[78%] shrink-0 place-items-center overflow-hidden rounded-full border border-amber-300/70 bg-white/85 p-[2%]">
           {hasLogo ? <img src={mandapam.logoUrl} alt={`${mandapam.name} logo`} className="h-full w-full rounded-full object-cover" /> : <span className="text-center text-[2cqw] font-black uppercase leading-tight text-stone-500">Mandapam<br />Logo</span>}
         </div>
         <div className="min-w-0 flex-1 text-center">
           <p className="text-[2cqw] font-bold uppercase tracking-[0.28em]" style={{ color: template.muted }}>Welcome to</p>
-          <p className="line-clamp-3 font-serif text-[3.8cqw] font-black uppercase leading-[0.94]" style={{ color: template.text }}>{mandapam.name}</p>
+          <p className="line-clamp-3 font-serif text-[3.55cqw] font-black uppercase leading-[0.94]" style={{ color: template.text }}>{mandapam.name}</p>
           <p className="mt-[1.5%] truncate text-[2.15cqw] font-bold" style={{ color: template.muted }}>{mandapamLocation}</p>
         </div>
       </div>
 
-      <div className="absolute left-1/2 top-[47.5%] w-[41%] -translate-x-1/2 -translate-y-1/2 rounded-[4cqw] border-[0.7cqw] bg-white p-[4%] shadow-xl" style={{ borderColor: template.accent }}>
+      <div className="absolute left-1/2 top-[48.8%] w-[41%] -translate-x-1/2 -translate-y-1/2 rounded-[4cqw] border-[0.7cqw] bg-white p-[4%] shadow-xl" style={{ borderColor: template.accent }}>
         <QRCodeSVG value={publicUrl} size={560} level="H" includeMargin className="h-full w-full" />
       </div>
-      <div className="absolute left-1/2 top-[61.5%] w-[50%] -translate-x-1/2 rounded-[3cqw] px-[2%] py-[2.2%] text-center text-white shadow-lg" style={{ background: template.tone === "ink" ? "#8b1e1e" : template.text }}>
+      <div className="absolute left-1/2 top-[62.8%] w-[50%] -translate-x-1/2 rounded-[3cqw] px-[2%] py-[2.2%] text-center text-white shadow-lg" style={{ background: template.tone === "ink" ? "#8b1e1e" : template.text }}>
         <p className="text-[4.1cqw] font-black uppercase leading-none">Scan Here</p>
         <p className="mt-[1%] text-[1.65cqw] font-bold uppercase tracking-[0.22em]">View today's details</p>
       </div>
 
-      <div className="absolute left-[6%] right-[6%] top-[70.5%] grid grid-cols-4 gap-[2%]">
+      <div className="absolute left-[6%] right-[6%] top-[72%] grid grid-cols-4 gap-[2%]">
         {[
           ["🌺", "Alankarana"],
           ["🍚", "Naivedyam"],
