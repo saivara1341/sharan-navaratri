@@ -676,13 +676,13 @@ export const NavaratriNearMe: React.FC = () => {
       </section>
 
       {/* Filter Category Pills */}
-      <div className="relative mx-auto h-[270px] w-full max-w-[440px] overflow-hidden rounded-[1.75rem] sm:hidden">
+      <div className="relative -mx-2 h-[286px] overflow-hidden sm:hidden">
         <img
           src={navaratriAsset("/navaratri/assets/sage-scroll-filter-frame-transparent.png")}
           alt=""
-          className="absolute left-1/2 top-0 h-full w-[108%] -translate-x-1/2 object-fill"
+          className="absolute left-1/2 top-2 h-[270px] w-[116%] -translate-x-1/2 object-fill"
         />
-        <div className="absolute left-[9.5%] right-[9.5%] top-[24%] grid grid-cols-2 gap-2">
+        <div className="absolute left-[12%] right-[12%] top-[29%] grid grid-cols-2 gap-2">
           {categories.map((category) => (
             <button
               key={category.id}
@@ -876,14 +876,13 @@ export const NavaratriNearMe: React.FC = () => {
       {/* 2. ACTIVITIES & PROCESSIONS (PALLAKI SEVA, BHAJANS, DANDIYA, ETC.) */}
       {showActivities && (
         <section className="mt-7 space-y-3">
-          <div className="relative -mx-1 h-16 overflow-hidden rounded-2xl border-y border-amber-200/80 bg-stone-50 shadow-inner sm:mx-0 sm:h-20">
+          <div className="relative -mx-4 h-16 overflow-hidden bg-white sm:-mx-6 sm:h-20">
             <img
               src={navaratriAsset("/navaratri/assets/blue-floral-horizontal-divider.jpg")}
               alt=""
               aria-hidden="true"
-              className="h-full w-full object-cover object-center opacity-95 mix-blend-multiply"
+              className="h-full w-full object-cover object-center saturate-150 contrast-125"
             />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#fffdf7] via-transparent to-[#fffdf7]" />
           </div>
           <div className="flex items-end justify-between gap-3 border-b border-amber-200/80 pb-2">
             <div>
