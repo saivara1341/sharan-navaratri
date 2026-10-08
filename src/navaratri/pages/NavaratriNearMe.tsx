@@ -1,6 +1,6 @@
 import { navaratriAsset } from "../utils/navaratriAssets";
 import { getMandapamDirectionsUrl } from "../utils/mandapamMaps";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
 import {
@@ -400,6 +400,35 @@ TELANGANA_DISTRICTS.forEach((district) => {
   }
 });
 
+const HYDERABAD_METRO_TERMS = [
+  "hyderabad",
+  "secunderabad",
+  "medchal",
+  "malkajgiri",
+  "rangareddy",
+  "ranga reddy",
+  "kompally",
+  "jeedimetla",
+  "kukatpally",
+  "miyapur",
+  "gachibowli",
+  "madhapur",
+  "hitec",
+  "uppal",
+  "lb nagar",
+  "ameerpet",
+  "bachupally",
+  "quthbullapur"
+];
+
+const normalizeLocation = (value: string = "") => value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+
+const isHyderabadMetroMatch = (selectedCity: string, mandapamCity: string, mandapamArea: string) => {
+  const selected = normalizeLocation(selectedCity);
+  if (selected !== "hyderabad") return false;
+  const combined = `${normalizeLocation(mandapamCity)} ${normalizeLocation(mandapamArea)}`;
+  return HYDERABAD_METRO_TERMS.some((term) => combined.includes(term));
+};
 
 const distanceKm = (lat1: number, lng1: number, lat2: number, lng2: number) => {
   const toRadians = (value: number) => (value * Math.PI) / 180;
@@ -435,6 +464,13 @@ export const NavaratriNearMe: React.FC = () => {
   const [isLocating, setIsLocating] = useState(false);
   const [locationSource, setLocationSource] = useState<"default" | "manual" | "gps">("default");
   const [showAllOverride, setShowAllOverride] = useState(false);
+  const resultsSectionRef = useRef<HTMLElement | null>(null);
+
+  const scrollToResults = () => {
+    window.setTimeout(() => {
+      resultsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+  };
 
   const applyManualLocation = () => {
     const region = REGIONS_DATA[manualCity] || REGIONS_DATA.Nizamabad;
@@ -449,6 +485,7 @@ export const NavaratriNearMe: React.FC = () => {
     setLocationSource("manual");
     setShowAllOverride(false);
     toast.success(finalArea ? `Showing results near ${finalArea}, ${manualCity}.` : `Showing all Mandapams in ${manualCity}.`);
+    scrollToResults();
   };
 
   const selectQuickArea = (selectedArea: string) => {
@@ -567,7 +604,10 @@ export const NavaratriNearMe: React.FC = () => {
         const mandapamCity = mandapam.city.toLowerCase().trim();
         const mandapamArea = mandapam.area.toLowerCase().trim();
 
-        const cityMatches = mandapamCity.includes(currentCity) || currentCity.includes(mandapamCity);
+        const cityMatches =
+          mandapamCity.includes(currentCity) ||
+          currentCity.includes(mandapamCity) ||
+          isHyderabadMetroMatch(currentCity, mandapamCity, mandapamArea);
         if (!cityMatches) {
           return false;
         }
@@ -823,7 +863,7 @@ export const NavaratriNearMe: React.FC = () => {
 
       {/* 1. MANDAPAMS LIST (FOR ALL OR MANDAPAM / ANNADANAM FILTERS) */}
       {showMandapams && (
-        <section className="space-y-4">
+        <section ref={resultsSectionRef} className="scroll-mt-28 space-y-4">
           <div className="flex items-center justify-between border-b border-amber-200/80 pb-2">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-800">
