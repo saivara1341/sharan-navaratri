@@ -914,9 +914,12 @@ export const NavaratriNearMe: React.FC = () => {
           </div>
 
           {visibleActivities.length === 0 ? (
-            <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-6 text-center text-xs text-stone-600 space-y-1">
-              <p className="font-bold text-stone-800">No events or activities found in this region yet.</p>
-              <p>When Mandapams in {currentDisplayArea}, {currentDisplayCity} post Bhajans, Pallaki Seva, or Dandiya schedules, they will appear here live.</p>
+            <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-6 text-center text-xs text-stone-600">
+              <p className="inline-flex items-center justify-center gap-2 font-bold text-stone-800">
+                <DandiyaIcon className="h-5 w-5 text-amber-700" />
+                <span>No events or activities found in this region yet.</span>
+                <DandiyaIcon className="h-5 w-5 text-amber-700" />
+              </p>
             </div>
           ) : (
             visibleActivities.map((activity) => {
