@@ -163,7 +163,7 @@ export const NavaratriAdmin: React.FC = () => {
             ctx.drawImage(img, 0, 0, width, height);
             const compressed = canvas.toDataURL("image/jpeg", 0.85);
             setAdminImagePreview(compressed);
-            toast.success("Image processed! Click 'Apply to Public Card' to save.");
+            toast.success("Image processed! Click 'Apply Card Background' to save.");
           } else {
             setAdminImagePreview(event.target?.result as string);
           }
@@ -192,12 +192,10 @@ export const NavaratriAdmin: React.FC = () => {
 
     try {
       localStorage.setItem(`mandapam_card_bg_${selectedAdminMandapam.id}`, targetUrl);
-      localStorage.setItem(`mandapam_cover_${selectedAdminMandapam.id}`, targetUrl);
     } catch {}
 
     updateMandapam(selectedAdminMandapam.id, {
-      cardBgImageUrl: targetUrl,
-      coverImageUrl: targetUrl
+      cardBgImageUrl: targetUrl
     });
 
     setAdminCardModalOpen(false);
@@ -208,12 +206,10 @@ export const NavaratriAdmin: React.FC = () => {
     if (!selectedAdminMandapam) return;
     try {
       localStorage.removeItem(`mandapam_card_bg_${selectedAdminMandapam.id}`);
-      localStorage.removeItem(`mandapam_cover_${selectedAdminMandapam.id}`);
     } catch {}
 
     updateMandapam(selectedAdminMandapam.id, {
-      cardBgImageUrl: "",
-      coverImageUrl: ""
+      cardBgImageUrl: ""
     });
 
     setAdminImagePreview("");
@@ -452,7 +448,7 @@ export const NavaratriAdmin: React.FC = () => {
                           type="button"
                           onClick={() => {
                             setSelectedAdminMandapam(m);
-                            const effective = m.cardBgImageUrl || m.coverImageUrl || (typeof window !== "undefined" ? localStorage.getItem(`mandapam_card_bg_${m.id}`) : null) || "";
+                            const effective = m.cardBgImageUrl || (typeof window !== "undefined" ? localStorage.getItem(`mandapam_card_bg_${m.id}`) : null) || "";
                             setAdminImagePreview(effective);
                             setAdminImageInputUrl("");
                             setAdminCardModalOpen(true);
@@ -722,7 +718,7 @@ export const NavaratriAdmin: React.FC = () => {
                     Set Mandapam Card Background
                   </h3>
                   <p className="text-[11px] text-stone-600 font-medium">
-                    {selectedAdminMandapam.name} • Public Profile Card Background
+                    {selectedAdminMandapam.name} • Card background only
                   </p>
                 </div>
               </div>
@@ -739,7 +735,7 @@ export const NavaratriAdmin: React.FC = () => {
               {/* Preview */}
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-stone-700">
-                  Card Background Live Preview:
+                  Admin / Card Background Preview:
                 </label>
                 <div className="relative h-36 rounded-2xl overflow-hidden border-2 border-amber-300 bg-stone-900 shadow-inner flex items-center justify-center">
                   {adminImagePreview ? (
@@ -761,6 +757,29 @@ export const NavaratriAdmin: React.FC = () => {
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Current Public Cover */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-stone-700">
+                  Public View Cover Image:
+                </label>
+                <div className="relative h-28 rounded-2xl overflow-hidden border border-amber-200 bg-stone-100 shadow-inner flex items-center justify-center">
+                  {selectedAdminMandapam.coverImageUrl ? (
+                    <img
+                      src={selectedAdminMandapam.coverImageUrl}
+                      alt={`${selectedAdminMandapam.name} public cover`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="text-center text-stone-400 p-4">
+                      <ImageIcon className="w-7 h-7 mx-auto mb-1 opacity-50" />
+                      <p className="text-xs">No public cover image set by organizer.</p>
+                    </div>
+                  )}
+                  <span className="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-black text-[#8B1E1E] shadow-sm">Public profile cover</span>
+                </div>
+                <p className="text-[10px] text-stone-500">This image is controlled by the organizer/public profile flow and is not changed by this card background tool.</p>
               </div>
 
               {/* Upload from Device */}
@@ -866,7 +885,7 @@ export const NavaratriAdmin: React.FC = () => {
                     className="px-5 py-2 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
                   >
                     <Check className="w-4 h-4" />
-                    <span>Apply to Public Card</span>
+                    <span>Apply Card Background</span>
                   </button>
                 </div>
               </div>
