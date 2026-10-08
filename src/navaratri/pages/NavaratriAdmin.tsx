@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
 import { useNavaratriLanguage } from "../context/NavaratriLanguageContext";
-import { STANDARD_NAVARATRI_DAYS } from "../data/standardNavaratriDays";
 import {
   ShieldCheck,
   Building,
@@ -32,6 +31,7 @@ import { navaratriAsset } from "../utils/navaratriAssets";
 import { supabase } from "@/integrations/supabase/client";
 
 const NAVARATRI_ADMIN_EMAIL = "ssaivaraprasad51@gmail.com";
+const FESTIVAL_DAYS_TO_TRACK = 10;
 
 type AdminAnalyticsEvent = {
   event_type: "QR_SCAN" | "AD_CLICK" | "AD_IMPRESSION";
@@ -88,7 +88,7 @@ export const NavaratriAdmin: React.FC = () => {
   } = useNavaratriData();
   const { t } = useNavaratriLanguage();
 
-  const [activeTab, setActiveTab] = useState<"overview" | "mandapams" | "ads" | "standard_data" | "seasons">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "mandapams" | "ads" | "seasons">("overview");
   const [adminAccess, setAdminAccess] = useState<"loading" | "allowed" | "denied">("loading");
   const [analyticsEvents, setAnalyticsEvents] = useState<AdminAnalyticsEvent[]>([]);
   const [organizerLogins, setOrganizerLogins] = useState<OrganizerLoginRow[]>([]);
@@ -228,18 +228,40 @@ export const NavaratriAdmin: React.FC = () => {
   const scanEvents = analyticsEvents.filter((event) => event.event_type === "QR_SCAN");
   const adClickEvents = analyticsEvents.filter((event) => event.event_type === "AD_CLICK");
   const uniqueDevotees = new Set(scanEvents.map((event) => event.visitor_id)).size;
+  const organizerCount = totalMandapams;
+  const visitorWindows = useMemo(() => {
+    const now = Date.now();
+    const hourAgo = now - 60 * 60 * 1000;
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const festivalStart = now - FESTIVAL_DAYS_TO_TRACK * 24 * 60 * 60 * 1000;
+
+    const countUniqueVisitorsSince = (sinceMs: number) =>
+      new Set(
+        scanEvents
+          .filter((event) => new Date(event.created_at).getTime() >= sinceMs)
+          .map((event) => event.visitor_id)
+      ).size;
+
+    return {
+      lastHour: countUniqueVisitorsSince(hourAgo),
+      today: countUniqueVisitorsSince(todayStart.getTime()),
+      festival: countUniqueVisitorsSince(festivalStart),
+      festivalDays: FESTIVAL_DAYS_TO_TRACK,
+    };
+  }, [scanEvents]);
+
   const mandapamUsage = useMemo(() => mandapams.map((mandapam) => {
-    const logins = organizerLogins.filter((row) => row.mandapam_id === mandapam.id).length;
     const scans = scanEvents.filter((event) => event.mandapam_id === mandapam.id);
     return {
       id: mandapam.id,
       name: mandapam.name,
-      logins,
+      organizers: 1,
       scans: scans.length,
       devotees: new Set(scans.map((event) => event.visitor_id)).size,
       adClicks: adClickEvents.filter((event) => event.mandapam_id === mandapam.id).length,
     };
-  }).sort((a, b) => (b.scans + b.logins + b.adClicks) - (a.scans + a.logins + a.adClicks)), [adClickEvents, mandapams, organizerLogins, scanEvents]);
+  }).sort((a, b) => (b.scans + b.organizers + b.adClicks) - (a.scans + a.organizers + a.adClicks)), [adClickEvents, mandapams, scanEvents]);
 
   if (adminAccess === "loading") {
     return <div className="min-h-[50vh] flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-[#8B1E1E]" /></div>;
@@ -287,7 +309,6 @@ export const NavaratriAdmin: React.FC = () => {
           { id: "overview", label: "Overview & Analytics" },
           { id: "mandapams", label: `Mandapams (${totalMandapams})` },
           { id: "ads", label: `Local Ads (${advertisements.length})` },
-          { id: "standard_data", label: "Standard 9-Day Data" },
           { id: "seasons", label: "Season Lifecycle & Archival" }
         ].map((tab) => (
           <button
@@ -315,9 +336,9 @@ export const NavaratriAdmin: React.FC = () => {
             </div>
 
             <div className="p-4 rounded-2xl bg-white border border-amber-200 shadow-sm space-y-1">
-              <span className="text-[10px] text-stone-500 uppercase font-bold flex items-center gap-1"><LogIn className="h-3 w-3" /> Organizer Logins</span>
-              <p className="text-3xl font-black text-amber-800">{analyticsLoading ? "—" : organizerLogins.length}</p>
-              <p className="text-[11px] text-stone-600">Across all Mandapams</p>
+              <span className="text-[10px] text-stone-500 uppercase font-bold flex items-center gap-1"><LogIn className="h-3 w-3" /> Organizers</span>
+              <p className="text-3xl font-black text-amber-800">{organizerCount}</p>
+              <p className="text-[11px] text-stone-600">1 organizer per Mandapam</p>
             </div>
 
             <div className="p-4 rounded-2xl bg-white border border-amber-200 shadow-sm space-y-1">
@@ -341,13 +362,13 @@ export const NavaratriAdmin: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[620px] text-left text-xs">
                 <thead className="bg-[#FAF6ED] text-[10px] uppercase text-stone-600">
-                  <tr><th className="p-3">Mandapam</th><th className="p-3 text-center">Organizer Logins</th><th className="p-3 text-center">Unique Devotees</th><th className="p-3 text-center">QR Scans</th><th className="p-3 text-center">Ad Clicks</th></tr>
+                  <tr><th className="p-3">Mandapam</th><th className="p-3 text-center">Organizers</th><th className="p-3 text-center">Unique Devotees</th><th className="p-3 text-center">QR Scans</th><th className="p-3 text-center">Ad Clicks</th></tr>
                 </thead>
                 <tbody className="divide-y divide-amber-100">
                   {mandapamUsage.map((row) => (
                     <tr key={row.id} className="hover:bg-amber-50/50">
                       <td className="p-3 font-bold text-[#8B1E1E]">{row.name}</td>
-                      <td className="p-3 text-center font-semibold">{row.logins}</td>
+                      <td className="p-3 text-center font-semibold">{row.organizers}</td>
                       <td className="p-3 text-center font-semibold">{row.devotees}</td>
                       <td className="p-3 text-center font-semibold">{row.scans}</td>
                       <td className="p-3 text-center font-semibold">{row.adClicks}</td>
@@ -358,13 +379,33 @@ export const NavaratriAdmin: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-5 rounded-3xl bg-[#FFFDF9] border border-amber-200 space-y-3">
-            <h3 className="font-serif font-bold text-base text-[#8B1E1E]">
-              Platform Operational Summary
-            </h3>
-            <p className="text-xs text-stone-700 leading-relaxed">
-              Navaratri Mandapam platform is active across Nizamabad, Hyderabad, and Vijayawada districts. Real-time daily Alankarana darshan uploads and unified walk-in registers are serving devotees seamlessly without third-party dependencies.
-            </p>
+          <div className="p-5 rounded-3xl bg-[#FFFDF9] border border-amber-200 space-y-4">
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h3 className="font-serif font-bold text-base text-[#8B1E1E]">
+                  Visitor Insights
+                </h3>
+                <p className="text-xs text-stone-600">Unique devotee visitors from QR scans across all Mandapams.</p>
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">Live analytics windows</span>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl border border-amber-200 bg-white p-4">
+                <p className="text-[10px] font-bold uppercase text-stone-500">Last 1 Hour</p>
+                <p className="mt-1 text-2xl font-black text-[#8B1E1E]">{analyticsLoading ? "—" : visitorWindows.lastHour}</p>
+                <p className="text-[11px] text-stone-600">Visitors in the current hour window</p>
+              </div>
+              <div className="rounded-2xl border border-amber-200 bg-white p-4">
+                <p className="text-[10px] font-bold uppercase text-stone-500">Today</p>
+                <p className="mt-1 text-2xl font-black text-blue-800">{analyticsLoading ? "—" : visitorWindows.today}</p>
+                <p className="text-[11px] text-stone-600">Visitors since today 12:00 AM</p>
+              </div>
+              <div className="rounded-2xl border border-amber-200 bg-white p-4">
+                <p className="text-[10px] font-bold uppercase text-stone-500">Full {visitorWindows.festivalDays}-Day Festival</p>
+                <p className="mt-1 text-2xl font-black text-emerald-800">{analyticsLoading ? "—" : visitorWindows.festival}</p>
+                <p className="text-[11px] text-stone-600">Visitors across the complete festival period</p>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -634,28 +675,7 @@ export const NavaratriAdmin: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 4: STANDARD 9-DAY FESTIVAL DATA */}
-      {activeTab === "standard_data" && (
-        <div className="space-y-4">
-          <p className="text-xs text-stone-600">
-            Central repository of suggested Devi forms, auspicious colors, and Naivedhyam for Sharad Navaratri:
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {STANDARD_NAVARATRI_DAYS.map((d) => (
-              <div key={d.dayNumber} className="p-4 rounded-2xl bg-white border border-amber-200 shadow-sm space-y-1 text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-[#8B1E1E]">Day {d.dayNumber}: {d.deviName}</span>
-                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: d.colorHex }} />
-                </div>
-                <p className="text-stone-700"><strong>Offerings:</strong> {d.suggestedOfferings}</p>
-                <p className="text-stone-600"><strong>Items:</strong> {d.suggestedItems}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* TAB 5: SEASON LIFECYCLE & ARCHIVAL */}
+      {/* TAB 4: SEASON LIFECYCLE & ARCHIVAL */}
       {activeTab === "seasons" && (
         <div className="p-6 rounded-3xl bg-[#FFFDF9] border border-amber-200 shadow-sm space-y-4">
           <h3 className="font-serif font-black text-xl text-[#8B1E1E]">
