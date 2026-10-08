@@ -3,7 +3,7 @@ import { QRCodeCanvas, QRCodeSVG } from "qrcode.react";
 import { Download, Share2, X } from "lucide-react";
 import { toast } from "sonner";
 import { Mandapam } from "../../types";
-import siddhiLogoTransparent from "@/assets/siddhi-logo-transparent.png";
+import siddhiDynamicsHeaderLogo from "@/assets/siddhi-dynamics-header-logo.png";
 
 interface ShareQrModalProps {
   mandapam: Mandapam;
@@ -12,7 +12,7 @@ interface ShareQrModalProps {
 }
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
-const siddhiLogoAsset = new URL("../../../assets/siddhi-logo-transparent.png", import.meta.url).href;
+const siddhiLogoAsset = new URL("../../../assets/siddhi-dynamics-header-logo.png", import.meta.url).href;
 type PosterTemplateId = "ROYAL_CLASSIC" | "LOTUS_GLOW" | "MODERN_DEVOTEE" | "TEMPLE_WHITE";
 type PosterTone = "maroon" | "saffron" | "ink" | "white";
 
@@ -201,16 +201,17 @@ const drawPosterBackground = (ctx: CanvasRenderingContext2D, template: PosterTem
 };
 
 const drawFeature = (ctx: CanvasRenderingContext2D, x: number, y: number, icon: string, title: string, subtitle: string, template: PosterTemplate) => {
-  fillRoundRect(ctx, x, y, 205, 138, 26, "rgba(255,255,255,0.82)", "rgba(245, 158, 11, 0.32)", 3);
+  const darkPoster = template.tone === "maroon";
+  fillRoundRect(ctx, x, y, 205, 138, 26, darkPoster ? "rgba(255,248,226,0.96)" : "rgba(255,255,255,0.92)", "rgba(245, 158, 11, 0.72)", 4);
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.font = "42px Arial";
   ctx.fillText(icon, x + 102, y + 38);
   ctx.font = "900 25px Arial";
-  ctx.fillStyle = template.text;
+  ctx.fillStyle = darkPoster ? "#111827" : template.text;
   ctx.fillText(title, x + 102, y + 82);
   ctx.font = "700 18px Arial";
-  ctx.fillStyle = template.muted;
+  ctx.fillStyle = darkPoster ? "#7c1d1d" : template.muted;
   ctx.fillText(subtitle, x + 102, y + 112);
 };
 
@@ -241,33 +242,33 @@ const drawGeneratedPoster = async (
   ctx.fillStyle = template.muted;
   ctx.fillText("ALL MANDAPAMS  |  ALL INFORMATION  |  FOR ALL DEVOTEES", 96, 226);
 
-  fillRoundRect(ctx, 80, 300, 864, 250, 44, template.panel, template.accent, 5);
-  fillRoundRect(ctx, 118, 340, 180, 180, 90, "rgba(255,255,255,0.92)", "rgba(245, 158, 11, 0.35)", 4);
+  fillRoundRect(ctx, 80, 270, 864, 230, 44, template.panel, template.accent, 5);
+  fillRoundRect(ctx, 118, 300, 170, 170, 85, "rgba(255,255,255,0.92)", "rgba(245, 158, 11, 0.35)", 4);
   if (mandapam.logoUrl) {
     try {
       const logo = await loadCanvasImage(mandapam.logoUrl);
-      drawCircularImage(ctx, logo, 140, 362, 136);
+      drawCircularImage(ctx, logo, 140, 318, 126);
     } catch {
       ctx.fillStyle = template.muted;
       ctx.font = "900 22px Arial";
       ctx.textAlign = "center";
-      ctx.fillText("MANDAPAM", 208, 424);
-      ctx.fillText("LOGO", 208, 456);
+      ctx.fillText("MANDAPAM", 203, 378);
+      ctx.fillText("LOGO", 203, 410);
     }
   }
 
   ctx.textAlign = "center";
   ctx.font = "700 24px Arial";
   ctx.fillStyle = template.muted;
-  ctx.fillText("WELCOME TO", 620, 350);
-  drawWrappedCenterText(ctx, mandapam.name.toUpperCase(), 620, 430, 510, 110, 48, 24, template.text);
+  ctx.fillText("WELCOME TO", 620, 318);
+  drawWrappedCenterText(ctx, mandapam.name.toUpperCase(), 620, 388, 510, 98, 44, 22, template.text);
   const locationFont = fitFont(ctx, mandapamLocation, 440, 23, 15, "Arial", "700");
   ctx.font = `700 ${locationFont}px Arial`;
   ctx.fillStyle = template.muted;
-  ctx.fillText(mandapamLocation, 620, 520);
+  ctx.fillText(mandapamLocation, 620, 472);
 
-  fillRoundRect(ctx, 292, 590, 440, 440, 36, "rgba(255,255,255,0.96)", template.accent, 8);
-  ctx.drawImage(qr, 342, 630, 340, 340);
+  fillRoundRect(ctx, 292, 585, 440, 440, 36, "rgba(255,255,255,0.96)", template.accent, 8);
+  ctx.drawImage(qr, 342, 625, 340, 340);
   fillRoundRect(ctx, 300, 985, 424, 86, 28, template.tone === "ink" ? "#8b1e1e" : template.text, template.accent, 4);
   ctx.font = "900 42px Arial";
   ctx.fillStyle = "#ffffff";
@@ -281,23 +282,20 @@ const drawGeneratedPoster = async (
   drawFeature(ctx, 530, 1122, "🍛", "Annadanam", "Timings & Details", template);
   drawFeature(ctx, 760, 1122, "🕘", "Puja Timings", "Daily Schedule", template);
 
-  fillRoundRect(ctx, 80, 1348, 864, 110, 30, "rgba(255,255,255,0.82)", "rgba(245, 158, 11, 0.35)", 3);
+  fillRoundRect(ctx, 80, 1348, 864, 110, 30, template.tone === "maroon" ? "rgba(255,248,226,0.96)" : "rgba(255,255,255,0.88)", "rgba(245, 158, 11, 0.72)", 4);
   ctx.font = "900 30px Georgia";
-  ctx.fillStyle = template.text;
+  ctx.fillStyle = template.tone === "maroon" ? "#7c1d1d" : template.text;
   ctx.fillText("అమ్మవారి సేవలో", 270, 1404);
   try {
     const siddhiLogo = await loadCanvasImage(siddhiLogoAsset);
-    ctx.drawImage(siddhiLogo, 520, 1368, 92, 72);
+    ctx.drawImage(siddhiLogo, 530, 1368, 270, 62);
   } catch {
     ctx.font = "900 24px Arial";
     ctx.fillText("SIDDHI", 560, 1398);
   }
-  ctx.font = "900 28px Arial";
-  ctx.fillStyle = "#111827";
-  ctx.fillText("SIDDHI DYNAMICS LLP", 744, 1398);
   ctx.font = "700 15px Arial";
-  ctx.fillStyle = template.muted;
-  ctx.fillText("TECHNOLOGY INITIATIVE", 744, 1430);
+  ctx.fillStyle = template.tone === "maroon" ? "#7c1d1d" : template.muted;
+  ctx.fillText("TECHNOLOGY INITIATIVE", 762, 1434);
 };
 
 export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, onClose }) => {
@@ -387,18 +385,18 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
       </div>
       <p className="absolute left-[8%] top-[17%] text-[2cqw] font-bold uppercase tracking-[0.2em]" style={{ color: template.muted }}>All Mandapams • All Information • For All Devotees</p>
 
-      <div className="absolute left-[8%] right-[8%] top-[23%] flex h-[17%] items-center gap-[5%] rounded-[6cqw] border border-amber-300/60 p-[4%] shadow-sm" style={{ background: template.panel }}>
-        <div className="grid aspect-square h-[86%] shrink-0 place-items-center overflow-hidden rounded-full border border-amber-300/70 bg-white/85 p-[2%]">
+      <div className="absolute left-[8%] right-[8%] top-[21.5%] flex h-[15.5%] items-center gap-[5%] rounded-[6cqw] border border-amber-300/60 p-[4%] shadow-sm" style={{ background: template.panel }}>
+        <div className="grid aspect-square h-[82%] shrink-0 place-items-center overflow-hidden rounded-full border border-amber-300/70 bg-white/85 p-[2%]">
           {hasLogo ? <img src={mandapam.logoUrl} alt={`${mandapam.name} logo`} className="h-full w-full rounded-full object-cover" /> : <span className="text-center text-[2cqw] font-black uppercase leading-tight text-stone-500">Mandapam<br />Logo</span>}
         </div>
         <div className="min-w-0 flex-1 text-center">
           <p className="text-[2cqw] font-bold uppercase tracking-[0.28em]" style={{ color: template.muted }}>Welcome to</p>
-          <p className="line-clamp-3 font-serif text-[4.2cqw] font-black uppercase leading-[0.94]" style={{ color: template.text }}>{mandapam.name}</p>
+          <p className="line-clamp-3 font-serif text-[3.8cqw] font-black uppercase leading-[0.94]" style={{ color: template.text }}>{mandapam.name}</p>
           <p className="mt-[1.5%] truncate text-[2.15cqw] font-bold" style={{ color: template.muted }}>{mandapamLocation}</p>
         </div>
       </div>
 
-      <div className="absolute left-1/2 top-[48%] w-[41%] -translate-x-1/2 -translate-y-1/2 rounded-[4cqw] border-[0.7cqw] bg-white p-[4%] shadow-xl" style={{ borderColor: template.accent }}>
+      <div className="absolute left-1/2 top-[47.5%] w-[41%] -translate-x-1/2 -translate-y-1/2 rounded-[4cqw] border-[0.7cqw] bg-white p-[4%] shadow-xl" style={{ borderColor: template.accent }}>
         <QRCodeSVG value={publicUrl} size={560} level="H" includeMargin className="h-full w-full" />
       </div>
       <div className="absolute left-1/2 top-[61.5%] w-[50%] -translate-x-1/2 rounded-[3cqw] px-[2%] py-[2.2%] text-center text-white shadow-lg" style={{ background: template.tone === "ink" ? "#8b1e1e" : template.text }}>
@@ -413,22 +411,16 @@ export const ShareQrModal: React.FC<ShareQrModalProps> = ({ mandapam, isOpen, on
           ["🍛", "Annadanam"],
           ["🕘", "Puja Timings"],
         ].map(([icon, label]) => (
-          <div key={label} className="rounded-[3cqw] bg-white/92 px-[1%] py-[8%] text-center shadow-sm ring-1 ring-amber-300/80">
+          <div key={label} className="rounded-[3cqw] bg-[#fff8e2]/95 px-[1%] py-[8%] text-center shadow-sm ring-2 ring-amber-400/80">
             <div className="text-[5cqw] leading-none drop-shadow-sm">{icon}</div>
-            <p className="mt-[8%] text-[2.15cqw] font-black leading-tight text-stone-950">{label}</p>
+            <p className="mt-[8%] text-[2.15cqw] font-black leading-tight text-stone-950 drop-shadow-sm">{label}</p>
           </div>
         ))}
       </div>
 
-      <div className="absolute bottom-[5%] left-[8%] right-[8%] flex items-center justify-between rounded-[3cqw] border border-amber-200/70 bg-white/82 px-[4%] py-[2.5%] shadow-sm">
-        <p className="text-[3.2cqw] font-serif font-black" style={{ color: template.text }}>అమ్మవారి సేవలో</p>
-        <div className="flex items-center gap-[2%]">
-          <img src={siddhiLogoTransparent} alt="Siddhi Dynamics LLP" className="h-[8cqw] w-[8cqw] object-contain" />
-          <div className="text-right leading-tight">
-            <p className="text-[3cqw] font-black text-orange-600">SIDDHI</p>
-            <p className="text-[2.4cqw] font-black text-stone-900">DYNAMICS LLP</p>
-          </div>
-        </div>
+      <div className="absolute bottom-[5%] left-[8%] right-[8%] flex items-center justify-between rounded-[3cqw] border-2 border-amber-400/75 bg-[#fff8e2]/95 px-[4%] py-[2.5%] shadow-sm">
+        <p className="text-[3.2cqw] font-serif font-black text-[#7c1d1d] drop-shadow-sm">అమ్మవారి సేవలో</p>
+        <img src={siddhiDynamicsHeaderLogo} alt="Siddhi Dynamics LLP" className="h-[9cqw] w-[27cqw] object-contain" />
       </div>
     </div>
   );
