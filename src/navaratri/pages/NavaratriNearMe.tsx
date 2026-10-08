@@ -680,9 +680,9 @@ export const NavaratriNearMe: React.FC = () => {
         <img
           src={navaratriAsset("/navaratri/assets/sage-scroll-filter-frame-transparent.png")}
           alt=""
-          className="absolute inset-0 h-full w-full object-fill"
+          className="absolute left-1/2 top-0 h-full w-[108%] -translate-x-1/2 object-fill"
         />
-        <div className="absolute left-[11%] right-[11%] top-[24%] grid grid-cols-2 gap-2">
+        <div className="absolute left-[9.5%] right-[9.5%] top-[24%] grid grid-cols-2 gap-2">
           {categories.map((category) => (
             <button
               key={category.id}
