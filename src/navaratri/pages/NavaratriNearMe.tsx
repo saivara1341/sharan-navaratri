@@ -1,6 +1,7 @@
 import { navaratriAsset } from "../utils/navaratriAssets";
-import { getMandapamDirectionsUrl } from "../utils/mandapamMaps";
+import { getMandapamMapsUrl, getMandapamFormattedAddress } from "../utils/mandapamMaps";
 import React, { useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 import { Link, useSearchParams } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
 import {
@@ -1104,27 +1105,51 @@ export const NavaratriNearMe: React.FC = () => {
                     >
                       Open Mandapam
                     </Link>
-                    {mapsUrl ? (
-                      <a
-                        href={mapsUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`Navigate to ${item.name}`}
-                        title="Navigate to this exact mandapam location"
-                        className="grid h-10 w-12 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100 cursor-pointer"
-                      >
-                        <img src={navaratriAsset("/navaratri/assets/google-maps-pin.png")} alt="Google Maps" className="h-6 w-6 object-contain" />
-                      </a>
-                    ) : (
-                      <button
-                        type="button"
-                        disabled
-                        title="Location / Google Maps link not provided by organizer"
-                        className="grid h-10 w-12 place-items-center rounded-xl border border-stone-200 bg-stone-100 text-stone-400 opacity-50 cursor-not-allowed"
-                      >
-                        <img src={navaratriAsset("/navaratri/assets/google-maps-pin.png")} alt="Google Maps Disabled" className="h-6 w-6 object-contain grayscale" />
-                      </button>
-                    )}
+                    {(() => {
+                      const gmapsUrl = getMandapamMapsUrl(item);
+                      const formattedAddress = getMandapamFormattedAddress(item);
+
+                      if (gmapsUrl) {
+                        return (
+                          <a
+                            href={gmapsUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`Navigate to ${item.name}`}
+                            title="Open in Google Maps"
+                            className="grid h-10 w-12 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100 cursor-pointer"
+                          >
+                            <img src={navaratriAsset("/navaratri/assets/google-maps-pin.png")} alt="Google Maps" className="h-6 w-6 object-contain" />
+                          </a>
+                        );
+                      }
+
+                      if (formattedAddress) {
+                        return (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              toast.info(`📍 ${item.name} Address:\n${formattedAddress}`);
+                            }}
+                            title={`Address: ${formattedAddress}`}
+                            className="grid h-10 w-12 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100 cursor-pointer"
+                          >
+                            <img src={navaratriAsset("/navaratri/assets/google-maps-pin.png")} alt="Location Address" className="h-6 w-6 object-contain" />
+                          </button>
+                        );
+                      }
+
+                      return (
+                        <button
+                          type="button"
+                          disabled
+                          title="Location / Google Maps link not added by organizer"
+                          className="grid h-10 w-12 place-items-center rounded-xl border border-stone-200 bg-stone-100 text-stone-400 opacity-40 cursor-not-allowed"
+                        >
+                          <img src={navaratriAsset("/navaratri/assets/google-maps-pin.png")} alt="Location Not Added" className="h-6 w-6 object-contain grayscale" />
+                        </button>
+                      );
+                    })()}
                   </div>
                 </article>
               );
@@ -1238,27 +1263,51 @@ export const NavaratriNearMe: React.FC = () => {
                         </span>
                       </div>
                     </div>
-                    {activityMapsUrl ? (
-                      <a
-                        href={activityMapsUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`Navigate to ${activity.title}`}
-                        title="Directions to Mandapam"
-                        className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100 cursor-pointer"
-                      >
-                        <Navigation className="h-4 w-4" />
-                      </a>
-                    ) : (
-                      <button
-                        type="button"
-                        disabled
-                        title="Directions unavailable — location not provided"
-                        className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-stone-200 bg-stone-100 text-stone-400 opacity-50 cursor-not-allowed"
-                      >
-                        <MapPinOff className="h-4 w-4" />
-                      </button>
-                    )}
+                    {(() => {
+                      const gmapsUrl = getMandapamMapsUrl(mandapam);
+                      const formattedAddress = getMandapamFormattedAddress(mandapam);
+
+                      if (gmapsUrl) {
+                        return (
+                          <a
+                            href={gmapsUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`Navigate to ${activity.title}`}
+                            title="Open in Google Maps"
+                            className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100 cursor-pointer"
+                          >
+                            <Navigation className="h-4 w-4" />
+                          </a>
+                        );
+                      }
+
+                      if (formattedAddress) {
+                        return (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              toast.info(`📍 ${mandapam?.name || activity.title} Address:\n${formattedAddress}`);
+                            }}
+                            title={`Address: ${formattedAddress}`}
+                            className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100 cursor-pointer"
+                          >
+                            <Navigation className="h-4 w-4" />
+                          </button>
+                        );
+                      }
+
+                      return (
+                        <button
+                          type="button"
+                          disabled
+                          title="Location not added"
+                          className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-stone-200 bg-stone-100 text-stone-400 opacity-40 cursor-not-allowed"
+                        >
+                          <MapPinOff className="h-4 w-4" />
+                        </button>
+                      );
+                    })()}
                   </div>
                 </article>
               );

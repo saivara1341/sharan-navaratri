@@ -28,7 +28,8 @@ import { NineDaySchedule } from "../components/citizen/NineDaySchedule";
 import { AuspiciousRibbonBorder } from "../components/devotional/AuspiciousRibbonBorder";
 import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifiedBadge";
 import { NavaratriFlankingAdBox } from "../components/ads/NavaratriFlankingAdBox";
-import { getMandapamDirectionsUrl } from "../utils/mandapamMaps";
+import { getMandapamMapsUrl, getMandapamFormattedAddress } from "../utils/mandapamMaps";
+import { toast } from "sonner";
 
 const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
 
@@ -542,7 +543,8 @@ export const NavaratriHome: React.FC = () => {
           ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {visibleSavedMandapams.slice(0, 2).map((mandapam) => {
-              const mapsUrl = getMandapamDirectionsUrl(mandapam);
+              const gmapsUrl = getMandapamMapsUrl(mandapam);
+              const formattedAddress = getMandapamFormattedAddress(mandapam);
               return (
                 <article
                   key={mandapam.id}
@@ -595,22 +597,32 @@ export const NavaratriHome: React.FC = () => {
                     <Link to={`/navaratri/m/${mandapam.slug}`} className="rounded-xl bg-[#8B1E1E] px-4 py-2.5 text-center text-xs font-bold text-white hover:bg-[#781B1B] shadow transition-colors">
                       Open Mandapam Website
                     </Link>
-                    {mapsUrl ? (
+                    {gmapsUrl ? (
                       <a
-                        href={mapsUrl}
+                        href={gmapsUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={`Navigate to ${mandapam.name}`}
+                        title="Open in Google Maps"
                         className="grid h-10 w-11 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100 transition-colors cursor-pointer"
                       >
                         <Navigation className="h-4 w-4" />
                       </a>
+                    ) : formattedAddress ? (
+                      <button
+                        type="button"
+                        onClick={() => toast.info(`📍 ${mandapam.name} Address:\n${formattedAddress}`)}
+                        title={`Address: ${formattedAddress}`}
+                        className="grid h-10 w-11 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100 transition-colors cursor-pointer"
+                      >
+                        <Navigation className="h-4 w-4" />
+                      </button>
                     ) : (
                       <button
                         type="button"
                         disabled
-                        title="Directions / Map location not provided"
-                        className="grid h-10 w-11 place-items-center rounded-xl border border-stone-200 bg-stone-100 text-stone-400 opacity-50 cursor-not-allowed"
+                        title="Location not added"
+                        className="grid h-10 w-11 place-items-center rounded-xl border border-stone-200 bg-stone-100 text-stone-400 opacity-40 cursor-not-allowed"
                       >
                         <Navigation className="h-4 w-4 text-stone-400" />
                       </button>

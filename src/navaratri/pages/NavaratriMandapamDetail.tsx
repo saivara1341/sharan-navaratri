@@ -1,5 +1,6 @@
 import { navaratriAsset } from "../utils/navaratriAssets";
-import { getMandapamDirectionsUrl } from "../utils/mandapamMaps";
+import { getMandapamMapsUrl, getMandapamFormattedAddress } from "../utils/mandapamMaps";
+import { toast } from "sonner";
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useNavaratriData } from "../context/NavaratriDataContext";
@@ -512,26 +513,46 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 </button>
 
                 {(() => {
-                  const directionsUrl = getMandapamDirectionsUrl(mandapam);
-                  return directionsUrl ? (
-                    <a
-                      href={directionsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-white hover:bg-amber-50 text-stone-800 border border-amber-300 text-xs font-bold shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                    >
-                      <MapPin className="w-3.5 h-3.5 text-[#8B1E1E]" />
-                      <span>{t.directions}</span>
-                    </a>
-                  ) : (
+                  const gmapsUrl = getMandapamMapsUrl(mandapam);
+                  const formattedAddress = getMandapamFormattedAddress(mandapam);
+
+                  if (gmapsUrl) {
+                    return (
+                      <a
+                        href={gmapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-white hover:bg-amber-50 text-stone-800 border border-amber-300 text-xs font-bold shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <MapPin className="w-3.5 h-3.5 text-[#8B1E1E]" />
+                        <span>{t.directions}</span>
+                      </a>
+                    );
+                  }
+
+                  if (formattedAddress) {
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => toast.info(`📍 ${mandapam.name} Address:\n${formattedAddress}`)}
+                        title={`Address: ${formattedAddress}`}
+                        className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-white hover:bg-amber-50 text-stone-800 border border-amber-300 text-xs font-bold shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <MapPin className="w-3.5 h-3.5 text-[#8B1E1E]" />
+                        <span>Address Info</span>
+                      </button>
+                    );
+                  }
+
+                  return (
                     <button
                       type="button"
                       disabled
-                      title="Directions / Map location not provided"
-                      className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-stone-100 text-stone-400 border border-stone-200 text-xs font-bold opacity-50 cursor-not-allowed flex items-center justify-center gap-1.5"
+                      title="Location not added"
+                      className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-stone-100 text-stone-400 border border-stone-200 text-xs font-bold opacity-40 cursor-not-allowed flex items-center justify-center gap-1.5"
                     >
                       <MapPin className="w-3.5 h-3.5 text-stone-400" />
-                      <span>{t.directions}</span>
+                      <span>Location Not Added</span>
                     </button>
                   );
                 })()}
