@@ -1590,6 +1590,8 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const dbPayload: any = { updated_at: new Date().toISOString() };
       if (data.name !== undefined) dbPayload.name = data.name;
+      if (data.description !== undefined) dbPayload.description = data.description;
+      if (data.deviName !== undefined) dbPayload.devi_name = data.deviName;
       if (data.address !== undefined) dbPayload.address = data.address;
       if (data.area !== undefined) dbPayload.area = data.area;
       if (data.city !== undefined) dbPayload.city = data.city;
@@ -1599,6 +1601,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
       if (data.longitude !== undefined) dbPayload.longitude = data.longitude;
       if (data.organizerName !== undefined) dbPayload.organizer_name = data.organizerName;
       if (data.organizerMobile !== undefined) dbPayload.organizer_mobile = data.organizerMobile;
+      if (data.organizerEmail !== undefined) dbPayload.organizer_email = data.organizerEmail || null;
       if (data.contactPhone !== undefined) dbPayload.contact_phone = data.contactPhone;
       if (data.whatsappNumber !== undefined) dbPayload.whatsapp_number = data.whatsappNumber;
       if (data.googleMapsUrl !== undefined) dbPayload.google_maps_url = data.googleMapsUrl || null;

@@ -135,10 +135,12 @@ export const NavaratriAdmin: React.FC = () => {
   const [adminImageInputUrl, setAdminImageInputUrl] = useState("");
   const [isUploadingAdminImage, setIsUploadingAdminImage] = useState(false);
 
-  // Admin Mandapam Location & Logo Edit State
+  // Admin Mandapam Details & Organizer Data Edit State
   const [adminEditModalOpen, setAdminEditModalOpen] = useState(false);
   const [adminEditMandapam, setAdminEditMandapam] = useState<Mandapam | null>(null);
   const [adminEditName, setAdminEditName] = useState("");
+  const [adminEditDeviName, setAdminEditDeviName] = useState("");
+  const [adminEditDescription, setAdminEditDescription] = useState("");
   const [adminEditAddress, setAdminEditAddress] = useState("");
   const [adminEditArea, setAdminEditArea] = useState("");
   const [adminEditCity, setAdminEditCity] = useState("");
@@ -146,6 +148,14 @@ export const NavaratriAdmin: React.FC = () => {
   const [adminEditPincode, setAdminEditPincode] = useState("");
   const [adminEditGoogleMapsUrl, setAdminEditGoogleMapsUrl] = useState("");
   const [adminEditLogoUrl, setAdminEditLogoUrl] = useState("");
+  const [adminEditCoverImageUrl, setAdminEditCoverImageUrl] = useState("");
+  const [adminEditOrganizerName, setAdminEditOrganizerName] = useState("");
+  const [adminEditOrganizerMobile, setAdminEditOrganizerMobile] = useState("");
+  const [adminEditOrganizerEmail, setAdminEditOrganizerEmail] = useState("");
+  const [adminEditContactPhone, setAdminEditContactPhone] = useState("");
+  const [adminEditWhatsappNumber, setAdminEditWhatsappNumber] = useState("");
+  const [adminEditInstagramUrl, setAdminEditInstagramUrl] = useState("");
+  const [adminEditTwitterUrl, setAdminEditTwitterUrl] = useState("");
   const [isUploadingAdminLogo, setIsUploadingAdminLogo] = useState(false);
 
   const handleAdminLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,18 +192,28 @@ export const NavaratriAdmin: React.FC = () => {
 
     const updates: Partial<Mandapam> = {
       name: adminEditName.trim() || adminEditMandapam.name,
+      deviName: adminEditDeviName.trim() || "Maa Durga",
+      description: adminEditDescription.trim(),
       address: adminEditAddress.trim(),
       area: adminEditArea.trim() || adminEditMandapam.area,
       city: adminEditCity.trim() || adminEditMandapam.city,
       state: adminEditState.trim() || "Telangana",
       pincode: adminEditPincode.trim() || "503001",
-      googleMapsUrl: adminEditGoogleMapsUrl.trim(),
-      logoUrl: adminEditLogoUrl.trim() || undefined
+      googleMapsUrl: adminEditGoogleMapsUrl.trim() || undefined,
+      logoUrl: adminEditLogoUrl.trim() || undefined,
+      coverImageUrl: adminEditCoverImageUrl.trim() || undefined,
+      organizerName: adminEditOrganizerName.trim() || adminEditMandapam.organizerName,
+      organizerMobile: adminEditOrganizerMobile.trim() || adminEditMandapam.organizerMobile,
+      organizerEmail: adminEditOrganizerEmail.trim() || undefined,
+      contactPhone: adminEditContactPhone.trim() || adminEditOrganizerMobile.trim() || adminEditMandapam.contactPhone,
+      whatsappNumber: adminEditWhatsappNumber.trim() || undefined,
+      instagramUrl: adminEditInstagramUrl.trim() || undefined,
+      twitterUrl: adminEditTwitterUrl.trim() || undefined
     };
 
     updateMandapam(adminEditMandapam.id, updates);
     setAdminEditModalOpen(false);
-    toast.success(`Mandapam location and logo updated for ${adminEditMandapam.name}!`);
+    toast.success(`Mandapam details, organizer info, and logo updated for ${adminEditMandapam.name}!`);
   };
 
   const handleAdminImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -506,12 +526,14 @@ export const NavaratriAdmin: React.FC = () => {
                     </td>
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end gap-1.5 flex-wrap">
-                        {/* Edit Location & Logo */}
+                        {/* Edit Location, Logo & Organizer Details */}
                         <button
                           type="button"
                           onClick={() => {
                             setAdminEditMandapam(m);
                             setAdminEditName(m.name || "");
+                            setAdminEditDeviName(m.deviName || "");
+                            setAdminEditDescription(m.description || "");
                             setAdminEditAddress(m.address || "");
                             setAdminEditArea(m.area || "");
                             setAdminEditCity(m.city || "");
@@ -519,10 +541,18 @@ export const NavaratriAdmin: React.FC = () => {
                             setAdminEditPincode(m.pincode || "503001");
                             setAdminEditGoogleMapsUrl(m.googleMapsUrl || "");
                             setAdminEditLogoUrl(m.logoUrl || "");
+                            setAdminEditCoverImageUrl(m.coverImageUrl || "");
+                            setAdminEditOrganizerName(m.organizerName || "");
+                            setAdminEditOrganizerMobile(m.organizerMobile || "");
+                            setAdminEditOrganizerEmail(m.organizerEmail || "");
+                            setAdminEditContactPhone(m.contactPhone || m.organizerMobile || "");
+                            setAdminEditWhatsappNumber(m.whatsappNumber || "");
+                            setAdminEditInstagramUrl(m.instagramUrl || "");
+                            setAdminEditTwitterUrl(m.twitterUrl || "");
                             setAdminEditModalOpen(true);
                           }}
                           className="px-2.5 py-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-900 text-xs font-bold border border-blue-300 flex items-center gap-1 transition-colors cursor-pointer"
-                          title="Edit Location & Logo"
+                          title="Edit Mandapam Details, Logo & Organizer Data"
                         >
                           <Pencil className="w-3.5 h-3.5 text-blue-800" />
                           <span>Edit Details</span>
@@ -979,7 +1009,7 @@ export const NavaratriAdmin: React.FC = () => {
         </div>
       )}
 
-      {/* ADMIN MANDAPAM LOCATION & LOGO EDIT MODAL */}
+      {/* ADMIN MANDAPAM LOCATION, LOGO & ORGANIZER EDIT MODAL */}
       {adminEditModalOpen && adminEditMandapam && (
         <div
           role="dialog"
@@ -988,7 +1018,7 @@ export const NavaratriAdmin: React.FC = () => {
           onClick={() => setAdminEditModalOpen(false)}
         >
           <div
-            className="w-full max-w-lg bg-[#FFFDF9] rounded-3xl border-2 border-blue-400 shadow-2xl p-5 sm:p-6 space-y-4 my-8 max-h-[92vh] overflow-y-auto animate-in zoom-in-95 duration-200"
+            className="w-full max-w-xl bg-[#FFFDF9] rounded-3xl border-2 border-blue-400 shadow-2xl p-5 sm:p-6 space-y-4 my-8 max-h-[92vh] overflow-y-auto animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-amber-200 pb-3">
@@ -998,10 +1028,10 @@ export const NavaratriAdmin: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="font-serif font-black text-lg text-[#8B1E1E]">
-                    Edit Mandapam Details & Logo
+                    Edit Mandapam & Organizer Data
                   </h3>
                   <p className="text-[11px] text-stone-600 font-medium">
-                    {adminEditMandapam.name} • Location & Branding Control
+                    {adminEditMandapam.name} • Full Administrative Override
                   </p>
                 </div>
               </div>
@@ -1015,24 +1045,61 @@ export const NavaratriAdmin: React.FC = () => {
             </div>
 
             <div className="space-y-4 text-xs font-medium text-stone-800">
-              {/* Name */}
-              <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">
-                  Mandapam Name
-                </label>
-                <input
-                  type="text"
-                  value={adminEditName}
-                  onChange={(e) => setAdminEditName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
-                />
+
+              {/* 1. Basic Mandapam Info */}
+              <div className="space-y-3">
+                <span className="block text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5 border-b border-amber-200 pb-1">
+                  <Building className="w-4 h-4 text-[#8B1E1E]" />
+                  <span>Mandapam Basic Details</span>
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      Mandapam Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={adminEditName}
+                      onChange={(e) => setAdminEditName(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      Devi / Deity Name
+                    </label>
+                    <input
+                      type="text"
+                      value={adminEditDeviName}
+                      onChange={(e) => setAdminEditDeviName(e.target.value)}
+                      placeholder="e.g. Sri Kanaka Durga Devi"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">
+                    Mandapam Description
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={adminEditDescription}
+                    onChange={(e) => setAdminEditDescription(e.target.value)}
+                    placeholder="Brief history or highlights of this Navaratri Mandapam..."
+                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
               </div>
 
-              {/* Logo section */}
+              {/* 2. Logo & Branding section */}
               <div className="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-3">
                 <span className="block text-xs font-bold text-stone-800 flex items-center gap-1.5">
                   <Upload className="w-4 h-4 text-[#8B1E1E]" />
-                  <span>Mandapam Logo / Emblem</span>
+                  <span>Mandapam Logo & Public Profile Cover</span>
                 </span>
 
                 <div className="flex items-center gap-3">
@@ -1048,19 +1115,109 @@ export const NavaratriAdmin: React.FC = () => {
                       type="url"
                       value={adminEditLogoUrl}
                       onChange={(e) => setAdminEditLogoUrl(e.target.value)}
-                      placeholder="Paste logo image URL..."
+                      placeholder="Paste Mandapam Logo image URL..."
                       className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white text-xs focus:outline-none focus:ring-2 focus:ring-amber-500"
                     />
                     <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#8B1E1E] hover:bg-[#9A241C] text-white font-bold text-xs shadow-xs cursor-pointer">
                       <Upload className="w-3.5 h-3.5" />
-                      <span>{isUploadingAdminLogo ? "Uploading..." : "Upload Logo Image"}</span>
+                      <span>{isUploadingAdminLogo ? "Uploading..." : "Upload Logo File"}</span>
                       <input type="file" accept="image/*" onChange={handleAdminLogoUpload} className="hidden" disabled={isUploadingAdminLogo} />
                     </label>
                   </div>
                 </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">
+                    Public Profile Cover Image URL
+                  </label>
+                  <input
+                    type="url"
+                    value={adminEditCoverImageUrl}
+                    onChange={(e) => setAdminEditCoverImageUrl(e.target.value)}
+                    placeholder="https://example.com/cover-banner.jpg"
+                    className="w-full px-3 py-1.5 rounded-xl border border-amber-300 bg-white text-xs focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
               </div>
 
-              {/* Location section */}
+              {/* 3. Organizer Contact Data */}
+              <div className="space-y-3">
+                <span className="block text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5 border-b border-amber-200 pb-1">
+                  <Users className="w-4 h-4 text-[#8B1E1E]" />
+                  <span>Organizer & Contact Person Information</span>
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      Organizer Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={adminEditOrganizerName}
+                      onChange={(e) => setAdminEditOrganizerName(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      Organizer Mobile Number *
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={adminEditOrganizerMobile}
+                      onChange={(e) => setAdminEditOrganizerMobile(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      Organizer Email
+                    </label>
+                    <input
+                      type="email"
+                      value={adminEditOrganizerEmail}
+                      onChange={(e) => setAdminEditOrganizerEmail(e.target.value)}
+                      placeholder="organizer@gmail.com"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      Public Contact Phone
+                    </label>
+                    <input
+                      type="tel"
+                      value={adminEditContactPhone}
+                      onChange={(e) => setAdminEditContactPhone(e.target.value)}
+                      placeholder="e.g. 9849012345"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      WhatsApp Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={adminEditWhatsappNumber}
+                      onChange={(e) => setAdminEditWhatsappNumber(e.target.value)}
+                      placeholder="e.g. 9849012345"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. Location section */}
               <div className="space-y-3">
                 <span className="block text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5 border-b border-amber-200 pb-1">
                   <MapPin className="w-4 h-4 text-[#8B1E1E]" />
@@ -1138,18 +1295,53 @@ export const NavaratriAdmin: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-bold text-stone-700 mb-1">
-                    Google Maps Link (Optional)
+                    Google Maps Link (share link or URL)
                   </label>
                   <input
                     type="url"
                     value={adminEditGoogleMapsUrl}
                     onChange={(e) => setAdminEditGoogleMapsUrl(e.target.value)}
-                    placeholder="Paste Google Maps share link..."
-                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    placeholder="https://maps.app.goo.gl/... or https://google.com/maps/..."
+                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono text-xs"
                   />
                   <p className="text-[10px] text-stone-500 mt-1">
                     If empty, directions link will automatically open a search for the area location ({adminEditArea || "Area"}, {adminEditCity || "City"}).
                   </p>
+                </div>
+              </div>
+
+              {/* 5. Social Links */}
+              <div className="space-y-3">
+                <span className="block text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5 border-b border-amber-200 pb-1">
+                  <span>📱 Social Profiles & Handles</span>
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      Instagram URL / Handle
+                    </label>
+                    <input
+                      type="url"
+                      value={adminEditInstagramUrl}
+                      onChange={(e) => setAdminEditInstagramUrl(e.target.value)}
+                      placeholder="https://instagram.com/..."
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      Twitter / X URL
+                    </label>
+                    <input
+                      type="url"
+                      value={adminEditTwitterUrl}
+                      onChange={(e) => setAdminEditTwitterUrl(e.target.value)}
+                      placeholder="https://x.com/..."
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
                 </div>
               </div>
 
