@@ -24,7 +24,6 @@ import { MandapamIcon } from "../components/devotional/MandapamIcon";
 import { PallakiIcon } from "../components/devotional/PallakiIcon";
 import { PrasadBowlIcon } from "../components/devotional/PrasadBowlIcon";
 import { HomaKundaIcon, isHomamEvent } from "../components/devotional/HomaKundaIcon";
-import { toast } from "sonner";
 
 type Category = "all" | "mandapams" | "annadanam" | "bhajans_pallaki" | "activities";
 

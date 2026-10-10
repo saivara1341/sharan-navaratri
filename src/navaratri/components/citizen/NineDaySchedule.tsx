@@ -271,6 +271,14 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                     <span className="shrink-0 text-amber-400">•</span>
                     <span>{day.hindiDeviName}</span>
                   </div>
+
+                  {/* Telangana Bathukamma Day Badge */}
+                  {day.bathukammaDay && (
+                    <div className="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-pink-100/90 text-pink-900 border border-pink-300/80 text-[11px] font-bold shadow-2xs">
+                      <span>🌸 {day.bathukammaDay.teluguName}</span>
+                      <span className="text-pink-600 font-normal">({day.bathukammaDay.englishName})</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Action Row: Pointed Leaf "Know More" Button (Run Ads Design) */}
@@ -407,6 +415,23 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                   </div>
                 </div>
               </div>
+
+              {/* Telangana Bathukamma Info Section in Modal */}
+              {selectedDay.bathukammaDay && (
+                <div className="bg-gradient-to-r from-pink-50 via-rose-50 to-amber-50 p-4 sm:p-5 rounded-2xl border-2 border-pink-300 shadow-sm space-y-2">
+                  <div className="flex items-center justify-between gap-2 border-b border-pink-200 pb-2">
+                    <div className="flex items-center gap-2 font-serif font-black text-sm sm:text-base text-pink-900">
+                      <span>🌸 తెలంగాణ బతుకమ్మ సంబరాలు • {selectedDay.bathukammaDay.teluguName}</span>
+                    </div>
+                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-pink-200 text-pink-900">
+                      {selectedDay.bathukammaDay.dayOfWeek}
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-stone-800 font-semibold leading-relaxed">
+                    {selectedDay.bathukammaDay.teluguName} ({selectedDay.bathukammaDay.englishName}): {selectedDay.bathukammaDay.description}
+                  </p>
+                </div>
+              )}
 
               {/* Why We Celebrate */}
               <div className="bg-gradient-to-br from-[#FFFBEB] via-[#FEF3C7]/40 to-[#FFFDF9] p-4 sm:p-5 rounded-2xl border-2 border-amber-300 shadow-sm space-y-2">

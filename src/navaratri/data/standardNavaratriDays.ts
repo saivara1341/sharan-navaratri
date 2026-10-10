@@ -42,6 +42,14 @@ Sri Bala Tripura Sundari Devi is the 9-year-old child manifestation of Supreme M
     suggestedItems: "Jasmine flowers (Mallepulu), White Lotus, White/Yellow vastram, Sugarcane pieces, and Panchamrutham.",
     standardActivities: "Ghatasthapana, Suprabhatha Seva, Sri Bala Tripura Sundari Pooja, Kumkumarchana, and Kanya Pooja.",
     significance: "Invokes pure childhood innocence, photographic memory, and fearlessness; marks the auspicious beginning with Ghatasthapana and Kanya Pooja.",
+    bathukammaDay: {
+      dayNumber: 2,
+      date: "2026-10-11",
+      dayOfWeek: "ఆదివారం (Sunday)",
+      teluguName: "అటుకుల బతుకమ్మ",
+      englishName: "Atukula Bathukamma",
+      description: "Offered with flattened rice (atukulu), jaggery, and boiled lentils along with vibrant seasonal flowers."
+    },
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Bala Tripura Sundari Devi",
@@ -91,6 +99,14 @@ Sri Gayatri Devi is revered across Sanatana Dharma as 'Vedamatha'—the primordi
     suggestedItems: "Red lotus, Hibiscus (Mandara), Sandalwood paste, Akshata, and pure cow ghee for deepam.",
     standardActivities: "Sri Gayatri Devi Veda Parayanam, Gayatri Japa, Gayatri Homa, and Sahasranama Deeparadhana.",
     significance: "Awakens Vedic intellect, mental clarity, and spiritual brilliance through Gayatri Maha Mantra, purifying past karmas.",
+    bathukammaDay: {
+      dayNumber: 3,
+      date: "2026-10-12",
+      dayOfWeek: "సోమవారం (Monday)",
+      teluguName: "ముద్దపప్పు బతుకమ్మ",
+      englishName: "Muddapappu Bathukamma",
+      description: "Offered with cooked softened moong dal (muddapappu), milk, and jaggery."
+    },
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Gayatri Devi",
@@ -140,6 +156,14 @@ Sri Annapurna Devi is the eternal mother of Kasi Kshetram and the supreme provid
     suggestedItems: "Navadhanyalu (nine sacred grains), Rice grains, Fresh harvest fruits, and Yellow flowers.",
     standardActivities: "Sri Annapurna Devi Golden Ladle Pooja, Maha Annadanam, and Ksheerannam Distribution.",
     significance: "Bestows boundless sustenance, food abundance (Akshaya Patra), and family fulfillment; celebrated with Maha Annadanam.",
+    bathukammaDay: {
+      dayNumber: 4,
+      date: "2026-10-13",
+      dayOfWeek: "మంగళవారం (Tuesday)",
+      teluguName: "నానబియ్యం బతుకమ్మ",
+      englishName: "Nanabiyyam Bathukamma",
+      description: "Offered with soaked rice (nanabiyyam) mixed with jaggery or sugar."
+    },
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Annapurna Devi",
@@ -189,6 +213,14 @@ Sri Maha Chandi Devi is the invincible warrior embodiment of the Supreme Mother,
     suggestedItems: "Red silk vastram, Red oleander (Ganneru), Bilva patra, Kumkum, and Lemon garland.",
     standardActivities: "Sri Maha Chandi Pooja, Chandi Parayanam, Kumkumarchana, and Rahu Kala Deeparadhana.",
     significance: "Vanquishes negative energies, Rahu-Ketu doshas, and internal foes (Arishadvargas); grants courage and protection.",
+    bathukammaDay: {
+      dayNumber: 5,
+      date: "2026-10-14",
+      dayOfWeek: "బుధవారం (Wednesday)",
+      teluguName: "అట్ల బతుకమ్మ",
+      englishName: "Atla Bathukamma",
+      description: "Offered with mini traditional dosas / crepes (atlu)."
+    },
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Maha Chandi Devi",
@@ -238,6 +270,14 @@ Sri Lalitha Tripura Sundari Devi is the Sovereign Empress of the Universe (Raja 
     suggestedItems: "Red Kumkum, Turmeric roots, Lotus flowers, and Yellow/Red silk vastram.",
     standardActivities: "Sri Chakra Navavarana Pooja, Lalitha Sahasranama Kumkumarchana, Suvasini Pooja, and Harathi.",
     significance: "Confers royal grace, marital harmony, and spiritual elevation through Sri Chakra Navavarana Pooja on Lalitha Panchami.",
+    bathukammaDay: {
+      dayNumber: 6,
+      date: "2026-10-15",
+      dayOfWeek: "గురువారం (Thursday)",
+      teluguName: "అలిగిన బతుకమ్మ",
+      englishName: "Aligina Bathukamma",
+      description: "A day of quiet reverence where Goddess Bathukamma is traditionally believed to rest."
+    },
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Lalitha Tripura Sundari Devi",
@@ -287,6 +327,14 @@ Sri Saraswati Devi is the divine goddess of supreme learning, intellect, music, 
     suggestedItems: "White/Yellow flowers, Slates, Notebooks, Pens for Aksharabhyasam, and White lotus.",
     standardActivities: "Aksharabhyasam, Pustaka Pooja, Sri Saraswati Sangeetha Seva, and Classical Bhajans.",
     significance: "Sacred birth star of Kanaka Durga; grants academic excellence, speech eloquence (Vak Siddhi), and wisdom with Aksharabhyasam.",
+    bathukammaDay: {
+      dayNumber: 7,
+      date: "2026-10-16",
+      dayOfWeek: "శుక్రవారం (Friday)",
+      teluguName: "వేపకాయల బతుకమ్మ",
+      englishName: "Vepakayala Bathukamma",
+      description: "Offered with neem-seed-shaped rice flour sweets fried in ghee."
+    },
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Saraswati Devi",
@@ -336,6 +384,14 @@ Sri Maha Lakshmi Devi is the divine consort of Lord Maha Vishnu and the eternal 
     suggestedItems: "Pink Lotus, Bilva leaves, Gold/Silver coins, Betel leaves, and Red vastram.",
     standardActivities: "Sri Maha Lakshmi Sahasra Deeparadhana, Dhana Lakshmi & Dhanya Lakshmi Archana, and Kumkumarchana.",
     significance: "Eradicates financial distress and debts; invites Ashta Lakshmi blessings, prosperity, and peace through Sahasra Deeparadhana.",
+    bathukammaDay: {
+      dayNumber: 8,
+      date: "2026-10-17",
+      dayOfWeek: "శనివారం (Saturday)",
+      teluguName: "వెన్నముద్దల బతుకమ్మ",
+      englishName: "Vennamuddala Bathukamma",
+      description: "Offered with fresh butter balls (vennamuddalu) and jaggery."
+    },
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Maha Lakshmi Devi",
@@ -385,6 +441,14 @@ Sri Durga Devi is the cosmic vanquisher of hardships and distress ('Durgati Nash
     suggestedItems: "Red Oleander (Ganneru), Lemon garlands, Trishulam decor, and Red silk vastram.",
     standardActivities: "Maha Durgashtami Special Pooja, Chandi Parayanam, and Sandhi Pooja (Midnight Sandhya).",
     significance: "Invincible warrior protection mounted on lion; dissolves chronic obstacles and shields families through Durga Kavacham.",
+    bathukammaDay: {
+      dayNumber: 9,
+      date: "2026-10-18",
+      dayOfWeek: "ఆదివారం (Sunday)",
+      teluguName: "సద్ధుల బతుకమ్మ (మహా బతుకమ్మ)",
+      englishName: "Saddula Bathukamma (Maha Bathukamma)",
+      description: "Grand culmination of Telangana Bathukamma with five varieties of spiced rice (saddulu) and flower immersions."
+    },
     dualSessionNote: {
       isCommonlyDual: true,
       morningAlankarana: "Sri Durga Devi",

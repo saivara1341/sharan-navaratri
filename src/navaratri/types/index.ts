@@ -74,6 +74,15 @@ export interface DualSessionInfo {
   eveningDetails?: SessionAlankaranaDetails;
 }
 
+export interface BathukammaDayInfo {
+  dayNumber: number;
+  date: string;
+  dayOfWeek: string;
+  teluguName: string;
+  englishName: string;
+  description?: string;
+}
+
 export interface StandardFestivalDay {
   dayNumber: number;
   date: string;
@@ -94,6 +103,7 @@ export interface StandardFestivalDay {
   significance: string;
   imageUrl?: string;
   dualSessionNote?: DualSessionInfo;
+  bathukammaDay?: BathukammaDayInfo;
 }
 
 export interface MandapamDaySetting {

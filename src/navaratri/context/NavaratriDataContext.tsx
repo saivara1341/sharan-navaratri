@@ -609,7 +609,8 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
                 m =>
                   !isDemoOrMockMandapam(m) &&
                   !remoteIdSet.has(m.id) &&
-                  !(m.slug && remoteSlugSet.has(m.slug.toLowerCase()))
+                  !(m.slug && remoteSlugSet.has(m.slug.toLowerCase())) &&
+                  !INITIAL_MANDAPAMS.some(im => im.id === m.id || (im.slug && m.slug && im.slug.toLowerCase() === m.slug.toLowerCase()))
               )
               .map(m => m.id);
 
