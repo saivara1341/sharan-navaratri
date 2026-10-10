@@ -629,31 +629,34 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
 
                 // Auto-upsert pre-seeded mandapams into Supabase if missing
                 try {
+                  const initPayload = {
+                    id: initM.id,
+                    name: initM.name,
+                    slug: initM.slug,
+                    description: initM.description || "Annual Community Navaratri Utsav",
+                    devi_name: initM.deviName || "Sri Kanaka Durga Devi",
+                    address: initM.address || "",
+                    area: initM.area || "",
+                    city: initM.city || "",
+                    state: initM.state || "Telangana",
+                    pincode: initM.pincode || "503001",
+                    latitude: initM.latitude || 18.6725,
+                    longitude: initM.longitude || 78.0941,
+                    verification_status: "VERIFIED",
+                    organizer_name: initM.organizerName || "",
+                    organizer_mobile: initM.organizerMobile || "",
+                    organizer_email: initM.organizerEmail || null,
+                    contact_phone: initM.contactPhone || initM.organizerMobile || "",
+                    whatsapp_number: initM.whatsappNumber || null,
+                    logo_url: initM.logoUrl || null,
+                    cover_image_url: initM.coverImageUrl || null,
+                    created_at: initM.createdAt || new Date().toISOString()
+                  };
                   (supabase.from("navaratri_mandapams") as any)
-                    .upsert([{
-                      id: initM.id,
-                      name: initM.name,
-                      slug: initM.slug,
-                      description: initM.description,
-                      devi_name: initM.deviName,
-                      address: initM.address,
-                      area: initM.area,
-                      city: initM.city,
-                      state: initM.state,
-                      pincode: initM.pincode,
-                      latitude: initM.latitude,
-                      longitude: initM.longitude,
-                      verification_status: initM.verificationStatus,
-                      organizer_name: initM.organizerName,
-                      organizer_mobile: initM.organizerMobile,
-                      organizer_email: initM.organizerEmail || null,
-                      contact_phone: initM.contactPhone,
-                      whatsapp_number: initM.whatsappNumber || null,
-                      logo_url: initM.logoUrl || null,
-                      cover_image_url: initM.coverImageUrl || null,
-                      created_at: initM.createdAt
-                    }])
-                    .then(() => {})
+                    .upsert([initPayload])
+                    .then(({ error }: any) => {
+                      if (error) console.warn("Supabase initial mandapam upsert note:", error.message);
+                    })
                     .catch(() => {});
                 } catch {}
               }

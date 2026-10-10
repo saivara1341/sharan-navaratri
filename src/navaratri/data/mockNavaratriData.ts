@@ -30,7 +30,7 @@ export const INITIAL_SEASON: Season = {
 // ── Mandapams ─────────────────────────────────────────────────────────────────
 export const INITIAL_MANDAPAMS: Mandapam[] = [
   {
-    id: "m-hurdaya-raguram-youth",
+    id: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
     name: "Sri Sri Sri Devi Kanaka Durga Navaratri Utsava Samithi",
     slug: "hurdaya-raguram-youth",
     description: "Sri Sri Sri Devi Kanaka Durga Navaratri Utsava Samithi - Hurdaya raguram youth Navaratri Mandapam",
