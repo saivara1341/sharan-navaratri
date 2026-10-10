@@ -643,6 +643,7 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
                     latitude: initM.latitude || 18.6725,
                     longitude: initM.longitude || 78.0941,
                     verification_status: "VERIFIED",
+                    owner_user_id: initM.ownerUserId || null,
                     organizer_name: initM.organizerName || "",
                     organizer_mobile: initM.organizerMobile || "",
                     organizer_email: initM.organizerEmail || null,

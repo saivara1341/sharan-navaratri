@@ -96,8 +96,14 @@ export const NavaratriGoogleCallback: React.FC = () => {
             })
             .then(() => { /* fire-and-forget */ });
 
+          // Ensure database link between auth.users and navaratri_mandapams
           (supabase.from("navaratri_mandapams") as any)
-            .update({ last_login_at: new Date().toISOString() })
+            .update({
+              owner_user_id: session.user.id,
+              organizer_email: googleEmail,
+              verification_status: "VERIFIED",
+              last_login_at: new Date().toISOString()
+            })
             .eq("id", matched.id)
             .then(() => { /* fire-and-forget */ });
 
