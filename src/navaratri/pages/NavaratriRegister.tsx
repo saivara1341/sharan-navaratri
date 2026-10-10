@@ -256,7 +256,7 @@ export const NavaratriRegister: React.FC = () => {
     setDuplicateWarning(null);
 
     const cleanMobile = organizerMobile.replace(/\D/g, "");
-    if (!name.trim() || !logoUrl || !organizerName.trim() || !cleanMobile || !area.trim() || !googleMapsUrl.trim()) {
+    if (!name.trim() || !logoUrl || !organizerName.trim() || !cleanMobile || !area.trim()) {
       toast.error("Please fill in all mandatory fields.");
       return;
     }
@@ -267,14 +267,16 @@ export const NavaratriRegister: React.FC = () => {
     }
 
     let normalizedMapsUrl = "";
-    try {
-      const parsedUrl = new URL(googleMapsUrl.trim());
-      const isGoogleMapsUrl = ["maps.google.com", "www.google.com", "google.com", "maps.app.goo.gl"].includes(parsedUrl.hostname);
-      if (!isGoogleMapsUrl) throw new Error("not a Google Maps URL");
-      normalizedMapsUrl = parsedUrl.toString();
-    } catch {
-      toast.error("Please paste a valid Google Maps share link for this mandapam.");
-      return;
+    if (googleMapsUrl.trim()) {
+      try {
+        const parsedUrl = new URL(googleMapsUrl.trim());
+        const isGoogleMapsUrl = ["maps.google.com", "www.google.com", "google.com", "maps.app.goo.gl"].includes(parsedUrl.hostname);
+        if (!isGoogleMapsUrl) throw new Error("not a Google Maps URL");
+        normalizedMapsUrl = parsedUrl.toString();
+      } catch {
+        toast.error("Please paste a valid Google Maps share link for this mandapam.");
+        return;
+      }
     }
 
     // Retrieve authenticated Google user if present
@@ -649,19 +651,18 @@ export const NavaratriRegister: React.FC = () => {
           <div className="rounded-2xl border border-amber-300 bg-amber-50/60 p-3.5">
             <label htmlFor="google-maps-url" className="mb-1.5 flex items-center gap-2 text-xs font-bold text-stone-800">
               <MapPin className="h-4 w-4 text-[#8B1E1E]" />
-              Google Maps Link <span className="text-red-600">*</span>
+              Google Maps Link <span className="text-stone-500 font-normal">(Optional)</span>
             </label>
             <input
               id="google-maps-url"
               type="url"
-              required
               value={googleMapsUrl}
               onChange={(event) => setGoogleMapsUrl(event.target.value)}
-              placeholder="Paste the Google Maps share link for this mandapam"
+              placeholder="Paste the Google Maps share link for this mandapam (optional)"
               className="w-full rounded-xl border border-amber-300 bg-white px-3 py-2 text-xs text-stone-800 outline-none placeholder:text-stone-400 focus:border-[#8B1E1E] focus:ring-2 focus:ring-amber-200"
             />
             <p className="mt-1.5 text-[11px] leading-relaxed text-stone-600">
-              Open the mandapam in Google Maps, tap <strong>Share</strong>, then paste that link here. Devotees will use it to navigate directly to your mandapam.
+              If added, devotees can tap Directions to open your exact Google Maps pin. If omitted, devotees will be directed to your respected area location.
             </p>
           </div>
         </div>

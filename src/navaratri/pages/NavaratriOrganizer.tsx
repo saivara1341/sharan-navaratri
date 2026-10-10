@@ -3510,7 +3510,7 @@ export const NavaratriOrganizer: React.FC = () => {
                           </p>
                         </div>
                         <a
-                          href={editGoogleMapsUrl.trim() || `https://www.google.com/maps?q=${currentMandapam.latitude},${currentMandapam.longitude}`}
+                          href={getMandapamDirectionsUrl({ ...currentMandapam, googleMapsUrl: editGoogleMapsUrl.trim(), address: editAddress || currentMandapam.address, area: editArea || currentMandapam.area, city: editCity || currentMandapam.city })}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="shrink-0 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition-colors"
@@ -3532,16 +3532,14 @@ export const NavaratriOrganizer: React.FC = () => {
                       <p className="font-semibold text-stone-800">
                         📍 {editAddress ? `${editAddress}, ` : ""}{editArea || currentMandapam.area}, {editCity || currentMandapam.city}
                       </p>
-                      {(editGoogleMapsUrl.trim() || (currentMandapam.latitude && currentMandapam.longitude)) && (
-                        <a
-                          href={editGoogleMapsUrl.trim() || getMandapamDirectionsUrl(currentMandapam)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-900 underline underline-offset-2 transition-colors"
-                        >
-                          🗺️ Get Directions on Google Maps
-                        </a>
-                      )}
+                      <a
+                        href={getMandapamDirectionsUrl({ ...currentMandapam, googleMapsUrl: editGoogleMapsUrl.trim(), address: editAddress || currentMandapam.address, area: editArea || currentMandapam.area, city: editCity || currentMandapam.city })}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-900 underline underline-offset-2 transition-colors"
+                      >
+                        🗺️ Get Directions on Google Maps
+                      </a>
                     </div>
                   </div>
                 </div>
