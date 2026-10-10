@@ -247,6 +247,9 @@ export const NavaratriOrganizer: React.FC = () => {
   const [photoPreview, setPhotoPreview] = useState("");
   const [photoInputUrl, setPhotoInputUrl] = useState("");
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [editMandapamName, setEditMandapamName] = useState("");
+  const [editDeviName, setEditDeviName] = useState("");
+  const [editMandapamDescription, setEditMandapamDescription] = useState("");
   const [editAddress, setEditAddress] = useState("");
   const [editArea, setEditArea] = useState("");
   const [editCity, setEditCity] = useState("");
@@ -1157,6 +1160,9 @@ export const NavaratriOrganizer: React.FC = () => {
         safeLocalStorageRemove(`mandapam_card_bg_${currentMandapam.id}`);
       }
 
+      const safeName = (editMandapamName || "").trim();
+      const safeDeviName = (editDeviName || "").trim();
+      const safeDesc = (editMandapamDescription || "").trim();
       const safeAddress = (editAddress || "").trim();
       const safeArea = (editArea || "").trim();
       const safeCity = (editCity || "").trim();
@@ -1167,6 +1173,9 @@ export const NavaratriOrganizer: React.FC = () => {
       const safeInstagram = normalizeSocialProfileUrl(editInstagramUrl, "instagram");
       const safeTwitter = normalizeSocialProfileUrl(editTwitterUrl, "twitter");
 
+      if (safeName) updates.name = safeName;
+      if (safeDeviName) updates.deviName = safeDeviName;
+      if (safeDesc) updates.description = safeDesc;
       if (safeAddress) updates.address = safeAddress;
       if (safeArea) updates.area = safeArea;
       if (safeCity) updates.city = safeCity;
@@ -1193,6 +1202,9 @@ export const NavaratriOrganizer: React.FC = () => {
         const updatePayload: Record<string, any> = {
           updated_at: new Date().toISOString()
         };
+        if (updates.name !== undefined) updatePayload.name = updates.name;
+        if (updates.deviName !== undefined) updatePayload.devi_name = updates.deviName;
+        if (updates.description !== undefined) updatePayload.description = updates.description;
         if (updates.logoUrl !== undefined) updatePayload.logo_url = updates.logoUrl || null;
         if (updates.coverImageUrl !== undefined) updatePayload.cover_image_url = updates.coverImageUrl || null;
         if (updates.address !== undefined) updatePayload.address = updates.address;
@@ -1482,6 +1494,9 @@ export const NavaratriOrganizer: React.FC = () => {
                       setLogoInputUrl("");
                       setPhotoPreview(currentMandapam.coverImageUrl || currentMandapam.cardBgImageUrl || safeLocalStorageGet(`mandapam_cover_${currentMandapam.id}`) || "");
                       setPhotoInputUrl("");
+                      setEditMandapamName(currentMandapam.name || "");
+                      setEditDeviName(currentMandapam.deviName || "Maa Durga");
+                      setEditMandapamDescription(currentMandapam.description || "");
                       setEditAddress(currentMandapam.address || "");
                       setEditArea(currentMandapam.area || "");
                       setEditCity(currentMandapam.city || "");
@@ -3129,6 +3144,50 @@ export const NavaratriOrganizer: React.FC = () => {
               {/* TAB 1: COMMITTEE LOGO */}
               {brandingTab === "logo" && (
                 <div className="space-y-4 animate-in fade-in duration-150">
+                  {/* Mandapam Name & Devi Name Inputs */}
+                  <div className="space-y-3 p-3.5 rounded-2xl bg-stone-50 border border-amber-200">
+                    <div>
+                      <label className="block text-xs font-bold text-stone-800 mb-1">
+                        Mandapam Name *
+                      </label>
+                      <input
+                        type="text"
+                        value={editMandapamName}
+                        onChange={(e) => setEditMandapamName(e.target.value)}
+                        placeholder="e.g. Hurdhaya Raghuram Youth"
+                        className="w-full px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white font-bold text-stone-900 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-stone-800 mb-1">
+                          Devi / Goddess Name
+                        </label>
+                        <input
+                          type="text"
+                          value={editDeviName}
+                          onChange={(e) => setEditDeviName(e.target.value)}
+                          placeholder="e.g. Sri Kanaka Durga Devi"
+                          className="w-full px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-stone-800 mb-1">
+                          Short Description
+                        </label>
+                        <input
+                          type="text"
+                          value={editMandapamDescription}
+                          onChange={(e) => setEditMandapamDescription(e.target.value)}
+                          placeholder="e.g. Annual Community Navaratri Utsav"
+                          className="w-full px-3.5 py-2 rounded-xl text-xs border border-amber-300 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-stone-700 flex items-start gap-2">
                     <span className="text-base shrink-0">💡</span>
                     <div>

@@ -139,6 +139,8 @@ export const NavaratriAdmin: React.FC = () => {
   const [adminEditModalOpen, setAdminEditModalOpen] = useState(false);
   const [adminEditMandapam, setAdminEditMandapam] = useState<Mandapam | null>(null);
   const [adminEditName, setAdminEditName] = useState("");
+  const [adminEditDeviName, setAdminEditDeviName] = useState("");
+  const [adminEditDescription, setAdminEditDescription] = useState("");
   const [adminEditAddress, setAdminEditAddress] = useState("");
   const [adminEditArea, setAdminEditArea] = useState("");
   const [adminEditCity, setAdminEditCity] = useState("");
@@ -146,6 +148,11 @@ export const NavaratriAdmin: React.FC = () => {
   const [adminEditPincode, setAdminEditPincode] = useState("");
   const [adminEditGoogleMapsUrl, setAdminEditGoogleMapsUrl] = useState("");
   const [adminEditLogoUrl, setAdminEditLogoUrl] = useState("");
+  const [adminEditOrganizerName, setAdminEditOrganizerName] = useState("");
+  const [adminEditOrganizerMobile, setAdminEditOrganizerMobile] = useState("");
+  const [adminEditWhatsappNumber, setAdminEditWhatsappNumber] = useState("");
+  const [adminEditInstagramUrl, setAdminEditInstagramUrl] = useState("");
+  const [adminEditTwitterUrl, setAdminEditTwitterUrl] = useState("");
   const [isUploadingAdminLogo, setIsUploadingAdminLogo] = useState(false);
 
   const handleAdminLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -177,23 +184,60 @@ export const NavaratriAdmin: React.FC = () => {
     }
   };
 
-  const handleSaveAdminMandapamDetails = () => {
+  const handleSaveAdminMandapamDetails = async () => {
     if (!adminEditMandapam) return;
 
     const updates: Partial<Mandapam> = {
       name: adminEditName.trim() || adminEditMandapam.name,
+      deviName: adminEditDeviName.trim() || "Maa Durga",
+      description: adminEditDescription.trim() || undefined,
       address: adminEditAddress.trim(),
       area: adminEditArea.trim() || adminEditMandapam.area,
       city: adminEditCity.trim() || adminEditMandapam.city,
       state: adminEditState.trim() || "Telangana",
       pincode: adminEditPincode.trim() || "503001",
       googleMapsUrl: adminEditGoogleMapsUrl.trim(),
-      logoUrl: adminEditLogoUrl.trim() || undefined
+      logoUrl: adminEditLogoUrl.trim() || undefined,
+      organizerName: adminEditOrganizerName.trim() || undefined,
+      organizerMobile: adminEditOrganizerMobile.trim() || undefined,
+      contactPhone: adminEditOrganizerMobile.trim() || undefined,
+      whatsappNumber: adminEditWhatsappNumber.trim() || undefined,
+      instagramUrl: adminEditInstagramUrl.trim() || undefined,
+      twitterUrl: adminEditTwitterUrl.trim() || undefined,
     };
 
     updateMandapam(adminEditMandapam.id, updates);
+
+    try {
+      const updatePayload: Record<string, any> = {
+        name: updates.name,
+        devi_name: updates.deviName,
+        description: updates.description || null,
+        address: updates.address,
+        area: updates.area,
+        city: updates.city,
+        state: updates.state,
+        pincode: updates.pincode,
+        google_maps_url: updates.googleMapsUrl || null,
+        logo_url: updates.logoUrl || null,
+        organizer_name: updates.organizerName || null,
+        organizer_mobile: updates.organizerMobile || null,
+        contact_phone: updates.contactPhone || null,
+        whatsapp_number: updates.whatsappNumber || null,
+        instagram_url: updates.instagramUrl || null,
+        twitter_url: updates.twitterUrl || null,
+        updated_at: new Date().toISOString()
+      };
+
+      await (supabase.from("navaratri_mandapams") as any)
+        .update(updatePayload)
+        .eq("id", adminEditMandapam.id);
+    } catch (err) {
+      console.warn("Supabase admin update notice:", err);
+    }
+
     setAdminEditModalOpen(false);
-    toast.success(`Mandapam location and logo updated for ${adminEditMandapam.name}!`);
+    toast.success(`Mandapam details updated for ${updates.name}!`);
   };
 
   const handleAdminImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -512,6 +556,8 @@ export const NavaratriAdmin: React.FC = () => {
                           onClick={() => {
                             setAdminEditMandapam(m);
                             setAdminEditName(m.name || "");
+                            setAdminEditDeviName(m.deviName || "Maa Durga");
+                            setAdminEditDescription(m.description || "");
                             setAdminEditAddress(m.address || "");
                             setAdminEditArea(m.area || "");
                             setAdminEditCity(m.city || "");
@@ -519,6 +565,11 @@ export const NavaratriAdmin: React.FC = () => {
                             setAdminEditPincode(m.pincode || "503001");
                             setAdminEditGoogleMapsUrl(m.googleMapsUrl || "");
                             setAdminEditLogoUrl(m.logoUrl || "");
+                            setAdminEditOrganizerName(m.organizerName || "");
+                            setAdminEditOrganizerMobile(m.organizerMobile || m.contactPhone || "");
+                            setAdminEditWhatsappNumber(m.whatsappNumber || "");
+                            setAdminEditInstagramUrl(m.instagramUrl || "");
+                            setAdminEditTwitterUrl(m.twitterUrl || "");
                             setAdminEditModalOpen(true);
                           }}
                           className="px-2.5 py-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-900 text-xs font-bold border border-blue-300 flex items-center gap-1 transition-colors cursor-pointer"
@@ -1015,17 +1066,123 @@ export const NavaratriAdmin: React.FC = () => {
             </div>
 
             <div className="space-y-4 text-xs font-medium text-stone-800">
-              {/* Name */}
-              <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">
-                  Mandapam Name
-                </label>
-                <input
-                  type="text"
-                  value={adminEditName}
-                  onChange={(e) => setAdminEditName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
-                />
+              {/* Basic Info */}
+              <div className="space-y-3 p-3.5 rounded-2xl bg-stone-50 border border-amber-200">
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">
+                    Mandapam Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={adminEditName}
+                    onChange={(e) => setAdminEditName(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-bold text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      Devi / Goddess Name
+                    </label>
+                    <input
+                      type="text"
+                      value={adminEditDeviName}
+                      onChange={(e) => setAdminEditDeviName(e.target.value)}
+                      placeholder="e.g. Sri Kanaka Durga Devi"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      Short Description
+                    </label>
+                    <input
+                      type="text"
+                      value={adminEditDescription}
+                      onChange={(e) => setAdminEditDescription(e.target.value)}
+                      placeholder="e.g. Annual Community Navaratri Utsav"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Organizer Contact Details */}
+              <div className="space-y-3 p-3.5 rounded-2xl bg-stone-50 border border-amber-200">
+                <span className="block text-xs font-bold text-stone-800 uppercase tracking-wider border-b border-amber-200 pb-1">
+                  Organizer Contact Details
+                </span>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      Organizer Name
+                    </label>
+                    <input
+                      type="text"
+                      value={adminEditOrganizerName}
+                      onChange={(e) => setAdminEditOrganizerName(e.target.value)}
+                      placeholder="e.g. T.Nani"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      Organizer Mobile
+                    </label>
+                    <input
+                      type="tel"
+                      value={adminEditOrganizerMobile}
+                      onChange={(e) => setAdminEditOrganizerMobile(e.target.value)}
+                      placeholder="e.g. 9848111781"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      WhatsApp
+                    </label>
+                    <input
+                      type="tel"
+                      value={adminEditWhatsappNumber}
+                      onChange={(e) => setAdminEditWhatsappNumber(e.target.value)}
+                      placeholder="e.g. 9848111781"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      Instagram
+                    </label>
+                    <input
+                      type="text"
+                      value={adminEditInstagramUrl}
+                      onChange={(e) => setAdminEditInstagramUrl(e.target.value)}
+                      placeholder="@handle or URL"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      Twitter / X
+                    </label>
+                    <input
+                      type="text"
+                      value={adminEditTwitterUrl}
+                      onChange={(e) => setAdminEditTwitterUrl(e.target.value)}
+                      placeholder="@handle or URL"
+                      className="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Logo section */}
