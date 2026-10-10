@@ -626,6 +626,36 @@ export const NavaratriDataProvider: React.FC<{ children: React.ReactNode }> = ({
                 )
               ) {
                 reconciledList.push(initM);
+
+                // Auto-upsert pre-seeded mandapams into Supabase if missing
+                try {
+                  (supabase.from("navaratri_mandapams") as any)
+                    .upsert([{
+                      id: initM.id,
+                      name: initM.name,
+                      slug: initM.slug,
+                      description: initM.description,
+                      devi_name: initM.deviName,
+                      address: initM.address,
+                      area: initM.area,
+                      city: initM.city,
+                      state: initM.state,
+                      pincode: initM.pincode,
+                      latitude: initM.latitude,
+                      longitude: initM.longitude,
+                      verification_status: initM.verificationStatus,
+                      organizer_name: initM.organizerName,
+                      organizer_mobile: initM.organizerMobile,
+                      organizer_email: initM.organizerEmail || null,
+                      contact_phone: initM.contactPhone,
+                      whatsapp_number: initM.whatsappNumber || null,
+                      logo_url: initM.logoUrl || null,
+                      cover_image_url: initM.coverImageUrl || null,
+                      created_at: initM.createdAt
+                    }])
+                    .then(() => {})
+                    .catch(() => {});
+                } catch {}
               }
             }
 

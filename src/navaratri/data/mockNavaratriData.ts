@@ -28,8 +28,32 @@ export const INITIAL_SEASON: Season = {
 };
 
 // ── Mandapams ─────────────────────────────────────────────────────────────────
-// All organization and demo data removed. Real mandapams will populate via registration.
-export const INITIAL_MANDAPAMS: Mandapam[] = [];
+export const INITIAL_MANDAPAMS: Mandapam[] = [
+  {
+    id: "m-hurdaya-raguram-youth",
+    name: "Sri Sri Sri Devi Kanaka Durga Navaratri Utsava Samithi",
+    slug: "hurdaya-raguram-youth",
+    description: "Sri Sri Sri Devi Kanaka Durga Navaratri Utsava Samithi - Hurdaya raguram youth Navaratri Mandapam",
+    deviName: "Sri Kanaka Durga Devi",
+    address: "Nizamabad",
+    area: "Nizamabad",
+    city: "Nizamabad",
+    state: "Telangana",
+    pincode: "503001",
+    latitude: 18.6725,
+    longitude: 78.0941,
+    verificationStatus: "VERIFIED",
+    organizerName: "Hurdaya Raguram Youth",
+    organizerMobile: "9848111781",
+    organizerEmail: "naninikithota@gmail.com",
+    contactPhone: "9848111781",
+    whatsappNumber: "9848111781",
+    logoUrl: "/uploads/hurdaya-raguram-youth-banner.png",
+    coverImageUrl: "/uploads/hurdaya-raguram-youth-banner.png",
+    cardBgImageUrl: "/uploads/hurdaya-raguram-youth-banner.png",
+    createdAt: new Date().toISOString()
+  }
+];
 
 // ── All dummy data arrays cleared ─────────────────────────────────────────────
 export const INITIAL_DAY_SETTINGS: MandapamDaySetting[] = [];
