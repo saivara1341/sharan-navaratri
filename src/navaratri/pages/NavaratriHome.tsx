@@ -595,15 +595,26 @@ export const NavaratriHome: React.FC = () => {
                     <Link to={`/navaratri/m/${mandapam.slug}`} className="rounded-xl bg-[#8B1E1E] px-4 py-2.5 text-center text-xs font-bold text-white hover:bg-[#781B1B] shadow transition-colors">
                       Open Mandapam Website
                     </Link>
-                    <a
-                      href={mapsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`Navigate to ${mandapam.name}`}
-                      className="grid h-10 w-11 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100 transition-colors"
-                    >
-                      <Navigation className="h-4 w-4" />
-                    </a>
+                    {mapsUrl ? (
+                      <a
+                        href={mapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Navigate to ${mandapam.name}`}
+                        className="grid h-10 w-11 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100 transition-colors cursor-pointer"
+                      >
+                        <Navigation className="h-4 w-4" />
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled
+                        title="Directions / Map location not provided"
+                        className="grid h-10 w-11 place-items-center rounded-xl border border-stone-200 bg-stone-100 text-stone-400 opacity-50 cursor-not-allowed"
+                      >
+                        <Navigation className="h-4 w-4 text-stone-400" />
+                      </button>
+                    )}
                   </div>
                 </article>
               );

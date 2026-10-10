@@ -129,15 +129,30 @@ export const TodayDarshanHero: React.FC<TodayDarshanHeroProps> = ({
               <span>→</span>
             </Link>
 
-            <a
-              href={getMandapamDirectionsUrl(mandapam)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-5 py-3 rounded-full bg-white hover:bg-amber-50 text-stone-800 border-2 border-amber-300 text-xs sm:text-sm font-bold shadow-sm transition-colors flex items-center gap-2"
-            >
-              <MapPin className="w-4 h-4 text-[#8B1E1E]" />
-              <span>{t.directions}</span>
-            </a>
+            {(() => {
+              const directionsUrl = getMandapamDirectionsUrl(mandapam);
+              return directionsUrl ? (
+                <a
+                  href={directionsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-5 py-3 rounded-full bg-white hover:bg-amber-50 text-stone-800 border-2 border-amber-300 text-xs sm:text-sm font-bold shadow-sm transition-colors flex items-center gap-2 cursor-pointer"
+                >
+                  <MapPin className="w-4 h-4 text-[#8B1E1E]" />
+                  <span>{t.directions}</span>
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  title="Directions / Map location not provided"
+                  className="px-5 py-3 rounded-full bg-stone-100 text-stone-400 border-2 border-stone-200 text-xs sm:text-sm font-bold opacity-50 cursor-not-allowed flex items-center gap-2"
+                >
+                  <MapPin className="w-4 h-4 text-stone-400" />
+                  <span>{t.directions}</span>
+                </button>
+              );
+            })()}
 
             <button
               onClick={handleShare}

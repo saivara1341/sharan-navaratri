@@ -1104,16 +1104,27 @@ export const NavaratriNearMe: React.FC = () => {
                     >
                       Open Mandapam
                     </Link>
-                    <a
-                      href={mapsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`Navigate to ${item.name}`}
-                      title="Navigate to this exact mandapam location"
-                      className="grid h-10 w-12 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100"
-                    >
-                      <img src={navaratriAsset("/navaratri/assets/google-maps-pin.png")} alt="Google Maps" className="h-6 w-6 object-contain" />
-                    </a>
+                    {mapsUrl ? (
+                      <a
+                        href={mapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Navigate to ${item.name}`}
+                        title="Navigate to this exact mandapam location"
+                        className="grid h-10 w-12 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100 cursor-pointer"
+                      >
+                        <img src={navaratriAsset("/navaratri/assets/google-maps-pin.png")} alt="Google Maps" className="h-6 w-6 object-contain" />
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled
+                        title="Location / Google Maps link not provided by organizer"
+                        className="grid h-10 w-12 place-items-center rounded-xl border border-stone-200 bg-stone-100 text-stone-400 opacity-50 cursor-not-allowed"
+                      >
+                        <img src={navaratriAsset("/navaratri/assets/google-maps-pin.png")} alt="Google Maps Disabled" className="h-6 w-6 object-contain grayscale" />
+                      </button>
+                    )}
                   </div>
                 </article>
               );
@@ -1227,17 +1238,26 @@ export const NavaratriNearMe: React.FC = () => {
                         </span>
                       </div>
                     </div>
-                    {activityMapsUrl && (
+                    {activityMapsUrl ? (
                       <a
                         href={activityMapsUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={`Navigate to ${activity.title}`}
                         title="Directions to Mandapam"
-                        className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100"
+                        className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-amber-300 bg-amber-50 text-[#8B1E1E] hover:bg-amber-100 cursor-pointer"
                       >
                         <Navigation className="h-4 w-4" />
                       </a>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled
+                        title="Directions unavailable — location not provided"
+                        className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-stone-200 bg-stone-100 text-stone-400 opacity-50 cursor-not-allowed"
+                      >
+                        <MapPinOff className="h-4 w-4" />
+                      </button>
                     )}
                   </div>
                 </article>
