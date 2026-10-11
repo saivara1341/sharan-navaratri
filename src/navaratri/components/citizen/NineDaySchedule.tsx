@@ -5,6 +5,7 @@ import { StandardFestivalDay, Mandapam, MandapamDaySetting } from "../../types";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { PrasadBowlIcon } from "../devotional/PrasadBowlIcon";
 import { HomaKundaIcon, isHomamEvent } from "../devotional/HomaKundaIcon";
+import { shareDayToWhatsApp, copyDayStatusText } from "../../utils/whatsappShareHelper";
 import {
   Calendar,
   ShoppingBag,
@@ -16,6 +17,9 @@ import {
   Sun,
   Moon,
   Clock,
+  MessageCircle,
+  Copy,
+  Share2,
 } from "lucide-react";
 
 interface NineDayScheduleProps {
@@ -273,15 +277,15 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                   </div>
                 </div>
 
-                {/* Action Row: Pointed Leaf "Know More" Button (Run Ads Design) */}
-                <div className="pt-2">
+                {/* Action Row: Pointed Leaf "Know More" Button & WhatsApp Status Share */}
+                <div className="pt-2 flex items-center gap-2">
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       setSelectedDay(day);
                     }}
-                    className="relative w-full inline-flex items-center justify-center px-4 py-2.5 font-sans font-bold text-xs tracking-wide text-white transition-all transform hover:scale-[1.02] active:scale-95 group/btn drop-shadow-md hover:drop-shadow-lg cursor-pointer"
+                    className="relative flex-1 inline-flex items-center justify-center px-3 py-2.5 font-sans font-bold text-xs tracking-wide text-white transition-all transform hover:scale-[1.02] active:scale-95 group/btn drop-shadow-md hover:drop-shadow-lg cursor-pointer"
                     title="Know More / వివరాలు"
                   >
                     {/* Pointed pill / leaf shape background matching Run Ads design */}
@@ -298,6 +302,19 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
                     <span className="relative z-10 font-bold text-white select-none text-xs">
                       Know More
                     </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      shareDayToWhatsApp(day, { mandapamName: mandapam?.name, language });
+                    }}
+                    className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition-all active:scale-95 shrink-0 flex items-center justify-center cursor-pointer"
+                    title="Share as WhatsApp Status 📲"
+                    aria-label="Share as WhatsApp Status"
+                  >
+                    <MessageCircle className="w-4 h-4 fill-current" />
                   </button>
                 </div>
               </div>
@@ -354,6 +371,44 @@ export const NineDaySchedule: React.FC<NineDayScheduleProps> = ({
 
             {/* Modal Body */}
             <div className="p-4 sm:p-6 overflow-y-auto space-y-5 text-stone-800">
+              {/* Devotional WhatsApp Status Action Banner */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-900 text-white shadow-md border-2 border-emerald-400/80 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="flex items-center gap-3 text-center sm:text-left">
+                  <div className="w-10 h-10 rounded-full bg-emerald-500/30 border border-emerald-300 flex items-center justify-center shrink-0">
+                    <MessageCircle className="w-5 h-5 text-emerald-200 fill-emerald-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-serif font-black text-sm text-emerald-100 flex items-center gap-1.5 justify-center sm:justify-start">
+                      <span>Share Maa {selectedDay.deviName} Darshan</span>
+                      <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 font-sans font-bold">WhatsApp Status</span>
+                    </h4>
+                    <p className="text-[11px] text-emerald-200/90 leading-snug mt-0.5">
+                      Includes Lord's Image, Incarnation Name, Slokam & Daily Blessings
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => shareDayToWhatsApp(selectedDay, { mandapamName: mandapam?.name, language })}
+                    className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <MessageCircle className="w-4 h-4 fill-stone-950" />
+                    <span>WhatsApp Status</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => copyDayStatusText(selectedDay, { mandapamName: mandapam?.name, language })}
+                    className="px-3 py-2.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-400/50 text-emerald-100 font-bold text-xs transition-colors cursor-pointer flex items-center justify-center gap-1"
+                    title="Copy Devotional Status Text"
+                  >
+                    <Copy className="w-4 h-4" />
+                    <span className="hidden xs:inline">Copy Text</span>
+                  </button>
+                </div>
+              </div>
+
               {/* Holy Image & Quick Info */}
               <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start bg-amber-50/70 p-4 rounded-2xl border border-amber-200">
                 {/* Framed image — full devi visible in modal too */}

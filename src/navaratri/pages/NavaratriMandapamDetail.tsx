@@ -10,6 +10,7 @@ import { ServiceBookingModal } from "../components/citizen/ServiceBookingModal";
 import { ShareQrModal } from "../components/citizen/ShareQrModal";
 import { TempleArchFrame } from "../components/devotional/TempleArchFrame";
 import { InstagramVerifiedBadge } from "../components/devotional/InstagramVerifiedBadge";
+import { shareDayToWhatsApp, copyDayStatusText } from "../utils/whatsappShareHelper";
 import { PrasadBowlIcon } from "../components/devotional/PrasadBowlIcon";
 import { MandapamIcon } from "../components/devotional/MandapamIcon";
 import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
@@ -1185,6 +1186,35 @@ export const NavaratriMandapamDetail: React.FC = () => {
                 <p className="text-stone-700">
                   {t.poojaSlotNoticeBody}
                 </p>
+              </div>
+            </div>
+
+            {/* Devotional WhatsApp Status Banner */}
+            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-900 text-white shadow-md border-2 border-emerald-400/80 flex flex-col sm:flex-row items-center justify-between gap-2.5">
+              <div className="flex items-center gap-2.5 text-center sm:text-left">
+                <div className="w-9 h-9 rounded-full bg-emerald-500/30 border border-emerald-300 flex items-center justify-center shrink-0">
+                  <MessageCircle className="w-4.5 h-4.5 text-emerald-200 fill-emerald-400" />
+                </div>
+                <div>
+                  <h4 className="font-serif font-black text-xs sm:text-sm text-emerald-100 flex items-center gap-1.5 justify-center sm:justify-start">
+                    <span>Share Status on WhatsApp</span>
+                    <span className="text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 font-sans font-bold">WhatsApp Status</span>
+                  </h4>
+                  <p className="text-[10px] sm:text-[11px] text-emerald-200/90 leading-snug">
+                    Lord image, incarnation name, slokam & mandapam details
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                <button
+                  type="button"
+                  onClick={() => shareDayToWhatsApp(selectedDay, { mandapamName: mandapam.name, language })}
+                  className="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <MessageCircle className="w-3.5 h-3.5 fill-stone-950" />
+                  <span>WhatsApp Status</span>
+                </button>
               </div>
             </div>
 

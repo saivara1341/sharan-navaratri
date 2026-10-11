@@ -4,6 +4,7 @@ import { STANDARD_NAVARATRI_DAYS } from "../../data/standardNavaratriDays";
 import { useNavaratriLanguage } from "../../context/NavaratriLanguageContext";
 import { PrasadBowlIcon } from "../devotional/PrasadBowlIcon";
 import { navaratriAsset } from "../../utils/navaratriAssets";
+import { shareDayToWhatsApp } from "../../utils/whatsappShareHelper";
 import {
   Calendar,
   Clock,
@@ -12,7 +13,8 @@ import {
   ShoppingBag,
   Bell,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  MessageCircle
 } from "lucide-react";
 
 interface TodayTomorrowViewProps {
@@ -157,9 +159,18 @@ export const TodayTomorrowView: React.FC<TodayTomorrowViewProps> = ({
                 style={{ backgroundColor: todayStd.colorHex }}
                 title={`Auspicious Color: ${todayStd.colorName}`}
               />
-              <span className="text-xs font-semibold text-stone-800">
+              <span className="text-xs font-semibold text-stone-800 hidden xs:inline">
                 {todayStd.colorName}
               </span>
+              <button
+                type="button"
+                onClick={() => shareDayToWhatsApp(todayStd, { mandapamName: mandapam?.name, language, customDeviName: todayDevi })}
+                className="ml-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+                title="Share Today's Darshan on WhatsApp Status 📲"
+              >
+                <MessageCircle className="w-3.5 h-3.5 fill-current" />
+                <span className="hidden sm:inline">WhatsApp Status</span>
+              </button>
             </div>
           </div>
 
@@ -234,9 +245,18 @@ export const TodayTomorrowView: React.FC<TodayTomorrowViewProps> = ({
                 style={{ backgroundColor: tomorrowStd.colorHex }}
                 title={`Auspicious Color: ${tomorrowStd.colorName}`}
               />
-              <span className="text-xs font-semibold text-stone-800">
+              <span className="text-xs font-semibold text-stone-800 hidden xs:inline">
                 {tomorrowStd.colorName}
               </span>
+              <button
+                type="button"
+                onClick={() => shareDayToWhatsApp(tomorrowStd, { mandapamName: mandapam?.name, language, customDeviName: tomorrowDevi })}
+                className="ml-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+                title="Share Tomorrow's Preparation on WhatsApp Status 📲"
+              >
+                <MessageCircle className="w-3.5 h-3.5 fill-current" />
+                <span className="hidden sm:inline">WhatsApp Status</span>
+              </button>
             </div>
           </div>
 
