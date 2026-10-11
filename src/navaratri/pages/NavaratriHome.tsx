@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
 import { PrasadBowlIcon } from "../components/devotional/PrasadBowlIcon";
-import { PrasadBowlIcon } from "../components/devotional/PrasadBowlIcon";
 import { PallakiIcon } from "../components/devotional/PallakiIcon";
 import { MandapamGoldIcon } from "../components/devotional/MandapamGoldIcon";
 import { FloatingAuspiciousParticles } from "../components/devotional/SacredMotionGraphics";

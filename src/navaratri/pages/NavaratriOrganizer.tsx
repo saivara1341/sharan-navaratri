@@ -16,6 +16,7 @@ import { DandiyaIcon } from "../components/devotional/DandiyaIcon";
 import { HomaKundaIcon, isHomamEvent } from "../components/devotional/HomaKundaIcon";
 import { MandapamGoldIcon } from "../components/devotional/MandapamGoldIcon";
 import { Activity, Mandapam } from "../types";
+import { compressImage } from "../utils/imageCompressor";
 import {
   ShieldCheck,
   Upload,
@@ -927,104 +928,33 @@ export const NavaratriOrganizer: React.FC = () => {
     toast.success("Mandapam announcement published to all devotee pages!");
   };
 
-  const handlePhotoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
       toast.error("Please upload an image file (JPG, PNG, WebP).");
-      return;
-    }
-
-    if (file.size > 15 * 1024 * 1024) {
-      toast.error("Image file is too large. Please select an image under 15MB.");
       return;
     }
 
     try {
       setIsUploadingPhoto(true);
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const rawResult = event.target?.result as string;
-        if (!rawResult) {
-          setIsUploadingPhoto(false);
-          return;
-        }
+      const compressRes = await compressImage(file, { maxWidth: 1200, maxHeight: 1200, quality: 0.82 });
+      setPhotoPreview(compressRes.dataUrl);
 
-        const img = new Image();
-        img.onload = async () => {
-          try {
-            const canvas = document.createElement("canvas");
-            const maxWidth = 960;
-            let width = img.width;
-            let height = img.height;
-            if (width > maxWidth) {
-              height = Math.round((height * maxWidth) / width);
-              width = maxWidth;
-            }
-            canvas.width = Math.max(1, width);
-            canvas.height = Math.max(1, height);
-            const ctx = canvas.getContext("2d");
-            let compressedDataUrl = rawResult;
-            if (ctx) {
-              ctx.drawImage(img, 0, 0, width, height);
-              compressedDataUrl = canvas.toDataURL("image/jpeg", 0.8);
-            }
-
-            setPhotoPreview(compressedDataUrl);
-
-            // Attempt background upload to Supabase Storage if mandapam is active
-            if (currentMandapam) {
-              try {
-                const ext = file.name.split(".").pop() || "jpg";
-                const safeSlug = (currentMandapam.slug || currentMandapam.id || "mandapam").replace(/[^a-zA-Z0-9_-]/g, "_");
-                const storagePath = `covers/${safeSlug}_${Date.now()}.${ext}`;
-                const { error: upErr } = await supabase.storage
-                  .from("mandapam-media")
-                  .upload(storagePath, file, { upsert: true });
-
-                if (!upErr) {
-                  const { data: pubData } = supabase.storage
-                    .from("mandapam-media")
-                    .getPublicUrl(storagePath);
-                  if (pubData?.publicUrl) {
-                    setPhotoPreview(pubData.publicUrl);
-                  }
-                }
-              } catch {
-                // Storage upload is optional; compressedDataUrl will be used
-              }
-            }
-
-            toast.success("Mandapam photo loaded! Click 'Save' to apply.");
-          } catch (canvasErr) {
-            console.warn("Photo canvas compression fallback:", canvasErr);
-            setPhotoPreview(rawResult);
-          } finally {
-            setIsUploadingPhoto(false);
-          }
-        };
-        img.onerror = () => {
-          setIsUploadingPhoto(false);
-          toast.error("Failed to parse image file.");
-        };
-        img.src = rawResult;
-      };
-      reader.onerror = () => {
-        setIsUploadingPhoto(false);
-        toast.error("Failed to read selected image.");
-      };
-      reader.readAsDataURL(file);
-    } catch {
-      setIsUploadingPhoto(false);
+      toast.success(
+        `Mandapam photo compressed from ${compressRes.originalSizeKB}KB to ${compressRes.compressedSizeKB}KB (${compressRes.compressionRatioPercent}% saved) with pristine quality!`
+      );
+    } catch (err) {
+      console.error("Photo compression error:", err);
       toast.error("Failed to process selected image.");
     } finally {
-      // Allow re-uploading same file if clicked again
+      setIsUploadingPhoto(false);
       e.target.value = "";
     }
   };
 
-  const handleLogoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -1033,96 +963,19 @@ export const NavaratriOrganizer: React.FC = () => {
       return;
     }
 
-    if (file.size > 12 * 1024 * 1024) {
-      toast.error("Logo file is too large. Please select an image under 12MB.");
-      return;
-    }
-
     try {
       setIsUploadingLogo(true);
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const rawResult = event.target?.result as string;
-        if (!rawResult) {
-          setIsUploadingLogo(false);
-          return;
-        }
+      const compressRes = await compressImage(file, { maxWidth: 512, maxHeight: 512, quality: 0.85 });
+      setLogoPreview(compressRes.dataUrl);
 
-        const img = new Image();
-        img.onload = async () => {
-          try {
-            const canvas = document.createElement("canvas");
-            // Crisp emblem size: 256px is lightweight (~15-25KB) and crystal-sharp
-            const maxSize = 256;
-            let width = img.width;
-            let height = img.height;
-            if (width > maxSize || height > maxSize) {
-              if (width > height) {
-                height = Math.round((height * maxSize) / width);
-                width = maxSize;
-              } else {
-                width = Math.round((width * maxSize) / height);
-                height = maxSize;
-              }
-            }
-            canvas.width = Math.max(1, width);
-            canvas.height = Math.max(1, height);
-            const ctx = canvas.getContext("2d");
-            let compressedDataUrl = rawResult;
-            if (ctx) {
-              ctx.drawImage(img, 0, 0, width, height);
-              compressedDataUrl = canvas.toDataURL("image/jpeg", 0.82);
-            }
-
-            setLogoPreview(compressedDataUrl);
-
-            // Attempt background upload to Supabase Storage if mandapam is active
-            if (currentMandapam) {
-              try {
-                const ext = file.name.split(".").pop() || "jpg";
-                const safeSlug = (currentMandapam.slug || currentMandapam.id || "mandapam").replace(/[^a-zA-Z0-9_-]/g, "_");
-                const storagePath = `logos/${safeSlug}_${Date.now()}.${ext}`;
-                const { error: upErr } = await supabase.storage
-                  .from("mandapam-media")
-                  .upload(storagePath, file, { upsert: true });
-
-                if (!upErr) {
-                  const { data: pubData } = supabase.storage
-                    .from("mandapam-media")
-                    .getPublicUrl(storagePath);
-                  if (pubData?.publicUrl) {
-                    setLogoPreview(pubData.publicUrl);
-                  }
-                }
-              } catch {
-                // Storage upload is optional; compressedDataUrl is already set
-              }
-            }
-
-            toast.success("Mandapam logo loaded! Click 'Save' to apply.");
-          } catch (canvasErr) {
-            console.warn("Logo canvas compression fallback:", canvasErr);
-            setLogoPreview(rawResult);
-          } finally {
-            setIsUploadingLogo(false);
-          }
-        };
-        img.onerror = () => {
-          setIsUploadingLogo(false);
-          toast.error("Failed to parse logo file.");
-        };
-        img.src = rawResult;
-      };
-      reader.onerror = () => {
-        setIsUploadingLogo(false);
-        toast.error("Failed to read logo file.");
-      };
-      reader.readAsDataURL(file);
-    } catch {
-      setIsUploadingLogo(false);
+      toast.success(
+        `Emblem compressed from ${compressRes.originalSizeKB}KB to ${compressRes.compressedSizeKB}KB (${compressRes.compressionRatioPercent}% saved)!`
+      );
+    } catch (err) {
+      console.error("Logo compression error:", err);
       toast.error("Failed to process logo file.");
     } finally {
-      // Allow re-uploading same file if clicked again
+      setIsUploadingLogo(false);
       e.target.value = "";
     }
   };

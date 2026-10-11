@@ -30,6 +30,7 @@ import {
 import { toast } from "sonner";
 import { Mandapam } from "../types";
 import { navaratriAsset } from "../utils/navaratriAssets";
+import { compressImage } from "../utils/imageCompressor";
 import { supabase } from "@/integrations/supabase/client";
 
 const NAVARATRI_ADMIN_EMAIL = "ssaivaraprasad51@gmail.com";
@@ -158,7 +159,7 @@ export const NavaratriAdmin: React.FC = () => {
   const [adminEditTwitterUrl, setAdminEditTwitterUrl] = useState("");
   const [isUploadingAdminLogo, setIsUploadingAdminLogo] = useState(false);
 
-  const handleAdminLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAdminLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -169,21 +170,14 @@ export const NavaratriAdmin: React.FC = () => {
 
     try {
       setIsUploadingAdminLogo(true);
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const rawResult = event.target?.result as string;
-        setAdminEditLogoUrl(rawResult);
-        setIsUploadingAdminLogo(false);
-        toast.success("Logo uploaded! Click 'Save Details' to apply.");
-      };
-      reader.onerror = () => {
-        setIsUploadingAdminLogo(false);
-        toast.error("Failed to read image.");
-      };
-      reader.readAsDataURL(file);
-    } catch {
-      setIsUploadingAdminLogo(false);
+      const compressRes = await compressImage(file, { maxWidth: 512, maxHeight: 512, quality: 0.85 });
+      setAdminEditLogoUrl(compressRes.dataUrl);
+      toast.success(`Logo compressed from ${compressRes.originalSizeKB}KB to ${compressRes.compressedSizeKB}KB (${compressRes.compressionRatioPercent}% saved)!`);
+    } catch (err) {
+      console.error("Admin logo compression error:", err);
       toast.error("Error reading logo file.");
+    } finally {
+      setIsUploadingAdminLogo(false);
     }
   };
 
@@ -216,7 +210,7 @@ export const NavaratriAdmin: React.FC = () => {
     toast.success(`Mandapam details, organizer info, and logo updated for ${adminEditMandapam.name}!`);
   };
 
-  const handleAdminImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAdminImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -227,41 +221,14 @@ export const NavaratriAdmin: React.FC = () => {
 
     try {
       setIsUploadingAdminImage(true);
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const maxWidth = 1200;
-          let width = img.width;
-          let height = img.height;
-          if (width > maxWidth) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          if (ctx) {
-            ctx.drawImage(img, 0, 0, width, height);
-            const compressed = canvas.toDataURL("image/jpeg", 0.85);
-            setAdminImagePreview(compressed);
-            toast.success("Image processed! Click 'Apply Card Background' to save.");
-          } else {
-            setAdminImagePreview(event.target?.result as string);
-          }
-          setIsUploadingAdminImage(false);
-        };
-        img.onerror = () => {
-          setIsUploadingAdminImage(false);
-          toast.error("Failed to process image.");
-        };
-        img.src = event.target?.result as string;
-      };
-      reader.readAsDataURL(file);
-    } catch {
-      setIsUploadingAdminImage(false);
+      const compressRes = await compressImage(file, { maxWidth: 1200, maxHeight: 1200, quality: 0.82 });
+      setAdminImagePreview(compressRes.dataUrl);
+      toast.success(`Image compressed from ${compressRes.originalSizeKB}KB to ${compressRes.compressedSizeKB}KB (${compressRes.compressionRatioPercent}% space saved)!`);
+    } catch (err) {
+      console.error("Admin photo compression error:", err);
       toast.error("Error reading image file.");
+    } finally {
+      setIsUploadingAdminImage(false);
     }
   };
 

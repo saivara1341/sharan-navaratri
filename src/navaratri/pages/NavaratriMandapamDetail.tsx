@@ -55,7 +55,8 @@ import {
   Check,
   RefreshCw,
   Image as ImageIcon,
-  Lock
+  Lock,
+  Download
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -737,7 +738,136 @@ export const NavaratriMandapamDetail: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. MANDAPAM ACTIVITIES & COMPETITIONS (With Registration Action) */}
+      {/* 3. MANDAPAM & LORD IDOL PHOTO GALLERY */}
+      <section className="bg-white border-2 border-amber-300 rounded-3xl p-5 sm:p-6 shadow-lg space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200/80 pb-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <Camera className="w-6 h-6 text-[#8B1E1E]" />
+              <h3 className="font-serif font-black text-xl text-[#8B1E1E]">
+                Mandapam & Lord Idol Photo Gallery
+              </h3>
+            </div>
+            <p className="text-xs text-stone-600 mt-0.5">
+              View, download, and share high-resolution idol darshan photos to WhatsApp Status & Instagram
+            </p>
+          </div>
+          <span className="text-xs font-bold text-amber-900 bg-amber-100 px-3 py-1 rounded-full border border-amber-300 self-start sm:self-center">
+            📸 Divine Gallery
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {STANDARD_NAVARATRI_DAYS.map((day) => {
+            const customAlankarana = alankaranas.find(
+              (a) => a.mandapamId === mandapam?.id && a.date === day.date
+            );
+            const customSetting = mandapamDaySettings.find((s) => s.dayNumber === day.dayNumber);
+            const deviInfo = DEVI_DAYS_LOCALIZED[day.dayNumber]?.[language];
+            const title = customSetting?.customDeviName || (
+              deviInfo?.fullName || (language === "te" ? day.teluguDeviName : language === "hi" ? day.hindiDeviName : day.deviName)
+            );
+            const imgUrl =
+              customAlankarana?.imageUrl && !customAlankarana.imageUrl.includes("-bg.jpg")
+                ? customAlankarana.imageUrl
+                : day.imageUrl || navaratriAsset("/navaratri/assets/maa-durga-hero-darshan-nobg.png");
+
+            const handleDownloadPhoto = async () => {
+              try {
+                const response = await fetch(imgUrl);
+                const blob = await response.blob();
+                const blobUrl = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = blobUrl;
+                link.download = `${title.toLowerCase().replace(/\s+/g, "_")}_darshan_day${day.dayNumber}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(blobUrl);
+                toast.success(`Downloaded ${title} image!`);
+              } catch {
+                window.open(imgUrl, "_blank");
+                toast.info("Opened HD photo in new tab for download.");
+              }
+            };
+
+            const handlePhotoWhatsAppShare = () => {
+              shareDayToWhatsApp(day, { mandapamName: mandapam.name, language });
+            };
+
+            const handlePhotoInstagramShare = () => {
+              const text = `🪔 Devotional Darshan of ${title} (Day ${day.dayNumber}) at ${mandapam.name}! 🙏✨\n\n#SharanNavaratri #DeviDarshan #Navaratri2026 #${title.replace(/\s+/g, "")}`;
+              if (navigator.clipboard) {
+                navigator.clipboard.writeText(text);
+                toast.success("Caption copied to clipboard! Open Instagram to paste into Story or Post.");
+              }
+              window.open("https://instagram.com", "_blank");
+            };
+
+            return (
+              <div
+                key={day.dayNumber}
+                className="rounded-2xl border border-amber-300 bg-[#FFFDF9] overflow-hidden shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow"
+              >
+                <div className="relative aspect-4/3 bg-stone-900 overflow-hidden">
+                  <img
+                    src={imgUrl}
+                    alt={title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                  <div className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full bg-black/70 backdrop-blur-xs text-amber-300 text-[10px] font-bold border border-amber-400/40">
+                    Day {day.dayNumber} • {formatLocalizedDateShort(day.date, language)}
+                  </div>
+                </div>
+
+                <div className="p-3.5 space-y-2.5">
+                  <div>
+                    <h4 className="font-serif font-bold text-sm text-[#8B1E1E]">
+                      {title}
+                    </h4>
+                    <p className="text-[11px] text-stone-600 line-clamp-1">
+                      {mandapam.name}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 pt-1 border-t border-amber-200/70">
+                    <button
+                      type="button"
+                      onClick={handleDownloadPhoto}
+                      title="Download HD Image"
+                      className="flex-1 py-1.5 px-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 text-[11px] font-bold flex items-center justify-center gap-1 transition-colors"
+                    >
+                      <Download className="w-3.5 h-3.5 text-[#8B1E1E]" />
+                      <span>Download</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handlePhotoWhatsAppShare}
+                      title="Share to WhatsApp Status"
+                      className="p-1.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-900 transition-colors"
+                    >
+                      <MessageCircle className="w-4 h-4 text-emerald-700 fill-emerald-600" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handlePhotoInstagramShare}
+                      title="Share to Instagram"
+                      className="p-1.5 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-900 transition-colors"
+                    >
+                      <Instagram className="w-4 h-4 text-pink-700" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* 4. MANDAPAM ACTIVITIES & COMPETITIONS (With Registration Action) */}
       <section className="bg-white border-2 border-amber-300 rounded-3xl p-5 sm:p-6 shadow-lg space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200/80 pb-3">
           <div>
