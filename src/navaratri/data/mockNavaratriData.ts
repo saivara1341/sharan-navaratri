@@ -196,5 +196,31 @@ export const INITIAL_ADVERTISEMENTS: Advertisement[] = [
     format: "BANNER",
     preferredFrame: "BOTH",
     createdAt: "2026-10-08T00:00:00.000Z"
+  },
+  {
+    id: "partner-shaurya-shibiram",
+    businessName: "Hindu Janajagruti Samiti",
+    category: "Shaurya Sikshana Shibiram",
+    phone: "+91 7702840723",
+    address: "Shivaji Nagar, Manik Bhavan School, Indur",
+    city: "Nizamabad",
+    targetZone: "Nizamabad",
+    targetArea: "Nizamabad",
+    packageId: "platform-sponsor",
+    title: "Prati Intlo Yodhudu - Shaurya Sikshana Shibiram",
+    description: "Free Shaurya Sikshana Shibiram for Hindu youth. Oct 14 to 21, 2026 at Manik Bhavan School, Indur (Nizamabad).",
+    imageUrl: "/navaratri/assets/ads/shaurya-sikshana-shibiram.jpeg",
+    ctaText: "Register Now",
+    ctaUrl: "https://forms.gle/DeUojRMVTNhnrkkD6",
+    targetCity: "Nizamabad",
+    startDate: "2026-10-14",
+    endDate: "2026-10-21",
+    status: "ACTIVE",
+    paymentStatus: "PAID",
+    impressions: 0,
+    clicks: 0,
+    format: "BANNER",
+    preferredFrame: "BOTH",
+    createdAt: "2026-10-14T00:00:00.000Z"
   }
 ];
